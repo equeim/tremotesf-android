@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/vertical_edge_padding">
+
+    <LinearLayout
+        android:id="@+id/servers_spinner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_edge_padding"
+        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/server"/>
+
+        <Spinner
+            android:id="@+id/servers_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+        android:background="?android:attr/listDivider"/>
+
+    <LinearLayout
+        android:id="@+id/list_settings_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_edge_padding"
+        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/sort_spinner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/sort"/>
+
+        <Spinner
+            android:id="@+id/sort_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+
+        <TextView
+            android:id="@+id/status_spinner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/status"/>
+
+        <Spinner
+            android:id="@+id/status_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+
+        <TextView
+            android:id="@+id/trackers_spinner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/trackers"/>
+
+        <Spinner
+            android:id="@+id/trackers_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+        android:background="?android:attr/listDivider"/>
+</LinearLayout>

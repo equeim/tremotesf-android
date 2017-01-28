@@ -1,0 +1,394 @@
+<resources
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_name" translatable="false">Tremotesf</string>
+
+    <string name="disconnected">Disconnected</string>
+    <string name="connecting">Connecting\u2026</string>
+    <string name="connected">Connected</string>
+
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="add">Add</string>
+
+    <string name="timed_out">Connection timed out</string>
+    <string name="connection_error">Connection error</string>
+    <string name="parsing_error">Parsing error</string>
+    <string name="server_is_too_new">Server\'s version is too new</string>
+    <string name="server_is_too_old">Server\'s version is too old</string>
+
+    <string name="main_activity_subtitle">
+        \u2193 <xliff:g example="10 KiB/s" id="download_speed">%1$s</xliff:g>    \u2191 <xliff:g example="10 KiB/s" id="upload_speed">%2$s</xliff:g>
+    </string>
+
+    <string name="current_server_string">
+        <xliff:g example="Desktop" id="server_name">%1$s</xliff:g> (<xliff:g example="192.168.1.2" id="server_address">%2$s</xliff:g>)
+    </string>
+
+    <string name="download_speed_string">\u2193 <xliff:g example="10 KiB/s" id="download_speed">%s</xliff:g></string>
+    <string name="upload_speed_string">\u2191 <xliff:g example="10 KiB/s" id="upload_speed">%s</xliff:g></string>
+
+    <string name="server">Server</string>
+    <string name="server_settings">Server settings</string>
+
+    <string name="sort">Sort</string>
+    <string name="progress">Progress</string>
+    <string name="eta">ETA</string>
+    <string name="ratio">Ratio</string>
+    <string name="size">Size</string>
+    <string name="added_date">Added date</string>
+
+    <string name="status">Status</string>
+
+    <string name="no_torrents">No torrents</string>
+
+    <string name="torrents_all">All (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_active">Active (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_downloading">Downloading (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_seeding">Seeding (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_paused">Paused (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_checking">Checking (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_errored">Errored (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+
+    <string name="trackers_spinner_text">
+        <xliff:g example="Desktop" id="server_name">%1$s</xliff:g> (<xliff:g example="1" id="torrents_count">%2$d</xliff:g>)
+    </string>
+
+    <plurals name="torrents_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> torrent selected</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> torrents selected</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> file selected</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> files selected</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> tracker selected</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> trackers selected</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> peer</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> peers</item>
+    </plurals>
+
+    <string name="next_update">Next update after <xliff:g example="10 min" id="time">%s</xliff:g></string>
+    <string name="add_tracker">Add tracker</string>
+    <string name="edit_tracker">Edit tracker</string>
+
+    <string name="tracker_announce_url">Tracker announce URL</string>
+
+    <string name="torrent_finished">Torrent finished</string>
+
+    <string name="torrent_not_found">Torrent not found</string>
+    <string name="torrent_removed">Torrent removed</string>
+
+    <string name="details">Details</string>
+    <string name="files">Files</string>
+    <string name="trackers">Trackers</string>
+    <string name="peers">Peers</string>
+    <string name="limits">Limits</string>
+
+    <string name="activity">Activity</string>
+    <string name="information">Information</string>
+
+    <string name="completed">Completed</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="uploaded">Uploaded</string>
+    <string name="download_speed">Download speed</string>
+    <string name="upload_speed">Upload speed</string>
+    <string name="seeders">Seeders</string>
+    <string name="leechers">Leechers</string>
+    <string name="last_activity">Last activity</string>
+
+    <string name="total_size">Total size</string>
+    <string name="location">Location</string>
+    <string name="hash">Hash</string>
+    <string name="created_by">Created by</string>
+    <string name="created_on">Created on</string>
+    <string name="comment">Comment</string>
+
+    <string name="parent_directory_list_item_label">..</string>
+
+    <string name="progress_string"><xliff:g example="33.3" id="percent_number">%s</xliff:g>%%</string>
+
+    <string name="completed_string">
+        <xliff:g example="1 GiB" id="completed_size">%1$s</xliff:g> of <xliff:g example="3 GiB" id="total_size">%2$s</xliff:g> (<xliff:g example="33.3" id="percent_number">%3$s</xliff:g>%%)
+    </string>
+
+    <string name="priority">Priority</string>
+    <string name="high_priority">High</string>
+    <string name="normal_priority">Normal</string>
+    <string name="low_pririty">Low</string>
+    <string name="mixed_priority">Mixed</string>
+
+    <string name="download_verb">Download</string>
+    <string name="not_download">Not download</string>
+
+    <string name="no_files">No files</string>
+
+    <string name="tracker_inactive">Inactive</string>
+    <string name="tracker_active">Active</string>
+    <string name="tracker_queued">Queued</string>
+    <string name="tracker_updating">Updating</string>
+    <string name="tracker_error">Error: <xliff:g id="error_string">%s</xliff:g></string>
+
+    <string name="loading">Loading\u2026</string>
+    <string name="no_peers">No peers</string>
+
+    <string name="error">Error</string>
+
+    <string name="speed">Speed</string>
+    <string name="honor_global_limits">Honor global limits</string>
+    <string name="kbps">kB/s</string>
+    <string name="download_noun">Download</string>
+    <string name="upload_noun">Upload</string>
+
+    <string-array name="priority">
+        <item>@string/high_priority</item>
+        <item>@string/normal_priority</item>
+        <item>@string/low_pririty</item>
+    </string-array>
+
+    <string name="seeding">Seeding</string>
+
+    <string name="ratio_limit">Ratio limit</string>
+    <string-array name="ratio_limit_mode">
+        <item>Use global settings</item>
+        <item>Seed regardless of ratio</item>
+        <item>@string/stop_seeding_at_ratio</item>
+    </string-array>
+
+    <string name="idle_seeding">Idle seeding</string>
+    <string-array name="idle_seeding_mode">
+        <item>Use global settings</item>
+        <item>Seed regardless of activity</item>
+        <item>@string/stop_seeding_if_idle_for</item>
+    </string-array>
+
+    <string name="min">min</string>
+    <string name="maximum_peers">Maximum peers</string>
+
+    <string name="settings">Settings</string>
+    <string name="servers">Servers</string>
+    <string name="notifications">Notifications</string>
+
+    <string name="quit">Quit</string>
+
+    <string name="select_all">Select all</string>
+
+    <string name="add_server">Add server</string>
+    <string name="edit_server">Edit server</string>
+
+    <plurals name="servers_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> server selected</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> servers selected</item>
+    </plurals>
+
+    <string name="save">Save</string>
+
+    <string name="remove">Remove</string>
+
+    <plurals name="remove_servers_message">
+        <item quantity="one">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected server?</item>
+        <item quantity="other">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected servers?</item>
+    </plurals>
+
+    <string name="no_servers">No servers</string>
+
+    <string name="name">Name</string>
+    <string name="address">Address</string>
+    <string name="port">Port</string>
+    <string name="api_path">API path</string>
+    <string name="https">HTTPS</string>
+    <string name="certificates">Certificates</string>
+    <string name="server_uses_self_signed_certificate">Server uses self-signed certificate</string>
+    <string name="certificate">Certificate in PEM format</string>
+    <string name="use_client_certificate_authentication">Use client certificate authentication</string>
+    <string name="authentication">Authentication</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="update_interval">Update interval, s</string>
+    <string name="background_update_interval">Background update interval, s</string>
+    <string name="timeout">Timeout, s</string>
+
+    <string name="empty_field_error">This field can\'t be empty</string>
+
+    <string name="overwrite_server">Overwrite server</string>
+    <string name="server_exists">Server with this name already exists</string>
+    <string name="overwrite">Overwrite</string>
+
+    <string name="add_torrent">Add torrent</string>
+    <string name="add_torrent_file">Add torrent file</string>
+    <string name="storage_permission_error">Storage permission is required</string>
+    <string name="file_is_too_large">File is too large</string>
+    <string name="file_reading_error">Error reading file</string>
+    <string name="file_parsing_error">Error parsing file</string>
+
+    <string name="download_directory">Download directory</string>
+
+    <string name="server_settings_downloading">Downloading</string>
+    <string name="server_settings_seeding">Seeding</string>
+    <string name="server_settings_queue">Queue</string>
+    <string name="server_settings_speed">Speed</string>
+    <string name="server_settings_network">Network</string>
+
+    <string-array name="server_settings">
+        <item>@string/server_settings_downloading</item>
+        <item>@string/server_settings_seeding</item>
+        <item>@string/server_settings_queue</item>
+        <item>@string/server_settings_speed</item>
+        <item>@string/server_settings_network</item>
+    </string-array>
+
+    <string name="start_added_torrents">Start added torrents</string>
+    <string name="rename_incomplete_files">Append \".part\" to names of incomplete files</string>
+    <string name="incomplete_files_directory">Directory for incomplete files</string>
+    <string name="stop_seeding_at_ratio">Stop seeding at ratio</string>
+    <string name="stop_seeding_if_idle_for">Stop seeding if idle for</string>
+    <string name="maximum_active_downloads">Maximum active downloads</string>
+    <string name="maximum_active_uploads">Maximum active uploads</string>
+    <string name="ignore_queue">Ignore queue position if idle for</string>
+    <string name="alternative_limits">Alternative limits</string>
+    <string name="enable">Enable</string>
+    <string name="download_kbps">Download, kB/s</string>
+    <string name="upload_kbps">Upload, kB/s</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="every_day">Every day</string>
+    <string name="weekdays">Weekdays</string>
+    <string name="weekends">Weekends</string>
+    <string name="connection">Connection</string>
+    <string name="peer_port">Peer port</string>
+    <string name="random_port">Random port on Transmission start</string>
+    <string name="port_forwarding">Enable port forwarding</string>
+    <string name="encryption">Encryption</string>
+    <string-array name="encryption">
+        <item>Allow</item>
+        <item>Prefer</item>
+        <item>Require</item>
+    </string-array>
+    <string name="enable_utp">Enable uTP</string>
+    <string name="enable_pex">Enable PEX</string>
+    <string name="enable_dht">Enable DHT</string>
+    <string name="enable_lpd">Enable LPD</string>
+    <string name="peer_limits">Peer limits</string>
+    <string name="maximum_peers_per_torrent">Maximum peers per torrent</string>
+    <string name="maximum_peers_globally">Maximum peers globally</string>
+
+    <string name="open_side_panel">Open side panel</string>
+    <string name="close_side_panel">Close side panel</string>
+    <string-array name="sort_spinner_items">
+        <item>@string/name</item>
+        <item>@string/status</item>
+        <item>@string/progress</item>
+        <item>@string/eta</item>
+        <item>@string/ratio</item>
+        <item>@string/size</item>
+        <item>@string/added_date</item>
+    </string-array>
+
+    <string name="start_downloading_after_adding">Start downloading after adding</string>
+
+    <string name="torrent_link">Torrent link</string>
+    <string name="add_torrent_link">Add torrent link</string>
+
+    <string name="select_file">Select file</string>
+    <string name="primary_storage">Primary storage</string>
+
+    <string name="current_session">Current session</string>
+    <string name="total">Total</string>
+    <string name="duration">Duration</string>
+    <string name="close">Close</string>
+    <string name="server_stats">Server statistics</string>
+
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">
+        <xliff:g id="days">%1$d</xliff:g> d <xliff:g id="hours">%2$d</xliff:g> h
+    </string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">
+        <xliff:g id="hours">%1$d</xliff:g> h <xliff:g id="minutes">%2$d</xliff:g> m
+    </string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">
+        <xliff:g id="minutes">%1$d</xliff:g> m <xliff:g id="seconds">%2$d</xliff:g> s
+    </string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds"><xliff:g id="seconds">%d</xliff:g> s</string>
+
+    <plurals name="started_times">
+        <item quantity="one">Started <xliff:g example="1" id="count">%d</xliff:g> time</item>
+        <item quantity="other">Started <xliff:g example="10" id="count">%d</xliff:g> times</item>
+    </plurals>
+
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+
+    <plurals name="remove_torrents_message">
+        <item quantity="one">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected torrent?</item>
+        <item quantity="other">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected torrents?</item>
+    </plurals>
+    <string name="delete_files">Also delete the files on the hard disk</string>
+    <string name="check_local_data">Check local data</string>
+    <string name="torrent_duplicate">This torrent is already added</string>
+    <string name="torrent_add_error">Error adding torrent</string>
+
+    <string name="uploaded_string">
+        <xliff:g example="1 GiB" id="size">%1$s</xliff:g>, uploaded <xliff:g example="500 MiB" id="uploaded">%2$s</xliff:g>
+    </string>
+
+    <string name="torrent_paused">Paused</string>
+    <plurals name="torrent_downloading">
+        <item quantity="one">Downloading from <xliff:g example="1" id="count">%d</xliff:g> peer</item>
+        <item quantity="other">Downloading from <xliff:g example="10" id="count">%d</xliff:g> peers</item>
+    </plurals>
+    <string name="torrent_downloading">Downloading</string>
+    <plurals name="torrent_seeding">
+        <item quantity="one">Seeding to <xliff:g example="1" id="count">%d</xliff:g> peer</item>
+        <item quantity="other">Seeding to <xliff:g example="10" id="count">%d</xliff:g> peers</item>
+    </plurals>
+    <string name="torrent_seeding">Seeding</string>
+    <string name="torrent_queued">Queued</string>
+    <string name="torrent_checking">Checking (<xliff:g example="33.3" id="percent_number">%s</xliff:g>%%)</string>
+    <string name="torrent_queued_for_checking">Queued for checking</string>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="one">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected tracker?</item>
+        <item quantity="other">Are you sure you want to remove <xliff:g example="10" id="count">%d</xliff:g> selected trackers?</item>
+    </plurals>
+
+    <string name="invalid_server_url">Invalid server url</string>
+
+    <string-array name="size_units">
+        <item><xliff:g example="1" id="number">%s</xliff:g> B</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> KiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> MiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> GiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> TiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> PiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> EiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ZiB</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> YiB</item>
+    </string-array>
+
+    <string-array name="speed_units">
+        <item><xliff:g example="1" id="number">%s</xliff:g> B/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> KiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> MiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> GiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> TiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> PiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> EiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ZiB/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> YiB/s</item>
+    </string-array>
+
+    <string name="remove_torrent_message">Are you sure you want to remove this torrent?</string>
+</resources>

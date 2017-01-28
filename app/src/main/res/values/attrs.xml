@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="selectedBackground" format="reference"/>
+
+    <attr name="progressBarStyleHorizontal" format="reference"/>
+
+    <attr name="selectAllIcon" format="reference"/>
+    <attr name="searchIcon" format="reference"/>
+    <attr name="addIcon" format="reference"/>
+    <attr name="doneIcon" format="reference"/>
+    <attr name="deleteIcon" format="reference"/>
+    <attr name="directoryIcon" format="reference"/>
+    <attr name="fileIcon" format="reference"/>
+    <attr name="fileListItemIcon" format="reference"/>
+    <attr name="downloadIcon" format="reference"/>
+    <attr name="priorityIcon" format="reference"/>
+    <attr name="homeIcon" format="reference"/>
+    <attr name="startIcon" format="reference"/>
+    <attr name="pauseIcon" format="reference"/>
+    <attr name="refreshIcon" format="reference"/>
+    <attr name="torrentIcon" format="reference"/>
+</resources>

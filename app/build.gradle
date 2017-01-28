@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+    defaultConfig {
+        applicationId 'org.equeim.tremotesf'
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName '1.0.0'
+    }
+    buildTypes {
+        release {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        url 'https://github.com/amjjd/amjjd-mvn-repo/raw/master/releases'
+    }
+    maven {
+        url 'http://clojars.org/repo'
+    }
+}
+
+def support_version = '25.1.0'
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.android.support:support-compat:$support_version"
+    compile "com.android.support:support-core-utils:$support_version"
+    compile "com.android.support:support-core-ui:$support_version"
+    compile "com.android.support:appcompat-v7:$support_version"
+    compile "com.android.support:gridlayout-v7:$support_version"
+    compile "com.android.support:recyclerview-v7:$support_version"
+    compile "com.android.support:support-v13:$support_version"
+    compile "com.android.support:design:$support_version"
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.google.guava:guava:20.0'
+    compile 'com.amjjd:java-alphanum:0.2'
+    compile 'com.hypirion:bencode:0.1.1'
+}

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="activity">Активность</string>
+    <string name="add">Добавить</string>
+    <string name="add_server">Добавить сервер</string>
+    <string name="add_torrent">Добавить торрент</string>
+    <string name="add_torrent_file">Добавить торрент-файл</string>
+    <string name="add_torrent_link">Добавить ссылку на торрент</string>
+    <string name="add_tracker">Добавить трекер</string>
+    <string name="added_date">Дата добавления</string>
+    <string name="address">Адрес</string>
+    <string name="alternative_limits">Альтернативные ограничения</string>
+    <string name="api_path">Путь API</string>
+    <string name="authentication">Аутентификация</string>
+    <string name="background_update_interval">Фоновый интервал обновления, с</string>
+    <string name="certificate">Сертификат в PEM-формате</string>
+    <string name="certificates">Сертификаты</string>
+    <string name="check_local_data">Проверить локальные данные</string>
+    <string name="close">Закрыть</string>
+    <string name="close_side_panel">Закрыть боковую панель</string>
+    <string name="comment">Комментарий</string>
+    <string name="completed">Завершено</string>
+    <string name="connect">Подключиться</string>
+    <string name="connected">Подключено</string>
+    <string name="connecting">Подключение…</string>
+    <string name="connection">Соединение</string>
+    <string name="connection_error">Ошибка соединения</string>
+    <string name="created_by">Создан в</string>
+    <string name="created_on">Дата создания</string>
+    <string name="current_server_string"><xliff:g example="Desktop" id="server_name">%1$s</xliff:g> (<xliff:g example="192.168.1.2" id="server_address">%2$s</xliff:g>)</string>
+    <string name="current_session">Текущая сессия</string>
+    <string name="delete_files">Также удалить файлы на жестком диске</string>
+    <string name="details">Сведения</string>
+    <string name="disconnect">Отключиться</string>
+    <string name="disconnected">Отключено</string>
+    <string name="download_directory">Каталог загрузки</string>
+    <string name="download_kbps">Загрузка, кБ/с</string>
+    <string name="download_noun">Загрузка</string>
+    <string name="download_speed">Скорость загрузки</string>
+    <string name="download_verb">Загружать</string>
+    <string name="downloaded">Загружено</string>
+    <string name="duration">Продолжительность</string>
+    <string name="edit_server">Редактировать сервер</string>
+    <string name="edit_tracker">Редактировать трекер</string>
+    <string name="empty_field_error">Это поле должно быть заполнено</string>
+    <string name="enable">Включить</string>
+    <string name="enable_dht">Использовать DHT</string>
+    <string name="enable_lpd">Использовать LPD</string>
+    <string name="enable_pex">Использовать PEX</string>
+    <string name="enable_utp">Использовать uTP</string>
+    <string name="encryption">Шифрование</string>
+    <string name="error">Ошибка</string>
+    <string name="eta">ETA</string>
+    <string name="every_day">Ежедневно</string>
+    <string name="file_is_too_large">Файл слишком большой</string>
+    <string name="file_parsing_error">Ошибка разбора файла</string>
+    <string name="file_reading_error">Ошибка чтения файла</string>
+    <string name="files">Файлы</string>
+    <string name="from">С</string>
+    <string name="hash">Хэш</string>
+    <string name="high_priority">Высокий</string>
+    <string name="honor_global_limits">Учитывать глобальные ограничения</string>
+    <string name="https">HTTPS</string>
+    <string name="idle_seeding">Раздача при простое</string>
+    <string name="ignore_queue">Игнорировать позицию в очереди при простое</string>
+    <string name="incomplete_files_directory">Каталог для незавершенных файлов</string>
+    <string name="information">Информация</string>
+    <string name="invalid_server_url">Неправильный адрес сервера</string>
+    <string name="kbps">кБ/с</string>
+    <string name="last_activity">Последняя активность</string>
+    <string name="leechers">Личи</string>
+    <string name="limits">Ограничения</string>
+    <string name="loading">Загрузка…</string>
+    <string name="location">Расположение</string>
+    <string name="low_pririty">Низкий</string>
+    <string name="maximum_active_downloads">Максимальное количество активных загрузок</string>
+    <string name="maximum_active_uploads">Максимальное количество активных раздач</string>
+    <string name="maximum_peers">Максимальное количество пиров</string>
+    <string name="maximum_peers_globally">Общее максимальное количество пиров</string>
+    <string name="maximum_peers_per_torrent">Максимальное количество пиров на торрент</string>
+    <string name="min">мин</string>
+    <string name="mixed_priority">Смешанный</string>
+    <string name="name">Название</string>
+    <string name="no_files">Нет файлов</string>
+    <string name="no_peers">Нет пиров</string>
+    <string name="no_servers">Нет серверов</string>
+    <string name="no_torrents">Нет торрентов</string>
+    <string name="normal_priority">Нормальный</string>
+    <string name="not_download">Не загружать</string>
+    <string name="notifications">Уведомления</string>
+    <string name="open_side_panel">Открыть боковую панель</string>
+    <string name="overwrite">Перезаписать</string>
+    <string name="overwrite_server">Перезаписать сервер</string>
+    <string name="parent_directory_list_item_label">..</string>
+    <string name="parsing_error">Ошибка разбора</string>
+    <string name="password">Пароль</string>
+    <string name="pause">Приостановить</string>
+    <string name="peer_limits">Ограничения пиров</string>
+    <string name="peer_port">Порт для входящих соединений</string>
+    <string name="peers">Пиры</string>
+    <string name="port">Порт</string>
+    <string name="port_forwarding">Перенаправление портов</string>
+    <string name="prefs_dark_theme_summary">Перезапустите приложение для применения изменений</string>
+    <string name="primary_storage">Главное хранилище</string>
+    <string name="priority">Приоритет</string>
+    <string name="progress">Прогресс</string>
+    <string name="quit">Выйти</string>
+    <string name="random_port">Случайный порт при запуске Transmission</string>
+    <string name="ratio">Рейтинг</string>
+    <string name="ratio_limit">Ограничение рейтинга</string>
+    <string name="remove">Удалить</string>
+    <string name="rename_incomplete_files">Добавлять \".part\" к именам незавершенных файлов</string>
+    <string name="save">Сохранить</string>
+    <string name="scheduled">По расписанию</string>
+    <string name="seeders">Сиды</string>
+    <string name="seeding">Раздача</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="select_file">Выбрать файл</string>
+    <string name="server">Сервер</string>
+    <string name="server_exists">Сервер с эти именем уже существует</string>
+    <string name="server_is_too_new">Версия сервера слишком новая</string>
+    <string name="server_is_too_old">Версия сервера слишком старая</string>
+    <string name="server_settings">Настройки сервера</string>
+    <string name="server_settings_downloading">Загрузки</string>
+    <string name="server_settings_network">Сеть</string>
+    <string name="server_settings_queue">Очередь</string>
+    <string name="server_settings_seeding">Раздачи</string>
+    <string name="server_settings_speed">Скорость</string>
+    <string name="server_stats">Статистика сервера</string>
+    <string name="server_uses_self_signed_certificate">Сервер использует самоподписанный сертификат</string>
+    <string name="servers">Серверы</string>
+    <string name="settings">Настройки</string>
+    <string name="size">Размер</string>
+    <string name="sort">Сортировать</string>
+    <string name="speed">Скорость</string>
+    <string name="start">Запустить</string>
+    <string name="start_added_torrents">Запускать добавленные торренты</string>
+    <string name="start_downloading_after_adding">Начать загрузку после добавления</string>
+    <string name="status">Статус</string>
+    <string name="stop_seeding_at_ratio">Прекратить раздачу при рейтинге</string>
+    <string name="stop_seeding_if_idle_for">Прекратить раздачу при простое</string>
+    <string name="storage_permission_error">Требуется разрешения на доступ к памяти</string>
+    <string name="timed_out">Время соединения истекло</string>
+    <string name="timeout">Таймаут, с</string>
+    <string name="to">до</string>
+    <string name="torrent_add_error">Ошибка добавления торрента</string>
+    <string name="torrent_downloading">Загружается</string>
+    <string name="torrent_duplicate">Этот торрент уже добавлен</string>
+    <string name="torrent_finished">Торрент завершен</string>
+    <string name="torrent_link">Ссылка на торрент</string>
+    <string name="torrent_not_found">Торрент не найден</string>
+    <string name="torrent_paused">Приостановлен</string>
+    <string name="torrent_queued">В очереди</string>
+    <string name="torrent_queued_for_checking">В очереди на проверку</string>
+    <string name="torrent_removed">Торрент удален</string>
+    <string name="torrent_seeding">Раздается</string>
+    <string name="total">Всего</string>
+    <string name="total_size">Общий размер</string>
+    <string name="tracker_active">Активен</string>
+    <string name="tracker_announce_url">Адрес объявлений трекера</string>
+    <string name="tracker_inactive">Неактивен</string>
+    <string name="tracker_queued">В очереди</string>
+    <string name="tracker_updating">Обновляется</string>
+    <string name="trackers">Трекеры</string>
+    <string name="update_interval">Интервал обновления, с</string>
+    <string name="upload_kbps">Отдача, кБ/с</string>
+    <string name="upload_noun">Отдача</string>
+    <string name="upload_speed">Скорость отдачи</string>
+    <string name="uploaded">Отдано</string>
+    <string name="use_client_certificate_authentication">Использовать аутентификацию с помощью клиентского сертификата</string>
+    <string name="username">Имя пользователя</string>
+    <string name="weekdays">По будням</string>
+    <string name="weekends">По выходным</string>
+    <string name="completed_string"><xliff:g example="1 GiB" id="completed_size">%1$s</xliff:g> из <xliff:g example="3 GiB" id="total_size">%2$s</xliff:g> (<xliff:g example="33.3" id="percent_number">%3$s</xliff:g>%%)</string>
+    <string name="download_speed_string">\u2193 <xliff:g example="10 KiB/s" id="download_speed">%s</xliff:g></string>
+    <string name="upload_speed_string">\u2191 <xliff:g example="10 KiB/s" id="upload_speed">%s</xliff:g></string>
+    <string name="torrents_all">Все (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_active">Активные (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_downloading">Загрузки (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_seeding">Раздачи (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_paused">Приостановленные (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_checking">Проверяющиеся (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="torrents_errored">С ошибкой (<xliff:g example="1" id="torrents_count">%d</xliff:g>)</string>
+    <string name="trackers_spinner_text">
+        <xliff:g example="Desktop" id="server_name">%1$s</xliff:g> (<xliff:g example="1" id="torrents_count">%2$d</xliff:g>)
+    </string>
+    <string name="next_update">Следующее обновление через <xliff:g example="10 min" id="time">%s</xliff:g></string>
+    <string name="progress_string"><xliff:g example="33.3" id="percent_number">%s</xliff:g>%%</string>
+    <string-array name="speed_units">
+        <item><xliff:g example="1" id="number">%s</xliff:g> Б/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> КиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> МиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ГиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ТиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ПиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЭиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЗиБ/s</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЙiB/s</item>
+    </string-array>
+    <string-array name="size_units">
+        <item><xliff:g example="1" id="number">%s</xliff:g> Б</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> КиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> МиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ГиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ТиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ПиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЭиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЗиБ</item>
+        <item><xliff:g example="1" id="number">%s</xliff:g> ЙиБ</item>
+    </string-array>
+    <string name="main_activity_subtitle">
+        \u2193 <xliff:g example="10 KiB/s" id="download_speed">%1$s</xliff:g>    \u2191<xliff:g example="10 KiB/s" id="upload_speed">%2$s</xliff:g>
+    </string>
+    <string name="tracker_error">Ошибка: <xliff:g id="error_string">%s</xliff:g></string>
+    <string name="duration_days">
+        <xliff:g id="days">%1$d</xliff:g> д <xliff:g id="hours">%2$d</xliff:g> ч
+    </string>
+    <string name="duration_hours">
+        <xliff:g id="hours">%1$d</xliff:g> ч <xliff:g id="minutes">%2$d</xliff:g> м
+    </string>
+    <string name="duration_minutes">
+        <xliff:g id="minutes">%1$d</xliff:g> м <xliff:g id="seconds">%2$d</xliff:g> с
+    </string>
+    <string name="duration_seconds"><xliff:g id="seconds">%d</xliff:g> с</string>
+    <string name="uploaded_string">
+        <xliff:g example="1 GiB" id="size">%1$s</xliff:g>, роздано <xliff:g example="500 MiB" id="uploaded">%2$s</xliff:g>
+    </string>
+    <string name="torrent_checking">Проверяется (<xliff:g example="33.3" id="percent_number">%s</xliff:g>%%)</string>
+    <string-array name="ratio_limit_mode">
+        <item>Использовать глобальные настройки</item>
+        <item>Раздавать независимо от рейтинга</item>
+        <item>@string/stop_seeding_at_ratio</item>
+    </string-array>
+    <string-array name="idle_seeding_mode">
+        <item>Использовать глобальные настройки</item>
+        <item>Раздавать независимо от активности</item>
+        <item>@string/stop_seeding_if_idle_for</item>
+    </string-array>
+
+    <plurals name="torrents_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> торрент выбран</item>
+        <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> торрента выбраны</item>
+        <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> торрентов выбраны</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> файл выбран</item>
+        <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> файла выбраны</item>
+        <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> файлов выбраны</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> трекер выбран</item>
+        <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> трекера выбраны</item>
+        <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> трекеров выбраны</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> пир</item>
+        <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> пира</item>
+        <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> пиров</item>
+    </plurals>
+
+    <plurals name="servers_selected">
+        <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> сервер выбран</item>
+        <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> сервера выбраны</item>
+        <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> серверов выбраны</item>
+    </plurals>
+
+    <plurals name="remove_servers_message">
+        <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный сервер?</item>
+        <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных сервера?</item>
+        <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных серверов?</item>
+    </plurals>
+
+    <plurals name="started_times">
+        <item quantity="one">Запущен <xliff:g example="1" id="count">%d</xliff:g> раз</item>
+        <item quantity="few">Запущен <xliff:g example="1" id="count">%d</xliff:g> раза</item>
+        <item quantity="many">Запущен <xliff:g example="1" id="count">%d</xliff:g> раз</item>
+    </plurals>
+
+    <plurals name="remove_torrents_message">
+        <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный торрент?</item>
+        <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных торрента?</item>
+        <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных торрентов?</item>
+    </plurals>
+
+    <plurals name="torrent_downloading">
+        <item quantity="one">Загружается от <xliff:g example="1" id="count">%d</xliff:g> пира</item>
+        <item quantity="few">Загружается от <xliff:g example="10" id="count">%d</xliff:g> пиров</item>
+        <item quantity="many">Загружается от <xliff:g example="10" id="count">%d</xliff:g> пиров</item>
+    </plurals>
+
+    <plurals name="torrent_seeding">
+        <item quantity="one">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пиру</item>
+        <item quantity="few">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пирам</item>
+        <item quantity="many">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пирам</item>
+    </plurals>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный трекер?</item>
+        <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных трекера?</item>
+        <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных трекеров?</item>
+    </plurals>
+
+    <string name="remove_torrent_message">Вы уверены, что хотите удалить этот торрент?</string>
+
+    <string-array name="encryption">
+        <item>Разрешить</item>
+        <item>Предпочитать</item>
+        <item>Требовать</item>
+    </string-array>
+</resources>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_edge_padding"
+        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speed"
+            android:textAppearance="@style/HeaderTextAppearance"/>
+
+        <CheckBox
+            android:id="@+id/global_limits_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/honor_global_limits"/>
+
+        <CheckBox
+            android:id="@+id/download_speed_limit_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/download_noun"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/download_speed_limit_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/download_speed_limit_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/kbps"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/upload_speed_limit_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/upload_noun"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/upload_speed_limit_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/upload_speed_limit_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/kbps"
+                android:inputType="number"
+                android:saveEnabled="false">
+
+                <requestFocus/>
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/priority"/>
+
+        <Spinner
+            android:id="@+id/priority_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/seeding"
+            android:textAppearance="@style/HeaderTextAppearance"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/ratio_limit"/>
+
+        <Spinner
+            android:id="@+id/ratio_limit_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"/>
+
+        <EditText
+            android:id="@+id/ratio_limit_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:digits="0123456789,."
+            android:inputType="numberDecimal"
+            android:saveEnabled="false"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/idle_seeding"/>
+
+        <Spinner
+            android:id="@+id/idle_seeding_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/idle_seeding_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/idle_seeding_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/min"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/peers"
+            android:textAppearance="@style/HeaderTextAppearance"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/maximum_peers_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/maximum_peers"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

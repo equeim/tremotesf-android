@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/horizontal_edge_padding"
+            android:layout_marginRight="@dimen/horizontal_edge_padding"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/limits"
+                android:textAppearance="@style/HeaderTextAppearance"/>
+
+            <CheckBox
+                android:id="@+id/download_speed_limit_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:saveEnabled="false"
+                android:text="@string/download_noun"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/download_speed_limit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/download_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/kbps"
+                    android:inputType="number"
+                    android:saveEnabled="false"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/upload_speed_limit_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:saveEnabled="false"
+                android:text="@string/upload_noun"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/upload_speed_limit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/upload_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/kbps"
+                    android:inputType="number"
+                    android:saveEnabled="false"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:text="@string/alternative_limits"
+                android:textAppearance="@style/HeaderTextAppearance"/>
+
+            <CheckBox
+                android:id="@+id/alternative_limits_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:saveEnabled="false"
+                android:text="@string/enable"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/alternative_download_speed_limit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/alternative_download_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/download_kbps"
+                    android:inputType="number"
+                    android:saveEnabled="false"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/alternative_upload_speed_limit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/alternative_upload_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/upload_kbps"
+                    android:inputType="number"
+                    android:saveEnabled="false"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/schedule_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:saveEnabled="false"
+                android:text="@string/scheduled"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedule_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:orientation="vertical">
+
+            <view
+                android:id="@+id/begin_time_item"
+                class="org.equeim.tremotesf.serversettingsactivity.SpeedFragment$TimePickerItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/from"/>
+
+            <view
+                android:id="@+id/end_time_item"
+                class="org.equeim.tremotesf.serversettingsactivity.SpeedFragment$TimePickerItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/to"/>
+
+            <Spinner
+                android:id="@+id/days_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_edge_padding"
+                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:paddingLeft="24dp"
+                android:paddingStart="24dp"
+                android:saveEnabled="false"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

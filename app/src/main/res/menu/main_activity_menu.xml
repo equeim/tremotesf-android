@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:icon="?attr/searchIcon"
+        android:title="@android:string/search_go"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView|always"/>
+
+    <item
+        android:id="@+id/connect"
+        android:title="@string/connect"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/add_torrent_file"
+        android:title="@string/add_torrent_file"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/add_torrent_link"
+        android:title="@string/add_torrent_link"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/server_settings"
+        android:title="@string/server_settings"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/server_stats"
+        android:title="@string/server_stats"
+        app:showAsAction="never"/>
+</menu>

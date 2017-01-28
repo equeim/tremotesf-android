@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/start"
+        android:icon="?attr/startIcon"
+        android:title="@string/start"/>
+
+    <item
+        android:id="@+id/pause"
+        android:icon="?attr/pauseIcon"
+        android:title="@string/pause"/>
+
+    <item
+        android:id="@+id/check"
+        android:icon="?attr/refreshIcon"
+        android:title="@string/check_local_data"/>
+
+    <item
+        android:id="@+id/remove"
+        android:icon="?attr/deleteIcon"
+        android:title="@string/remove"/>
+
+    <item
+        android:id="@+id/select_all"
+        android:icon="?attr/selectAllIcon"
+        android:title="@string/select_all" />
+</menu>

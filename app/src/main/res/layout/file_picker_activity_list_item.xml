@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/listPreferredItemHeightSmall"
+    android:background="?attr/selectableItemBackground"
+    android:drawableLeft="?attr/fileListItemIcon"
+    android:drawablePadding="8dp"
+    android:drawableStart="?attr/fileListItemIcon"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:paddingLeft="@dimen/horizontal_edge_padding"
+    android:paddingRight="@dimen/horizontal_edge_padding"
+    android:singleLine="true"
+    android:textAppearance="?attr/textAppearanceListItemSmall"
+    android:clickable="true"/>

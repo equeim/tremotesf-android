@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_arrow_downward_black_24dp" />
+    <item
+        android:drawable="@drawable/ic_arrow_upward_black_24dp"
+        android:maxLevel="1" />
+    <item
+        android:drawable="@drawable/ic_pause_black_enabled_24dp"
+        android:maxLevel="2" />
+    <item
+        android:drawable="@drawable/ic_refresh_black_24dp"
+        android:maxLevel="3" />
+    <item
+        android:drawable="@drawable/ic_error_black_24dp"
+        android:maxLevel="4" />
+</level-list>

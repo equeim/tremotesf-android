@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dialog_horizontal_padding"
+        android:layout_marginRight="@dimen/dialog_horizontal_padding"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding"
+        app:columnCount="2">
+
+        <TextView
+            android:text="@string/current_session"
+            android:textAppearance="@style/HeaderTextAppearance"
+            app:layout_columnSpan="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/downloaded"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/session_downloaded_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/uploaded"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/session_uploaded_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/ratio"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/session_ratio_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/duration"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/session_duration_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/total"
+            android:textAppearance="@style/HeaderTextAppearance"
+            app:layout_columnSpan="2"/>
+
+        <TextView
+            android:id="@+id/started_timed_text_view"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            app:layout_columnSpan="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/downloaded"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/total_downloaded_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/uploaded"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/total_uploaded_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/ratio"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/total_ratio_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
+            android:text="@string/duration"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/total_duration_text_view"
+            android:layout_width="0dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+    </android.support.v7.widget.GridLayout>
+</ScrollView>

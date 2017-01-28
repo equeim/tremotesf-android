@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/horizontal_edge_padding"
+    android:layout_marginRight="@dimen/horizontal_edge_padding"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/vertical_edge_padding"
+    android:paddingTop="@dimen/vertical_edge_padding">
+
+    <CheckBox
+        android:id="@+id/ratio_limit_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:saveEnabled="false"
+        android:text="@string/stop_seeding_at_ratio"/>
+
+    <EditText
+        android:id="@+id/ratio_limit_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:digits="0123456789,."
+        android:inputType="numberDecimal"
+        android:saveEnabled="false"/>
+
+    <CheckBox
+        android:id="@+id/idle_seeding_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:saveEnabled="false"
+        android:text="@string/stop_seeding_if_idle_for"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/idle_seeding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/idle_seeding_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/min"
+            android:inputType="number"
+            android:saveEnabled="false"/>
+    </android.support.design.widget.TextInputLayout>
+</LinearLayout>

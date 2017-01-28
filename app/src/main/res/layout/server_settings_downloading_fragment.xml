@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_edge_padding"
+        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/download_directory_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/download_directory"
+                android:inputType="textUri"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/start_torrents_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/start_added_torrents"/>
+
+        <CheckBox
+            android:id="@+id/rename_incomplete_files_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/rename_incomplete_files"/>
+
+        <CheckBox
+            android:id="@+id/incomplete_files_directory_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/incomplete_files_directory"/>
+
+        <EditText
+            android:id="@+id/incomplete_files_directory_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:inputType="textUri"
+            android:saveEnabled="false"/>
+    </LinearLayout>
+</ScrollView>

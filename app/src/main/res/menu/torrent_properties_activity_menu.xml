@@ -1,0 +1,30 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/all_items">
+        <item
+            android:id="@+id/start"
+            android:icon="?attr/startIcon"
+            android:title="@string/start"
+            app:showAsAction="ifRoom"/>
+
+        <item
+            android:id="@+id/pause"
+            android:icon="?attr/pauseIcon"
+            android:title="@string/pause"
+            app:showAsAction="ifRoom"/>
+
+        <item
+            android:id="@+id/check"
+            android:icon="?attr/refreshIcon"
+            android:title="@string/check_local_data"
+            app:showAsAction="ifRoom"/>
+
+        <item
+            android:id="@+id/remove"
+            android:icon="?attr/deleteIcon"
+            android:title="@string/remove"
+            app:showAsAction="ifRoom"/>
+    </group>
+</menu>

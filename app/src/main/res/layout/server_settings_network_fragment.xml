@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/horizontal_edge_padding"
+        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connection"
+            android:textAppearance="@style/HeaderTextAppearance"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/peer_port_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/peer_port"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/random_port_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/random_port"/>
+
+        <CheckBox
+            android:id="@+id/port_forwarding_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/port_forwarding"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/encryption"/>
+
+        <Spinner
+            android:id="@+id/encryption_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"/>
+
+        <CheckBox
+            android:id="@+id/utp_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/enable_utp"/>
+
+        <CheckBox
+            android:id="@+id/pex_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/enable_pex"/>
+
+        <CheckBox
+            android:id="@+id/dht_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/enable_dht"/>
+
+        <CheckBox
+            android:id="@+id/lpd_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:saveEnabled="false"
+            android:text="@string/enable_lpd"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/peer_limits"
+            android:textAppearance="@style/HeaderTextAppearance"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/peers_per_torrent_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/maximum_peers_per_torrent"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/peers_globally_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/maximum_peers_globally"
+                android:inputType="number"
+                android:saveEnabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+</ScrollView>

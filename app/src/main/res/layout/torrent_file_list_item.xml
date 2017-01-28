@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:id="@+id/selected_background_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectedBackground"
+        android:paddingBottom="4dp"
+        android:paddingLeft="@dimen/horizontal_edge_padding"
+        android:paddingRight="@dimen/horizontal_edge_padding"
+        android:paddingTop="4dp">
+
+        <ImageView
+            android:id="@+id/icon_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="?attr/fileListItemIcon"
+            android:layout_gravity="center_vertical"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textAppearance="?attr/textAppearanceListItemSmall"
+                android:textSize="@dimen/text_size_list_item_smaller"/>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/progress_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="@dimen/text_size_smaller"/>
+        </LinearLayout>
+
+        <view
+            android:id="@+id/check_box"
+            class="org.equeim.tremotesf.BaseTorrentFilesAdapter$TristateCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+</FrameLayout>

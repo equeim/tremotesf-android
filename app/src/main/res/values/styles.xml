@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="applicationTheme" type="style">@style/AppTheme.Dark</item>
+
+    <style name="AppTheme"/>
+
+    <style name="AppTheme.Dark" parent="@style/Theme.Design">
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
+
+        <item name="selectedBackground">@drawable/selected_background_dark</item>
+
+        <item name="selectAllIcon">@drawable/ic_select_all_white_24dp</item>
+        <item name="searchIcon">@drawable/ic_search_white_24dp</item>
+        <item name="addIcon">@drawable/ic_add_white_24dp</item>
+        <item name="doneIcon">@drawable/ic_done_white_24dp</item>
+        <item name="deleteIcon">@drawable/ic_delete_white_24dp</item>
+        <item name="directoryIcon">@drawable/ic_folder_white_24dp</item>
+        <item name="fileIcon">@drawable/ic_insert_drive_file_white_24dp</item>
+        <item name="fileListItemIcon">@drawable/file_list_item_icon_white</item>
+        <item name="downloadIcon">@drawable/ic_file_download_white_24dp</item>
+        <item name="priorityIcon">@drawable/ic_priority_high_white_24dp</item>
+        <item name="homeIcon">@drawable/ic_home_white_24dp</item>
+        <item name="startIcon">@drawable/ic_play_arrow_white_24dp</item>
+        <item name="pauseIcon">@drawable/ic_pause_white_24dp</item>
+        <item name="refreshIcon">@drawable/ic_refresh_white_24dp</item>
+        <item name="torrentIcon">@drawable/torrent_icon_white</item>
+    </style>
+
+    <style name="AppTheme.Dark.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="AppTheme.Light" parent="@style/Theme.Design.Light">
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
+
+        <item name="selectedBackground">@drawable/selected_background_light</item>
+
+        <item name="selectAllIcon">@drawable/ic_select_all_black_24dp</item>
+        <item name="searchIcon">@drawable/ic_search_black_24dp</item>
+        <item name="addIcon">@drawable/ic_add_black_24dp</item>
+        <item name="doneIcon">@drawable/ic_done_black_24dp</item>
+        <item name="deleteIcon">@drawable/ic_delete_black_24dp</item>
+        <item name="directoryIcon">@drawable/ic_folder_black_24dp</item>
+        <item name="fileIcon">@drawable/ic_insert_drive_file_black_24dp</item>
+        <item name="fileListItemIcon">@drawable/file_list_item_icon_black</item>
+        <item name="downloadIcon">@drawable/ic_file_download_black_24dp</item>
+        <item name="priorityIcon">@drawable/ic_priority_high_black_24dp</item>
+        <item name="homeIcon">@drawable/ic_home_black_24dp</item>
+        <item name="startIcon">@drawable/ic_play_arrow_black_enabled_24dp</item>
+        <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
+        <item name="refreshIcon">@drawable/ic_refresh_black_24dp</item>
+        <item name="torrentIcon">@drawable/torrent_icon_black</item>
+    </style>
+
+    <style name="AppTheme.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textColor">?android:attr/textColorHint</item>
+    </style>
+
+    <style name="HeaderTextAppearance" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+</resources>

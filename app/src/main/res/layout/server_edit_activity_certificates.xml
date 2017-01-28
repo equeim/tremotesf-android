@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/vertical_edge_padding"
+        android:paddingLeft="@dimen/horizontal_edge_padding"
+        android:paddingRight="@dimen/horizontal_edge_padding"
+        android:paddingTop="@dimen/vertical_edge_padding">
+
+        <CheckBox
+            android:id="@+id/self_signed_certificate_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/server_uses_self_signed_certificate"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/self_signed_certificate_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/self_signed_certificate_edit"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:gravity="top|start"
+                android:hint="@string/certificate"
+                android:inputType="textMultiLine|textUri"
+                android:scrollbars="vertical"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/client_certificate_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/use_client_certificate_authentication"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/client_certificate_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/client_certificate_edit"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:gravity="top|start"
+                android:hint="@string/certificate"
+                android:inputType="textMultiLine|textUri"
+                android:scrollbars="vertical"/>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+</ScrollView>

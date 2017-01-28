@@ -1,0 +1,393 @@
+/*
+ * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ *
+ * This file is part of Tremotesf.
+ *
+ * Tremotesf is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Tremotesf is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.equeim.tremotesf.mainactivity
+
+import java.text.Collator
+import java.text.DecimalFormat
+import java.util.Comparator
+
+import android.app.Activity
+import android.app.Dialog
+import android.app.DialogFragment
+
+import android.content.Intent
+
+import android.os.Build
+import android.os.Bundle
+
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+
+import android.widget.CheckBox
+import android.widget.ProgressBar
+import android.widget.TextView
+
+import android.support.v7.app.AlertDialog
+import android.support.v7.view.ActionMode
+import android.support.v7.widget.RecyclerView
+
+import com.amjjd.alphanum.AlphanumericComparator
+
+import org.equeim.tremotesf.R
+import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.Selector
+
+import org.equeim.tremotesf.Torrent
+
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
+import org.equeim.tremotesf.utils.Utils
+
+
+class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
+    companion object {
+        fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
+            return when (filterMode) {
+                StatusFilterMode.Active -> (torrent.status == Torrent.Status.Downloading) ||
+                                           (torrent.status == Torrent.Status.Seeding)
+                StatusFilterMode.Downloading -> when (torrent.status) {
+                    Torrent.Status.Downloading,
+                    Torrent.Status.StalledDownloading,
+                    Torrent.Status.QueuedForDownloading -> true
+                    else -> false
+                }
+                StatusFilterMode.Seeding -> when (torrent.status) {
+                    Torrent.Status.Seeding,
+                    Torrent.Status.StalledSeeding,
+                    Torrent.Status.QueuedForSeeding -> true
+                    else -> false
+                }
+                StatusFilterMode.Paused -> (torrent.status == Torrent.Status.Paused)
+                StatusFilterMode.Checking -> (torrent.status == Torrent.Status.Checking) ||
+                                             (torrent.status == Torrent.Status.Checking)
+                StatusFilterMode.Errored -> (torrent.status == Torrent.Status.Errored)
+                StatusFilterMode.All -> true
+            }
+        }
+    }
+
+    enum class SortMode {
+        Name,
+        Status,
+        Progress,
+        Eta,
+        Ratio,
+        Size,
+        AddedDate
+    }
+
+    enum class StatusFilterMode {
+        All,
+        Active,
+        Downloading,
+        Seeding,
+        Paused,
+        Checking,
+        Errored
+    }
+
+    private val torrents = Rpc.torrents
+    private lateinit var filteredTorrents: List<Torrent>
+    private val displayedTorrents = mutableListOf<Torrent>()
+
+    val selector = Selector(activity,
+                            ActionModeCallback(activity),
+                            this,
+                            displayedTorrents,
+                            Torrent::id,
+                            R.plurals.torrents_selected)
+
+    private val filterPredicate = { torrent: Torrent ->
+        statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
+        (trackerFilter.isEmpty() || (torrent.trackers.find { tracker -> tracker.site == trackerFilter } != null)) &&
+        torrent.name.contains(filterString, true)
+    }
+
+    private val comparator = object : Comparator<Torrent> {
+        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+
+        override fun compare(o1: Torrent, o2: Torrent): Int {
+            val compared = when (sortMode) {
+                SortMode.Name -> nameComparator.compare(
+                        o1.name,
+                        o2.name)
+                SortMode.Status -> o1.status.compareTo(o2.status)
+                SortMode.Progress -> o1.percentDone.compareTo(
+                        o2.percentDone)
+                SortMode.Eta -> o1.eta.compareTo(o2.eta)
+                SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
+                SortMode.Size -> o1.totalSize.compareTo(
+                        o2.totalSize)
+                SortMode.AddedDate -> o1.addedDate.compareTo(
+                        o2.addedDate)
+            }
+            if (sortMode != SortMode.Name && compared == 0) {
+                return nameComparator.compare(o1.name, o2.name)
+            }
+            return compared
+        }
+    }
+
+    var sortMode = SortMode.Name
+        set(value) {
+            if (value != field) {
+                field = value
+                displayedTorrents.clear()
+                displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
+                notifyItemRangeChanged(0, itemCount)
+            }
+        }
+
+    var statusFilterMode = StatusFilterMode.All
+        set(value) {
+            if (value != field) {
+                field = value
+                updateListContent()
+                activity.torrentsView.scrollToPosition(0)
+            }
+        }
+
+    var trackerFilter = String()
+        set(value) {
+            if (value != field) {
+                field = value
+                updateListContent()
+                activity.torrentsView.scrollToPosition(0)
+            }
+        }
+
+    var filterString = String()
+        set(value) {
+            if (value != field) {
+                field = value
+                updateListContent()
+                activity.torrentsView.scrollToPosition(0)
+            }
+        }
+
+    override fun getItemCount(): Int {
+        return displayedTorrents.size
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TorrentsViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item,
+                                                               parent,
+                                                               false)
+        Utils.setProgressBarAccentColor(view.findViewById(R.id.progress_bar) as ProgressBar)
+
+        return TorrentsViewHolder(selector, activity, view)
+    }
+
+    override fun onBindViewHolder(holder: TorrentsViewHolder, position: Int) {
+        val torrent = displayedTorrents[position]
+
+        holder.item = torrent
+
+        holder.nameTextView.text = torrent.name
+        holder.statusIconDrawable.level = when (torrent.status) {
+            Torrent.Status.Paused -> 0
+            Torrent.Status.Downloading,
+            Torrent.Status.StalledDownloading,
+            Torrent.Status.QueuedForDownloading -> 1
+            Torrent.Status.Seeding,
+            Torrent.Status.StalledSeeding,
+            Torrent.Status.QueuedForSeeding -> 2
+            Torrent.Status.Checking,
+            Torrent.Status.QueuedForChecking -> 3
+            Torrent.Status.Errored -> 4
+        }
+
+        holder.sizeTextView.text = if (torrent.percentDone == 1.0) {
+            activity.getString(R.string.uploaded_string,
+                               Utils.formatByteSize(activity, torrent.sizeWhenDone),
+                               Utils.formatByteSize(activity, torrent.totalUploaded))
+        } else {
+            activity.getString(R.string.completed_string,
+                               Utils.formatByteSize(activity, torrent.completedSize),
+                               Utils.formatByteSize(activity, torrent.sizeWhenDone),
+                               DecimalFormat("0.#").format(torrent.percentDone * 100))
+        }
+        holder.etaTextView.text = Utils.formatDuration(activity, torrent.eta)
+
+        holder.progressBar.progress = (torrent.percentDone * 100).toInt()
+        holder.downloadSpeedTextView.text = activity.getString(R.string.download_speed_string,
+                                                               Utils.formatByteSpeed(activity,
+                                                                                     torrent.downloadSpeed))
+        holder.uploadSpeedTextView.text = activity.getString(R.string.upload_speed_string,
+                                                             Utils.formatByteSpeed(activity,
+                                                                                   torrent.uploadSpeed))
+
+        holder.statusTextView.text = torrent.statusString
+
+        holder.updateSelectedBackground()
+    }
+
+    private fun updateListContent() {
+        filteredTorrents = torrents.filter(filterPredicate)
+
+        run {
+            var i = 0
+            while (i < displayedTorrents.size) {
+                if (filteredTorrents.contains(displayedTorrents[i])) {
+                    i++
+                } else {
+                    displayedTorrents.removeAt(i)
+                    notifyItemRemoved(i)
+                }
+            }
+        }
+
+        for ((i, torrent) in filteredTorrents.sortedWith(comparator).withIndex()) {
+            if (displayedTorrents.getOrNull(i) !== torrent) {
+                val index = displayedTorrents.indexOf(torrent)
+                if (index == -1) {
+                    displayedTorrents.add(i, torrent)
+                    notifyItemInserted(i)
+                } else {
+                    displayedTorrents.removeAt(index)
+                    displayedTorrents.add(i, torrent)
+                    notifyItemMoved(index, i)
+                }
+            }
+        }
+
+        selector.clearRemovedItems()
+    }
+
+    fun update() {
+        updateListContent()
+        for ((i, torrent) in displayedTorrents.withIndex()) {
+            if (torrent.changed) {
+                notifyItemChanged(i)
+            }
+        }
+        selector.actionMode?.invalidate()
+    }
+
+    class TorrentsViewHolder(selector: Selector<Torrent, Int>,
+                             private val activity: MainActivity,
+                             itemView: View) : Selector.ViewHolder<Torrent>(selector,
+                                                                            itemView) {
+        lateinit override var item: Torrent
+
+        val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
+        val statusIconDrawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            nameTextView.compoundDrawables.first()
+        } else {
+            nameTextView.compoundDrawablesRelative.first()
+        }
+
+        val sizeTextView = itemView.findViewById(R.id.size_text_view) as TextView
+        val etaTextView = itemView.findViewById(R.id.eta_text_view) as TextView
+        val progressBar = itemView.findViewById(R.id.progress_bar) as ProgressBar
+        val downloadSpeedTextView = itemView.findViewById(R.id.download_speed_text_view) as TextView
+        val uploadSpeedTextView = itemView.findViewById(R.id.upload_speed_text_view) as TextView
+        val statusTextView = itemView.findViewById(R.id.status_text_view) as TextView
+
+        override fun onClick(view: View) {
+            if (selector.actionMode == null) {
+                val intent = Intent(activity, TorrentPropertiesActivity::class.java)
+                intent.putExtra(TorrentPropertiesActivity.HASH, item.hashString)
+                intent.putExtra(TorrentPropertiesActivity.NAME, item.name)
+                activity.startActivity(intent)
+            } else {
+                super.onClick(view)
+            }
+        }
+    }
+
+    private class ActionModeCallback(private val activity: Activity) : Selector.ActionModeCallback<Torrent>() {
+        private var startItem: MenuItem? = null
+        private var pauseItem: MenuItem? = null
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
+            startItem = menu.findItem(R.id.start)
+            pauseItem = menu.findItem(R.id.pause)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            super.onPrepareActionMode(mode, menu)
+
+            if (selector.selectedCount == 1) {
+                val status = selector.selectedItems.first().status
+                startItem!!.isEnabled = when (status) {
+                    Torrent.Status.Paused,
+                    Torrent.Status.Errored -> true
+                    else -> false
+                }
+                pauseItem!!.isEnabled = !startItem!!.isEnabled
+            } else {
+                startItem!!.isEnabled = true
+                pauseItem!!.isEnabled = true
+            }
+
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            if (super.onActionItemClicked(mode, item)) {
+                return true
+            }
+
+            when (item.itemId) {
+                R.id.start -> Rpc.startTorrents(selector.selectedItems.map(Torrent::id))
+                R.id.pause -> Rpc.pauseTorrents(selector.selectedItems.map(Torrent::id))
+                R.id.check -> Rpc.checkTorrents(selector.selectedItems.map(Torrent::id))
+                R.id.remove -> RemoveDialogFragment().show(activity.fragmentManager,
+                                                           RemoveDialogFragment.TAG)
+                else -> return false
+            }
+
+            return true
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            super.onDestroyActionMode(mode)
+            startItem = null
+            pauseItem = null
+        }
+    }
+
+    class RemoveDialogFragment : DialogFragment() {
+        companion object {
+            const val TAG = "org.equeim.tremotesf.TorrentsAdapter.RemoveDialogFragment"
+        }
+
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val selector = (activity as MainActivity).torrentsAdapter.selector
+            val selectedCount = selector.selectedCount
+            return AlertDialog.Builder(activity)
+                    .setMessage(activity.resources.getQuantityString(R.plurals.remove_torrents_message,
+                                                                     selectedCount,
+                                                                     selectedCount))
+                    .setView(R.layout.remove_torrents_dialog)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.remove, { dialog, which ->
+                        Rpc.removeTorrents(selector.selectedItems.map(Torrent::id),
+                                           (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
+                        selector.actionMode?.finish()
+                    }).create()
+        }
+    }
+}
