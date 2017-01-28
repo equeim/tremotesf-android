@@ -20,9 +20,27 @@
 package org.equeim.tremotesf
 
 import java.io.IOException
+
 import java.net.HttpURLConnection
+import java.net.Authenticator
+import java.net.MalformedURLException
+import java.net.PasswordAuthentication
 import java.net.SocketTimeoutException
 import java.net.URL
+
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+
+import java.security.KeyFactory
+import java.security.KeyStore
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import java.security.interfaces.RSAPrivateKey
+import java.security.spec.PKCS8EncodedKeySpec
+
 import java.util.Timer
 
 import kotlin.concurrent.schedule
@@ -37,28 +55,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import org.equeim.tremotesf.utils.Logger
 
-import org.equeim.tremotesf.utils.Utils
-import java.net.Authenticator
-import java.net.MalformedURLException
-import java.net.PasswordAuthentication
-import java.security.KeyFactory
-import java.security.KeyStore
-import java.security.NoSuchAlgorithmException
-import java.security.Security
-import java.security.cert.CertificateException
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
-import java.security.interfaces.RSAPrivateKey
-import java.security.spec.DSAPrivateKeySpec
-import java.security.spec.EncodedKeySpec
-import java.security.spec.PKCS8EncodedKeySpec
-import java.security.spec.X509EncodedKeySpec
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.KeyManagerFactory
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
+import org.equeim.tremotesf.utils.Logger
 
 
 // Transmission 2.40+
@@ -672,8 +670,10 @@ object Rpc {
                         .substringBefore("-----END PRIVATE KEY-----")
                 if (certEncoded.isNotEmpty() && keyEncoded.isNotEmpty()) {
                     try {
-                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded, 0).inputStream()) as X509Certificate
-                        val key = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(Base64.decode(keyEncoded, 0))) as RSAPrivateKey
+                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded,
+                                                                                        0).inputStream()) as X509Certificate
+                        val key = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(
+                                Base64.decode(keyEncoded, 0))) as RSAPrivateKey
                         val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                         keyStore.load(null)
                         keyStore.setCertificateEntry("cert-alias", cert)
@@ -695,7 +695,8 @@ object Rpc {
                         .substringBefore("-----END CERTIFICATE-----")
                 if (certEncoded.isNotEmpty()) {
                     try {
-                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded, 0).inputStream()) as X509Certificate
+                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded,
+                                                                                        0).inputStream()) as X509Certificate
                         val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
                         keyStore.load(null)
                         keyStore.setCertificateEntry("cert-alias", cert)
