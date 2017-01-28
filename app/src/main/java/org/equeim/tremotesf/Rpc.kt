@@ -40,7 +40,9 @@ import com.google.gson.JsonSyntaxException
 import org.equeim.tremotesf.utils.Logger
 
 import org.equeim.tremotesf.utils.Utils
+import java.net.Authenticator
 import java.net.MalformedURLException
+import java.net.PasswordAuthentication
 import java.security.KeyFactory
 import java.security.KeyStore
 import java.security.NoSuchAlgorithmException
@@ -206,7 +208,6 @@ object Rpc {
 
     val torrents = mutableListOf<Torrent>()
 
-    //private lateinit var url: String
     private lateinit var url: URL
     private var timeout = 0
     private var updateInterval = 0L
@@ -717,6 +718,18 @@ object Rpc {
         timeout = server.timeout * 1000
         updateInterval = (server.updateInterval * 1000).toLong()
         backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
+
+        if (server.authentication) {
+            Authenticator.setDefault(object : Authenticator() {
+                private val username = server.username
+                private val password = server.password.toCharArray()
+                override fun getPasswordAuthentication(): PasswordAuthentication {
+                    return PasswordAuthentication(username, password)
+                }
+            })
+        } else {
+            Authenticator.setDefault(null)
+        }
 
         connect()
     }
