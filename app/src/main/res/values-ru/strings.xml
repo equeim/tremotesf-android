@@ -211,7 +211,7 @@
         <item><xliff:g example="1" id="number">%s</xliff:g> ЙиБ</item>
     </string-array>
     <string name="main_activity_subtitle">
-        \u2193 <xliff:g example="10 KiB/s" id="download_speed">%1$s</xliff:g>    \u2191<xliff:g example="10 KiB/s" id="upload_speed">%2$s</xliff:g>
+        \u2193 <xliff:g example="10 KiB/s" id="download_speed">%1$s</xliff:g>    \u2191 <xliff:g example="10 KiB/s" id="upload_speed">%2$s</xliff:g>
     </string>
     <string name="tracker_error">Ошибка: <xliff:g id="error_string">%s</xliff:g></string>
     <string name="duration_days">
