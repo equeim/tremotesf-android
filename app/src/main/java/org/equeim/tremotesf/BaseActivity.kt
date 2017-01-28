@@ -19,14 +19,11 @@
 
 package org.equeim.tremotesf
 
-import android.graphics.drawable.LayerDrawable
-
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
-
 import android.widget.FrameLayout
 import android.support.v7.app.AppCompatActivity
+
 import org.equeim.tremotesf.utils.Utils
 
 

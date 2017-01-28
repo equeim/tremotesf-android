@@ -21,7 +21,9 @@ package org.equeim.tremotesf.mainactivity
 
 import java.text.Collator
 import android.content.Context
+
 import com.amjjd.alphanum.AlphanumericComparator
+
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter

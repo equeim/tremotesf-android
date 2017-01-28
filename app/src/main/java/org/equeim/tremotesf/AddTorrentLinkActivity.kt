@@ -21,7 +21,7 @@ package org.equeim.tremotesf
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -31,6 +31,9 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+
+import android.support.design.widget.Snackbar
+
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 
 

@@ -421,7 +421,9 @@ class MainActivity : BaseActivity() {
     private fun updateTitle() {
         if (Servers.hasServers) {
             val currentServer = Servers.currentServer!!
-            title = getString(R.string.current_server_string, currentServer.name, currentServer.address)
+            title = getString(R.string.current_server_string,
+                              currentServer.name,
+                              currentServer.address)
         } else {
             title = getString(R.string.app_name)
         }

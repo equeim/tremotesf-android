@@ -52,8 +52,6 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
 
-import org.equeim.tremotesf.utils.Utils
-
 
 private const val TAB_DETAILS = 0
 private const val TAB_FILES = 1

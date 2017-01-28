@@ -19,27 +19,31 @@
 
 package org.equeim.tremotesf
 
+import java.io.File
+import java.text.Collator
+import java.util.Comparator
+
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+
 import com.amjjd.alphanum.AlphanumericComparator
-import org.equeim.tremotesf.utils.Utils
-import java.io.File
-import java.text.Collator
-import java.util.Comparator
 
 
 class FilePickerActivity : BaseActivity() {

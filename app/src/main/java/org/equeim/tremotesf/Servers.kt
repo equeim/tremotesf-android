@@ -30,15 +30,13 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 
 import org.equeim.tremotesf.utils.Logger
-import java.io.File
 
 
 private const val FILE_NAME = "servers.json"
 private const val CURRENT = "current"
 private const val SERVERS = "servers"
-//private const val CERTS_DIR = "certs"
 
-class Server() {
+class Server {
 
     var name = String()
     var address = String()
@@ -277,9 +275,5 @@ object Servers {
         }
 
         save()
-    }
-
-    fun getLocalCertificateFile(serverName: String): File {
-        return File(context.getDir("certs", 0), "$serverName.p12")
     }
 }

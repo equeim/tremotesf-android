@@ -19,6 +19,8 @@
 
 package org.equeim.tremotesf.utils
 
+import java.text.DecimalFormat
+
 import android.content.Context
 import android.content.Intent
 
@@ -37,7 +39,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
-import java.text.DecimalFormat
 
 
 private var appIsRunning = false
