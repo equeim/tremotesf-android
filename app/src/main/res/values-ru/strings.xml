@@ -141,7 +141,7 @@
     <string name="status">Статус</string>
     <string name="stop_seeding_at_ratio">Прекратить раздачу при рейтинге</string>
     <string name="stop_seeding_if_idle_for">Прекратить раздачу при простое</string>
-    <string name="storage_permission_error">Требуется разрешения на доступ к памяти</string>
+    <string name="storage_permission_error">Требуется разрешение на доступ к памяти</string>
     <string name="timed_out">Время соединения истекло</string>
     <string name="timeout">Таймаут, с</string>
     <string name="to">до</string>
