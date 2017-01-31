@@ -261,7 +261,8 @@ class AddTorrentFileActivity : BaseActivity() {
                     }
                 }
 
-                progressBar!!.visibility = if (Rpc.status == Rpc.Status.Connecting || status == Status.Loading) {
+                progressBar!!.visibility = if (status == Status.Loading ||
+                        (Rpc.status == Rpc.Status.Connecting && status == Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
