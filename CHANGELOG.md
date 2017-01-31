@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.0.1] - 2017-01-31
 ### Fixed
 - Progress bar visibility on Add torrent file activity
 - More correct starting Add torrents activities from other applications
