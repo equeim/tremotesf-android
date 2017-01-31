@@ -21,39 +21,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data android:scheme="content"/>
-                <data android:scheme="file"/>
-                <data android:mimeType="application/x-bittorrent"/>
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data android:scheme="content"/>
-                <data android:scheme="file"/>
-                <data android:host="*"/>
-                <data android:mimeType="*/*"/>
-                <data android:pathPattern=".*\\.torrent"/>
-                <data android:pathPattern=".*\\..*\\.torrent"/>
-                <data android:pathPattern=".*\\..*\\..*\\.torrent"/>
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.torrent"/>
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.torrent"/>
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                <data android:scheme="magnet"/>
-            </intent-filter>
         </activity>
 
         <activity
@@ -90,17 +57,52 @@
         <activity
             android:name=".AddTorrentFileActivity"
             android:label="@string/add_torrent_file">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainactivity.MainActivity"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:mimeType="application/x-bittorrent"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:host="*"/>
+                <data android:mimeType="*/*"/>
+                <data android:pathPattern=".*\\.torrent"/>
+                <data android:pathPattern=".*\\..*\\.torrent"/>
+                <data android:pathPattern=".*\\..*\\..*\\.torrent"/>
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.torrent"/>
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.torrent"/>
+            </intent-filter>
         </activity>
 
         <activity
             android:name=".AddTorrentLinkActivity"
             android:label="@string/add_torrent_link">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainactivity.MainActivity"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="magnet"/>
+            </intent-filter>
         </activity>
 
         <activity

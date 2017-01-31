@@ -27,6 +27,7 @@ import android.app.Fragment
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 
 import android.os.AsyncTask
@@ -63,6 +64,7 @@ import android.support.design.widget.TabLayout
 import com.hypirion.bencode.BencodeReader
 import com.hypirion.bencode.BencodeReadException
 
+import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
@@ -73,6 +75,26 @@ class AddTorrentFileActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.themeNoActionBar)
         setContentView(R.layout.add_torrent_file_activity)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val intent = Intent(this, MainActivity::class.java)
+        if (isTaskRoot) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finish()
+        return true
+    }
+
+    override fun onBackPressed() {
+        if (isTaskRoot) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     class MainFragment : Fragment() {

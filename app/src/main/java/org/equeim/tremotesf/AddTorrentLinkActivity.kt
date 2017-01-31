@@ -20,6 +20,7 @@
 package org.equeim.tremotesf
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 
 import android.view.Menu
@@ -34,6 +35,7 @@ import android.widget.TextView
 
 import android.support.design.widget.Snackbar
 
+import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 
 
@@ -134,6 +136,26 @@ class AddTorrentLinkActivity : BaseActivity() {
         }
 
         return false
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val intent = Intent(this, MainActivity::class.java)
+        if (isTaskRoot) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finish()
+        return true
+    }
+
+    override fun onBackPressed() {
+        if (isTaskRoot) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun updateView(savedInstanceState: Bundle? = null) {

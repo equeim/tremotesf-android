@@ -25,8 +25,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.Configuration
 
-import android.net.Uri
-
 import android.os.Bundle
 
 import android.view.Gravity
@@ -299,11 +297,7 @@ class MainActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            if (Servers.hasServers) {
-                if (intent.action == Intent.ACTION_VIEW) {
-                    startAddTorrentActivity(intent.data)
-                }
-            } else {
+            if (!Servers.hasServers) {
                 startActivity(Intent(this, ServerEditActivity::class.java))
             }
         } else if (Rpc.connected) {
@@ -351,13 +345,6 @@ class MainActivity : BaseActivity() {
 
         if (menu != null && !searchView.isIconified) {
             outState.putString(SEARCH_QUERY_KEY, searchView.query.toString())
-        }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (intent.action == Intent.ACTION_VIEW) {
-            startAddTorrentActivity(intent.data)
         }
     }
 
@@ -414,7 +401,9 @@ class MainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            startAddTorrentActivity(data.data)
+            val intent = Intent(this, AddTorrentFileActivity::class.java)
+            intent.data = data.data
+            startActivity(intent)
         }
     }
 
@@ -476,21 +465,6 @@ class MainActivity : BaseActivity() {
         } else {
             null
         }
-    }
-
-    private fun startAddTorrentActivity(uri: Uri) {
-        if (!Rpc.canConnect) {
-            return
-        }
-
-        val intent: Intent
-        if (uri.scheme == "magnet") {
-            intent = Intent(this, AddTorrentLinkActivity::class.java)
-        } else {
-            intent = Intent(this, AddTorrentFileActivity::class.java)
-        }
-        intent.data = uri
-        startActivity(intent)
     }
 
     private fun startFilePickerActivity() {
