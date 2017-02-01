@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.1.0] - 2017-02-01
 ### Added
 - Set torrent location
 - Rename torrent's files
