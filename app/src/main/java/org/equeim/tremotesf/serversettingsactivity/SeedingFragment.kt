@@ -31,13 +31,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.CheckBox
-import android.widget.EditText
-
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
+
+import kotlinx.android.synthetic.main.server_settings_seeding_fragment.*
 
 
 class SeedingFragment : Fragment() {
@@ -45,23 +44,22 @@ class SeedingFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         activity.title = getString(R.string.server_settings_seeding)
+        return inflater.inflate(R.layout.server_settings_seeding_fragment, container, false)
+    }
 
-        val view = inflater.inflate(R.layout.server_settings_seeding_fragment, container, false)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val ratioLimitCheckBox = view.findViewById(R.id.ratio_limit_check_box) as CheckBox
-        ratioLimitCheckBox.isChecked = Rpc.serverSettings.ratioLimited
-
-        val ratioLimitEdit = view.findViewById(R.id.ratio_limit_edit) as EditText
-        ratioLimitEdit.isEnabled = ratioLimitCheckBox.isChecked
-        ratioLimitEdit.filters = arrayOf(DoubleFilter(0..10000))
-        ratioLimitEdit.setText(DecimalFormat("0.00").format(Rpc.serverSettings.ratioLimit))
-
-        ratioLimitCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            ratioLimitEdit.isEnabled = checked
+        ratio_limit_check_box.isChecked = Rpc.serverSettings.ratioLimited
+        ratio_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            ratio_limit_edit.isEnabled = checked
             Rpc.serverSettings.ratioLimited = checked
         }
 
-        ratioLimitEdit.addTextChangedListener(object : TextWatcher {
+        ratio_limit_edit.isEnabled = ratio_limit_check_box.isChecked
+        ratio_limit_edit.filters = arrayOf(DoubleFilter(0..10000))
+        ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.serverSettings.ratioLimit))
+        ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.ratioLimit = DoubleFilter.parse(s.toString())!!
@@ -77,22 +75,17 @@ class SeedingFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val idleSeedingCheckBox = view.findViewById(R.id.idle_seeding_check_box) as CheckBox
-        idleSeedingCheckBox.isChecked = Rpc.serverSettings.idleSeedingLimited
-
-        val idleSeedingLayout = view.findViewById(R.id.idle_seeding_layout)
-        idleSeedingLayout.isEnabled = idleSeedingCheckBox.isChecked
-
-        idleSeedingCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            idleSeedingLayout.isEnabled = checked
+        idle_seeding_check_box.isChecked = Rpc.serverSettings.idleSeedingLimited
+        idle_seeding_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            idle_seeding_layout.isEnabled = checked
             Rpc.serverSettings.idleSeedingLimited = checked
         }
 
-        val idleSeedingEdit = view.findViewById(R.id.idle_seeding_edit) as EditText
-        idleSeedingEdit.filters = arrayOf(IntFilter(0..10000))
-        idleSeedingEdit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
+        idle_seeding_layout.isEnabled = idle_seeding_check_box.isChecked
 
-        idleSeedingEdit.addTextChangedListener(object : TextWatcher {
+        idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
+        idle_seeding_edit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
+        idle_seeding_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.idleSeedingLimit = s.toString().toInt()
@@ -107,8 +100,6 @@ class SeedingFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-
-        return view
     }
 
     override fun onDestroyView() {

@@ -33,7 +33,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
 import android.widget.CheckBox
-import android.widget.TextView
 
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -42,9 +41,7 @@ import android.support.v7.widget.Toolbar
 import android.support.v13.app.FragmentPagerAdapter
 
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.design.widget.TabLayout
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -52,6 +49,8 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
+
+import kotlinx.android.synthetic.main.torrent_properties_activity.*
 
 
 private const val TAB_DETAILS = 0
@@ -140,7 +139,7 @@ class TorrentPropertiesActivity : BaseActivity() {
             }
         }
 
-        progressBar.visibility = if (status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (status == Rpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
@@ -155,14 +154,6 @@ class TorrentPropertiesActivity : BaseActivity() {
     private lateinit var startMenuItem: MenuItem
     private lateinit var pauseMenuItem: MenuItem
 
-    private lateinit var toolbar: Toolbar
-    private lateinit var tabLayout: TabLayout
-    private lateinit var pager: ViewPager
-    lateinit var fab: FloatingActionButton
-
-    private lateinit var placeholderLayout: View
-    private lateinit var progressBar: View
-    private lateinit var placeholder: TextView
     private var snackbar: Snackbar? = null
 
     lateinit var pagerAdapter: PagerAdapter
@@ -178,13 +169,11 @@ class TorrentPropertiesActivity : BaseActivity() {
 
         hash = intent.getStringExtra(HASH)
 
-        toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         title = intent.getStringExtra(NAME)
 
-        pager = findViewById(R.id.pager) as ViewPager
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             private var previousPage = -1
             private val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -205,17 +194,10 @@ class TorrentPropertiesActivity : BaseActivity() {
             }
         })
 
-        tabLayout = findViewById(R.id.tab_layout) as TabLayout
-
-        placeholderLayout = findViewById(R.id.placeholder_layout)
-        progressBar = findViewById(R.id.progress_bar)
-        placeholder = findViewById(R.id.placeholder) as TextView
-
         pagerAdapter = PagerAdapter()
         pager.adapter = pagerAdapter
-        tabLayout.setupWithViewPager(pager)
+        tab_layout.setupWithViewPager(pager)
 
-        fab = findViewById(R.id.fab) as FloatingActionButton
         fab.setOnClickListener {
             if (fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
                 val fragment = TrackersAdapter.EditTrackerDialogFragment()
@@ -334,15 +316,15 @@ class TorrentPropertiesActivity : BaseActivity() {
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-            tabLayout.visibility = View.VISIBLE
+            tab_layout.visibility = View.VISIBLE
             pager.visibility = View.VISIBLE
-            placeholderLayout.visibility = View.GONE
+            placeholder_layout.visibility = View.GONE
         } else {
             (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
-            tabLayout.visibility = View.GONE
+            tab_layout.visibility = View.GONE
             pager.visibility = View.GONE
             pager.currentItem = 0
-            placeholderLayout.visibility = View.VISIBLE
+            placeholder_layout.visibility = View.VISIBLE
         }
     }
 

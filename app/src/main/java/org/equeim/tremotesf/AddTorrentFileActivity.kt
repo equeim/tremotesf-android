@@ -42,9 +42,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 
 import android.support.v4.view.ViewPager
@@ -61,7 +58,6 @@ import android.support.v13.app.FragmentPagerAdapter
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
-import android.support.design.widget.TabLayout
 
 import com.hypirion.bencode.BencodeReader
 import com.hypirion.bencode.BencodeReadException
@@ -70,6 +66,10 @@ import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
+
+import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
+import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
+import kotlinx.android.synthetic.main.add_torrent_file_main_fragment.*
 
 
 class AddTorrentFileActivity : BaseActivity() {
@@ -125,14 +125,6 @@ class AddTorrentFileActivity : BaseActivity() {
         val rootDirectory = BaseTorrentFilesAdapter.Directory()
         private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
-        private var toolbar: Toolbar? = null
-        private var tabLayout: TabLayout? = null
-
-        private var placeholderLayout: View? = null
-        private var progressBar: View? = null
-        private var placeholder: TextView? = null
-
-        private var pager: ViewPager? = null
         private var pagerAdapter: PagerAdapter? = null
 
         private var snackbar: Snackbar? = null
@@ -169,25 +161,20 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
-            val view = inflater.inflate(R.layout.add_torrent_file_main_fragment,
-                                        container,
-                                        false)
+            return inflater.inflate(R.layout.add_torrent_file_main_fragment,
+                                    container,
+                                    false)
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             Utils.setPreLollipopContentShadow(view)
 
-            toolbar = view.findViewById(R.id.toolbar) as Toolbar
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(toolbar as Toolbar)
             activity.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-            tabLayout = view.findViewById(R.id.tab_layout) as TabLayout
-
-            placeholderLayout = view.findViewById(R.id.placeholder_layout)
-            progressBar = view.findViewById(R.id.progress_bar)
-            placeholder = view.findViewById(R.id.placeholder) as TextView
-
-            pager = view.findViewById(R.id.pager) as ViewPager
             pagerAdapter = PagerAdapter(this)
-            pager!!.adapter = pagerAdapter
-            pager!!.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            pager.adapter = pagerAdapter
+            pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
                 private var previousPage = -1
 
                 override fun onPageSelected(position: Int) {
@@ -197,25 +184,17 @@ class AddTorrentFileActivity : BaseActivity() {
                     previousPage = position
                 }
             })
-            tabLayout!!.setupWithViewPager(pager)
+            tab_layout.setupWithViewPager(pager)
+
+            updateView()
 
             Rpc.addStatusListener(rpcStatusListener)
-
-            return view
-        }
-
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-            updateView()
         }
 
         override fun onDestroyView() {
             super.onDestroyView()
             doneMenuItem = null
-            toolbar = null
-            tabLayout = null
-            placeholderLayout = null
-            placeholder = null
-            pager = null
+            pagerAdapter = null
             snackbar = null
             Rpc.removeStatusListener(rpcStatusListener)
         }
@@ -234,19 +213,19 @@ class AddTorrentFileActivity : BaseActivity() {
             if (infoFragment.check()) {
                 val filesData = getFilesData()
                 Rpc.addTorrentFile(torrentFileData,
-                                   infoFragment.downloadDirectoryEdit!!.text.toString(),
+                                   infoFragment.download_directory_edit.text.toString(),
                                    filesData.wantedFiles,
                                    filesData.unwantedFiles,
                                    filesData.lowPriorityFiles,
                                    filesData.normalPriorityFiles,
                                    filesData.highPriorityFiles,
-                                   when (infoFragment.prioritySpinner!!.selectedItemPosition) {
+                                   when (infoFragment.priority_spinner.selectedItemPosition) {
                                        0 -> Torrent.Priority.HIGH
                                        1 -> Torrent.Priority.NORMAL
                                        2 -> Torrent.Priority.LOW
                                        else -> Torrent.Priority.NORMAL
                                    },
-                                   infoFragment.startDownloadingCheckBox!!.isChecked)
+                                   infoFragment.start_downloading_check_box.isChecked)
 
                 activity.finish()
                 return true
@@ -264,15 +243,15 @@ class AddTorrentFileActivity : BaseActivity() {
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                toolbar!!.subtitle = rootDirectory.children.first().name
+                (toolbar as Toolbar).subtitle = rootDirectory.children.first().name
                 doneMenuItem?.isVisible = true
 
-                tabLayout!!.visibility = View.VISIBLE
-                pager!!.visibility = View.VISIBLE
+                tab_layout.visibility = View.VISIBLE
+                pager.visibility = View.VISIBLE
 
-                placeholderLayout!!.visibility = View.GONE
+                placeholder_layout.visibility = View.GONE
             } else {
-                placeholder!!.text = if (status == Status.Loaded) {
+                placeholder.text = if (status == Status.Loaded) {
                     if (Rpc.connected) null else Rpc.statusString
                 } else {
                     when (status) {
@@ -285,17 +264,17 @@ class AddTorrentFileActivity : BaseActivity() {
                     }
                 }
 
-                progressBar!!.visibility = if (status == Status.Loading ||
+                progress_bar.visibility = if (status == Status.Loading ||
                         (Rpc.status == Rpc.Status.Connecting && status == Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
                 }
 
-                placeholderLayout!!.visibility = View.VISIBLE
+                placeholder_layout.visibility = View.VISIBLE
 
-                (toolbar!!.layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
-                toolbar!!.subtitle = null
+                (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
+                (toolbar as Toolbar).subtitle = null
                 doneMenuItem?.isVisible = false
 
                 if (activity.currentFocus != null) {
@@ -303,10 +282,10 @@ class AddTorrentFileActivity : BaseActivity() {
                             .hideSoftInputFromWindow(activity.currentFocus.windowToken, 0)
                 }
 
-                tabLayout!!.visibility = View.GONE
-                pager!!.visibility = View.GONE
-                pager!!.currentItem = 0
-                placeholder!!.visibility = View.VISIBLE
+                tab_layout.visibility = View.GONE
+                pager.visibility = View.GONE
+                pager.currentItem = 0
+                placeholder.visibility = View.VISIBLE
 
                 if (status == Status.Loaded) {
                     when (Rpc.status) {
@@ -506,13 +485,6 @@ class AddTorrentFileActivity : BaseActivity() {
     }
 
     class InfoFragment : Fragment() {
-        var downloadDirectoryEdit: EditText? = null
-            private set
-        var prioritySpinner: Spinner? = null
-            private set
-        var startDownloadingCheckBox: CheckBox? = null
-            private set
-
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
@@ -520,33 +492,21 @@ class AddTorrentFileActivity : BaseActivity() {
                                         container,
                                         false)
 
-            downloadDirectoryEdit = view.findViewById(R.id.download_directory_edit) as EditText
-
-            prioritySpinner = view.findViewById(R.id.priority_spinner) as Spinner
-            prioritySpinner!!.adapter = ArraySpinnerAdapter(activity,
-                                                            resources.getStringArray(R.array.priority))
-
-            startDownloadingCheckBox = view.findViewById(R.id.start_downloading_check_box) as CheckBox
+            priority_spinner.adapter = ArraySpinnerAdapter(activity,
+                                                           resources.getStringArray(R.array.priority))
 
             if (savedInstanceState == null) {
-                downloadDirectoryEdit!!.setText(Rpc.serverSettings.downloadDirectory)
-                prioritySpinner!!.setSelection(1)
-                startDownloadingCheckBox!!.isChecked = Rpc.serverSettings.startAddedTorrents
+                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
+                priority_spinner.setSelection(1)
+                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
             }
 
             return view
         }
 
-        override fun onDestroyView() {
-            super.onDestroyView()
-            downloadDirectoryEdit = null
-            prioritySpinner = null
-            startDownloadingCheckBox = null
-        }
-
         fun check(): Boolean {
-            if (downloadDirectoryEdit!!.text.trim().isEmpty()) {
-                downloadDirectoryEdit!!.error = getString(R.string.empty_field_error)
+            if (download_directory_edit.text.trim().isEmpty()) {
+                download_directory_edit.error = getString(R.string.empty_field_error)
                 return false
             }
             return true
@@ -574,12 +534,12 @@ class AddTorrentFileActivity : BaseActivity() {
 
             adapter = Adapter(activity as AppCompatActivity,
                               mainFragment.rootDirectory)
-            val filesView = view.findViewById(R.id.files_view) as RecyclerView
-            filesView.adapter = adapter
-            filesView.layoutManager = LinearLayoutManager(activity)
-            filesView.addItemDecoration(DividerItemDecoration(activity,
-                                                              DividerItemDecoration.VERTICAL))
-            filesView.itemAnimator = null
+
+            files_view.adapter = adapter
+            files_view.layoutManager = LinearLayoutManager(activity)
+            files_view.addItemDecoration(DividerItemDecoration(activity,
+                                                               DividerItemDecoration.VERTICAL))
+            files_view.itemAnimator = null
 
             if (mainFragment.status == MainFragment.Status.Loaded) {
                 adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)

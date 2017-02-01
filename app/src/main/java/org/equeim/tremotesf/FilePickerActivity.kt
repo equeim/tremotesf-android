@@ -45,10 +45,10 @@ import android.support.v7.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
 
+import kotlinx.android.synthetic.main.file_picker_activity.*
+
 
 class FilePickerActivity : BaseActivity() {
-    private lateinit var placeholder: TextView
-    private lateinit var filesView: RecyclerView
     private lateinit var adapter: FilePickerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,19 +59,16 @@ class FilePickerActivity : BaseActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-        placeholder = findViewById(R.id.placeholder) as TextView
-
         adapter = FilePickerAdapter(this)
 
-        filesView = findViewById(R.id.files_view) as RecyclerView
-        filesView.adapter = adapter
-        filesView.layoutManager = LinearLayoutManager(this)
-        filesView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        filesView.itemAnimator = null
+        files_view.adapter = adapter
+        files_view.layoutManager = LinearLayoutManager(this)
+        files_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        files_view.itemAnimator = null
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            filesView.visibility = View.GONE
+            files_view.visibility = View.GONE
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
             adapter.init()
@@ -95,7 +92,7 @@ class FilePickerActivity : BaseActivity() {
                                             permissions: Array<out String>,
                                             grantResults: IntArray) {
         if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-            filesView.visibility = View.VISIBLE
+            files_view.visibility = View.VISIBLE
             adapter.init()
         } else {
             placeholder.text = getString(R.string.storage_permission_error)
@@ -120,7 +117,6 @@ class FilePickerActivity : BaseActivity() {
 
 private const val TYPE_HEADER = 0
 private const val TYPE_ITEM = 1
-
 
 private class FilePickerAdapter(private val activity: FilePickerActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var currentDirectory = Environment.getExternalStorageDirectory()

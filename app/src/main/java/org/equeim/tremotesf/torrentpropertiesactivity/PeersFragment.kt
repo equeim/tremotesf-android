@@ -24,7 +24,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -33,12 +32,11 @@ import android.support.v7.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent
 
+import kotlinx.android.synthetic.main.peers_fragment.*
+
 
 class PeersFragment : Fragment() {
     private lateinit var activity: TorrentPropertiesActivity
-
-    private var placeholder: TextView? = null
-    private var progressBar: View? = null
 
     private var peersAdapter: PeersAdapter? = null
 
@@ -63,17 +61,13 @@ class PeersFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.peers_fragment, container, false)
 
-        placeholder = view.findViewById(R.id.placeholder) as TextView
-        progressBar = view.findViewById(R.id.progress_bar)
-
         peersAdapter = PeersAdapter(activity)
 
-        val peersView = view.findViewById(R.id.peers_view) as RecyclerView
-        peersView.adapter = peersAdapter
-        peersView.layoutManager = LinearLayoutManager(activity)
-        peersView.addItemDecoration(DividerItemDecoration(activity,
-                                                          DividerItemDecoration.VERTICAL))
-        peersView.itemAnimator = null
+        peers_view.adapter = peersAdapter
+        peers_view.layoutManager = LinearLayoutManager(activity)
+        peers_view.addItemDecoration(DividerItemDecoration(activity,
+                                                           DividerItemDecoration.VERTICAL))
+        peers_view.itemAnimator = null
 
         return view
     }
@@ -91,8 +85,6 @@ class PeersFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        placeholder = null
-        progressBar = null
         peersAdapter = null
     }
 
@@ -102,9 +94,9 @@ class PeersFragment : Fragment() {
             peersAdapter!!.update()
 
             if (torrent?.peers == null) {
-                progressBar!!.visibility = View.VISIBLE
+                progress_bar!!.visibility = View.VISIBLE
             } else {
-                progressBar!!.visibility = View.GONE
+                progress_bar!!.visibility = View.GONE
                 placeholder!!.visibility = if (peersAdapter!!.itemCount == 0) {
                     View.VISIBLE
                 } else {

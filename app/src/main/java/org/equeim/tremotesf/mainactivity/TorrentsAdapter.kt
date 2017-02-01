@@ -60,6 +60,8 @@ import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
+import kotlinx.android.synthetic.main.main_activity.torrents_view
+
 
 class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
     companion object {
@@ -165,7 +167,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrentsView.scrollToPosition(0)
+                activity.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -174,7 +176,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrentsView.scrollToPosition(0)
+                activity.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -183,7 +185,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrentsView.scrollToPosition(0)
+                activity.torrents_view.scrollToPosition(0)
             }
         }
 

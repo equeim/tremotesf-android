@@ -28,33 +28,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-
 import android.support.design.widget.Snackbar
 
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 
+import kotlinx.android.synthetic.main.add_torrent_link_activity.*
+
 
 class AddTorrentLinkActivity : BaseActivity() {
     private lateinit var inputManager: InputMethodManager
 
-    private lateinit var placeholderLayout: View
-    private lateinit var progressBar: View
-    private lateinit var placeholder: TextView
-
-    private lateinit var scrollView: View
-
-    private lateinit var torrentLinkEdit: EditText
-    private lateinit var downloadDirectoryEdit: EditText
-    private lateinit var prioritySpinner: Spinner
-    private lateinit var startDownloadingCheckBox: CheckBox
-
     private var doneMenuItem: MenuItem? = null
-
     private var snackbar: Snackbar? = null
 
     private var rpcStatusListener = { status: Rpc.Status ->
@@ -69,25 +54,12 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        placeholderLayout = findViewById(R.id.placeholder_layout)
-        progressBar = findViewById(R.id.progress_bar)
-        placeholder = findViewById(R.id.placeholder) as TextView
-
-        scrollView = findViewById(R.id.scroll_view)
-
-        torrentLinkEdit = findViewById(R.id.torrent_link_edit) as EditText
-
-        downloadDirectoryEdit = findViewById(R.id.download_directory_edit) as EditText
-
-        prioritySpinner = findViewById(R.id.priority_spinner) as Spinner
-        prioritySpinner.adapter = ArraySpinnerAdapter(this,
-                                                      resources.getStringArray(R.array.priority))
-
-        startDownloadingCheckBox = findViewById(R.id.start_downloading_check_box) as CheckBox
+        priority_spinner.adapter = ArraySpinnerAdapter(this,
+                                                       resources.getStringArray(R.array.priority))
 
         if (savedInstanceState == null) {
-            torrentLinkEdit.setText(intent.dataString)
-            prioritySpinner.setSelection(1)
+            torrent_link_edit.setText(intent.dataString)
+            priority_spinner.setSelection(1)
         }
 
         updateView(savedInstanceState)
@@ -108,27 +80,27 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.done) {
-            if (torrentLinkEdit.text.trim().isEmpty()) {
-                torrentLinkEdit.error = getString(R.string.empty_field_error)
+            if (torrent_link_edit.text.trim().isEmpty()) {
+                torrent_link_edit.error = getString(R.string.empty_field_error)
             }
 
-            if (downloadDirectoryEdit.text.trim().isEmpty()) {
-                downloadDirectoryEdit.error = getString(R.string.empty_field_error)
+            if (download_directory_edit.text.trim().isEmpty()) {
+                download_directory_edit.error = getString(R.string.empty_field_error)
             }
 
-            if (torrentLinkEdit.error != null || downloadDirectoryEdit.error != null) {
+            if (torrent_link_edit.error != null || download_directory_edit.error != null) {
                 return false
             }
 
-            Rpc.addTorrentLink(torrentLinkEdit.text.toString(),
-                               downloadDirectoryEdit.text.toString(),
-                               when (prioritySpinner.selectedItemPosition) {
+            Rpc.addTorrentLink(torrent_link_edit.text.toString(),
+                               download_directory_edit.text.toString(),
+                               when (priority_spinner.selectedItemPosition) {
                                    0 -> Torrent.Priority.HIGH
                                    1 -> Torrent.Priority.NORMAL
                                    2 -> Torrent.Priority.LOW
                                    else -> Torrent.Priority.NORMAL
                                },
-                               startDownloadingCheckBox.isChecked)
+                               start_downloading_check_box.isChecked)
 
             finish()
 
@@ -186,21 +158,21 @@ class AddTorrentLinkActivity : BaseActivity() {
             }
             else -> {
                 if (savedInstanceState == null) {
-                    downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
-                    startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
+                    start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
                 }
             }
         }
 
         if (Rpc.connected) {
-            scrollView.visibility = View.VISIBLE
-            placeholderLayout.visibility = View.GONE
+            scroll_view.visibility = View.VISIBLE
+            placeholder_layout.visibility = View.GONE
         } else {
-            placeholderLayout.visibility = View.VISIBLE
-            scrollView.visibility = View.GONE
+            placeholder_layout.visibility = View.VISIBLE
+            scroll_view.visibility = View.GONE
         }
 
-        progressBar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

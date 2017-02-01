@@ -46,6 +46,9 @@ import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
+import kotlinx.android.synthetic.main.server_edit_activity_main_fragment.*
+import kotlinx.android.synthetic.main.server_edit_activity_certificates_fragment.*
+
 
 class ServerEditActivity : BaseActivity() {
     companion object {
@@ -92,18 +95,6 @@ class ServerEditActivity : BaseActivity() {
                 return getActivity() as ServerEditActivity
             }
 
-        private var nameEdit: EditText? = null
-        private var addressEdit: EditText? = null
-        private var portEdit: EditText? = null
-        private var apiPathEdit: EditText? = null
-        private var httpsCheckBox: CheckBox? = null
-        private var authenticationCheckBox: CheckBox? = null
-        private var usernameEdit: EditText? = null
-        private var passwordEdit: EditText? = null
-        private var updateIntervalEdit: EditText? = null
-        private var backgroundUpdateIntervalEdit: EditText? = null
-        private var timeoutEdit: EditText? = null
-
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setHasOptionsMenu(true)
@@ -118,23 +109,19 @@ class ServerEditActivity : BaseActivity() {
                 activity.title = getString(R.string.edit_server)
             }
 
-            val view = inflater.inflate(R.layout.server_edit_activity, container, false)
+            return inflater.inflate(R.layout.server_edit_activity_main_fragment, container, false)
+        }
 
-            nameEdit = view.findViewById(R.id.name_edit) as EditText
-            addressEdit = view.findViewById(R.id.address_edit) as EditText
+        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
-            portEdit = view.findViewById(R.id.port_edit) as EditText
-            portEdit!!.filters = arrayOf(IntFilter(0..65535))
+            port_edit.filters = arrayOf(IntFilter(0..65535))
 
-            apiPathEdit = view.findViewById(R.id.api_path_edit) as EditText
+            https_check_box.isChecked = false
 
-            httpsCheckBox = view.findViewById(R.id.https_check_box) as CheckBox
-            httpsCheckBox!!.isChecked = false
-
-            val certificatesItem = view.findViewById(R.id.certificates_item) as ViewGroup
-            certificatesItem.isEnabled = false
-            certificatesItem.setChildrenEnabled(false)
-            certificatesItem.setOnClickListener {
+            certificates_item.isEnabled = false
+            certificates_item.setChildrenEnabled(false)
+            certificates_item.setOnClickListener {
                 fragmentManager
                         .beginTransaction()
                         .replace(android.R.id.content, CertificatesFragment())
@@ -142,71 +129,46 @@ class ServerEditActivity : BaseActivity() {
                         .addToBackStack(null)
                         .commit()
             }
-            httpsCheckBox!!.setOnCheckedChangeListener { checkBox, checked ->
-                certificatesItem.isEnabled = checked
-                certificatesItem.setChildrenEnabled(checked)
+            https_check_box.setOnCheckedChangeListener { checkBox, checked ->
+                certificates_item.isEnabled = checked
+                certificates_item.setChildrenEnabled(checked)
             }
 
-            authenticationCheckBox = view.findViewById(R.id.authentication_check_box) as CheckBox
-            authenticationCheckBox!!.isChecked = false
+            authentication_check_box.isChecked = false
 
-            usernameEdit = view.findViewById(R.id.username_edit) as EditText
-            usernameEdit!!.isEnabled = false
-            passwordEdit = view.findViewById(R.id.password_edit) as EditText
-            passwordEdit!!.isEnabled = false
-            authenticationCheckBox!!.setOnCheckedChangeListener { checkBox, checked ->
-                usernameEdit!!.isEnabled = checked
-                passwordEdit!!.isEnabled = checked
+            username_edit.isEnabled = false
+            password_edit.isEnabled = false
+            authentication_check_box.setOnCheckedChangeListener { checkBox, checked ->
+                username_edit.isEnabled = checked
+                password_edit.isEnabled = checked
             }
 
-            updateIntervalEdit = view.findViewById(R.id.update_interval_edit) as EditText
-            updateIntervalEdit!!.filters = arrayOf(IntFilter(1..3600))
-
-            backgroundUpdateIntervalEdit = view.findViewById(R.id.background_update_interval_edit) as EditText
-            backgroundUpdateIntervalEdit!!.filters = arrayOf(IntFilter(0..10800))
-
-            timeoutEdit = view.findViewById(R.id.timeout_edit) as EditText
-            timeoutEdit!!.filters = arrayOf(IntFilter(5..60))
+            update_interval_edit.filters = arrayOf(IntFilter(1..3600))
+            background_update_interval_edit.filters = arrayOf(IntFilter(0..10800))
+            timeout_edit.filters = arrayOf(IntFilter(5..60))
 
             if (savedInstanceState == null) {
                 val server = activity.server
                 if (server == null) {
-                    portEdit!!.setText("9091")
-                    apiPathEdit!!.setText("/transmission/rpc")
-                    updateIntervalEdit!!.setText("5")
-                    backgroundUpdateIntervalEdit!!.setText("60")
-                    timeoutEdit!!.setText("30")
+                    port_edit.setText("9091")
+                    api_path_edit.setText("/transmission/rpc")
+                    update_interval_edit.setText("5")
+                    background_update_interval_edit.setText("60")
+                    timeout_edit.setText("30")
                 } else {
-                    nameEdit!!.setText(server.name)
-                    addressEdit!!.setText(server.address)
-                    portEdit!!.setText(server.port.toString())
-                    apiPathEdit!!.setText(server.apiPath)
-                    httpsCheckBox!!.isChecked = server.httpsEnabled
-                    authenticationCheckBox!!.isChecked = server.authentication
-                    usernameEdit!!.setText(server.username)
-                    passwordEdit!!.setText(server.password)
-                    updateIntervalEdit!!.setText(server.updateInterval.toString())
-                    backgroundUpdateIntervalEdit!!.setText(server.backgroundUpdateInterval.toString())
-                    timeoutEdit!!.setText(server.timeout.toString())
+                    name_edit.setText(server.name)
+                    address_edit.setText(server.address)
+                    port_edit.setText(server.port.toString())
+                    api_path_edit.setText(server.apiPath)
+                    https_check_box.isChecked = server.httpsEnabled
+                    authentication_check_box.isChecked = server.authentication
+                    username_edit.setText(server.username)
+                    password_edit.setText(server.password)
+                    update_interval_edit.setText(server.updateInterval.toString())
+                    background_update_interval_edit.setText(server.backgroundUpdateInterval.toString())
+                    timeout_edit.setText(server.timeout.toString())
                 }
             }
-
-            return view
-        }
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-            nameEdit = null
-            addressEdit = null
-            portEdit = null
-            apiPathEdit = null
-            httpsCheckBox = null
-            authenticationCheckBox = null
-            usernameEdit = null
-            passwordEdit = null
-            updateIntervalEdit = null
-            backgroundUpdateIntervalEdit = null
-            timeoutEdit = null
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -233,13 +195,13 @@ class ServerEditActivity : BaseActivity() {
                 return true
             }
 
-            val nameOk = checkLength(nameEdit!!)
-            val addressOk = checkLength(addressEdit!!)
-            val portOk = checkLength(portEdit!!)
-            val apiPathOk = checkLength(apiPathEdit!!)
-            val updateIntervalOk = checkLength(updateIntervalEdit!!)
-            val backgroundUpdateIntervalOk = checkLength(backgroundUpdateIntervalEdit!!)
-            val timeoutOk = checkLength(timeoutEdit!!)
+            val nameOk = checkLength(name_edit)
+            val addressOk = checkLength(address_edit)
+            val portOk = checkLength(port_edit)
+            val apiPathOk = checkLength(api_path_edit)
+            val updateIntervalOk = checkLength(update_interval_edit)
+            val backgroundUpdateIntervalOk = checkLength(background_update_interval_edit)
+            val timeoutOk = checkLength(timeout_edit)
 
             if (nameOk &&
                 addressOk &&
@@ -248,8 +210,8 @@ class ServerEditActivity : BaseActivity() {
                 updateIntervalOk &&
                 backgroundUpdateIntervalOk &&
                 timeoutOk) {
-                if ((nameEdit!!.text.toString() != activity.server?.name) &&
-                    Servers.servers.find { server -> (server.name == nameEdit!!.text.toString()) } != null) {
+                if ((name_edit.text.toString() != activity.server?.name) &&
+                    Servers.servers.find { server -> (server.name == name_edit.text.toString()) } != null) {
                     OverwriteDialogFragment().show(fragmentManager, null)
                 } else {
                     save()
@@ -261,17 +223,17 @@ class ServerEditActivity : BaseActivity() {
 
         private fun save() {
             val newServer = activity.newServer
-            newServer.name = nameEdit!!.text.toString()
-            newServer.address = addressEdit!!.text.toString()
-            newServer.port = portEdit!!.text.toString().toInt()
-            newServer.apiPath = apiPathEdit!!.text.toString()
-            newServer.httpsEnabled = httpsCheckBox!!.isChecked
-            newServer.authentication = authenticationCheckBox!!.isChecked
-            newServer.username = usernameEdit!!.text.toString()
-            newServer.password = passwordEdit!!.text.toString()
-            newServer.updateInterval = updateIntervalEdit!!.text.toString().toInt()
-            newServer.backgroundUpdateInterval = backgroundUpdateIntervalEdit!!.text.toString().toInt()
-            newServer.timeout = timeoutEdit!!.text.toString().toInt()
+            newServer.name = name_edit.text.toString()
+            newServer.address = address_edit.text.toString()
+            newServer.port = port_edit.text.toString().toInt()
+            newServer.apiPath = api_path_edit.text.toString()
+            newServer.httpsEnabled = https_check_box.isChecked
+            newServer.authentication = authentication_check_box.isChecked
+            newServer.username = username_edit.text.toString()
+            newServer.password = password_edit.text.toString()
+            newServer.updateInterval = update_interval_edit.text.toString().toInt()
+            newServer.backgroundUpdateInterval = background_update_interval_edit.text.toString().toInt()
+            newServer.timeout = timeout_edit.text.toString().toInt()
 
             if (activity.server == null) {
                 Servers.addServer(newServer)
@@ -300,66 +262,49 @@ class ServerEditActivity : BaseActivity() {
                 return getActivity() as ServerEditActivity
             }
 
-        private var selfSignedCertificateCheckBox: CheckBox? = null
-        private var selfSignedCertificateEdit: EditText? = null
-        private var clientCertificateCheckBox: CheckBox? = null
-        private var clientCertificateEdit: EditText? = null
-
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
             activity.title = getString(R.string.certificates)
+            return inflater.inflate(R.layout.server_edit_activity_certificates_fragment,
+                                    container,
+                                    false)
+        }
 
-            val view = inflater.inflate(R.layout.server_edit_activity_certificates,
-                                        container,
-                                        false)
+        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
-            selfSignedCertificateCheckBox = view.findViewById(R.id.self_signed_certificate_check_box) as CheckBox
-            selfSignedCertificateCheckBox!!.isChecked = false
+            self_signed_certificate_check_box.isChecked = false
 
-            val selfSignedCertificateLayout = view.findViewById(R.id.self_signed_certificate_layout)
-            selfSignedCertificateLayout.isEnabled = false
-            selfSignedCertificateCheckBox!!.setOnCheckedChangeListener { checkBox, checked ->
-                selfSignedCertificateLayout.isEnabled = checked
+            self_signed_certificate_layout.isEnabled = false
+            self_signed_certificate_check_box.setOnCheckedChangeListener { checkBox, checked ->
+                self_signed_certificate_layout.isEnabled = checked
             }
 
-            selfSignedCertificateEdit = view.findViewById(R.id.self_signed_certificate_edit) as EditText
+            client_certificate_check_box.isChecked = false
 
-            clientCertificateCheckBox = view.findViewById(R.id.client_certificate_check_box) as CheckBox
-            clientCertificateCheckBox!!.isChecked = false
-
-            val clientCertificateLayout = view.findViewById(R.id.client_certificate_layout)
-            clientCertificateLayout.isEnabled = false
-            clientCertificateCheckBox!!.setOnCheckedChangeListener { checkBox, checked ->
-                clientCertificateLayout.isEnabled = checked
+            client_certificate_layout.isEnabled = false
+            client_certificate_check_box.setOnCheckedChangeListener { checkBox, checked ->
+                client_certificate_layout.isEnabled = checked
             }
-
-            clientCertificateEdit = view.findViewById(R.id.client_certificate_edit) as EditText
 
             if (savedInstanceState == null) {
                 val newServer = activity.newServer
-                selfSignedCertificateCheckBox!!.isChecked = newServer.selfSignedSertificateEnabled
-                selfSignedCertificateEdit!!.setText(newServer.selfSignedSertificate)
-                clientCertificateCheckBox!!.isChecked = newServer.clientCertificateEnabled
-                clientCertificateEdit!!.setText(newServer.clientCertificate)
+                self_signed_certificate_check_box.isChecked = newServer.selfSignedSertificateEnabled
+                self_signed_certificate_edit.setText(newServer.selfSignedSertificate)
+                client_certificate_check_box.isChecked = newServer.clientCertificateEnabled
+                client_certificate_edit.setText(newServer.clientCertificate)
             }
-
-            return view
         }
 
         override fun onDestroyView() {
             super.onDestroyView()
 
             val newServer = activity.newServer
-            newServer.selfSignedSertificateEnabled = selfSignedCertificateCheckBox!!.isChecked
-            newServer.selfSignedSertificate = selfSignedCertificateEdit!!.text.toString()
-            newServer.clientCertificateEnabled = clientCertificateCheckBox!!.isChecked
-            newServer.clientCertificate = clientCertificateEdit!!.text.toString()
-
-            selfSignedCertificateCheckBox = null
-            selfSignedCertificateEdit = null
-            clientCertificateCheckBox = null
-            clientCertificateEdit = null
+            newServer.selfSignedSertificateEnabled = self_signed_certificate_check_box.isChecked
+            newServer.selfSignedSertificate = self_signed_certificate_edit.text.toString()
+            newServer.clientCertificateEnabled = client_certificate_check_box.isChecked
+            newServer.clientCertificate = client_certificate_edit.text.toString()
         }
     }
 }

@@ -47,8 +47,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 
-import android.support.design.widget.FloatingActionButton
-
 import com.amjjd.alphanum.AlphanumericComparator
 
 import org.equeim.tremotesf.BaseActivity
@@ -58,10 +56,11 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 
+import kotlinx.android.synthetic.main.servers_activity.*
+
 
 class ServersActivity : BaseActivity() {
     lateinit var adapter: ServersAdapter
-    private lateinit var placeholder: View
     private val serversListener = { update() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,23 +70,20 @@ class ServersActivity : BaseActivity() {
         setContentView(R.layout.servers_activity)
         setPreLollipopShadow()
 
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        val serversView = findViewById(R.id.servers_view) as RecyclerView
         adapter = ServersAdapter(this)
-        serversView.adapter = adapter
-        serversView.layoutManager = LinearLayoutManager(this)
-        serversView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        servers_view.adapter = adapter
+        servers_view.layoutManager = LinearLayoutManager(this)
+        servers_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        val fab = findViewById(R.id.fab) as FloatingActionButton
         fab.setOnClickListener {
             startActivity(Intent(this, ServerEditActivity::class.java))
         }
 
-        serversView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 if (dy > 0) {
                     fab.hide()
@@ -96,8 +92,6 @@ class ServersActivity : BaseActivity() {
                 }
             }
         })
-
-        placeholder = findViewById(R.id.placeholder)
 
         update()
         adapter.selector.restoreInstanceState(savedInstanceState)

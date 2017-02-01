@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -38,6 +37,8 @@ import com.google.gson.JsonObject
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent
+
+import kotlinx.android.synthetic.main.torrent_files_fragment.*
 
 
 private fun updateFile(file: BaseTorrentFilesAdapter.File,
@@ -89,8 +90,6 @@ class TorrentFilesFragment : Fragment() {
     private var updateAfterCreate = false
     private var resetAfterCreate = false
 
-    private var placeholder: TextView? = null
-    private var progressBar: View? = null
     private var adapter: TorrentFilesAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,17 +103,13 @@ class TorrentFilesFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.torrent_files_fragment, container, false)
 
-        placeholder = view.findViewById(R.id.placeholder) as TextView
-        progressBar = view.findViewById(R.id.progress_bar)
-
         adapter = TorrentFilesAdapter(activity, rootDirectory)
 
-        val filesView = view.findViewById(R.id.files_view) as RecyclerView
-        filesView.adapter = adapter
-        filesView.layoutManager = LinearLayoutManager(activity)
-        filesView.addItemDecoration(DividerItemDecoration(activity,
-                                                          DividerItemDecoration.VERTICAL))
-        filesView.itemAnimator = null
+        files_view.adapter = adapter
+        files_view.layoutManager = LinearLayoutManager(activity)
+        files_view.addItemDecoration(DividerItemDecoration(activity,
+                                                           DividerItemDecoration.VERTICAL))
+        files_view.itemAnimator = null
 
         if (treeCreated) {
             adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
@@ -141,8 +136,6 @@ class TorrentFilesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         adapter = null
-        placeholder = null
-        progressBar = null
     }
 
     override fun onDestroy() {
@@ -320,7 +313,7 @@ class TorrentFilesFragment : Fragment() {
         if (torrent == null) {
             return
         }
-        progressBar?.visibility = if (torrent!!.fileJsons == null || creatingTree) {
+        progress_bar?.visibility = if (torrent!!.fileJsons == null || creatingTree) {
             View.VISIBLE
         } else {
             View.GONE

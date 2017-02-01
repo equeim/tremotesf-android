@@ -42,10 +42,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.TimePicker
 
@@ -55,6 +52,8 @@ import org.equeim.tremotesf.ServerSettings
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
+
+import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
 
 
 class SpeedFragment : Fragment() {
@@ -67,9 +66,6 @@ class SpeedFragment : Fragment() {
                                      ServerSettings.Days.WEEKDAYS,
                                      ServerSettings.Days.WEEKENDS)
     private val daysSpinnerItems = mutableListOf<String>()
-
-    private var beginTimeItem: TimePickerItem? = null
-    private var endTimeItem: TimePickerItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,26 +113,30 @@ class SpeedFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         activity.title = getString(R.string.server_settings_speed)
+        return inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
+    }
 
-        val view = inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (activity as ServerSettingsActivity).hideKeyboard()
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val limitsFilters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
 
-        val downloadSpeedLimitCheckBox = view.findViewById(R.id.download_speed_limit_check_box) as CheckBox
-        downloadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.downloadSpeedLimited
-
-        val downloadSpeedLimitLayout = view.findViewById(R.id.download_speed_limit_layout)
-        downloadSpeedLimitLayout.isEnabled = downloadSpeedLimitCheckBox.isChecked
-
-        downloadSpeedLimitCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            downloadSpeedLimitLayout!!.isEnabled = checked
+        download_speed_limit_check_box.isChecked = Rpc.serverSettings.downloadSpeedLimited
+        download_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            download_speed_limit_layout!!.isEnabled = checked
             Rpc.serverSettings.downloadSpeedLimited = checked
         }
 
-        val downloadSpeedLimitEdit = view.findViewById(R.id.download_speed_limit_edit) as EditText
-        downloadSpeedLimitEdit.filters = limitsFilters
-        downloadSpeedLimitEdit.setText(Rpc.serverSettings.downloadSpeedLimit.toString())
-        downloadSpeedLimitEdit.addTextChangedListener(object : TextWatcher {
+        download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked
+
+        download_speed_limit_edit.filters = limitsFilters
+        download_speed_limit_edit.setText(Rpc.serverSettings.downloadSpeedLimit.toString())
+        download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.downloadSpeedLimit = s.toString().toInt()
@@ -152,21 +152,17 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val uploadSpeedLimitCheckBox = view.findViewById(R.id.upload_speed_limit_check_box) as CheckBox
-        uploadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.uploadSpeedLimited
-
-        val uploadSpeedLimitLayout = view.findViewById(R.id.upload_speed_limit_layout)
-        uploadSpeedLimitLayout.isEnabled = uploadSpeedLimitCheckBox.isChecked
-
-        uploadSpeedLimitCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            uploadSpeedLimitLayout.isEnabled = checked
+        upload_speed_limit_check_box.isChecked = Rpc.serverSettings.uploadSpeedLimited
+        upload_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            upload_speed_limit_layout.isEnabled = checked
             Rpc.serverSettings.uploadSpeedLimited = checked
         }
 
-        val uploadSpeedLimitEdit = view.findViewById(R.id.upload_speed_limit_edit) as EditText
-        uploadSpeedLimitEdit.filters = limitsFilters
-        uploadSpeedLimitEdit.setText(Rpc.serverSettings.uploadSpeedLimit.toString())
-        uploadSpeedLimitEdit.addTextChangedListener(object : TextWatcher {
+        upload_speed_limit_layout.isEnabled = upload_speed_limit_check_box.isChecked
+
+        upload_speed_limit_edit.filters = limitsFilters
+        upload_speed_limit_edit.setText(Rpc.serverSettings.uploadSpeedLimit.toString())
+        upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.uploadSpeedLimit = s.toString().toInt()
@@ -182,24 +178,19 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val alternativeLimitsCheckBox = view.findViewById(R.id.alternative_limits_check_box) as CheckBox
-        alternativeLimitsCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
-
-        val alternativeDownloadSpeedLimitLayout = view.findViewById(R.id.alternative_download_speed_limit_layout)
-        val alternativeUploadSpeedLimitLayout = view.findViewById(R.id.alternative_upload_speed_limit_layout)
-        alternativeDownloadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
-        alternativeUploadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
-
-        alternativeLimitsCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            alternativeDownloadSpeedLimitLayout!!.isEnabled = checked
-            alternativeUploadSpeedLimitLayout!!.isEnabled = checked
+        alternative_limits_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+        alternative_limits_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            alternative_download_speed_limit_layout!!.isEnabled = checked
+            alternative_upload_speed_limit_layout!!.isEnabled = checked
             Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
         }
 
-        val alternativeDownloadSpeedLimitEdit = view.findViewById(R.id.alternative_download_speed_limit_edit) as EditText
-        alternativeDownloadSpeedLimitEdit.filters = limitsFilters
-        alternativeDownloadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit.toString())
-        alternativeDownloadSpeedLimitEdit.addTextChangedListener(object : TextWatcher {
+        alternative_download_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
+        alternative_upload_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
+
+        alternative_download_speed_limit_edit.filters = limitsFilters
+        alternative_download_speed_limit_edit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit.toString())
+        alternative_download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.alternativeDownloadSpeedLimit = s.toString().toInt()
@@ -215,10 +206,9 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val alternativeUploadSpeedLimitEdit = view.findViewById(R.id.alternative_upload_speed_limit_edit) as EditText
-        alternativeUploadSpeedLimitEdit.filters = limitsFilters
-        alternativeUploadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit.toString())
-        alternativeUploadSpeedLimitEdit.addTextChangedListener(object : TextWatcher {
+        alternative_upload_speed_limit_edit.filters = limitsFilters
+        alternative_upload_speed_limit_edit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit.toString())
+        alternative_upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.alternativeUploadSpeedLimit = s.toString().toInt()
@@ -234,29 +224,23 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val scheduleCheckBox = view.findViewById(R.id.schedule_check_box) as CheckBox
-        scheduleCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitScheduled
-
-        val scheduleLayout = view.findViewById(R.id.schedule_layout) as ViewGroup
-        scheduleLayout.setChildrenEnabled(scheduleCheckBox.isChecked)
-
-        scheduleCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            scheduleLayout.setChildrenEnabled(checked)
+        schedule_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitScheduled
+        schedule_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            schedule_layout.setChildrenEnabled(checked)
             Rpc.serverSettings.alternativeSpeedLimitScheduled = checked
         }
 
-        beginTimeItem = view.findViewById(R.id.begin_time_item) as TimePickerItem
-        beginTimeItem!!.beginTime = true
-        beginTimeItem!!.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime)
+        schedule_layout.setChildrenEnabled(schedule_check_box.isChecked)
 
-        endTimeItem = view.findViewById(R.id.end_time_item) as TimePickerItem
-        endTimeItem!!.beginTime = false
-        endTimeItem!!.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
+        begin_time_item.beginTime = true
+        begin_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime)
 
-        val daysSpinner = view.findViewById(R.id.days_spinner) as Spinner
-        daysSpinner.adapter = ArraySpinnerAdapter(activity, daysSpinnerItems.toTypedArray())
-        daysSpinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays))
-        daysSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        end_time_item.beginTime = false
+        end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
+
+        days_spinner.adapter = ArraySpinnerAdapter(activity, daysSpinnerItems.toTypedArray())
+        days_spinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays))
+        days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
                                         position: Int,
@@ -266,84 +250,75 @@ class SpeedFragment : Fragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+}
 
-        return view
+class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+    var beginTime = false
+    val calendar = Calendar.getInstance()
+    private val titleTextView: View
+    private val textView: TextView
+    private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
+
+    init {
+        inflate(context, R.layout.server_settings_time_picker_item, this)
+        titleTextView = findViewById(R.id.title_text_view)
+        textView = findViewById(R.id.text_view) as TextView
+
+        val ta = context.theme.obtainStyledAttributes(attrs,
+                                                      intArrayOf(android.R.attr.title),
+                                                      0,
+                                                      0)
+        (findViewById(R.id.title_text_view) as TextView).text = ta.getText(0)
+        ta.recycle()
+
+        setOnClickListener {
+            val fragment = TimePickerFragment()
+            val args = Bundle()
+            args.putBoolean("beginTime", beginTime)
+            args.putInt("hourOfDay", calendar.get(Calendar.HOUR_OF_DAY))
+            args.putInt("minute", calendar.get(Calendar.MINUTE))
+            fragment.arguments = args
+            fragment.show((context as Activity).fragmentManager, null)
+        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        beginTimeItem = null
-        endTimeItem = null
-        (activity as ServerSettingsActivity).hideKeyboard()
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        titleTextView.isEnabled = enabled
+        textView.isEnabled = enabled
     }
 
-    class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
-        var beginTime = false
-        val calendar = Calendar.getInstance()
-        private val titleTextView: View
-        private val textView: TextView
-        private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
+    fun setTime(hourOfDay: Int, minute: Int) {
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        calendar.set(Calendar.MINUTE, minute)
+        textView.text = format.format(calendar.time)
+    }
 
-        init {
-            inflate(context, R.layout.server_settings_time_picker_item, this)
-            titleTextView = findViewById(R.id.title_text_view)
-            textView = findViewById(R.id.text_view) as TextView
+    fun setTime(minutesFromStartOfDay: Int) {
+        calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
+        calendar.set(Calendar.MINUTE, minutesFromStartOfDay.mod(60))
+        textView.text = format.format(calendar.time)
+    }
 
-            val ta = context.theme.obtainStyledAttributes(attrs,
-                                                          intArrayOf(android.R.attr.title),
-                                                          0,
-                                                          0)
-            (findViewById(R.id.title_text_view) as TextView).text = ta.getText(0)
-            ta.recycle()
-
-            setOnClickListener {
-                val fragment = TimePickerFragment()
-                val args = Bundle()
-                args.putBoolean("beginTime", beginTime)
-                args.putInt("hourOfDay", calendar.get(Calendar.HOUR_OF_DAY))
-                args.putInt("minute", calendar.get(Calendar.MINUTE))
-                fragment.arguments = args
-                fragment.show((context as Activity).fragmentManager, null)
-            }
+    class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return TimePickerDialog(activity,
+                                    this,
+                                    arguments.getInt("hourOfDay"),
+                                    arguments.getInt("minute"),
+                                    android.text.format.DateFormat.is24HourFormat(activity))
         }
 
-        override fun setEnabled(enabled: Boolean) {
-            super.setEnabled(enabled)
-            titleTextView.isEnabled = enabled
-            textView.isEnabled = enabled
-        }
-
-        fun setTime(hourOfDay: Int, minute: Int) {
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-            calendar.set(Calendar.MINUTE, minute)
-            textView.text = format.format(calendar.time)
-        }
-
-        fun setTime(minutesFromStartOfDay: Int) {
-            calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
-            calendar.set(Calendar.MINUTE, minutesFromStartOfDay.mod(60))
-            textView.text = format.format(calendar.time)
-        }
-
-        class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
-            override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                return TimePickerDialog(activity,
-                                        this,
-                                        arguments.getInt("hourOfDay"),
-                                        arguments.getInt("minute"),
-                                        android.text.format.DateFormat.is24HourFormat(activity))
-            }
-
-            override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-                val speedFragment = fragmentManager.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
-                if (speedFragment != null) {
-                    if (arguments.getBoolean("beginTime")) {
-                        speedFragment.beginTimeItem?.setTime(hourOfDay, minute)
-                        Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
-                    } else {
-                        speedFragment.endTimeItem?.setTime(hourOfDay, minute)
-                        Rpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
-                    }
+        override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+            val speedFragment = fragmentManager.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
+            if (speedFragment != null) {
+                if (arguments.getBoolean("beginTime")) {
+                    speedFragment.begin_time_item.setTime(hourOfDay, minute)
+                    Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
+                } else {
+                    speedFragment.end_time_item.setTime(hourOfDay, minute)
+                    Rpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
                 }
             }
         }

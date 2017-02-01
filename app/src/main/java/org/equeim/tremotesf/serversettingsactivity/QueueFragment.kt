@@ -29,12 +29,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.CheckBox
-import android.widget.EditText
-
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.IntFilter
+
+import kotlinx.android.synthetic.main.server_settings_queue_fragment.*
 
 
 class QueueFragment : Fragment() {
@@ -42,23 +41,22 @@ class QueueFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         activity.title = getString(R.string.server_settings_queue)
+        return inflater.inflate(R.layout.server_settings_queue_fragment, container, false)
+    }
 
-        val view = inflater.inflate(R.layout.server_settings_queue_fragment, container, false)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val downloadQueueCheckBox = view.findViewById(R.id.download_queue_check_box) as CheckBox
-        downloadQueueCheckBox.isChecked = Rpc.serverSettings.downloadQueueEnabled
-
-        val downloadQueueEdit = view.findViewById(R.id.download_queue_edit) as EditText
-        downloadQueueEdit.isEnabled = downloadQueueCheckBox.isChecked
-        downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
-        downloadQueueEdit.setText(Rpc.serverSettings.downloadQueueSize.toString())
-
-        downloadQueueCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            downloadQueueEdit.isEnabled = checked
+        download_queue_check_box.isChecked = Rpc.serverSettings.downloadQueueEnabled
+        download_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            download_queue_edit.isEnabled = checked
             Rpc.serverSettings.downloadQueueEnabled = checked
         }
 
-        downloadQueueEdit.addTextChangedListener(object : TextWatcher {
+        download_queue_edit.isEnabled = download_queue_check_box.isChecked
+        download_queue_edit.filters = arrayOf(IntFilter(0..10000))
+        download_queue_edit.setText(Rpc.serverSettings.downloadQueueSize.toString())
+        download_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.downloadQueueSize = s.toString().toInt()
@@ -74,20 +72,16 @@ class QueueFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val seedQueueCheckBox = view.findViewById(R.id.seed_queue_check_box) as CheckBox
-        seedQueueCheckBox.isChecked = Rpc.serverSettings.seedQueueEnabled
-
-        val seedQueueEdit = view.findViewById(R.id.seed_queue_edit) as EditText
-        seedQueueEdit.isEnabled = seedQueueCheckBox.isChecked
-        seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
-        seedQueueEdit.setText(Rpc.serverSettings.seedQueueSize.toString())
-
-        seedQueueCheckBox.setOnCheckedChangeListener { checkBox, checked ->
-            seedQueueEdit.isEnabled = checked
+        seed_queue_check_box.isChecked = Rpc.serverSettings.seedQueueEnabled
+        seed_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            seed_queue_edit.isEnabled = checked
             Rpc.serverSettings.seedQueueEnabled = checked
         }
 
-        seedQueueEdit.addTextChangedListener(object : TextWatcher {
+        seed_queue_edit.isEnabled = seed_queue_check_box.isChecked
+        seed_queue_edit.filters = arrayOf(IntFilter(0..10000))
+        seed_queue_edit.setText(Rpc.serverSettings.seedQueueSize.toString())
+        seed_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.seedQueueSize = s.toString().toInt()
@@ -103,22 +97,17 @@ class QueueFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        val idleQueueCheckbox = view.findViewById(R.id.idle_queue_check_box) as CheckBox
-        idleQueueCheckbox.isChecked = Rpc.serverSettings.idleQueueLimited
-
-        val idleQueueLayout = view.findViewById(R.id.idle_queue_layout)
-        idleQueueLayout.isEnabled = idleQueueCheckbox.isChecked
-
-        idleQueueCheckbox.setOnCheckedChangeListener { checkBox, checked ->
-            idleQueueLayout.isEnabled = checked
+        idle_queue_check_box.isChecked = Rpc.serverSettings.idleQueueLimited
+        idle_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            idle_queue_layout.isEnabled = checked
             Rpc.serverSettings.idleQueueLimited = checked
         }
 
-        val idleQueueEdit = view.findViewById(R.id.idle_queue_edit) as EditText
-        idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
-        idleQueueEdit.setText(Rpc.serverSettings.idleQueueLimit.toString())
+        idle_queue_layout.isEnabled = idle_queue_check_box.isChecked
 
-        idleQueueEdit.addTextChangedListener(object : TextWatcher {
+        idle_queue_edit.filters = arrayOf(IntFilter(0..10000))
+        idle_queue_edit.setText(Rpc.serverSettings.idleQueueLimit.toString())
+        idle_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
                     Rpc.serverSettings.idleQueueLimit = s.toString().toInt()
@@ -133,8 +122,6 @@ class QueueFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-
-        return view
     }
 
     override fun onDestroyView() {

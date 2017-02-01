@@ -141,16 +141,14 @@
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:orientation="vertical">
 
-            <view
+            <org.equeim.tremotesf.serversettingsactivity.TimePickerItem
                 android:id="@+id/begin_time_item"
-                class="org.equeim.tremotesf.serversettingsactivity.SpeedFragment$TimePickerItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:title="@string/from"/>
 
-            <view
+            <org.equeim.tremotesf.serversettingsactivity.TimePickerItem
                 android:id="@+id/end_time_item"
-                class="org.equeim.tremotesf.serversettingsactivity.SpeedFragment$TimePickerItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:title="@string/to"/>

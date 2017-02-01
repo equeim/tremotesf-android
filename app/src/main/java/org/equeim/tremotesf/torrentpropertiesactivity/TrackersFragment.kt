@@ -33,15 +33,17 @@ import android.support.v7.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 
+import kotlinx.android.synthetic.main.torrent_properties_activity.fab
+import kotlinx.android.synthetic.main.trackers_fragment.*
+
 
 class TrackersFragment : Fragment() {
     private lateinit var activity: TorrentPropertiesActivity
-    private lateinit var trackersAdapter: TrackersAdapter
+    private var trackersAdapter: TrackersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = getActivity() as TorrentPropertiesActivity
-        trackersAdapter = TrackersAdapter(activity)
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -49,14 +51,15 @@ class TrackersFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.trackers_fragment, container, false)
 
-        val trackersView = view.findViewById(R.id.trackers_view) as RecyclerView
-        trackersView.adapter = trackersAdapter
-        trackersView.layoutManager = LinearLayoutManager(activity)
-        trackersView.addItemDecoration(DividerItemDecoration(activity,
-                                                             DividerItemDecoration.VERTICAL))
-        (trackersView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        trackersAdapter = TrackersAdapter(activity)
 
-        trackersView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        trackers_view.adapter = trackersAdapter
+        trackers_view.layoutManager = LinearLayoutManager(activity)
+        trackers_view.addItemDecoration(DividerItemDecoration(activity,
+                                                             DividerItemDecoration.VERTICAL))
+        (trackers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+
+        trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 if (dy > 0) {
                     activity.fab.hide()
@@ -68,10 +71,15 @@ class TrackersFragment : Fragment() {
 
         if (savedInstanceState != null) {
             update()
-            trackersAdapter.selector.restoreInstanceState(savedInstanceState)
+            trackersAdapter!!.selector.restoreInstanceState(savedInstanceState)
         }
 
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        trackersAdapter = null
     }
 
     override fun onStart() {
@@ -80,12 +88,10 @@ class TrackersFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        trackersAdapter.selector.saveInstanceState(outState)
+        trackersAdapter!!.selector.saveInstanceState(outState)
     }
 
     fun update() {
-        if (isAdded) {
-            trackersAdapter.update()
-        }
+        trackersAdapter?.update()
     }
 }

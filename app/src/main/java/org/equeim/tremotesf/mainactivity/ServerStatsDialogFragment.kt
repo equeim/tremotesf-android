@@ -28,9 +28,11 @@ import android.os.Bundle
 import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
+import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
 

@@ -33,7 +33,6 @@ import android.view.inputmethod.InputMethodManager
 
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.TextView
 
 import android.support.design.widget.Snackbar
 
@@ -41,6 +40,8 @@ import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
+
+import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 
 
 class ServerSettingsActivity : BaseActivity() {
@@ -112,13 +113,10 @@ class ServerSettingsActivity : BaseActivity() {
             const val TAG = "org.equeim.tremotesf.ServerSettingsActivity.PlaceholderFragment"
         }
 
-        private var progressBar: View? = null
-        private var placeholder: TextView? = null
-
         private var snackbar: Snackbar? = null
 
         private var rpcStatusListener: (Rpc.Status) -> Unit = { status ->
-            placeholder!!.text = Rpc.statusString
+            placeholder.text = Rpc.statusString
             when (status) {
                 Rpc.Status.Disconnected -> {
                     snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
@@ -129,14 +127,14 @@ class ServerSettingsActivity : BaseActivity() {
                         Rpc.connect()
                     })
                     snackbar!!.show()
-                    progressBar!!.visibility = View.GONE
+                    progress_bar.visibility = View.GONE
                 }
                 Rpc.Status.Connecting -> {
                     if (snackbar != null) {
                         snackbar!!.dismiss()
                         snackbar = null
                     }
-                    progressBar!!.visibility = View.VISIBLE
+                    progress_bar.visibility = View.VISIBLE
                 }
                 Rpc.Status.Connected -> {
                 }
@@ -146,24 +144,20 @@ class ServerSettingsActivity : BaseActivity() {
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup,
                                   savedInstanceState: Bundle?): View {
-            val view = inflater.inflate(R.layout.server_settings_placeholder_fragment,
-                                        container,
-                                        false)
+            return inflater.inflate(R.layout.server_settings_placeholder_fragment,
+                                    container,
+                                    false)
+        }
 
-            progressBar = view.findViewById(R.id.progress_bar)
-            placeholder = view.findViewById(R.id.placeholder) as TextView
-
+        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
             rpcStatusListener(Rpc.status)
-
             Rpc.addStatusListener(rpcStatusListener)
-
-            return view
         }
 
         override fun onDestroyView() {
             super.onDestroyView()
             Rpc.removeStatusListener(rpcStatusListener)
-            placeholder = null
             snackbar = null
         }
     }

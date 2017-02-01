@@ -35,16 +35,12 @@ import android.view.ViewGroup
 
 import android.widget.AdapterView
 import android.widget.Spinner
-import android.widget.TextView
-
-import android.support.v4.widget.DrawerLayout
 
 import android.support.v7.app.ActionBarDrawerToggle
 
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 
@@ -71,11 +67,12 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
+import kotlinx.android.synthetic.main.main_activity.*
+
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
 class MainActivity : BaseActivity() {
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
@@ -92,10 +89,6 @@ class MainActivity : BaseActivity() {
     private lateinit var statusSpinnerAdapter: StatusFilterSpinnerAdapter
     private lateinit var trackersSpinnerAdapter: TrackersSpinnerAdapter
 
-    private lateinit var progressBar: View
-    private lateinit var placeholder: TextView
-    lateinit var torrentsView: RecyclerView
-        private set
     lateinit var torrentsAdapter: TorrentsAdapter
         private set
 
@@ -161,31 +154,25 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.main_activity)
         setPreLollipopShadow()
 
-        setSupportActionBar(findViewById(R.id.toolbar) as Toolbar)
+        setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
 
-        drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START)
+        drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START)
         drawerToggle = ActionBarDrawerToggle(this,
-                                             drawerLayout,
+                                             drawer_layout,
                                              R.string.open_side_panel,
                                              R.string.close_side_panel)
 
-        progressBar = findViewById(R.id.progress_bar)
-        placeholder = findViewById(R.id.placeholder) as TextView
-
-        torrentsView = findViewById(R.id.torrents_view) as RecyclerView
         torrentsAdapter = TorrentsAdapter(this)
 
-        torrentsView.adapter = torrentsAdapter
-        torrentsView.layoutManager = LinearLayoutManager(this)
-        torrentsView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        (torrentsView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        torrents_view.adapter = torrentsAdapter
+        torrents_view.layoutManager = LinearLayoutManager(this)
+        torrents_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        val sidePanel = findViewById(R.id.side_panel) as NavigationView
-        sidePanel.setNavigationItemSelectedListener { menuItem ->
-            drawerLayout.closeDrawers()
+        side_panel.setNavigationItemSelectedListener { menuItem ->
+            drawer_layout.closeDrawers()
             when (menuItem.itemId) {
                 R.id.settings -> startActivity(Intent(application, SettingsActivity::class.java))
                 R.id.servers -> startActivity(Intent(application, ServersActivity::class.java))
@@ -195,7 +182,7 @@ class MainActivity : BaseActivity() {
             return@setNavigationItemSelectedListener true
         }
 
-        val sidePanelHeader = sidePanel.getHeaderView(0)
+        val sidePanelHeader = side_panel.getHeaderView(0)
 
         serversSpinnerLayout = sidePanelHeader.findViewById(R.id.servers_spinner_layout) as ViewGroup
         serversSpinnerLayout.setChildrenEnabled(Servers.hasServers)
@@ -291,12 +278,12 @@ class MainActivity : BaseActivity() {
         Servers.addCurrentServerListener(currentServerListener)
 
         Rpc.torrentDuplicateListener = {
-            Snackbar.make(findViewById(R.id.coordinator_layout),
+            Snackbar.make(coordinator_layout,
                           R.string.torrent_duplicate,
                           Snackbar.LENGTH_LONG).show()
         }
         Rpc.torrentAddErrorListener = {
-            Snackbar.make(findViewById(R.id.coordinator_layout),
+            Snackbar.make(coordinator_layout,
                           R.string.torrent_add_error,
                           Snackbar.LENGTH_LONG).show()
         }
@@ -455,7 +442,7 @@ class MainActivity : BaseActivity() {
             Rpc.statusString
         }
 
-        progressBar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
@@ -484,8 +471,8 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(Gravity.START)) {
-            drawerLayout.closeDrawer(Gravity.START)
+        if (drawer_layout.isDrawerOpen(Gravity.START)) {
+            drawer_layout.closeDrawer(Gravity.START)
         } else {
             super.onBackPressed()
         }
