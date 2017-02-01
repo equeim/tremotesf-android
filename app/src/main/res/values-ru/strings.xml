@@ -315,4 +315,7 @@
 
     <string name="set_location">Переместить</string>
     <string name="move_files">Переместить файлы из текущего каталога</string>
+
+    <string name="rename">Переименовать</string>
+    <string name="file_name">Имя файла</string>
 </resources>

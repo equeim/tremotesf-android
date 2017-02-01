@@ -89,6 +89,11 @@ class ServerSettings {
     var minimumRpcVersion = 0
         private set
 
+    val canRenameFiles: Boolean
+        get() {
+            return (rpcVersion >= 15)
+        }
+
     var downloadDirectory by Delegate(String(), DOWNLOAD_DIRECTORY)
     var startAddedTorrents by Delegate(false, START_ADDED_TORRENTS)
     var renameIncompleteFiles by Delegate(false, RENAME_INCOMPLETE_FILES)

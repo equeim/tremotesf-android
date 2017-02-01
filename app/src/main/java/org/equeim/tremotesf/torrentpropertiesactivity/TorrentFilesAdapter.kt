@@ -21,20 +21,31 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 
 import java.text.DecimalFormat
 
+import android.app.Dialog
+import android.app.DialogFragment
+import android.os.Bundle
+
+import android.text.InputType
+
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
 import android.widget.ProgressBar
 import android.widget.TextView
 
+import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.createTextFieldDialog
 
 
 private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
@@ -50,8 +61,11 @@ private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
 }
 
 class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
-                          rootDirectory: Directory) : BaseTorrentFilesAdapter(activity,
-                                                                              rootDirectory) {
+                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
+    init {
+        initSelector(activity, ActionModeCallback())
+    }
+
     private val torrent: Torrent?
         get() {
             return activity.torrent
@@ -109,10 +123,104 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         notifyItemRangeRemoved(0, count)
     }
 
+    fun fileRenamed(file: Item) {
+        val index = currentItems.indexOf(file)
+        if (index != -1) {
+            if (hasHeaderItem) {
+                notifyItemChanged(index + 1)
+            } else {
+                notifyItemChanged(index)
+            }
+        }
+    }
+
     private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                              selector: Selector<Item, Int>,
                              itemView: View) : BaseItemHolder(adapter, selector, itemView) {
         val progressBar = itemView.findViewById(R.id.progress_bar) as ProgressBar
         val progressTextView = itemView.findViewById(R.id.progress_text_view) as TextView
+    }
+
+    private inner class ActionModeCallback : BaseActionModeCallback() {
+        private var renameItem: MenuItem? = null
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            super.onCreateActionMode(mode, menu)
+            if (Rpc.serverSettings.canRenameFiles) {
+                mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
+                renameItem = menu.findItem(R.id.rename)
+            }
+            mode.menuInflater.inflate(R.menu.select_all_menu, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            super.onPrepareActionMode(mode, menu)
+            renameItem?.isEnabled = (selector.selectedCount == 1)
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            if (super.onActionItemClicked(mode, item)) {
+                return true
+            }
+
+            if (item == renameItem) {
+                val file = selector.selectedItems.first()
+
+                val pathParts = mutableListOf<String>()
+                var directory = file
+                while (directory != rootDirectory) {
+                    pathParts.add(0, directory.name)
+                    directory = directory.parentDirectory!!
+                }
+
+                RenameDialogFragment.create(torrent!!.id, pathParts.joinToString("/"), file.name)
+                        .show(activity.fragmentManager, RenameDialogFragment.TAG)
+
+                return true
+            }
+
+            return false
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            super.onDestroyActionMode(mode)
+            renameItem = null
+        }
+    }
+
+    class RenameDialogFragment : DialogFragment() {
+        companion object {
+            const val TAG = "org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter.RenameDialogFragment"
+            private const val TORRENT_ID = "torrentId"
+            private const val FILE_PATH = "filePath"
+            private const val FILE_NAME = "fileName"
+
+            fun create(torrentId: Int, filePath: String, fileName: String): RenameDialogFragment {
+                val fragment = RenameDialogFragment()
+                val arguments = Bundle()
+                arguments.putInt(TORRENT_ID, torrentId)
+                arguments.putString(FILE_PATH, filePath)
+                arguments.putString(FILE_NAME, fileName)
+                fragment.arguments = arguments
+                return fragment
+            }
+        }
+
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val fileName = arguments.getString(FILE_NAME)
+            return createTextFieldDialog(activity,
+                                         null,
+                                         null,
+                                         getString(R.string.file_name),
+                                         InputType.TYPE_TEXT_VARIATION_URI,
+                                         fileName) {
+                val path = arguments.getString(FILE_PATH)
+                val newName = (dialog.findViewById(R.id.text_field) as TextView).text.toString()
+                Rpc.renameTorrentFile(arguments.getInt(TORRENT_ID), path, newName)
+                (activity as TorrentPropertiesActivity).actionMode?.finish()
+            }
+        }
     }
 }

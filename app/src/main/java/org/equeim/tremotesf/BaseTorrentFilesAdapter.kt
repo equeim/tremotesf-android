@@ -24,7 +24,7 @@ import java.text.Collator
 import java.util.Comparator
 
 import android.content.Context
-import android.graphics.drawable.Drawable
+
 import android.os.Bundle
 import android.util.AttributeSet
 
@@ -48,8 +48,7 @@ import com.amjjd.alphanum.AlphanumericComparator
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
-abstract class BaseTorrentFilesAdapter(activity: AppCompatActivity,
-                                       protected val rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -79,12 +78,17 @@ abstract class BaseTorrentFilesAdapter(activity: AppCompatActivity,
         }
     }
 
-    val selector = Selector(activity,
-                            ActionModeCallback(),
+    lateinit var selector: Selector<Item, Int>
+
+    protected fun initSelector(activity: AppCompatActivity,
+                               actionModeCallback: BaseActionModeCallback) {
+        selector = Selector(activity,
+                            actionModeCallback,
                             this,
                             currentItems,
                             Item::row,
                             R.plurals.files_selected)
+    }
 
     override fun getItemCount(): Int {
         if (hasHeaderItem) {
@@ -301,7 +305,7 @@ abstract class BaseTorrentFilesAdapter(activity: AppCompatActivity,
             }
     }
 
-    private inner class ActionModeCallback : Selector.ActionModeCallback<Item>() {
+    protected abstract inner class BaseActionModeCallback : Selector.ActionModeCallback<Item>() {
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
@@ -310,7 +314,8 @@ abstract class BaseTorrentFilesAdapter(activity: AppCompatActivity,
         private var mixedPriorityItem: MenuItem? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
+            mode.menuInflater.inflate(R.menu.base_torrent_files_context_menu, menu)
+
             downloadItem = menu.findItem(R.id.download)
             notDownloadItem = menu.findItem(R.id.not_download)
             lowPriorityItem = menu.findItem(R.id.low_priority)
@@ -395,7 +400,7 @@ abstract class BaseTorrentFilesAdapter(activity: AppCompatActivity,
 
     abstract class Item(val row: Int,
                         val parentDirectory: Directory?,
-                        val name: String) {
+                        var name: String) {
         enum class WantedState {
             Wanted,
             Unwanted,

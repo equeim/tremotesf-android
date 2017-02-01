@@ -50,6 +50,8 @@ import android.widget.TextView
 import android.support.v4.view.ViewPager
 
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.view.ActionMode
+
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -601,7 +603,10 @@ class AddTorrentFileActivity : BaseActivity() {
         }
 
         class Adapter(private val activity: AppCompatActivity,
-                      rootDirectory: Directory) : BaseTorrentFilesAdapter(activity, rootDirectory) {
+                      rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
+            init {
+                initSelector(activity, ActionModeCallback())
+            }
 
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): RecyclerView.ViewHolder? {
@@ -627,6 +632,14 @@ class AddTorrentFileActivity : BaseActivity() {
                                      selector: Selector<Item, Int>,
                                      itemView: View) : BaseItemHolder(adapter, selector, itemView) {
                 val sizeTextView = itemView.findViewById(R.id.size_text_view) as TextView
+            }
+
+            private inner class ActionModeCallback : BaseActionModeCallback() {
+                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                    super.onCreateActionMode(mode, menu)
+                    mode.menuInflater.inflate(R.menu.select_all_menu, menu)
+                    return true
+                }
             }
         }
     }

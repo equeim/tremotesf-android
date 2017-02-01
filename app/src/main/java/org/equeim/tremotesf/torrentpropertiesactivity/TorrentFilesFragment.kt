@@ -70,11 +70,15 @@ class TorrentFilesFragment : Fragment() {
                 if (value != null) {
                     value.filesUpdateEnabled = true
                     value.filesLoadedListener = filesLoadedListener
+                    value.fileRenamedListener = fileRenamedListener
                 }
             }
         }
 
     private val filesLoadedListener = { update() }
+    private val fileRenamedListener = { filePath: String, newName: String ->
+        fileRenamed(filePath, newName)
+    }
 
     val rootDirectory = BaseTorrentFilesAdapter.Directory()
     private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
@@ -131,6 +135,7 @@ class TorrentFilesFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         torrent?.filesLoadedListener = null
+        torrent?.fileRenamedListener = null
     }
 
     override fun onDestroyView() {
@@ -185,6 +190,25 @@ class TorrentFilesFragment : Fragment() {
             } else {
                 createTree(fileJsons!!, fileStatsJsons!!)
             }
+        }
+    }
+
+    fun fileRenamed(path: String, newName: String) {
+        if (!treeCreated || creatingTree) {
+            return
+        }
+
+        val pathParts = path.split('/').filter(String::isNotEmpty)
+        var item: BaseTorrentFilesAdapter.Item? = rootDirectory
+        for (part in pathParts) {
+            item = (item as BaseTorrentFilesAdapter.Directory).children.find { item -> item.name == part }
+            if (item == null) {
+                break
+            }
+        }
+        if (item != rootDirectory && item != null) {
+            item.name = newName
+            adapter?.fileRenamed(item)
         }
     }
 

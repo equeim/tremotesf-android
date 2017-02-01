@@ -394,4 +394,8 @@
 
     <string name="set_location">Set location</string>
     <string name="move_files">Move files from current directory</string>
+
+    <string name="rename">Rename</string>
+
+    <string name="file_name">File name</string>
 </resources>

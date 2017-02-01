@@ -596,6 +596,28 @@ object Rpc {
                     })
     }
 
+    fun renameTorrentFile(torrentId: Int, filePath: String, newName: String) {
+        if (!Rpc.connected) {
+            return
+        }
+
+        postRequest(makeRequestData("torrent-rename-path",
+                                    mapOf(Pair("ids", intArrayOf(torrentId)),
+                                          Pair("path", filePath),
+                                          Pair("name", newName))),
+                    { jsonObject ->
+                        val arguments = getReplyArguments(jsonObject)
+                        val id = arguments["id"].asInt
+                        val torrent = torrents.find { torrent -> torrent.id == id }
+                        if (torrent != null) {
+                            torrent.fileRenamedListener?.invoke(arguments["path"].asString,
+                                                                arguments["name"].asString)
+                        }
+                        resetTimer()
+                        updateData()
+                    })
+    }
+
     private fun getServerStats() {
         Logger.d("get server stats")
 

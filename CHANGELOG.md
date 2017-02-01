@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Set torrent location
+- Rename torrent's files
 
 ### Fixed
 - Crash if tracker's address is an IP address

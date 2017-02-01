@@ -216,6 +216,8 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
                                files)
     }
 
+    var fileRenamedListener: ((String, String) -> Unit)? = null
+
 
     var peers: JsonArray? = null
     var peersUpdateEnabled = false

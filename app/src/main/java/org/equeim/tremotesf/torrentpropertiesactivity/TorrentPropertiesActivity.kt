@@ -80,19 +80,27 @@ class TorrentPropertiesActivity : BaseActivity() {
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
+                    fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                            ?.let { fragment ->
+                        fragmentManager.beginTransaction().remove(fragment).commit()
+                    }
+
                     fragmentManager.findFragmentByTag(RemoveDialogFragment.TAG)?.let { fragment ->
                         fragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)?.let { fragment ->
+                    fragmentManager.findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
+                            ?.let { fragment ->
+                                fragmentManager.beginTransaction().remove(fragment).commit()
+                            }
+
+                    fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)
+                            ?.let { fragment ->
                         fragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)?.let { fragment ->
-                        fragmentManager.beginTransaction().remove(fragment).commit()
-                    }
-
-                    fragmentManager.findFragmentByTag(TrackersAdapter.RemoveDialogFragment.TAG)?.let { fragment ->
+                    fragmentManager.findFragmentByTag(TrackersAdapter.RemoveDialogFragment.TAG)
+                            ?.let { fragment ->
                         fragmentManager.beginTransaction().remove(fragment).commit()
                     }
                 }
