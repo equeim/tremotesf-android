@@ -488,9 +488,13 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
-            val view = inflater.inflate(R.layout.add_torrent_file_info_fragment,
-                                        container,
-                                        false)
+            return inflater.inflate(R.layout.add_torrent_file_info_fragment,
+                                    container,
+                                    false)
+        }
+
+        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
             priority_spinner.adapter = ArraySpinnerAdapter(activity,
                                                            resources.getStringArray(R.array.priority))
@@ -500,8 +504,6 @@ class AddTorrentFileActivity : BaseActivity() {
                 priority_spinner.setSelection(1)
                 start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
             }
-
-            return view
         }
 
         fun check(): Boolean {
@@ -530,7 +532,11 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup,
                                   savedInstanceState: Bundle?): View {
-            val view = inflater.inflate(R.layout.add_torrent_file_files_fragment, container, false)
+            return inflater.inflate(R.layout.add_torrent_file_files_fragment, container, false)
+        }
+
+        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
             adapter = Adapter(activity as AppCompatActivity,
                               mainFragment.rootDirectory)
@@ -544,8 +550,6 @@ class AddTorrentFileActivity : BaseActivity() {
             if (mainFragment.status == MainFragment.Status.Loaded) {
                 adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
             }
-
-            return view
         }
 
         override fun onDestroyView() {

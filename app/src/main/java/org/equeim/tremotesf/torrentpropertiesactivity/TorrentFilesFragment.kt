@@ -101,7 +101,11 @@ class TorrentFilesFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup,
                               savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.torrent_files_fragment, container, false)
+        return inflater.inflate(R.layout.torrent_files_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         adapter = TorrentFilesAdapter(activity, rootDirectory)
 
@@ -117,8 +121,6 @@ class TorrentFilesFragment : Fragment() {
 
         updateProgressBar()
         updatePlaceholder()
-
-        return view
     }
 
     override fun onStart() {

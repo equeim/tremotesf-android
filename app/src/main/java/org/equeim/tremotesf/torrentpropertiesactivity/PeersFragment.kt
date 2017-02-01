@@ -59,7 +59,11 @@ class PeersFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup,
                               savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.peers_fragment, container, false)
+        return inflater.inflate(R.layout.peers_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         peersAdapter = PeersAdapter(activity)
 
@@ -68,8 +72,6 @@ class PeersFragment : Fragment() {
         peers_view.addItemDecoration(DividerItemDecoration(activity,
                                                            DividerItemDecoration.VERTICAL))
         peers_view.itemAnimator = null
-
-        return view
     }
 
     override fun onStart() {

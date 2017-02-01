@@ -49,14 +49,18 @@ class TrackersFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup,
                               savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.trackers_fragment, container, false)
+        return inflater.inflate(R.layout.trackers_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         trackersAdapter = TrackersAdapter(activity)
 
         trackers_view.adapter = trackersAdapter
         trackers_view.layoutManager = LinearLayoutManager(activity)
         trackers_view.addItemDecoration(DividerItemDecoration(activity,
-                                                             DividerItemDecoration.VERTICAL))
+                                                              DividerItemDecoration.VERTICAL))
         (trackers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -73,8 +77,6 @@ class TrackersFragment : Fragment() {
             update()
             trackersAdapter!!.selector.restoreInstanceState(savedInstanceState)
         }
-
-        return view
     }
 
     override fun onDestroyView() {
