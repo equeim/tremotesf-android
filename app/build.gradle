@@ -46,7 +46,7 @@ dependencies {
     compile "com.android.support:support-v13:$support_version"
     compile "com.android.support:design:$support_version"
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.google.guava:guava:21.0'
+    compile 'com.google.guava:guava:20.0'
     compile 'com.amjjd:java-alphanum:0.2'
     compile 'com.hypirion:bencode:0.1.1'
 }
