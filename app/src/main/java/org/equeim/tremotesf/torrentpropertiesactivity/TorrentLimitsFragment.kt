@@ -35,7 +35,7 @@ import android.widget.AdapterView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
 
@@ -101,8 +101,8 @@ class TorrentLimitsFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        priority_spinner.adapter = ArraySpinnerAdapter(activity,
-                                                       resources.getStringArray(R.array.priority))
+        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority),
+                                                                 R.string.priority)
         priority_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
@@ -121,8 +121,8 @@ class TorrentLimitsFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        ratio_limit_spinner.adapter = ArraySpinnerAdapter(activity,
-                                                          resources.getStringArray(R.array.ratio_limit_mode))
+        ratio_limit_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.ratio_limit_mode),
+                                                                    R.string.ratio_limit)
         ratio_limit_edit.filters = arrayOf(DoubleFilter(0..10000))
         ratio_limit_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
@@ -153,8 +153,8 @@ class TorrentLimitsFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        idle_seeding_spinner.adapter = ArraySpinnerAdapter(activity,
-                                                           resources.getStringArray(R.array.idle_seeding_mode))
+        idle_seeding_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.idle_seeding_mode),
+                                                                     R.string.idle_seeding)
         idle_seeding_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,

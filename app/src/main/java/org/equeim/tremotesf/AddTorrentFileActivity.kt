@@ -63,7 +63,7 @@ import com.hypirion.bencode.BencodeReader
 import com.hypirion.bencode.BencodeReadException
 
 import org.equeim.tremotesf.mainactivity.MainActivity
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
@@ -496,8 +496,8 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            priority_spinner.adapter = ArraySpinnerAdapter(activity,
-                                                           resources.getStringArray(R.array.priority))
+            priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority),
+                                                                     R.string.priority)
 
             if (savedInstanceState == null) {
                 download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)

@@ -70,12 +70,6 @@
                     android:inputType="textUri"/>
             </android.support.design.widget.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/priority"/>
-
             <Spinner
                 android:id="@+id/priority_spinner"
                 android:layout_width="match_parent"

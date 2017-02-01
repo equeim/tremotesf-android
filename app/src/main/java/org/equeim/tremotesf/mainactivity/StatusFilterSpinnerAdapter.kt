@@ -26,7 +26,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
-class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter() {
+class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.status) {
     companion object {
         const val ALL = 0
         const val ACTIVE = 1

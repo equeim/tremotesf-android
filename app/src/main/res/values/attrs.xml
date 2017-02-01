@@ -19,4 +19,6 @@
     <attr name="pauseIcon" format="reference"/>
     <attr name="refreshIcon" format="reference"/>
     <attr name="torrentIcon" format="reference"/>
+    <attr name="sortDescendingIcon" format="reference"/>
+    <attr name="sortAscendingIcon" format="reference"/>
 </resources>

@@ -51,12 +51,6 @@
             android:saveEnabled="false"
             android:text="@string/port_forwarding"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:text="@string/encryption"/>
-
         <Spinner
             android:id="@+id/encryption_spinner"
             android:layout_width="match_parent"

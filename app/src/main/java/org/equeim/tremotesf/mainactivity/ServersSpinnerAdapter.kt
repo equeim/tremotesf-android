@@ -26,12 +26,13 @@ import android.widget.Spinner
 
 import com.amjjd.alphanum.AlphanumericComparator
 
+import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
-class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAdapter() {
+class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAdapter(R.string.server) {
     val servers = mutableListOf<Server>()
 
     private val comparator = object : Comparator<Server> {

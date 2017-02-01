@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.utils
 
 import android.content.Context
+import android.util.AttributeSet
 
 import android.view.LayoutInflater
 import android.view.View
@@ -27,50 +28,80 @@ import android.view.ViewGroup
 
 import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
+import android.widget.LinearLayout
 import android.widget.TextView
 
+import org.equeim.tremotesf.R
 
-class ArraySpinnerAdapter(context: Context, items: Array<String>)
+
+class ArraySpinnerAdapter(context: Context,
+                          items: Array<String>)
     : ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items) {
-
     init {
         setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     }
 }
 
-abstract class BaseSpinnerAdapter : BaseAdapter() {
+class ChildrenDisablingLinearLayout(context: Context, attrs: AttributeSet) : LinearLayout(context,
+                                                                                          attrs) {
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        setChildrenEnabled(enabled)
+    }
+}
+
+abstract class BaseSpinnerAdapter(private val headerText: Int? = null) : BaseAdapter() {
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return getView(position, convertView, parent, false)
+        val view: View
+        if (convertView == null) {
+            val inflater = LayoutInflater.from(parent.context)
+            if (headerText == null) {
+                view = inflater.inflate(android.R.layout.simple_spinner_item, parent, false)
+            } else {
+                view = inflater.inflate(R.layout.spinner_item_with_header, parent, false)
+                view.tag = ViewHolder(view)
+            }
+        } else {
+            view = convertView
+        }
+
+        if (headerText == null) {
+            (view as TextView).text = getItem(position) as String
+        } else {
+            val holder = view.tag as ViewHolder
+            holder.headerTextView.text = parent.context.getString(headerText)
+            holder.textView.text = getItem(position) as String
+        }
+
+        return view
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return getView(position, convertView, parent, true)
-    }
-
-    private fun getView(position: Int,
-                        convertView: View?,
-                        parent: ViewGroup,
-                        dropdown: Boolean): View {
-        val view: View
-        val textView: TextView
+        val view: TextView
         if (convertView == null) {
-            val layoutId = if (dropdown) {
-                android.R.layout.simple_spinner_dropdown_item
-            } else {
-                android.R.layout.simple_spinner_item
-            }
-            view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
-            textView = view.findViewById(android.R.id.text1) as TextView
-            view.tag = textView
+            view = LayoutInflater.from(parent.context)
+                    .inflate(android.R.layout.simple_spinner_dropdown_item,
+                             parent,
+                             false) as TextView
         } else {
-            view = convertView
-            textView = view.tag as TextView
+            view = convertView as TextView
         }
-        textView.text = getItem(position) as String
+        view.text = getItem(position) as String
         return view
     }
+
+    private class ViewHolder(view: View) {
+        val headerTextView = view.findViewById(R.id.header_text_view) as TextView
+        val textView = view.findViewById(android.R.id.text1) as TextView
+    }
+}
+
+class ArraySpinnerAdapterWithHeader(private val items: Array<String>,
+                                    headerText: Int) : BaseSpinnerAdapter(headerText) {
+    override fun getCount() = items.size
+    override fun getItem(position: Int) = items[position]
 }

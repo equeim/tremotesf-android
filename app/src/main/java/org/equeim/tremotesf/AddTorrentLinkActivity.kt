@@ -31,7 +31,7 @@ import android.view.inputmethod.InputMethodManager
 import android.support.design.widget.Snackbar
 
 import org.equeim.tremotesf.mainactivity.MainActivity
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 
 import kotlinx.android.synthetic.main.add_torrent_link_activity.*
 
@@ -54,8 +54,8 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        priority_spinner.adapter = ArraySpinnerAdapter(this,
-                                                       resources.getStringArray(R.array.priority))
+        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority),
+                                                                 R.string.priority)
 
         if (savedInstanceState == null) {
             torrent_link_edit.setText(intent.dataString)

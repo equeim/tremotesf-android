@@ -100,6 +100,11 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         AddedDate
     }
 
+    enum class SortOrder {
+        Ascending,
+        Descending
+    }
+
     enum class StatusFilterMode {
         All,
         Active,
@@ -131,7 +136,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         private val nameComparator = AlphanumericComparator(Collator.getInstance())
 
         override fun compare(o1: Torrent, o2: Torrent): Int {
-            val compared = when (sortMode) {
+            var compared = when (sortMode) {
                 SortMode.Name -> nameComparator.compare(
                         o1.name,
                         o2.name)
@@ -146,13 +151,26 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                         o2.addedDate)
             }
             if (sortMode != SortMode.Name && compared == 0) {
-                return nameComparator.compare(o1.name, o2.name)
+                compared = nameComparator.compare(o1.name, o2.name)
+            }
+            if (sortOrder == SortOrder.Descending) {
+                compared = -compared
             }
             return compared
         }
     }
 
     var sortMode = SortMode.Name
+        set(value) {
+            if (value != field) {
+                field = value
+                displayedTorrents.clear()
+                displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
+                notifyItemRangeChanged(0, itemCount)
+            }
+        }
+
+    var sortOrder = SortOrder.Ascending
         set(value) {
             if (value != field) {
                 field = value

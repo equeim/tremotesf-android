@@ -6,25 +6,13 @@
     android:orientation="vertical"
     android:paddingTop="@dimen/vertical_edge_padding">
 
-    <LinearLayout
-        android:id="@+id/servers_spinner_layout"
+    <Spinner
+        android:id="@+id/servers_spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/horizontal_edge_padding"
         android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/server"/>
-
-        <Spinner
-            android:id="@+id/servers_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
 
     <View
         android:layout_width="match_parent"
@@ -38,47 +26,40 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/horizontal_edge_padding"
         android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/sort_spinner_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/sort"/>
-
-        <Spinner
-            android:id="@+id/sort_spinner"
+        <org.equeim.tremotesf.utils.ChildrenDisablingLinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/status_spinner_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/status"/>
+            <Spinner
+                android:id="@+id/sort_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/sort_order_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
+                android:layout_gravity="center_vertical"
+                android:src="?attr/sortDescendingIcon"/>
+        </org.equeim.tremotesf.utils.ChildrenDisablingLinearLayout>
 
         <Spinner
             android:id="@+id/status_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
-
-        <TextView
-            android:id="@+id/trackers_spinner_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/trackers"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
 
         <Spinner
             android:id="@+id/trackers_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
     </LinearLayout>
 
     <View

@@ -34,7 +34,8 @@ import android.widget.AdapterView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.ServerSettings
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+
+import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.IntFilter
 
 import kotlinx.android.synthetic.main.server_settings_network_fragment.*
@@ -79,8 +80,8 @@ class NetworkFragment : Fragment() {
             Rpc.serverSettings.portForwardingEnabled = checked
         }
 
-        encryption_spinner.adapter = ArraySpinnerAdapter(activity,
-                                                         resources.getStringArray(R.array.encryption))
+        encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption),
+                                                                   R.string.encryption)
         encryption_spinner.setSelection(when (Rpc.serverSettings.encryption) {
                                             ServerSettings.Encryption.ALLOWED -> 0
                                             ServerSettings.Encryption.PREFERRED -> 1

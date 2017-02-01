@@ -34,6 +34,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Spinner
 
 import android.support.v7.app.ActionBarDrawerToggle
@@ -44,7 +45,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 
-import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 
 import org.equeim.tremotesf.AddTorrentFileActivity
@@ -62,7 +62,7 @@ import org.equeim.tremotesf.serversactivity.ServersActivity
 
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
 
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
@@ -80,7 +80,7 @@ class MainActivity : BaseActivity() {
     private lateinit var searchView: SearchView
     private var restoredSearchQuery: String? = null
 
-    private lateinit var serversSpinnerLayout: ViewGroup
+    private lateinit var serversSpinner: Spinner
     private lateinit var serversSpinnerAdapter: ServersSpinnerAdapter
 
     private lateinit var listSettingsLayout: ViewGroup
@@ -130,7 +130,7 @@ class MainActivity : BaseActivity() {
     private val rpcErrorListener = { error: Rpc.Error ->
         updateTitle()
         updateMenuItems()
-        serversSpinnerLayout.setChildrenEnabled(Servers.hasServers)
+        serversSpinner.isEnabled = Servers.hasServers
         updatePlaceholder()
     }
 
@@ -184,9 +184,8 @@ class MainActivity : BaseActivity() {
 
         val sidePanelHeader = side_panel.getHeaderView(0)
 
-        serversSpinnerLayout = sidePanelHeader.findViewById(R.id.servers_spinner_layout) as ViewGroup
-        serversSpinnerLayout.setChildrenEnabled(Servers.hasServers)
-        val serversSpinner = sidePanelHeader.findViewById(R.id.servers_spinner) as Spinner
+        serversSpinner = sidePanelHeader.findViewById(R.id.servers_spinner) as Spinner
+        serversSpinner.isEnabled = Servers.hasServers
         serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
         serversSpinner.adapter = serversSpinnerAdapter
         serversSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -205,8 +204,8 @@ class MainActivity : BaseActivity() {
         listSettingsLayout.setChildrenEnabled(Rpc.connected)
 
         sortSpinner = sidePanelHeader.findViewById(R.id.sort_spinner) as Spinner
-        sortSpinner.adapter = ArraySpinnerAdapter(this,
-                                                  resources.getStringArray(R.array.sort_spinner_items))
+        sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
+                                                            R.string.sort)
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
@@ -225,6 +224,16 @@ class MainActivity : BaseActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+        val sortOrderButton = sidePanelHeader.findViewById(R.id.sort_order_button) as ImageButton
+        sortOrderButton.setImageResource(getSortOrderButtonIcon())
+        sortOrderButton.setOnClickListener {
+            torrentsAdapter.sortOrder = if (torrentsAdapter.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
+                TorrentsAdapter.SortOrder.Descending
+            } else {
+                TorrentsAdapter.SortOrder.Ascending
+            }
+            sortOrderButton.setImageResource(getSortOrderButtonIcon())
         }
 
         statusSpinner = sidePanelHeader.findViewById(R.id.status_spinner) as Spinner
@@ -457,6 +466,17 @@ class MainActivity : BaseActivity() {
         } else {
             null
         }
+    }
+
+    private fun getSortOrderButtonIcon(): Int {
+        val ta = obtainStyledAttributes(intArrayOf(if (torrentsAdapter.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
+            R.attr.sortAscendingIcon
+        } else {
+            R.attr.sortDescendingIcon
+        }))
+        val resId = ta.getResourceId(0, 0)
+        ta.recycle()
+        return resId
     }
 
     private fun startFilePickerActivity() {

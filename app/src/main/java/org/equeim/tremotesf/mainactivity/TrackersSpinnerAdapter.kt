@@ -29,7 +29,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
-class TrackersSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter() {
+class TrackersSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.trackers) {
     private val trackersMap = mutableMapOf<String, Int>()
     val trackers = mutableListOf<String>()
     private val comparator = AlphanumericComparator(Collator.getInstance())

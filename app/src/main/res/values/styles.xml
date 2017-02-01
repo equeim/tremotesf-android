@@ -24,6 +24,8 @@
         <item name="pauseIcon">@drawable/ic_pause_white_24dp</item>
         <item name="refreshIcon">@drawable/ic_refresh_white_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_white</item>
+        <item name="sortDescendingIcon">@drawable/sort_descending_white</item>
+        <item name="sortAscendingIcon">@drawable/sort_ascending_white</item>
     </style>
 
     <style name="AppTheme.Dark.NoActionBar">
@@ -52,6 +54,8 @@
         <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
         <item name="refreshIcon">@drawable/ic_refresh_black_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_black</item>
+        <item name="sortDescendingIcon">@drawable/sort_descending_black</item>
+        <item name="sortAscendingIcon">@drawable/sort_ascending_black</item>
     </style>
 
     <style name="AppTheme.Light.NoActionBar">
