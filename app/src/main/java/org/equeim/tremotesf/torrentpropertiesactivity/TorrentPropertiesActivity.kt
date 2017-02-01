@@ -315,7 +315,9 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     private fun updateMenu() {
-        menu!!.setGroupVisible(R.id.all_items, (torrent != null))
+        for (i in (0..menu!!.size() - 1)) {
+            menu!!.getItem(i).isVisible = (torrent != null)
+        }
         if (torrent != null) {
             startMenuItem.isVisible = when (torrent!!.status) {
                 Torrent.Status.Paused,
