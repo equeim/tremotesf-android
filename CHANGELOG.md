@@ -1,5 +1,9 @@
 # Change Log
 
+## [Unreleased]
+### Fixed
+- Crash if tracker's address is an IP address
+
 ## [1.0.1] - 2017-01-31
 ### Fixed
 - Progress bar visibility on Add torrent file activity

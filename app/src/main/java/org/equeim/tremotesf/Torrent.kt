@@ -463,11 +463,16 @@ class Tracker(val id: Int, private val context: Context) {
 
         announce = trackerJson["announce"].asString
 
-        val domain = InternetDomainName.from(URI(announce).host)
-        site = if (domain.hasPublicSuffix()) {
-            domain.topPrivateDomain().toString()
-        } else {
-            domain.toString()
+        val host = URI(announce).host
+        site = try {
+            val domain = InternetDomainName.from(URI(announce).host)
+            if (domain.hasPublicSuffix()) {
+                domain.topPrivateDomain().toString()
+            } else {
+                host
+            }
+        } catch (error: IllegalArgumentException) {
+            host
         }
 
         val scrapeError = (!trackerJson["lastScrapeSucceeded"].asBoolean && trackerJson["lastScrapeTime"].asInt != 0)
