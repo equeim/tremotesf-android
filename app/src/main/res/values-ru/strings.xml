@@ -312,4 +312,7 @@
         <item>Предпочитать</item>
         <item>Требовать</item>
     </string-array>
+
+    <string name="set_location">Переместить</string>
+    <string name="move_files">Переместить файлы из текущего каталога</string>
 </resources>

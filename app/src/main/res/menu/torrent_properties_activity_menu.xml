@@ -19,12 +19,17 @@
             android:id="@+id/check"
             android:icon="?attr/refreshIcon"
             android:title="@string/check_local_data"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="never"/>
+
+        <item
+            android:id="@+id/set_location"
+            android:title="@string/set_location"
+            app:showAsAction="never"/>
 
         <item
             android:id="@+id/remove"
             android:icon="?attr/deleteIcon"
             android:title="@string/remove"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="never"/>
     </group>
 </menu>

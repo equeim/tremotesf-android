@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Set torrent location
+
 ### Fixed
 - Crash if tracker's address is an IP address
 

@@ -15,6 +15,10 @@
         android:title="@string/check_local_data"/>
 
     <item
+        android:id="@+id/set_location"
+        android:title="@string/set_location"/>
+
+    <item
         android:id="@+id/remove"
         android:icon="?attr/deleteIcon"
         android:title="@string/remove"/>

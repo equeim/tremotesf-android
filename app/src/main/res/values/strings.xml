@@ -391,4 +391,7 @@
     </string-array>
 
     <string name="remove_torrent_message">Are you sure you want to remove this torrent?</string>
+
+    <string name="set_location">Set location</string>
+    <string name="move_files">Move files from current directory</string>
 </resources>

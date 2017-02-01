@@ -45,6 +45,7 @@ import android.widget.TextView
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 
 import com.amjjd.alphanum.AlphanumericComparator
 
@@ -52,6 +53,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.Tracker
+import org.equeim.tremotesf.utils.createTextFieldDialog
 
 
 class TrackersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
@@ -195,54 +197,20 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val trackerId = arguments?.getInt(TRACKER_ID) ?: -1
 
-            val dialog = AlertDialog.Builder(activity)
-                    .setTitle(if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(android.R.string.ok, { dialog, which ->
-                        val torrent = (activity as TorrentPropertiesActivity).torrent
-                        val announceEdit = this.dialog.findViewById(R.id.announce_edit) as TextView
-                        if (trackerId == -1) {
-                            torrent?.addTracker(announceEdit.text.toString())
-                        } else {
-                            torrent?.setTracker(trackerId, announceEdit.text.toString())
-                        }
-                    })
-                    .setView(R.layout.edit_tracker_dialog)
-                    .create()
-
-            dialog.setOnShowListener {
-                val announceEdit = dialog.findViewById(R.id.announce_edit) as TextView
-
-                if (trackerId != -1) {
-                    announceEdit.text = arguments.getString(ANNOUNCE)
+            return createTextFieldDialog(activity,
+                                         if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker,
+                                         null,
+                                         activity.getString(R.string.tracker_announce_url),
+                                         InputType.TYPE_TEXT_VARIATION_URI,
+                                         arguments?.getString(ANNOUNCE)) {
+                val torrent = (activity as TorrentPropertiesActivity).torrent
+                val textField = dialog.findViewById(R.id.text_field) as TextView
+                if (trackerId == -1) {
+                    torrent?.addTracker(textField.text.toString())
+                } else {
+                    torrent?.setTracker(trackerId, textField.text.toString())
                 }
-
-                val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                okButton.isEnabled = announceEdit.text.isNotEmpty()
-
-                announceEdit.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(s: Editable) {
-                        okButton.isEnabled = s.isNotEmpty()
-                    }
-
-                    override fun beforeTextChanged(s: CharSequence?,
-                                                   start: Int,
-                                                   count: Int,
-                                                   after: Int) {
-                    }
-
-                    override fun onTextChanged(s: CharSequence?,
-                                               start: Int,
-                                               before: Int,
-                                               count: Int) {
-                    }
-                })
-
-                (activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                        .showSoftInput(announceEdit, InputMethodManager.SHOW_IMPLICIT)
             }
-
-            return dialog
         }
     }
 

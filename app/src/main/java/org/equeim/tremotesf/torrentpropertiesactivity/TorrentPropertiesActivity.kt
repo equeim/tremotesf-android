@@ -51,6 +51,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
 
 private const val TAB_DETAILS = 0
@@ -84,6 +85,10 @@ class TorrentPropertiesActivity : BaseActivity() {
                     }
 
                     fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)?.let { fragment ->
+                        fragmentManager.beginTransaction().remove(fragment).commit()
+                    }
+
+                    fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)?.let { fragment ->
                         fragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
@@ -259,7 +264,10 @@ class TorrentPropertiesActivity : BaseActivity() {
             R.id.start -> Rpc.startTorrents(listOf(torrent!!.id))
             R.id.pause -> Rpc.pauseTorrents(listOf(torrent!!.id))
             R.id.check -> Rpc.checkTorrents(listOf(torrent!!.id))
-            R.id.remove -> RemoveDialogFragment.create(torrent!!.id).show(fragmentManager, RemoveDialogFragment.TAG)
+            R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(torrent!!)
+                    .show(fragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
+            R.id.remove -> RemoveDialogFragment.create(torrent!!.id).show(fragmentManager,
+                                                                          RemoveDialogFragment.TAG)
             else -> return false
         }
         return true

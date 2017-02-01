@@ -32,6 +32,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 
+import android.text.InputType
+
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -56,6 +58,7 @@ import org.equeim.tremotesf.Torrent
 
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.createTextFieldDialog
 
 
 class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
@@ -318,11 +321,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     private class ActionModeCallback(private val activity: Activity) : Selector.ActionModeCallback<Torrent>() {
         private var startItem: MenuItem? = null
         private var pauseItem: MenuItem? = null
+        private var setLocationItem: MenuItem? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
             startItem = menu.findItem(R.id.start)
             pauseItem = menu.findItem(R.id.pause)
+            setLocationItem = menu.findItem(R.id.set_location)
             return true
         }
 
@@ -337,9 +342,11 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     else -> false
                 }
                 pauseItem!!.isEnabled = !startItem!!.isEnabled
+                setLocationItem!!.isEnabled = true
             } else {
                 startItem!!.isEnabled = true
                 pauseItem!!.isEnabled = true
+                setLocationItem!!.isEnabled = false
             }
 
             return true
@@ -354,6 +361,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 R.id.start -> Rpc.startTorrents(selector.selectedItems.map(Torrent::id))
                 R.id.pause -> Rpc.pauseTorrents(selector.selectedItems.map(Torrent::id))
                 R.id.check -> Rpc.checkTorrents(selector.selectedItems.map(Torrent::id))
+                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.first())
+                        .show(activity.fragmentManager, SetLocationDialogFragment.TAG)
                 R.id.remove -> RemoveDialogFragment().show(activity.fragmentManager,
                                                            RemoveDialogFragment.TAG)
                 else -> return false
@@ -366,6 +375,41 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             super.onDestroyActionMode(mode)
             startItem = null
             pauseItem = null
+            setLocationItem = null
+        }
+    }
+
+    class SetLocationDialogFragment : DialogFragment() {
+        companion object {
+            const val TAG = "org.equeim.tremotesf.TorrentsAdapter.SetLocationDialogFragment"
+            private const val TORRENT_ID = "torrentId"
+            private const val LOCATION = "location"
+
+            fun create(torrent: Torrent): SetLocationDialogFragment {
+                val fragment = SetLocationDialogFragment()
+                val arguments = Bundle()
+                arguments.putInt(TORRENT_ID, torrent.id)
+                arguments.putString(LOCATION, torrent.downloadDirectory)
+                fragment.arguments = arguments
+                return fragment
+            }
+        }
+
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return createTextFieldDialog(activity,
+                                         null,
+                                         R.layout.set_location_dialog,
+                                         activity.getString(R.string.location),
+                                         InputType.TYPE_TEXT_VARIATION_URI,
+                                         arguments.getString(LOCATION)) {
+                val textField = dialog.findViewById(R.id.text_field) as TextView
+                val moveFilesCheckBox = dialog.findViewById(R.id.move_files_check_box) as CheckBox
+                Rpc.setTorrentLocation(arguments.getInt(TORRENT_ID),
+                                       textField.text.toString(),
+                                       moveFilesCheckBox.isChecked)
+
+                (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
+            }
         }
     }
 

@@ -579,6 +579,23 @@ object Rpc {
                     })
     }
 
+    fun setTorrentLocation(torrentId: Int,
+                           location: String,
+                           moveFiles: Boolean) {
+        if (!Rpc.connected) {
+            return
+        }
+
+        postRequest(makeRequestData("torrent-set-location",
+                                    mapOf(Pair("ids", intArrayOf(torrentId)),
+                                          Pair("location", location),
+                                          Pair("move", moveFiles))),
+                    { jsonObject ->
+                        resetTimer()
+                        updateData()
+                    })
+    }
+
     private fun getServerStats() {
         Logger.d("get server stats")
 

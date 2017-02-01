@@ -104,6 +104,11 @@ class MainActivity : BaseActivity() {
             if (!Rpc.connected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
+                fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                        ?.let { fragment ->
+                            fragmentManager.beginTransaction().remove(fragment).commit()
+                        }
+
                 fragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
                         ?.let { fragment ->
                             fragmentManager.beginTransaction().remove(fragment).commit()
