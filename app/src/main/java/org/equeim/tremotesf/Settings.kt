@@ -24,7 +24,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 
 import android.preference.PreferenceManager
+import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
+
+private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
 
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private var initialized = false
@@ -67,6 +70,18 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     val showPersistentNotification: Boolean
         get() {
             return preferences.getBoolean(persistentNotificationKey, false)
+        }
+
+    var torrentsSortOrder: TorrentsAdapter.SortOrder
+        get() {
+            val int = preferences.getInt(TORRENTS_SORT_ORDER, 0)
+            if (int in TorrentsAdapter.SortOrder.values().indices) {
+                return TorrentsAdapter.SortOrder.values()[int]
+            }
+            return TorrentsAdapter.SortOrder.Ascending
+        }
+        set(value) {
+            preferences.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).commit()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {

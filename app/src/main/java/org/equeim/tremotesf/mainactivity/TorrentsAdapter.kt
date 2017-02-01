@@ -53,9 +53,8 @@ import com.amjjd.alphanum.AlphanumericComparator
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
-
+import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
-
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -170,13 +169,14 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
-    var sortOrder = SortOrder.Ascending
+    var sortOrder = Settings.torrentsSortOrder
         set(value) {
             if (value != field) {
                 field = value
                 displayedTorrents.clear()
                 displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
                 notifyItemRangeChanged(0, itemCount)
+                Settings.torrentsSortOrder = value
             }
         }
 
