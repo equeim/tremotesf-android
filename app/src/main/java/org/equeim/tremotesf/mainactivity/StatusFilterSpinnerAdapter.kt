@@ -27,16 +27,6 @@ import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
 class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.status) {
-    companion object {
-        const val ALL = 0
-        const val ACTIVE = 1
-        const val DOWNLOADING = 2
-        const val SEEDING = 3
-        const val PAUSED = 4
-        const val CHECKING = 5
-        const val ERRORED = 6
-    }
-
     private var activeTorrents = 0
     private var downloadingTorrents = 0
     private var seedingTorrents = 0
@@ -46,13 +36,13 @@ class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdap
 
     override fun getItem(position: Int): String {
         return when (position) {
-            ALL -> context.getString(R.string.torrents_all, Rpc.torrents.size)
-            ACTIVE -> context.getString(R.string.torrents_active, activeTorrents)
-            DOWNLOADING -> context.getString(R.string.torrents_downloading, downloadingTorrents)
-            SEEDING -> context.getString(R.string.torrents_seeding, seedingTorrents)
-            PAUSED -> context.getString(R.string.torrents_paused, pausedTorrents)
-            CHECKING -> context.getString(R.string.torrents_checking, checkingTorrents)
-            ERRORED -> context.getString(R.string.torrents_errored, erroredTorrents)
+            0 -> context.getString(R.string.torrents_all, Rpc.torrents.size)
+            1 -> context.getString(R.string.torrents_active, activeTorrents)
+            2 -> context.getString(R.string.torrents_downloading, downloadingTorrents)
+            3 -> context.getString(R.string.torrents_seeding, seedingTorrents)
+            4 -> context.getString(R.string.torrents_paused, pausedTorrents)
+            5 -> context.getString(R.string.torrents_checking, checkingTorrents)
+            6 -> context.getString(R.string.torrents_errored, erroredTorrents)
             else -> String()
         }
     }

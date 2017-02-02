@@ -214,16 +214,7 @@ class MainActivity : BaseActivity() {
                                         position: Int,
                                         id: Long) {
                 if (previousPosition != -1) {
-                    torrentsAdapter.sortMode = when (position) {
-                        0 -> TorrentsAdapter.SortMode.Name
-                        1 -> TorrentsAdapter.SortMode.Status
-                        2 -> TorrentsAdapter.SortMode.Progress
-                        3 -> TorrentsAdapter.SortMode.Eta
-                        4 -> TorrentsAdapter.SortMode.Ratio
-                        5 -> TorrentsAdapter.SortMode.Size
-                        6 -> TorrentsAdapter.SortMode.AddedDate
-                        else -> TorrentsAdapter.SortMode.Name
-                    }
+                    torrentsAdapter.sortMode = TorrentsAdapter.SortMode.values()[position]
                     if (Rpc.connected) {
                         Settings.torrentsSortMode = torrentsAdapter.sortMode
                     }
@@ -255,16 +246,7 @@ class MainActivity : BaseActivity() {
                                         position: Int,
                                         id: Long) {
                 if (previousPosition != -1) {
-                    torrentsAdapter.statusFilterMode = when (position) {
-                        StatusFilterSpinnerAdapter.ALL -> TorrentsAdapter.StatusFilterMode.All
-                        StatusFilterSpinnerAdapter.ACTIVE -> TorrentsAdapter.StatusFilterMode.Active
-                        StatusFilterSpinnerAdapter.DOWNLOADING -> TorrentsAdapter.StatusFilterMode.Downloading
-                        StatusFilterSpinnerAdapter.SEEDING -> TorrentsAdapter.StatusFilterMode.Seeding
-                        StatusFilterSpinnerAdapter.PAUSED -> TorrentsAdapter.StatusFilterMode.Paused
-                        StatusFilterSpinnerAdapter.CHECKING -> TorrentsAdapter.StatusFilterMode.Checking
-                        StatusFilterSpinnerAdapter.ERRORED -> TorrentsAdapter.StatusFilterMode.Errored
-                        else -> TorrentsAdapter.StatusFilterMode.All
-                    }
+                    torrentsAdapter.statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
                     updatePlaceholder()
                 }
                 previousPosition = position
