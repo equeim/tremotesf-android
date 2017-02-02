@@ -62,6 +62,12 @@ import org.equeim.tremotesf.utils.createTextFieldDialog
 import kotlinx.android.synthetic.main.main_activity.torrents_view
 
 
+private const val INSTANCE_STATE = "org.equeim.tremotesf.mainactivity.TorrentsAdapter"
+private const val SORT_MODE = "sortMode"
+private const val SORT_ORDER = "sortOrder"
+private const val STATUS_FILTER_MODE = "statusFilterMode"
+private const val TRACKER_FILTER = "trackerFilter"
+
 class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
@@ -136,18 +142,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
         override fun compare(o1: Torrent, o2: Torrent): Int {
             var compared = when (sortMode) {
-                SortMode.Name -> nameComparator.compare(
-                        o1.name,
-                        o2.name)
+                SortMode.Name -> nameComparator.compare(o1.name, o2.name)
                 SortMode.Status -> o1.status.compareTo(o2.status)
-                SortMode.Progress -> o1.percentDone.compareTo(
-                        o2.percentDone)
+                SortMode.Progress -> o1.percentDone.compareTo(o2.percentDone)
                 SortMode.Eta -> o1.eta.compareTo(o2.eta)
                 SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
-                SortMode.Size -> o1.totalSize.compareTo(
-                        o2.totalSize)
-                SortMode.AddedDate -> o1.addedDate.compareTo(
-                        o2.addedDate)
+                SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
+                SortMode.AddedDate -> o1.addedDate.compareTo(o2.addedDate)
             }
             if (sortMode != SortMode.Name && compared == 0) {
                 compared = nameComparator.compare(o1.name, o2.name)
@@ -159,7 +160,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
     }
 
-    var sortMode = SortMode.Name
+    var sortMode = Settings.torrentsSortMode
         set(value) {
             if (value != field) {
                 field = value
@@ -176,7 +177,6 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 displayedTorrents.clear()
                 displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
                 notifyItemRangeChanged(0, itemCount)
-                Settings.torrentsSortOrder = value
             }
         }
 
@@ -304,6 +304,23 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
         selector.actionMode?.invalidate()
+    }
+
+    fun saveInstanceState(outState: Bundle) {
+        val state = Bundle()
+        state.putInt(SORT_MODE, sortMode.ordinal)
+        state.putInt(SORT_ORDER, sortOrder.ordinal)
+        state.putInt(STATUS_FILTER_MODE, statusFilterMode.ordinal)
+        state.putString(TRACKER_FILTER, trackerFilter)
+        outState.putBundle(INSTANCE_STATE, state)
+    }
+
+    fun restoreInstanceState(savedInstanceState: Bundle) {
+        val state = savedInstanceState.getBundle(INSTANCE_STATE)
+        sortMode = SortMode.values()[state.getInt(SORT_MODE)]
+        sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
+        statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]
+        trackerFilter = state.getString(TRACKER_FILTER)
     }
 
     class TorrentsViewHolder(selector: Selector<Torrent, Int>,

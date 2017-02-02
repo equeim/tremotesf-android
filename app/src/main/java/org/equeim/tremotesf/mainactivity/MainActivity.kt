@@ -207,20 +207,27 @@ class MainActivity : BaseActivity() {
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
                                                             R.string.sort)
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                torrentsAdapter.sortMode = when (position) {
-                    0 -> TorrentsAdapter.SortMode.Name
-                    1 -> TorrentsAdapter.SortMode.Status
-                    2 -> TorrentsAdapter.SortMode.Progress
-                    3 -> TorrentsAdapter.SortMode.Eta
-                    4 -> TorrentsAdapter.SortMode.Ratio
-                    5 -> TorrentsAdapter.SortMode.Size
-                    6 -> TorrentsAdapter.SortMode.AddedDate
-                    else -> TorrentsAdapter.SortMode.Name
+                if (previousPosition != -1) {
+                    torrentsAdapter.sortMode = when (position) {
+                        0 -> TorrentsAdapter.SortMode.Name
+                        1 -> TorrentsAdapter.SortMode.Status
+                        2 -> TorrentsAdapter.SortMode.Progress
+                        3 -> TorrentsAdapter.SortMode.Eta
+                        4 -> TorrentsAdapter.SortMode.Ratio
+                        5 -> TorrentsAdapter.SortMode.Size
+                        6 -> TorrentsAdapter.SortMode.AddedDate
+                        else -> TorrentsAdapter.SortMode.Name
+                    }
+                    if (Rpc.connected) {
+                        Settings.torrentsSortMode = torrentsAdapter.sortMode
+                    }
                 }
+                previousPosition = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -233,6 +240,7 @@ class MainActivity : BaseActivity() {
             } else {
                 TorrentsAdapter.SortOrder.Ascending
             }
+            Settings.torrentsSortOrder = torrentsAdapter.sortOrder
             sortOrderButton.setImageResource(getSortOrderButtonIcon())
         }
 
@@ -240,21 +248,25 @@ class MainActivity : BaseActivity() {
         statusSpinnerAdapter = StatusFilterSpinnerAdapter(this)
         statusSpinner.adapter = statusSpinnerAdapter
         statusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>,
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                torrentsAdapter.statusFilterMode = when (position) {
-                    StatusFilterSpinnerAdapter.ALL -> TorrentsAdapter.StatusFilterMode.All
-                    StatusFilterSpinnerAdapter.ACTIVE -> TorrentsAdapter.StatusFilterMode.Active
-                    StatusFilterSpinnerAdapter.DOWNLOADING -> TorrentsAdapter.StatusFilterMode.Downloading
-                    StatusFilterSpinnerAdapter.SEEDING -> TorrentsAdapter.StatusFilterMode.Seeding
-                    StatusFilterSpinnerAdapter.PAUSED -> TorrentsAdapter.StatusFilterMode.Paused
-                    StatusFilterSpinnerAdapter.CHECKING -> TorrentsAdapter.StatusFilterMode.Checking
-                    StatusFilterSpinnerAdapter.ERRORED -> TorrentsAdapter.StatusFilterMode.Errored
-                    else -> TorrentsAdapter.StatusFilterMode.All
+                if (previousPosition != -1) {
+                    torrentsAdapter.statusFilterMode = when (position) {
+                        StatusFilterSpinnerAdapter.ALL -> TorrentsAdapter.StatusFilterMode.All
+                        StatusFilterSpinnerAdapter.ACTIVE -> TorrentsAdapter.StatusFilterMode.Active
+                        StatusFilterSpinnerAdapter.DOWNLOADING -> TorrentsAdapter.StatusFilterMode.Downloading
+                        StatusFilterSpinnerAdapter.SEEDING -> TorrentsAdapter.StatusFilterMode.Seeding
+                        StatusFilterSpinnerAdapter.PAUSED -> TorrentsAdapter.StatusFilterMode.Paused
+                        StatusFilterSpinnerAdapter.CHECKING -> TorrentsAdapter.StatusFilterMode.Checking
+                        StatusFilterSpinnerAdapter.ERRORED -> TorrentsAdapter.StatusFilterMode.Errored
+                        else -> TorrentsAdapter.StatusFilterMode.All
+                    }
+                    updatePlaceholder()
                 }
-                updatePlaceholder()
+                previousPosition = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -264,16 +276,20 @@ class MainActivity : BaseActivity() {
         trackersSpinnerAdapter = TrackersSpinnerAdapter(this)
         trackersSpinner.adapter = trackersSpinnerAdapter
         trackersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>,
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                torrentsAdapter.trackerFilter = if (position == 0) {
-                    String()
-                } else {
-                    trackersSpinnerAdapter.trackers[position - 1]
+                if (previousPosition != -1) {
+                    torrentsAdapter.trackerFilter = if (position == 0) {
+                        String()
+                    } else {
+                        trackersSpinnerAdapter.trackers[position - 1]
+                    }
+                    updatePlaceholder()
                 }
-                updatePlaceholder()
+                previousPosition = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -302,9 +318,13 @@ class MainActivity : BaseActivity() {
                 startActivity(Intent(this, ServerEditActivity::class.java))
             }
         } else if (Rpc.connected) {
+            restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
+            if (restoredSearchQuery != null) {
+                torrentsAdapter.filterString = restoredSearchQuery!!
+            }
+            torrentsAdapter.restoreInstanceState(savedInstanceState)
             torrentsAdapter.update()
             torrentsAdapter.selector.restoreInstanceState(savedInstanceState)
-            restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
         }
     }
 
@@ -342,8 +362,8 @@ class MainActivity : BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        torrentsAdapter.saveInstanceState(outState)
         torrentsAdapter.selector.saveInstanceState(outState)
-
         if (menu != null && !searchView.isIconified) {
             outState.putString(SEARCH_QUERY_KEY, searchView.query.toString())
         }
