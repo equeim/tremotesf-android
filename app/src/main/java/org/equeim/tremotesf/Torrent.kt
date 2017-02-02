@@ -135,7 +135,7 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
     var leechers = 0
     var peersLimit by OnChanged(0, PEERS_LIMIT)
 
-    var addedDate = Date(0)
+    var addedDate = 0L
 
     var activityDate = Date(0)
     var doneDate = Date(0)
@@ -315,6 +315,8 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
         errorString = torrentJson["errorString"].asString
 
         peersLimit = torrentJson[PEERS_LIMIT].asInt
+
+        addedDate = torrentJson["addedDate"].asLong * 1000
 
         val activityDateTime = torrentJson["activityDate"].asLong
         activityDate.time = if (activityDateTime > 0) {
