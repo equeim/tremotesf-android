@@ -206,6 +206,7 @@ class MainActivity : BaseActivity() {
         sortSpinner = sidePanelHeader.findViewById(R.id.sort_spinner) as Spinner
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
                                                             R.string.sort)
+        sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>?,
