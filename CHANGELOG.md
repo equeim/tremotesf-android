@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.2.0] - 2017-02-03
 ### Added
 - Changing torrents sort order
 - Added date is now shown on torrent's details tab
