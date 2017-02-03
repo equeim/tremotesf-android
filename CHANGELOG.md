@@ -1,5 +1,16 @@
 # Change Log
 
+## [Unreleased]
+### Added
+- Changing torrents sort order
+
+### Changed
+- Torrents sort mode is saved in settings
+
+### Fixed
+- Torrent status icon with light theme
+- Sort by added date now works
+
 ## [1.1.0] - 2017-02-01
 ### Added
 - Set torrent location
