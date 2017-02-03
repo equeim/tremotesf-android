@@ -121,7 +121,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     private val torrents = Rpc.torrents
-    private lateinit var filteredTorrents: List<Torrent>
+    private var filteredTorrents = listOf<Torrent>()
     private val displayedTorrents = mutableListOf<Torrent>()
 
     val selector = Selector(activity,
