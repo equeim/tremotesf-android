@@ -194,7 +194,6 @@ class MainActivity : BaseActivity() {
                                         position: Int,
                                         id: Long) {
                 Servers.currentServer = serversSpinnerAdapter.servers[position]
-                updateTitle()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
