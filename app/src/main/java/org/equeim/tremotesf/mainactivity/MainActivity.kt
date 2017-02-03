@@ -108,7 +108,7 @@ class MainActivity : BaseActivity() {
                         }
 
                 sortSpinner.setSelection(0)
-                statusSpinner.setSelection(StatusFilterSpinnerAdapter.ALL)
+                statusSpinner.setSelection(0)
 
                 if (menu != null) {
                     searchMenuItem.collapseActionView()
@@ -207,18 +207,14 @@ class MainActivity : BaseActivity() {
                                                             R.string.sort)
         sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                if (previousPosition != -1) {
-                    torrentsAdapter.sortMode = TorrentsAdapter.SortMode.values()[position]
-                    if (Rpc.connected) {
-                        Settings.torrentsSortMode = torrentsAdapter.sortMode
-                    }
+                torrentsAdapter.sortMode = TorrentsAdapter.SortMode.values()[position]
+                if (Rpc.connected) {
+                    Settings.torrentsSortMode = torrentsAdapter.sortMode
                 }
-                previousPosition = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
