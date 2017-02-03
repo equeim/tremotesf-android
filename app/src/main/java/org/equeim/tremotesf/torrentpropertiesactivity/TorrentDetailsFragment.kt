@@ -82,6 +82,7 @@ class TorrentDetailsFragment : Fragment() {
 
             creator_text_view.text = torrent.creator
             creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.creationDate.time)
+            added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate)
 
             if (torrent.comment != comment_text_view.text.toString()) {
                 comment_text_view.text = torrent.comment

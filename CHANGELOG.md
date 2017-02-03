@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Changing torrents sort order
+- Added date is now shown on torrent's details tab
 
 ### Changed
 - Torrents sort mode is saved in settings
