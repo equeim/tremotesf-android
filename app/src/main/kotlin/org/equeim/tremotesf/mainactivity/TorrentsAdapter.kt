@@ -133,7 +133,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
     private val filterPredicate = { torrent: Torrent ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
-        (trackerFilter.isEmpty() || (torrent.trackers.find { tracker -> tracker.site == trackerFilter } != null)) &&
+        (trackerFilter.isEmpty() || (torrent.trackers.find { it.site == trackerFilter } != null)) &&
         torrent.name.contains(filterString, true)
     }
 

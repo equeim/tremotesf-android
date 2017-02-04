@@ -353,7 +353,7 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
         for (jsonElement in trackerStats) {
             val trackerJson = jsonElement.asJsonObject
             val id = trackerJson["id"].asInt
-            var tracker = trackers.find { tracker -> tracker.id == id }
+            var tracker = trackers.find { it.id == id }
             if (tracker == null) {
                 tracker = Tracker(id, context)
             }

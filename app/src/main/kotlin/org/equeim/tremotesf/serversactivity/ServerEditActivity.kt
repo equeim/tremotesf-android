@@ -64,7 +64,7 @@ class ServerEditActivity : BaseActivity() {
         setTheme(Settings.theme)
 
         val serverName = intent.getStringExtra(SERVER)
-        server = Servers.servers.find { server -> server.name == serverName }
+        server = Servers.servers.find { it.name == serverName }
         if (server != null) {
             server!!.copyTo(newServer)
         }
@@ -203,15 +203,17 @@ class ServerEditActivity : BaseActivity() {
             val backgroundUpdateIntervalOk = checkLength(background_update_interval_edit)
             val timeoutOk = checkLength(timeout_edit)
 
+            val nameEditText = name_edit.text.toString()
+
             if (nameOk &&
-                addressOk &&
-                portOk &&
-                apiPathOk &&
-                updateIntervalOk &&
-                backgroundUpdateIntervalOk &&
-                timeoutOk) {
-                if ((name_edit.text.toString() != activity.server?.name) &&
-                    Servers.servers.find { server -> (server.name == name_edit.text.toString()) } != null) {
+                    addressOk &&
+                    portOk &&
+                    apiPathOk &&
+                    updateIntervalOk &&
+                    backgroundUpdateIntervalOk &&
+                    timeoutOk) {
+                if (nameEditText != activity.server?.name &&
+                        Servers.servers.find { it.name == nameEditText } != null) {
                     OverwriteDialogFragment().show(fragmentManager, null)
                 } else {
                     save()

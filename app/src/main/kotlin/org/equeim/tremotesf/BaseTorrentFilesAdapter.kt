@@ -197,7 +197,7 @@ abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) :
             val path = savedInstanceState.getSerializable(BUNDLE_KEY) as List<Int>
             var directory: Directory? = rootDirectory
             for (row in path) {
-                directory = directory!!.children.find { item -> item.row == row } as? Directory
+                directory = directory!!.children.find { it.row == row } as? Directory
                 if (directory == null) {
                     break
                 }

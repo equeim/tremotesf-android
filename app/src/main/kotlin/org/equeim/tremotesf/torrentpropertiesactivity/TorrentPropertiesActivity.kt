@@ -132,7 +132,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                 placeholder.text = getString(R.string.connecting)
             }
             Rpc.Status.Connected -> {
-                torrent = Rpc.torrents.find { torrent -> torrent.hashString == hash }
+                torrent = Rpc.torrents.find { it.hashString == hash }
                 if (torrent == null) {
                     placeholder.text = getString(R.string.torrent_not_found)
                 }
@@ -147,7 +147,7 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     private val rpcUpdatedListener = {
-        torrent = Rpc.torrents.find { torrent -> torrent.hashString == hash }
+        torrent = Rpc.torrents.find { it.hashString == hash }
     }
 
     private var menu: Menu? = null

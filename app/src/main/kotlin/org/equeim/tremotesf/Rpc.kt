@@ -469,7 +469,7 @@ object Rpc {
                                 val torrentJson = jsonElement.asJsonObject
                                 val id = torrentJson["id"].asInt
 
-                                var torrent = torrents.find { torrent -> torrent.id == id }
+                                var torrent = torrents.find { it.id == id }
                                 if (torrent == null) {
                                     torrent = Torrent(id, torrentJson, context)
                                 } else {
@@ -521,7 +521,7 @@ object Rpc {
     "method": "torrent-get"
 }""",
                 { jsonObject ->
-                    val torrent = torrents.find { torrent -> torrent.id == id }
+                    val torrent = torrents.find { it.id == id }
                     if (torrent != null) {
                         val torrentJson = getReplyArguments(jsonObject)
                                 .getAsJsonArray("torrents")[0].asJsonObject
@@ -549,7 +549,7 @@ object Rpc {
     "method": "torrent-get"
 }""",
                 { jsonObject ->
-                    val torrent = torrents.find { torrent -> torrent.id == id }
+                    val torrent = torrents.find { it.id == id }
                     if (torrent != null) {
                         val torrentJson = getReplyArguments(jsonObject)
                                 .getAsJsonArray("torrents")[0].asJsonObject
@@ -608,7 +608,7 @@ object Rpc {
                     { jsonObject ->
                         val arguments = getReplyArguments(jsonObject)
                         val id = arguments["id"].asInt
-                        val torrent = torrents.find { torrent -> torrent.id == id }
+                        val torrent = torrents.find { it.id == id }
                         if (torrent != null) {
                             torrent.fileRenamedListener?.invoke(arguments["path"].asString,
                                                                 arguments["name"].asString)

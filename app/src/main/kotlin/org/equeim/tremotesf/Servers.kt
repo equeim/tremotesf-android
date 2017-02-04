@@ -160,7 +160,7 @@ object Servers {
 
                 if (jsonObject.has(CURRENT)) {
                     val currentServerName = jsonObject[CURRENT].asString
-                    currentServerField = servers.find { server -> server.name == currentServerName }
+                    currentServerField = servers.find { it.name == currentServerName }
                 }
 
                 if (currentServerField == null && servers.isNotEmpty()) {
@@ -203,7 +203,7 @@ object Servers {
     fun addServer(newServer: Server) {
         var currentChanged = false
 
-        val overwriteServer = servers.find { server -> server.name == newServer.name }
+        val overwriteServer = servers.find { it.name == newServer.name }
         if (overwriteServer == null) {
             servers.add(newServer)
             if (servers.size == 1) {
@@ -234,7 +234,7 @@ object Servers {
         val currentChanged = (server == currentServerField) || (newServer.name == currentServerField!!.name)
 
         if (newServer.name != server.name) {
-            val overwriteServer = servers.find { server -> server.name == newServer.name }
+            val overwriteServer = servers.find { it.name == newServer.name }
             if (overwriteServer != null) {
                 servers.remove(overwriteServer)
                 if (overwriteServer == currentServerField) {

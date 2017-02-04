@@ -196,7 +196,7 @@ class TorrentFilesFragment : Fragment() {
         val pathParts = path.split('/').filter(String::isNotEmpty)
         var item: BaseTorrentFilesAdapter.Item? = rootDirectory
         for (part in pathParts) {
-            item = (item as BaseTorrentFilesAdapter.Directory).children.find { item -> item.name == part }
+            item = (item as BaseTorrentFilesAdapter.Directory).children.find { it.name == part }
             if (item == null) {
                 break
             }
@@ -249,8 +249,8 @@ class TorrentFilesFragment : Fragment() {
                             currentDirectory.children.add(file)
                             files.add(file)
                         } else {
-                            var childDirectory = currentDirectory.children.find { item ->
-                                (item is BaseTorrentFilesAdapter.Directory && item.name == part)
+                            var childDirectory = currentDirectory.children.find {
+                                it is BaseTorrentFilesAdapter.Directory && it.name == part
                             }
                             if (childDirectory == null) {
                                 childDirectory = BaseTorrentFilesAdapter.Directory(currentDirectory.children.size,

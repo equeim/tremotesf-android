@@ -146,7 +146,7 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
         for (jsonElement in peerJsons) {
             val peerJson = jsonElement.asJsonObject
             val address = peerJson["address"].asString
-            var peer = peers.find { peer -> peer.address == address }
+            var peer = peers.find { it.address == address }
             if (peer == null) {
                 peer = Peer(peerJson)
             } else {

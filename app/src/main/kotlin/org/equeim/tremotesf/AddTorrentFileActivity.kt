@@ -383,8 +383,8 @@ class AddTorrentFileActivity : BaseActivity() {
                             directory.children.add(file)
                             files.add(file)
                         } else {
-                            var childDirectory = directory.children.find { item ->
-                                item is BaseTorrentFilesAdapter.Directory && item.name == part
+                            var childDirectory = directory.children.find {
+                                it is BaseTorrentFilesAdapter.Directory && it.name == part
                             }
                             if (childDirectory == null) {
                                 childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
