@@ -26,9 +26,7 @@ android {
 
 repositories {
     jcenter()
-    maven {
-        url 'https://github.com/amjjd/amjjd-mvn-repo/raw/master/releases'
-    }
+    maven { url 'https://jitpack.io' }
 }
 
 def support_version = '25.1.1'
@@ -45,6 +43,6 @@ dependencies {
     compile "com.android.support:design:$support_version"
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.google.guava:guava:20.0'
-    compile 'com.amjjd:java-alphanum:0.2'
+    compile 'com.github.amjjd:java-alphanum:0.2'
     compile 'io.github.raindev:benjamin:1.0.0'
 }
