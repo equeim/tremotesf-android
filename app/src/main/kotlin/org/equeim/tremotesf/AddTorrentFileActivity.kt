@@ -19,8 +19,8 @@
 
 package org.equeim.tremotesf
 
-import java.io.EOFException
 import java.io.IOException
+import java.nio.charset.Charset
 
 import android.Manifest
 import android.app.Fragment
@@ -59,8 +59,7 @@ import android.support.v13.app.FragmentPagerAdapter
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
 
-import com.hypirion.bencode.BencodeReader
-import com.hypirion.bencode.BencodeReadException
+import org.benjamin.Bdecoder
 
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -330,14 +329,10 @@ class AddTorrentFileActivity : BaseActivity() {
                         torrentFileData = stream.readBytes()
 
                         try {
-                            @Suppress("UNCHECKED_CAST")
-                            createTree(BencodeReader(torrentFileData.inputStream())
-                                               .readDict()["info"] as Map<String, Any>)
+                            createTree(Bdecoder(Charset.forName("UTF-8"),
+                                                torrentFileData.inputStream()).decodeDict())
                             return MainFragment.Status.Loaded
-                        } catch (error: BencodeReadException) {
-                            Logger.e("error parsing torrent file", error)
-                            return MainFragment.Status.ParsingError
-                        } catch (error: EOFException) {
+                        } catch (error: IllegalStateException) {
                             Logger.e("error parsing torrent file", error)
                             return MainFragment.Status.ParsingError
                         }
@@ -361,15 +356,18 @@ class AddTorrentFileActivity : BaseActivity() {
             }.execute()
         }
 
-        private fun createTree(torrentInfoMap: Map<String, Any>) {
-            if (torrentInfoMap.contains("files")) {
+        private fun createTree(torrentFileMap: Map<String, Any>) {
+            @Suppress("UNCHECKED_CAST")
+            val infoMap = torrentFileMap["info"] as Map<String, Any>
+
+            if (infoMap.contains("files")) {
                 val torrentDirectory = BaseTorrentFilesAdapter.Directory(0,
                                                                          rootDirectory,
-                                                                         torrentInfoMap["name"] as String)
+                                                                         infoMap["name"] as String)
                 rootDirectory.children.add(torrentDirectory)
 
                 @Suppress("UNCHECKED_CAST")
-                val filesMaps = torrentInfoMap["files"] as List<Map<String, Any>>
+                val filesMaps = infoMap["files"] as List<Map<String, Any>>
                 for ((fileIndex, fileMap) in filesMaps.withIndex()) {
                     var directory = torrentDirectory
 
@@ -401,9 +399,9 @@ class AddTorrentFileActivity : BaseActivity() {
             } else {
                 val file = BaseTorrentFilesAdapter.File(0,
                                                         rootDirectory,
-                                                        torrentInfoMap["name"] as String,
+                                                        infoMap["name"] as String,
                                                         0)
-                file.size = torrentInfoMap["length"] as Long
+                file.size = infoMap["length"] as Long
                 rootDirectory.children.add(file)
                 files.add(file)
             }
