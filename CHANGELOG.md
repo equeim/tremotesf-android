@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.1] - 2017-02-04
+### Changed
+- Switched to another Bencode library (slightly faster)
+
 ## [1.2.0] - 2017-02-03
 ### Added
 - Changing torrents sort order
