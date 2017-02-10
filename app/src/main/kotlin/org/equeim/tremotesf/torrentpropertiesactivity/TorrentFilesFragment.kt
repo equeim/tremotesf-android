@@ -29,7 +29,6 @@ import android.view.ViewGroup
 
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -217,7 +216,7 @@ class TorrentFilesFragment : Fragment() {
     }
 
     private fun doResetTree() {
-        rootDirectory.children.clear()
+        rootDirectory.clearChildren()
         files.clear()
         treeCreated = false
         adapter?.reset()
@@ -246,20 +245,19 @@ class TorrentFilesFragment : Fragment() {
                                                                     part,
                                                                     fileIndex)
                             updateFile(file, fileJson, fileStatsJson)
-                            currentDirectory.children.add(file)
+                            currentDirectory.addChild(file)
                             files.add(file)
                         } else {
-                            var childDirectory = currentDirectory.children.find {
-                                it is BaseTorrentFilesAdapter.Directory && it.name == part
-                            }
+                            var childDirectory = currentDirectory.childrenMap[part]
+                                    as BaseTorrentFilesAdapter.Directory?
                             if (childDirectory == null) {
                                 childDirectory = BaseTorrentFilesAdapter.Directory(currentDirectory.children.size,
                                                                                    currentDirectory,
                                                                                    part)
-                                currentDirectory.children.add(childDirectory)
+                                currentDirectory.addChild(childDirectory)
 
                             }
-                            currentDirectory = childDirectory as BaseTorrentFilesAdapter.Directory
+                            currentDirectory = childDirectory
                         }
                     }
                 }

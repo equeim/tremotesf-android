@@ -507,6 +507,17 @@ abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) :
             }
 
         val children = mutableListOf<Item>()
+        val childrenMap = mutableMapOf<String, Item>()
+
+        fun addChild(child: Item) {
+            children.add(child)
+            childrenMap[child.name] = child
+        }
+
+        fun clearChildren() {
+            children.clear()
+            childrenMap.clear()
+        }
 
         val childrenIds: List<Int>
             get() {

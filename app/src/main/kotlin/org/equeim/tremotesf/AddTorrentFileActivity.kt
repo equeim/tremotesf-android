@@ -364,7 +364,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 val torrentDirectory = BaseTorrentFilesAdapter.Directory(0,
                                                                          rootDirectory,
                                                                          infoMap["name"] as String)
-                rootDirectory.children.add(torrentDirectory)
+                rootDirectory.addChild(torrentDirectory)
 
                 @Suppress("UNCHECKED_CAST")
                 val filesMaps = infoMap["files"] as List<Map<String, Any>>
@@ -380,19 +380,18 @@ class AddTorrentFileActivity : BaseActivity() {
                                                                     part,
                                                                     fileIndex)
                             file.size = fileMap["length"] as Long
-                            directory.children.add(file)
+                            directory.addChild(file)
                             files.add(file)
                         } else {
-                            var childDirectory = directory.children.find {
-                                it is BaseTorrentFilesAdapter.Directory && it.name == part
-                            }
+                            var childDirectory = directory.childrenMap[part]
+                                    as BaseTorrentFilesAdapter.Directory?
                             if (childDirectory == null) {
                                 childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
                                                                                    directory,
                                                                                    part)
-                                directory.children.add(childDirectory)
+                                directory.addChild(childDirectory)
                             }
-                            directory = childDirectory as BaseTorrentFilesAdapter.Directory
+                            directory = childDirectory
                         }
                     }
                 }
@@ -402,7 +401,7 @@ class AddTorrentFileActivity : BaseActivity() {
                                                         infoMap["name"] as String,
                                                         0)
                 file.size = infoMap["length"] as Long
-                rootDirectory.children.add(file)
+                rootDirectory.addChild(file)
                 files.add(file)
             }
 
