@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.0] - 2017-02-10
+### Added
+- Fast scroll for torrent's files
+
+### Changed
+- Torrents with large number of files now load a lot faster.
+
 ## [1.2.1] - 2017-02-04
 ### Changed
 - Switched to another Bencode library (slightly faster)
