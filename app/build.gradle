@@ -41,6 +41,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$support_version"
     compile "com.android.support:support-v13:$support_version"
     compile "com.android.support:design:$support_version"
+    compile 'com.github.kittinunf.fuel:fuel-android:1.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.google.guava:guava:20.0'
     compile 'com.github.amjjd:java-alphanum:0.2'

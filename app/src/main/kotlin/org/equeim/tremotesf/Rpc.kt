@@ -19,18 +19,16 @@
 
 package org.equeim.tremotesf
 
-import java.io.IOException
-
 import java.net.HttpURLConnection
-import java.net.Authenticator
 import java.net.MalformedURLException
-import java.net.PasswordAuthentication
 import java.net.SocketTimeoutException
 import java.net.URL
 
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSession
 import javax.net.ssl.TrustManagerFactory
 
 import java.security.KeyFactory
@@ -50,10 +48,13 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.util.Base64
 
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.ResponseDeserializable
+
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
-import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 
 import org.equeim.tremotesf.utils.Logger
@@ -121,6 +122,8 @@ object Rpc {
                 serverSettingsUpdated = false
                 torrentsUpdated = false
                 serverStatsUpdated = false
+
+                activeRequests.forEach { it.cancel() }
                 activeRequests.clear()
             }
 
@@ -204,27 +207,32 @@ object Rpc {
             }
         }
 
-    val torrents = mutableListOf<Torrent>()
-
-    private lateinit var url: URL
+    private lateinit var url: String
     private var timeout = 0
     private var updateInterval = 0L
     private var backgroundUpdateInterval = 0L
-    private var sslContext: SSLContext? = null
+    private var authentication = false
+    private lateinit var username: String
+    private lateinit var password: String
 
+    private val responseDeserializer = object : ResponseDeserializable<JsonObject> {
+        override fun deserialize(content: String): JsonObject? {
+            return gson.fromJson(content, JsonObject::class.java)
+        }
+    }
+    private val activeRequests = mutableListOf<Request>()
     private var sessionId = String()
+
+    private var timer = Timer()
+    private val mainThreadHandler = Handler()
 
     private var rpcVersionChecked = false
     private var serverSettingsUpdated = false
     private var torrentsUpdated = false
     private var serverStatsUpdated = false
 
-    private val activeRequests = mutableListOf<Thread>()
-
-    private var timer = Timer()
-    private val mainThreadHandler = Handler()
-
     val serverSettings = ServerSettings()
+    val torrents = mutableListOf<Torrent>()
     val serverStats = ServerStats()
 
     private val updatedListeners = mutableListOf<() -> Unit>()
@@ -688,14 +696,15 @@ object Rpc {
 
         try {
             val scheme = if (server.httpsEnabled) "https" else "http"
-            url = URL(scheme, server.address, server.port, server.apiPath)
+            url = URL(scheme, server.address, server.port, server.apiPath).toString()
         } catch (error: MalformedURLException) {
             Logger.e("invalid server url", error)
             this.error = Error.InvalidServerUrl
             return
         }
 
-        sslContext = null
+        FuelManager.instance.socketFactory = HttpsURLConnection.getDefaultSSLSocketFactory()
+        FuelManager.instance.hostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier()
         if (server.clientCertificateEnabled || server.selfSignedSertificateEnabled) {
             val certificateFactory = CertificateFactory.getInstance("X.509")
 
@@ -746,125 +755,82 @@ object Rpc {
                     } catch (error: CertificateException) {
                         Logger.e("self-signed certificate parsing error: $error")
                     }
+
+                    FuelManager.instance.hostnameVerifier = object : HostnameVerifier {
+                        private val serverHostname = server.address
+                        override fun verify(hostname: String, session: SSLSession?): Boolean {
+                            return (hostname == serverHostname)
+                        }
+                    }
                 }
             }
 
             if (kmf != null || tmf != null) {
-                sslContext = SSLContext.getInstance("TLS")
-                sslContext!!.init(kmf?.keyManagers, tmf?.trustManagers, null)
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(kmf?.keyManagers, tmf?.trustManagers, null)
+                FuelManager.instance.socketFactory = sslContext.socketFactory
             }
         }
+
+        authentication = server.authentication
+        username = server.username
+        password = server.password
 
         timeout = server.timeout * 1000
         updateInterval = (server.updateInterval * 1000).toLong()
         backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
 
-        if (server.authentication) {
-            Authenticator.setDefault(object : Authenticator() {
-                private val username = server.username
-                private val password = server.password.toCharArray()
-                override fun getPasswordAuthentication(): PasswordAuthentication {
-                    return PasswordAuthentication(username, password)
-                }
-            })
-        } else {
-            Authenticator.setDefault(null)
-        }
-
         connect()
     }
 
     private fun postRequest(data: String, callOnSuccess: ((JsonObject) -> Unit)?) {
-        val thread = object : Thread() {
-            override fun run() {
-                val connection = url.openConnection() as HttpURLConnection
-                if (connection is HttpsURLConnection) {
-                    if (sslContext != null) {
-                        connection.sslSocketFactory = sslContext!!.socketFactory
-                        connection.setHostnameVerifier { hostname, sslSession ->
-                            Logger.d(hostname)
-                            true
-                        }
-                    }
-                }
+        val request = Fuel.post(url)
+                .body(data)
+                .header(Pair(SESSION_ID_HEADER, sessionId))
+                .timeout(timeout)
 
-                connection.setRequestProperty(SESSION_ID_HEADER, sessionId)
-
-                connection.doOutput = true
-
-                connection.connectTimeout = timeout
-                connection.readTimeout = timeout
-
-                try {
-                    val outputStream = connection.outputStream
-                    outputStream.write(data.toByteArray())
-                    outputStream.flush()
-                    outputStream.close()
-
-                    when (connection.responseCode) {
-                        HttpURLConnection.HTTP_OK -> {
-                            if ((callOnSuccess != null) && (this in activeRequests)) {
-                                val inputStream = connection.inputStream
-                                try {
-                                    val jsonObject = JsonParser().parse(inputStream.reader()).asJsonObject
-                                    mainThreadHandler.post { callOnSuccess(jsonObject) }
-                                } catch (error: JsonParseException) {
-                                    Logger.e("parsing error: $error")
-                                    mainThreadHandler.post {
-                                        this@Rpc.error = Error.ParsingError
-                                        status = Status.Disconnected
-                                    }
-                                } catch (error: JsonSyntaxException) {
-                                    Logger.e("parsing error: $error")
-                                    mainThreadHandler.post {
-                                        this@Rpc.error = Error.ParsingError
-                                        status = Status.Disconnected
-                                    }
-                                } finally {
-                                    inputStream.close()
-                                }
-                            }
-                        }
-                        HttpURLConnection.HTTP_CONFLICT -> {
-                            val id: String? = connection.getHeaderField(SESSION_ID_HEADER)
-                            if (id == null) {
-                                Logger.e("connection error: ${connection.responseCode} ${connection.responseMessage}")
-                                mainThreadHandler.post {
-                                    error = Error.ConnectionError
-                                    status = Status.Disconnected
-                                }
-                            } else {
-                                sessionId = id
-                                mainThreadHandler.post { postRequest(data, callOnSuccess) }
-                            }
-                        }
-                        else -> {
-                            Logger.e("connection error: ${connection.responseCode} ${connection.responseMessage}")
-                            mainThreadHandler.post {
-                                error = Error.ConnectionError
-                                status = Status.Disconnected
-                            }
-                        }
-                    }
-                } catch (error: SocketTimeoutException) {
-                    Logger.e("connection timed out: $error")
-                    mainThreadHandler.post {
-                        this@Rpc.error = Error.TimedOut
-                        status = Status.Disconnected
-                    }
-                } catch (error: IOException) {
-                    Logger.e("connection error: $error")
-                    mainThreadHandler.post {
-                        this@Rpc.error = Error.ConnectionError
-                        status = Status.Disconnected
-                    }
-                } finally {
-                    connection.disconnect()
-                }
-                mainThreadHandler.post { activeRequests.remove(this) }
-            }
+        if (authentication) {
+            request.authenticate(username, password)
         }
-        thread.start()
-        activeRequests.add(thread)
+
+        request.responseObject(responseDeserializer,
+                               { request, response, result ->
+                                   val (jsonObject, error) = result
+                                   if (error == null) {
+                                       callOnSuccess?.invoke(jsonObject!!)
+                                   } else {
+                                       if (response.httpStatusCode == HttpURLConnection.HTTP_CONFLICT) {
+                                           val headers = response.httpResponseHeaders
+                                           if (headers.containsKey(SESSION_ID_HEADER)) {
+                                               sessionId = headers[SESSION_ID_HEADER]!!.first()
+                                               postRequest(data, callOnSuccess)
+                                           } else {
+                                               Logger.e("no session id header")
+                                               this@Rpc.error = Error.ConnectionError
+                                               status = Status.Disconnected
+                                           }
+                                       } else {
+                                           when (error.exception) {
+                                               is JsonSyntaxException -> {
+                                                   Logger.e("parsing error: ${error.exception}")
+                                                   this@Rpc.error = Error.ParsingError
+                                               }
+                                               is SocketTimeoutException -> {
+                                                   Logger.e("connection timed out: ${error.exception}")
+                                                   this@Rpc.error = Error.TimedOut
+                                               }
+                                               else -> {
+                                                   Logger.e("connection error: ${error.exception}")
+                                                   this@Rpc.error = Error.ConnectionError
+                                               }
+                                           }
+                                           status = Status.Disconnected
+                                       }
+                                   }
+
+                                   activeRequests.remove(request)
+                               })
+
+        activeRequests.add(request)
     }
 }
