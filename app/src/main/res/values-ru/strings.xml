@@ -318,4 +318,6 @@
 
     <string name="rename">Переименовать</string>
     <string name="file_name">Имя файла</string>
+
+    <string name="authentication_error">Ошибка аутентификации</string>
 </resources>

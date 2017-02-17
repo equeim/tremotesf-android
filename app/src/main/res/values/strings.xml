@@ -13,6 +13,7 @@
 
     <string name="timed_out">Connection timed out</string>
     <string name="connection_error">Connection error</string>
+    <string name="authentication_error">Authentication error</string>
     <string name="parsing_error">Parsing error</string>
     <string name="server_is_too_new">Server\'s version is too new</string>
     <string name="server_is_too_old">Server\'s version is too old</string>

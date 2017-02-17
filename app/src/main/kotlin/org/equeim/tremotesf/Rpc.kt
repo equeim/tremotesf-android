@@ -92,6 +92,7 @@ object Rpc {
         InvalidServerUrl,
         TimedOut,
         ConnectionError,
+        Authentication,
         ParsingError,
         ServerIsTooNew,
         ServerIsTooOld,
@@ -141,6 +142,7 @@ object Rpc {
                     Error.InvalidServerUrl -> context.getString(R.string.invalid_server_url)
                     Error.TimedOut -> context.getString(R.string.timed_out)
                     Error.ConnectionError -> context.getString(R.string.connection_error)
+                    Error.Authentication -> context.getString(R.string.authentication_error)
                     Error.ParsingError -> context.getString(R.string.parsing_error)
                     Error.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
                     Error.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
@@ -799,32 +801,40 @@ object Rpc {
                                    if (error == null) {
                                        callOnSuccess?.invoke(jsonObject!!)
                                    } else {
-                                       if (response.httpStatusCode == HttpURLConnection.HTTP_CONFLICT) {
-                                           val headers = response.httpResponseHeaders
-                                           if (headers.containsKey(SESSION_ID_HEADER)) {
-                                               sessionId = headers[SESSION_ID_HEADER]!!.first()
-                                               postRequest(data, callOnSuccess)
-                                           } else {
-                                               Logger.e("no session id header")
-                                               this@Rpc.error = Error.ConnectionError
+                                       when (response.httpStatusCode) {
+                                           HttpURLConnection.HTTP_CONFLICT -> {
+                                               val headers = response.httpResponseHeaders
+                                               if (headers.containsKey(SESSION_ID_HEADER)) {
+                                                   sessionId = headers[SESSION_ID_HEADER]!!.first()
+                                                   postRequest(data, callOnSuccess)
+                                               } else {
+                                                   Logger.e("no session id header")
+                                                   this.error = Error.ConnectionError
+                                                   status = Status.Disconnected
+                                               }
+                                           }
+                                           HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                                               Logger.e("authentication error")
+                                               this.error = Error.Authentication
                                                status = Status.Disconnected
                                            }
-                                       } else {
-                                           when (error.exception) {
-                                               is JsonSyntaxException -> {
-                                                   Logger.e("parsing error: ${error.exception}")
-                                                   this@Rpc.error = Error.ParsingError
+                                           else -> {
+                                               when (error.exception) {
+                                                   is JsonSyntaxException -> {
+                                                       Logger.e("parsing error: ${error.exception}")
+                                                       this.error = Error.ParsingError
+                                                   }
+                                                   is SocketTimeoutException -> {
+                                                       Logger.e("connection timed out: ${error.exception}")
+                                                       this.error = Error.TimedOut
+                                                   }
+                                                   else -> {
+                                                       Logger.e("connection error: ${error.exception}")
+                                                       this.error = Error.ConnectionError
+                                                   }
                                                }
-                                               is SocketTimeoutException -> {
-                                                   Logger.e("connection timed out: ${error.exception}")
-                                                   this@Rpc.error = Error.TimedOut
-                                               }
-                                               else -> {
-                                                   Logger.e("connection error: ${error.exception}")
-                                                   this@Rpc.error = Error.ConnectionError
-                                               }
+                                               status = Status.Disconnected
                                            }
-                                           status = Status.Disconnected
                                        }
                                    }
 
