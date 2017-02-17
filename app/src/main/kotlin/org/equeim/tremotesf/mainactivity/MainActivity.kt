@@ -68,6 +68,7 @@ import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.main_activity.*
+import org.equeim.tremotesf.AboutActivity
 
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
@@ -174,8 +175,9 @@ class MainActivity : BaseActivity() {
         side_panel.setNavigationItemSelectedListener { menuItem ->
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {
-                R.id.settings -> startActivity(Intent(application, SettingsActivity::class.java))
-                R.id.servers -> startActivity(Intent(application, ServersActivity::class.java))
+                R.id.settings -> startActivity(Intent(this, SettingsActivity::class.java))
+                R.id.servers -> startActivity(Intent(this, ServersActivity::class.java))
+                R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
                 R.id.quit -> Utils.shutdownApp(this)
                 else -> return@setNavigationItemSelectedListener false
             }

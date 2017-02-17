@@ -320,4 +320,9 @@
     <string name="file_name">Имя файла</string>
 
     <string name="authentication_error">Ошибка аутентификации</string>
+
+    <string name="about">О программе</string>
+    <string name="authors">Авторы</string>
+    <string name="translators">Переводчики</string>
+    <string name="license">Лицензия</string>
 </resources>

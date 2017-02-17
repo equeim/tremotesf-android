@@ -399,4 +399,11 @@
     <string name="rename">Rename</string>
 
     <string name="file_name">File name</string>
+
+    <string name="about">About</string>
+    <string name="authors">Authors</string>
+    <string name="translators">Translators</string>
+    <string name="license">License</string>
+
+    <string name="about_text">\u00a9 2017 Alexey Rochev &lt;equeim@gmail.com&gt;\n\nhttps://github.com/equeim/tremotesf-android</string>
 </resources>

@@ -121,6 +121,13 @@
                 android:value=".mainactivity.MainActivity"/>
         </activity>
 
+        <activity
+            android:name=".AboutActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".mainactivity.MainActivity"/>
+        </activity>
+
         <service android:name=".BackgroundService"/>
     </application>
 </manifest>
