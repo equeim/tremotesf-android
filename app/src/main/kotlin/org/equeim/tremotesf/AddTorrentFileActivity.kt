@@ -19,9 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.io.IOException
-import java.nio.charset.Charset
-
 import android.Manifest
 import android.app.Fragment
 
@@ -30,7 +27,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 
@@ -59,11 +55,8 @@ import android.support.v13.app.FragmentPagerAdapter
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
 
-import org.benjamin.Bdecoder
-
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
@@ -99,34 +92,19 @@ class AddTorrentFileActivity : BaseActivity() {
     }
 
     class MainFragment : Fragment() {
-        enum class Status {
-            None,
-            PermissionError,
-            Loading,
-            FileIsTooLarge,
-            ReadingError,
-            ParsingError,
-            Loaded
-        }
-
         private val activity: AddTorrentFileActivity
             get() {
                 return getActivity() as AddTorrentFileActivity
             }
 
         private var doneMenuItem: MenuItem? = null
+        private var pagerAdapter: PagerAdapter? = null
+        private var snackbar: Snackbar? = null
 
-        var status = Status.None
+        lateinit var torrentFileParser: TorrentFileParser
             private set
 
-        private lateinit var torrentFileData: ByteArray
-
-        val rootDirectory = BaseTorrentFilesAdapter.Directory()
-        private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
-
-        private var pagerAdapter: PagerAdapter? = null
-
-        private var snackbar: Snackbar? = null
+        private var noPermission = false
 
         private val rpcStatusListener = { status: Rpc.Status ->
             updateView()
@@ -137,12 +115,14 @@ class AddTorrentFileActivity : BaseActivity() {
             retainInstance = true
             setHasOptionsMenu(true)
 
+            torrentFileParser = TorrentFileParser()
+
             if (activity.intent.scheme == ContentResolver.SCHEME_FILE &&
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                     activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                readFile()
+                torrentFileParser.load(activity.intent.data, activity.applicationContext)
             }
         }
 
@@ -150,9 +130,9 @@ class AddTorrentFileActivity : BaseActivity() {
                                                 permissions: Array<out String>?,
                                                 grantResults: IntArray) {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-                readFile()
+                torrentFileParser.load(activity.intent.data, activity.applicationContext)
             } else {
-                status = Status.PermissionError
+                noPermission = true
                 updateView()
             }
         }
@@ -188,6 +168,13 @@ class AddTorrentFileActivity : BaseActivity() {
             updateView()
 
             Rpc.addStatusListener(rpcStatusListener)
+
+            torrentFileParser.statusListener = { status ->
+                updateView()
+                if (status == TorrentFileParser.Status.Loaded) {
+                    pagerAdapter?.filesFragment?.treeCreated()
+                }
+            }
         }
 
         override fun onDestroyView() {
@@ -196,12 +183,13 @@ class AddTorrentFileActivity : BaseActivity() {
             pagerAdapter = null
             snackbar = null
             Rpc.removeStatusListener(rpcStatusListener)
+            torrentFileParser.statusListener = null
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
             inflater.inflate(R.menu.add_torrent_activity_menu, menu)
             doneMenuItem = menu.findItem(R.id.done)
-            doneMenuItem!!.isVisible = (status == MainFragment.Status.Loaded && Rpc.connected)
+            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.connected)
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -210,8 +198,8 @@ class AddTorrentFileActivity : BaseActivity() {
             }
             val infoFragment = pagerAdapter!!.infoFragment!!
             if (infoFragment.check()) {
-                val filesData = getFilesData()
-                Rpc.addTorrentFile(torrentFileData,
+                val filesData = torrentFileParser.getFilesData()
+                Rpc.addTorrentFile(torrentFileParser.fileData,
                                    infoFragment.download_directory_edit.text.toString(),
                                    filesData.wantedFiles,
                                    filesData.unwantedFiles,
@@ -225,7 +213,6 @@ class AddTorrentFileActivity : BaseActivity() {
                                        else -> Torrent.Priority.NORMAL
                                    },
                                    infoFragment.start_downloading_check_box.isChecked)
-
                 activity.finish()
                 return true
             }
@@ -237,12 +224,12 @@ class AddTorrentFileActivity : BaseActivity() {
                 return
             }
 
-            if (Rpc.connected && status == Status.Loaded) {
+            if (Rpc.connected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                 (toolbar!!.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                (toolbar as Toolbar).subtitle = rootDirectory.children.first().name
+                (toolbar as Toolbar).subtitle = torrentFileParser.torrentName
                 doneMenuItem?.isVisible = true
 
                 tab_layout.visibility = View.VISIBLE
@@ -250,21 +237,22 @@ class AddTorrentFileActivity : BaseActivity() {
 
                 placeholder_layout.visibility = View.GONE
             } else {
-                placeholder.text = if (status == Status.Loaded) {
-                    if (Rpc.connected) null else Rpc.statusString
+                placeholder.text = if (noPermission) {
+                    getString(R.string.storage_permission_error)
+                } else if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
+                    Rpc.statusString
                 } else {
-                    when (status) {
-                        Status.PermissionError -> getString(R.string.storage_permission_error)
-                        Status.Loading -> getString(R.string.loading)
-                        Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
-                        Status.ReadingError -> getString(R.string.file_reading_error)
-                        Status.ParsingError -> getString(R.string.file_parsing_error)
+                    when (torrentFileParser.status) {
+                        TorrentFileParser.Status.Loading -> getString(R.string.loading)
+                        TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
+                        TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
+                        TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
                         else -> null
                     }
                 }
 
-                progress_bar.visibility = if (status == Status.Loading ||
-                        (Rpc.status == Rpc.Status.Connecting && status == Status.Loaded)) {
+                progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
+                        (Rpc.status == Rpc.Status.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -286,7 +274,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 pager.currentItem = 0
                 placeholder.visibility = View.VISIBLE
 
-                if (status == Status.Loaded) {
+                if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                     when (Rpc.status) {
                         Rpc.Status.Disconnected -> {
                             snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
@@ -309,138 +297,6 @@ class AddTorrentFileActivity : BaseActivity() {
                     }
                 }
             }
-        }
-
-        private fun readFile() {
-            status = Status.Loading
-            updateView()
-
-            object : AsyncTask<Any, Any, Status>() {
-                override fun doInBackground(vararg params: Any?): MainFragment.Status {
-                    val stream = activity.contentResolver.openInputStream(activity.intent.data)
-                    try {
-                        val size = stream.available()
-
-                        if (size > 10 * 1024 * 1024) {
-                            Logger.e("torrent file is too large")
-                            return MainFragment.Status.FileIsTooLarge
-                        }
-
-                        torrentFileData = stream.readBytes()
-
-                        try {
-                            createTree(Bdecoder(Charset.forName("UTF-8"),
-                                                torrentFileData.inputStream()).decodeDict())
-                            return MainFragment.Status.Loaded
-                        } catch (error: IllegalStateException) {
-                            Logger.e("error parsing torrent file", error)
-                            return MainFragment.Status.ParsingError
-                        }
-                    } catch (error: IOException) {
-                        Logger.e("error reading torrent file", error)
-                        return MainFragment.Status.ReadingError
-                    } catch (error: SecurityException) {
-                        Logger.e("error reading torrent file", error)
-                        return MainFragment.Status.ReadingError
-                    } finally {
-                        stream.close()
-                    }
-                }
-
-                override fun onPostExecute(result: MainFragment.Status) {
-                    this@MainFragment.status = result
-                    updateView()
-                    pagerAdapter?.filesFragment?.treeCreated()
-
-                }
-            }.execute()
-        }
-
-        private fun createTree(torrentFileMap: Map<String, Any>) {
-            @Suppress("UNCHECKED_CAST")
-            val infoMap = torrentFileMap["info"] as Map<String, Any>
-
-            if (infoMap.contains("files")) {
-                val torrentDirectory = BaseTorrentFilesAdapter.Directory(0,
-                                                                         rootDirectory,
-                                                                         infoMap["name"] as String)
-                rootDirectory.addChild(torrentDirectory)
-
-                @Suppress("UNCHECKED_CAST")
-                val filesMaps = infoMap["files"] as List<Map<String, Any>>
-                for ((fileIndex, fileMap) in filesMaps.withIndex()) {
-                    var directory = torrentDirectory
-
-                    @Suppress("UNCHECKED_CAST")
-                    val pathParts = fileMap["path"] as List<String>
-                    for ((partIndex, part) in pathParts.withIndex()) {
-                        if (partIndex == pathParts.lastIndex) {
-                            val file = BaseTorrentFilesAdapter.File(directory.children.size,
-                                                                    directory,
-                                                                    part,
-                                                                    fileIndex)
-                            file.size = fileMap["length"] as Long
-                            directory.addChild(file)
-                            files.add(file)
-                        } else {
-                            var childDirectory = directory.childrenMap[part]
-                                    as BaseTorrentFilesAdapter.Directory?
-                            if (childDirectory == null) {
-                                childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
-                                                                                   directory,
-                                                                                   part)
-                                directory.addChild(childDirectory)
-                            }
-                            directory = childDirectory
-                        }
-                    }
-                }
-            } else {
-                val file = BaseTorrentFilesAdapter.File(0,
-                                                        rootDirectory,
-                                                        infoMap["name"] as String,
-                                                        0)
-                file.size = infoMap["length"] as Long
-                rootDirectory.addChild(file)
-                files.add(file)
-            }
-
-            rootDirectory.children.first().setWanted(true)
-        }
-
-        private class FilesData(val wantedFiles: List<Int>,
-                                val unwantedFiles: List<Int>,
-                                val lowPriorityFiles: List<Int>,
-                                val normalPriorityFiles: List<Int>,
-                                val highPriorityFiles: List<Int>)
-
-        private fun getFilesData(): FilesData {
-            val wantedFiles = mutableListOf<Int>()
-            val unwantedFiles = mutableListOf<Int>()
-            val lowPriorityFiles = mutableListOf<Int>()
-            val normalPriorityFiles = mutableListOf<Int>()
-            val highPriorityFiles = mutableListOf<Int>()
-
-            for (file in files) {
-                val id = file.id
-                if (file.wantedState == BaseTorrentFilesAdapter.Item.WantedState.Wanted) {
-                    wantedFiles.add(id)
-                } else {
-                    unwantedFiles.add(id)
-                }
-                when (file.priority) {
-                    BaseTorrentFilesAdapter.Item.Priority.Low -> lowPriorityFiles
-                    BaseTorrentFilesAdapter.Item.Priority.Normal -> normalPriorityFiles
-                    BaseTorrentFilesAdapter.Item.Priority.High -> highPriorityFiles
-                    BaseTorrentFilesAdapter.Item.Priority.Mixed -> normalPriorityFiles
-                }.add(id)
-            }
-
-            return FilesData(wantedFiles,
-                             unwantedFiles,
-                             lowPriorityFiles,
-                             normalPriorityFiles,
-                             highPriorityFiles)
         }
 
         class PagerAdapter(private val mainFragment: Fragment) : FragmentPagerAdapter(
@@ -535,8 +391,10 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
+            val parser = mainFragment.torrentFileParser
+
             adapter = Adapter(activity as AppCompatActivity,
-                              mainFragment.rootDirectory)
+                              parser.rootDirectory)
 
             files_view.adapter = adapter
             files_view.layoutManager = LinearLayoutManager(activity)
@@ -544,7 +402,7 @@ class AddTorrentFileActivity : BaseActivity() {
                                                                DividerItemDecoration.VERTICAL))
             files_view.itemAnimator = null
 
-            if (mainFragment.status == MainFragment.Status.Loaded) {
+            if (parser.status == TorrentFileParser.Status.Loaded) {
                 adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
             }
         }
