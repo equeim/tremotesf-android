@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.4.0] - 2017-02-17
+### Added
+- Show authentication error
+- "About" activity
+
 ## [1.3.0] - 2017-02-10
 ### Added
 - Fast scroll for torrent's files
