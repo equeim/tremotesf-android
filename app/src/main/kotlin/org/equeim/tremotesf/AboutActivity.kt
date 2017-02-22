@@ -21,17 +21,23 @@ package org.equeim.tremotesf
 
 import android.app.Fragment
 import android.os.Bundle
-import android.support.v13.app.FragmentPagerAdapter
-import android.support.v7.widget.Toolbar
 import android.text.Html
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
+import android.webkit.WebView
+
+import android.support.v7.widget.Toolbar
+import android.support.v13.app.FragmentPagerAdapter
 
 import kotlinx.android.synthetic.main.about_activity.*
 import kotlinx.android.synthetic.main.about_activity_pager_fragment.*
 
 class AboutActivity : BaseActivity() {
+    private lateinit var licenseFragmentView: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,6 +52,13 @@ class AboutActivity : BaseActivity() {
 
         pager.adapter = PagerAdapter()
         tab_layout.setupWithViewPager(pager)
+
+        licenseFragmentView = layoutInflater.inflate(R.layout.about_activity_license_fragment, null)
+        val inputStream = resources.openRawResource(R.raw.license)
+        (licenseFragmentView.findViewById(R.id.web_view) as WebView).loadData(inputStream.reader().readText(),
+                                                                              "text/html",
+                                                                              null)
+        inputStream.close()
     }
 
     private inner class PagerAdapter : FragmentPagerAdapter(fragmentManager) {
@@ -119,14 +132,7 @@ class AboutActivity : BaseActivity() {
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
-        }
-
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            val inputStream = resources.openRawResource(R.raw.license)
-            text_view.text = inputStream.reader().readText()
-            inputStream.close()
+            return (activity as AboutActivity).licenseFragmentView
         }
     }
 }
