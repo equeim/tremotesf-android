@@ -29,7 +29,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-def support_version = '25.1.1'
+def support_version = '25.2.0'
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
