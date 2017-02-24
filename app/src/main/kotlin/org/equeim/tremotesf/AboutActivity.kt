@@ -94,7 +94,9 @@ class AboutActivity : BaseActivity() {
 
         override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            text_view.text = getString(R.string.about_text)
+            val inputStream = resources.openRawResource(R.raw.about)
+            text_view.text = Html.fromHtml(inputStream.reader().readText())
+            inputStream.close()
         }
     }
 

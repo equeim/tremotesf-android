@@ -1,6 +1,0 @@
-<resources>
-    <string name="prefs_dark_theme_title">Использовать темную тему</string>
-    <string name="prefs_background_service_title">Включить фоновый сервис</string>
-    <string name="prefs_background_service_summary">Сервис останавливается, когда приложение удаляется из списка недавних, если постоянное уведомление выключено</string>
-    <string name="prefs_persistent_notification_title">Показывать постоянное уведомление</string>
-</resources>

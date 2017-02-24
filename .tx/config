@@ -8,3 +8,14 @@ source_file = app/src/main/res/values/strings.xml
 source_lang = en
 type = ANDROID
 
+[tremotesf-android.about]
+file_filter = app/src/main/res/raw-<lang>/about.html
+source_file = app/src/main/res/raw/about.html
+source_lang = en
+type = HTML
+
+[tremotesf-android.authors]
+file_filter = app/src/main/res/raw-<lang>/authors.html
+source_file = app/src/main/res/raw/authors.html
+source_lang = en
+type = HTML
