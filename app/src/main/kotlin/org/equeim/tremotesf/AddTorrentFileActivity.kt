@@ -349,7 +349,7 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority),
+            priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                      R.string.priority)
 
             if (savedInstanceState == null) {

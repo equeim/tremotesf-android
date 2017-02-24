@@ -146,7 +146,7 @@
     <string name="timeout">Таймаут, с</string>
     <string name="to">до</string>
     <string name="torrent_add_error">Ошибка добавления торрента</string>
-    <string name="torrent_downloading">Загружается</string>
+    <string name="torrent_downloading_stalled">Загружается</string>
     <string name="torrent_duplicate">Этот торрент уже добавлен</string>
     <string name="torrent_finished">Торрент завершен</string>
     <string name="torrent_link">Ссылка на торрент</string>
@@ -155,7 +155,7 @@
     <string name="torrent_queued">В очереди</string>
     <string name="torrent_queued_for_checking">В очереди на проверку</string>
     <string name="torrent_removed">Торрент удален</string>
-    <string name="torrent_seeding">Раздается</string>
+    <string name="torrent_seeding_stalled">Раздается</string>
     <string name="total">Всего</string>
     <string name="total_size">Общий размер</string>
     <string name="tracker_active">Активен</string>
@@ -243,71 +243,82 @@
         <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> торрент выбран</item>
         <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> торрента выбраны</item>
         <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> торрентов выбраны</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> торрентов выбраны</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> файл выбран</item>
         <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> файла выбраны</item>
         <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> файлов выбраны</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> файлов выбраны</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> трекер выбран</item>
         <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> трекера выбраны</item>
         <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> трекеров выбраны</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> трекеров выбраны</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> пир</item>
         <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> пира</item>
         <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> пиров</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> пиров</item>
     </plurals>
 
     <plurals name="servers_selected">
         <item quantity="one"><xliff:g example="1" id="count">%d</xliff:g> сервер выбран</item>
         <item quantity="few"><xliff:g example="10" id="count">%d</xliff:g> сервера выбраны</item>
         <item quantity="many"><xliff:g example="10" id="count">%d</xliff:g> серверов выбраны</item>
+        <item quantity="other"><xliff:g example="10" id="count">%d</xliff:g> серверов выбраны</item>
     </plurals>
 
     <plurals name="remove_servers_message">
         <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный сервер?</item>
         <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных сервера?</item>
         <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных серверов?</item>
+        <item quantity="other">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных серверов?</item>
     </plurals>
 
     <plurals name="started_times">
         <item quantity="one">Запущен <xliff:g example="1" id="count">%d</xliff:g> раз</item>
         <item quantity="few">Запущен <xliff:g example="1" id="count">%d</xliff:g> раза</item>
         <item quantity="many">Запущен <xliff:g example="1" id="count">%d</xliff:g> раз</item>
+        <item quantity="other">Запущен <xliff:g example="1" id="count">%d</xliff:g> раз</item>
     </plurals>
 
     <plurals name="remove_torrents_message">
         <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный торрент?</item>
         <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных торрента?</item>
         <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных торрентов?</item>
+        <item quantity="other">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных торрентов?</item>
     </plurals>
 
     <plurals name="torrent_downloading">
         <item quantity="one">Загружается от <xliff:g example="1" id="count">%d</xliff:g> пира</item>
         <item quantity="few">Загружается от <xliff:g example="10" id="count">%d</xliff:g> пиров</item>
         <item quantity="many">Загружается от <xliff:g example="10" id="count">%d</xliff:g> пиров</item>
+        <item quantity="other">Загружается от <xliff:g example="10" id="count">%d</xliff:g> пиров</item>
     </plurals>
 
     <plurals name="torrent_seeding">
         <item quantity="one">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пиру</item>
         <item quantity="few">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пирам</item>
         <item quantity="many">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пирам</item>
+        <item quantity="other">Раздается к <xliff:g example="1" id="count">%d</xliff:g> пирам</item>
     </plurals>
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранный трекер?</item>
         <item quantity="few">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных трекера?</item>
         <item quantity="many">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных трекеров?</item>
+        <item quantity="other">Вы уверены, что хотите удалить <xliff:g example="10" id="count">%d</xliff:g> выбранных трекеров?</item>
     </plurals>
 
     <string name="remove_torrent_message">Вы уверены, что хотите удалить этот торрент?</string>
 
-    <string-array name="encryption">
+    <string-array name="encryption_items">
         <item>Разрешить</item>
         <item>Предпочитать</item>
         <item>Требовать</item>

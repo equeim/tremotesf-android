@@ -90,11 +90,11 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
                 Status.Downloading -> context.resources.getQuantityString(R.plurals.torrent_downloading,
                                                                           seeders,
                                                                           seeders)
-                Status.StalledDownloading -> context.getString(R.string.torrent_downloading)
+                Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
                 Status.Seeding -> context.resources.getQuantityString(R.plurals.torrent_seeding,
                                                                       leechers,
                                                                       leechers)
-                Status.StalledSeeding -> context.getString(R.string.torrent_seeding)
+                Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
                 Status.QueuedForDownloading,
                 Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
                 Status.Checking -> context.getString(R.string.torrent_checking,

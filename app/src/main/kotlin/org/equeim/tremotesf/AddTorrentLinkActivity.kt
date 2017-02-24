@@ -54,7 +54,7 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority),
+        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)
 
         if (savedInstanceState == null) {

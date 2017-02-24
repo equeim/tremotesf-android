@@ -80,7 +80,7 @@ class NetworkFragment : Fragment() {
             Rpc.serverSettings.portForwardingEnabled = checked
         }
 
-        encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption),
+        encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption_items),
                                                                    R.string.encryption)
         encryption_spinner.setSelection(when (Rpc.serverSettings.encryption) {
                                             ServerSettings.Encryption.ALLOWED -> 0

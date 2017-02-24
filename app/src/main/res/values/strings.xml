@@ -147,7 +147,7 @@
     <string name="download_noun">Download</string>
     <string name="upload_noun">Upload</string>
 
-    <string-array name="priority">
+    <string-array name="priority_items" translatable="false">
         <item>@string/high_priority</item>
         <item>@string/normal_priority</item>
         <item>@string/low_pririty</item>
@@ -236,7 +236,7 @@
     <string name="server_settings_speed">Speed</string>
     <string name="server_settings_network">Network</string>
 
-    <string-array name="server_settings">
+    <string-array name="server_settings_items" translatable="false">
         <item>@string/server_settings_downloading</item>
         <item>@string/server_settings_seeding</item>
         <item>@string/server_settings_queue</item>
@@ -267,7 +267,7 @@
     <string name="random_port">Random port on Transmission start</string>
     <string name="port_forwarding">Enable port forwarding</string>
     <string name="encryption">Encryption</string>
-    <string-array name="encryption">
+    <string-array name="encryption_items">
         <item>Allow</item>
         <item>Prefer</item>
         <item>Require</item>
@@ -282,7 +282,7 @@
 
     <string name="open_side_panel">Open side panel</string>
     <string name="close_side_panel">Close side panel</string>
-    <string-array name="sort_spinner_items">
+    <string-array name="sort_spinner_items" translatable="false">
         <item>@string/name</item>
         <item>@string/status</item>
         <item>@string/progress</item>
@@ -350,12 +350,12 @@
         <item quantity="one">Downloading from <xliff:g example="1" id="count">%d</xliff:g> peer</item>
         <item quantity="other">Downloading from <xliff:g example="10" id="count">%d</xliff:g> peers</item>
     </plurals>
-    <string name="torrent_downloading">Downloading</string>
+    <string name="torrent_downloading_stalled">Downloading</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Seeding to <xliff:g example="1" id="count">%d</xliff:g> peer</item>
         <item quantity="other">Seeding to <xliff:g example="10" id="count">%d</xliff:g> peers</item>
     </plurals>
-    <string name="torrent_seeding">Seeding</string>
+    <string name="torrent_seeding_stalled">Seeding</string>
     <string name="torrent_queued">Queued</string>
     <string name="torrent_checking">Checking (<xliff:g example="33.3" id="percent_number">%s</xliff:g>%%)</string>
     <string name="torrent_queued_for_checking">Queued for checking</string>

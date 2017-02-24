@@ -167,7 +167,7 @@ class ServerSettingsActivity : BaseActivity() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            items = resources.getStringArray(R.array.server_settings)
+            items = resources.getStringArray(R.array.server_settings_items)
             listAdapter = ArrayAdapter(activity,
                                        R.layout.server_settings_activity_main_fragment_list_item,
                                        items)
