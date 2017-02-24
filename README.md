@@ -24,5 +24,8 @@ Android remote GUI for transmission-daemon.
 - Can connect to servers with self-signed certificates (you need to add certificate to server settings)
 - Client certificate authentication
 
+## Translations
+Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
+
 ## Screenshots
 ![](http://i.imgur.com/tsmKQIV.png) ![](http://i.imgur.com/HMucsni.png) ![](http://i.imgur.com/EXc9CG0.png)
