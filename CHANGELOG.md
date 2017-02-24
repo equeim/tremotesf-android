@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.4.1] - 2017-02-25
+### Changed
+- License is now shown in WebView
+- Translations are now managed on Transifex.
+
 ## [1.4.0] - 2017-02-17
 ### Added
 - Show authentication error
