@@ -292,8 +292,8 @@ class ServerEditActivity : BaseActivity() {
 
             if (savedInstanceState == null) {
                 val newServer = activity.newServer
-                self_signed_certificate_check_box.isChecked = newServer.selfSignedSertificateEnabled
-                self_signed_certificate_edit.setText(newServer.selfSignedSertificate)
+                self_signed_certificate_check_box.isChecked = newServer.selfSignedCertificateEnabled
+                self_signed_certificate_edit.setText(newServer.selfSignedCertificate)
                 client_certificate_check_box.isChecked = newServer.clientCertificateEnabled
                 client_certificate_edit.setText(newServer.clientCertificate)
             }
@@ -303,8 +303,8 @@ class ServerEditActivity : BaseActivity() {
             super.onDestroyView()
 
             val newServer = activity.newServer
-            newServer.selfSignedSertificateEnabled = self_signed_certificate_check_box.isChecked
-            newServer.selfSignedSertificate = self_signed_certificate_edit.text.toString()
+            newServer.selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
+            newServer.selfSignedCertificate = self_signed_certificate_edit.text.toString()
             newServer.clientCertificateEnabled = client_certificate_check_box.isChecked
             newServer.clientCertificate = client_certificate_edit.text.toString()
         }

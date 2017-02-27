@@ -705,7 +705,7 @@ object Rpc {
 
         FuelManager.instance.socketFactory = HttpsURLConnection.getDefaultSSLSocketFactory()
         FuelManager.instance.hostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier()
-        if (server.clientCertificateEnabled || server.selfSignedSertificateEnabled) {
+        if (server.clientCertificateEnabled || server.selfSignedCertificateEnabled) {
             val certificateFactory = CertificateFactory.getInstance("X.509")
 
             var kmf: KeyManagerFactory? = null
@@ -737,8 +737,8 @@ object Rpc {
             }
 
             var tmf: TrustManagerFactory? = null
-            if (server.selfSignedSertificateEnabled) {
-                val certEncoded = server.selfSignedSertificate
+            if (server.selfSignedCertificateEnabled) {
+                val certEncoded = server.selfSignedCertificate
                         .substringAfter("-----BEGIN CERTIFICATE-----")
                         .substringBefore("-----END CERTIFICATE-----")
                 if (certEncoded.isNotEmpty()) {

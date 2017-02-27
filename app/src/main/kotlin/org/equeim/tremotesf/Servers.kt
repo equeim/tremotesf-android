@@ -43,8 +43,8 @@ class Server {
     var port = 0
     var apiPath = ""
     var httpsEnabled = false
-    var selfSignedSertificateEnabled = false
-    var selfSignedSertificate = ""
+    var selfSignedCertificateEnabled = false
+    var selfSignedCertificate = ""
     var clientCertificateEnabled = false
     var clientCertificate = ""
     var authentication = false
@@ -60,8 +60,8 @@ class Server {
         other.port = port
         other.apiPath = apiPath
         other.httpsEnabled = httpsEnabled
-        other.selfSignedSertificateEnabled = selfSignedSertificateEnabled
-        other.selfSignedSertificate = selfSignedSertificate
+        other.selfSignedCertificateEnabled = selfSignedCertificateEnabled
+        other.selfSignedCertificate = selfSignedCertificate
         other.clientCertificateEnabled = clientCertificateEnabled
         other.clientCertificate = clientCertificate
         other.authentication = authentication
