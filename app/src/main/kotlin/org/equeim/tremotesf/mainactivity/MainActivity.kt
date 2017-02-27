@@ -263,7 +263,7 @@ class MainActivity : BaseActivity() {
                                         id: Long) {
                 if (previousPosition != -1) {
                     torrentsAdapter.trackerFilter = if (position == 0) {
-                        String()
+                        ""
                     } else {
                         trackersSpinnerAdapter.trackers[position - 1]
                     }

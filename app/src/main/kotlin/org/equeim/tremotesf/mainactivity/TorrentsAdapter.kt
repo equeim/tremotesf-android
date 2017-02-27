@@ -189,7 +189,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
-    var trackerFilter = String()
+    var trackerFilter = ""
         set(value) {
             if (value != field) {
                 field = value
@@ -198,7 +198,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
-    var filterString = String()
+    var filterString = ""
         set(value) {
             if (value != field) {
                 field = value

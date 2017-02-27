@@ -65,7 +65,7 @@ private class Peer(peerJson: JsonObject) {
             }
         }
 
-    /*var flags = String()
+    /*var flags = ""
         private set(value) {
             if (value != field) {
                 field = value
@@ -73,7 +73,7 @@ private class Peer(peerJson: JsonObject) {
             }
         }*/
 
-    var client = String()
+    var client = ""
         private set(value) {
             if (value != field) {
                 field = value

@@ -136,7 +136,7 @@ class AddTorrentLinkActivity : BaseActivity() {
         when (Rpc.status) {
             Rpc.Status.Disconnected -> {
                 snackbar = Snackbar.make(findViewById(android.R.id.content),
-                                         String(),
+                                         "",
                                          Snackbar.LENGTH_INDEFINITE)
                 snackbar!!.setAction(R.string.connect, {
                     snackbar = null

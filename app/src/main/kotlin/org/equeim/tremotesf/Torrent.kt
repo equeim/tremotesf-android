@@ -400,7 +400,7 @@ class Tracker(val id: Int, private val context: Context) {
         Error
     }
 
-    var announce = String()
+    var announce = ""
         private set(value) {
             if (value != field) {
                 field = value
@@ -418,7 +418,7 @@ class Tracker(val id: Int, private val context: Context) {
             }
         }
 
-    private var errorMessage = String()
+    private var errorMessage = ""
         private set(value) {
             if (value != field) {
                 field = value
@@ -497,7 +497,7 @@ class Tracker(val id: Int, private val context: Context) {
                 3 -> Status.Updating
                 else -> Status.Error
             }
-            errorMessage = String()
+            errorMessage = ""
         }
 
         peers = trackerJson["lastAnnouncePeerCount"].asInt

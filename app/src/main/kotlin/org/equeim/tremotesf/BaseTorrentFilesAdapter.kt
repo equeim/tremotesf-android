@@ -436,7 +436,7 @@ abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) :
     class Directory(row: Int,
                     parentDirectory: Directory?,
                     name: String) : Item(row, parentDirectory, name) {
-        constructor() : this(-1, null, String())
+        constructor() : this(-1, null, "")
 
         override val size: Long
             get() {

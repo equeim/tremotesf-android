@@ -70,7 +70,7 @@ class AboutActivity : BaseActivity() {
                 1 -> getString(R.string.authors)
                 2 -> getString(R.string.translators)
                 3 -> getString(R.string.license)
-                else -> String()
+                else -> ""
             }
         }
     }

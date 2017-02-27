@@ -43,7 +43,7 @@ class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdap
             4 -> context.getString(R.string.torrents_paused, pausedTorrents)
             5 -> context.getString(R.string.torrents_checking, checkingTorrents)
             6 -> context.getString(R.string.torrents_errored, erroredTorrents)
-            else -> String()
+            else -> ""
         }
     }
 

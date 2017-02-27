@@ -278,7 +278,7 @@ class AddTorrentFileActivity : BaseActivity() {
                     when (Rpc.status) {
                         Rpc.Status.Disconnected -> {
                             snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
-                                                     String(),
+                                                     "",
                                                      Snackbar.LENGTH_INDEFINITE)
                             snackbar!!.setAction(R.string.connect, {
                                 snackbar = null
@@ -331,7 +331,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 return when (position) {
                     0 -> mainFragment.getString(R.string.information)
                     1 -> mainFragment.getString(R.string.files)
-                    else -> String()
+                    else -> ""
                 }
             }
         }

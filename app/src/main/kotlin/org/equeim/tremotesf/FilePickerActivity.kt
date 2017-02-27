@@ -110,7 +110,7 @@ class FilePickerActivity : BaseActivity() {
         placeholder.text = if (adapter.files.isEmpty()) {
             getString(R.string.no_files)
         } else {
-            String()
+            null
         }
     }
 }

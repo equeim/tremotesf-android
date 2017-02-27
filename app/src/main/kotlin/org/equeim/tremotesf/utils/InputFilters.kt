@@ -39,7 +39,7 @@ class IntFilter(private val range: IntRange) : InputFilter {
             }
         } catch (error: NumberFormatException) {
         }
-        return String()
+        return ""
     }
 }
 
@@ -82,7 +82,7 @@ class DoubleFilter(private val range: IntRange) : InputFilter {
         val newString = dest.substring(0, dstart) + source + dest.substring(dstart)
         val number = parse(newString)
         if (number == null || number !in range) {
-            return String()
+            return ""
         }
         return null
     }

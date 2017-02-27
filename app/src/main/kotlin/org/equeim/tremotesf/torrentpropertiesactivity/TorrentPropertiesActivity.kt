@@ -115,7 +115,7 @@ class TorrentPropertiesActivity : BaseActivity() {
             Rpc.Status.Disconnected -> {
                 torrent = null
                 snackbar = Snackbar.make(findViewById(android.R.id.content),
-                                         String(),
+                                         "",
                                          Snackbar.LENGTH_INDEFINITE)
                 snackbar!!.setAction(R.string.connect, {
                     snackbar = null
@@ -381,7 +381,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                 TAB_TRACKERS -> getString(R.string.trackers)
                 TAB_PEERS -> getString(R.string.peers)
                 TAB_LIMITS -> getString(R.string.limits)
-                else -> String()
+                else -> ""
             }
         }
     }

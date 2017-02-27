@@ -38,18 +38,18 @@ private const val SERVERS = "servers"
 
 class Server {
 
-    var name = String()
-    var address = String()
+    var name = ""
+    var address = ""
     var port = 0
-    var apiPath = String()
+    var apiPath = ""
     var httpsEnabled = false
     var selfSignedSertificateEnabled = false
-    var selfSignedSertificate = String()
+    var selfSignedSertificate = ""
     var clientCertificateEnabled = false
-    var clientCertificate = String()
+    var clientCertificate = ""
     var authentication = false
-    var username = String()
-    var password = String()
+    var username = ""
+    var password = ""
     var updateInterval = 0
     var backgroundUpdateInterval = 0
     var timeout = 0

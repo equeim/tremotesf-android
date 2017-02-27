@@ -223,7 +223,7 @@ object Rpc {
         }
     }
     private val activeRequests = mutableListOf<Request>()
-    private var sessionId = String()
+    private var sessionId = ""
 
     private var timer = Timer()
     private val mainThreadHandler = Handler()

@@ -120,7 +120,7 @@ class ServerSettingsActivity : BaseActivity() {
             when (status) {
                 Rpc.Status.Disconnected -> {
                     snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
-                                             String(),
+                                             "",
                                              Snackbar.LENGTH_INDEFINITE)
                     snackbar!!.setAction(R.string.connect, {
                         snackbar = null
