@@ -67,8 +67,8 @@ private const val SESSION_ID_HEADER = "X-Transmission-Session-Id"
 
 private val gson = Gson()
 private fun makeRequestData(method: String, arguments: Map<String, Any>): String {
-    return gson.toJson(mapOf(Pair("method", method),
-                             Pair("arguments", arguments)))
+    return gson.toJson(mapOf("method" to method,
+                             "arguments" to arguments))
 }
 
 private fun getReplyArguments(jsonObject: JsonObject): JsonObject {
@@ -285,17 +285,16 @@ object Rpc {
         object : AsyncTask<Any, Any, String>() {
             override fun doInBackground(vararg params: Any?): String {
                 return makeRequestData("torrent-add",
-                                       mapOf(Pair("metainfo",
-                                                  String(Base64.encode(fileData,
-                                                                       Base64.DEFAULT))),
-                                             Pair("download-dir", downloadDirectory),
-                                             Pair("files-wanted", wantedFiles),
-                                             Pair("files-unwanted", unwantedFiles),
-                                             Pair("priority-low", lowPriorityFiles),
-                                             Pair("priority-normal", normalPriorityFiles),
-                                             Pair("priority-high", highPriorityFiles),
-                                             Pair("bandwidthPriority", priority),
-                                             Pair("paused", !start)))
+                                       mapOf("metainfo" to String(Base64.encode(fileData,
+                                                                                Base64.DEFAULT)),
+                                             "download-dir" to downloadDirectory,
+                                             "files-wanted" to wantedFiles,
+                                             "files-unwanted" to unwantedFiles,
+                                             "priority-low" to lowPriorityFiles,
+                                             "priority-normal" to normalPriorityFiles,
+                                             "priority-high" to highPriorityFiles,
+                                             "bandwidthPriority" to priority,
+                                             "paused" to !start))
             }
 
             override fun onPostExecute(result: String) {
@@ -326,10 +325,10 @@ object Rpc {
         }
 
         postRequest(makeRequestData("torrent-add",
-                                    mapOf(Pair("filename", link),
-                                          Pair("download-dir", downloadDirectory),
-                                          Pair("bandwidthPriority", priority),
-                                          Pair("paused", !start))),
+                                    mapOf("filename" to link,
+                                          "download-dir" to downloadDirectory,
+                                          "bandwidthPriority" to priority,
+                                          "paused" to !start)),
                     { jsonObject ->
                         if (isResultSuccessful(jsonObject)) {
                             if (getReplyArguments(jsonObject).has("torrent-duplicate")) {
@@ -346,9 +345,8 @@ object Rpc {
 
     fun removeTorrents(ids: List<Int>, deleteFiles: Boolean) {
         if (connected) {
-            postRequest(makeRequestData("torrent-remove", mapOf(Pair("ids", ids),
-                                                                Pair("delete-local-data",
-                                                                     deleteFiles)))) {
+            postRequest(makeRequestData("torrent-remove", mapOf("ids" to ids,
+                                                                "delete-local-data" to deleteFiles))) {
                 resetTimer()
                 updateData()
             }
@@ -357,7 +355,7 @@ object Rpc {
 
     fun startTorrents(ids: List<Int>) {
         if (connected) {
-            postRequest(makeRequestData("torrent-start", mapOf(Pair("ids", ids)))) {
+            postRequest(makeRequestData("torrent-start", mapOf("ids" to ids))) {
                 resetTimer()
                 updateData()
             }
@@ -366,7 +364,7 @@ object Rpc {
 
     fun pauseTorrents(ids: List<Int>) {
         if (connected) {
-            postRequest(makeRequestData("torrent-stop", mapOf(Pair("ids", ids)))) {
+            postRequest(makeRequestData("torrent-stop", mapOf("ids" to ids))) {
                 resetTimer()
                 updateData()
             }
@@ -375,7 +373,7 @@ object Rpc {
 
     fun checkTorrents(ids: List<Int>) {
         if (connected) {
-            postRequest(makeRequestData("torrent-verify", mapOf(Pair("ids", ids)))) {
+            postRequest(makeRequestData("torrent-verify", mapOf("ids" to ids))) {
                 resetTimer()
                 updateData()
             }
@@ -410,7 +408,7 @@ object Rpc {
 
     fun setSessionProperty(property: String, value: Any) {
         if (connected) {
-            postRequest(makeRequestData("session-set", mapOf(Pair(property, value))), null)
+            postRequest(makeRequestData("session-set", mapOf(property to value)), null)
         }
     }
 
@@ -579,8 +577,8 @@ object Rpc {
                            value: Any,
                            updateOnSuccess: Boolean = false) {
         postRequest(makeRequestData("torrent-set",
-                                    mapOf(Pair("ids", intArrayOf(torrentId)),
-                                          Pair(property, value))),
+                                    mapOf("ids" to intArrayOf(torrentId),
+                                          property to value)),
                     { jsonObject ->
                         if (updateOnSuccess) {
                             resetTimer()
@@ -597,9 +595,9 @@ object Rpc {
         }
 
         postRequest(makeRequestData("torrent-set-location",
-                                    mapOf(Pair("ids", intArrayOf(torrentId)),
-                                          Pair("location", location),
-                                          Pair("move", moveFiles))),
+                                    mapOf("ids" to intArrayOf(torrentId),
+                                          "location" to location,
+                                          "move" to moveFiles)),
                     { jsonObject ->
                         resetTimer()
                         updateData()
@@ -612,9 +610,9 @@ object Rpc {
         }
 
         postRequest(makeRequestData("torrent-rename-path",
-                                    mapOf(Pair("ids", intArrayOf(torrentId)),
-                                          Pair("path", filePath),
-                                          Pair("name", newName))),
+                                    mapOf("ids" to intArrayOf(torrentId),
+                                          "path" to filePath,
+                                          "name" to newName)),
                     { jsonObject ->
                         val arguments = getReplyArguments(jsonObject)
                         val id = arguments["id"].asInt
