@@ -218,7 +218,7 @@ object Rpc {
     private lateinit var password: String
 
     private val responseDeserializer = object : ResponseDeserializable<JsonObject> {
-        override fun deserialize(content: String): JsonObject? {
+        override fun deserialize(content: String): JsonObject {
             return gson.fromJson(content, JsonObject::class.java)
         }
     }
