@@ -51,7 +51,7 @@ class SeedingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         ratio_limit_check_box.isChecked = Rpc.serverSettings.ratioLimited
-        ratio_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        ratio_limit_check_box.setOnCheckedChangeListener { _, checked ->
             ratio_limit_edit.isEnabled = checked
             Rpc.serverSettings.ratioLimited = checked
         }
@@ -76,7 +76,7 @@ class SeedingFragment : Fragment() {
         })
 
         idle_seeding_check_box.isChecked = Rpc.serverSettings.idleSeedingLimited
-        idle_seeding_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        idle_seeding_check_box.setOnCheckedChangeListener { _, checked ->
             idle_seeding_layout.isEnabled = checked
             Rpc.serverSettings.idleSeedingLimited = checked
         }

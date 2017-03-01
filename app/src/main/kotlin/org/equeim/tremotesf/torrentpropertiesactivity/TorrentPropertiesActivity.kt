@@ -404,7 +404,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                     .setMessage(R.string.remove_torrent_message)
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove, { dialog, which ->
+                    .setPositiveButton(R.string.remove, { _, _ ->
                         Rpc.removeTorrents(listOf(arguments.getInt("id")),
                                            (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
                         activity.finish()

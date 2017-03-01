@@ -215,7 +215,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
                                                                          selectedCount,
                                                                          selectedCount))
                         .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(R.string.remove, { dialog, which ->
+                        .setPositiveButton(R.string.remove, { _, _ ->
                             val adapter = (activity as ServersActivity).adapter
                             Servers.removeServers(adapter.selector.selectedItems)
                             adapter.selector.actionMode?.finish()

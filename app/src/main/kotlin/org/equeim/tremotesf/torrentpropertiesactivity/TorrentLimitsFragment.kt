@@ -55,14 +55,14 @@ class TorrentLimitsFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        global_limits_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        global_limits_check_box.setOnCheckedChangeListener { _, checked ->
             if (!updating) {
                 torrent?.honorSessionLimits = checked
             }
         }
 
         download_speed_limit_layout.isEnabled = false
-        download_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout.isEnabled = checked
             if (!updating) {
                 torrent?.downloadSpeedLimited = checked
@@ -82,7 +82,7 @@ class TorrentLimitsFragment : Fragment() {
         })
 
         upload_speed_limit_layout.isEnabled = false
-        upload_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
             if (!updating) {
                 torrent?.uploadSpeedLimited = checked

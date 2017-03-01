@@ -50,9 +50,9 @@ class BackgroundService : Service() {
 
     private lateinit var notificationManager: NotificationManager
 
-    private val rpcStatusListener = { status: Rpc.Status -> updatePersistentNotification() }
+    private val rpcStatusListener = { _: Rpc.Status -> updatePersistentNotification() }
     private val rpcUpdatedListener = { updatePersistentNotification() }
-    private val rpcErrorListener = { error: Rpc.Error -> updatePersistentNotification() }
+    private val rpcErrorListener = { _: Rpc.Error -> updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
     override fun onBind(intent: Intent) = null

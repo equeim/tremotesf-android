@@ -256,7 +256,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                                      ids.size,
                                                                      ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove, { dialog, which ->
+                    .setPositiveButton(R.string.remove, { _, _ ->
                         val activity = this.activity as TorrentPropertiesActivity
                         activity.torrent?.removeTrackers(ids)
                         activity.actionMode?.finish()

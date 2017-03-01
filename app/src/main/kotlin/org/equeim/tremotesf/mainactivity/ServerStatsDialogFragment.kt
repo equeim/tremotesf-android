@@ -38,7 +38,7 @@ import org.equeim.tremotesf.utils.Utils
 
 class ServerStatsDialogFragment : DialogFragment() {
     private var rpcUpdatedListener: (() -> Unit)? = null
-    private val rpcStatusListener = { status: Rpc.Status ->
+    private val rpcStatusListener = { _: Rpc.Status ->
         if (Rpc.connected) {
             rpcUpdatedListener!!()
         }

@@ -71,12 +71,12 @@ class NetworkFragment : Fragment() {
         })
 
         random_port_check_box.isChecked = Rpc.serverSettings.randomPortEnabled
-        random_port_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        random_port_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.randomPortEnabled = checked
         }
 
         port_forwarding_check_box.isChecked = Rpc.serverSettings.portForwardingEnabled
-        port_forwarding_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        port_forwarding_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.portForwardingEnabled = checked
         }
 
@@ -105,22 +105,22 @@ class NetworkFragment : Fragment() {
         }
 
         utp_check_box.isChecked = Rpc.serverSettings.utpEnabled
-        utp_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        utp_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.utpEnabled = checked
         }
 
         pex_check_box.isChecked = Rpc.serverSettings.pexEnabled
-        pex_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        pex_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.pexEnabled = checked
         }
 
         dht_check_box.isChecked = Rpc.serverSettings.dhtEnabled
-        dht_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        dht_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.dhtEnabled = checked
         }
 
         lpd_check_box.isChecked = Rpc.serverSettings.lpdEnabled
-        lpd_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        lpd_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.lpdEnabled = checked
         }
 

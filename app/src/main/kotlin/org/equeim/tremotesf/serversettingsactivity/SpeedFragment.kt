@@ -127,7 +127,7 @@ class SpeedFragment : Fragment() {
         val limitsFilters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
 
         download_speed_limit_check_box.isChecked = Rpc.serverSettings.downloadSpeedLimited
-        download_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout!!.isEnabled = checked
             Rpc.serverSettings.downloadSpeedLimited = checked
         }
@@ -153,7 +153,7 @@ class SpeedFragment : Fragment() {
         })
 
         upload_speed_limit_check_box.isChecked = Rpc.serverSettings.uploadSpeedLimited
-        upload_speed_limit_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
             Rpc.serverSettings.uploadSpeedLimited = checked
         }
@@ -179,7 +179,7 @@ class SpeedFragment : Fragment() {
         })
 
         alternative_limits_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
-        alternative_limits_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        alternative_limits_check_box.setOnCheckedChangeListener { _, checked ->
             alternative_download_speed_limit_layout!!.isEnabled = checked
             alternative_upload_speed_limit_layout!!.isEnabled = checked
             Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
@@ -225,7 +225,7 @@ class SpeedFragment : Fragment() {
         })
 
         schedule_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitScheduled
-        schedule_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        schedule_check_box.setOnCheckedChangeListener { _, checked ->
             schedule_layout.setChildrenEnabled(checked)
             Rpc.serverSettings.alternativeSpeedLimitScheduled = checked
         }

@@ -106,7 +106,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
         private var noPermission = false
 
-        private val rpcStatusListener = { status: Rpc.Status ->
+        private val rpcStatusListener = { _: Rpc.Status ->
             updateView()
         }
 

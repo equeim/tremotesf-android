@@ -48,7 +48,7 @@ class QueueFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         download_queue_check_box.isChecked = Rpc.serverSettings.downloadQueueEnabled
-        download_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        download_queue_check_box.setOnCheckedChangeListener { _, checked ->
             download_queue_edit.isEnabled = checked
             Rpc.serverSettings.downloadQueueEnabled = checked
         }
@@ -73,7 +73,7 @@ class QueueFragment : Fragment() {
         })
 
         seed_queue_check_box.isChecked = Rpc.serverSettings.seedQueueEnabled
-        seed_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        seed_queue_check_box.setOnCheckedChangeListener { _, checked ->
             seed_queue_edit.isEnabled = checked
             Rpc.serverSettings.seedQueueEnabled = checked
         }
@@ -98,7 +98,7 @@ class QueueFragment : Fragment() {
         })
 
         idle_queue_check_box.isChecked = Rpc.serverSettings.idleQueueLimited
-        idle_queue_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        idle_queue_check_box.setOnCheckedChangeListener { _, checked ->
             idle_queue_layout.isEnabled = checked
             Rpc.serverSettings.idleQueueLimited = checked
         }

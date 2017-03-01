@@ -66,17 +66,17 @@ class DownloadingFragment : Fragment() {
         })
 
         start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
-        start_torrents_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.startAddedTorrents = checked
         }
 
         rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles
-        rename_incomplete_files_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        rename_incomplete_files_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.renameIncompleteFiles = checked
         }
 
         incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.incompleteFilesDirectoryEnabled
-        incomplete_files_directory_check_box.setOnCheckedChangeListener { checkBox, checked ->
+        incomplete_files_directory_check_box.setOnCheckedChangeListener { _, checked ->
             incomplete_files_directory_edit.isEnabled = checked
             Rpc.serverSettings.incompleteFilesDirectoryEnabled = checked
         }

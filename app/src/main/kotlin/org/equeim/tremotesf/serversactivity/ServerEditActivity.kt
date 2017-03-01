@@ -26,7 +26,6 @@ import android.app.FragmentTransaction
 
 import android.os.Bundle
 
-import android.widget.CheckBox
 import android.widget.EditText
 
 import android.view.LayoutInflater
@@ -129,7 +128,7 @@ class ServerEditActivity : BaseActivity() {
                         .addToBackStack(null)
                         .commit()
             }
-            https_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            https_check_box.setOnCheckedChangeListener { _, checked ->
                 certificates_item.isEnabled = checked
                 certificates_item.setChildrenEnabled(checked)
             }
@@ -138,7 +137,7 @@ class ServerEditActivity : BaseActivity() {
 
             username_edit.isEnabled = false
             password_edit.isEnabled = false
-            authentication_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            authentication_check_box.setOnCheckedChangeListener { _, checked ->
                 username_edit.isEnabled = checked
                 password_edit.isEnabled = checked
             }
@@ -251,7 +250,7 @@ class ServerEditActivity : BaseActivity() {
                 return AlertDialog.Builder(activity)
                         .setMessage(R.string.server_exists)
                         .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(R.string.overwrite, { dialog, which ->
+                        .setPositiveButton(R.string.overwrite, { _, _ ->
                             (activity.fragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
                         }).create()
             }
@@ -279,14 +278,14 @@ class ServerEditActivity : BaseActivity() {
             self_signed_certificate_check_box.isChecked = false
 
             self_signed_certificate_layout.isEnabled = false
-            self_signed_certificate_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            self_signed_certificate_check_box.setOnCheckedChangeListener { _, checked ->
                 self_signed_certificate_layout.isEnabled = checked
             }
 
             client_certificate_check_box.isChecked = false
 
             client_certificate_layout.isEnabled = false
-            client_certificate_check_box.setOnCheckedChangeListener { checkBox, checked ->
+            client_certificate_check_box.setOnCheckedChangeListener { _, checked ->
                 client_certificate_layout.isEnabled = checked
             }
 

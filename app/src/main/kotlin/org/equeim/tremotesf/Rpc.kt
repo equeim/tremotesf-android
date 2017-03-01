@@ -579,7 +579,7 @@ object Rpc {
         postRequest(makeRequestData("torrent-set",
                                     mapOf("ids" to intArrayOf(torrentId),
                                           property to value)),
-                    { jsonObject ->
+                    {
                         if (updateOnSuccess) {
                             resetTimer()
                             updateData()
@@ -598,7 +598,7 @@ object Rpc {
                                     mapOf("ids" to intArrayOf(torrentId),
                                           "location" to location,
                                           "move" to moveFiles)),
-                    { jsonObject ->
+                    {
                         resetTimer()
                         updateData()
                     })

@@ -42,7 +42,7 @@ class AddTorrentLinkActivity : BaseActivity() {
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
-    private var rpcStatusListener = { status: Rpc.Status ->
+    private var rpcStatusListener = { _: Rpc.Status ->
         updateView()
     }
 

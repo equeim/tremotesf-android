@@ -128,7 +128,7 @@ class MainActivity : BaseActivity() {
         updatePlaceholder()
     }
 
-    private val rpcErrorListener = { error: Rpc.Error ->
+    private val rpcErrorListener = { _: Rpc.Error ->
         updateTitle()
         updateMenuItems()
         serversSpinner.isEnabled = Servers.hasServers
