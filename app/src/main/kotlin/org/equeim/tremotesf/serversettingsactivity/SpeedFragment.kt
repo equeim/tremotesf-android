@@ -297,7 +297,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     fun setTime(minutesFromStartOfDay: Int) {
         calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
-        calendar.set(Calendar.MINUTE, minutesFromStartOfDay.mod(60))
+        calendar.set(Calendar.MINUTE, minutesFromStartOfDay.rem(60))
         textView.text = format.format(calendar.time)
     }
 
