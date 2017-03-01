@@ -68,7 +68,7 @@ abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) :
 
         override fun compare(item1: Item,
                              item2: Item): Int {
-            if (item1.javaClass == item2.javaClass) {
+            if (item1::class.java == item2::class.java) {
                 return nameComparator.compare(item1.name, item2.name)
             }
             if (item1 is Directory) {
