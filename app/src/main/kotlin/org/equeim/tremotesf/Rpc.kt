@@ -20,9 +20,9 @@
 package org.equeim.tremotesf
 
 import java.net.HttpURLConnection
-import java.net.MalformedURLException
 import java.net.SocketTimeoutException
-import java.net.URL
+import java.net.URI
+import java.net.URISyntaxException
 
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.HttpsURLConnection
@@ -696,8 +696,8 @@ object Rpc {
 
         try {
             val scheme = if (server.httpsEnabled) "https" else "http"
-            url = URL(scheme, server.address, server.port, server.apiPath).toString()
-        } catch (error: MalformedURLException) {
+            url = URI(scheme, null, server.address, server.port, server.apiPath, null, null).toString()
+        } catch (error: URISyntaxException) {
             Logger.e("invalid server url", error)
             this.error = Error.InvalidServerUrl
             return
