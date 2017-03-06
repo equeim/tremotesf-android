@@ -1,5 +1,12 @@
 # Change Log
 
+## [Unreleased]
+### Changed
+- Trim whitespaces from fields in ServerEditActivity before saving server
+
+### Fixed
+- Correctly check server URL
+
 ## [1.4.1] - 2017-02-25
 ### Changed
 - License is now shown in WebView
