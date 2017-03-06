@@ -40,7 +40,7 @@
                     android:id="@+id/address_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/address"
+                    android:hint="@string/address_edit_hint"
                     android:inputType="textUri"/>
             </android.support.design.widget.TextInputLayout>
 
