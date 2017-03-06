@@ -224,17 +224,19 @@ class ServerEditActivity : BaseActivity() {
 
         private fun save() {
             val newServer = activity.newServer
-            newServer.name = name_edit.text.toString()
-            newServer.address = address_edit.text.toString()
-            newServer.port = port_edit.text.toString().toInt()
-            newServer.apiPath = api_path_edit.text.toString()
-            newServer.httpsEnabled = https_check_box.isChecked
-            newServer.authentication = authentication_check_box.isChecked
-            newServer.username = username_edit.text.toString()
-            newServer.password = password_edit.text.toString()
-            newServer.updateInterval = update_interval_edit.text.toString().toInt()
-            newServer.backgroundUpdateInterval = background_update_interval_edit.text.toString().toInt()
-            newServer.timeout = timeout_edit.text.toString().toInt()
+            newServer.apply {
+                name = name_edit.text.toString().trim()
+                address = address_edit.text.toString().trim()
+                port = port_edit.text.toString().toInt()
+                apiPath = api_path_edit.text.toString().trim()
+                httpsEnabled = https_check_box.isChecked
+                authentication = authentication_check_box.isChecked
+                username = username_edit.text.toString().trim()
+                password = password_edit.text.toString().trim()
+                updateInterval = update_interval_edit.text.toString().toInt()
+                backgroundUpdateInterval = background_update_interval_edit.text.toString().toInt()
+                timeout = timeout_edit.text.toString().toInt()
+            }
 
             if (activity.server == null) {
                 Servers.addServer(newServer)
