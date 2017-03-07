@@ -159,22 +159,22 @@ class BackgroundService : Service() {
             notificationBuilder.setContentText(Rpc.statusString)
         }
 
-        if (Rpc.connected) {
+        if (Rpc.status == Rpc.Status.Disconnected) {
             val intent = Intent(this, BackgroundService::class.java)
-            intent.action = ACTION_DISCONNECT
+            intent.action = ACTION_CONNECT
             notificationBuilder.addAction(
-                    R.drawable.notification_disconnect,
-                    getString(R.string.disconnect),
+                    R.drawable.notification_connect,
+                    getString(R.string.connect),
                     PendingIntent.getService(this,
                                              0,
                                              intent,
                                              PendingIntent.FLAG_UPDATE_CURRENT))
         } else if (Rpc.canConnect) {
             val intent = Intent(this, BackgroundService::class.java)
-            intent.action = ACTION_CONNECT
+            intent.action = ACTION_DISCONNECT
             notificationBuilder.addAction(
-                    R.drawable.notification_connect,
-                    getString(R.string.connect),
+                    R.drawable.notification_disconnect,
+                    getString(R.string.disconnect),
                     PendingIntent.getService(this,
                                              0,
                                              intent,
