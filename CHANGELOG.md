@@ -3,9 +3,12 @@
 ## [Unreleased]
 ### Changed
 - Trim whitespaces from fields in ServerEditActivity before saving server
+- More correct hint text for server's address field
 
 ### Fixed
 - Correctly check server URL
+- Notification actions icons are black on Lollipop+ (for ROMs that doesn't automatically recolor them, e.g. MIUI)
+- Show "Disconnect" action on notification when connectiong to server
 
 ## [1.4.1] - 2017-02-25
 ### Changed
