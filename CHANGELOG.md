@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.4.2] = 2017-03-07
 ### Changed
 - Trim whitespaces from fields in ServerEditActivity before saving server
 - More correct hint text for server's address field
