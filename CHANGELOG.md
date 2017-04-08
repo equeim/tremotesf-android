@@ -1,6 +1,17 @@
 # Change Log
 
-## [1.4.2] = 2017-03-07
+## [Unreleased]
+### Added
+- Option to delete torrent's files from hard disk by default when removing torrent
+
+### Changed
+- Torrents status and tracker filters are restored after app restart and reconnection
+- Torrents sort mode and status filter are not reset after disconnecting
+
+### Fixed
+- Torrent properties activity doesn't release from memory until files tree is created (memory leak when torrent has large number of files) 
+
+## [1.4.2] - 2017-03-07
 ### Changed
 - Trim whitespaces from fields in ServerEditActivity before saving server
 - More correct hint text for server's address field
