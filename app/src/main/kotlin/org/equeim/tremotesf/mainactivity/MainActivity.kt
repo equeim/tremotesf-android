@@ -125,6 +125,8 @@ class MainActivity : BaseActivity() {
             if (Rpc.connected) {
                 trackersSpinner.setSelection(trackersSpinnerAdapter.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
             }
+
+            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
         }
 
         updateMenuItems()
@@ -144,6 +146,8 @@ class MainActivity : BaseActivity() {
         trackersSpinnerAdapter.update()
         torrentsAdapter.update()
         updatePlaceholder()
+
+        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
     }
 
     private val serversListener = { serversSpinnerAdapter.update() }
@@ -384,6 +388,8 @@ class MainActivity : BaseActivity() {
 
         updateMenuItems()
 
+        menu.findItem(R.id.alternative_speed_limits).isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+
         return true
     }
 
@@ -403,6 +409,7 @@ class MainActivity : BaseActivity() {
             R.id.add_torrent_file -> startFilePickerActivity()
             R.id.add_torrent_link -> startActivity(Intent(this, AddTorrentLinkActivity::class.java))
             R.id.server_settings -> startActivity(Intent(this, ServerSettingsActivity::class.java))
+            R.id.alternative_speed_limits -> { Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked }
             R.id.server_stats -> ServerStatsDialogFragment().show(fragmentManager, null)
             else -> return false
         }
@@ -447,6 +454,7 @@ class MainActivity : BaseActivity() {
         menu!!.findItem(R.id.add_torrent_file).isEnabled = connected
         menu!!.findItem(R.id.add_torrent_link).isEnabled = connected
         menu!!.findItem(R.id.server_settings).isEnabled = connected
+        menu!!.findItem(R.id.alternative_speed_limits).isEnabled = connected
         menu!!.findItem(R.id.server_stats).isEnabled = connected
     }
 

@@ -28,6 +28,12 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/alternative_speed_limits"
+        android:checkable="true"
+        android:title="@string/alternative_speed_limits"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/server_stats"
         android:title="@string/server_stats"
         app:showAsAction="never"/>
