@@ -180,7 +180,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
-    var statusFilterMode = StatusFilterMode.All
+    var statusFilterMode = Settings.torrentsStatusFilter
         set(value) {
             if (value != field) {
                 field = value

@@ -30,6 +30,8 @@ import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
 private const val TORRENTS_SORT_MODE = "torrentsSortMode"
 private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
+private const val TORRENTS_STATUS_FILTER = "torrentsStatusFilter"
+private const val TORRENTS_TRACKER_FILTER = "torrentsTrackerFilter"
 
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private var initialized = false
@@ -102,6 +104,26 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         }
         set(value) {
             preferences.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).commit()
+        }
+
+    var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
+        get() {
+            val int = preferences.getInt(TORRENTS_STATUS_FILTER, 0)
+            if (int in TorrentsAdapter.StatusFilterMode.values().indices) {
+                return TorrentsAdapter.StatusFilterMode.values()[int]
+            }
+            return TorrentsAdapter.StatusFilterMode.All
+        }
+        set(value) {
+            preferences.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).commit()
+        }
+
+    var torrentsTrackerFilter: String
+        get() {
+            return preferences.getString(TORRENTS_TRACKER_FILTER, "")
+        }
+        set(value) {
+            preferences.edit().putString(TORRENTS_TRACKER_FILTER, value).commit()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {

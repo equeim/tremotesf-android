@@ -88,6 +88,8 @@ class MainActivity : BaseActivity() {
     private lateinit var sortSpinner: Spinner
     private lateinit var statusSpinner: Spinner
     private lateinit var statusSpinnerAdapter: StatusFilterSpinnerAdapter
+
+    private lateinit var trackersSpinner: Spinner
     private lateinit var trackersSpinnerAdapter: TrackersSpinnerAdapter
 
     lateinit var torrentsAdapter: TorrentsAdapter
@@ -108,9 +110,6 @@ class MainActivity : BaseActivity() {
                             fragmentManager.beginTransaction().remove(fragment).commit()
                         }
 
-                sortSpinner.setSelection(0)
-                statusSpinner.setSelection(0)
-
                 if (menu != null) {
                     searchMenuItem.collapseActionView()
                 }
@@ -121,7 +120,11 @@ class MainActivity : BaseActivity() {
             updateSubtitle()
             listSettingsLayout.setChildrenEnabled(Rpc.connected)
             statusSpinnerAdapter.update()
+
             trackersSpinnerAdapter.update()
+            if (Rpc.connected) {
+                trackersSpinner.setSelection(trackersSpinnerAdapter.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+            }
         }
 
         updateMenuItems()
@@ -236,6 +239,7 @@ class MainActivity : BaseActivity() {
         statusSpinner = sidePanelHeader.findViewById(R.id.status_spinner) as Spinner
         statusSpinnerAdapter = StatusFilterSpinnerAdapter(this)
         statusSpinner.adapter = statusSpinnerAdapter
+        statusSpinner.setSelection(Settings.torrentsStatusFilter.ordinal)
         statusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             private var previousPosition = -1
             override fun onItemSelected(parent: AdapterView<*>,
@@ -245,6 +249,9 @@ class MainActivity : BaseActivity() {
                 if (previousPosition != -1) {
                     torrentsAdapter.statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
                     updatePlaceholder()
+                    if (Rpc.connected) {
+                        Settings.torrentsStatusFilter = torrentsAdapter.statusFilterMode
+                    }
                 }
                 previousPosition = position
             }
@@ -252,7 +259,7 @@ class MainActivity : BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        val trackersSpinner = sidePanelHeader.findViewById(R.id.trackers_spinner) as Spinner
+        trackersSpinner = sidePanelHeader.findViewById(R.id.trackers_spinner) as Spinner
         trackersSpinnerAdapter = TrackersSpinnerAdapter(this)
         trackersSpinner.adapter = trackersSpinnerAdapter
         trackersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -268,6 +275,9 @@ class MainActivity : BaseActivity() {
                         trackersSpinnerAdapter.trackers[position - 1]
                     }
                     updatePlaceholder()
+                    if (Rpc.connected) {
+                        Settings.torrentsTrackerFilter = torrentsAdapter.trackerFilter
+                    }
                 }
                 previousPosition = position
             }
