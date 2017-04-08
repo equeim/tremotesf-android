@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Option to delete torrent's files from hard disk by default when removing torrent
+- Menu item for quick enabling/disabling alternative speed limits
 
 ### Changed
 - Torrents status and tracker filters are restored after app restart and reconnection
