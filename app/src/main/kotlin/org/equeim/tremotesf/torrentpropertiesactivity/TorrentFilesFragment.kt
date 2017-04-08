@@ -19,6 +19,8 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
+import java.lang.ref.WeakReference
+
 import android.app.Fragment
 import android.os.AsyncTask
 import android.os.Bundle
@@ -182,7 +184,7 @@ class TorrentFilesFragment : Fragment() {
             if (treeCreated || creatingTree) {
                 updateTree()
             } else {
-                createTree(fileJsons!!, fileStatsJsons!!)
+                beginCreatingTree(fileJsons!!, fileStatsJsons!!)
             }
         }
     }
@@ -223,61 +225,32 @@ class TorrentFilesFragment : Fragment() {
         updatePlaceholder()
     }
 
-    private fun createTree(fileJsons: JsonArray, fileStatsJsons: JsonArray) {
+    private fun beginCreatingTree(fileJsons: JsonArray, fileStatsJsons: JsonArray) {
         creatingTree = true
         updateProgressBar()
         updatePlaceholder()
+        TreeCreationTask(WeakReference(this), fileJsons, fileStatsJsons).execute()
+    }
 
-        object : AsyncTask<Any, Any, Any>() {
-            override fun doInBackground(vararg params: Any?): Any? {
-                for (fileIndex in 0..(fileJsons.size() - 1)) {
-                    val fileJson = fileJsons[fileIndex].asJsonObject
-                    val fileStatsJson = fileStatsJsons[fileIndex].asJsonObject
+    private fun endCreatingTree(rootDirectoryChildren: List<BaseTorrentFilesAdapter.Item>,
+                                files: List<BaseTorrentFilesAdapter.File>) {
+        creatingTree = false
+        treeCreated = true
+        updateProgressBar()
 
-                    var currentDirectory = rootDirectory
+        if (resetAfterCreate) {
+            doResetTree()
+            return
+        }
 
-                    val filePath = fileJson["name"].asString
-                    val parts = filePath.split('/').filter(String::isNotEmpty)
-                    for ((partIndex, part) in parts.withIndex()) {
-                        if (partIndex == parts.lastIndex) {
-                            val file = BaseTorrentFilesAdapter.File(currentDirectory.children.size,
-                                                                    currentDirectory,
-                                                                    part,
-                                                                    fileIndex)
-                            updateFile(file, fileJson, fileStatsJson)
-                            currentDirectory.addChild(file)
-                            files.add(file)
-                        } else {
-                            var childDirectory = currentDirectory.childrenMap[part]
-                                    as BaseTorrentFilesAdapter.Directory?
-                            if (childDirectory == null) {
-                                childDirectory = BaseTorrentFilesAdapter.Directory(currentDirectory.children.size,
-                                                                                   currentDirectory,
-                                                                                   part)
-                                currentDirectory.addChild(childDirectory)
+        rootDirectory.children.addAll(rootDirectoryChildren)
+        this.files.addAll(files)
 
-                            }
-                            currentDirectory = childDirectory
-                        }
-                    }
-                }
-                return null
-            }
+        if (updateAfterCreate) {
+            doUpdateTree()
+        }
 
-            override fun onPostExecute(result: Any?) {
-                creatingTree = false
-                treeCreated = true
-                updateProgressBar()
-                if (resetAfterCreate) {
-                    doResetTree()
-                    return
-                }
-                if (updateAfterCreate) {
-                    doUpdateTree()
-                }
-                adapter?.restoreInstanceState(null)
-            }
-        }.execute()
+        adapter?.restoreInstanceState(null)
     }
 
     private fun updateTree() {
@@ -317,6 +290,53 @@ class TorrentFilesFragment : Fragment() {
             View.VISIBLE
         } else {
             View.GONE
+        }
+    }
+
+    private class TreeCreationTask(private val fragment: WeakReference<TorrentFilesFragment>,
+                                   private val fileJsons: JsonArray,
+                                   private val fileStatsJsons: JsonArray) : AsyncTask<Any, Any, Any?>() {
+
+        private val rootDirectory = BaseTorrentFilesAdapter.Directory()
+        private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
+
+        override fun doInBackground(vararg params: Any?): Any? {
+            for (fileIndex in 0..(fileJsons.size() - 1)) {
+                val fileJson = fileJsons[fileIndex].asJsonObject
+                val fileStatsJson = fileStatsJsons[fileIndex].asJsonObject
+
+                var currentDirectory = rootDirectory
+
+                val filePath = fileJson["name"].asString
+                val parts = filePath.split('/').filter(String::isNotEmpty)
+                for ((partIndex, part) in parts.withIndex()) {
+                    if (partIndex == parts.lastIndex) {
+                        val file = BaseTorrentFilesAdapter.File(currentDirectory.children.size,
+                                                                currentDirectory,
+                                                                part,
+                                                                fileIndex)
+                        updateFile(file, fileJson, fileStatsJson)
+                        currentDirectory.addChild(file)
+                        files.add(file)
+                    } else {
+                        var childDirectory = currentDirectory.childrenMap[part]
+                                as BaseTorrentFilesAdapter.Directory?
+                        if (childDirectory == null) {
+                            childDirectory = BaseTorrentFilesAdapter.Directory(currentDirectory.children.size,
+                                                                               currentDirectory,
+                                                                               part)
+                            currentDirectory.addChild(childDirectory)
+
+                        }
+                        currentDirectory = childDirectory
+                    }
+                }
+            }
+            return null
+        }
+
+        override fun onPostExecute(result: Any?) {
+            fragment.get()?.endCreatingTree(rootDirectory.children, files)
         }
     }
 }
