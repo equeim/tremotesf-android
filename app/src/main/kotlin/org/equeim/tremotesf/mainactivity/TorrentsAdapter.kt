@@ -458,7 +458,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val selector = (activity as MainActivity).torrentsAdapter.selector
             val selectedCount = selector.selectedCount
-            return AlertDialog.Builder(activity)
+
+            val dialog = AlertDialog.Builder(activity)
                     .setMessage(activity.resources.getQuantityString(R.plurals.remove_torrents_message,
                                                                      selectedCount,
                                                                      selectedCount))
@@ -469,6 +470,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                            (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
                         selector.actionMode?.finish()
                     }).create()
+
+            dialog.setOnShowListener {
+                val deleteFilesCheckBox = dialog.findViewById(R.id.delete_files_check_box) as CheckBox
+                deleteFilesCheckBox.isChecked = Settings.deleteFiles
+            }
+
+            return dialog
         }
     }
 }

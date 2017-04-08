@@ -395,4 +395,9 @@
     <string name="prefs_background_service_title">Enable background service</string>
     <string name="prefs_background_service_summary">Service is stopped when app is removed from recent apps screen unless persistent notification is enabled</string>
     <string name="prefs_persistent_notification_title">Show persistent notification</string>
+
+    <string name="appearance">Appearance</string>
+    <string name="torrents">Torrents</string>
+
+    <string name="prefs_delete_files_title">Delete files on the hard disk when removing torrent</string>
 </resources>

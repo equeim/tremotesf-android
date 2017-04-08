@@ -1,9 +1,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/prefs_dark_theme_key"
-        android:summary="@string/prefs_dark_theme_summary"
-        android:title="@string/prefs_dark_theme_title"/>
+    <PreferenceCategory android:title="@string/appearance">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefs_dark_theme_key"
+            android:summary="@string/prefs_dark_theme_summary"
+            android:title="@string/prefs_dark_theme_title"/>
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">
         <CheckBoxPreference
@@ -17,5 +19,12 @@
             android:dependency="@string/prefs_background_service_key"
             android:key="@string/prefs_persistent_notification_key"
             android:title="@string/prefs_persistent_notification_title"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/torrents">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_delete_files_key"
+            android:title="@string/prefs_delete_files_title"/>
     </PreferenceCategory>
 </PreferenceScreen>

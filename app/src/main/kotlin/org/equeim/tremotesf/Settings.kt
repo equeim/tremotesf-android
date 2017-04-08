@@ -40,6 +40,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var darkThemeKey: String
     private lateinit var backgroundServiceKey: String
     private lateinit var persistentNotificationKey: String
+    private lateinit var deleteFilesKey: String
 
     private val darkTheme: Boolean
         get() {
@@ -72,6 +73,11 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     val showPersistentNotification: Boolean
         get() {
             return preferences.getBoolean(persistentNotificationKey, false)
+        }
+
+    val deleteFiles: Boolean
+        get() {
+            return preferences.getBoolean(deleteFilesKey, false)
         }
 
     var torrentsSortMode: TorrentsAdapter.SortMode
@@ -133,5 +139,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
         backgroundServiceKey = context.getString(R.string.prefs_background_service_key)
         persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
+        deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
     }
 }
