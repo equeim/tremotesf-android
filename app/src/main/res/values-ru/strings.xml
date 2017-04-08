@@ -391,4 +391,11 @@
     <string name="prefs_background_service_title">Включить фоновый сервис</string>
     <string name="prefs_background_service_summary">Сервис останавливается, когда приложение удаляется из списка недавних, если постоянное уведомление выключено</string>
     <string name="prefs_persistent_notification_title">Показывать постоянное уведомление</string>
+
+    <string name="appearance">Внешний вид</string>
+    <string name="torrents">Торренты</string>
+
+    <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
+
+    <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 </resources>
