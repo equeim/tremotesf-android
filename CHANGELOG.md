@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.5.1] - 2017-04-13
+### Fixed
+- Crashes in torrent's files view
+
 ## [1.5.0] - 2017-04-09
 ### Added
 - Option to delete torrent's files from hard disk by default when removing torrent
