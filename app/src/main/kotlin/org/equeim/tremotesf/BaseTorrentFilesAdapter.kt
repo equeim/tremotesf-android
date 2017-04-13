@@ -48,7 +48,7 @@ import com.amjjd.alphanum.AlphanumericComparator
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
-abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -189,7 +189,12 @@ abstract class BaseTorrentFilesAdapter(protected val rootDirectory: Directory) :
         selector.saveInstanceState(outState)
     }
 
-    fun restoreInstanceState(savedInstanceState: Bundle?) {
+    fun restoreInstanceState(savedInstanceState: Bundle?, newRootDirectory: Directory? = null) {
+        if (newRootDirectory != null) {
+            rootDirectory = newRootDirectory
+            currentDirectory = rootDirectory
+        }
+
         var root = true
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY)) {

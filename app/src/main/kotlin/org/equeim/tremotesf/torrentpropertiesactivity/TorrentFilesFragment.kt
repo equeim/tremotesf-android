@@ -82,7 +82,7 @@ class TorrentFilesFragment : Fragment() {
         fileRenamed(filePath, newName)
     }
 
-    val rootDirectory = BaseTorrentFilesAdapter.Directory()
+    var rootDirectory = BaseTorrentFilesAdapter.Directory()
     private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
     private var treeCreated = false
@@ -232,7 +232,7 @@ class TorrentFilesFragment : Fragment() {
         TreeCreationTask(WeakReference(this), fileJsons, fileStatsJsons).execute()
     }
 
-    private fun endCreatingTree(rootDirectoryChildren: List<BaseTorrentFilesAdapter.Item>,
+    private fun endCreatingTree(rootDirectory: BaseTorrentFilesAdapter.Directory,
                                 files: List<BaseTorrentFilesAdapter.File>) {
         creatingTree = false
         treeCreated = true
@@ -243,14 +243,14 @@ class TorrentFilesFragment : Fragment() {
             return
         }
 
-        rootDirectory.children.addAll(rootDirectoryChildren)
+        this.rootDirectory = rootDirectory
         this.files.addAll(files)
 
         if (updateAfterCreate) {
             doUpdateTree()
         }
 
-        adapter?.restoreInstanceState(null)
+        adapter?.restoreInstanceState(null, rootDirectory)
     }
 
     private fun updateTree() {
@@ -336,7 +336,7 @@ class TorrentFilesFragment : Fragment() {
         }
 
         override fun onPostExecute(result: Any?) {
-            fragment.get()?.endCreatingTree(rootDirectory.children, files)
+            fragment.get()?.endCreatingTree(rootDirectory, files)
         }
     }
 }
