@@ -1,3 +1,5 @@
+# Project is temporarily suspended. I won't be able to support my projects until 2018 spring
+
 # Tremotesf
 Android remote GUI for transmission-daemon.
 
