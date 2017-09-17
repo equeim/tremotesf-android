@@ -47,6 +47,7 @@
 
     <!-- e.g. "example.com (42)" -->
     <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="folders_spinner_text">%1$s (%2$d)</string>
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selected</item>
@@ -82,6 +83,7 @@
     <string name="details">Details</string>
     <string name="files">Files</string>
     <string name="trackers">Trackers</string>
+    <string name="folders">Folders</string>
     <string name="peers">Peers</string>
     <string name="limits">Limits</string>
 

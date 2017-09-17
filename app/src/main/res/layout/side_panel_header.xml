@@ -62,6 +62,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
+
+        <Spinner
+            android:id="@+id/folders_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
     </LinearLayout>
 
     <View
