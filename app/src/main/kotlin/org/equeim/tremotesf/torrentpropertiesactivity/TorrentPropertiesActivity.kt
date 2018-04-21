@@ -351,7 +351,7 @@ class TorrentPropertiesActivity : BaseActivity() {
         }
 
 
-        override fun instantiateItem(container: ViewGroup?, position: Int): Any {
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val fragment = super.instantiateItem(container, position)
             when (position) {
                 TAB_DETAILS -> {

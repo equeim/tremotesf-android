@@ -317,7 +317,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 return InfoFragment()
             }
 
-            override fun instantiateItem(container: ViewGroup?, position: Int): Any {
+            override fun instantiateItem(container: ViewGroup, position: Int): Any {
                 val fragment = super.instantiateItem(container, position)
                 if (position == 0) {
                     infoFragment = fragment as InfoFragment
@@ -428,7 +428,7 @@ class AddTorrentFileActivity : BaseActivity() {
             }
 
             override fun onCreateViewHolder(parent: ViewGroup,
-                                            viewType: Int): RecyclerView.ViewHolder? {
+                                            viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
                     return ItemHolder(this,
                                       selector,

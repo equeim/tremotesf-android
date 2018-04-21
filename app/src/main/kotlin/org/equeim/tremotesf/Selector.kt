@@ -176,7 +176,7 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
                                                          View.OnClickListener,
                                                          View.OnLongClickListener {
         abstract var item: T
-        private val selectedBackground = itemView.findViewById(R.id.selected_background_view).background
+        private val selectedBackground: View = itemView.findViewById(R.id.selected_background_view)
 
         init {
             itemView.setOnClickListener(this)
@@ -199,7 +199,8 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
         }
 
         fun updateSelectedBackground() {
-            selectedBackground.level = if (selector.isSelected(item)) 1 else 0
+            selectedBackground
+            selectedBackground.background.level = if (selector.isSelected(item)) 1 else 0
         }
     }
 

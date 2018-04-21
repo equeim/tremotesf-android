@@ -71,7 +71,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             return activity.torrent
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_file_list_item,
                                                                    parent,

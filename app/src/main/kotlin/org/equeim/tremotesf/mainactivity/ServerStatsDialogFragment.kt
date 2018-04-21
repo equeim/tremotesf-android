@@ -51,16 +51,16 @@ class ServerStatsDialogFragment : DialogFragment() {
                 .setPositiveButton(R.string.close, null).create()
 
         dialog.setOnShowListener {
-            val sessionDownloadedTextView = dialog.findViewById(R.id.session_downloaded_text_view) as TextView
-            val sessionUploadedTextView = dialog.findViewById(R.id.session_uploaded_text_view) as TextView
-            val sessionRatioTextView = dialog.findViewById(R.id.session_ratio_text_view) as TextView
-            val sessionDurationTextView = dialog.findViewById(R.id.session_duration_text_view) as TextView
+            val sessionDownloadedTextView = dialog.findViewById<TextView>(R.id.session_downloaded_text_view)!!
+            val sessionUploadedTextView = dialog.findViewById<TextView>(R.id.session_uploaded_text_view)!!
+            val sessionRatioTextView = dialog.findViewById<TextView>(R.id.session_ratio_text_view)!!
+            val sessionDurationTextView = dialog.findViewById<TextView>(R.id.session_duration_text_view)!!
 
-            val startedTimesTextView = dialog.findViewById(R.id.started_timed_text_view) as TextView
-            val totalDownloadedTextView = dialog.findViewById(R.id.total_downloaded_text_view) as TextView
-            val totalUploadedTextView = dialog.findViewById(R.id.total_uploaded_text_view) as TextView
-            val totalRatioTextView = dialog.findViewById(R.id.total_ratio_text_view) as TextView
-            val totalDurationTextView = dialog.findViewById(R.id.total_duration_text_view) as TextView
+            val startedTimesTextView = dialog.findViewById<TextView>(R.id.started_timed_text_view)!!
+            val totalDownloadedTextView = dialog.findViewById<TextView>(R.id.total_downloaded_text_view)!!
+            val totalUploadedTextView = dialog.findViewById<TextView>(R.id.total_uploaded_text_view)!!
+            val totalRatioTextView = dialog.findViewById<TextView>(R.id.total_ratio_text_view)!!
+            val totalDurationTextView = dialog.findViewById<TextView>(R.id.total_duration_text_view)!!
 
             val ratioFormat = DecimalFormat("0.00")
 

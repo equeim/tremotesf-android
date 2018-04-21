@@ -159,7 +159,7 @@ private class FilePickerAdapter(private val activity: FilePickerActivity) : Recy
         return TYPE_ITEM
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_HEADER) {
             return HeaderHolder(activity.layoutInflater.inflate(R.layout.up_list_item,
                                                                 parent,

@@ -472,7 +472,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     }).create()
 
             dialog.setOnShowListener {
-                val deleteFilesCheckBox = dialog.findViewById(R.id.delete_files_check_box) as CheckBox
+                val deleteFilesCheckBox = dialog.findViewById<CheckBox>(R.id.delete_files_check_box)!!
                 deleteFilesCheckBox.isChecked = Settings.deleteFiles
             }
 

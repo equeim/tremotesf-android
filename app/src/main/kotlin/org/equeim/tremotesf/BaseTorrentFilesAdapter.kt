@@ -97,13 +97,13 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         return currentItems.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_HEADER) {
             return HeaderHolder(LayoutInflater.from(parent.context).inflate(R.layout.up_list_item,
                                                                             parent,
                                                                             false))
         }
-        return null
+        throw InvalidViewTypeException();
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -584,4 +584,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
         override var changed = false
     }
+
+    class InvalidViewTypeException : Exception()
 }

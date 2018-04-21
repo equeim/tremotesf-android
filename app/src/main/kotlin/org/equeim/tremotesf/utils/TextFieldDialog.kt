@@ -34,14 +34,14 @@ fun createTextFieldDialog(context: Context,
     val dialog = builder.create()
 
     dialog.setOnShowListener {
-        val textFieldLayout = dialog.findViewById(R.id.text_field_layout) as TextInputLayout
+        val textFieldLayout = dialog.findViewById<TextInputLayout>(R.id.text_field_layout)!!
         textFieldLayout.hint = hint
 
-        val textField = dialog.findViewById(R.id.text_field) as TextView
+        val textField = dialog.findViewById<TextView>(R.id.text_field)!!
         textField.inputType = inputType
         textField.text = defaultText
 
-        val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
         okButton.isEnabled = textField.text.isNotEmpty()
 
         textField.addTextChangedListener(object : TextWatcher {
