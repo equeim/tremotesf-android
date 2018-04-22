@@ -839,9 +839,9 @@ object Rpc {
                                    if (error == null) {
                                        callOnSuccess?.invoke(jsonObject!!)
                                    } else {
-                                       when (response.httpStatusCode) {
+                                       when (response.statusCode) {
                                            HttpURLConnection.HTTP_CONFLICT -> {
-                                               val headers = response.httpResponseHeaders
+                                               val headers = response.headers
                                                if (headers.containsKey(SESSION_ID_HEADER)) {
                                                    sessionId = headers[SESSION_ID_HEADER]!!.first()
                                                    postRequest(data, callOnSuccess)
