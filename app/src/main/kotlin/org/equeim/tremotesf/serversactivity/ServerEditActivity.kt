@@ -20,9 +20,7 @@
 package org.equeim.tremotesf.serversactivity
 
 import android.app.Dialog
-
 import android.os.Bundle
-
 import android.widget.EditText
 
 import android.view.LayoutInflater

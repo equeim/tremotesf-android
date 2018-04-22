@@ -23,13 +23,9 @@ import java.text.Collator
 import java.util.Comparator
 
 import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
-
 import android.os.Bundle
 
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.InputType
 import android.text.format.DateUtils
 
 import android.view.LayoutInflater
@@ -37,7 +33,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 
 import android.widget.TextView
 
@@ -46,7 +41,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
-import android.text.InputType
 
 import com.amjjd.alphanum.AlphanumericComparator
 
@@ -215,7 +209,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         }
     }
 
-    private inner class ActionModeCallback() : Selector.ActionModeCallback<Tracker>() {
+    private inner class ActionModeCallback : Selector.ActionModeCallback<Tracker>() {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.trackers_context_menu, menu)
             return true

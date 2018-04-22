@@ -103,7 +103,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                                                                             parent,
                                                                             false))
         }
-        throw InvalidViewTypeException();
+        throw InvalidViewTypeException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

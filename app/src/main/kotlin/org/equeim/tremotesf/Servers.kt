@@ -19,8 +19,9 @@
 
 package org.equeim.tremotesf
 
-import android.annotation.SuppressLint
 import java.io.FileNotFoundException
+
+import android.annotation.SuppressLint
 import android.content.Context
 
 import com.google.gson.GsonBuilder

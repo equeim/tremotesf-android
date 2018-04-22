@@ -26,10 +26,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.support.v4.app.Fragment
-
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent

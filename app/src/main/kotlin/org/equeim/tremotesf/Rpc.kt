@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf
 
-import android.annotation.SuppressLint
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URI
@@ -44,6 +43,7 @@ import java.util.Timer
 
 import kotlin.concurrent.schedule
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler

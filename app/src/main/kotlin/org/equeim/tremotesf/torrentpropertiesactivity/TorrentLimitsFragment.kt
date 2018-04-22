@@ -204,10 +204,6 @@ class TorrentLimitsFragment : Fragment() {
         update()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     fun update() {
         torrent = (activity as TorrentPropertiesActivity).torrent
 

@@ -47,6 +47,7 @@ import android.support.v7.widget.Toolbar
 
 import android.support.design.widget.Snackbar
 
+import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
 import org.equeim.tremotesf.BaseActivity
@@ -68,7 +69,6 @@ import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.main_activity.*
-import org.equeim.tremotesf.AboutActivity
 
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
