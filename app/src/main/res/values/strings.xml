@@ -209,7 +209,6 @@
 
     <string name="empty_field_error">This field can\'t be empty</string>
 
-    <string name="overwrite_server">Overwrite server</string>
     <string name="server_exists">Server with this name already exists</string>
     <string name="overwrite">Overwrite</string>
 

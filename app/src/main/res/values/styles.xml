@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="applicationTheme" type="style">@style/AppTheme.Dark</item>
-
     <style name="AppTheme"/>
 
     <style name="AppTheme.Dark" parent="@style/Theme.Design">
@@ -50,7 +48,7 @@
         <item name="downloadIcon">@drawable/ic_file_download_black_24dp</item>
         <item name="priorityIcon">@drawable/ic_priority_high_black_24dp</item>
         <item name="homeIcon">@drawable/ic_home_black_24dp</item>
-        <item name="startIcon">@drawable/ic_play_arrow_black_enabled_24dp</item>
+        <item name="startIcon">@drawable/ic_play_arrow_black_24dp</item>
         <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
         <item name="refreshIcon">@drawable/ic_refresh_black_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_black</item>

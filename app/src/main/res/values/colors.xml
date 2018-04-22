@@ -2,5 +2,4 @@
 <resources>
     <color name="list_item_selected_color_dark">#26ffffff</color>
     <color name="list_item_selected_color_light">#26000000</color>
-    <color name="red">#26ff0000</color>
 </resources>

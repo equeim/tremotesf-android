@@ -213,7 +213,6 @@
 
     <string name="empty_field_error">Это поле должно быть заполнено</string>
 
-    <string name="overwrite_server">Перезаписать сервер</string>
     <string name="server_exists">Сервер с эти именем уже существует</string>
     <string name="overwrite">Перезаписать</string>
 
