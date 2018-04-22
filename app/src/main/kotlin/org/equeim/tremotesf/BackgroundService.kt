@@ -20,6 +20,7 @@
 package org.equeim.tremotesf
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -38,9 +39,11 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
 
-private const val PERSISTENT_NOTIFICATION_ID = 1
+private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
+private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
 private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
+private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
 
 class BackgroundService : Service() {
     companion object {
@@ -70,6 +73,15 @@ class BackgroundService : Service() {
             Utils.initApp(applicationContext)
 
             notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.createNotificationChannels(listOf(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
+                                                                                          getString(R.string.persistent_notification_channel_name),
+                                                                                          NotificationManager.IMPORTANCE_LOW),
+                                                                      NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
+                                                                                          getString(R.string.finished_torrents_channel_name),
+                                                                                          NotificationManager.IMPORTANCE_DEFAULT)))
+            }
 
             if (Settings.showPersistentNotification) {
                 startForeground()
@@ -132,6 +144,7 @@ class BackgroundService : Service() {
                         mainActivityIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 ))
+                .setChannelId(PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
 
         if (Servers.hasServers) {
@@ -210,6 +223,7 @@ class BackgroundService : Service() {
                                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
                                            .setAutoCancel(true)
                                            .setDefaults(Notification.DEFAULT_ALL)
+                                           .setChannelId(FINISHED_NOTIFICATION_CHANNEL_ID)
                                            .build())
     }
 }
