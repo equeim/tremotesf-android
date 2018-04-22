@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
-import android.app.Fragment
 import android.os.Bundle
 
 import android.text.Editable
@@ -28,6 +27,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
+import android.support.v4.app.Fragment
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -40,11 +41,11 @@ class QueueFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity.title = getString(R.string.server_settings_queue)
+        activity?.title = getString(R.string.server_settings_queue)
         return inflater.inflate(R.layout.server_settings_queue_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         download_queue_check_box.isChecked = Rpc.serverSettings.downloadQueueEnabled

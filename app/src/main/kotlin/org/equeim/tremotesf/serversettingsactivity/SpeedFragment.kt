@@ -23,10 +23,7 @@ import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
-import android.app.Activity
 import android.app.Dialog
-import android.app.DialogFragment
-import android.app.Fragment
 import android.app.TimePickerDialog
 
 import android.content.Context
@@ -45,6 +42,10 @@ import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.TimePicker
+
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -112,7 +113,7 @@ class SpeedFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity.title = getString(R.string.server_settings_speed)
+        activity?.title = getString(R.string.server_settings_speed)
         return inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
     }
 
@@ -121,7 +122,7 @@ class SpeedFragment : Fragment() {
         (activity as ServerSettingsActivity).hideKeyboard()
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val limitsFilters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
@@ -238,7 +239,7 @@ class SpeedFragment : Fragment() {
         end_time_item.beginTime = false
         end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
 
-        days_spinner.adapter = ArraySpinnerAdapter(activity, daysSpinnerItems.toTypedArray())
+        days_spinner.adapter = ArraySpinnerAdapter(context!!, daysSpinnerItems.toTypedArray())
         days_spinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays))
         days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
@@ -279,7 +280,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
             args.putInt("hourOfDay", calendar.get(Calendar.HOUR_OF_DAY))
             args.putInt("minute", calendar.get(Calendar.MINUTE))
             fragment.arguments = args
-            fragment.show((context as Activity).fragmentManager, null)
+            fragment.show((context as AppCompatActivity).supportFragmentManager, null)
         }
     }
 
@@ -305,15 +306,15 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return TimePickerDialog(activity,
                                     this,
-                                    arguments.getInt("hourOfDay"),
-                                    arguments.getInt("minute"),
+                                    arguments!!.getInt("hourOfDay"),
+                                    arguments!!.getInt("minute"),
                                     android.text.format.DateFormat.is24HourFormat(activity))
         }
 
         override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-            val speedFragment = fragmentManager.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
+            val speedFragment = fragmentManager!!.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
             if (speedFragment != null) {
-                if (arguments.getBoolean("beginTime")) {
+                if (arguments!!.getBoolean("beginTime")) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
                     Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
                 } else {

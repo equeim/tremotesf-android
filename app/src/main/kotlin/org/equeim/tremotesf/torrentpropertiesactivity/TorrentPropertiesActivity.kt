@@ -20,8 +20,6 @@
 package org.equeim.tremotesf.torrentpropertiesactivity
 
 import android.app.Dialog
-import android.app.DialogFragment
-import android.app.Fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -38,10 +36,12 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.Toolbar
-import android.support.v13.app.FragmentPagerAdapter
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -79,28 +79,28 @@ class TorrentPropertiesActivity : BaseActivity() {
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
-                    fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                    supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
                             ?.let { fragment ->
-                        fragmentManager.beginTransaction().remove(fragment).commit()
+                                supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    fragmentManager.findFragmentByTag(RemoveDialogFragment.TAG)?.let { fragment ->
-                        fragmentManager.beginTransaction().remove(fragment).commit()
+                    supportFragmentManager.findFragmentByTag(RemoveDialogFragment.TAG)?.let { fragment ->
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    fragmentManager.findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
+                    supportFragmentManager.findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
                             ?.let { fragment ->
-                                fragmentManager.beginTransaction().remove(fragment).commit()
+                                supportFragmentManager.beginTransaction().remove(fragment).commit()
                             }
 
-                    fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)
+                    supportFragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)
                             ?.let { fragment ->
-                        fragmentManager.beginTransaction().remove(fragment).commit()
+                                supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    fragmentManager.findFragmentByTag(TrackersAdapter.RemoveDialogFragment.TAG)
+                    supportFragmentManager.findFragmentByTag(TrackersAdapter.RemoveDialogFragment.TAG)
                             ?.let { fragment ->
-                        fragmentManager.beginTransaction().remove(fragment).commit()
+                                supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
                 }
                 updatePlaceholderVisibility()
@@ -199,9 +199,9 @@ class TorrentPropertiesActivity : BaseActivity() {
         tab_layout.setupWithViewPager(pager)
 
         fab.setOnClickListener {
-            if (fragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
+            if (supportFragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
                 val fragment = TrackersAdapter.EditTrackerDialogFragment()
-                fragment.show(fragmentManager, TrackersAdapter.EditTrackerDialogFragment.TAG)
+                fragment.show(supportFragmentManager, TrackersAdapter.EditTrackerDialogFragment.TAG)
             }
         }
 
@@ -255,8 +255,8 @@ class TorrentPropertiesActivity : BaseActivity() {
             R.id.pause -> Rpc.pauseTorrents(listOf(torrent!!.id))
             R.id.check -> Rpc.checkTorrents(listOf(torrent!!.id))
             R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(torrent!!)
-                    .show(fragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
-            R.id.remove -> RemoveDialogFragment.create(torrent!!.id).show(fragmentManager,
+                    .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
+            R.id.remove -> RemoveDialogFragment.create(torrent!!.id).show(supportFragmentManager,
                                                                           RemoveDialogFragment.TAG)
             else -> return false
         }
@@ -328,7 +328,7 @@ class TorrentPropertiesActivity : BaseActivity() {
         }
     }
 
-    inner class PagerAdapter : FragmentPagerAdapter(fragmentManager) {
+    inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager) {
         var detailsFragment: TorrentDetailsFragment? = null
         var filesFragment: TorrentFilesFragment? = null
         var trackersFragment: TrackersFragment? = null
@@ -400,14 +400,14 @@ class TorrentPropertiesActivity : BaseActivity() {
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(activity)
+            return AlertDialog.Builder(context!!)
                     .setMessage(R.string.remove_torrent_message)
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
-                        Rpc.removeTorrents(listOf(arguments.getInt("id")),
+                        Rpc.removeTorrents(listOf(arguments!!.getInt("id")),
                                            (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
-                        activity.finish()
+                        activity!!.finish()
                     }).create()
         }
     }

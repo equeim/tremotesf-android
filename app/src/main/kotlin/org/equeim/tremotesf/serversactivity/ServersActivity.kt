@@ -22,12 +22,11 @@ package org.equeim.tremotesf.serversactivity
 import java.text.Collator
 import java.util.Comparator
 
-import android.app.Activity
 import android.app.Dialog
-import android.app.DialogFragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 
 import android.view.LayoutInflater
 import android.view.Menu
@@ -39,6 +38,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
 
 import android.support.v7.widget.DefaultItemAnimator
@@ -188,7 +188,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
         }
     }
 
-    private class ActionModeCallback(private val activity: Activity) : Selector.ActionModeCallback<Server>() {
+    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Server>() {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
             return true
@@ -200,7 +200,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
             }
 
             if (selector.hasSelection && item.itemId == R.id.remove) {
-                RemoveDialogFragment().show(activity.fragmentManager, null)
+                RemoveDialogFragment().show(activity.supportFragmentManager, null)
                 return true
             }
 
@@ -210,10 +210,10 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
         class RemoveDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
                 val selectedCount = (activity as ServersActivity).adapter.selector.selectedCount
-                return AlertDialog.Builder(activity)
-                        .setMessage(activity.resources.getQuantityString(R.plurals.remove_servers_message,
-                                                                         selectedCount,
-                                                                         selectedCount))
+                return AlertDialog.Builder(context!!)
+                        .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
+                                                                selectedCount,
+                                                                selectedCount))
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.remove, { _, _ ->
                             val adapter = (activity as ServersActivity).adapter

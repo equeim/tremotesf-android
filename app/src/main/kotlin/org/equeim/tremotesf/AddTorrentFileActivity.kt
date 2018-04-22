@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import android.Manifest
-import android.app.Fragment
 
 import android.content.ContentResolver
 import android.content.Context
@@ -40,6 +39,8 @@ import android.view.inputmethod.InputMethodManager
 
 import android.widget.TextView
 
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 
 import android.support.v7.app.AppCompatActivity
@@ -50,7 +51,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 
-import android.support.v13.app.FragmentPagerAdapter
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
@@ -127,7 +127,7 @@ class AddTorrentFileActivity : BaseActivity() {
         }
 
         override fun onRequestPermissionsResult(requestCode: Int,
-                                                permissions: Array<out String>?,
+                                                permissions: Array<out String>,
                                                 grantResults: IntArray) {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
                 torrentFileParser.load(activity.intent.data, activity.applicationContext)
@@ -346,7 +346,7 @@ class AddTorrentFileActivity : BaseActivity() {
                                     false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
@@ -379,16 +379,16 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             retainInstance = true
-            mainFragment = fragmentManager.findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
+            mainFragment = fragmentManager!!.findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
         }
 
         override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup,
+                                  container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
             return inflater.inflate(R.layout.add_torrent_file_files_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             val parser = mainFragment.torrentFileParser

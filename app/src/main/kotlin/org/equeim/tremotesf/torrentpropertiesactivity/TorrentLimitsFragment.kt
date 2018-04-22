@@ -21,7 +21,6 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 
 import java.text.DecimalFormat
 
-import android.app.Fragment
 import android.os.Bundle
 
 import android.text.Editable
@@ -32,6 +31,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
+
+import android.support.v4.app.Fragment
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent
@@ -47,12 +48,12 @@ class TorrentLimitsFragment : Fragment() {
     private var updating = false
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup,
+                              container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.torrent_limits_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         global_limits_check_box.setOnCheckedChangeListener { _, checked ->

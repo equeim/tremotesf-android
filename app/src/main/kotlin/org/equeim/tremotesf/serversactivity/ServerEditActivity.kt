@@ -20,9 +20,6 @@
 package org.equeim.tremotesf.serversactivity
 
 import android.app.Dialog
-import android.app.DialogFragment
-import android.app.Fragment
-import android.app.FragmentTransaction
 
 import android.os.Bundle
 
@@ -35,6 +32,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 
 import org.equeim.tremotesf.BaseActivity
@@ -69,7 +69,7 @@ class ServerEditActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            fragmentManager
+            supportFragmentManager
                     .beginTransaction()
                     .replace(android.R.id.content, MainFragment(), MainFragment.TAG)
                     .commit()
@@ -77,8 +77,8 @@ class ServerEditActivity : BaseActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (fragmentManager.backStackEntryCount > 0) {
-            fragmentManager.popBackStack()
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
             return true
         }
         return super.onSupportNavigateUp()
@@ -111,7 +111,7 @@ class ServerEditActivity : BaseActivity() {
             return inflater.inflate(R.layout.server_edit_activity_main_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             port_edit.filters = arrayOf(IntFilter(0..65535))
@@ -121,7 +121,7 @@ class ServerEditActivity : BaseActivity() {
             certificates_item.isEnabled = false
             certificates_item.setChildrenEnabled(false)
             certificates_item.setOnClickListener {
-                fragmentManager
+                fragmentManager!!
                         .beginTransaction()
                         .replace(android.R.id.content, CertificatesFragment())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -249,11 +249,11 @@ class ServerEditActivity : BaseActivity() {
 
         class OverwriteDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                return AlertDialog.Builder(activity)
+                return AlertDialog.Builder(context!!)
                         .setMessage(R.string.server_exists)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.overwrite, { _, _ ->
-                            (activity.fragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
+                            (activity!!.supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
                         }).create()
             }
         }
@@ -274,7 +274,7 @@ class ServerEditActivity : BaseActivity() {
                                     false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             self_signed_certificate_check_box.isChecked = false

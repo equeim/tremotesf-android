@@ -20,19 +20,18 @@
 package org.equeim.tremotesf
 
 import android.os.Bundle
-import android.preference.PreferenceFragment
+import android.support.v7.preference.PreferenceFragmentCompat
 
 class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
-        fragmentManager.beginTransaction().replace(android.R.id.content, Fragment()).commit()
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, Fragment()).commit()
     }
 
-    class Fragment : PreferenceFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.preferences)
+    class Fragment : PreferenceFragmentCompat() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.preferences, rootKey)
         }
     }
 }

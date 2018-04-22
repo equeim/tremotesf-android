@@ -21,13 +21,14 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 
 import java.text.DecimalFormat
 
-import android.app.Fragment
 import android.os.Bundle
 import android.text.format.DateUtils
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
+import android.support.v4.app.Fragment
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.Utils
@@ -36,14 +37,13 @@ import kotlinx.android.synthetic.main.torrent_details_fragment.*
 
 
 class TorrentDetailsFragment : Fragment() {
-
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup,
+                              container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.torrent_details_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hash_text_view.text = (activity as TorrentPropertiesActivity).hash
     }
@@ -54,7 +54,8 @@ class TorrentDetailsFragment : Fragment() {
     }
 
     fun update() {
-        if (view != null) {
+        val activity = this.activity
+        if (activity != null && view != null) {
             val torrent = (activity as TorrentPropertiesActivity).torrent
             if (torrent == null) {
                 return

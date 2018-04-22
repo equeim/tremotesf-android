@@ -23,14 +23,13 @@ import java.text.Collator
 import java.text.DecimalFormat
 import java.util.Comparator
 
-import android.app.Activity
 import android.app.Dialog
-import android.app.DialogFragment
 
 import android.content.Intent
 
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 
 import android.text.InputType
 
@@ -45,6 +44,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
@@ -355,7 +355,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
     }
 
-    private class ActionModeCallback(private val activity: Activity) : Selector.ActionModeCallback<Torrent>() {
+    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Torrent>() {
         private var startItem: MenuItem? = null
         private var pauseItem: MenuItem? = null
         private var setLocationItem: MenuItem? = null
@@ -399,8 +399,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 R.id.pause -> Rpc.pauseTorrents(selector.selectedItems.map(Torrent::id))
                 R.id.check -> Rpc.checkTorrents(selector.selectedItems.map(Torrent::id))
                 R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.first())
-                        .show(activity.fragmentManager, SetLocationDialogFragment.TAG)
-                R.id.remove -> RemoveDialogFragment().show(activity.fragmentManager,
+                        .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
+                R.id.remove -> RemoveDialogFragment().show(activity.supportFragmentManager,
                                                            RemoveDialogFragment.TAG)
                 else -> return false
             }
@@ -433,15 +433,15 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return createTextFieldDialog(activity,
+            return createTextFieldDialog(context!!,
                                          null,
                                          R.layout.set_location_dialog,
-                                         activity.getString(R.string.location),
+                                         getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         arguments.getString(LOCATION)) {
+                                         arguments!!.getString(LOCATION)) {
                 val textField = dialog.findViewById(R.id.text_field) as TextView
                 val moveFilesCheckBox = dialog.findViewById(R.id.move_files_check_box) as CheckBox
-                Rpc.setTorrentLocation(arguments.getInt(TORRENT_ID),
+                Rpc.setTorrentLocation(arguments!!.getInt(TORRENT_ID),
                                        textField.text.toString(),
                                        moveFilesCheckBox.isChecked)
 
@@ -459,8 +459,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             val selector = (activity as MainActivity).torrentsAdapter.selector
             val selectedCount = selector.selectedCount
 
-            val dialog = AlertDialog.Builder(activity)
-                    .setMessage(activity.resources.getQuantityString(R.plurals.remove_torrents_message,
+            val dialog = AlertDialog.Builder(context!!)
+                    .setMessage(resources.getQuantityString(R.plurals.remove_torrents_message,
                                                                      selectedCount,
                                                                      selectedCount))
                     .setView(R.layout.remove_torrents_dialog)

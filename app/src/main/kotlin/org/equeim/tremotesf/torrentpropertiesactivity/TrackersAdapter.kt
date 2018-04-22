@@ -23,7 +23,6 @@ import java.text.Collator
 import java.util.Comparator
 
 import android.app.Dialog
-import android.app.DialogFragment
 import android.content.Context
 import android.content.DialogInterface
 
@@ -41,6 +40,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 import android.widget.TextView
+
+import android.support.v4.app.DialogFragment
 
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
@@ -173,13 +174,13 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                if (activity.fragmentManager.findFragmentByTag(EditTrackerDialogFragment.TAG) == null) {
+                if (activity.supportFragmentManager.findFragmentByTag(EditTrackerDialogFragment.TAG) == null) {
                     val fragment = EditTrackerDialogFragment()
                     val args = Bundle()
                     args.putInt(EditTrackerDialogFragment.TRACKER_ID, item.id)
                     args.putString(EditTrackerDialogFragment.ANNOUNCE, item.announce)
                     fragment.arguments = args
-                    fragment.show(activity.fragmentManager, EditTrackerDialogFragment.TAG)
+                    fragment.show(activity.supportFragmentManager, EditTrackerDialogFragment.TAG)
                 }
             } else {
                 super.onClick(view)
@@ -197,10 +198,10 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val trackerId = arguments?.getInt(TRACKER_ID) ?: -1
 
-            return createTextFieldDialog(activity,
+            return createTextFieldDialog(context!!,
                                          if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker,
                                          null,
-                                         activity.getString(R.string.tracker_announce_url),
+                                         getString(R.string.tracker_announce_url),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments?.getString(ANNOUNCE)) {
                 val torrent = (activity as TorrentPropertiesActivity).torrent
@@ -227,7 +228,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
             if (item.itemId == R.id.remove) {
                 RemoveDialogFragment.create(selector.selectedItems.map(Tracker::id).toIntArray())
-                        .show(activity.fragmentManager, RemoveDialogFragment.TAG)
+                        .show(activity.supportFragmentManager, RemoveDialogFragment.TAG)
                 return true
             }
 
@@ -249,12 +250,12 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val ids = arguments.getIntArray("ids")
+            val ids = arguments!!.getIntArray("ids")
 
-            return AlertDialog.Builder(activity)
-                    .setMessage(activity.resources.getQuantityString(R.plurals.remove_trackers_message,
-                                                                     ids.size,
-                                                                     ids.size))
+            return AlertDialog.Builder(context!!)
+                    .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,
+                                                            ids.size,
+                                                            ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
                         val activity = this.activity as TorrentPropertiesActivity

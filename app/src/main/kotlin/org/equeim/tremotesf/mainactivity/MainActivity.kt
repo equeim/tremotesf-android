@@ -100,14 +100,14 @@ class MainActivity : BaseActivity() {
             if (!Rpc.connected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
-                fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
                         ?.let { fragment ->
-                            fragmentManager.beginTransaction().remove(fragment).commit()
+                            supportFragmentManager.beginTransaction().remove(fragment).commit()
                         }
 
-                fragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
+                supportFragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
                         ?.let { fragment ->
-                            fragmentManager.beginTransaction().remove(fragment).commit()
+                            supportFragmentManager.beginTransaction().remove(fragment).commit()
                         }
 
                 if (menu != null) {
@@ -410,7 +410,7 @@ class MainActivity : BaseActivity() {
             R.id.add_torrent_link -> startActivity(Intent(this, AddTorrentLinkActivity::class.java))
             R.id.server_settings -> startActivity(Intent(this, ServerSettingsActivity::class.java))
             R.id.alternative_speed_limits -> { Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked }
-            R.id.server_stats -> ServerStatsDialogFragment().show(fragmentManager, null)
+            R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
             else -> return false
         }
 

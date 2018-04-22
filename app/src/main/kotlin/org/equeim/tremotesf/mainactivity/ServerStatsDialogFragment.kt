@@ -22,11 +22,11 @@ package org.equeim.tremotesf.mainactivity
 import java.text.DecimalFormat
 
 import android.app.Dialog
-import android.app.DialogFragment
 
 import android.os.Bundle
 import android.widget.TextView
 
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.View
 
@@ -45,7 +45,7 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(context!!)
                 .setTitle(R.string.server_stats)
                 .setView(R.layout.server_stats_dialog)
                 .setPositiveButton(R.string.close, null).create()
@@ -66,25 +66,25 @@ class ServerStatsDialogFragment : DialogFragment() {
 
             val update = {
                 val sessionStats = Rpc.serverStats.currentSession
-                sessionDownloadedTextView.text = Utils.formatByteSize(activity,
+                sessionDownloadedTextView.text = Utils.formatByteSize(context!!,
                                                                       sessionStats.downloaded)
-                sessionUploadedTextView.text = Utils.formatByteSize(activity,
+                sessionUploadedTextView.text = Utils.formatByteSize(context!!,
                                                                     sessionStats.uploaded)
                 sessionRatioTextView.text = ratioFormat.format(sessionStats.uploaded.toDouble() /
                                                                sessionStats.downloaded.toDouble())
-                sessionDurationTextView.text = Utils.formatDuration(activity, sessionStats.duration)
+                sessionDurationTextView.text = Utils.formatDuration(context!!, sessionStats.duration)
 
                 val totalStats = Rpc.serverStats.total
                 val sessionCount = totalStats.sessionCount
                 startedTimesTextView.text = resources.getQuantityString(R.plurals.started_times,
                                                                         sessionCount,
                                                                         sessionCount)
-                totalDownloadedTextView.text = Utils.formatByteSize(activity,
+                totalDownloadedTextView.text = Utils.formatByteSize(context!!,
                                                                     totalStats.downloaded)
-                totalUploadedTextView.text = Utils.formatByteSize(activity, totalStats.uploaded)
+                totalUploadedTextView.text = Utils.formatByteSize(context!!, totalStats.uploaded)
                 totalRatioTextView.text = ratioFormat.format(totalStats.uploaded.toDouble() /
                                                              totalStats.downloaded.toDouble())
-                totalDurationTextView.text = Utils.formatDuration(activity, totalStats.duration)
+                totalDurationTextView.text = Utils.formatDuration(context!!, totalStats.duration)
             }
 
             update()

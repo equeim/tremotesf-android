@@ -22,7 +22,6 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 import java.text.DecimalFormat
 
 import android.app.Dialog
-import android.app.DialogFragment
 import android.os.Bundle
 
 import android.text.InputType
@@ -36,6 +35,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 
+import android.support.v4.app.DialogFragment
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
@@ -176,7 +176,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                 }
 
                 RenameDialogFragment.create(torrent!!.id, pathParts.joinToString("/"), file.name)
-                        .show(activity.fragmentManager, RenameDialogFragment.TAG)
+                        .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
 
                 return true
             }
@@ -209,16 +209,16 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val fileName = arguments.getString(FILE_NAME)
-            return createTextFieldDialog(activity,
+            val fileName = arguments!!.getString(FILE_NAME)
+            return createTextFieldDialog(context!!,
                                          null,
                                          null,
                                          getString(R.string.file_name),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          fileName) {
-                val path = arguments.getString(FILE_PATH)
+                val path = arguments!!.getString(FILE_PATH)
                 val newName = (dialog.findViewById(R.id.text_field) as TextView).text.toString()
-                Rpc.renameTorrentFile(arguments.getInt(TORRENT_ID), path, newName)
+                Rpc.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
                 (activity as TorrentPropertiesActivity).actionMode?.finish()
             }
         }
