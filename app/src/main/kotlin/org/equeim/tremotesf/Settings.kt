@@ -107,7 +107,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.SortMode.Name
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_SORT_MODE, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_SORT_MODE, value.ordinal).apply()
         }
 
     var torrentsSortOrder: TorrentsAdapter.SortOrder
@@ -119,7 +119,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.SortOrder.Ascending
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).apply()
         }
 
     var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
@@ -131,7 +131,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.StatusFilterMode.All
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).apply()
         }
 
     var torrentsTrackerFilter: String
@@ -139,7 +139,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")
         }
         set(value) {
-            preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).commit()
+            preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).apply()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
