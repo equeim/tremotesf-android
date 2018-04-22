@@ -90,7 +90,7 @@ class TrackersFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        trackersAdapter!!.selector.saveInstanceState(outState)
+        trackersAdapter?.selector?.saveInstanceState(outState)
     }
 
     fun update() {
