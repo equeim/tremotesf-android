@@ -27,6 +27,8 @@ import android.app.Dialog
 
 import android.content.Intent
 
+import android.graphics.drawable.Drawable
+
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -330,7 +332,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         lateinit override var item: Torrent
 
         val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
-        val statusIconDrawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             nameTextView.compoundDrawables.first()
         } else {
             nameTextView.compoundDrawablesRelative.first()

@@ -76,7 +76,7 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
         const val UNLIMITED = 2
     }
 
-    val hashString = torrentJson["hashString"].asString
+    val hashString: String = torrentJson["hashString"].asString
 
     var name by SetChanged(String())
 

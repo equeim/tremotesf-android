@@ -256,7 +256,7 @@ class SpeedFragment : Fragment() {
 
 class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
     var beginTime = false
-    val calendar = Calendar.getInstance()
+    val calendar: Calendar = Calendar.getInstance()
     private val titleTextView: View
     private val textView: TextView
     private val format = DateFormat.getTimeInstance(DateFormat.SHORT)

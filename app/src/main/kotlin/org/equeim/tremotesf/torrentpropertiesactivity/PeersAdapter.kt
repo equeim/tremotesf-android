@@ -39,7 +39,7 @@ import org.equeim.tremotesf.utils.Utils
 
 
 private class Peer(peerJson: JsonObject) {
-    val address = peerJson["address"].asString
+    val address: String = peerJson["address"].asString
 
     var downloadSpeed = 0L
         private set(value) {
