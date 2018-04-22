@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.annotation.SuppressLint
 import java.io.FileNotFoundException
 import android.content.Context
 
@@ -75,9 +76,18 @@ class Server {
     override fun toString() = name
 }
 
+@SuppressLint("StaticFieldLeak")
 object Servers {
-    private var initialized = false
-    private lateinit var context: Context
+    var context: Context? = null
+        set(value) {
+            field = value
+            if (field == null) {
+                reset()
+            } else {
+                load()
+            }
+        }
+
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     val servers = mutableListOf<Server>()
@@ -108,18 +118,9 @@ object Servers {
             }
         }
 
-    fun init(context: Context) {
-        if (!initialized) {
-            this.context = context
-            initialized = true
-        }
-        reset()
-        load()
-    }
-
     private fun load() {
         try {
-            val stream = context.openFileInput(FILE_NAME)
+            val stream = context!!.openFileInput(FILE_NAME)
             try {
                 val jsonObject = JsonParser().parse(stream.reader()).asJsonObject
 
@@ -197,7 +198,7 @@ object Servers {
         val jsonObject = JsonObject()
         jsonObject.addProperty(CURRENT, currentServerField?.name)
         jsonObject.add(SERVERS, gson.toJsonTree(servers))
-        context.getFileStreamPath(FILE_NAME).writeText(gson.toJson(jsonObject))
+        context!!.getFileStreamPath(FILE_NAME).writeText(gson.toJson(jsonObject))
     }
 
     fun addServer(newServer: Server) {

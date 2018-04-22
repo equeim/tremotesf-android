@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.annotation.SuppressLint
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URI
@@ -79,6 +80,7 @@ private fun isResultSuccessful(jsonObject: JsonObject): Boolean {
     return jsonObject["result"].asString == "success"
 }
 
+@SuppressLint("StaticFieldLeak")
 object Rpc {
     enum class Status {
         Disconnected,
@@ -98,7 +100,13 @@ object Rpc {
         ServerIsTooOld,
     }
 
-    private lateinit var context: Context
+    var context: Context? = null
+        set(value) {
+            field = value
+            if (field != null) {
+                updateServer()
+            }
+        }
 
     //
     // status property
@@ -137,18 +145,18 @@ object Rpc {
         get() {
             return when (status) {
                 Status.Disconnected -> when (error) {
-                    Error.None -> context.getString(R.string.disconnected)
-                    Error.NoServers -> context.getString(R.string.no_servers)
-                    Error.InvalidServerUrl -> context.getString(R.string.invalid_server_url)
-                    Error.TimedOut -> context.getString(R.string.timed_out)
-                    Error.ConnectionError -> context.getString(R.string.connection_error)
-                    Error.Authentication -> context.getString(R.string.authentication_error)
-                    Error.ParsingError -> context.getString(R.string.parsing_error)
-                    Error.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
-                    Error.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                    Error.None -> context!!.getString(R.string.disconnected)
+                    Error.NoServers -> context!!.getString(R.string.no_servers)
+                    Error.InvalidServerUrl -> context!!.getString(R.string.invalid_server_url)
+                    Error.TimedOut -> context!!.getString(R.string.timed_out)
+                    Error.ConnectionError -> context!!.getString(R.string.connection_error)
+                    Error.Authentication -> context!!.getString(R.string.authentication_error)
+                    Error.ParsingError -> context!!.getString(R.string.parsing_error)
+                    Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
+                    Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
                 }
-                Status.Connecting -> context.getString(R.string.connecting)
-                Status.Connected -> context.getString(R.string.connected)
+                Status.Connecting -> context!!.getString(R.string.connecting)
+                Status.Connected -> context!!.getString(R.string.connected)
             }
         }
 
@@ -246,14 +254,9 @@ object Rpc {
 
     var torrentFinishedListener: ((Torrent) -> Unit)? = null
 
-    private var initialized = false
-    fun init(context: Context) {
-        if (!initialized) {
-            Servers.addCurrentServerListener { updateServer() }
-            initialized = true
-            this.context = context
-        }
-        updateServer()
+
+    init {
+        Servers.addCurrentServerListener { updateServer() }
     }
 
     fun connect() {
@@ -479,7 +482,7 @@ object Rpc {
 
                                 var torrent = torrents.find { it.id == id }
                                 if (torrent == null) {
-                                    torrent = Torrent(id, torrentJson, context)
+                                    torrent = Torrent(id, torrentJson, context!!)
                                 } else {
                                     val progress = torrent.percentDone
                                     torrent.update(torrentJson)

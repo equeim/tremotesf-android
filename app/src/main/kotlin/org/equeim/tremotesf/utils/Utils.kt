@@ -37,7 +37,6 @@ import org.equeim.tremotesf.BackgroundService
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 
 
@@ -48,9 +47,6 @@ object Utils {
         if (!appIsRunning) {
             Logger.d("init app")
             appIsRunning = true
-            Settings.init(context.applicationContext)
-            Servers.init(context.applicationContext)
-            Rpc.init(context.applicationContext)
             if (Settings.backgroundServiceEnabled) {
                 context.startService(Intent(context, BackgroundService::class.java))
             }

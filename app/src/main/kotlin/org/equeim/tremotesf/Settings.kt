@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -33,11 +34,25 @@ private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
 private const val TORRENTS_STATUS_FILTER = "torrentsStatusFilter"
 private const val TORRENTS_TRACKER_FILTER = "torrentsTrackerFilter"
 
+@SuppressLint("StaticFieldLeak")
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
-    private var initialized = false
-    private lateinit var context: Context
+    var context: Context? = null
+        set(value) {
+            field = value
+            if (field == null) {
+                preferences = null
+            } else {
+                preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                preferences!!.registerOnSharedPreferenceChangeListener(this)
 
-    private lateinit var preferences: SharedPreferences
+                darkThemeKey = context!!.getString(R.string.prefs_dark_theme_key)
+                backgroundServiceKey = context!!.getString(R.string.prefs_background_service_key)
+                persistentNotificationKey = context!!.getString(R.string.prefs_persistent_notification_key)
+                deleteFilesKey = context!!.getString(R.string.prefs_delete_files_key)
+            }
+        }
+
+    private var preferences: SharedPreferences? = null
 
     private lateinit var darkThemeKey: String
     private lateinit var backgroundServiceKey: String
@@ -46,7 +61,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val darkTheme: Boolean
         get() {
-            return preferences.getBoolean(darkThemeKey, true)
+            return preferences!!.getBoolean(darkThemeKey, true)
         }
 
     val theme: Int
@@ -69,70 +84,70 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     val backgroundServiceEnabled: Boolean
         get() {
-            return preferences.getBoolean(backgroundServiceKey, false)
+            return preferences!!.getBoolean(backgroundServiceKey, false)
         }
 
     val showPersistentNotification: Boolean
         get() {
-            return preferences.getBoolean(persistentNotificationKey, false)
+            return preferences!!.getBoolean(persistentNotificationKey, false)
         }
 
     val deleteFiles: Boolean
         get() {
-            return preferences.getBoolean(deleteFilesKey, false)
+            return preferences!!.getBoolean(deleteFilesKey, false)
         }
 
     var torrentsSortMode: TorrentsAdapter.SortMode
         get() {
-            val int = preferences.getInt(TORRENTS_SORT_MODE, 0)
+            val int = preferences!!.getInt(TORRENTS_SORT_MODE, 0)
             if (int in TorrentsAdapter.SortMode.values().indices) {
                 return TorrentsAdapter.SortMode.values()[int]
             }
             return TorrentsAdapter.SortMode.Name
         }
         set(value) {
-            preferences.edit().putInt(TORRENTS_SORT_MODE, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_SORT_MODE, value.ordinal).commit()
         }
 
     var torrentsSortOrder: TorrentsAdapter.SortOrder
         get() {
-            val int = preferences.getInt(TORRENTS_SORT_ORDER, 0)
+            val int = preferences!!.getInt(TORRENTS_SORT_ORDER, 0)
             if (int in TorrentsAdapter.SortOrder.values().indices) {
                 return TorrentsAdapter.SortOrder.values()[int]
             }
             return TorrentsAdapter.SortOrder.Ascending
         }
         set(value) {
-            preferences.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).commit()
         }
 
     var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
         get() {
-            val int = preferences.getInt(TORRENTS_STATUS_FILTER, 0)
+            val int = preferences!!.getInt(TORRENTS_STATUS_FILTER, 0)
             if (int in TorrentsAdapter.StatusFilterMode.values().indices) {
                 return TorrentsAdapter.StatusFilterMode.values()[int]
             }
             return TorrentsAdapter.StatusFilterMode.All
         }
         set(value) {
-            preferences.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).commit()
+            preferences!!.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).commit()
         }
 
     var torrentsTrackerFilter: String
         get() {
-            return preferences.getString(TORRENTS_TRACKER_FILTER, "")
+            return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")
         }
         set(value) {
-            preferences.edit().putString(TORRENTS_TRACKER_FILTER, value).commit()
+            preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).commit()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
         when (key) {
             backgroundServiceKey -> {
                 if (backgroundServiceEnabled) {
-                    context.startService(Intent(context, BackgroundService::class.java))
+                    context!!.startService(Intent(context, BackgroundService::class.java))
                 } else {
-                    context.stopService(Intent(context, BackgroundService::class.java))
+                    context!!.stopService(Intent(context, BackgroundService::class.java))
                 }
             }
             persistentNotificationKey -> {
@@ -145,22 +160,5 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 }
             }
         }
-    }
-
-    fun init(context: Context) {
-        if (initialized) {
-            return
-        }
-        initialized = true
-
-        this.context = context
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        preferences.registerOnSharedPreferenceChangeListener(this)
-
-        darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
-        backgroundServiceKey = context.getString(R.string.prefs_background_service_key)
-        persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
-        deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
     }
 }
