@@ -63,7 +63,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             return (currentDirectory !== rootDirectory)
         }
 
-    protected val comparator = object : Comparator<Item> {
+    private val comparator = object : Comparator<Item> {
         private val nameComparator = AlphanumericComparator(Collator.getInstance())
 
         override fun compare(item1: Item,
@@ -110,12 +110,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         if (holder.itemViewType == TYPE_ITEM) {
             holder as BaseItemHolder
 
-            val item: Item
-            if (hasHeaderItem) {
-                item = currentItems[position - 1]
-            } else {
-                item = currentItems[position]
-            }
+            val item = currentItems[if (hasHeaderItem) position - 1 else position]
 
             holder.item = item
 
@@ -155,7 +150,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         return false
     }
 
-    protected fun navigateTo(directory: Directory) {
+    private fun navigateTo(directory: Directory) {
         val hadHeaderItem = hasHeaderItem
         currentDirectory = directory
         val count = currentItems.size
@@ -207,7 +202,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                     break
                 }
             }
-            if (directory !== rootDirectory && directory != null) {
+            if (directory !== rootDirectory && directory !== null) {
                 navigateTo(directory)
                 root = false
             }
@@ -257,7 +252,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                                             itemView: View) : Selector.ViewHolder<Item>(
             selector,
             itemView) {
-        lateinit override var item: Item
+        override lateinit var item: Item
 
         val iconView = itemView.findViewById(R.id.icon_view) as ImageView
         val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView

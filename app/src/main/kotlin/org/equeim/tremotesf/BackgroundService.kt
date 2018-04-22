@@ -129,7 +129,7 @@ class BackgroundService : Service() {
         Servers.removeCurrentServerListener(currentServerListener)
     }
 
-    fun updatePersistentNotification() {
+    private fun updatePersistentNotification() {
         notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
     }
 
@@ -205,7 +205,7 @@ class BackgroundService : Service() {
         return notificationBuilder.build()
     }
 
-    fun showFinishedNotification(torrent: Torrent) {
+    private fun showFinishedNotification(torrent: Torrent) {
         val intent = Intent(this, TorrentPropertiesActivity::class.java)
         intent.putExtra(TorrentPropertiesActivity.HASH, torrent.hashString)
         intent.putExtra(TorrentPropertiesActivity.NAME, torrent.name)

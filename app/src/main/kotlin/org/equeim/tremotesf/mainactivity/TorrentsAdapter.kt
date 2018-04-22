@@ -329,7 +329,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                              private val activity: MainActivity,
                              itemView: View) : Selector.ViewHolder<Torrent>(selector,
                                                                             itemView) {
-        lateinit override var item: Torrent
+        override lateinit var item: Torrent
 
         val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
         val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {

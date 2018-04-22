@@ -138,9 +138,7 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
         this.torrent = torrent
 
         val peerJsons = torrent.peers
-        if (peerJsons == null) {
-            return
-        }
+        peerJsons ?: return
 
         val newPeers = mutableListOf<Peer>()
         for (jsonElement in peerJsons) {

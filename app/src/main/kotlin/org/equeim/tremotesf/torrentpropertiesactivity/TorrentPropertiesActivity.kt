@@ -156,7 +156,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
     private var snackbar: Snackbar? = null
 
-    lateinit var pagerAdapter: PagerAdapter
+    private lateinit var pagerAdapter: PagerAdapter
 
     var actionMode: ActionMode? = null
 
@@ -297,7 +297,7 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     private fun updateMenu() {
-        for (i in (0..menu!!.size() - 1)) {
+        for (i in 0 until (menu!!.size() - 1)) {
             menu!!.getItem(i).isVisible = (torrent != null)
         }
         if (torrent != null) {
@@ -333,7 +333,7 @@ class TorrentPropertiesActivity : BaseActivity() {
         var filesFragment: TorrentFilesFragment? = null
         var trackersFragment: TrackersFragment? = null
         var peersFragment: PeersFragment? = null
-        var limitsFragment: TorrentLimitsFragment? = null
+        private var limitsFragment: TorrentLimitsFragment? = null
 
         override fun getCount(): Int {
             return TABS_COUNT

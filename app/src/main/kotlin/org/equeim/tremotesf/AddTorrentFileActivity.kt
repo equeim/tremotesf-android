@@ -239,14 +239,13 @@ class AddTorrentFileActivity : BaseActivity() {
             } else {
                 placeholder.text = if (noPermission) {
                     getString(R.string.storage_permission_error)
-                } else if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                    Rpc.statusString
                 } else {
                     when (torrentFileParser.status) {
                         TorrentFileParser.Status.Loading -> getString(R.string.loading)
                         TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
                         TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
+                        TorrentFileParser.Status.Loaded -> Rpc.statusString
                         else -> null
                     }
                 }

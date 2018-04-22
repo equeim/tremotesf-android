@@ -81,14 +81,13 @@ abstract class BaseSpinnerAdapter(private val headerText: Int? = null) : BaseAda
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view: TextView
-        if (convertView == null) {
-            view = LayoutInflater.from(parent.context)
+        val view = if (convertView == null) {
+            LayoutInflater.from(parent.context)
                     .inflate(android.R.layout.simple_spinner_dropdown_item,
                              parent,
                              false) as TextView
         } else {
-            view = convertView as TextView
+            convertView as TextView
         }
         view.text = getItem(position) as String
         return view

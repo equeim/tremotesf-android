@@ -57,9 +57,7 @@ class TorrentDetailsFragment : Fragment() {
         val activity = this.activity
         if (activity != null && view != null) {
             val torrent = (activity as TorrentPropertiesActivity).torrent
-            if (torrent == null) {
-                return
-            }
+            torrent ?: return
 
             completed_text_view.text = Utils.formatByteSize(activity, torrent.completedSize)
             downloaded_text_view.text = Utils.formatByteSize(activity,

@@ -83,7 +83,7 @@ class TorrentFilesFragment : Fragment() {
         fileRenamed(filePath, newName)
     }
 
-    var rootDirectory = BaseTorrentFilesAdapter.Directory()
+    private var rootDirectory = BaseTorrentFilesAdapter.Directory()
     private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
     private var treeCreated = false
@@ -190,7 +190,7 @@ class TorrentFilesFragment : Fragment() {
         }
     }
 
-    fun fileRenamed(path: String, newName: String) {
+    private fun fileRenamed(path: String, newName: String) {
         if (!treeCreated || creatingTree) {
             return
         }

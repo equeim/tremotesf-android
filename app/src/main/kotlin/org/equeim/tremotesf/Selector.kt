@@ -56,11 +56,6 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
             return selectedItems.isNotEmpty()
         }
 
-    val isAllSelected: Boolean
-        get() {
-            return (selectedCount == items.size)
-        }
-
     init {
         actionModeCallback.selector = this
     }
@@ -87,7 +82,7 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
     }
 
     fun selectAll() {
-        if (isAllSelected) {
+        if (selectedCount == items.size) {
             return
         }
 

@@ -485,10 +485,10 @@ class Tracker(val id: Int, private val context: Context) {
                 trackerJson["lastAnnounceTime"].asInt != 0)
         if (scrapeError || announceError) {
             status = Status.Error
-            if (scrapeError) {
-                errorMessage = trackerJson["lastScrapeResult"].asString
+            errorMessage = if (scrapeError) {
+                trackerJson["lastScrapeResult"].asString
             } else {
-                errorMessage = trackerJson["lastAnnounceResult"].asString
+                trackerJson["lastAnnounceResult"].asString
             }
         } else {
             status = when (trackerJson["announceState"].asInt) {
