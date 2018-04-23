@@ -39,6 +39,8 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
+import androidx.core.os.bundleOf
+
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -199,11 +201,9 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
             fun create(torrentId: Int, filePath: String, fileName: String): RenameDialogFragment {
                 val fragment = RenameDialogFragment()
-                val arguments = Bundle()
-                arguments.putInt(TORRENT_ID, torrentId)
-                arguments.putString(FILE_PATH, filePath)
-                arguments.putString(FILE_NAME, fileName)
-                fragment.arguments = arguments
+                fragment.arguments = bundleOf(TORRENT_ID to torrentId,
+                                              FILE_PATH to filePath,
+                                              FILE_NAME to fileName)
                 return fragment
             }
         }

@@ -50,6 +50,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
+import androidx.core.os.bundleOf
+
 import com.amjjd.alphanum.AlphanumericComparator
 
 import org.equeim.tremotesf.R
@@ -309,12 +311,10 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     fun saveInstanceState(outState: Bundle) {
-        val state = Bundle()
-        state.putInt(SORT_MODE, sortMode.ordinal)
-        state.putInt(SORT_ORDER, sortOrder.ordinal)
-        state.putInt(STATUS_FILTER_MODE, statusFilterMode.ordinal)
-        state.putString(TRACKER_FILTER, trackerFilter)
-        outState.putBundle(INSTANCE_STATE, state)
+        outState.putBundle(INSTANCE_STATE, bundleOf(SORT_MODE to sortMode.ordinal,
+                                                    SORT_ORDER to sortOrder.ordinal,
+                                                    STATUS_FILTER_MODE to statusFilterMode.ordinal,
+                                                    TRACKER_FILTER to trackerFilter))
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle) {
@@ -426,10 +426,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
             fun create(torrent: Torrent): SetLocationDialogFragment {
                 val fragment = SetLocationDialogFragment()
-                val arguments = Bundle()
-                arguments.putInt(TORRENT_ID, torrent.id)
-                arguments.putString(LOCATION, torrent.downloadDirectory)
-                fragment.arguments = arguments
+                fragment.arguments = bundleOf(TORRENT_ID to torrent.id,
+                                              LOCATION to torrent.downloadDirectory)
                 return fragment
             }
         }

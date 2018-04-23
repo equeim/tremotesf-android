@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
-import android.content.Context
 import android.os.Bundle
 
 import android.view.LayoutInflater
@@ -35,13 +34,14 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.app.ListFragment
 
+import androidx.core.content.systemService
+
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
-
 
 class ServerSettingsActivity : BaseActivity() {
     private lateinit var inputManager: InputMethodManager
@@ -72,7 +72,7 @@ class ServerSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
 
-        inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager = systemService<InputMethodManager>()
 
         supportFragmentManager.addOnBackStackChangedListener {
             if (supportFragmentManager.backStackEntryCount == 0) {

@@ -42,6 +42,7 @@ dependencies {
     implementation "com.android.support:preference-v7:$support_version"
     implementation "com.android.support:support-v13:$support_version"
     implementation "com.android.support:design:$support_version"
+    implementation 'androidx.core:core-ktx:0.3'
     implementation 'com.github.kittinunf.fuel:fuel-android:1.12.1'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.google.guava:guava:24.1-android'

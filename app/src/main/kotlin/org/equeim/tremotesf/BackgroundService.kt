@@ -25,13 +25,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 
-import android.content.Context
 import android.content.Intent
 
 import android.os.Build
 
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
+
+import androidx.core.content.systemService
 
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
@@ -72,7 +73,7 @@ class BackgroundService : Service() {
 
             Utils.initApp(applicationContext)
 
-            notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager = systemService<NotificationManager>()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannels(listOf(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,

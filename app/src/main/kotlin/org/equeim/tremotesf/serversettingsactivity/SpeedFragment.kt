@@ -47,6 +47,8 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 
+import androidx.core.os.bundleOf
+
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.ServerSettings
@@ -275,11 +277,9 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
         setOnClickListener {
             val fragment = TimePickerFragment()
-            val args = Bundle()
-            args.putBoolean("beginTime", beginTime)
-            args.putInt("hourOfDay", calendar.get(Calendar.HOUR_OF_DAY))
-            args.putInt("minute", calendar.get(Calendar.MINUTE))
-            fragment.arguments = args
+            fragment.arguments = bundleOf("beginTime" to beginTime,
+                                          "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
+                                          "minute" to calendar.get(Calendar.MINUTE))
             fragment.show((context as AppCompatActivity).supportFragmentManager, null)
         }
     }

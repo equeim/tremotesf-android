@@ -21,7 +21,6 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 
 import android.app.Dialog
 
-import android.content.Context
 import android.os.Bundle
 
 import android.view.Menu
@@ -42,6 +41,9 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+
+import androidx.core.content.systemService
+import androidx.core.os.bundleOf
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -176,7 +178,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             private var previousPage = -1
-            private val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            private val inputManager = systemService<InputMethodManager>()
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
@@ -392,9 +394,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
             fun create(torrentId: Int): RemoveDialogFragment {
                 val fragment = RemoveDialogFragment()
-                val arguments = Bundle()
-                arguments.putInt("id", torrentId)
-                fragment.arguments = arguments
+                fragment.arguments = bundleOf("id" to torrentId)
                 return fragment
             }
         }

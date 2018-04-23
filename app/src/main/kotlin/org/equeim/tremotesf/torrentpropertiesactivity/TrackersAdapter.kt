@@ -42,6 +42,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
+import androidx.core.os.bundleOf
+
 import com.amjjd.alphanum.AlphanumericComparator
 
 import org.equeim.tremotesf.R
@@ -170,10 +172,8 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
             if (selector.actionMode == null) {
                 if (activity.supportFragmentManager.findFragmentByTag(EditTrackerDialogFragment.TAG) == null) {
                     val fragment = EditTrackerDialogFragment()
-                    val args = Bundle()
-                    args.putInt(EditTrackerDialogFragment.TRACKER_ID, item.id)
-                    args.putString(EditTrackerDialogFragment.ANNOUNCE, item.announce)
-                    fragment.arguments = args
+                    fragment.arguments = bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
+                                                  EditTrackerDialogFragment.ANNOUNCE to item.announce)
                     fragment.show(activity.supportFragmentManager, EditTrackerDialogFragment.TAG)
                 }
             } else {
@@ -236,9 +236,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
             fun create(ids: IntArray): RemoveDialogFragment {
                 val fragment = RemoveDialogFragment()
-                val arguments = Bundle()
-                arguments.putIntArray("ids", ids)
-                fragment.arguments = arguments
+                fragment.arguments = bundleOf("ids" to ids)
                 return fragment
             }
         }

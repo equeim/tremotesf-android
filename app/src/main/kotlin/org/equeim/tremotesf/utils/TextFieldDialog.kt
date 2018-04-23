@@ -12,6 +12,8 @@ import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
 
+import androidx.core.content.systemService
+
 import org.equeim.tremotesf.R
 
 
@@ -62,8 +64,8 @@ fun createTextFieldDialog(context: Context,
             }
         })
 
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                .showSoftInput(textField, InputMethodManager.SHOW_IMPLICIT)
+        context.systemService<InputMethodManager>().showSoftInput(textField,
+                                                                  InputMethodManager.SHOW_IMPLICIT)
     }
 
     return dialog
