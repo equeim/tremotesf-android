@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
 
@@ -85,7 +86,12 @@ class AboutActivity : BaseActivity() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.about)
-            text_view.text = Html.fromHtml(inputStream.reader().readText())
+            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(inputStream.reader().readText(), 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(inputStream.reader().readText())
+            }
             inputStream.close()
         }
     }
@@ -100,7 +106,12 @@ class AboutActivity : BaseActivity() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.authors)
-            text_view.text = Html.fromHtml(inputStream.reader().readText())
+            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(inputStream.reader().readText(), 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(inputStream.reader().readText())
+            }
             inputStream.close()
         }
     }

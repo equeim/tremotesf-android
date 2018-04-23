@@ -136,7 +136,7 @@ class BackgroundService : Service() {
     private fun buildPersistentNotification(): Notification {
         val mainActivityIntent = Intent(this, MainActivity::class.java)
 
-        val notificationBuilder = NotificationCompat.Builder(applicationContext)
+        val notificationBuilder = NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(PendingIntent.getActivity(
                         this,
@@ -144,7 +144,6 @@ class BackgroundService : Service() {
                         mainActivityIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 ))
-                .setChannelId(PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
 
         if (Servers.hasServers) {
@@ -215,7 +214,7 @@ class BackgroundService : Service() {
         stackBuilder.addNextIntent(intent)
 
         notificationManager.notify(torrent.id,
-                                   NotificationCompat.Builder(this)
+                                   NotificationCompat.Builder(this, FINISHED_NOTIFICATION_CHANNEL_ID)
                                            .setSmallIcon(R.drawable.notification_icon)
                                            .setContentTitle(getString(R.string.torrent_finished))
                                            .setContentText(torrent.name)
@@ -223,7 +222,6 @@ class BackgroundService : Service() {
                                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
                                            .setAutoCancel(true)
                                            .setDefaults(Notification.DEFAULT_ALL)
-                                           .setChannelId(FINISHED_NOTIFICATION_CHANNEL_ID)
                                            .build())
     }
 }
