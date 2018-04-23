@@ -1,5 +1,13 @@
 # Change Log
 
+## [Unreleased]
+### Added
+- Support of Android 8.1
+- Support of adaptive icons
+
+### Fixed
+- Various crashes
+
 ## [1.5.1] - 2017-04-13
 ### Fixed
 - Crashes in torrent's files view
