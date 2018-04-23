@@ -499,10 +499,10 @@ class MainActivity : BaseActivity() {
 
     private fun startFilePickerActivity() {
         try {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "application/x-bittorrent"
-            startActivityForResult(intent, 0)
+            startActivityForResult(Intent(Intent.ACTION_GET_CONTENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType("application/x-bittorrent"),
+                    0)
         } catch (error: ActivityNotFoundException) {
             startActivityForResult(Intent(this, FilePickerActivity::class.java), 0)
         }

@@ -101,9 +101,7 @@ class FilePickerActivity : BaseActivity() {
     }
 
     fun finish(fileUri: Uri) {
-        val intent = Intent()
-        intent.data = fileUri
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK, Intent().setData(fileUri))
         finish()
     }
 
