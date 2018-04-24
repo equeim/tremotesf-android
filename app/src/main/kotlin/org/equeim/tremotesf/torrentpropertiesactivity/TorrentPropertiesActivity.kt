@@ -44,6 +44,7 @@ import android.support.v4.app.FragmentPagerAdapter
 
 import androidx.core.content.systemService
 import androidx.core.os.bundleOf
+import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -405,7 +406,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
                         Rpc.removeTorrents(listOf(arguments!!.getInt("id")),
-                                           (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
+                                           dialog.delete_files_check_box.isChecked)
                         activity!!.finish()
                     }).create()
         }

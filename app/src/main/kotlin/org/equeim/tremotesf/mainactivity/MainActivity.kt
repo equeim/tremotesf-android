@@ -34,7 +34,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
-import android.widget.ImageButton
 import android.widget.Spinner
 
 import android.support.v7.app.ActionBarDrawerToggle
@@ -72,6 +71,7 @@ import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
@@ -196,7 +196,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
         val sidePanelHeader = side_panel.getHeaderView(0)
 
-        serversSpinner = sidePanelHeader.findViewById(R.id.servers_spinner) as Spinner
+        serversSpinner = sidePanelHeader.servers_spinner
         serversSpinner.isEnabled = Servers.hasServers
         serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
         serversSpinner.adapter = serversSpinnerAdapter
@@ -211,10 +211,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        listSettingsLayout = sidePanelHeader.findViewById(R.id.list_settings_layout) as ViewGroup
+        listSettingsLayout = sidePanelHeader.list_settings_layout
         listSettingsLayout.setChildrenEnabled(Rpc.connected)
 
-        sortSpinner = sidePanelHeader.findViewById(R.id.sort_spinner) as Spinner
+        sortSpinner = sidePanelHeader.sort_spinner
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
                                                             R.string.sort)
         sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
@@ -231,7 +231,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        val sortOrderButton = sidePanelHeader.findViewById(R.id.sort_order_button) as ImageButton
+        val sortOrderButton = sidePanelHeader.sort_order_button
         sortOrderButton.setImageResource(getSortOrderButtonIcon())
         sortOrderButton.setOnClickListener {
             torrentsAdapter.sortOrder = if (torrentsAdapter.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
@@ -243,7 +243,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
             sortOrderButton.setImageResource(getSortOrderButtonIcon())
         }
 
-        statusSpinner = sidePanelHeader.findViewById(R.id.status_spinner) as Spinner
+        statusSpinner = sidePanelHeader.status_spinner
         statusSpinnerAdapter = StatusFilterSpinnerAdapter(this)
         statusSpinner.adapter = statusSpinnerAdapter
         statusSpinner.setSelection(Settings.torrentsStatusFilter.ordinal)
@@ -266,7 +266,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        trackersSpinner = sidePanelHeader.findViewById(R.id.trackers_spinner) as Spinner
+        trackersSpinner = sidePanelHeader.trackers_spinner
         trackersSpinnerAdapter = TrackersSpinnerAdapter(this)
         trackersSpinner.adapter = trackersSpinnerAdapter
         trackersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

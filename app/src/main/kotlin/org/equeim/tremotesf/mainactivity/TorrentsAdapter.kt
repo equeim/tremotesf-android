@@ -39,10 +39,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.CheckBox
-import android.widget.ProgressBar
-import android.widget.TextView
-
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
@@ -63,6 +59,9 @@ import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.main_activity.torrents_view
+import kotlinx.android.synthetic.main.remove_torrents_dialog.*
+import kotlinx.android.synthetic.main.set_location_dialog.*
+import kotlinx.android.synthetic.main.torrent_list_item.view.*
 
 
 private const val INSTANCE_STATE = "org.equeim.tremotesf.mainactivity.TorrentsAdapter"
@@ -218,8 +217,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item,
                                                                parent,
                                                                false)
-        Utils.setProgressBarAccentColor(view.findViewById(R.id.progress_bar) as ProgressBar)
-
+        Utils.setProgressBarAccentColor(view.progress_bar)
         return TorrentsViewHolder(selector, activity, view)
     }
 
@@ -330,19 +328,19 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                                                             itemView) {
         override lateinit var item: Torrent
 
-        val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
+        val nameTextView = itemView.name_text_view!!
         val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             nameTextView.compoundDrawables.first()
         } else {
             nameTextView.compoundDrawablesRelative.first()
         }
 
-        val sizeTextView = itemView.findViewById(R.id.size_text_view) as TextView
-        val etaTextView = itemView.findViewById(R.id.eta_text_view) as TextView
-        val progressBar = itemView.findViewById(R.id.progress_bar) as ProgressBar
-        val downloadSpeedTextView = itemView.findViewById(R.id.download_speed_text_view) as TextView
-        val uploadSpeedTextView = itemView.findViewById(R.id.upload_speed_text_view) as TextView
-        val statusTextView = itemView.findViewById(R.id.status_text_view) as TextView
+        val sizeTextView = itemView.size_text_view!!
+        val etaTextView = itemView.eta_text_view!!
+        val progressBar = itemView.progress_bar!!
+        val downloadSpeedTextView = itemView.download_speed_text_view!!
+        val uploadSpeedTextView = itemView.upload_speed_text_view!!
+        val statusTextView = itemView.status_text_view!!
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
@@ -436,11 +434,9 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments!!.getString(LOCATION)) {
-                val textField = dialog.findViewById(R.id.text_field) as TextView
-                val moveFilesCheckBox = dialog.findViewById(R.id.move_files_check_box) as CheckBox
                 Rpc.setTorrentLocation(arguments!!.getInt(TORRENT_ID),
-                                       textField.text.toString(),
-                                       moveFilesCheckBox.isChecked)
+                                       dialog.text_field.text.toString(),
+                                       dialog.move_files_check_box.isChecked)
 
                 (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
             }
@@ -464,13 +460,12 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
                         Rpc.removeTorrents(selector.selectedItems.map(Torrent::id),
-                                           (this.dialog.findViewById(R.id.delete_files_check_box) as CheckBox).isChecked)
+                                           dialog.delete_files_check_box.isChecked)
                         selector.actionMode?.finish()
                     }).create()
 
             dialog.setOnShowListener {
-                val deleteFilesCheckBox = dialog.findViewById<CheckBox>(R.id.delete_files_check_box)!!
-                deleteFilesCheckBox.isChecked = Settings.deleteFiles
+                dialog.delete_files_check_box.isChecked = Settings.deleteFiles
             }
 
             return dialog

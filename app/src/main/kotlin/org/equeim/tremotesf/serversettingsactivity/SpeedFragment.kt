@@ -57,6 +57,7 @@ import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
+import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
 
 
 class SpeedFragment : Fragment() {
@@ -265,14 +266,14 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     init {
         inflate(context, R.layout.server_settings_time_picker_item, this)
-        titleTextView = findViewById(R.id.title_text_view)
-        textView = findViewById(R.id.text_view) as TextView
+        titleTextView = title_text_view
+        textView = text_view!!
 
         val ta = context.theme.obtainStyledAttributes(attrs,
                                                       intArrayOf(android.R.attr.title),
                                                       0,
                                                       0)
-        (findViewById(R.id.title_text_view) as TextView).text = ta.getText(0)
+        title_text_view.text = ta.getText(0)
         ta.recycle()
 
         setOnClickListener {

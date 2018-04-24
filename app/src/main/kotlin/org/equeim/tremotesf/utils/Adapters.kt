@@ -33,6 +33,9 @@ import android.widget.TextView
 
 import org.equeim.tremotesf.R
 
+import kotlinx.android.synthetic.main.spinner_item_with_header.view.*
+import org.jetbrains.anko.find
+
 
 class ArraySpinnerAdapter(context: Context,
                           items: Array<String>)
@@ -94,8 +97,9 @@ abstract class BaseSpinnerAdapter(private val headerText: Int? = null) : BaseAda
     }
 
     private class ViewHolder(view: View) {
-        val headerTextView = view.findViewById(R.id.header_text_view) as TextView
-        val textView = view.findViewById(android.R.id.text1) as TextView
+        val headerTextView = view.header_text_view!!
+        val textView = view.text1!!
+
     }
 }
 

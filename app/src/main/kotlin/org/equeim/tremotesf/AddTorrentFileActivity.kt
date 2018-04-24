@@ -67,6 +67,7 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_main_fragment.*
+import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 
 class AddTorrentFileActivity : BaseActivity() {
@@ -448,7 +449,7 @@ class AddTorrentFileActivity : BaseActivity() {
             private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                                      selector: Selector<Item, Int>,
                                      itemView: View) : BaseItemHolder(adapter, selector, itemView) {
-                val sizeTextView = itemView.findViewById(R.id.size_text_view) as TextView
+                val sizeTextView = itemView.size_text_view!!
             }
 
             private inner class ActionModeCallback : BaseActionModeCallback() {

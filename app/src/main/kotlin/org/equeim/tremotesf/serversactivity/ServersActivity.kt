@@ -24,7 +24,6 @@ import java.util.Comparator
 
 import android.app.Dialog
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 
@@ -33,9 +32,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-
-import android.widget.RadioButton
-import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -58,6 +54,7 @@ import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.servers_activity.*
+import kotlinx.android.synthetic.main.server_list_item.view.*
 
 
 class ServersActivity : BaseActivity() {
@@ -166,8 +163,8 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
                      itemView: View) : Selector.ViewHolder<Server>(selector, itemView) {
         override lateinit var item: Server
 
-        val radioButton = itemView.findViewById(R.id.radio_button) as RadioButton
-        val textView = itemView.findViewById(R.id.text_view) as TextView
+        val radioButton = itemView.radio_button!!
+        val textView = itemView.text_view!!
 
         init {
             radioButton.setOnClickListener {

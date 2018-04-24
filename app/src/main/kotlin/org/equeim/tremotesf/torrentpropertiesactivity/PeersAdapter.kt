@@ -26,7 +26,6 @@ import java.util.Comparator
 import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import android.support.v7.widget.RecyclerView
 
 import com.google.gson.JsonObject
@@ -36,6 +35,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent
 
 import org.equeim.tremotesf.utils.Utils
+
+import kotlinx.android.synthetic.main.peer_list_item.view.*
 
 
 private class Peer(peerJson: JsonObject) {
@@ -188,10 +189,10 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val addressTextView = itemView.findViewById(R.id.address_text_view) as TextView
-        val downloadSpeedTextView = itemView.findViewById(R.id.download_speed_text_view) as TextView
-        val uploadSpeedTextView = itemView.findViewById(R.id.upload_speed_text_view) as TextView
-        val progressTextView = itemView.findViewById(R.id.progress_text_view) as TextView
-        val clientTextView = itemView.findViewById(R.id.client_text_view) as TextView
+        val addressTextView = itemView.address_text_view!!
+        val downloadSpeedTextView = itemView.download_speed_text_view!!
+        val uploadSpeedTextView = itemView.upload_speed_text_view!!
+        val progressTextView = itemView.progress_text_view!!
+        val clientTextView = itemView.client_text_view!!
     }
 }

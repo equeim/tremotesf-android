@@ -34,8 +34,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.widget.TextView
-
 import android.support.v4.app.DialogFragment
 
 import android.support.v7.app.AlertDialog
@@ -51,6 +49,9 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.Tracker
 import org.equeim.tremotesf.utils.createTextFieldDialog
+
+import kotlinx.android.synthetic.main.text_field_dialog.*
+import kotlinx.android.synthetic.main.tracker_list_item.view.*
 
 
 class TrackersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
@@ -163,10 +164,10 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
     inner class ViewHolder(selector: Selector<Tracker, Int>,
                            itemView: View) : Selector.ViewHolder<Tracker>(selector, itemView) {
         override lateinit var item: Tracker
-        val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
-        val statusTextView = itemView.findViewById(R.id.status_text_view) as TextView
-        val peersTextView = itemView.findViewById(R.id.peers_text_view) as TextView
-        val nextUpdateTextView = itemView.findViewById(R.id.next_update_text_view) as TextView
+        val nameTextView = itemView.name_text_view!!
+        val statusTextView = itemView.name_text_view!!
+        val peersTextView = itemView.peers_text_view!!
+        val nextUpdateTextView = itemView.next_update_text_view!!
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
@@ -199,7 +200,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments?.getString(ANNOUNCE)) {
                 val torrent = (activity as TorrentPropertiesActivity).torrent
-                val textField = dialog.findViewById(R.id.text_field) as TextView
+                val textField = dialog.text_field!!
                 if (trackerId == -1) {
                     torrent?.addTracker(textField.text.toString())
                 } else {

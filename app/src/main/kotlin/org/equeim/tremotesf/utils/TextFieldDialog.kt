@@ -2,19 +2,18 @@ package org.equeim.tremotesf.utils
 
 import android.content.Context
 import android.content.DialogInterface
-import android.support.design.widget.TextInputLayout
 
 import android.text.Editable
 import android.text.TextWatcher
-
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
 
 import androidx.core.content.systemService
 
 import org.equeim.tremotesf.R
+
+import kotlinx.android.synthetic.main.text_field_dialog.*
 
 
 fun createTextFieldDialog(context: Context,
@@ -36,12 +35,12 @@ fun createTextFieldDialog(context: Context,
     val dialog = builder.create()
 
     dialog.setOnShowListener {
-        val textFieldLayout = dialog.findViewById<TextInputLayout>(R.id.text_field_layout)!!
+        val textFieldLayout = dialog.text_field_layout!!
         textFieldLayout.hint = hint
 
-        val textField = dialog.findViewById<TextView>(R.id.text_field)!!
+        val textField = dialog.text_field!!
         textField.inputType = inputType
-        textField.text = defaultText
+        textField.setText(defaultText)
 
         val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
         okButton.isEnabled = textField.text.isNotEmpty()

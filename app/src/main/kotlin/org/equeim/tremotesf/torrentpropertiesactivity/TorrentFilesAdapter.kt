@@ -33,7 +33,6 @@ import android.view.ViewGroup
 import android.view.View
 
 import android.widget.ProgressBar
-import android.widget.TextView
 
 import android.support.v4.app.DialogFragment
 import android.support.v7.view.ActionMode
@@ -48,6 +47,9 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
+
+import kotlinx.android.synthetic.main.text_field_dialog.*
+import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
@@ -78,7 +80,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_file_list_item,
                                                                    parent,
                                                                    false)
-            Utils.setProgressBarAccentColor(view.findViewById(R.id.progress_bar) as ProgressBar)
+            Utils.setProgressBarAccentColor(view.progress_bar)
             return ItemHolder(this, selector, view)
         }
         return super.onCreateViewHolder(parent, viewType)
@@ -139,8 +141,8 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                              selector: Selector<Item, Int>,
                              itemView: View) : BaseItemHolder(adapter, selector, itemView) {
-        val progressBar = itemView.findViewById(R.id.progress_bar) as ProgressBar
-        val progressTextView = itemView.findViewById(R.id.progress_text_view) as TextView
+        val progressBar = itemView.progress_bar!!
+        val progressTextView = itemView.progress_text_view!!
     }
 
     private inner class ActionModeCallback : BaseActionModeCallback() {
@@ -217,7 +219,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          fileName) {
                 val path = arguments!!.getString(FILE_PATH)
-                val newName = (dialog.findViewById(R.id.text_field) as TextView).text.toString()
+                val newName = dialog.text_field.text.toString()
                 Rpc.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
                 (activity as TorrentPropertiesActivity).actionMode?.finish()
             }

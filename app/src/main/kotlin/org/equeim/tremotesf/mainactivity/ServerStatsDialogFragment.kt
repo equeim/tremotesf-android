@@ -23,7 +23,6 @@ import java.text.DecimalFormat
 
 import android.app.Dialog
 import android.os.Bundle
-import android.widget.TextView
 
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
@@ -31,6 +30,8 @@ import android.support.v7.app.AlertDialog
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.Utils
+
+import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 
 class ServerStatsDialogFragment : DialogFragment() {
@@ -48,16 +49,16 @@ class ServerStatsDialogFragment : DialogFragment() {
                 .setPositiveButton(R.string.close, null).create()
 
         dialog.setOnShowListener {
-            val sessionDownloadedTextView = dialog.findViewById<TextView>(R.id.session_downloaded_text_view)!!
-            val sessionUploadedTextView = dialog.findViewById<TextView>(R.id.session_uploaded_text_view)!!
-            val sessionRatioTextView = dialog.findViewById<TextView>(R.id.session_ratio_text_view)!!
-            val sessionDurationTextView = dialog.findViewById<TextView>(R.id.session_duration_text_view)!!
+            val sessionDownloadedTextView = dialog.session_downloaded_text_view!!
+            val sessionUploadedTextView = dialog.session_uploaded_text_view!!
+            val sessionRatioTextView = dialog.session_ratio_text_view!!
+            val sessionDurationTextView = dialog.session_duration_text_view!!
 
-            val startedTimesTextView = dialog.findViewById<TextView>(R.id.started_timed_text_view)!!
-            val totalDownloadedTextView = dialog.findViewById<TextView>(R.id.total_downloaded_text_view)!!
-            val totalUploadedTextView = dialog.findViewById<TextView>(R.id.total_uploaded_text_view)!!
-            val totalRatioTextView = dialog.findViewById<TextView>(R.id.total_ratio_text_view)!!
-            val totalDurationTextView = dialog.findViewById<TextView>(R.id.total_duration_text_view)!!
+            val startedTimesTextView = dialog.started_timed_text_view!!
+            val totalDownloadedTextView = dialog.total_downloaded_text_view!!
+            val totalUploadedTextView = dialog.total_uploaded_text_view
+            val totalRatioTextView = dialog.total_ratio_text_view
+            val totalDurationTextView = dialog.total_duration_text_view!!
 
             val ratioFormat = DecimalFormat("0.00")
 

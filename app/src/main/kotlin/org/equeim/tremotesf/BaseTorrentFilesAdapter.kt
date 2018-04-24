@@ -23,10 +23,7 @@ import java.io.Serializable
 import java.text.Collator
 import java.util.Comparator
 
-import android.content.Context
-
 import android.os.Bundle
-import android.util.AttributeSet
 
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,16 +31,15 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.widget.ImageView
-import android.widget.TextView
-
-import android.support.v4.widget.CompoundButtonCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
-import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
+
+import org.equeim.tremotesf.utils.TristateCheckbox
+
+import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
@@ -254,9 +250,9 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             itemView) {
         override lateinit var item: Item
 
-        val iconView = itemView.findViewById(R.id.icon_view) as ImageView
-        val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
-        val checkBox = itemView.findViewById(R.id.check_box) as TristateCheckbox
+        val iconView = itemView.icon_view!!
+        val nameTextView = itemView.name_text_view!!
+        val checkBox = itemView.check_box!!
 
         init {
             checkBox.setOnClickListener {
@@ -271,38 +267,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 super.onClick(view)
             }
         }
-    }
-
-    class TristateCheckbox(context: Context,
-                           attrs: AttributeSet?) : AppCompatCheckBox(context, attrs) {
-        constructor(context: Context) : this(context, null)
-
-        enum class State {
-            Checked,
-            Unchecked,
-            Indeterminate
-        }
-
-        override fun toggle() {
-            state = when (state) {
-                State.Checked -> State.Unchecked
-                State.Unchecked -> State.Checked
-                State.Indeterminate -> State.Checked
-            }
-        }
-
-        var state = State.Unchecked
-            set(value) {
-                if (value != field) {
-                    field = value
-                    isChecked = (value != State.Unchecked)
-                    CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (value == State.Indeterminate) {
-                        127
-                    } else {
-                        255
-                    }
-                }
-            }
     }
 
     protected abstract inner class BaseActionModeCallback : Selector.ActionModeCallback<Item>() {
