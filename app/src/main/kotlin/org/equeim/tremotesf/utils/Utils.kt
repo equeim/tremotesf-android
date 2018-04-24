@@ -51,9 +51,12 @@ object Utils : AnkoLogger {
         if (!appIsRunning) {
             debug("init app")
             appIsRunning = true
+
             if (Settings.backgroundServiceEnabled) {
                 context.startService<BackgroundService>()
             }
+
+            Rpc.connect()
         }
     }
 

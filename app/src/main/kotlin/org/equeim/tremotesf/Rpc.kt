@@ -258,7 +258,10 @@ object Rpc : AnkoLogger {
 
 
     init {
-        Servers.addCurrentServerListener { updateServer() }
+        Servers.addCurrentServerListener {
+            updateServer()
+            connect()
+        }
     }
 
     fun connect() {
@@ -821,8 +824,6 @@ object Rpc : AnkoLogger {
         timeout = server.timeout * 1000
         updateInterval = (server.updateInterval * 1000).toLong()
         backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
-
-        connect()
     }
 
     private fun postRequest(data: String, callOnSuccess: ((JsonObject) -> Unit)?) {
