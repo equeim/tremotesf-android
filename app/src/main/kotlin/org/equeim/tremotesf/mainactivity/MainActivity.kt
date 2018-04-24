@@ -95,6 +95,9 @@ class MainActivity : BaseActivity(), AnkoLogger {
     private lateinit var trackersSpinner: Spinner
     private lateinit var trackersSpinnerAdapter: TrackersSpinnerAdapter
 
+    private lateinit var foldersSpinner: Spinner
+    private lateinit var foldersSpinnerAdapter: FoldersSpinnerAdapter
+
     lateinit var torrentsAdapter: TorrentsAdapter
         private set
 
@@ -125,8 +128,11 @@ class MainActivity : BaseActivity(), AnkoLogger {
             statusSpinnerAdapter.update()
 
             trackersSpinnerAdapter.update()
+            foldersSpinnerAdapter.update()
+            
             if (Rpc.connected) {
                 trackersSpinner.setSelection(trackersSpinnerAdapter.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+                foldersSpinner.setSelection(foldersSpinnerAdapter.folders.indexOf(Settings.torrentsFolderFilter) + 1)
             }
 
             menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
@@ -147,6 +153,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
         updateSubtitle()
         statusSpinnerAdapter.update()
         trackersSpinnerAdapter.update()
+        foldersSpinnerAdapter.update()
         torrentsAdapter.update()
         updatePlaceholder()
 
@@ -284,6 +291,32 @@ class MainActivity : BaseActivity(), AnkoLogger {
                     updatePlaceholder()
                     if (Rpc.connected) {
                         Settings.torrentsTrackerFilter = torrentsAdapter.trackerFilter
+                    }
+                }
+                previousPosition = position
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        foldersSpinner = sidePanelHeader.findViewById(R.id.folders_spinner) as Spinner
+        foldersSpinnerAdapter = FoldersSpinnerAdapter(this)
+        foldersSpinner.adapter = foldersSpinnerAdapter
+        foldersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            private var previousPosition = -1
+            override fun onItemSelected(parent: AdapterView<*>,
+                                        view: View?,
+                                        position: Int,
+                                        id: Long) {
+                if (previousPosition != -1) {
+                    torrentsAdapter.folderFilter = if (position == 0) {
+                        ""
+                    } else {
+                        foldersSpinnerAdapter.folders[position - 1]
+                    }
+                    updatePlaceholder()
+                    if (Rpc.connected) {
+                        Settings.torrentsFolderFilter = torrentsAdapter.folderFilter
                     }
                 }
                 previousPosition = position
