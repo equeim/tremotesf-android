@@ -43,6 +43,8 @@ dependencies {
     implementation "com.android.support:support-v13:$support_version"
     implementation "com.android.support:design:$support_version"
     implementation 'androidx.core:core-ktx:0.3'
+    implementation 'org.jetbrains.anko:anko-commons:0.10.4'
+    implementation 'org.jetbrains.anko:anko-design:0.10.4'
     implementation 'com.github.kittinunf.fuel:fuel-android:1.12.1'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.google.guava:guava:24.1-android'

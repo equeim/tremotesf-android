@@ -45,6 +45,9 @@ import android.support.v4.app.FragmentPagerAdapter
 import androidx.core.content.systemService
 import androidx.core.os.bundleOf
 
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.design.indefiniteSnackbar
+
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -116,14 +119,10 @@ class TorrentPropertiesActivity : BaseActivity() {
         when (status) {
             Rpc.Status.Disconnected -> {
                 torrent = null
-                snackbar = Snackbar.make(findViewById(android.R.id.content),
-                                         "",
-                                         Snackbar.LENGTH_INDEFINITE)
-                snackbar!!.setAction(R.string.connect, {
+                snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.connect()
-                })
-                snackbar!!.show()
+                }
                 placeholder.text = Rpc.statusString
             }
             Rpc.Status.Connecting -> {

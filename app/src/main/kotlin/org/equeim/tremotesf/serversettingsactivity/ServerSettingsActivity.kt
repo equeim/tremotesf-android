@@ -35,6 +35,8 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v4.app.ListFragment
 
 import androidx.core.content.systemService
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -118,14 +120,10 @@ class ServerSettingsActivity : BaseActivity() {
             placeholder.text = Rpc.statusString
             when (status) {
                 Rpc.Status.Disconnected -> {
-                    snackbar = Snackbar.make(activity!!.findViewById(android.R.id.content),
-                                             "",
-                                             Snackbar.LENGTH_INDEFINITE)
-                    snackbar!!.setAction(R.string.connect, {
+                    snackbar = indefiniteSnackbar(activity!!.contentView!!, "", getString(R.string.connect)) {
                         snackbar = null
                         Rpc.connect()
-                    })
-                    snackbar!!.show()
+                    }
                     progress_bar.visibility = View.GONE
                 }
                 Rpc.Status.Connecting -> {

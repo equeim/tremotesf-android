@@ -49,6 +49,10 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.util.Base64
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
+
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Request
@@ -57,8 +61,6 @@ import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
-
-import org.equeim.tremotesf.utils.Logger
 
 
 // Transmission 2.40+
@@ -81,7 +83,7 @@ private fun isResultSuccessful(jsonObject: JsonObject): Boolean {
 }
 
 @SuppressLint("StaticFieldLeak")
-object Rpc {
+object Rpc : AnkoLogger {
     enum class Status {
         Disconnected,
         Connecting,
@@ -384,10 +386,10 @@ object Rpc {
     }
 
     private fun getServerSettings() {
-        Logger.d("get server settings")
+        debug("get server settings")
 
         postRequest("{\"method\": \"session-get\"}", { jsonObject ->
-            Logger.d("got server settings")
+            debug("got server settings")
 
             val arguments = getReplyArguments(jsonObject)
             if (arguments == null) {
@@ -422,7 +424,7 @@ object Rpc {
     }
 
     private fun getTorrents() {
-        Logger.d("get torrents")
+        debug("get torrents")
 
         postRequest(
                 """
@@ -475,7 +477,7 @@ object Rpc {
     "method": "torrent-get"
 }""",
                 { jsonObject ->
-                    Logger.d("got torrents")
+                    debug("got torrents")
 
                     object : AsyncTask<Any, Any, Pair<Boolean, List<Torrent>>>() {
                         override fun doInBackground(vararg params: Any?): Pair<Boolean, List<Torrent>> {
@@ -661,7 +663,7 @@ object Rpc {
     }
 
     private fun getServerStats() {
-        Logger.d("get server stats")
+        debug("get server stats")
 
         postRequest("{\"method\": \"session-stats\"}", { jsonObject ->
             val arguments = getReplyArguments(jsonObject)
@@ -705,7 +707,7 @@ object Rpc {
             }
 
             if (!updateDisabled) {
-                Logger.d("starting update timer")
+                debug("starting update timer")
                 startTimer()
             }
         }
@@ -738,7 +740,7 @@ object Rpc {
             val scheme = if (server.httpsEnabled) "https" else "http"
             url = URI(scheme, null, server.address, server.port, server.apiPath, null, null).toString()
         } catch (error: URISyntaxException) {
-            Logger.e("invalid server url", error)
+            error("invalid server url", error)
             this.error = Error.InvalidServerUrl
             return
         }
@@ -769,9 +771,9 @@ object Rpc {
                         kmf = KeyManagerFactory.getInstance("X509")
                         kmf.init(keyStore, charArrayOf())
                     } catch (error: IllegalArgumentException) {
-                        Logger.e("client certificate decoding error: $error")
+                        error("client certificate decoding error: $error")
                     } catch (error: CertificateException) {
-                        Logger.e("client certificate parsing error: $error")
+                        error("client certificate parsing error: $error")
                     }
                 }
             }
@@ -791,9 +793,9 @@ object Rpc {
                         tmf = TrustManagerFactory.getInstance("X509")
                         tmf.init(keyStore)
                     } catch (error: IllegalArgumentException) {
-                        Logger.e("self-signed certificate decoding error: $error")
+                        error("self-signed certificate decoding error: $error")
                     } catch (error: CertificateException) {
-                        Logger.e("self-signed certificate parsing error: $error")
+                        error("self-signed certificate parsing error: $error")
                     }
 
                     FuelManager.instance.hostnameVerifier = object : HostnameVerifier {
@@ -846,28 +848,28 @@ object Rpc {
                                                    sessionId = headers[SESSION_ID_HEADER]!!.first()
                                                    postRequest(data, callOnSuccess)
                                                } else {
-                                                   Logger.e("no session id header")
+                                                   error("no session id header")
                                                    this.error = Error.ConnectionError
                                                    status = Status.Disconnected
                                                }
                                            }
                                            HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                                               Logger.e("authentication error")
+                                               error("authentication error")
                                                this.error = Error.Authentication
                                                status = Status.Disconnected
                                            }
                                            else -> {
                                                when (error.exception) {
                                                    is JsonSyntaxException -> {
-                                                       Logger.e("parsing error: ${error.exception}")
+                                                       error("parsing error: ${error.exception}")
                                                        this.error = Error.ParsingError
                                                    }
                                                    is SocketTimeoutException -> {
-                                                       Logger.e("connection timed out: ${error.exception}")
+                                                       error("connection timed out: ${error.exception}")
                                                        this.error = Error.TimedOut
                                                    }
                                                    else -> {
-                                                       Logger.e("connection error: ${error.exception}")
+                                                       error("connection error: ${error.exception}")
                                                        this.error = Error.ConnectionError
                                                    }
                                                }

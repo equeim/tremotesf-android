@@ -22,8 +22,6 @@ package org.equeim.tremotesf
 import android.Manifest
 
 import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 
 import android.os.Build
@@ -57,6 +55,11 @@ import android.support.design.widget.Snackbar
 
 import androidx.core.content.systemService
 
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.design.indefiniteSnackbar
+
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
@@ -74,9 +77,9 @@ class AddTorrentFileActivity : BaseActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = intentFor<MainActivity>()
         if (isTaskRoot) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.clearTask()
         }
         startActivity(intent)
         finish()
@@ -85,9 +88,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (isTaskRoot) {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
+            startActivity(intentFor<MainActivity>().clearTask())
         } else {
             super.onBackPressed()
         }
@@ -278,14 +279,10 @@ class AddTorrentFileActivity : BaseActivity() {
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                     when (Rpc.status) {
                         Rpc.Status.Disconnected -> {
-                            snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
-                                                     "",
-                                                     Snackbar.LENGTH_INDEFINITE)
-                            snackbar!!.setAction(R.string.connect, {
+                            snackbar = indefiniteSnackbar(activity.contentView!!, "", getString(R.string.connect)) {
                                 snackbar = null
                                 Rpc.connect()
-                            })
-                            snackbar!!.show()
+                            }
                         }
                         Rpc.Status.Connecting -> {
                             if (snackbar != null) {

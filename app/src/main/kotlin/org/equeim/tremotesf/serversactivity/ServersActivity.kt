@@ -48,6 +48,8 @@ import android.support.v7.widget.Toolbar
 
 import com.amjjd.alphanum.AlphanumericComparator
 
+import org.jetbrains.anko.startActivity
+
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
@@ -79,7 +81,7 @@ class ServersActivity : BaseActivity() {
         (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         fab.setOnClickListener {
-            startActivity(Intent(this, ServerEditActivity::class.java))
+            startActivity<ServerEditActivity>()
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -178,9 +180,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                val intent = Intent(itemView.context, ServerEditActivity::class.java)
-                intent.putExtra(ServerEditActivity.SERVER, item.name)
-                itemView.context.startActivity(intent)
+                itemView.context.startActivity<ServerEditActivity>(ServerEditActivity.SERVER to item.name)
             } else {
                 super.onClick(view)
             }

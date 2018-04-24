@@ -25,8 +25,6 @@ import java.util.Comparator
 
 import android.app.Dialog
 
-import android.content.Intent
-
 import android.graphics.drawable.Drawable
 
 import android.os.Build
@@ -51,6 +49,7 @@ import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
 import androidx.core.os.bundleOf
+import org.jetbrains.anko.intentFor
 
 import com.amjjd.alphanum.AlphanumericComparator
 
@@ -347,10 +346,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                val intent = Intent(activity, TorrentPropertiesActivity::class.java)
-                intent.putExtra(TorrentPropertiesActivity.HASH, item.hashString)
-                intent.putExtra(TorrentPropertiesActivity.NAME, item.name)
-                activity.startActivity(intent)
+                activity.startActivity(activity.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to item.hashString,
+                                                                                     TorrentPropertiesActivity.NAME to item.name))
             } else {
                 super.onClick(view)
             }

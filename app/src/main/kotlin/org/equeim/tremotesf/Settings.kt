@@ -22,10 +22,11 @@ package org.equeim.tremotesf
 import android.annotation.SuppressLint
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 
-import android.preference.PreferenceManager
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
@@ -40,10 +41,10 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     var context: Context? = null
         set(value) {
             field = value
-            if (field == null) {
+            if (value == null) {
                 preferences = null
             } else {
-                preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                preferences = value.defaultSharedPreferences
                 preferences!!.registerOnSharedPreferenceChangeListener(this)
 
                 darkThemeKey = context!!.getString(R.string.prefs_dark_theme_key)
@@ -146,9 +147,9 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         when (key) {
             backgroundServiceKey -> {
                 if (backgroundServiceEnabled) {
-                    context!!.startService(Intent(context, BackgroundService::class.java))
+                    context!!.startService<BackgroundService>()
                 } else {
-                    context!!.stopService(Intent(context, BackgroundService::class.java))
+                    context!!.stopService<BackgroundService>()
                 }
             }
             persistentNotificationKey -> {

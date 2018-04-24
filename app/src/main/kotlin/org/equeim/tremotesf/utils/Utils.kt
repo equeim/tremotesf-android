@@ -22,7 +22,6 @@ package org.equeim.tremotesf.utils
 import java.text.DecimalFormat
 
 import android.content.Context
-import android.content.Intent
 
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
@@ -33,6 +32,11 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
+
 import org.equeim.tremotesf.BackgroundService
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -42,24 +46,24 @@ import org.equeim.tremotesf.Settings
 
 private var appIsRunning = false
 
-object Utils {
+object Utils : AnkoLogger {
     fun initApp(context: Context) {
         if (!appIsRunning) {
-            Logger.d("init app")
+            debug("init app")
             appIsRunning = true
             if (Settings.backgroundServiceEnabled) {
-                context.startService(Intent(context, BackgroundService::class.java))
+                context.startService<BackgroundService>()
             }
         }
     }
 
     fun shutdownApp(context: Context) {
         if (appIsRunning) {
-            Logger.d("shutdown app")
+            debug("shutdown app")
             appIsRunning = false
             BaseActivity.finishAllActivities()
             Rpc.disconnect()
-            context.stopService(Intent(context, BackgroundService::class.java))
+            context.stopService<BackgroundService>()
         }
     }
 

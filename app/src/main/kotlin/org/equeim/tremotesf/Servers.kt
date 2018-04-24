@@ -24,14 +24,16 @@ import java.io.FileNotFoundException
 import android.annotation.SuppressLint
 import android.content.Context
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
+
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-
-import org.equeim.tremotesf.utils.Logger
 
 
 private const val FILE_NAME = "servers.json"
@@ -78,7 +80,7 @@ class Server {
 }
 
 @SuppressLint("StaticFieldLeak")
-object Servers {
+object Servers : AnkoLogger {
     var context: Context? = null
         set(value) {
             field = value
@@ -129,31 +131,31 @@ object Servers {
                     for ((i, jsonElement) in jsonObject.getAsJsonArray(SERVERS).withIndex()) {
                         val server = gson.fromJson(jsonElement, Server::class.java)
                         if (server.name.isEmpty()) {
-                            Logger.e("server's name can't be empty")
+                            error("server's name can't be empty")
                             server.name = i.toString()
                         }
                         if (server.address.isEmpty()) {
-                            Logger.e("server's address can't be empty")
+                            error("server's address can't be empty")
                             server.address = "example.com"
                         }
                         if (server.port < 0) {
-                            Logger.e("server's port can't be less than 0")
+                            error("server's port can't be less than 0")
                             server.port = 9091
                         }
                         if (server.apiPath.isEmpty()) {
-                            Logger.e("server's API path can't be empty")
+                            error("server's API path can't be empty")
                             server.apiPath = "/transmission/rpc"
                         }
                         if (server.updateInterval < 1) {
-                            Logger.e("server's update interval can't be less than 1")
+                            error("server's update interval can't be less than 1")
                             server.updateInterval = 5
                         }
                         if (server.backgroundUpdateInterval < 1) {
-                            Logger.e("server's background update interval can't be less than 1")
+                            error("server's background update interval can't be less than 1")
                             server.backgroundUpdateInterval = 60
                         }
                         if (server.timeout < 1) {
-                            Logger.e("server's timeout can't be less than 1")
+                            error("server's timeout can't be less than 1")
                             server.timeout = 30
                         }
                         servers.add(server)
@@ -170,22 +172,22 @@ object Servers {
                     save()
                 }
             } catch (error: JsonIOException) {
-                Logger.e("error parsing servers file", error)
+                error("error parsing servers file", error)
                 reset()
             } catch (error: JsonParseException) {
-                Logger.e("error parsing servers file", error)
+                error("error parsing servers file", error)
                 reset()
             } catch (error: IllegalStateException) {
-                Logger.e("error parsing servers file", error)
+                error("error parsing servers file", error)
                 reset()
             } catch (error: JsonSyntaxException) {
-                Logger.e("error parsing servers file", error)
+                error("error parsing servers file", error)
                 reset()
             } finally {
                 stream.close()
             }
         } catch (error: FileNotFoundException) {
-            Logger.d("servers file not found")
+            debug("servers file not found")
         }
     }
 
@@ -195,7 +197,7 @@ object Servers {
     }
 
     private fun save() {
-        Logger.d("saving servers file")
+        debug("saving servers file")
         val jsonObject = JsonObject()
         jsonObject.addProperty(CURRENT, currentServerField?.name)
         jsonObject.add(SERVERS, gson.toJsonTree(servers))

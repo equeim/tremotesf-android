@@ -45,7 +45,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 
-import android.support.design.widget.Snackbar
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.design.longSnackbar
 
 import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
@@ -64,7 +68,6 @@ import org.equeim.tremotesf.serversactivity.ServersActivity
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
 
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
@@ -73,7 +76,7 @@ import kotlinx.android.synthetic.main.main_activity.*
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), AnkoLogger {
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
@@ -155,7 +158,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Logger.d("MainActivity onCreate")
+        debug("MainActivity onCreate")
 
         setTheme(Settings.themeNoActionBar)
 
@@ -182,9 +185,9 @@ class MainActivity : BaseActivity() {
         side_panel.setNavigationItemSelectedListener { menuItem ->
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {
-                R.id.settings -> startActivity(Intent(this, SettingsActivity::class.java))
-                R.id.servers -> startActivity(Intent(this, ServersActivity::class.java))
-                R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
+                R.id.settings -> startActivity<SettingsActivity>()
+                R.id.servers -> startActivity<ServersActivity>()
+                R.id.about -> startActivity<AboutActivity>()
                 R.id.quit -> Utils.shutdownApp(this)
                 else -> return@setNavigationItemSelectedListener false
             }
@@ -297,19 +300,15 @@ class MainActivity : BaseActivity() {
         Servers.addCurrentServerListener(currentServerListener)
 
         Rpc.torrentDuplicateListener = {
-            Snackbar.make(coordinator_layout,
-                          R.string.torrent_duplicate,
-                          Snackbar.LENGTH_LONG).show()
+            longSnackbar(coordinator_layout, R.string.torrent_duplicate)
         }
         Rpc.torrentAddErrorListener = {
-            Snackbar.make(coordinator_layout,
-                          R.string.torrent_add_error,
-                          Snackbar.LENGTH_LONG).show()
+            longSnackbar(coordinator_layout, R.string.torrent_add_error)
         }
 
         if (savedInstanceState == null) {
             if (!Servers.hasServers) {
-                startActivity(Intent(this, ServerEditActivity::class.java))
+                startActivity<ServerEditActivity>()
             }
         } else if (Rpc.connected) {
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
@@ -340,7 +339,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Logger.d("MainActivity onDestroy")
+        debug("MainActivity onDestroy")
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.torrentDuplicateListener = null
@@ -407,8 +406,8 @@ class MainActivity : BaseActivity() {
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
-            R.id.add_torrent_link -> startActivity(Intent(this, AddTorrentLinkActivity::class.java))
-            R.id.server_settings -> startActivity(Intent(this, ServerSettingsActivity::class.java))
+            R.id.add_torrent_link -> startActivity<AddTorrentLinkActivity>()
+            R.id.server_settings -> startActivity<ServerSettingsActivity>()
             R.id.alternative_speed_limits -> { Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked }
             R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
             else -> return false
@@ -419,9 +418,7 @@ class MainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            val intent = Intent(this, AddTorrentFileActivity::class.java)
-            intent.data = data.data
-            startActivity(intent)
+            startActivity(intentFor<AddTorrentFileActivity>().setData(data.data))
         }
     }
 
@@ -504,7 +501,7 @@ class MainActivity : BaseActivity() {
                     .setType("application/x-bittorrent"),
                     0)
         } catch (error: ActivityNotFoundException) {
-            startActivityForResult(Intent(this, FilePickerActivity::class.java), 0)
+            startActivityForResult(intentFor<FilePickerActivity>(), 0)
         }
     }
 
