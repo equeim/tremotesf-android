@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -22,12 +22,10 @@ package org.equeim.tremotesf.serversactivity
 import java.text.Collator
 import java.util.Comparator
 
-import android.app.Activity
 import android.app.Dialog
-import android.app.DialogFragment
 
-import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 
 import android.view.LayoutInflater
 import android.view.Menu
@@ -35,12 +33,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.RadioButton
-import android.widget.TextView
-
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
-
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -48,6 +43,8 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 
 import com.amjjd.alphanum.AlphanumericComparator
+
+import org.jetbrains.anko.startActivity
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -57,6 +54,7 @@ import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.servers_activity.*
+import kotlinx.android.synthetic.main.server_list_item.view.*
 
 
 class ServersActivity : BaseActivity() {
@@ -80,7 +78,7 @@ class ServersActivity : BaseActivity() {
         (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         fab.setOnClickListener {
-            startActivity(Intent(this, ServerEditActivity::class.java))
+            startActivity<ServerEditActivity>()
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -165,8 +163,8 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
                      itemView: View) : Selector.ViewHolder<Server>(selector, itemView) {
         override lateinit var item: Server
 
-        val radioButton = itemView.findViewById(R.id.radio_button) as RadioButton
-        val textView = itemView.findViewById(R.id.text_view) as TextView
+        val radioButton = itemView.radio_button!!
+        val textView = itemView.text_view!!
 
         init {
             radioButton.setOnClickListener {
@@ -179,16 +177,14 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                val intent = Intent(itemView.context, ServerEditActivity::class.java)
-                intent.putExtra(ServerEditActivity.SERVER, item.name)
-                itemView.context.startActivity(intent)
+                itemView.context.startActivity<ServerEditActivity>(ServerEditActivity.SERVER to item.name)
             } else {
                 super.onClick(view)
             }
         }
     }
 
-    private class ActionModeCallback(private val activity: Activity) : Selector.ActionModeCallback<Server>() {
+    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Server>() {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
             return true
@@ -200,7 +196,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
             }
 
             if (selector.hasSelection && item.itemId == R.id.remove) {
-                RemoveDialogFragment().show(activity.fragmentManager, null)
+                RemoveDialogFragment().show(activity.supportFragmentManager, null)
                 return true
             }
 
@@ -210,10 +206,10 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
         class RemoveDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
                 val selectedCount = (activity as ServersActivity).adapter.selector.selectedCount
-                return AlertDialog.Builder(activity)
-                        .setMessage(activity.resources.getQuantityString(R.plurals.remove_servers_message,
-                                                                         selectedCount,
-                                                                         selectedCount))
+                return AlertDialog.Builder(context!!)
+                        .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
+                                                                selectedCount,
+                                                                selectedCount))
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.remove, { _, _ ->
                             val adapter = (activity as ServersActivity).adapter

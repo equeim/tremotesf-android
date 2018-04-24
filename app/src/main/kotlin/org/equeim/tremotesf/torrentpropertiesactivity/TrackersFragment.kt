@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,12 +19,13 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
-import android.app.Fragment
 import android.os.Bundle
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
+import android.support.v4.app.Fragment
 
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -47,12 +48,12 @@ class TrackersFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup,
+                              container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.trackers_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         trackersAdapter = TrackersAdapter(activity)
@@ -90,7 +91,7 @@ class TrackersFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        trackersAdapter!!.selector.saveInstanceState(outState)
+        trackersAdapter?.selector?.saveInstanceState(outState)
     }
 
     fun update() {

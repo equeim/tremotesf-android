@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -25,12 +25,13 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.error
+
 import org.benjamin.Bdecoder
 
-import org.equeim.tremotesf.utils.Logger
 
-
-class TorrentFileParser {
+class TorrentFileParser : AnkoLogger {
     enum class Status {
         None,
         Loading,
@@ -72,7 +73,7 @@ class TorrentFileParser {
                     val size = stream.available()
 
                     if (size > 10 * 1024 * 1024) {
-                        Logger.e("torrent file is too large")
+                        error("torrent file is too large")
                         return TorrentFileParser.Status.FileIsTooLarge
                     }
 
@@ -83,14 +84,14 @@ class TorrentFileParser {
                                             fileData.inputStream()).decodeDict())
                         return TorrentFileParser.Status.Loaded
                     } catch (error: IllegalStateException) {
-                        Logger.e("error parsing torrent file", error)
+                        error("error parsing torrent file", error)
                         return TorrentFileParser.Status.ParsingError
                     }
                 } catch (error: IOException) {
-                    Logger.e("error reading torrent file", error)
+                    error("error reading torrent file", error)
                     return TorrentFileParser.Status.ReadingError
                 } catch (error: SecurityException) {
-                    Logger.e("error reading torrent file", error)
+                    error("error reading torrent file", error)
                     return TorrentFileParser.Status.ReadingError
                 } finally {
                     stream.close()

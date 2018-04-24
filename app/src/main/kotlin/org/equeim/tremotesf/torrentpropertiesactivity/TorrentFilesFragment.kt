@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -21,7 +21,6 @@ package org.equeim.tremotesf.torrentpropertiesactivity
 
 import java.lang.ref.WeakReference
 
-import android.app.Fragment
 import android.os.AsyncTask
 import android.os.Bundle
 
@@ -29,6 +28,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
+import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 
@@ -62,6 +62,7 @@ class TorrentFilesFragment : Fragment() {
 
     private val activity: TorrentPropertiesActivity
         get() {
+
             return getActivity() as TorrentPropertiesActivity
         }
 
@@ -82,7 +83,7 @@ class TorrentFilesFragment : Fragment() {
         fileRenamed(filePath, newName)
     }
 
-    var rootDirectory = BaseTorrentFilesAdapter.Directory()
+    private var rootDirectory = BaseTorrentFilesAdapter.Directory()
     private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
     private var treeCreated = false
@@ -100,12 +101,12 @@ class TorrentFilesFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup,
+                              container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.torrent_files_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = TorrentFilesAdapter(activity, rootDirectory)
@@ -189,7 +190,7 @@ class TorrentFilesFragment : Fragment() {
         }
     }
 
-    fun fileRenamed(path: String, newName: String) {
+    private fun fileRenamed(path: String, newName: String) {
         if (!treeCreated || creatingTree) {
             return
         }

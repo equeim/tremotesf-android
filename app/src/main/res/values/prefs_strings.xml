@@ -1,5 +1,4 @@
 <resources>
-    <string name="prefs_current_account_key" translatable="false">currentAccount</string>
     <string name="prefs_dark_theme_key" translatable="false">darkTheme</string>
     <string name="prefs_background_service_key" translatable="false">backgroundService</string>
     <string name="prefs_persistent_notification_key" translatable="false">persistentNotification</string>

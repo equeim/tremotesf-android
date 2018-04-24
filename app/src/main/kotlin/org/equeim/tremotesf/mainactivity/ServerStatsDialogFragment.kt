@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -22,18 +22,16 @@ package org.equeim.tremotesf.mainactivity
 import java.text.DecimalFormat
 
 import android.app.Dialog
-import android.app.DialogFragment
-
 import android.os.Bundle
-import android.widget.TextView
 
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
+
+import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 
 class ServerStatsDialogFragment : DialogFragment() {
@@ -45,46 +43,46 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(context!!)
                 .setTitle(R.string.server_stats)
                 .setView(R.layout.server_stats_dialog)
                 .setPositiveButton(R.string.close, null).create()
 
         dialog.setOnShowListener {
-            val sessionDownloadedTextView = dialog.findViewById(R.id.session_downloaded_text_view) as TextView
-            val sessionUploadedTextView = dialog.findViewById(R.id.session_uploaded_text_view) as TextView
-            val sessionRatioTextView = dialog.findViewById(R.id.session_ratio_text_view) as TextView
-            val sessionDurationTextView = dialog.findViewById(R.id.session_duration_text_view) as TextView
+            val sessionDownloadedTextView = dialog.session_downloaded_text_view!!
+            val sessionUploadedTextView = dialog.session_uploaded_text_view!!
+            val sessionRatioTextView = dialog.session_ratio_text_view!!
+            val sessionDurationTextView = dialog.session_duration_text_view!!
 
-            val startedTimesTextView = dialog.findViewById(R.id.started_timed_text_view) as TextView
-            val totalDownloadedTextView = dialog.findViewById(R.id.total_downloaded_text_view) as TextView
-            val totalUploadedTextView = dialog.findViewById(R.id.total_uploaded_text_view) as TextView
-            val totalRatioTextView = dialog.findViewById(R.id.total_ratio_text_view) as TextView
-            val totalDurationTextView = dialog.findViewById(R.id.total_duration_text_view) as TextView
+            val startedTimesTextView = dialog.started_timed_text_view!!
+            val totalDownloadedTextView = dialog.total_downloaded_text_view!!
+            val totalUploadedTextView = dialog.total_uploaded_text_view
+            val totalRatioTextView = dialog.total_ratio_text_view
+            val totalDurationTextView = dialog.total_duration_text_view!!
 
             val ratioFormat = DecimalFormat("0.00")
 
             val update = {
                 val sessionStats = Rpc.serverStats.currentSession
-                sessionDownloadedTextView.text = Utils.formatByteSize(activity,
+                sessionDownloadedTextView.text = Utils.formatByteSize(context!!,
                                                                       sessionStats.downloaded)
-                sessionUploadedTextView.text = Utils.formatByteSize(activity,
+                sessionUploadedTextView.text = Utils.formatByteSize(context!!,
                                                                     sessionStats.uploaded)
                 sessionRatioTextView.text = ratioFormat.format(sessionStats.uploaded.toDouble() /
                                                                sessionStats.downloaded.toDouble())
-                sessionDurationTextView.text = Utils.formatDuration(activity, sessionStats.duration)
+                sessionDurationTextView.text = Utils.formatDuration(context!!, sessionStats.duration)
 
                 val totalStats = Rpc.serverStats.total
                 val sessionCount = totalStats.sessionCount
                 startedTimesTextView.text = resources.getQuantityString(R.plurals.started_times,
                                                                         sessionCount,
                                                                         sessionCount)
-                totalDownloadedTextView.text = Utils.formatByteSize(activity,
+                totalDownloadedTextView.text = Utils.formatByteSize(context!!,
                                                                     totalStats.downloaded)
-                totalUploadedTextView.text = Utils.formatByteSize(activity, totalStats.uploaded)
+                totalUploadedTextView.text = Utils.formatByteSize(context!!, totalStats.uploaded)
                 totalRatioTextView.text = ratioFormat.format(totalStats.uploaded.toDouble() /
                                                              totalStats.downloaded.toDouble())
-                totalDurationTextView.text = Utils.formatDuration(activity, totalStats.duration)
+                totalDurationTextView.text = Utils.formatDuration(context!!, totalStats.duration)
             }
 
             update()

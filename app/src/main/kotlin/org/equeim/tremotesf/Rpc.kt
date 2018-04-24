@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -43,10 +43,15 @@ import java.util.Timer
 
 import kotlin.concurrent.schedule
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
 import android.util.Base64
+
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
 
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
@@ -56,8 +61,6 @@ import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
-
-import org.equeim.tremotesf.utils.Logger
 
 
 // Transmission 2.40+
@@ -71,7 +74,7 @@ private fun makeRequestData(method: String, arguments: Map<String, Any>): String
                              "arguments" to arguments))
 }
 
-private fun getReplyArguments(jsonObject: JsonObject): JsonObject {
+private fun getReplyArguments(jsonObject: JsonObject): JsonObject? {
     return jsonObject.getAsJsonObject("arguments")
 }
 
@@ -79,7 +82,8 @@ private fun isResultSuccessful(jsonObject: JsonObject): Boolean {
     return jsonObject["result"].asString == "success"
 }
 
-object Rpc {
+@SuppressLint("StaticFieldLeak")
+object Rpc : AnkoLogger {
     enum class Status {
         Disconnected,
         Connecting,
@@ -98,7 +102,13 @@ object Rpc {
         ServerIsTooOld,
     }
 
-    private lateinit var context: Context
+    var context: Context? = null
+        set(value) {
+            field = value
+            if (field != null) {
+                updateServer()
+            }
+        }
 
     //
     // status property
@@ -137,18 +147,18 @@ object Rpc {
         get() {
             return when (status) {
                 Status.Disconnected -> when (error) {
-                    Error.None -> context.getString(R.string.disconnected)
-                    Error.NoServers -> context.getString(R.string.no_servers)
-                    Error.InvalidServerUrl -> context.getString(R.string.invalid_server_url)
-                    Error.TimedOut -> context.getString(R.string.timed_out)
-                    Error.ConnectionError -> context.getString(R.string.connection_error)
-                    Error.Authentication -> context.getString(R.string.authentication_error)
-                    Error.ParsingError -> context.getString(R.string.parsing_error)
-                    Error.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
-                    Error.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                    Error.None -> context!!.getString(R.string.disconnected)
+                    Error.NoServers -> context!!.getString(R.string.no_servers)
+                    Error.InvalidServerUrl -> context!!.getString(R.string.invalid_server_url)
+                    Error.TimedOut -> context!!.getString(R.string.timed_out)
+                    Error.ConnectionError -> context!!.getString(R.string.connection_error)
+                    Error.Authentication -> context!!.getString(R.string.authentication_error)
+                    Error.ParsingError -> context!!.getString(R.string.parsing_error)
+                    Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
+                    Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
                 }
-                Status.Connecting -> context.getString(R.string.connecting)
-                Status.Connected -> context.getString(R.string.connected)
+                Status.Connecting -> context!!.getString(R.string.connecting)
+                Status.Connected -> context!!.getString(R.string.connected)
             }
         }
 
@@ -246,14 +256,9 @@ object Rpc {
 
     var torrentFinishedListener: ((Torrent) -> Unit)? = null
 
-    private var initialized = false
-    fun init(context: Context) {
-        if (!initialized) {
-            Servers.addCurrentServerListener { updateServer() }
-            initialized = true
-            this.context = context
-        }
-        updateServer()
+
+    init {
+        Servers.addCurrentServerListener { updateServer() }
     }
 
     fun connect() {
@@ -301,7 +306,7 @@ object Rpc {
                 if (connected) {
                     postRequest(result, { jsonObject ->
                         if (isResultSuccessful(jsonObject)) {
-                            if (getReplyArguments(jsonObject).has("torrent-duplicate")) {
+                            if (getReplyArguments(jsonObject)?.has("torrent-duplicate") == true) {
                                 torrentDuplicateListener?.invoke()
                             } else {
                                 resetTimer()
@@ -331,7 +336,7 @@ object Rpc {
                                           "paused" to !start)),
                     { jsonObject ->
                         if (isResultSuccessful(jsonObject)) {
-                            if (getReplyArguments(jsonObject).has("torrent-duplicate")) {
+                            if (getReplyArguments(jsonObject)?.has("torrent-duplicate") == true) {
                                 torrentDuplicateListener?.invoke()
                             } else {
                                 resetTimer()
@@ -381,27 +386,33 @@ object Rpc {
     }
 
     private fun getServerSettings() {
-        Logger.d("get server settings")
+        debug("get server settings")
 
         postRequest("{\"method\": \"session-get\"}", { jsonObject ->
-            Logger.d("got server settings")
+            debug("got server settings")
 
-            serverSettings.update(getReplyArguments(jsonObject))
-            serverSettingsUpdated = true
-            if (!rpcVersionChecked) {
-                rpcVersionChecked = true
-                if (serverSettings.minimumRpcVersion > MINIMUM_RPC_VERSION) {
-                    error = Error.ServerIsTooNew
-                    status = Status.Disconnected
-                } else if (serverSettings.rpcVersion < MINIMUM_RPC_VERSION) {
-                    error = Error.ServerIsTooOld
-                    status = Status.Disconnected
-                } else {
-                    getTorrents()
-                    getServerStats()
-                }
+            val arguments = getReplyArguments(jsonObject)
+            if (arguments == null) {
+                error = Error.ParsingError
+                status = Status.Disconnected
             } else {
-                checkIfUpdated()
+                serverSettings.update(arguments)
+                serverSettingsUpdated = true
+                if (!rpcVersionChecked) {
+                    rpcVersionChecked = true
+                    if (serverSettings.minimumRpcVersion > MINIMUM_RPC_VERSION) {
+                        error = Error.ServerIsTooNew
+                        status = Status.Disconnected
+                    } else if (serverSettings.rpcVersion < MINIMUM_RPC_VERSION) {
+                        error = Error.ServerIsTooOld
+                        status = Status.Disconnected
+                    } else {
+                        getTorrents()
+                        getServerStats()
+                    }
+                } else {
+                    checkIfUpdated()
+                }
             }
         })
     }
@@ -413,7 +424,7 @@ object Rpc {
     }
 
     private fun getTorrents() {
-        Logger.d("get torrents")
+        debug("get torrents")
 
         postRequest(
                 """
@@ -466,11 +477,13 @@ object Rpc {
     "method": "torrent-get"
 }""",
                 { jsonObject ->
-                    Logger.d("got torrents")
+                    debug("got torrents")
 
-                    object : AsyncTask<Any, Any, List<Torrent>>() {
-                        override fun doInBackground(vararg params: Any?): List<Torrent> {
-                            val torrentJsons = getReplyArguments(jsonObject).getAsJsonArray("torrents")
+                    object : AsyncTask<Any, Any, Pair<Boolean, List<Torrent>>>() {
+                        override fun doInBackground(vararg params: Any?): Pair<Boolean, List<Torrent>> {
+                            val torrentJsons = getReplyArguments(jsonObject)?.getAsJsonArray("torrents")
+                            torrentJsons ?: return Pair(false, emptyList())
+
                             val newTorrents = mutableListOf<Torrent>()
 
                             for (jsonElement in torrentJsons) {
@@ -479,7 +492,7 @@ object Rpc {
 
                                 var torrent = torrents.find { it.id == id }
                                 if (torrent == null) {
-                                    torrent = Torrent(id, torrentJson, context)
+                                    torrent = Torrent(id, torrentJson, context!!)
                                 } else {
                                     val progress = torrent.percentDone
                                     torrent.update(torrentJson)
@@ -500,15 +513,20 @@ object Rpc {
                                 }
                             }
 
-                            return newTorrents
+                            return Pair(true, newTorrents)
                         }
 
-                        override fun onPostExecute(result: List<Torrent>) {
-                            if (!torrentsUpdated && this@Rpc.status != Rpc.Status.Disconnected) {
-                                torrents.clear()
-                                torrents.addAll(result)
-                                checkIfTorrentsUpdated()
-                                checkIfUpdated()
+                        override fun onPostExecute(result: Pair<Boolean, List<Torrent>>) {
+                            if (result.first) {
+                                if (!torrentsUpdated && this@Rpc.status != Rpc.Status.Disconnected) {
+                                    torrents.clear()
+                                    torrents.addAll(result.second)
+                                    checkIfTorrentsUpdated()
+                                    checkIfUpdated()
+                                }
+                            } else {
+                                error = Error.ParsingError
+                                this@Rpc.status = Rpc.Status.Disconnected
                             }
                         }
                     }.execute()
@@ -531,16 +549,23 @@ object Rpc {
                 { jsonObject ->
                     val torrent = torrents.find { it.id == id }
                     if (torrent != null) {
-                        val torrentJson = getReplyArguments(jsonObject)
-                                .getAsJsonArray("torrents")[0].asJsonObject
-                        val files = torrentJson.getAsJsonArray("files")
-                        val fileStats = torrentJson.getAsJsonArray("fileStats")
-                        torrent.updateFiles(files, fileStats)
-                        if (scheduledUpdate) {
-                            checkIfTorrentsUpdated()
-                            checkIfUpdated()
-                        } else {
-                            torrent.filesLoadedListener?.invoke()
+                        val torrentsJson = getReplyArguments(jsonObject)
+                                ?.getAsJsonArray("torrents")
+
+                        if (torrentsJson == null) {
+                            error = Error.ParsingError
+                            status = Status.Disconnected
+                        } else if (torrentsJson.size() != 0) {
+                            val torrentJson = torrentsJson[0].asJsonObject
+                            val files = torrentJson.getAsJsonArray("files")
+                            val fileStats = torrentJson.getAsJsonArray("fileStats")
+                            torrent.updateFiles(files, fileStats)
+                            if (scheduledUpdate) {
+                                checkIfTorrentsUpdated()
+                                checkIfUpdated()
+                            } else {
+                                torrent.filesLoadedListener?.invoke()
+                            }
                         }
                     }
                 })
@@ -559,14 +584,21 @@ object Rpc {
                 { jsonObject ->
                     val torrent = torrents.find { it.id == id }
                     if (torrent != null) {
-                        val torrentJson = getReplyArguments(jsonObject)
-                                .getAsJsonArray("torrents")[0].asJsonObject
-                        torrent.updatePeers(torrentJson.getAsJsonArray("peers"))
-                        if (scheduledUpdate) {
-                            checkIfTorrentsUpdated()
-                            checkIfUpdated()
-                        } else {
-                            torrent.peersLoadedListener?.invoke()
+                        val torrentsJson = getReplyArguments(jsonObject)
+                                ?.getAsJsonArray("torrents")
+
+                        if (torrentsJson == null) {
+                            error = Error.ParsingError
+                            status = Status.Disconnected
+                        } else if (torrentsJson.size() != 0) {
+                            val torrentJson = torrentsJson[0].asJsonObject
+                            torrent.updatePeers(torrentJson.getAsJsonArray("peers"))
+                            if (scheduledUpdate) {
+                                checkIfTorrentsUpdated()
+                                checkIfUpdated()
+                            } else {
+                                torrent.peersLoadedListener?.invoke()
+                            }
                         }
                     }
                 })
@@ -615,24 +647,34 @@ object Rpc {
                                           "name" to newName)),
                     { jsonObject ->
                         val arguments = getReplyArguments(jsonObject)
-                        val id = arguments["id"].asInt
-                        val torrent = torrents.find { it.id == id }
-                        if (torrent != null) {
-                            torrent.fileRenamedListener?.invoke(arguments["path"].asString,
-                                                                arguments["name"].asString)
+                        if (arguments != null) {
+                            val id = arguments["id"]?.asInt
+                            if (id != null) {
+                                val torrent = torrents.find { it.id == id }
+                                if (torrent != null) {
+                                    torrent.fileRenamedListener?.invoke(arguments["path"].asString,
+                                                                        arguments["name"].asString)
+                                }
+                                resetTimer()
+                                updateData()
+                            }
                         }
-                        resetTimer()
-                        updateData()
                     })
     }
 
     private fun getServerStats() {
-        Logger.d("get server stats")
+        debug("get server stats")
 
         postRequest("{\"method\": \"session-stats\"}", { jsonObject ->
-            serverStats.update(getReplyArguments(jsonObject))
-            serverStatsUpdated = true
-            checkIfUpdated()
+            val arguments = getReplyArguments(jsonObject)
+            if (arguments == null) {
+                error = Error.ParsingError
+                status = Status.Disconnected
+            } else {
+                serverStats.update(arguments)
+                serverStatsUpdated = true
+                checkIfUpdated()
+            }
         })
     }
 
@@ -665,7 +707,7 @@ object Rpc {
             }
 
             if (!updateDisabled) {
-                Logger.d("starting update timer")
+                debug("starting update timer")
                 startTimer()
             }
         }
@@ -698,7 +740,7 @@ object Rpc {
             val scheme = if (server.httpsEnabled) "https" else "http"
             url = URI(scheme, null, server.address, server.port, server.apiPath, null, null).toString()
         } catch (error: URISyntaxException) {
-            Logger.e("invalid server url", error)
+            error("invalid server url", error)
             this.error = Error.InvalidServerUrl
             return
         }
@@ -729,9 +771,9 @@ object Rpc {
                         kmf = KeyManagerFactory.getInstance("X509")
                         kmf.init(keyStore, charArrayOf())
                     } catch (error: IllegalArgumentException) {
-                        Logger.e("client certificate decoding error: $error")
+                        error("client certificate decoding error: $error")
                     } catch (error: CertificateException) {
-                        Logger.e("client certificate parsing error: $error")
+                        error("client certificate parsing error: $error")
                     }
                 }
             }
@@ -751,9 +793,9 @@ object Rpc {
                         tmf = TrustManagerFactory.getInstance("X509")
                         tmf.init(keyStore)
                     } catch (error: IllegalArgumentException) {
-                        Logger.e("self-signed certificate decoding error: $error")
+                        error("self-signed certificate decoding error: $error")
                     } catch (error: CertificateException) {
-                        Logger.e("self-signed certificate parsing error: $error")
+                        error("self-signed certificate parsing error: $error")
                     }
 
                     FuelManager.instance.hostnameVerifier = object : HostnameVerifier {
@@ -799,35 +841,35 @@ object Rpc {
                                    if (error == null) {
                                        callOnSuccess?.invoke(jsonObject!!)
                                    } else {
-                                       when (response.httpStatusCode) {
+                                       when (response.statusCode) {
                                            HttpURLConnection.HTTP_CONFLICT -> {
-                                               val headers = response.httpResponseHeaders
+                                               val headers = response.headers
                                                if (headers.containsKey(SESSION_ID_HEADER)) {
                                                    sessionId = headers[SESSION_ID_HEADER]!!.first()
                                                    postRequest(data, callOnSuccess)
                                                } else {
-                                                   Logger.e("no session id header")
+                                                   error("no session id header")
                                                    this.error = Error.ConnectionError
                                                    status = Status.Disconnected
                                                }
                                            }
                                            HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                                               Logger.e("authentication error")
+                                               error("authentication error")
                                                this.error = Error.Authentication
                                                status = Status.Disconnected
                                            }
                                            else -> {
                                                when (error.exception) {
                                                    is JsonSyntaxException -> {
-                                                       Logger.e("parsing error: ${error.exception}")
+                                                       error("parsing error: ${error.exception}")
                                                        this.error = Error.ParsingError
                                                    }
                                                    is SocketTimeoutException -> {
-                                                       Logger.e("connection timed out: ${error.exception}")
+                                                       error("connection timed out: ${error.exception}")
                                                        this.error = Error.TimedOut
                                                    }
                                                    else -> {
-                                                       Logger.e("connection error: ${error.exception}")
+                                                       error("connection error: ${error.exception}")
                                                        this.error = Error.ConnectionError
                                                    }
                                                }

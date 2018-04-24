@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
-import android.app.Fragment
 import android.os.Bundle
 
 import android.text.Editable
@@ -30,6 +29,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
+
+import android.support.v4.app.Fragment
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -45,11 +46,11 @@ class NetworkFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity.title = getString(R.string.server_settings_network)
+        activity?.title = getString(R.string.server_settings_network)
         return inflater.inflate(R.layout.server_settings_network_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         peer_port_edit.filters = arrayOf(IntFilter(0..65535))

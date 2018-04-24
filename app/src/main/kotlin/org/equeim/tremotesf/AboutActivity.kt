@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,7 +19,7 @@
 
 package org.equeim.tremotesf
 
-import android.app.Fragment
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
 
@@ -27,8 +27,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.widget.Toolbar
-import android.support.v13.app.FragmentPagerAdapter
 
 import kotlinx.android.synthetic.main.about_activity.*
 import kotlinx.android.synthetic.main.about_activity_license_fragment.*
@@ -51,7 +52,7 @@ class AboutActivity : BaseActivity() {
         tab_layout.setupWithViewPager(pager)
     }
 
-    private inner class PagerAdapter : FragmentPagerAdapter(fragmentManager) {
+    private inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager) {
         override fun getCount() = 4
 
         override fun getItem(position: Int): Fragment? {
@@ -82,10 +83,15 @@ class AboutActivity : BaseActivity() {
             return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.about)
-            text_view.text = Html.fromHtml(inputStream.reader().readText())
+            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(inputStream.reader().readText(), 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(inputStream.reader().readText())
+            }
             inputStream.close()
         }
     }
@@ -97,10 +103,15 @@ class AboutActivity : BaseActivity() {
             return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.authors)
-            text_view.text = Html.fromHtml(inputStream.reader().readText())
+            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(inputStream.reader().readText(), 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(inputStream.reader().readText())
+            }
             inputStream.close()
         }
     }
@@ -112,7 +123,7 @@ class AboutActivity : BaseActivity() {
             return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.translators)
             text_view.text = inputStream.reader().readText()
@@ -127,7 +138,7 @@ class AboutActivity : BaseActivity() {
             return inflater.inflate(R.layout.about_activity_license_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.license)
             web_view.loadData(inputStream.reader().readText(), "text/html", null)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 
 import android.view.Menu
@@ -29,6 +27,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 import android.support.design.widget.Snackbar
+
+import androidx.core.content.systemService
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -52,7 +56,7 @@ class AddTorrentLinkActivity : BaseActivity() {
         setTheme(Settings.theme)
         setContentView(R.layout.add_torrent_link_activity)
 
-        inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager = systemService<InputMethodManager>()
 
         priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)
@@ -111,9 +115,9 @@ class AddTorrentLinkActivity : BaseActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = intentFor<MainActivity>()
         if (isTaskRoot) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.clearTask()
         }
         startActivity(intent)
         finish()
@@ -122,9 +126,7 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (isTaskRoot) {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
+            startActivity(intentFor<MainActivity>().clearTask())
         } else {
             super.onBackPressed()
         }
@@ -135,14 +137,10 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         when (Rpc.status) {
             Rpc.Status.Disconnected -> {
-                snackbar = Snackbar.make(findViewById(android.R.id.content),
-                                         "",
-                                         Snackbar.LENGTH_INDEFINITE)
-                snackbar!!.setAction(R.string.connect, {
+                snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.connect()
-                })
-                snackbar!!.show()
+                }
                 placeholder.text = Rpc.statusString
 
                 if (currentFocus != null) {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="applicationTheme" type="style">@style/AppTheme.Dark</item>
-
     <style name="AppTheme"/>
 
     <style name="AppTheme.Dark" parent="@style/Theme.Design">
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
         <item name="selectedBackground">@drawable/selected_background_dark</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="selectAllIcon">@drawable/ic_select_all_white_24dp</item>
         <item name="searchIcon">@drawable/ic_search_white_24dp</item>
@@ -39,6 +39,8 @@
 
         <item name="selectedBackground">@drawable/selected_background_light</item>
 
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+
         <item name="selectAllIcon">@drawable/ic_select_all_black_24dp</item>
         <item name="searchIcon">@drawable/ic_search_black_24dp</item>
         <item name="addIcon">@drawable/ic_add_black_24dp</item>
@@ -50,7 +52,7 @@
         <item name="downloadIcon">@drawable/ic_file_download_black_24dp</item>
         <item name="priorityIcon">@drawable/ic_priority_high_black_24dp</item>
         <item name="homeIcon">@drawable/ic_home_black_24dp</item>
-        <item name="startIcon">@drawable/ic_play_arrow_black_enabled_24dp</item>
+        <item name="startIcon">@drawable/ic_play_arrow_black_24dp</item>
         <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
         <item name="refreshIcon">@drawable/ic_refresh_black_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_black</item>

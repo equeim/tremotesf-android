@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -56,11 +56,6 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
             return selectedItems.isNotEmpty()
         }
 
-    val isAllSelected: Boolean
-        get() {
-            return (selectedCount == items.size)
-        }
-
     init {
         actionModeCallback.selector = this
     }
@@ -87,7 +82,7 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
     }
 
     fun selectAll() {
-        if (isAllSelected) {
+        if (selectedCount == items.size) {
             return
         }
 
@@ -176,7 +171,7 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
                                                          View.OnClickListener,
                                                          View.OnLongClickListener {
         abstract var item: T
-        private val selectedBackground = itemView.findViewById(R.id.selected_background_view).background
+        private val selectedBackground: View = itemView.findViewById(R.id.selected_background_view)
 
         init {
             itemView.setOnClickListener(this)
@@ -199,7 +194,8 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
         }
 
         fun updateSelectedBackground() {
-            selectedBackground.level = if (selector.isSelected(item)) 1 else 0
+            selectedBackground
+            selectedBackground.background.level = if (selector.isSelected(item)) 1 else 0
         }
     }
 

@@ -2,17 +2,18 @@ package org.equeim.tremotesf.utils
 
 import android.content.Context
 import android.content.DialogInterface
-import android.support.design.widget.TextInputLayout
 
 import android.text.Editable
 import android.text.TextWatcher
-
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 
 import android.support.v7.app.AlertDialog
 
+import androidx.core.content.systemService
+
 import org.equeim.tremotesf.R
+
+import kotlinx.android.synthetic.main.text_field_dialog.*
 
 
 fun createTextFieldDialog(context: Context,
@@ -34,14 +35,14 @@ fun createTextFieldDialog(context: Context,
     val dialog = builder.create()
 
     dialog.setOnShowListener {
-        val textFieldLayout = dialog.findViewById(R.id.text_field_layout) as TextInputLayout
+        val textFieldLayout = dialog.text_field_layout!!
         textFieldLayout.hint = hint
 
-        val textField = dialog.findViewById(R.id.text_field) as TextView
+        val textField = dialog.text_field!!
         textField.inputType = inputType
-        textField.text = defaultText
+        textField.setText(defaultText)
 
-        val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
         okButton.isEnabled = textField.text.isNotEmpty()
 
         textField.addTextChangedListener(object : TextWatcher {
@@ -62,8 +63,8 @@ fun createTextFieldDialog(context: Context,
             }
         })
 
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                .showSoftInput(textField, InputMethodManager.SHOW_IMPLICIT)
+        context.systemService<InputMethodManager>().showSoftInput(textField,
+                                                                  InputMethodManager.SHOW_IMPLICIT)
     }
 
     return dialog

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -27,6 +27,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 
 import android.os.Build
@@ -100,9 +101,7 @@ class FilePickerActivity : BaseActivity() {
     }
 
     fun finish(fileUri: Uri) {
-        val intent = Intent()
-        intent.data = fileUri
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK, Intent().setData(fileUri))
         finish()
     }
 
@@ -159,7 +158,7 @@ private class FilePickerAdapter(private val activity: FilePickerActivity) : Recy
         return TYPE_ITEM
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_HEADER) {
             return HeaderHolder(activity.layoutInflater.inflate(R.layout.up_list_item,
                                                                 parent,
@@ -242,7 +241,7 @@ private class FilePickerAdapter(private val activity: FilePickerActivity) : Recy
     private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var file: File
         val textView = itemView as TextView
-        val iconDrawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        val iconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             textView.compoundDrawables.first()
         } else {
             textView.compoundDrawablesRelative.first()

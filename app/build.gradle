@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId 'org.equeim.tremotesf'
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 11
         versionName '1.5.1'
     }
@@ -29,22 +29,26 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-def support_version = '25.3.1'
+def support_version = '27.1.1'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "com.android.support:support-compat:$support_version"
-    compile "com.android.support:support-core-utils:$support_version"
-    compile "com.android.support:support-core-ui:$support_version"
-    compile "com.android.support:appcompat-v7:$support_version"
-    compile "com.android.support:gridlayout-v7:$support_version"
-    compile "com.android.support:recyclerview-v7:$support_version"
-    compile "com.android.support:support-v13:$support_version"
-    compile "com.android.support:design:$support_version"
-    compile 'com.github.kittinunf.fuel:fuel-android:1.5.0'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.google.guava:guava:20.0'
-    compile 'com.github.amjjd:java-alphanum:0.2'
-    compile 'io.github.raindev:benjamin:1.0.0'
-    compile 'com.jaredrummler:fastscroll-recyclerview:1.0.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "com.android.support:support-compat:$support_version"
+    implementation "com.android.support:support-core-utils:$support_version"
+    implementation "com.android.support:support-core-ui:$support_version"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:gridlayout-v7:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:preference-v7:$support_version"
+    implementation "com.android.support:support-v13:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation 'androidx.core:core-ktx:0.3'
+    implementation 'org.jetbrains.anko:anko-commons:0.10.4'
+    implementation 'org.jetbrains.anko:anko-design:0.10.4'
+    implementation 'com.github.kittinunf.fuel:fuel-android:1.12.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.guava:guava:24.1-android'
+    implementation 'com.github.amjjd:java-alphanum:0.2'
+    implementation 'io.github.raindev:benjamin:1.0.0'
+    implementation 'com.jaredrummler:fastscroll-recyclerview:1.0.2'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,11 +19,6 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
-import android.app.Fragment
-import android.app.FragmentTransaction
-import android.app.ListFragment
-
-import android.content.Context
 import android.os.Bundle
 
 import android.view.LayoutInflater
@@ -35,6 +30,13 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
+import android.support.v4.app.ListFragment
+
+import androidx.core.content.systemService
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -43,16 +45,15 @@ import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 
-
 class ServerSettingsActivity : BaseActivity() {
     private lateinit var inputManager: InputMethodManager
 
     private val rpcStatusListener = fun(status: Rpc.Status) {
         when (status) {
             Rpc.Status.Disconnected -> {
-                if (fragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
-                    fragmentManager.popBackStack()
-                    fragmentManager.beginTransaction()
+                if (supportFragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
+                    supportFragmentManager.popBackStack()
+                    supportFragmentManager.beginTransaction()
                             .replace(android.R.id.content,
                                      PlaceholderFragment(),
                                      PlaceholderFragment.TAG)
@@ -60,7 +61,7 @@ class ServerSettingsActivity : BaseActivity() {
                 }
             }
             Rpc.Status.Connected -> {
-                fragmentManager.beginTransaction()
+                supportFragmentManager.beginTransaction()
                         .replace(android.R.id.content, MainFragment())
                         .commit()
             }
@@ -73,17 +74,17 @@ class ServerSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
 
-        inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager = systemService<InputMethodManager>()
 
-        fragmentManager.addOnBackStackChangedListener {
-            if (fragmentManager.backStackEntryCount == 0) {
+        supportFragmentManager.addOnBackStackChangedListener {
+            if (supportFragmentManager.backStackEntryCount == 0) {
                 title = getString(R.string.server_settings)
             }
         }
 
         if (savedInstanceState == null) {
-            fragmentManager.beginTransaction().replace(android.R.id.content,
-                                                       MainFragment()).commit()
+            supportFragmentManager.beginTransaction().replace(android.R.id.content,
+                                                              MainFragment()).commit()
         }
 
         Rpc.addStatusListener(rpcStatusListener)
@@ -95,8 +96,8 @@ class ServerSettingsActivity : BaseActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (fragmentManager.backStackEntryCount > 0) {
-            fragmentManager.popBackStack()
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
             return true
         }
         return super.onSupportNavigateUp()
@@ -119,14 +120,10 @@ class ServerSettingsActivity : BaseActivity() {
             placeholder.text = Rpc.statusString
             when (status) {
                 Rpc.Status.Disconnected -> {
-                    snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
-                                             "",
-                                             Snackbar.LENGTH_INDEFINITE)
-                    snackbar!!.setAction(R.string.connect, {
+                    snackbar = indefiniteSnackbar(activity!!.contentView!!, "", getString(R.string.connect)) {
                         snackbar = null
                         Rpc.connect()
-                    })
-                    snackbar!!.show()
+                    }
                     progress_bar.visibility = View.GONE
                 }
                 Rpc.Status.Connecting -> {
@@ -142,14 +139,14 @@ class ServerSettingsActivity : BaseActivity() {
         }
 
         override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup,
+                                  container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
             return inflater.inflate(R.layout.server_settings_placeholder_fragment,
                                     container,
                                     false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             rpcStatusListener(Rpc.status)
             Rpc.addStatusListener(rpcStatusListener)
@@ -173,14 +170,14 @@ class ServerSettingsActivity : BaseActivity() {
                                        items)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             listView.divider = null
             listView.setSelector(android.R.color.transparent)
         }
 
-        override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-            val fragment = when (position) {
+        override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
+            val fragment: Fragment = when (position) {
                 0 -> DownloadingFragment()
                 1 -> SeedingFragment()
                 2 -> QueueFragment()
@@ -189,7 +186,7 @@ class ServerSettingsActivity : BaseActivity() {
                 else -> return
             }
 
-            fragmentManager.beginTransaction()
+            fragmentManager!!.beginTransaction()
                     .replace(android.R.id.content,
                              fragment,
                              if (position == 3) SpeedFragment.TAG else null)

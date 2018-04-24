@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -23,10 +23,7 @@ import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.util.Calendar
 
-import android.app.Activity
 import android.app.Dialog
-import android.app.DialogFragment
-import android.app.Fragment
 import android.app.TimePickerDialog
 
 import android.content.Context
@@ -46,6 +43,12 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.TimePicker
 
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
+
+import androidx.core.os.bundleOf
+
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.ServerSettings
@@ -54,6 +57,7 @@ import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
+import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
 
 
 class SpeedFragment : Fragment() {
@@ -112,7 +116,7 @@ class SpeedFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity.title = getString(R.string.server_settings_speed)
+        activity?.title = getString(R.string.server_settings_speed)
         return inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
     }
 
@@ -121,7 +125,7 @@ class SpeedFragment : Fragment() {
         (activity as ServerSettingsActivity).hideKeyboard()
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val limitsFilters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
@@ -238,7 +242,7 @@ class SpeedFragment : Fragment() {
         end_time_item.beginTime = false
         end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
 
-        days_spinner.adapter = ArraySpinnerAdapter(activity, daysSpinnerItems.toTypedArray())
+        days_spinner.adapter = ArraySpinnerAdapter(context!!, daysSpinnerItems.toTypedArray())
         days_spinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays))
         days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
@@ -255,31 +259,29 @@ class SpeedFragment : Fragment() {
 
 class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
     var beginTime = false
-    val calendar = Calendar.getInstance()
+    private val calendar: Calendar = Calendar.getInstance()
     private val titleTextView: View
     private val textView: TextView
     private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
 
     init {
         inflate(context, R.layout.server_settings_time_picker_item, this)
-        titleTextView = findViewById(R.id.title_text_view)
-        textView = findViewById(R.id.text_view) as TextView
+        titleTextView = title_text_view
+        textView = text_view!!
 
         val ta = context.theme.obtainStyledAttributes(attrs,
                                                       intArrayOf(android.R.attr.title),
                                                       0,
                                                       0)
-        (findViewById(R.id.title_text_view) as TextView).text = ta.getText(0)
+        title_text_view.text = ta.getText(0)
         ta.recycle()
 
         setOnClickListener {
             val fragment = TimePickerFragment()
-            val args = Bundle()
-            args.putBoolean("beginTime", beginTime)
-            args.putInt("hourOfDay", calendar.get(Calendar.HOUR_OF_DAY))
-            args.putInt("minute", calendar.get(Calendar.MINUTE))
-            fragment.arguments = args
-            fragment.show((context as Activity).fragmentManager, null)
+            fragment.arguments = bundleOf("beginTime" to beginTime,
+                                          "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
+                                          "minute" to calendar.get(Calendar.MINUTE))
+            fragment.show((context as AppCompatActivity).supportFragmentManager, null)
         }
     }
 
@@ -305,15 +307,15 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return TimePickerDialog(activity,
                                     this,
-                                    arguments.getInt("hourOfDay"),
-                                    arguments.getInt("minute"),
+                                    arguments!!.getInt("hourOfDay"),
+                                    arguments!!.getInt("minute"),
                                     android.text.format.DateFormat.is24HourFormat(activity))
         }
 
         override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-            val speedFragment = fragmentManager.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
+            val speedFragment = fragmentManager!!.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
             if (speedFragment != null) {
-                if (arguments.getBoolean("beginTime")) {
+                if (arguments!!.getBoolean("beginTime")) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
                     Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
                 } else {

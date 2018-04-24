@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -28,6 +28,7 @@ import kotlin.reflect.KProperty
 import android.content.Context
 
 import com.google.common.net.InternetDomainName
+
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
@@ -76,7 +77,7 @@ class Torrent(val id: Int, torrentJson: JsonObject, private val context: Context
         const val UNLIMITED = 2
     }
 
-    val hashString = torrentJson["hashString"].asString
+    val hashString: String = torrentJson["hashString"].asString
 
     var name by SetChanged(String())
 
@@ -484,10 +485,10 @@ class Tracker(val id: Int, private val context: Context) {
                 trackerJson["lastAnnounceTime"].asInt != 0)
         if (scrapeError || announceError) {
             status = Status.Error
-            if (scrapeError) {
-                errorMessage = trackerJson["lastScrapeResult"].asString
+            errorMessage = if (scrapeError) {
+                trackerJson["lastScrapeResult"].asString
             } else {
-                errorMessage = trackerJson["lastAnnounceResult"].asString
+                trackerJson["lastAnnounceResult"].asString
             }
         } else {
             status = when (trackerJson["announceState"].asInt) {

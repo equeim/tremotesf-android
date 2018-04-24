@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -23,10 +23,7 @@ import java.io.Serializable
 import java.text.Collator
 import java.util.Comparator
 
-import android.content.Context
-
 import android.os.Bundle
-import android.util.AttributeSet
 
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,16 +31,15 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.widget.ImageView
-import android.widget.TextView
-
-import android.support.v4.widget.CompoundButtonCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
-import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
+
+import org.equeim.tremotesf.utils.TristateCheckbox
+
+import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
@@ -63,7 +59,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             return (currentDirectory !== rootDirectory)
         }
 
-    protected val comparator = object : Comparator<Item> {
+    private val comparator = object : Comparator<Item> {
         private val nameComparator = AlphanumericComparator(Collator.getInstance())
 
         override fun compare(item1: Item,
@@ -97,25 +93,20 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         return currentItems.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_HEADER) {
             return HeaderHolder(LayoutInflater.from(parent.context).inflate(R.layout.up_list_item,
                                                                             parent,
                                                                             false))
         }
-        return null
+        throw InvalidViewTypeException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder.itemViewType == TYPE_ITEM) {
             holder as BaseItemHolder
 
-            val item: Item
-            if (hasHeaderItem) {
-                item = currentItems[position - 1]
-            } else {
-                item = currentItems[position]
-            }
+            val item = currentItems[if (hasHeaderItem) position - 1 else position]
 
             holder.item = item
 
@@ -155,7 +146,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         return false
     }
 
-    protected fun navigateTo(directory: Directory) {
+    private fun navigateTo(directory: Directory) {
         val hadHeaderItem = hasHeaderItem
         currentDirectory = directory
         val count = currentItems.size
@@ -207,7 +198,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                     break
                 }
             }
-            if (directory !== rootDirectory && directory != null) {
+            if (directory !== rootDirectory && directory !== null) {
                 navigateTo(directory)
                 root = false
             }
@@ -257,11 +248,11 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                                             itemView: View) : Selector.ViewHolder<Item>(
             selector,
             itemView) {
-        lateinit override var item: Item
+        override lateinit var item: Item
 
-        val iconView = itemView.findViewById(R.id.icon_view) as ImageView
-        val nameTextView = itemView.findViewById(R.id.name_text_view) as TextView
-        val checkBox = itemView.findViewById(R.id.check_box) as TristateCheckbox
+        val iconView = itemView.icon_view!!
+        val nameTextView = itemView.name_text_view!!
+        val checkBox = itemView.check_box!!
 
         init {
             checkBox.setOnClickListener {
@@ -276,38 +267,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 super.onClick(view)
             }
         }
-    }
-
-    class TristateCheckbox(context: Context,
-                           attrs: AttributeSet?) : AppCompatCheckBox(context, attrs) {
-        constructor(context: Context) : this(context, null)
-
-        enum class State {
-            Checked,
-            Unchecked,
-            Indeterminate
-        }
-
-        override fun toggle() {
-            state = when (state) {
-                State.Checked -> State.Unchecked
-                State.Unchecked -> State.Checked
-                State.Indeterminate -> State.Checked
-            }
-        }
-
-        var state = State.Unchecked
-            set(value) {
-                if (value != field) {
-                    field = value
-                    isChecked = (value != State.Unchecked)
-                    CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (value == State.Indeterminate) {
-                        127
-                    } else {
-                        255
-                    }
-                }
-            }
     }
 
     protected abstract inner class BaseActionModeCallback : Selector.ActionModeCallback<Item>() {
@@ -584,4 +543,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
         override var changed = false
     }
+
+    class InvalidViewTypeException : Exception()
 }

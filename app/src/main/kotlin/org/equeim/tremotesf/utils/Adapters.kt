@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -32,6 +32,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 import org.equeim.tremotesf.R
+
+import kotlinx.android.synthetic.main.spinner_item_with_header.view.*
+import org.jetbrains.anko.find
 
 
 class ArraySpinnerAdapter(context: Context,
@@ -81,22 +84,22 @@ abstract class BaseSpinnerAdapter(private val headerText: Int? = null) : BaseAda
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view: TextView
-        if (convertView == null) {
-            view = LayoutInflater.from(parent.context)
+        val view = if (convertView == null) {
+            LayoutInflater.from(parent.context)
                     .inflate(android.R.layout.simple_spinner_dropdown_item,
                              parent,
                              false) as TextView
         } else {
-            view = convertView as TextView
+            convertView as TextView
         }
         view.text = getItem(position) as String
         return view
     }
 
     private class ViewHolder(view: View) {
-        val headerTextView = view.findViewById(R.id.header_text_view) as TextView
-        val textView = view.findViewById(android.R.id.text1) as TextView
+        val headerTextView = view.header_text_view!!
+        val textView = view.text1!!
+
     }
 }
 

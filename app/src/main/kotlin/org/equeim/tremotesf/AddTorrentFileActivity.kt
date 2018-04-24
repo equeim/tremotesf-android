@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -20,11 +20,8 @@
 package org.equeim.tremotesf
 
 import android.Manifest
-import android.app.Fragment
 
 import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 
 import android.os.Build
@@ -40,6 +37,8 @@ import android.view.inputmethod.InputMethodManager
 
 import android.widget.TextView
 
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 
 import android.support.v7.app.AppCompatActivity
@@ -50,10 +49,16 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 
-import android.support.v13.app.FragmentPagerAdapter
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
+
+import androidx.core.content.systemService
+
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.contentView
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -62,6 +67,7 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_main_fragment.*
+import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 
 class AddTorrentFileActivity : BaseActivity() {
@@ -72,9 +78,9 @@ class AddTorrentFileActivity : BaseActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = intentFor<MainActivity>()
         if (isTaskRoot) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.clearTask()
         }
         startActivity(intent)
         finish()
@@ -83,9 +89,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (isTaskRoot) {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
+            startActivity(intentFor<MainActivity>().clearTask())
         } else {
             super.onBackPressed()
         }
@@ -127,7 +131,7 @@ class AddTorrentFileActivity : BaseActivity() {
         }
 
         override fun onRequestPermissionsResult(requestCode: Int,
-                                                permissions: Array<out String>?,
+                                                permissions: Array<out String>,
                                                 grantResults: IntArray) {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
                 torrentFileParser.load(activity.intent.data, activity.applicationContext)
@@ -239,14 +243,13 @@ class AddTorrentFileActivity : BaseActivity() {
             } else {
                 placeholder.text = if (noPermission) {
                     getString(R.string.storage_permission_error)
-                } else if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                    Rpc.statusString
                 } else {
                     when (torrentFileParser.status) {
                         TorrentFileParser.Status.Loading -> getString(R.string.loading)
                         TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
                         TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
+                        TorrentFileParser.Status.Loaded -> Rpc.statusString
                         else -> null
                     }
                 }
@@ -265,7 +268,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 doneMenuItem?.isVisible = false
 
                 if (activity.currentFocus != null) {
-                    (activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    activity.systemService<InputMethodManager>()
                             .hideSoftInputFromWindow(activity.currentFocus.windowToken, 0)
                 }
 
@@ -277,14 +280,10 @@ class AddTorrentFileActivity : BaseActivity() {
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                     when (Rpc.status) {
                         Rpc.Status.Disconnected -> {
-                            snackbar = Snackbar.make(activity.findViewById(android.R.id.content),
-                                                     "",
-                                                     Snackbar.LENGTH_INDEFINITE)
-                            snackbar!!.setAction(R.string.connect, {
+                            snackbar = indefiniteSnackbar(activity.contentView!!, "", getString(R.string.connect)) {
                                 snackbar = null
                                 Rpc.connect()
-                            })
-                            snackbar!!.show()
+                            }
                         }
                         Rpc.Status.Connecting -> {
                             if (snackbar != null) {
@@ -317,7 +316,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 return InfoFragment()
             }
 
-            override fun instantiateItem(container: ViewGroup?, position: Int): Any {
+            override fun instantiateItem(container: ViewGroup, position: Int): Any {
                 val fragment = super.instantiateItem(container, position)
                 if (position == 0) {
                     infoFragment = fragment as InfoFragment
@@ -346,7 +345,7 @@ class AddTorrentFileActivity : BaseActivity() {
                                     false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
@@ -379,16 +378,16 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             retainInstance = true
-            mainFragment = fragmentManager.findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
+            mainFragment = fragmentManager!!.findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
         }
 
         override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup,
+                                  container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
             return inflater.inflate(R.layout.add_torrent_file_files_fragment, container, false)
         }
 
-        override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             val parser = mainFragment.torrentFileParser
@@ -428,7 +427,7 @@ class AddTorrentFileActivity : BaseActivity() {
             }
 
             override fun onCreateViewHolder(parent: ViewGroup,
-                                            viewType: Int): RecyclerView.ViewHolder? {
+                                            viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
                     return ItemHolder(this,
                                       selector,
@@ -450,7 +449,7 @@ class AddTorrentFileActivity : BaseActivity() {
             private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                                      selector: Selector<Item, Int>,
                                      itemView: View) : BaseItemHolder(adapter, selector, itemView) {
-                val sizeTextView = itemView.findViewById(R.id.size_text_view) as TextView
+                val sizeTextView = itemView.size_text_view!!
             }
 
             private inner class ActionModeCallback : BaseActionModeCallback() {

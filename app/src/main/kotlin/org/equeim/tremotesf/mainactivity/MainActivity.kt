@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -34,7 +34,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.AdapterView
-import android.widget.ImageButton
 import android.widget.Spinner
 
 import android.support.v7.app.ActionBarDrawerToggle
@@ -45,8 +44,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 
-import android.support.design.widget.Snackbar
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.design.longSnackbar
 
+import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
 import org.equeim.tremotesf.BaseActivity
@@ -63,17 +67,16 @@ import org.equeim.tremotesf.serversactivity.ServersActivity
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
 
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.main_activity.*
-import org.equeim.tremotesf.AboutActivity
+import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), AnkoLogger {
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
@@ -103,14 +106,14 @@ class MainActivity : BaseActivity() {
             if (!Rpc.connected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
-                fragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
                         ?.let { fragment ->
-                            fragmentManager.beginTransaction().remove(fragment).commit()
+                            supportFragmentManager.beginTransaction().remove(fragment).commit()
                         }
 
-                fragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
+                supportFragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
                         ?.let { fragment ->
-                            fragmentManager.beginTransaction().remove(fragment).commit()
+                            supportFragmentManager.beginTransaction().remove(fragment).commit()
                         }
 
                 if (menu != null) {
@@ -162,7 +165,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Logger.d("MainActivity onCreate")
+        debug("MainActivity onCreate")
 
         setTheme(Settings.themeNoActionBar)
 
@@ -189,9 +192,9 @@ class MainActivity : BaseActivity() {
         side_panel.setNavigationItemSelectedListener { menuItem ->
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {
-                R.id.settings -> startActivity(Intent(this, SettingsActivity::class.java))
-                R.id.servers -> startActivity(Intent(this, ServersActivity::class.java))
-                R.id.about -> startActivity(Intent(this, AboutActivity::class.java))
+                R.id.settings -> startActivity<SettingsActivity>()
+                R.id.servers -> startActivity<ServersActivity>()
+                R.id.about -> startActivity<AboutActivity>()
                 R.id.quit -> Utils.shutdownApp(this)
                 else -> return@setNavigationItemSelectedListener false
             }
@@ -200,7 +203,7 @@ class MainActivity : BaseActivity() {
 
         val sidePanelHeader = side_panel.getHeaderView(0)
 
-        serversSpinner = sidePanelHeader.findViewById(R.id.servers_spinner) as Spinner
+        serversSpinner = sidePanelHeader.servers_spinner
         serversSpinner.isEnabled = Servers.hasServers
         serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
         serversSpinner.adapter = serversSpinnerAdapter
@@ -215,10 +218,10 @@ class MainActivity : BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        listSettingsLayout = sidePanelHeader.findViewById(R.id.list_settings_layout) as ViewGroup
+        listSettingsLayout = sidePanelHeader.list_settings_layout
         listSettingsLayout.setChildrenEnabled(Rpc.connected)
 
-        sortSpinner = sidePanelHeader.findViewById(R.id.sort_spinner) as Spinner
+        sortSpinner = sidePanelHeader.sort_spinner
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
                                                             R.string.sort)
         sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
@@ -235,7 +238,7 @@ class MainActivity : BaseActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        val sortOrderButton = sidePanelHeader.findViewById(R.id.sort_order_button) as ImageButton
+        val sortOrderButton = sidePanelHeader.sort_order_button
         sortOrderButton.setImageResource(getSortOrderButtonIcon())
         sortOrderButton.setOnClickListener {
             torrentsAdapter.sortOrder = if (torrentsAdapter.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
@@ -247,7 +250,7 @@ class MainActivity : BaseActivity() {
             sortOrderButton.setImageResource(getSortOrderButtonIcon())
         }
 
-        statusSpinner = sidePanelHeader.findViewById(R.id.status_spinner) as Spinner
+        statusSpinner = sidePanelHeader.status_spinner
         statusSpinnerAdapter = StatusFilterSpinnerAdapter(this)
         statusSpinner.adapter = statusSpinnerAdapter
         statusSpinner.setSelection(Settings.torrentsStatusFilter.ordinal)
@@ -270,7 +273,7 @@ class MainActivity : BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        trackersSpinner = sidePanelHeader.findViewById(R.id.trackers_spinner) as Spinner
+        trackersSpinner = sidePanelHeader.trackers_spinner
         trackersSpinnerAdapter = TrackersSpinnerAdapter(this)
         trackersSpinner.adapter = trackersSpinnerAdapter
         trackersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -330,19 +333,15 @@ class MainActivity : BaseActivity() {
         Servers.addCurrentServerListener(currentServerListener)
 
         Rpc.torrentDuplicateListener = {
-            Snackbar.make(coordinator_layout,
-                          R.string.torrent_duplicate,
-                          Snackbar.LENGTH_LONG).show()
+            longSnackbar(coordinator_layout, R.string.torrent_duplicate)
         }
         Rpc.torrentAddErrorListener = {
-            Snackbar.make(coordinator_layout,
-                          R.string.torrent_add_error,
-                          Snackbar.LENGTH_LONG).show()
+            longSnackbar(coordinator_layout, R.string.torrent_add_error)
         }
 
         if (savedInstanceState == null) {
             if (!Servers.hasServers) {
-                startActivity(Intent(this, ServerEditActivity::class.java))
+                startActivity<ServerEditActivity>()
             }
         } else if (Rpc.connected) {
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
@@ -373,7 +372,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Logger.d("MainActivity onDestroy")
+        debug("MainActivity onDestroy")
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.torrentDuplicateListener = null
@@ -440,10 +439,10 @@ class MainActivity : BaseActivity() {
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
-            R.id.add_torrent_link -> startActivity(Intent(this, AddTorrentLinkActivity::class.java))
-            R.id.server_settings -> startActivity(Intent(this, ServerSettingsActivity::class.java))
+            R.id.add_torrent_link -> startActivity<AddTorrentLinkActivity>()
+            R.id.server_settings -> startActivity<ServerSettingsActivity>()
             R.id.alternative_speed_limits -> { Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked }
-            R.id.server_stats -> ServerStatsDialogFragment().show(fragmentManager, null)
+            R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
             else -> return false
         }
 
@@ -452,20 +451,18 @@ class MainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            val intent = Intent(this, AddTorrentFileActivity::class.java)
-            intent.data = data.data
-            startActivity(intent)
+            startActivity(intentFor<AddTorrentFileActivity>().setData(data.data))
         }
     }
 
     private fun updateTitle() {
-        if (Servers.hasServers) {
+        title = if (Servers.hasServers) {
             val currentServer = Servers.currentServer!!
-            title = getString(R.string.current_server_string,
-                              currentServer.name,
-                              currentServer.address)
+            getString(R.string.current_server_string,
+                      currentServer.name,
+                      currentServer.address)
         } else {
-            title = getString(R.string.app_name)
+            getString(R.string.app_name)
         }
     }
 
@@ -532,12 +529,12 @@ class MainActivity : BaseActivity() {
 
     private fun startFilePickerActivity() {
         try {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "application/x-bittorrent"
-            startActivityForResult(intent, 0)
+            startActivityForResult(Intent(Intent.ACTION_GET_CONTENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType("application/x-bittorrent"),
+                    0)
         } catch (error: ActivityNotFoundException) {
-            startActivityForResult(Intent(this, FilePickerActivity::class.java), 0)
+            startActivityForResult(intentFor<FilePickerActivity>(), 0)
         }
     }
 

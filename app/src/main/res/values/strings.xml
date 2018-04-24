@@ -211,7 +211,6 @@
 
     <string name="empty_field_error">This field can\'t be empty</string>
 
-    <string name="overwrite_server">Overwrite server</string>
     <string name="server_exists">Server with this name already exists</string>
     <string name="overwrite">Overwrite</string>
 
@@ -397,6 +396,9 @@
     <string name="prefs_background_service_title">Enable background service</string>
     <string name="prefs_background_service_summary">Service is stopped when app is removed from recent apps screen unless persistent notification is enabled</string>
     <string name="prefs_persistent_notification_title">Show persistent notification</string>
+
+    <string name="persistent_notification_channel_name">Persistent notification</string>
+    <string name="finished_torrents_channel_name">Finished torrents</string>
 
     <string name="appearance">Appearance</string>
     <string name="torrents">Torrents</string>

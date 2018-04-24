@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.widget.FrameLayout
@@ -29,6 +30,7 @@ import org.equeim.tremotesf.utils.Utils
 
 private val createdActivities = mutableListOf<BaseActivity>()
 
+@SuppressLint("Registered")
 open class BaseActivity : AppCompatActivity() {
     protected var creating = true
     protected var active = false

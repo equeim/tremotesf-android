@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -21,8 +21,8 @@ package org.equeim.tremotesf.serversettingsactivity
 
 import java.text.DecimalFormat
 
-import android.app.Fragment
 import android.os.Bundle
+import android.support.v4.app.Fragment
 
 import android.text.Editable
 import android.text.TextWatcher
@@ -43,11 +43,11 @@ class SeedingFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity.title = getString(R.string.server_settings_seeding)
+        activity?.title = getString(R.string.server_settings_seeding)
         return inflater.inflate(R.layout.server_settings_seeding_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         ratio_limit_check_box.isChecked = Rpc.serverSettings.ratioLimited
