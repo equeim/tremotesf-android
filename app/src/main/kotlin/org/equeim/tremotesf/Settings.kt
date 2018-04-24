@@ -35,7 +35,7 @@ private const val TORRENTS_SORT_MODE = "torrentsSortMode"
 private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
 private const val TORRENTS_STATUS_FILTER = "torrentsStatusFilter"
 private const val TORRENTS_TRACKER_FILTER = "torrentsTrackerFilter"
-private const val TORRENTS_FOLDER_FILTER = "torrentsFolderFilter"
+private const val TORRENTS_DIRECTORY_FILTER = "torrentsFolderFilter"
 
 @SuppressLint("StaticFieldLeak")
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
@@ -144,12 +144,12 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).apply()
         }
 
-    var torrentsFolderFilter: String
+    var torrentsDirectoryFilter: String
         get() {
-            return preferences.getString(TORRENTS_FOLDER_FILTER, "")
+            return preferences!!.getString(TORRENTS_DIRECTORY_FILTER, "")
         }
         set(value) {
-            preferences.edit().putString(TORRENTS_FOLDER_FILTER, value).commit()
+            preferences!!.edit().putString(TORRENTS_DIRECTORY_FILTER, value).apply()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {

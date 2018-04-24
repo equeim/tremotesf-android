@@ -69,7 +69,7 @@ private const val SORT_MODE = "sortMode"
 private const val SORT_ORDER = "sortOrder"
 private const val STATUS_FILTER_MODE = "statusFilterMode"
 private const val TRACKER_FILTER = "trackerFilter"
-private const val FOLDER_FILTER = "folderFilter"
+private const val DIRECTORY_FILTER = "directoryFilter"
 
 class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
     companion object {
@@ -137,7 +137,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     private val filterPredicate = { torrent: Torrent ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
         (trackerFilter.isEmpty() || (torrent.trackers.find { it.site == trackerFilter } != null)) &&
-        (folderFilter.isEmpty() || torrent.downloadDirectory == folderFilter) &&
+        (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
         torrent.name.contains(filterString, true)
     }
 
@@ -202,7 +202,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
-    var folderFilter = ""
+    var directoryFilter = ""
         set(value) {
             if (value != field) {
                 field = value
@@ -323,7 +323,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                                     SORT_ORDER to sortOrder.ordinal,
                                                     STATUS_FILTER_MODE to statusFilterMode.ordinal,
                                                     TRACKER_FILTER to trackerFilter,
-                                                    FOLDER_FILTER to folderFilter))
+                                                    DIRECTORY_FILTER to directoryFilter))
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle) {
@@ -332,7 +332,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
         statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]
         trackerFilter = state.getString(TRACKER_FILTER)
-        folderFilter = state.getString(FOLDER_FILTER)
+        directoryFilter = state.getString(DIRECTORY_FILTER)
     }
 
     class TorrentsViewHolder(selector: Selector<Torrent, Int>,
