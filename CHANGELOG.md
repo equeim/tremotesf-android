@@ -4,6 +4,7 @@
 ### Added
 - Support of Android 8.1
 - Support of adaptive icons
+- Filter torrents by download directory (thanks to beschoenen)
 
 ### Fixed
 - Various crashes
