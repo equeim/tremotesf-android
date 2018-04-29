@@ -27,5 +27,8 @@ Android remote GUI for transmission-daemon.
 ## Translations
 Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
 
+## Donate
+I you like this app, you can support its development via [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=65PPMXWVZJMYS) or [Yandex.Money](https://yasobe.ru/na/tremotesf_android).
+
 ## Screenshots
 ![](http://i.imgur.com/tsmKQIV.png) ![](http://i.imgur.com/HMucsni.png) ![](http://i.imgur.com/EXc9CG0.png)
