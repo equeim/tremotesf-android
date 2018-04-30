@@ -1,10 +1,11 @@
 # Change Log
 
-## [Unreleased]
+## [1.6.0] - 2018-04-30
 ### Added
 - Support of Android 8.1
 - Support of adaptive icons
 - Filter torrents by download directory (thanks to beschoenen)
+- Donations support (Google Play, PayPal and Yandex.Money)
 
 ### Fixed
 - Various crashes
