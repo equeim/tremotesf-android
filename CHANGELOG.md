@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.6.1] - 2018-04-30
+### Fixed
+- Crash when restoring activity with no servers configured
+
 ## [1.6.0] - 2018-04-30
 ### Added
 - Support of Android 8.1

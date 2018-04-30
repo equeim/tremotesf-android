@@ -198,10 +198,12 @@ object Rpc : AnkoLogger {
         set(value) {
             if (value != field) {
                 field = value
-                if (value) {
-                    resetTimer()
-                } else if (connected) {
-                    updateData()
+                if (connected) {
+                    if (value) {
+                        startTimer()
+                    } else {
+                        updateData()
+                    }
                 }
             }
         }
@@ -211,10 +213,12 @@ object Rpc : AnkoLogger {
             if (value != field) {
                 field = value
                 resetTimer()
-                if (value) {
-                    startTimer()
-                } else {
-                    updateData()
+                if (connected) {
+                    if (value) {
+                        startTimer()
+                    } else {
+                        updateData()
+                    }
                 }
             }
         }
