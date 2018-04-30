@@ -45,6 +45,7 @@
 
     <!-- e.g. "example.com (42)" -->
     <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="directories_spinner_text">%1$s (%2$d)</string>
 
     <plurals name="torrents_selected">
         <item quantity="one">%d торрент выбран</item>
@@ -88,6 +89,7 @@
     <string name="details">Сведения</string>
     <string name="files">Файлы</string>
     <string name="trackers">Трекеры</string>
+    <string name="directories">Каталоги</string>
     <string name="peers">Пиры</string>
     <string name="limits">Ограничения</string>
 
@@ -391,10 +393,16 @@
     <string name="prefs_background_service_summary">Сервис останавливается, когда приложение удаляется из списка недавних, если постоянное уведомление выключено</string>
     <string name="prefs_persistent_notification_title">Показывать постоянное уведомление</string>
 
+    <string name="persistent_notification_channel_name">Постоянное уведомление</string>
+    <string name="finished_torrents_channel_name">Завершенные торренты</string>
+
     <string name="appearance">Внешний вид</string>
     <string name="torrents">Торренты</string>
 
     <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
 
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
+
+    <string name="donate">Пожертвовать</string>
+    <string name="donate_yandex">Яндекс.Деньги</string>
 </resources>

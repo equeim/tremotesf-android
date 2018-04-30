@@ -406,7 +406,4 @@
     <string name="prefs_delete_files_title">Delete files on the hard disk when removing torrent</string>
 
     <string name="alternative_speed_limits">Alternative speed limits</string>
-
-    <string name="donate">Donate</string>
-    <string name="donate_yandex">Yandex.Money</string>
 </resources>

@@ -1,0 +1,263 @@
+<resources>
+    <string name="disconnected">Desconectado</string>
+    <string name="connecting">Conectando\u2026</string>
+    <string name="connected">Conectado</string>
+
+    <string name="connect">Conectar</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="add">Adicionar</string>
+
+    <string name="timed_out">Conexão expirada</string>
+    <string name="connection_error">Erro de conexão</string>
+    <string name="authentication_error">Erro de autenticação</string>
+    <string name="server">Servidor</string>
+    <string name="server_settings">Configurações de servidor</string>
+
+    <string name="sort">Organizar</string>
+    <string name="progress">Progresso</string>
+    <string name="ratio">Proporção</string>
+    <string name="size">Tamanho</string>
+    <string name="status">Estado</string>
+
+    <string name="torrents_all">Tudo (%d)</string>
+    <string name="torrents_active">Ativo (%d)</string>
+    <string name="torrents_downloading">Baixando (%d)</string>
+    <string name="torrents_seeding">Semeando (%d)</string>
+    <string name="torrents_paused">Pausado (%d)</string>
+    <string name="torrents_checking">Verificando (%d)</string>
+    <!-- e.g. "example.com (42)" -->
+    <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <plurals name="torrents_selected">
+        <item quantity="one">%d torrent selecionado</item>
+        <item quantity="other">%d torrents selecionados</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="one">%d arquivo selecionado</item>
+        <item quantity="other">%d arquivos selecionados</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="one">%d rastreador selecionado</item>
+        <item quantity="other">%d rastreadores selecionados</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="one">%d par</item>
+        <item quantity="other">%d pares</item>
+    </plurals>
+
+    <string name="next_update">Próxima atualização em %s</string>
+    <string name="add_tracker">Adicionar rastreador</string>
+    <string name="edit_tracker">Editar rastreador</string>
+
+    <string name="torrent_finished">Torrent finalizado</string>
+
+    <string name="torrent_not_found">Torrent não encontrado</string>
+    <string name="torrent_removed">Torrent removido</string>
+
+    <string name="details">Detalhes</string>
+    <string name="files">Arquivos</string>
+    <string name="trackers">Rastreadores</string>
+    <string name="peers">Pares</string>
+    <string name="limits">Limites</string>
+
+    <string name="activity">Atividade</string>
+    <string name="information">Informação</string>
+
+    <string name="completed">Completado</string>
+    <string name="downloaded">Baixado</string>
+    <string name="uploaded">Enviado</string>
+    <string name="last_activity">Última atividade</string>
+
+    <string name="created_by">Criado por</string>
+    <string name="created_on">Criado em</string>
+    <string name="comment">Comentário</string>
+
+    <string name="parent_directory_list_item_label">..</string>
+
+    <string name="priority">Prioridade</string>
+    <string name="high_priority">Alta</string>
+    <string name="normal_priority">Normal</string>
+    <string name="low_pririty">Baixa</string>
+    <string name="tracker_inactive">Inativo</string>
+    <string name="tracker_active">Ativo</string>
+    <string name="tracker_queued">Na fila</string>
+    <string name="tracker_updating">Atualizando</string>
+    <string name="tracker_error">Erro: %s</string>
+
+    <string name="loading">Carregando\u2026</string>
+    <string name="error">Erro</string>
+
+    <string name="speed">Velocidade</string>
+    <string name="honor_global_limits">Honrar limites globais</string>
+    <string name="kbps">kB/s</string>
+    <string name="download_noun">Baixar</string>
+    <string name="upload_noun">Enviar</string>
+
+    <string name="seeding">Semeando</string>
+
+    <string-array name="ratio_limit_mode">
+        <item>Usar configurações globais</item>
+    </string-array>
+
+    <string-array name="idle_seeding_mode">
+        <item>Usar configurações globais</item>
+    </string-array>
+
+    <string name="settings">Configurações</string>
+    <string name="servers">Servidores</string>
+    <string name="notifications">Notificações</string>
+
+    <string name="quit">Sair</string>
+
+    <string name="select_all">Selecionar tudo</string>
+
+    <string name="add_server">Adicionar servidor</string>
+    <string name="edit_server">Editar servidor</string>
+
+    <plurals name="servers_selected">
+        <item quantity="one">%d servidor selecionado</item>
+        <item quantity="other">%d servidores selecionados</item>
+    </plurals>
+
+    <string name="save">Salvar</string>
+
+    <string name="remove">Remover</string>
+
+    <string name="name">Nome</string>
+    <string name="address_edit_hint">Nome de domínio ou endereço IP</string>
+    <string name="port">Porta</string>
+    <string name="https">HTTPS</string>
+    <string name="certificates">Certificados</string>
+    <string name="authentication">Autenticação</string>
+    <string name="username">Usuário</string>
+    <string name="password">Senha</string>
+    <string name="update_interval">Intervalo de atualização, s</string>
+    <string name="overwrite">Sobrescrever</string>
+
+    <string name="add_torrent">Adicionar torrent</string>
+    <string name="add_torrent_file">Adicionar arquivo torrent</string>
+    <string name="file_is_too_large">Arquivo é muito grande</string>
+    <string name="server_settings_downloading">Baixando</string>
+    <string name="server_settings_seeding">Semeando</string>
+    <string name="server_settings_queue">Fila</string>
+    <string name="server_settings_speed">Velocidade</string>
+    <string name="server_settings_network">Rede</string>
+
+    <string name="start_added_torrents">Iniciar torrents adicionados</string>
+    <string name="rename_incomplete_files">Acrescentar \".part\" ao nome de arquivos incompletos</string>
+    <string name="stop_seeding_at_ratio">Parar de semear na proporção</string>
+    <string name="alternative_limits">Limites alternativos</string>
+    <string name="enable">Ativar</string>
+    <string name="scheduled">Agendado</string>
+    <string name="from">De</string>
+    <string name="to">Para</string>
+    <string name="connection">Conexão</string>
+    <string name="random_port">Escolher porta aleatória quando o Transmission for iniciado</string>
+    <string name="port_forwarding">Ativar encaminhamento de porta</string>
+    <string name="encryption">Criptografia</string>
+    <string-array name="encryption_items">
+        <item>Permitir</item>
+    </string-array>
+    <string name="enable_utp">Ativar uTP</string>
+    <string name="enable_pex">Ativar PEX</string>
+    <string name="enable_dht">Ativar DHT</string>
+    <string name="enable_lpd">Ativar LPD</string>
+    <string name="open_side_panel">Abrir painel lateral</string>
+    <string name="close_side_panel">Fechar painel lateral</string>
+    <string name="select_file">Selecionar arquivo</string>
+    <string name="current_session">Sessão atual</string>
+    <string name="total">Total</string>
+    <string name="duration">Duração</string>
+    <string name="close">Fechar</string>
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">%1$d d %2$d h</string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">%1$d h %2$d m</string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">%1$d m %2$d s</string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds">%d s</string>
+
+    <plurals name="started_times">
+        <item quantity="one">Iniciado %d vez</item>
+        <item quantity="other">Iniciado %d vezes</item>
+    </plurals>
+
+    <string name="start">Iniciar</string>
+    <string name="pause">Pausar</string>
+
+    <string name="check_local_data">Verificar dados locais</string>
+    <string name="torrent_add_error">Erro ao adicionar torrent</string>
+
+    <!-- e.g. "100 MiB, uploaded 200 MiB" -->
+    <string name="uploaded_string">%1$s, enviado %2$s</string>
+
+    <string name="torrent_paused">Pausado</string>
+    <plurals name="torrent_downloading">
+        <item quantity="one">Baixando de %d par</item>
+        <item quantity="other">Baixando de %d pares</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">Baixando</string>
+    <plurals name="torrent_seeding">
+        <item quantity="one">Semeando para %d par</item>
+        <item quantity="other">Semeando para %d pares</item>
+    </plurals>
+    <string name="torrent_seeding_stalled">Semeando</string>
+    <string name="torrent_queued">Na fila</string>
+    <string name="torrent_checking">Verificando (%s%%)</string>
+    <string name="torrent_queued_for_checking">Na fila para verificação</string>
+
+    <string name="invalid_server_url">Endereço de servidor inválido</string>
+
+    <string-array name="size_units">
+        <item>%s B</item>
+        <item>%s KiB</item>
+        <item>%s MiB</item>
+        <item>%s GiB</item>
+        <item>%s TiB</item>
+        <item>%s PiB</item>
+        <item>%s EiB</item>
+        <item>%s ZiB</item>
+        <item>%s YiB</item>
+    </string-array>
+
+    <string-array name="speed_units">
+        <item>%s B/s</item>
+        <item>%s KiB/s</item>
+        <item>%s MiB/s</item>
+        <item>%s GiB/s</item>
+        <item>%s TiB/s</item>
+        <item>%s PiB/s</item>
+        <item>%s EiB/s</item>
+        <item>%s ZiB/s</item>
+        <item>%s YiB/s</item>
+    </string-array>
+
+    <string name="set_location">Definir local</string>
+    <string name="move_files">Mover arquivos do diretório atual</string>
+
+    <string name="rename">Renomear</string>
+
+    <string name="file_name">Nome do arquivo</string>
+
+    <string name="about">Sobre</string>
+    <string name="authors">Autores</string>
+    <string name="translators">Tradutores</string>
+    <string name="license">Licença</string>
+
+    <string name="prefs_dark_theme_title">Usar tema escuro</string>
+    <string name="prefs_dark_theme_summary">Reinicie o aplicativo para aplicar mudanças</string>
+    <string name="prefs_persistent_notification_title">Mostrar notificação persistente</string>
+
+    <string name="appearance">Aparência</string>
+    <string name="torrents">Torrents</string>
+
+    <string name="prefs_delete_files_title">Deletar arquivos quando torrent for removido</string>
+
+    <string name="alternative_speed_limits">Limites alternativos de velocidade</string>
+</resources>

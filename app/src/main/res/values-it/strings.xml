@@ -1,0 +1,377 @@
+<resources>
+    <string name="disconnected">Disconnesso</string>
+    <string name="connecting">In connessione\n2026</string>
+    <string name="connected">Connesso</string>
+
+    <string name="connect">Connetti</string>
+    <string name="disconnect">Disconnetti</string>
+    <string name="add">Aggiungi</string>
+
+    <string name="timed_out">Connessione scaduta</string>
+    <string name="connection_error">Errore di connessione</string>
+    <string name="authentication_error">Errore di autenticazione</string>
+    <string name="parsing_error">Errore di parsing</string>
+    <string name="server_is_too_new">La versione del server è troppo nuova</string>
+    <string name="server_is_too_old">La versione del server è troppo vecchia</string>
+
+    <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
+
+    <string name="current_server_string">%1$s (%2$s)</string>
+
+    <string name="download_speed_string">\u2193 %s</string>
+    <string name="upload_speed_string">\u2191 %s</string>
+
+    <string name="server">Server</string>
+    <string name="server_settings">Impostazioni del server</string>
+
+    <string name="sort">Ordina</string>
+    <string name="progress">Completamento</string>
+    <string name="eta">Tempo mancante</string>
+    <string name="ratio">Rapporto</string>
+    <string name="size">Dimensione</string>
+    <string name="added_date">Data di aggiunta</string>
+
+    <string name="status">Stato</string>
+
+    <string name="no_torrents">Nessun torrent</string>
+
+    <string name="torrents_all">Tutti (%d)</string>
+    <string name="torrents_active">Attivi (%d)</string>
+    <string name="torrents_downloading">In scaricamento (%d)</string>
+    <string name="torrents_seeding">In seeding (%d)</string>
+    <string name="torrents_paused">In pausa (%d)</string>
+    <string name="torrents_checking">Controllati (%d)</string>
+    <string name="torrents_errored">Con errore (%d)</string>
+
+    <!-- e.g. "example.com (42)" -->
+    <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <plurals name="torrents_selected">
+        <item quantity="one">%d torrent selezionato</item>
+        <item quantity="other">%d torrent selezionati</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="one">%d file selezionato</item>
+        <item quantity="other">%d file selezionati</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="one">%d server traccia selezionato</item>
+        <item quantity="other">%d server traccia selezionati</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="one">%d peer</item>
+        <item quantity="other">%d peer</item>
+    </plurals>
+
+    <string name="next_update">Prossimo aggiornamento dopo %s</string>
+    <string name="add_tracker">Aggiungi server traccia</string>
+    <string name="edit_tracker">Modifica server traccia</string>
+
+    <string name="tracker_announce_url">URL del server traccia</string>
+
+    <string name="torrent_finished">Torrent completati</string>
+
+    <string name="torrent_not_found">Torrent non trovato</string>
+    <string name="torrent_removed">Torrent rimosso</string>
+
+    <string name="details">Dettagli</string>
+    <string name="files">File</string>
+    <string name="trackers">Server traccia</string>
+    <string name="peers">Peer</string>
+    <string name="limits">Limiti</string>
+
+    <string name="activity">Attività</string>
+    <string name="information">Informazioni</string>
+
+    <string name="completed">Completati</string>
+    <string name="downloaded">Scaricati</string>
+    <string name="uploaded">Inviati</string>
+    <string name="download_speed">Velocità scaricamento</string>
+    <string name="upload_speed">Velocità caricamento</string>
+    <string name="seeders">Seed</string>
+    <string name="leechers">Leech</string>
+    <string name="last_activity">Ultima attività</string>
+
+    <string name="total_size">Dimensione totale</string>
+    <string name="location">Posizione</string>
+    <string name="hash">Hash</string>
+    <string name="created_by">Creato da</string>
+    <string name="created_on">Creato il</string>
+    <string name="comment">Commento</string>
+
+    <string name="parent_directory_list_item_label">..</string>
+
+    <string name="progress_string">%s%%</string>
+
+    <!-- e.g. "100 MiB of 200 MiB (50%)" -->
+    <string name="completed_string">%1$s di %2$s (%3$s%%)</string>
+
+    <string name="priority">Priorità</string>
+    <string name="high_priority">Alta</string>
+    <string name="normal_priority">Normale</string>
+    <string name="low_pririty">Bassa</string>
+    <string name="mixed_priority">Mista</string>
+
+    <string name="download_verb">Scaricato</string>
+    <string name="not_download">Non scaricato</string>
+
+    <string name="no_files">Nessun file</string>
+
+    <string name="tracker_inactive">Inattivo</string>
+    <string name="tracker_active">Attivo</string>
+    <string name="tracker_queued">In coda</string>
+    <string name="tracker_updating">In aggiornamento</string>
+    <string name="tracker_error">Errore: %s</string>
+
+    <string name="loading">Caricamento\u2026</string>
+    <string name="no_peers">Nessun peer</string>
+
+    <string name="error">Errore</string>
+
+    <string name="speed">Velocità</string>
+    <string name="honor_global_limits">Segui i limiti globali</string>
+    <string name="kbps">kB/s</string>
+    <string name="download_noun">Scaricamenti</string>
+    <string name="upload_noun">Caricamenti</string>
+
+    <string name="seeding">Seed</string>
+
+    <string name="ratio_limit">Limite rapporto</string>
+    <string-array name="ratio_limit_mode">
+        <item>Usa i limiti globali</item>
+        <item>Continua il seed comunque</item>
+        <item>@string/stop_seeding_at_ratio</item>
+    </string-array>
+
+    <string name="idle_seeding">Seed in attesa</string>
+    <string-array name="idle_seeding_mode">
+        <item>Usa impostazioni globali</item>
+        <item>Continua il seed a prescindere dall\'attività</item>
+        <item>@string/stop_seeding_if_idle_for</item>
+    </string-array>
+
+    <string name="min">minuti</string>
+    <string name="maximum_peers">Peer massimi</string>
+
+    <string name="settings">Impostazioni</string>
+    <string name="servers">Server</string>
+    <string name="notifications">Notifiche</string>
+
+    <string name="quit">Esci</string>
+
+    <string name="select_all">Seleziona tutto</string>
+
+    <string name="add_server">Aggiungi server</string>
+    <string name="edit_server">Modifica server</string>
+
+    <plurals name="servers_selected">
+        <item quantity="one">%d server selezionato</item>
+        <item quantity="other">%d server selezionati</item>
+    </plurals>
+
+    <string name="save">Salva</string>
+
+    <string name="remove">Rimuovi</string>
+
+    <plurals name="remove_servers_message">
+        <item quantity="one">Eliminare il server selezionato? %d</item>
+        <item quantity="other">Eliminare i server selezionati? %d</item>
+    </plurals>
+
+    <string name="no_servers">Nessun server</string>
+
+    <string name="name">Nome</string>
+    <string name="address_edit_hint">Nome dominio o indirizzo IP</string>
+    <string name="port">Porta</string>
+    <string name="api_path">Indirizzo API</string>
+    <string name="https">HTTPS</string>
+    <string name="certificates">Certificati</string>
+    <string name="server_uses_self_signed_certificate">Il server usa un certificato auto-firmato</string>
+    <string name="certificate">Certificato in formato PEM</string>
+    <string name="use_client_certificate_authentication">Usa il certificato client per l\'autenticazione</string>
+    <string name="authentication">Autenticazione</string>
+    <string name="username">Nome utente</string>
+    <string name="password">Password</string>
+    <string name="update_interval">Intervallo di aggiornamento, s</string>
+    <string name="background_update_interval">Intervallo di aggiornamento in background, s</string>
+    <string name="timeout">Timeout, s</string>
+
+    <string name="empty_field_error">Questo campo non può essere vuoto</string>
+
+    <string name="server_exists">Un server con questo nome già esiste</string>
+    <string name="overwrite">Sovrascrivi</string>
+
+    <string name="add_torrent">Aggiungi torrent</string>
+    <string name="add_torrent_file">Aggiungi file torrent</string>
+    <string name="storage_permission_error">Sono necessari i permessi per l\'archiviazione </string>
+    <string name="file_is_too_large">Il file è troppo grande</string>
+    <string name="file_reading_error">Errore nella lettura del file</string>
+    <string name="file_parsing_error">Errore nel parsing del file</string>
+
+    <string name="download_directory">Cartella di download</string>
+
+    <string name="server_settings_downloading">Scaricamento</string>
+    <string name="server_settings_seeding">Seeding</string>
+    <string name="server_settings_queue">Coda</string>
+    <string name="server_settings_speed">Velocità</string>
+    <string name="server_settings_network">Rete</string>
+
+    <string name="start_added_torrents">Avvia i torrent aggiunti</string>
+    <string name="rename_incomplete_files">Aggiungi \".part\" ai nomi dei file incompleti</string>
+    <string name="incomplete_files_directory">Cartella dei file incompleti</string>
+    <string name="stop_seeding_at_ratio">Ferma il seed al rapporto</string>
+    <string name="stop_seeding_if_idle_for">Ferma il seed se fermo per</string>
+    <string name="maximum_active_downloads">Numero massimo di scaricamenti attivi</string>
+    <string name="maximum_active_uploads">Numero massimo di caricamenti attivi</string>
+    <string name="ignore_queue">Ignora la coda se fermo per</string>
+    <string name="alternative_limits">Limiti alternativi</string>
+    <string name="enable">Abilita</string>
+    <string name="download_kbps">Scaricamento, kB/s</string>
+    <string name="upload_kbps">Caricamento, kB/s</string>
+    <string name="scheduled">Schedulato</string>
+    <string name="from">Da</string>
+    <string name="to">A</string>
+    <string name="every_day">Ogni giorno</string>
+    <string name="weekdays">Giorni della settimana</string>
+    <string name="weekends">Fine settimana</string>
+    <string name="connection">Connessione</string>
+    <string name="peer_port">Porta del peer</string>
+    <string name="random_port">Porta casuale all\'avvio di Transmission</string>
+    <string name="port_forwarding">Abilita l\'apertura delle porte</string>
+    <string name="encryption">Crittografia</string>
+    <string-array name="encryption_items">
+        <item>Permetti</item>
+        <item>Preferisci</item>
+        <item>Richiesta</item>
+    </string-array>
+    <string name="enable_utp">Abilita uTP</string>
+    <string name="enable_pex">Abilita PEX</string>
+    <string name="enable_dht">Abilita DHT</string>
+    <string name="enable_lpd">Abilita LPD</string>
+    <string name="peer_limits">Limiti peer</string>
+    <string name="maximum_peers_per_torrent">Peer massimi per torrent</string>
+    <string name="maximum_peers_globally">Peer massimi globalmente</string>
+
+    <string name="open_side_panel">Apri pannello laterale</string>
+    <string name="close_side_panel">Chiudi pannello laterale</string>
+    <string name="start_downloading_after_adding">Comincia lo scaricamento dopo l\'aggiunta</string>
+
+    <string name="torrent_link">Indirizzo torrent</string>
+    <string name="add_torrent_link">Aggiungi indirizzo torrent</string>
+
+    <string name="select_file">Selezione file</string>
+    <string name="primary_storage">Spazio di archiviazione primario</string>
+
+    <string name="current_session">Sessione corrente</string>
+    <string name="total">Totale</string>
+    <string name="duration">Durata</string>
+    <string name="close">Chiudi</string>
+    <string name="server_stats">Statistiche server</string>
+
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">%1$d g %2$d o</string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">%1$d o %2$d m</string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">%1$d m %2$d s</string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds">%d s</string>
+
+    <plurals name="started_times">
+        <item quantity="one">Lanciato %d volta</item>
+        <item quantity="other">Lanciato %d volte</item>
+    </plurals>
+
+    <string name="start">Avvia</string>
+    <string name="pause">Pausa</string>
+
+    <plurals name="remove_torrents_message">
+        <item quantity="one">Rimuovere il torrent selezionato? %d</item>
+        <item quantity="other">Rimuovere i %d torrent selezionati?</item>
+    </plurals>
+    <string name="delete_files">Elimina anche i file sul disco</string>
+    <string name="check_local_data">Controlla i dati locali</string>
+    <string name="torrent_duplicate">Questo torrent è già stato aggiunto</string>
+    <string name="torrent_add_error">Errore nell\'aggiunta del torrent</string>
+
+    <!-- e.g. "100 MiB, uploaded 200 MiB" -->
+    <string name="uploaded_string">%1$s, caricato %2$s</string>
+
+    <string name="torrent_paused">In pausa</string>
+    <plurals name="torrent_downloading">
+        <item quantity="one">In scaricamento da %d peer</item>
+        <item quantity="other">In scaricamento da %d peer</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">In scaricamento</string>
+    <plurals name="torrent_seeding">
+        <item quantity="one">Seeding a %d peer</item>
+        <item quantity="other">Seeding a %d peer</item>
+    </plurals>
+    <string name="torrent_seeding_stalled">In seeding</string>
+    <string name="torrent_queued">In coda</string>
+    <string name="torrent_checking">Controllo (%s%%)</string>
+    <string name="torrent_queued_for_checking">In coda per il controllo</string>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="one">Rimuovere il server traccia selezionato? %d</item>
+        <item quantity="other">Rimuovere i %d server traccia selezionati?</item>
+    </plurals>
+
+    <string name="invalid_server_url">Indirizzo server invalido</string>
+
+    <string-array name="size_units">
+        <item>%s B</item>
+        <item>%s KiB</item>
+        <item>%s MiB</item>
+        <item>%s GiB</item>
+        <item>%s TiB</item>
+        <item>%s PiB</item>
+        <item>%s EiB</item>
+        <item>%s ZiB</item>
+        <item>%s YiB</item>
+    </string-array>
+
+    <string-array name="speed_units">
+        <item>%s B/s</item>
+        <item>%s KiB/s</item>
+        <item>%s MiB/s</item>
+        <item>%s GiB/s</item>
+        <item>%s TiB/s</item>
+        <item>%s PiB/s</item>
+        <item>%s EiB/s</item>
+        <item>%s ZiB/s</item>
+        <item>%s YiB/s</item>
+    </string-array>
+
+    <string name="remove_torrent_message">Rimuovere il seguente torrent?</string>
+
+    <string name="set_location">Scegli locazione</string>
+    <string name="move_files">Sposta i file dalla cartella corrente</string>
+
+    <string name="rename">Rinomina</string>
+
+    <string name="file_name">Nome file</string>
+
+    <string name="about">Informazioni</string>
+    <string name="authors">Autori</string>
+    <string name="translators">Traduzioni</string>
+    <string name="license">Licenza</string>
+
+    <string name="prefs_dark_theme_title">Usa tema scuro</string>
+    <string name="prefs_dark_theme_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
+    <string name="prefs_background_service_title">Abilita servizio in background</string>
+    <string name="prefs_background_service_summary">Il servizio è fermato quando l\'applicazione è rimossa dalla schermata delle applicazioni recenti a meno che le notifiche persistenti non siano state abilitate</string>
+    <string name="prefs_persistent_notification_title">Mostra notifiche persistenti</string>
+
+    <string name="appearance">Aspetto</string>
+    <string name="torrents">Torrent</string>
+
+    <string name="prefs_delete_files_title">Elimina i file dal disco quando si rimuove il torrent</string>
+
+    <string name="alternative_speed_limits">Limiti di velocità alternativi</string>
+</resources>

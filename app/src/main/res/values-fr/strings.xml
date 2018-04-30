@@ -1,0 +1,59 @@
+<resources>
+    <string name="disconnected">Déconnecté</string>
+    <string name="connected">Connecté</string>
+
+    <string name="progress_string">%s%%</string>
+
+    <string name="priority">Priorité</string>
+    <string name="high_priority">Haute</string>
+    <string name="normal_priority">Normale</string>
+    <string name="low_pririty">Faible</string>
+    <string name="mixed_priority">Multiple</string>
+
+    <string name="download_verb">Télécharger</string>
+    <string name="tracker_inactive">Inactif</string>
+    <string name="tracker_active">Actif</string>
+    <string name="tracker_queued">En attente</string>
+    <string name="tracker_error">Erreur : %s</string>
+
+    <string name="error">Erreur</string>
+
+    <string name="speed">Vitesse</string>
+    <string name="notifications">Notifications</string>
+
+    <plurals name="servers_selected">
+        <item quantity="one">%d serveur sélectionné</item>
+        <item quantity="other">%d serveurs sélectionnés</item>
+    </plurals>
+
+    <string name="https">HTTPS</string>
+    <string name="certificates">Certificats</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="server_settings_speed">Vitesse</string>
+    <string name="server_settings_network">Réseau</string>
+
+    <string name="alternative_limits">Limites alternatives</string>
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">%1$d d %2$d h</string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">%1$d h %2$d m</string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">%1$d m %2$d s</string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds">%d s</string>
+
+    <string-array name="speed_units">
+        <item>%s KiB/s</item>
+    </string-array>
+
+    <string name="remove_torrent_message">Êtes-vous sûr de vouloir supprimer ce torrent ?</string>
+
+    <string name="authors">Auteurs</string>
+    <string name="translators">Traducteurs</string>
+    <string name="license">Licence</string>
+
+    </resources>

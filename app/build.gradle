@@ -22,6 +22,22 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
+
+    flavorDimensions("freedom")
+    productFlavors {
+        google {
+            dimension "freedom"
+            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
+        }
+        fdroid {
+            dimension "freedom"
+            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
+        }
+    }
 }
 
 repositories {
@@ -51,4 +67,5 @@ dependencies {
     implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
     implementation 'com.jaredrummler:fastscroll-recyclerview:1.0.2'
+    implementation 'org.sufficientlysecure:donations:2.6'
 }
