@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.6.2] - 2018-05-04
+### Changed
+- Updated translations
+
+### Fixed
+- Crashes with some uncompleted translations
+- Crashes on Android versions older than 6.0
+- License tab on About screen
+
 ## [1.6.1] - 2018-04-30
 ### Fixed
 - Crash when restoring activity with no servers configured
