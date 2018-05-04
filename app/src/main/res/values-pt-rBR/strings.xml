@@ -99,10 +99,14 @@
 
     <string-array name="ratio_limit_mode">
         <item>Usar configurações globais</item>
+        <item>Seed regardless of ratio</item>
+        <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string-array name="idle_seeding_mode">
         <item>Usar configurações globais</item>
+        <item>Seed regardless of activity</item>
+        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="settings">Configurações</string>
@@ -159,6 +163,8 @@
     <string name="encryption">Criptografia</string>
     <string-array name="encryption_items">
         <item>Permitir</item>
+        <item>Prefer</item>
+        <item>Require</item>
     </string-array>
     <string name="enable_utp">Ativar uTP</string>
     <string name="enable_pex">Ativar PEX</string>
@@ -260,4 +266,5 @@
     <string name="prefs_delete_files_title">Deletar arquivos quando torrent for removido</string>
 
     <string name="alternative_speed_limits">Limites alternativos de velocidade</string>
-</resources>
+
+    </resources>

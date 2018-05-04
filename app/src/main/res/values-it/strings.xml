@@ -374,4 +374,5 @@
     <string name="prefs_delete_files_title">Elimina i file dal disco quando si rimuove il torrent</string>
 
     <string name="alternative_speed_limits">Limiti di velocità alternativi</string>
-</resources>
+
+    </resources>

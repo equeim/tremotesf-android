@@ -380,4 +380,7 @@
     <string name="prefs_delete_files_title">Bestanden op harde schijf verwijderen bij verwijderen van torrent</string>
 
     <string name="alternative_speed_limits">Alternatieve snelheidslimieten</string>
+
+    <string name="donate">Doneren</string>
+    <string name="donate_yandex">Yandex.Money</string>
 </resources>

@@ -47,7 +47,15 @@
     <string name="duration_seconds">%d s</string>
 
     <string-array name="speed_units">
+        <item>%s B/s</item>
         <item>%s KiB/s</item>
+        <item>%s MiB/s</item>
+        <item>%s GiB/s</item>
+        <item>%s TiB/s</item>
+        <item>%s PiB/s</item>
+        <item>%s EiB/s</item>
+        <item>%s ZiB/s</item>
+        <item>%s YiB/s</item>
     </string-array>
 
     <string name="remove_torrent_message">Êtes-vous sûr de vouloir supprimer ce torrent ?</string>
