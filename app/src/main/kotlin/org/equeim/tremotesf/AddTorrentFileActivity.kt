@@ -22,6 +22,7 @@ package org.equeim.tremotesf
 import android.Manifest
 
 import android.content.ContentResolver
+import android.content.Context
 import android.content.pm.PackageManager
 
 import android.os.Build
@@ -52,8 +53,6 @@ import android.support.v7.widget.Toolbar
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
-
-import androidx.core.content.systemService
 
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.contentView
@@ -268,7 +267,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 doneMenuItem?.isVisible = false
 
                 if (activity.currentFocus != null) {
-                    activity.systemService<InputMethodManager>()
+                    (activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                             .hideSoftInputFromWindow(activity.currentFocus.windowToken, 0)
                 }
 

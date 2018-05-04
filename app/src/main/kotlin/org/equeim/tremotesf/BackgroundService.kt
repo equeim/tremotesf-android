@@ -24,6 +24,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 
 import android.content.Intent
 
@@ -32,7 +33,6 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 
-import androidx.core.content.systemService
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.intentFor
 
@@ -75,7 +75,7 @@ class BackgroundService : Service(), AnkoLogger {
 
             Utils.initApp(applicationContext)
 
-            notificationManager = systemService<NotificationManager>()
+            notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannels(listOf(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,

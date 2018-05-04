@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
+import android.content.Context
 import android.os.Bundle
 
 import android.view.LayoutInflater
@@ -34,7 +35,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.app.ListFragment
 
-import androidx.core.content.systemService
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
@@ -74,7 +74,7 @@ class ServerSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
 
-        inputManager = systemService<InputMethodManager>()
+        inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         supportFragmentManager.addOnBackStackChangedListener {
             if (supportFragmentManager.backStackEntryCount == 0) {

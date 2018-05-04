@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.torrentpropertiesactivity
 
 import android.app.Dialog
+import android.content.Context
 
 import android.os.Bundle
 
@@ -42,7 +43,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 
-import androidx.core.content.systemService
 import androidx.core.os.bundleOf
 import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 
@@ -178,7 +178,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             private var previousPage = -1
-            private val inputManager = systemService<InputMethodManager>()
+            private val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {

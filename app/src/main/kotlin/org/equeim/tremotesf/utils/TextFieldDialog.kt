@@ -9,8 +9,6 @@ import android.view.inputmethod.InputMethodManager
 
 import android.support.v7.app.AlertDialog
 
-import androidx.core.content.systemService
-
 import org.equeim.tremotesf.R
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
@@ -63,7 +61,7 @@ fun createTextFieldDialog(context: Context,
             }
         })
 
-        context.systemService<InputMethodManager>().showSoftInput(textField,
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(textField,
                                                                   InputMethodManager.SHOW_IMPLICIT)
     }
 
