@@ -149,7 +149,7 @@ class AboutActivity : BaseActivity() {
                                                         "$5",
                                                         "$10")
 
-            private const val PAYPAL_USER = "equeim@gmail.com"
+            private const val PAYPAL_USER = "DDQTRHTY5YV2G"
             private const val PAYPAL_CURRENCY_CODE = "USD"
             private const val PAYPAL_ITEM_NAME = "Support Tremotesf (Android) development"
 
