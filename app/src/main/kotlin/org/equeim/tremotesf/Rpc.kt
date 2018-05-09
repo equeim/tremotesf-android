@@ -224,7 +224,6 @@ object Rpc : AnkoLogger {
         }
 
     private lateinit var url: String
-    private var timeout = 0
     private var updateInterval = 0L
     private var backgroundUpdateInterval = 0L
     private var authentication = false
@@ -825,7 +824,7 @@ object Rpc : AnkoLogger {
         username = server.username
         password = server.password
 
-        timeout = server.timeout * 1000
+        FuelManager.instance.timeoutInMillisecond = server.timeout * 1000
         updateInterval = (server.updateInterval * 1000).toLong()
         backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
 
@@ -836,7 +835,6 @@ object Rpc : AnkoLogger {
         val request = Fuel.post(url)
                 .body(data)
                 .header(Pair(SESSION_ID_HEADER, sessionId))
-                .timeout(timeout)
 
         if (authentication) {
             request.authenticate(username, password)
