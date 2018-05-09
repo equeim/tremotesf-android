@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.6.3] - 2018-05-09
+### Fixed
+- Crash when adding torrent file
+- Crashes in some weird cases
+
 ## [1.6.2] - 2018-05-04
 ### Changed
 - Updated translations
