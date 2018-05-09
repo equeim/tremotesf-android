@@ -47,9 +47,8 @@
                 android:textSize="@dimen/text_size_smaller"/>
         </LinearLayout>
 
-        <view
+        <org.equeim.tremotesf.utils.TristateCheckbox
             android:id="@+id/check_box"
-            class="org.equeim.tremotesf.BaseTorrentFilesAdapter$TristateCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>

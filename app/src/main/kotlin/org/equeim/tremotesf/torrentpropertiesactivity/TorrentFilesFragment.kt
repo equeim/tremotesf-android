@@ -60,10 +60,9 @@ private fun updateFile(file: BaseTorrentFilesAdapter.File,
 class TorrentFilesFragment : Fragment() {
     private var instanceState: Bundle? = null
 
-    private val activity: TorrentPropertiesActivity
+    private val activity: TorrentPropertiesActivity?
         get() {
-
-            return getActivity() as TorrentPropertiesActivity
+            return getActivity() as? TorrentPropertiesActivity
         }
 
     private var torrent: Torrent? = null
@@ -109,7 +108,7 @@ class TorrentFilesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TorrentFilesAdapter(activity, rootDirectory)
+        adapter = TorrentFilesAdapter(activity!!, rootDirectory)
 
         files_view.adapter = adapter
         files_view.layoutManager = LinearLayoutManager(activity)
@@ -160,7 +159,7 @@ class TorrentFilesFragment : Fragment() {
         updateAfterCreate = false
         resetAfterCreate = false
 
-        val newTorrent = activity.torrent
+        val newTorrent = activity?.torrent
 
         if (newTorrent == null) {
             if (torrent != null) {

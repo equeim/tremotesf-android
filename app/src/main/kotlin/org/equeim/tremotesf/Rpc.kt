@@ -171,7 +171,7 @@ object Rpc : AnkoLogger {
             return (status == Status.Connected)
         }
 
-    var error = Error.None
+    var error = Error.NoServers
         private set(value) {
             if (value != field) {
                 field = value
@@ -828,6 +828,8 @@ object Rpc : AnkoLogger {
         timeout = server.timeout * 1000
         updateInterval = (server.updateInterval * 1000).toLong()
         backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
+
+        error = Error.None
     }
 
     private fun postRequest(data: String, callOnSuccess: ((JsonObject) -> Unit)?) {
