@@ -37,6 +37,7 @@ import android.support.v7.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
 
+import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.utils.TristateCheckbox
 
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
@@ -375,8 +376,28 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             Low,
             Normal,
             High,
-            Mixed
-        }
+            Mixed;
+
+            companion object {
+                fun fromTorrentFilePriority(priority: Int): Priority {
+                    return when (priority) {
+                        TorrentFile.Priority.LowPriority -> Low
+                        TorrentFile.Priority.NormalPriority -> Normal
+                        TorrentFile.Priority.HighPriority -> High
+                        else -> Normal
+                    }
+                }
+            }
+
+            fun toTorrentFilePriority(): Int {
+                return when (this) {
+                    Low -> TorrentFile.Priority.LowPriority
+                    Normal -> TorrentFile.Priority.NormalPriority
+                    High -> TorrentFile.Priority.HighPriority
+                    else -> TorrentFile.Priority.NormalPriority
+                }
+            }
+         }
 
         abstract val size: Long
         abstract val completedSize: Long
@@ -461,14 +482,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             }
 
         override val changed: Boolean
-            get() {
-                for (item in children) {
-                    if (item.changed) {
-                        return true
-                    }
-                }
-                return false
-            }
+            get() = children.any(BaseTorrentFilesAdapter.Item::changed)
 
         val children = mutableListOf<Item>()
         val childrenMap = mutableMapOf<String, Item>()

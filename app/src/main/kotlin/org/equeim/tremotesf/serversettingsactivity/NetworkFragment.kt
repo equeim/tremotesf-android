@@ -32,10 +32,9 @@ import android.widget.AdapterView
 
 import android.support.v4.app.Fragment
 
+import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.ServerSettings
-
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.IntFilter
 
@@ -54,11 +53,11 @@ class NetworkFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         peer_port_edit.filters = arrayOf(IntFilter(0..65535))
-        peer_port_edit.setText(Rpc.serverSettings.peerPort.toString())
+        peer_port_edit.setText(Rpc.instance.serverSettings.peerPort().toString())
         peer_port_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.peerPort = s.toString().toInt()
+                    Rpc.instance.serverSettings.setPeerPort(s.toString().toInt())
                 }
             }
 
@@ -71,22 +70,22 @@ class NetworkFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        random_port_check_box.isChecked = Rpc.serverSettings.randomPortEnabled
+        random_port_check_box.isChecked = Rpc.instance.serverSettings.isRandomPortEnabled
         random_port_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.randomPortEnabled = checked
+            Rpc.instance.serverSettings.isRandomPortEnabled = checked
         }
 
-        port_forwarding_check_box.isChecked = Rpc.serverSettings.portForwardingEnabled
+        port_forwarding_check_box.isChecked = Rpc.instance.serverSettings.isPortForwardingEnabled
         port_forwarding_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.portForwardingEnabled = checked
+            Rpc.instance.serverSettings.isPortForwardingEnabled = checked
         }
 
         encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption_items),
                                                                    R.string.encryption)
-        encryption_spinner.setSelection(when (Rpc.serverSettings.encryption) {
-                                            ServerSettings.Encryption.ALLOWED -> 0
-                                            ServerSettings.Encryption.PREFERRED -> 1
-                                            ServerSettings.Encryption.REQUIRED -> 2
+        encryption_spinner.setSelection(when (Rpc.instance.serverSettings.encryptionMode()) {
+                                            ServerSettings.EncryptionMode.AllowedEncryption -> 0
+                                            ServerSettings.EncryptionMode.PreferredEncryption -> 1
+                                            ServerSettings.EncryptionMode.RequiredEncryption -> 2
                                             else -> 0
                                         })
         encryption_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -94,43 +93,43 @@ class NetworkFragment : Fragment() {
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                Rpc.serverSettings.encryption = when (position) {
-                    0 -> ServerSettings.Encryption.ALLOWED
-                    1 -> ServerSettings.Encryption.PREFERRED
-                    2 -> ServerSettings.Encryption.REQUIRED
-                    else -> ServerSettings.Encryption.ALLOWED
-                }
+                Rpc.instance.serverSettings.setEncryptionMode(when (position) {
+                    0 -> ServerSettings.EncryptionMode.AllowedEncryption
+                    1 -> ServerSettings.EncryptionMode.PreferredEncryption
+                    2 -> ServerSettings.EncryptionMode.RequiredEncryption
+                    else -> ServerSettings.EncryptionMode.AllowedEncryption
+                })
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        utp_check_box.isChecked = Rpc.serverSettings.utpEnabled
+        utp_check_box.isChecked = Rpc.instance.serverSettings.isUtpEnabled
         utp_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.utpEnabled = checked
+            Rpc.instance.serverSettings.isUtpEnabled = checked
         }
 
-        pex_check_box.isChecked = Rpc.serverSettings.pexEnabled
+        pex_check_box.isChecked = Rpc.instance.serverSettings.isPexEnabled
         pex_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.pexEnabled = checked
+            Rpc.instance.serverSettings.isPexEnabled = checked
         }
 
-        dht_check_box.isChecked = Rpc.serverSettings.dhtEnabled
+        dht_check_box.isChecked = Rpc.instance.serverSettings.isDhtEnabled
         dht_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.dhtEnabled = checked
+            Rpc.instance.serverSettings.isDhtEnabled = checked
         }
 
-        lpd_check_box.isChecked = Rpc.serverSettings.lpdEnabled
+        lpd_check_box.isChecked = Rpc.instance.serverSettings.isLpdEnabled
         lpd_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.lpdEnabled = checked
+            Rpc.instance.serverSettings.isLpdEnabled = checked
         }
 
         peers_per_torrent_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_per_torrent_edit.setText(Rpc.serverSettings.peersLimitPerTorrent.toString())
+        peers_per_torrent_edit.setText(Rpc.instance.serverSettings.maximumPeersPerTorrent().toString())
         peers_per_torrent_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.peersLimitPerTorrent = s.toString().toInt()
+                    Rpc.instance.serverSettings.setMaximumPeersPerTorrent(s.toString().toInt())
                 }
             }
 
@@ -144,11 +143,11 @@ class NetworkFragment : Fragment() {
         })
 
         peers_globally_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_globally_edit.setText(Rpc.serverSettings.peersLimitGlobal.toString())
+        peers_globally_edit.setText(Rpc.instance.serverSettings.maximumPeersGlobally().toString())
         peers_globally_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.peersLimitGlobal = s.toString().toInt()
+                    Rpc.instance.serverSettings.setMaximumPeersGlobally(s.toString().toInt())
                 }
             }
 

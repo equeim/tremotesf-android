@@ -26,7 +26,6 @@ import android.content.SharedPreferences
 
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startService
-import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
@@ -158,15 +157,15 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 if (backgroundServiceEnabled) {
                     context!!.startService<BackgroundService>()
                 } else {
-                    context!!.stopService<BackgroundService>()
+                    BackgroundService.instance?.stopService()
                 }
             }
             persistentNotificationKey -> {
                 if (BackgroundService.instance != null) {
                     if (showPersistentNotification) {
-                        BackgroundService.instance!!.startForeground()
+                        BackgroundService.instance?.startForeground()
                     } else {
-                        BackgroundService.instance!!.stopForeground()
+                        BackgroundService.instance?.stopForeground()
                     }
                 }
             }

@@ -32,19 +32,20 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.widget.ProgressBar
-
 import android.support.v4.app.DialogFragment
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.RecyclerView
 
 import androidx.core.os.bundleOf
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
+
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
-import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
@@ -65,7 +66,7 @@ private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
 }
 
 class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
-                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
+                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory), AnkoLogger {
     init {
         initSelector(activity, ActionModeCallback())
     }
@@ -103,17 +104,18 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
     override fun setSelectedItemsWanted(wanted: Boolean) {
         super.setSelectedItemsWanted(wanted)
-        torrent!!.setFilesWanted(idsFromItems(selector.selectedItems), wanted)
+        Rpc.instance.setTorrentFilesWanted(torrent, idsFromItems(selector.selectedItems).toIntArray(), wanted)
     }
 
     override fun setSelectedItemsPriority(priority: Item.Priority) {
         super.setSelectedItemsPriority(priority)
-        torrent!!.setFilesPriority(idsFromItems(selector.selectedItems), priority)
+        Rpc.instance.setTorrentFilesPriority(torrent, idsFromItems(selector.selectedItems).toIntArray(), priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {
+        info(currentItems.size)
         for ((i, item) in currentItems.withIndex()) {
-            if (item.changed) {
+                if (item.changed) {
                 notifyItemChanged(i)
             }
         }
@@ -150,7 +152,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             super.onCreateActionMode(mode, menu)
-            if (Rpc.serverSettings.canRenameFiles) {
+            if (Rpc.instance.serverSettings.canRenameFiles()) {
                 mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
                 renameItem = menu.findItem(R.id.rename)
             }
@@ -179,7 +181,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                     directory = directory.parentDirectory!!
                 }
 
-                RenameDialogFragment.create(torrent!!.id, pathParts.joinToString("/"), file.name)
+                RenameDialogFragment.create(torrent!!.id(), pathParts.joinToString("/"), file.name)
                         .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
 
                 return true
@@ -220,7 +222,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                                          fileName) {
                 val path = arguments!!.getString(FILE_PATH)
                 val newName = dialog.text_field.text.toString()
-                Rpc.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
+                Rpc.instance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
                 (activity as TorrentPropertiesActivity).actionMode?.finish()
             }
         }

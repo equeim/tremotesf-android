@@ -32,28 +32,25 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-
+import org.equeim.libtremotesf.StringsVector
+import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentFile
+import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.Rpc
 
 import kotlinx.android.synthetic.main.torrent_files_fragment.*
 
 
 private fun updateFile(file: BaseTorrentFilesAdapter.File,
-                       fileJson: JsonObject,
-                       fileStatsJson: JsonObject) {
-    file.changed = false
-    file.size = fileJson["length"].asLong
-    file.completedSize = fileJson["bytesCompleted"].asLong
-    file.setWanted(fileStatsJson["wanted"].asBoolean)
-    file.priority = when (fileStatsJson["priority"].asInt) {
-        -1 -> BaseTorrentFilesAdapter.Item.Priority.Low
-        0 -> BaseTorrentFilesAdapter.Item.Priority.Normal
-        1 -> BaseTorrentFilesAdapter.Item.Priority.High
-        else -> BaseTorrentFilesAdapter.Item.Priority.Normal
+                       rpcFile: TorrentFile) {
+    file.changed = rpcFile.changed
+    if (file.changed) {
+        file.size = rpcFile.size
+        file.completedSize = rpcFile.completedSize
+        file.setWanted(rpcFile.wanted)
+        file.priority = BaseTorrentFilesAdapter.Item.Priority.fromTorrentFilePriority(rpcFile.priority)
     }
 }
 
@@ -70,16 +67,22 @@ class TorrentFilesFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    value.filesUpdateEnabled = true
-                    value.filesLoadedListener = filesLoadedListener
-                    value.fileRenamedListener = fileRenamedListener
+                    Rpc.instance.setTorrentFilesEnabled(value, true)
+                    Rpc.instance.gotTorrentFilesListener = gotTorrentFilesListener
+                    Rpc.instance.torrentFileRenamedListener = fileRenamedListener
                 }
             }
         }
 
-    private val filesLoadedListener = { update() }
-    private val fileRenamedListener = { filePath: String, newName: String ->
-        fileRenamed(filePath, newName)
+    private val gotTorrentFilesListener = { torrentId: Int ->
+        if (torrentId == torrent?.id()) {
+            update()
+        }
+    }
+    private val fileRenamedListener = { torrentId: Int, filePath: String, newName: String ->
+        if (torrentId == torrent?.id()) {
+            fileRenamed(filePath, newName)
+        }
     }
 
     private var rootDirectory = BaseTorrentFilesAdapter.Directory()
@@ -127,13 +130,14 @@ class TorrentFilesFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         update()
-        torrent?.filesLoadedListener = filesLoadedListener
+        Rpc.instance.gotTorrentFilesListener = gotTorrentFilesListener
+        Rpc.instance.torrentFileRenamedListener = fileRenamedListener
     }
 
     override fun onStop() {
         super.onStop()
-        torrent?.filesLoadedListener = null
-        torrent?.fileRenamedListener = null
+        Rpc.instance.gotTorrentFilesListener = null
+        Rpc.instance.torrentFileRenamedListener = null
     }
 
     override fun onDestroyView() {
@@ -173,10 +177,9 @@ class TorrentFilesFragment : Fragment() {
 
         torrent = newTorrent
 
-        val fileJsons = newTorrent.fileJsons
-        val fileStatsJsons = newTorrent.fileStatsJsons
+        val filesVector: TorrentFilesVector = newTorrent.files()
 
-        if ((fileJsons?.size() ?: 0) == 0) {
+        if (filesVector.size() == 0L) {
             if (treeCreated || creatingTree) {
                 resetTree()
             }
@@ -184,7 +187,7 @@ class TorrentFilesFragment : Fragment() {
             if (treeCreated || creatingTree) {
                 updateTree()
             } else {
-                beginCreatingTree(fileJsons!!, fileStatsJsons!!)
+                beginCreatingTree(filesVector)
             }
         }
     }
@@ -225,11 +228,11 @@ class TorrentFilesFragment : Fragment() {
         updatePlaceholder()
     }
 
-    private fun beginCreatingTree(fileJsons: JsonArray, fileStatsJsons: JsonArray) {
+    private fun beginCreatingTree(filesVector: TorrentFilesVector) {
         creatingTree = true
         updateProgressBar()
         updatePlaceholder()
-        TreeCreationTask(WeakReference(this), fileJsons, fileStatsJsons).execute()
+        TreeCreationTask(WeakReference(this), filesVector).execute()
     }
 
     private fun endCreatingTree(rootDirectory: BaseTorrentFilesAdapter.Directory,
@@ -263,10 +266,9 @@ class TorrentFilesFragment : Fragment() {
     }
 
     private fun doUpdateTree() {
-        val fileJsons = torrent!!.fileJsons!!
-        val fileStatsJsons = torrent!!.fileStatsJsons!!
+        val rpcFiles = torrent!!.files()
         for ((i, file) in files.withIndex()) {
-            updateFile(file, fileJsons[i].asJsonObject, fileStatsJsons[i].asJsonObject)
+            updateFile(file, rpcFiles[i])
         }
         adapter?.treeUpdated()
     }
@@ -275,7 +277,7 @@ class TorrentFilesFragment : Fragment() {
         if (torrent == null) {
             return
         }
-        placeholder?.visibility = if (torrent!!.fileJsons != null && !creatingTree && adapter!!.itemCount == 0) {
+        placeholder?.visibility = if (torrent!!.isFilesLoaded && !creatingTree && adapter!!.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
@@ -286,7 +288,7 @@ class TorrentFilesFragment : Fragment() {
         if (torrent == null) {
             return
         }
-        progress_bar?.visibility = if (torrent!!.fileJsons == null || creatingTree) {
+        progress_bar?.visibility = if (!torrent!!.isFilesLoaded || creatingTree) {
             View.VISIBLE
         } else {
             View.GONE
@@ -294,28 +296,27 @@ class TorrentFilesFragment : Fragment() {
     }
 
     private class TreeCreationTask(private val fragment: WeakReference<TorrentFilesFragment>,
-                                   private val fileJsons: JsonArray,
-                                   private val fileStatsJsons: JsonArray) : AsyncTask<Any, Any, Any?>() {
+                                   private val filesVector: TorrentFilesVector) : AsyncTask<Any, Any, Any?>() {
 
         private val rootDirectory = BaseTorrentFilesAdapter.Directory()
         private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
         override fun doInBackground(vararg params: Any?): Any? {
-            for (fileIndex in 0..(fileJsons.size() - 1)) {
-                val fileJson = fileJsons[fileIndex].asJsonObject
-                val fileStatsJson = fileStatsJsons[fileIndex].asJsonObject
+            for (fileIndex in 0..(filesVector.size() - 1).toInt()) {
+                val rpcFile: TorrentFile = filesVector[fileIndex]
 
                 var currentDirectory = rootDirectory
 
-                val filePath = fileJson["name"].asString
-                val parts = filePath.split('/').filter(String::isNotEmpty)
-                for ((partIndex, part) in parts.withIndex()) {
-                    if (partIndex == parts.lastIndex) {
+                val path: StringsVector = rpcFile.path
+                val lastPartIndex = (path.size() - 1).toInt()
+                for (partIndex in 0..lastPartIndex) {
+                    val part: String = path[partIndex]
+                    if (partIndex == lastPartIndex) {
                         val file = BaseTorrentFilesAdapter.File(currentDirectory.children.size,
                                                                 currentDirectory,
                                                                 part,
                                                                 fileIndex)
-                        updateFile(file, fileJson, fileStatsJson)
+                        updateFile(file, rpcFile)
                         currentDirectory.addChild(file)
                         files.add(file)
                     } else {

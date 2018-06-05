@@ -30,8 +30,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
-import android.widget.CheckBox
-
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
@@ -44,18 +42,19 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 
 import androidx.core.os.bundleOf
-import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
+import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
+import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 import kotlinx.android.synthetic.main.torrent_properties_activity.*
 
 
@@ -81,7 +80,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                 field = value
                 if (value == null) {
                     needUpdate = true
-                    if (Rpc.connected) {
+                    if (Rpc.instance.isConnected) {
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
@@ -116,40 +115,40 @@ class TorrentPropertiesActivity : BaseActivity() {
             }
         }
 
-    private val rpcStatusListener: (Rpc.Status) -> Unit = { status ->
+    private val rpcStatusListener: (Int) -> Unit = { status ->
         when (status) {
-            Rpc.Status.Disconnected -> {
+            BaseRpc.Status.Disconnected -> {
                 torrent = null
                 snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
                     snackbar = null
-                    Rpc.connect()
+                    Rpc.instance.connect()
                 }
-                placeholder.text = Rpc.statusString
+                placeholder.text = Rpc.instance.statusString
             }
-            Rpc.Status.Connecting -> {
+            BaseRpc.Status.Connecting -> {
                 if (snackbar != null) {
                     snackbar!!.dismiss()
                     snackbar = null
                 }
                 placeholder.text = getString(R.string.connecting)
             }
-            Rpc.Status.Connected -> {
-                torrent = Rpc.torrents.find { it.hashString == hash }
+            BaseRpc.Status.Connected -> {
+                torrent = Rpc.instance.torrents.find { it.hashString == hash }?.torrent
                 if (torrent == null) {
                     placeholder.text = getString(R.string.torrent_not_found)
                 }
             }
         }
 
-        progress_bar.visibility = if (status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (status == BaseRpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
         }
     }
 
-    private val rpcUpdatedListener = {
-        torrent = Rpc.torrents.find { it.hashString == hash }
+    private val torrentsUpdatedListener = {
+        torrent = Rpc.instance.torrents.find { it.hashString == hash }?.torrent
     }
 
     private var menu: Menu? = null
@@ -207,38 +206,36 @@ class TorrentPropertiesActivity : BaseActivity() {
             }
         }
 
-        rpcStatusListener(Rpc.status)
-        if (!Rpc.connected) {
+        rpcStatusListener(Rpc.instance.status())
+        if (!Rpc.instance.isConnected) {
             updatePlaceholderVisibility()
         }
 
-        Rpc.addStatusListener(rpcStatusListener)
-        Rpc.addUpdatedListener(rpcUpdatedListener)
+        Rpc.instance.addStatusListener(rpcStatusListener)
+        Rpc.instance.addTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
     override fun onStart() {
         super.onStart()
         if (!creating) {
-            rpcUpdatedListener()
+            torrentsUpdatedListener()
         }
     }
 
     override fun onStop() {
         super.onStop()
-        Rpc.removeUpdatedListener(rpcUpdatedListener)
+        Rpc.instance.removeTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        Rpc.removeStatusListener(rpcStatusListener)
-        Rpc.removeUpdatedListener(rpcUpdatedListener)
+        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
         if (isFinishing && torrent != null) {
-            torrent!!.filesUpdateEnabled = false
-            torrent!!.resetFiles()
-            torrent!!.peersUpdateEnabled = false
-            torrent!!.peers = null
+            Rpc.instance.setTorrentFilesEnabled(torrent, false)
+            Rpc.instance.setTorrentPeersEnabled(torrent, false)
         }
     }
 
@@ -253,12 +250,12 @@ class TorrentPropertiesActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.start -> Rpc.startTorrents(listOf(torrent!!.id))
-            R.id.pause -> Rpc.pauseTorrents(listOf(torrent!!.id))
-            R.id.check -> Rpc.checkTorrents(listOf(torrent!!.id))
+            R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent!!.id()))
+            R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent!!.id()))
+            R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent!!.id()))
             R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(torrent!!)
                     .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
-            R.id.remove -> RemoveDialogFragment.create(torrent!!.id).show(supportFragmentManager,
+            R.id.remove -> RemoveDialogFragment.create(torrent!!.id()).show(supportFragmentManager,
                                                                           RemoveDialogFragment.TAG)
             else -> return false
         }
@@ -285,7 +282,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
     private fun update() {
         if (torrent != null) {
-            title = torrent!!.name
+            title = torrent!!.name()
         }
 
         if (menu != null) {
@@ -303,7 +300,7 @@ class TorrentPropertiesActivity : BaseActivity() {
             menu!!.getItem(i).isVisible = (torrent != null)
         }
         if (torrent != null) {
-            startMenuItem.isVisible = when (torrent!!.status) {
+            startMenuItem.isVisible = when (torrent!!.status()) {
                 Torrent.Status.Paused,
                 Torrent.Status.Errored -> true
                 else -> false
@@ -313,7 +310,7 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     private fun updatePlaceholderVisibility() {
-        if (Rpc.connected && torrent != null) {
+        if (Rpc.instance.isConnected && torrent != null) {
             (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
@@ -405,7 +402,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
-                        Rpc.removeTorrents(listOf(arguments!!.getInt("id")),
+                        Rpc.instance.removeTorrents(intArrayOf(arguments!!.getInt("id")),
                                            dialog.delete_files_check_box.isChecked)
                         activity!!.finish()
                     }).create()

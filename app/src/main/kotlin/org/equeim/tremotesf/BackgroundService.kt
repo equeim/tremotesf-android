@@ -34,12 +34,13 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.intentFor
 
+import org.equeim.libtremotesf.BaseRpc
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
-import org.jetbrains.anko.debug
 
 
 private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
@@ -56,19 +57,23 @@ class BackgroundService : Service(), AnkoLogger {
 
     private lateinit var notificationManager: NotificationManager
 
-    private val rpcStatusListener = { _: Rpc.Status -> updatePersistentNotification() }
-    private val rpcUpdatedListener = { updatePersistentNotification() }
-    private val rpcErrorListener = { _: Rpc.Error -> updatePersistentNotification() }
+    private val rpcStatusListener = { _: Int -> updatePersistentNotification() }
+    private val serverStatsUpdatedListener = { updatePersistentNotification() }
+    private val rpcErrorListener = { _: Int -> updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
     override fun onBind(intent: Intent) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == Intent.ACTION_SHUTDOWN) {
+            Utils.shutdownApp()
+            return START_NOT_STICKY
+        }
+
         if (instance == this) {
             when (intent?.action) {
-                ACTION_CONNECT -> Rpc.connect()
-                ACTION_DISCONNECT -> Rpc.disconnect()
-                Intent.ACTION_SHUTDOWN -> Utils.shutdownApp(this)
+                ACTION_CONNECT -> Rpc.instance.connect()
+                ACTION_DISCONNECT -> Rpc.instance.disconnect()
             }
         } else {
             debug("service started")
@@ -90,7 +95,7 @@ class BackgroundService : Service(), AnkoLogger {
                 startForeground()
             }
 
-            Rpc.torrentFinishedListener = { torrent -> showFinishedNotification(torrent) }
+            Rpc.instance.torrentFinishedListener = { id, hashString, name -> showFinishedNotification(id, hashString, name) }
 
             instance = this
         }
@@ -101,10 +106,10 @@ class BackgroundService : Service(), AnkoLogger {
     override fun onDestroy() {
         super.onDestroy()
         debug("service destroyed")
-
-        stopForeground()
-        Rpc.torrentFinishedListener = null
-
+        Rpc.instance.torrentFinishedListener = null
+        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeErrorListener(rpcErrorListener)
+        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
         instance = null
     }
 
@@ -112,24 +117,33 @@ class BackgroundService : Service(), AnkoLogger {
         super.onTaskRemoved(rootIntent)
         debug("task removed")
         if (!Settings.showPersistentNotification) {
-            Utils.shutdownApp(this)
+            Utils.shutdownApp()
         }
     }
 
     fun startForeground() {
         startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
-        Rpc.addStatusListener(rpcStatusListener)
-        Rpc.addErrorListener(rpcErrorListener)
-        Rpc.addUpdatedListener(rpcUpdatedListener)
+        Rpc.instance.addStatusListener(rpcStatusListener)
+        Rpc.instance.addErrorListener(rpcErrorListener)
+        Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener)
         Servers.addCurrentServerListener(currentServerListener)
     }
 
     fun stopForeground() {
-        stopForeground(true)
-        Rpc.removeStatusListener(rpcStatusListener)
-        Rpc.removeErrorListener(rpcErrorListener)
-        Rpc.removeUpdatedListener(rpcUpdatedListener)
+        super.stopForeground(true)
+        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeErrorListener(rpcErrorListener)
+        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
         Servers.removeCurrentServerListener(currentServerListener)
+    }
+
+    fun stopService(stop: Boolean = true) {
+        Rpc.instance.torrentFinishedListener = null
+        if (Settings.showPersistentNotification) {
+            stopForeground()
+        }
+        stopSelf()
+        instance = null
     }
 
     private fun updatePersistentNotification() {
@@ -162,17 +176,17 @@ class BackgroundService : Service(), AnkoLogger {
             notificationBuilder.setShowWhen(false)
         }
 
-        if (Rpc.connected) {
+        if (Rpc.instance.isConnected) {
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.serverStats.downloadSpeed),
+                                                                               Rpc.instance.serverStats.downloadSpeed()),
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.serverStats.uploadSpeed)))
+                                                                               Rpc.instance.serverStats.uploadSpeed())))
         } else {
-            notificationBuilder.setContentText(Rpc.statusString)
+            notificationBuilder.setContentText(Rpc.instance.statusString)
         }
 
-        if (Rpc.status == Rpc.Status.Disconnected) {
+        if (Rpc.instance.status() == BaseRpc.Status.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),
@@ -180,7 +194,7 @@ class BackgroundService : Service(), AnkoLogger {
                                              0,
                                              intentFor<BackgroundService>().setAction(ACTION_CONNECT),
                                              PendingIntent.FLAG_UPDATE_CURRENT))
-        } else if (Rpc.canConnect) {
+        } else {
             notificationBuilder.addAction(
                     R.drawable.notification_disconnect,
                     getString(R.string.disconnect),
@@ -202,17 +216,17 @@ class BackgroundService : Service(), AnkoLogger {
         return notificationBuilder.build()
     }
 
-    private fun showFinishedNotification(torrent: Torrent) {
+    private fun showFinishedNotification(id: Int, hashString: String, name: String) {
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
-        stackBuilder.addNextIntent(intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to torrent.hashString,
-                                                                        TorrentPropertiesActivity.NAME to torrent.name))
+        stackBuilder.addNextIntent(intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
+                                                                        TorrentPropertiesActivity.NAME to name))
 
-        notificationManager.notify(torrent.id,
+        notificationManager.notify(id,
                                    NotificationCompat.Builder(this, FINISHED_NOTIFICATION_CHANNEL_ID)
                                            .setSmallIcon(R.drawable.notification_icon)
                                            .setContentTitle(getString(R.string.torrent_finished))
-                                           .setContentText(torrent.name)
+                                           .setContentText(name)
                                            .setContentIntent(stackBuilder.getPendingIntent(0,
                                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
                                            .setAutoCancel(true)

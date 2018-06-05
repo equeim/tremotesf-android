@@ -29,8 +29,9 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.Rpc
 
 import kotlinx.android.synthetic.main.peers_fragment.*
 
@@ -45,11 +46,17 @@ class PeersFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    value.peersUpdateEnabled = true
-                    value.peersLoadedListener = { update() }
+                    Rpc.instance.setTorrentPeersEnabled(torrent, true)
+                    Rpc.instance.gotTorrentPeersListener = gotTorrentPeersListener
                 }
             }
         }
+
+    private val gotTorrentPeersListener = { torrentId: Int ->
+        if (torrentId == torrent?.id()) {
+            update()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,12 +84,12 @@ class PeersFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         update()
-        torrent?.peersLoadedListener = { update() }
+        Rpc.instance.gotTorrentPeersListener = gotTorrentPeersListener
     }
 
     override fun onStop() {
         super.onStop()
-        torrent?.peersLoadedListener = null
+        Rpc.instance.gotTorrentPeersListener = null
     }
 
     override fun onDestroyView() {
@@ -95,14 +102,18 @@ class PeersFragment : Fragment() {
             torrent = activity.torrent
             peersAdapter!!.update()
 
-            if (torrent?.peers == null) {
-                progress_bar!!.visibility = View.VISIBLE
-            } else {
+            if (torrent == null) {
                 progress_bar!!.visibility = View.GONE
-                placeholder!!.visibility = if (peersAdapter!!.itemCount == 0) {
-                    View.VISIBLE
+            } else {
+                if (torrent!!.isPeersLoaded) {
+                    progress_bar!!.visibility = View.GONE
+                    placeholder!!.visibility = if (peersAdapter!!.itemCount == 0) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
                 } else {
-                    View.GONE
+                    progress_bar!!.visibility = View.VISIBLE
                 }
             }
         }

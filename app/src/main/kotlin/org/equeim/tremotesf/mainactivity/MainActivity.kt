@@ -50,6 +50,8 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.design.longSnackbar
 
+import org.equeim.libtremotesf.BaseRpc
+
 import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
@@ -101,9 +103,9 @@ class MainActivity : BaseActivity(), AnkoLogger {
     lateinit var torrentsAdapter: TorrentsAdapter
         private set
 
-    private val rpcStatusListener = { status: Rpc.Status ->
-        if (status == Rpc.Status.Disconnected || status == Rpc.Status.Connected) {
-            if (!Rpc.connected) {
+    private val rpcStatusListener = { status: Int ->
+        if (status == BaseRpc.Status.Disconnected || status == BaseRpc.Status.Connected) {
+            if (!Rpc.instance.isConnected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
                 supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
@@ -124,40 +126,43 @@ class MainActivity : BaseActivity(), AnkoLogger {
             torrentsAdapter.update()
 
             updateSubtitle()
-            listSettingsLayout.setChildrenEnabled(Rpc.connected)
+            listSettingsLayout.setChildrenEnabled(Rpc.instance.isConnected)
             statusSpinnerAdapter.update()
 
             trackersSpinnerAdapter.update()
             directoriesSpinnerAdapter.update()
             
-            if (Rpc.connected) {
+            if (Rpc.instance.isConnected) {
                 trackersSpinner.setSelection(trackersSpinnerAdapter.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
                 directoriesSpinner.setSelection(directoriesSpinnerAdapter.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
             }
 
-            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled
         }
 
         updateMenuItems()
         updatePlaceholder()
     }
 
-    private val rpcErrorListener = { _: Rpc.Error ->
+    private val rpcErrorListener = { _: Int ->
         updateTitle()
         updateMenuItems()
         serversSpinner.isEnabled = Servers.hasServers
         updatePlaceholder()
     }
 
-    private val rpcUpdatedListener = {
-        updateSubtitle()
+    private val torrentsUpdatedListener = {
         statusSpinnerAdapter.update()
         trackersSpinnerAdapter.update()
         directoriesSpinnerAdapter.update()
         torrentsAdapter.update()
         updatePlaceholder()
 
-        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled
+    }
+
+    private val serverStatsUpdatedListener = {
+        updateSubtitle()
     }
 
     private val serversListener = { serversSpinnerAdapter.update() }
@@ -195,7 +200,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
                 R.id.settings -> startActivity<SettingsActivity>()
                 R.id.servers -> startActivity<ServersActivity>()
                 R.id.about -> startActivity<AboutActivity>()
-                R.id.quit -> Utils.shutdownApp(this)
+                R.id.quit -> Utils.shutdownApp()
                 else -> return@setNavigationItemSelectedListener false
             }
             return@setNavigationItemSelectedListener true
@@ -219,7 +224,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
         }
 
         listSettingsLayout = sidePanelHeader.list_settings_layout
-        listSettingsLayout.setChildrenEnabled(Rpc.connected)
+        listSettingsLayout.setChildrenEnabled(Rpc.instance.isConnected)
 
         sortSpinner = sidePanelHeader.sort_spinner
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
@@ -231,7 +236,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
                                         position: Int,
                                         id: Long) {
                 torrentsAdapter.sortMode = TorrentsAdapter.SortMode.values()[position]
-                if (Rpc.connected) {
+                if (Rpc.instance.isConnected) {
                     Settings.torrentsSortMode = torrentsAdapter.sortMode
                 }
             }
@@ -263,7 +268,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
                 if (previousPosition != -1) {
                     torrentsAdapter.statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
                     updatePlaceholder()
-                    if (Rpc.connected) {
+                    if (Rpc.instance.isConnected) {
                         Settings.torrentsStatusFilter = torrentsAdapter.statusFilterMode
                     }
                 }
@@ -289,7 +294,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
                         trackersSpinnerAdapter.trackers[position - 1]
                     }
                     updatePlaceholder()
-                    if (Rpc.connected) {
+                    if (Rpc.instance.isConnected) {
                         Settings.torrentsTrackerFilter = torrentsAdapter.trackerFilter
                     }
                 }
@@ -315,7 +320,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
                         directoriesSpinnerAdapter.directories[position - 1]
                     }
                     updatePlaceholder()
-                    if (Rpc.connected) {
+                    if (Rpc.instance.isConnected) {
                         Settings.torrentsDirectoryFilter = torrentsAdapter.directoryFilter
                     }
                 }
@@ -327,15 +332,15 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
         updateTitle()
 
-        Rpc.addStatusListener(rpcStatusListener)
-        Rpc.addErrorListener(rpcErrorListener)
+        Rpc.instance.addStatusListener(rpcStatusListener)
+        Rpc.instance.addErrorListener(rpcErrorListener)
         Servers.addServersListener(serversListener)
         Servers.addCurrentServerListener(currentServerListener)
 
-        Rpc.torrentDuplicateListener = {
+        Rpc.instance.torrentAddDuplicateListener = {
             longSnackbar(coordinator_layout, R.string.torrent_duplicate)
         }
-        Rpc.torrentAddErrorListener = {
+        Rpc.instance.torrentAddErrorListener = {
             longSnackbar(coordinator_layout, R.string.torrent_add_error)
         }
 
@@ -343,7 +348,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
             if (!Servers.hasServers) {
                 startActivity<ServerEditActivity>()
             }
-        } else if (Rpc.connected) {
+        } else if (Rpc.instance.isConnected) {
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
             if (restoredSearchQuery != null) {
                 torrentsAdapter.filterString = restoredSearchQuery!!
@@ -356,8 +361,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
     override fun onStart() {
         super.onStart()
-        rpcUpdatedListener()
-        Rpc.addUpdatedListener(rpcUpdatedListener)
+        torrentsUpdatedListener()
+        serverStatsUpdatedListener()
+        Rpc.instance.addTorrentsUpdatedListener(torrentsUpdatedListener)
+        Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -367,16 +374,17 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
     override fun onStop() {
         super.onStop()
-        Rpc.removeUpdatedListener(rpcUpdatedListener)
+        Rpc.instance.removeTorrentsUpdatedListener(torrentsUpdatedListener)
+        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         debug("MainActivity onDestroy")
-        Rpc.removeStatusListener(rpcStatusListener)
-        Rpc.removeErrorListener(rpcErrorListener)
-        Rpc.torrentDuplicateListener = null
-        Rpc.torrentAddErrorListener = null
+        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeErrorListener(rpcErrorListener)
+        Rpc.instance.torrentAddDuplicateListener = null
+        Rpc.instance.torrentAddErrorListener = null
         Servers.removeServersListener(serversListener)
         Servers.removeCurrentServerListener(currentServerListener)
     }
@@ -420,7 +428,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
         updateMenuItems()
 
-        menu.findItem(R.id.alternative_speed_limits).isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+        menu.findItem(R.id.alternative_speed_limits).isChecked = Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled
 
         return true
     }
@@ -432,16 +440,16 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
         when (menuItem.itemId) {
             R.id.connect -> {
-                if (Rpc.status == Rpc.Status.Disconnected) {
-                    Rpc.connect()
+                if (Rpc.instance.status() == BaseRpc.Status.Disconnected) {
+                    Rpc.instance.connect()
                 } else {
-                    Rpc.disconnect()
+                    Rpc.instance.disconnect()
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
             R.id.add_torrent_link -> startActivity<AddTorrentLinkActivity>()
             R.id.server_settings -> startActivity<ServerSettingsActivity>()
-            R.id.alternative_speed_limits -> { Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked }
+            R.id.alternative_speed_limits -> { Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked }
             R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
             else -> return false
         }
@@ -472,14 +480,15 @@ class MainActivity : BaseActivity(), AnkoLogger {
         }
 
         val connectMenuItem = menu!!.findItem(R.id.connect)
-        connectMenuItem.isEnabled = Rpc.canConnect
-        connectMenuItem.title = when (Rpc.status) {
-            Rpc.Status.Disconnected -> getString(R.string.connect)
-            Rpc.Status.Connecting,
-            Rpc.Status.Connected -> getString(R.string.disconnect)
+        connectMenuItem.isEnabled = Servers.hasServers
+        connectMenuItem.title = when (Rpc.instance.status()) {
+            BaseRpc.Status.Disconnected -> getString(R.string.connect)
+            BaseRpc.Status.Connecting,
+            BaseRpc.Status.Connected -> getString(R.string.disconnect)
+            else -> getString(R.string.connect)
         }
 
-        val connected = Rpc.connected
+        val connected = Rpc.instance.isConnected
         searchMenuItem.isVisible = connected
         menu!!.findItem(R.id.add_torrent_file).isEnabled = connected
         menu!!.findItem(R.id.add_torrent_link).isEnabled = connected
@@ -489,17 +498,17 @@ class MainActivity : BaseActivity(), AnkoLogger {
     }
 
     private fun updatePlaceholder() {
-        placeholder.text = if (Rpc.status == Rpc.Status.Connected) {
+        placeholder.text = if (Rpc.instance.status() == BaseRpc.Status.Connected) {
             if (torrentsAdapter.itemCount == 0) {
                 getString(R.string.no_torrents)
             } else {
                 null
             }
         } else {
-            Rpc.statusString
+            Rpc.instance.statusString
         }
 
-        progress_bar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.instance.status() == BaseRpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
@@ -507,10 +516,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
     }
 
     private fun updateSubtitle() {
-        supportActionBar!!.subtitle = if (Rpc.connected) {
+        supportActionBar!!.subtitle = if (Rpc.instance.isConnected) {
             getString(R.string.main_activity_subtitle,
-                      Utils.formatByteSpeed(this, Rpc.serverStats.downloadSpeed),
-                      Utils.formatByteSpeed(this, Rpc.serverStats.uploadSpeed))
+                      Utils.formatByteSpeed(this, Rpc.instance.serverStats.downloadSpeed()),
+                      Utils.formatByteSpeed(this, Rpc.instance.serverStats.uploadSpeed()))
         } else {
             null
         }

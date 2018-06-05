@@ -50,19 +50,19 @@ class SeedingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ratio_limit_check_box.isChecked = Rpc.serverSettings.ratioLimited
+        ratio_limit_check_box.isChecked = Rpc.instance.serverSettings.isRatioLimited
         ratio_limit_check_box.setOnCheckedChangeListener { _, checked ->
             ratio_limit_edit.isEnabled = checked
-            Rpc.serverSettings.ratioLimited = checked
+            Rpc.instance.serverSettings.isRatioLimited = checked
         }
 
         ratio_limit_edit.isEnabled = ratio_limit_check_box.isChecked
         ratio_limit_edit.filters = arrayOf(DoubleFilter(0..10000))
-        ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.serverSettings.ratioLimit))
+        ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.instance.serverSettings.ratioLimit()))
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.ratioLimit = DoubleFilter.parse(s.toString())!!
+                    Rpc.instance.serverSettings.setRatioLimit(DoubleFilter.parse(s.toString())!!.toFloat())
                 }
             }
 
@@ -75,20 +75,20 @@ class SeedingFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        idle_seeding_check_box.isChecked = Rpc.serverSettings.idleSeedingLimited
+        idle_seeding_check_box.isChecked = Rpc.instance.serverSettings.isIdleSeedingLimited
         idle_seeding_check_box.setOnCheckedChangeListener { _, checked ->
             idle_seeding_layout.isEnabled = checked
-            Rpc.serverSettings.idleSeedingLimited = checked
+            Rpc.instance.serverSettings.isIdleSeedingLimited = checked
         }
 
         idle_seeding_layout.isEnabled = idle_seeding_check_box.isChecked
 
         idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_seeding_edit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
+        idle_seeding_edit.setText(Rpc.instance.serverSettings.idleSeedingLimit().toString())
         idle_seeding_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.idleSeedingLimit = s.toString().toInt()
+                    Rpc.instance.serverSettings.setIdleSeedingLimit(s.toString().toInt())
                 }
             }
 

@@ -37,6 +37,8 @@ import kotlinx.android.synthetic.main.torrent_details_fragment.*
 
 
 class TorrentDetailsFragment : Fragment() {
+    private var firstUpdate = true
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -46,6 +48,11 @@ class TorrentDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hash_text_view.text = (activity as TorrentPropertiesActivity).hash
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        firstUpdate = true
     }
 
     override fun onStart() {
@@ -59,32 +66,38 @@ class TorrentDetailsFragment : Fragment() {
             val torrent = (activity as TorrentPropertiesActivity).torrent
             torrent ?: return
 
-            completed_text_view.text = Utils.formatByteSize(activity, torrent.completedSize)
+            if (!torrent.isChanged && !firstUpdate) return
+
+            firstUpdate = false
+
+            completed_text_view.text = Utils.formatByteSize(activity, torrent.completedSize())
             downloaded_text_view.text = Utils.formatByteSize(activity,
-                                                             torrent.totalDownloaded)
-            uploaded_text_view.text = Utils.formatByteSize(activity, torrent.totalUploaded)
+                                                             torrent.totalDownloaded())
+            uploaded_text_view.text = Utils.formatByteSize(activity, torrent.totalUploaded())
 
-            ratio_text_view.text = DecimalFormat("0.00").format(torrent.ratio)
+            ratio_text_view.text = DecimalFormat("0.00").format(torrent.ratio())
 
-            download_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.downloadSpeed)
-            upload_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.uploadSpeed)
-            eta_text_view.text = Utils.formatDuration(activity, torrent.eta)
-            seeders_text_view.text = torrent.seeders.toString()
-            leechers_text_view.text = torrent.leechers.toString()
-            last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.activityDate.time)
+            download_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.downloadSpeed())
+            upload_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.uploadSpeed())
+            eta_text_view.text = Utils.formatDuration(activity, torrent.eta())
+            seeders_text_view.text = torrent.seeders().toString()
+            leechers_text_view.text = torrent.leechers().toString()
+            last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.activityDate().time)
 
-            total_size_text_view.text = Utils.formatByteSize(activity, torrent.totalSize)
+            total_size_text_view.text = Utils.formatByteSize(activity, torrent.totalSize())
 
-            if (torrent.downloadDirectory != location_text_view!!.text.toString()) {
-                location_text_view!!.text = torrent.downloadDirectory
+            val dir = torrent.downloadDirectory()
+            if (dir != location_text_view!!.text.toString()) {
+                location_text_view!!.text = dir
             }
 
-            creator_text_view.text = torrent.creator
-            creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.creationDate.time)
-            added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate)
+            creator_text_view.text = torrent.creator()
+            creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.creationDate().time)
+            added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate().time)
 
-            if (torrent.comment != comment_text_view.text.toString()) {
-                comment_text_view.text = torrent.comment
+            val comment: String = torrent.comment()
+            if (comment != comment_text_view.text.toString()) {
+                comment_text_view.text = comment
             }
         }
     }

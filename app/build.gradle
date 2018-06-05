@@ -9,8 +9,8 @@ android {
         applicationId 'org.equeim.tremotesf'
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 15
-        versionName '1.6.3'
+        versionCode 16
+        versionName '1.7.0a'
     }
     buildTypes {
         release {
@@ -21,6 +21,8 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += '../libtremotesf/jni/java'
+        main.jniLibs.srcDirs 'libs'
     }
 
     lintOptions {
@@ -48,6 +50,7 @@ repositories {
 def support_version = '27.1.1'
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: '*.jar')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.android.support:support-compat:$support_version"
     implementation "com.android.support:support-core-utils:$support_version"
@@ -58,12 +61,10 @@ dependencies {
     implementation "com.android.support:preference-v7:$support_version"
     implementation "com.android.support:support-v13:$support_version"
     implementation "com.android.support:design:$support_version"
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.core:core-ktx:0.3'
     implementation 'org.jetbrains.anko:anko-commons:0.10.5'
     implementation 'org.jetbrains.anko:anko-design:0.10.5'
-    implementation 'com.github.kittinunf.fuel:fuel-android:1.13.0'
-    implementation 'com.google.code.gson:gson:2.8.4'
-    implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
     implementation 'com.jaredrummler:fastscroll-recyclerview:1.0.2'

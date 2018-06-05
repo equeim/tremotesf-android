@@ -34,8 +34,9 @@ import android.widget.AdapterView
 
 import android.support.v4.app.Fragment
 
+import org.equeim.libtremotesf.Torrent
+import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
@@ -58,7 +59,7 @@ class TorrentLimitsFragment : Fragment() {
 
         global_limits_check_box.setOnCheckedChangeListener { _, checked ->
             if (!updating) {
-                torrent?.honorSessionLimits = checked
+                Rpc.instance.setTorrentHonorSessionLimits(torrent, checked)
             }
         }
 
@@ -66,7 +67,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                torrent?.downloadSpeedLimited = checked
+                Rpc.instance.setTorrentDownloadSpeedLimited(torrent, checked)
             }
         }
 
@@ -74,7 +75,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    torrent?.downloadSpeedLimit = string.toString().toInt()
+                    Rpc.instance.setTorrentDownloadSpeedLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -86,7 +87,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                torrent?.uploadSpeedLimited = checked
+                Rpc.instance.setTorrentUploadSpeedLimited(torrent, checked)
             }
         }
 
@@ -94,7 +95,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    torrent?.uploadSpeedLimit = string.toString().toInt()
+                    Rpc.instance.setTorrentUploadSpeedLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -110,12 +111,12 @@ class TorrentLimitsFragment : Fragment() {
                                         position: Int,
                                         id: Long) {
                 if (!updating) {
-                    torrent?.bandwidthPriority = when (position) {
-                        0 -> Torrent.Priority.HIGH
-                        1 -> Torrent.Priority.NORMAL
-                        2 -> Torrent.Priority.LOW
-                        else -> Torrent.Priority.NORMAL
-                    }
+                    Rpc.instance.setTorrentBandwidthPriority(torrent, when (position) {
+                        0 -> Torrent.Priority.HighPriority
+                        1 -> Torrent.Priority.NormalPriority
+                        2 -> Torrent.Priority.LowPriority
+                        else -> Torrent.Priority.NormalPriority
+                    })
                 }
             }
 
@@ -132,12 +133,12 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 ratio_limit_edit.isEnabled = (position == 2)
                 if (!updating) {
-                    torrent?.ratioLimitMode = when (position) {
-                        0 -> Torrent.RatioLimitMode.GLOBAL
-                        1 -> Torrent.RatioLimitMode.UNLIMITED
-                        2 -> Torrent.RatioLimitMode.SINGLE
-                        else -> Torrent.RatioLimitMode.GLOBAL
-                    }
+                    Rpc.instance.setTorrentRatioLimitMode(torrent, when (position) {
+                        0 -> Torrent.RatioLimitMode.GlobalRatioLimit
+                        1 -> Torrent.RatioLimitMode.UnlimitedRatio
+                        2 -> Torrent.RatioLimitMode.SingleRatioLimit
+                        else -> Torrent.RatioLimitMode.GlobalRatioLimit
+                    })
                 }
             }
 
@@ -146,7 +147,7 @@ class TorrentLimitsFragment : Fragment() {
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    torrent?.ratioLimit = DoubleFilter.parse(string.toString())!!
+                    Rpc.instance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!.toFloat())
                 }
             }
 
@@ -163,12 +164,12 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 idle_seeding_layout.isEnabled = (position == 2)
                 if (!updating) {
-                    torrent?.idleSeedingLimitMode = when (position) {
-                        0 -> Torrent.IdleSeedingLimitMode.GLOBAL
-                        1 -> Torrent.IdleSeedingLimitMode.UNLIMITED
-                        2 -> Torrent.IdleSeedingLimitMode.SINGLE
-                        else -> Torrent.IdleSeedingLimitMode.GLOBAL
-                    }
+                    Rpc.instance.setTorrentIdleSeedingLimitMode(torrent, when (position) {
+                        0 -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
+                        1 -> Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding
+                        2 -> Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit
+                        else -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
+                    })
                 }
             }
 
@@ -178,7 +179,7 @@ class TorrentLimitsFragment : Fragment() {
         idle_seeding_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    torrent?.idleSeedingLimit = string.toString().toInt()
+                    Rpc.instance.setTorrentIdleSeedingLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -190,7 +191,7 @@ class TorrentLimitsFragment : Fragment() {
         maximum_peers_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    torrent?.peersLimit = string.toString().toInt()
+                    Rpc.instance.setTorrentPeersLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -213,38 +214,38 @@ class TorrentLimitsFragment : Fragment() {
 
         updating = true
 
-        global_limits_check_box.isChecked = torrent!!.honorSessionLimits
+        global_limits_check_box.isChecked = torrent!!.honorSessionLimits()
 
-        download_speed_limit_check_box.isChecked = torrent!!.downloadSpeedLimited
-        download_speed_limit_edit.setText(torrent!!.downloadSpeedLimit.toString())
+        download_speed_limit_check_box.isChecked = torrent!!.isDownloadSpeedLimited
+        download_speed_limit_edit.setText(torrent!!.downloadSpeedLimit().toString())
 
-        upload_speed_limit_check_box.isChecked = torrent!!.uploadSpeedLimited
-        upload_speed_limit_edit.setText(torrent!!.uploadSpeedLimit.toString())
+        upload_speed_limit_check_box.isChecked = torrent!!.isUploadSpeedLimited
+        upload_speed_limit_edit.setText(torrent!!.uploadSpeedLimit().toString())
 
-        priority_spinner.setSelection(when (torrent!!.bandwidthPriority) {
-                                          Torrent.Priority.LOW -> 2
-                                          Torrent.Priority.NORMAL -> 1
-                                          Torrent.Priority.HIGH -> 0
+        priority_spinner.setSelection(when (torrent!!.bandwidthPriority()) {
+                                          Torrent.Priority.LowPriority -> 2
+                                          Torrent.Priority.NormalPriority -> 1
+                                          Torrent.Priority.HighPriority -> 0
                                           else -> 0
                                       })
 
-        ratio_limit_spinner.setSelection(when (torrent!!.ratioLimitMode) {
-                                             Torrent.RatioLimitMode.GLOBAL -> 0
-                                             Torrent.RatioLimitMode.SINGLE -> 2
-                                             Torrent.RatioLimitMode.UNLIMITED -> 1
+        ratio_limit_spinner.setSelection(when (torrent!!.ratioLimitMode()) {
+                                             Torrent.RatioLimitMode.GlobalRatioLimit -> 0
+                                             Torrent.RatioLimitMode.SingleRatioLimit -> 2
+                                             Torrent.RatioLimitMode.UnlimitedRatio -> 1
                                              else -> 0
                                          })
-        ratio_limit_edit.setText(DecimalFormat("0.00").format(torrent!!.ratioLimit))
+        ratio_limit_edit.setText(DecimalFormat("0.00").format(torrent!!.ratioLimit()))
 
-        idle_seeding_spinner.setSelection(when (torrent!!.idleSeedingLimitMode) {
-                                              Torrent.IdleSeedingLimitMode.GLOBAL -> 0
-                                              Torrent.IdleSeedingLimitMode.SINGLE -> 2
-                                              Torrent.IdleSeedingLimitMode.UNLIMITED -> 3
+        idle_seeding_spinner.setSelection(when (torrent!!.idleSeedingLimitMode()) {
+                                              Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit -> 0
+                                              Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit -> 2
+                                              Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding -> 3
                                               else -> 0
                                           })
-        idle_seeding_edit.setText(torrent!!.idleSeedingLimit.toString())
+        idle_seeding_edit.setText(torrent!!.idleSeedingLimit().toString())
 
-        maximum_peers_edit.setText(torrent!!.peersLimit.toString())
+        maximum_peers_edit.setText(torrent!!.peersLimit().toString())
 
         updating = false
     }

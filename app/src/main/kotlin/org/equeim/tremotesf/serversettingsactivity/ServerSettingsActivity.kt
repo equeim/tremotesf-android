@@ -38,6 +38,7 @@ import android.support.v4.app.ListFragment
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
+import org.equeim.libtremotesf.BaseRpc
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -48,9 +49,9 @@ import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 class ServerSettingsActivity : BaseActivity() {
     private lateinit var inputManager: InputMethodManager
 
-    private val rpcStatusListener = fun(status: Rpc.Status) {
+    private val rpcStatusListener = fun(status: Int) {
         when (status) {
-            Rpc.Status.Disconnected -> {
+            BaseRpc.Status.Disconnected -> {
                 if (supportFragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
                     supportFragmentManager.popBackStack()
                     supportFragmentManager.beginTransaction()
@@ -60,7 +61,7 @@ class ServerSettingsActivity : BaseActivity() {
                             .commit()
                 }
             }
-            Rpc.Status.Connected -> {
+            BaseRpc.Status.Connected -> {
                 supportFragmentManager.beginTransaction()
                         .replace(android.R.id.content, MainFragment())
                         .commit()
@@ -87,12 +88,12 @@ class ServerSettingsActivity : BaseActivity() {
                                                               MainFragment()).commit()
         }
 
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.instance.addStatusListener(rpcStatusListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Rpc.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeStatusListener(rpcStatusListener)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -116,24 +117,24 @@ class ServerSettingsActivity : BaseActivity() {
 
         private var snackbar: Snackbar? = null
 
-        private var rpcStatusListener: (Rpc.Status) -> Unit = { status ->
-            placeholder.text = Rpc.statusString
+        private var rpcStatusListener: (Int) -> Unit = { status ->
+            placeholder.text = Rpc.instance.statusString
             when (status) {
-                Rpc.Status.Disconnected -> {
+                BaseRpc.Status.Disconnected -> {
                     snackbar = indefiniteSnackbar(activity!!.contentView!!, "", getString(R.string.connect)) {
                         snackbar = null
-                        Rpc.connect()
+                        Rpc.instance.connect()
                     }
                     progress_bar.visibility = View.GONE
                 }
-                Rpc.Status.Connecting -> {
+                BaseRpc.Status.Connecting -> {
                     if (snackbar != null) {
                         snackbar!!.dismiss()
                         snackbar = null
                     }
                     progress_bar.visibility = View.VISIBLE
                 }
-                Rpc.Status.Connected -> {
+                BaseRpc.Status.Connected -> {
                 }
             }
         }
@@ -148,13 +149,13 @@ class ServerSettingsActivity : BaseActivity() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            rpcStatusListener(Rpc.status)
-            Rpc.addStatusListener(rpcStatusListener)
+            rpcStatusListener(Rpc.instance.status())
+            Rpc.instance.addStatusListener(rpcStatusListener)
         }
 
         override fun onDestroyView() {
             super.onDestroyView()
-            Rpc.removeStatusListener(rpcStatusListener)
+            Rpc.instance.removeStatusListener(rpcStatusListener)
             snackbar = null
         }
     }

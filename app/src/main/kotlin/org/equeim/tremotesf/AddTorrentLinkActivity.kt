@@ -34,6 +34,8 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.design.indefiniteSnackbar
 
+import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 
@@ -46,7 +48,7 @@ class AddTorrentLinkActivity : BaseActivity() {
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
-    private var rpcStatusListener = { _: Rpc.Status ->
+    private var rpcStatusListener = { _: Int ->
         updateView()
     }
 
@@ -67,18 +69,18 @@ class AddTorrentLinkActivity : BaseActivity() {
         }
 
         updateView(savedInstanceState)
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.instance.addStatusListener(rpcStatusListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Rpc.removeStatusListener(rpcStatusListener)
+        Rpc.instance.removeStatusListener(rpcStatusListener)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.add_torrent_activity_menu, menu)
         doneMenuItem = menu.findItem(R.id.done)
-        doneMenuItem!!.isVisible = Rpc.connected
+        doneMenuItem!!.isVisible = Rpc.instance.isConnected
         return true
     }
 
@@ -96,13 +98,13 @@ class AddTorrentLinkActivity : BaseActivity() {
                 return false
             }
 
-            Rpc.addTorrentLink(torrent_link_edit.text.toString(),
+            Rpc.instance.addTorrentLink(torrent_link_edit.text.toString(),
                                download_directory_edit.text.toString(),
                                when (priority_spinner.selectedItemPosition) {
-                                   0 -> Torrent.Priority.HIGH
-                                   1 -> Torrent.Priority.NORMAL
-                                   2 -> Torrent.Priority.LOW
-                                   else -> Torrent.Priority.NORMAL
+                                   0 -> Torrent.Priority.HighPriority
+                                   1 -> Torrent.Priority.NormalPriority
+                                   2 -> Torrent.Priority.LowPriority
+                                   else -> Torrent.Priority.NormalPriority
                                },
                                start_downloading_check_box.isChecked)
 
@@ -133,21 +135,21 @@ class AddTorrentLinkActivity : BaseActivity() {
     }
 
     private fun updateView(savedInstanceState: Bundle? = null) {
-        doneMenuItem?.isVisible = Rpc.connected
+        doneMenuItem?.isVisible = Rpc.instance.isConnected
 
-        when (Rpc.status) {
-            Rpc.Status.Disconnected -> {
+        when (Rpc.instance.status()) {
+            BaseRpc.Status.Disconnected -> {
                 snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
                     snackbar = null
-                    Rpc.connect()
+                    Rpc.instance.connect()
                 }
-                placeholder.text = Rpc.statusString
+                placeholder.text = Rpc.instance.statusString
 
                 if (currentFocus != null) {
                     inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
                 }
             }
-            Rpc.Status.Connecting -> {
+            BaseRpc.Status.Connecting -> {
                 if (snackbar != null) {
                     snackbar!!.dismiss()
                     snackbar = null
@@ -156,13 +158,13 @@ class AddTorrentLinkActivity : BaseActivity() {
             }
             else -> {
                 if (savedInstanceState == null) {
-                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
-                    start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
+                    download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())
+                    start_downloading_check_box.isChecked = Rpc.instance.serverSettings.startAddedTorrents()
                 }
             }
         }
 
-        if (Rpc.connected) {
+        if (Rpc.instance.isConnected) {
             scroll_view.visibility = View.VISIBLE
             placeholder_layout.visibility = View.GONE
         } else {
@@ -170,7 +172,7 @@ class AddTorrentLinkActivity : BaseActivity() {
             scroll_view.visibility = View.GONE
         }
 
-        progress_bar.visibility = if (Rpc.status == Rpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.instance.status() == BaseRpc.Status.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

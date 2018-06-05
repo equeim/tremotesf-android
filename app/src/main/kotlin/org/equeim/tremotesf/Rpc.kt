@@ -19,87 +19,31 @@
 
 package org.equeim.tremotesf
 
-import java.net.HttpURLConnection
-import java.net.SocketTimeoutException
-import java.net.URI
-import java.net.URISyntaxException
-
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.KeyManagerFactory
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSession
-import javax.net.ssl.TrustManagerFactory
-
-import java.security.KeyFactory
-import java.security.KeyStore
-import java.security.cert.CertificateException
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
-import java.security.interfaces.RSAPrivateKey
-import java.security.spec.PKCS8EncodedKeySpec
-
-import java.util.Timer
-
-import kotlin.concurrent.schedule
-
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.AsyncTask
-import android.os.Handler
-import android.util.Base64
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
+import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.JniRpc
+import org.equeim.libtremotesf.JniServerSettings
+import org.equeim.libtremotesf.JniWrapper
+import org.equeim.libtremotesf.ServerStats
 
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.Request
-import com.github.kittinunf.fuel.core.ResponseDeserializable
+import org.jetbrains.anko.runOnUiThread
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonSyntaxException
+class Rpc : JniRpc() {
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var instanceField: Rpc? = null
+        private var wrapperInstanceField: JniWrapper? = null
 
-
-// Transmission 2.40+
-private const val MINIMUM_RPC_VERSION = 14
-
-private const val SESSION_ID_HEADER = "X-Transmission-Session-Id"
-
-private val gson = Gson()
-private fun makeRequestData(method: String, arguments: Map<String, Any>): String {
-    return gson.toJson(mapOf("method" to method,
-                             "arguments" to arguments))
-}
-
-private fun getReplyArguments(jsonObject: JsonObject): JsonObject? {
-    return jsonObject.getAsJsonObject("arguments")
-}
-
-private fun isResultSuccessful(jsonObject: JsonObject): Boolean {
-    return jsonObject["result"].asString == "success"
-}
-
-@SuppressLint("StaticFieldLeak")
-object Rpc : AnkoLogger {
-    enum class Status {
-        Disconnected,
-        Connecting,
-        Connected
-    }
-
-    enum class Error {
-        None,
-        NoServers,
-        InvalidServerUrl,
-        TimedOut,
-        ConnectionError,
-        Authentication,
-        ParsingError,
-        ServerIsTooNew,
-        ServerIsTooOld,
+        val instance: Rpc
+            get() {
+                if (instanceField == null) {
+                    instanceField = Rpc()
+                    wrapperInstanceField = JniWrapper(instanceField)
+                }
+                return instanceField!!
+            }
     }
 
     var context: Context? = null
@@ -110,782 +54,170 @@ object Rpc : AnkoLogger {
             }
         }
 
-    //
-    // status property
-    //
-    var status = Status.Disconnected
-        private set(value) {
-            if (value == field) {
-                return
-            }
-
-            val wasConnected = connected
-
-            field = value
-
-            if (wasConnected) {
-                torrents.clear()
-                resetTimer()
-            }
-
-            if (value == Status.Disconnected) {
-                rpcVersionChecked = false
-                serverSettingsUpdated = false
-                torrentsUpdated = false
-                serverStatsUpdated = false
-
-                activeRequests.forEach { it.cancel() }
-                activeRequests.clear()
-            }
-
-            for (listener in statusListeners) {
-                listener(value)
-            }
-        }
+    val serverSettings: JniServerSettings = serverSettings()
+    val serverStats: ServerStats = serverStats()
 
     val statusString: String
         get() {
-            return when (status) {
-                Status.Disconnected -> when (error) {
-                    Error.None -> context!!.getString(R.string.disconnected)
-                    Error.NoServers -> context!!.getString(R.string.no_servers)
-                    Error.InvalidServerUrl -> context!!.getString(R.string.invalid_server_url)
-                    Error.TimedOut -> context!!.getString(R.string.timed_out)
-                    Error.ConnectionError -> context!!.getString(R.string.connection_error)
-                    Error.Authentication -> context!!.getString(R.string.authentication_error)
-                    Error.ParsingError -> context!!.getString(R.string.parsing_error)
-                    Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
-                    Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
+            return when (status()) {
+                BaseRpc.Status.Disconnected -> when (error()) {
+                    BaseRpc.Error.NoError -> context!!.getString(R.string.disconnected)
+                    BaseRpc.Error.TimedOut -> context!!.getString(R.string.timed_out)
+                    BaseRpc.Error.ConnectionError -> context!!.getString(R.string.connection_error)
+                    BaseRpc.Error.AuthenticationError -> context!!.getString(R.string.authentication_error)
+                    BaseRpc.Error.ParseError -> context!!.getString(R.string.parsing_error)
+                    BaseRpc.Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
+                    BaseRpc.Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
+                    else -> context!!.getString(R.string.disconnected)
                 }
-                Status.Connecting -> context!!.getString(R.string.connecting)
-                Status.Connected -> context!!.getString(R.string.connected)
+                BaseRpc.Status.Connecting -> context!!.getString(R.string.connecting)
+                BaseRpc.Status.Connected -> context!!.getString(R.string.connected)
+                else -> context!!.getString(R.string.disconnected)
             }
         }
 
-    private val statusListeners = mutableListOf<(Status) -> Unit>()
-    fun addStatusListener(listener: (Status) -> Unit) = statusListeners.add(listener)
-    fun removeStatusListener(listener: (Status) -> Unit) = statusListeners.remove(listener)
+    private val statusListeners = mutableListOf<(Int) -> Unit>()
+    private val errorListeners = mutableListOf<(Int) -> Unit>()
+    private val torrentsUpdatedListeners = mutableListOf<() -> Unit>()
+    private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
 
-    val connected: Boolean
-        get() {
-            return (status == Status.Connected)
-        }
+    var torrentFinishedListener: ((Int, String, String) -> Unit)? = null
 
-    var error = Error.NoServers
-        private set(value) {
-            if (value != field) {
-                field = value
-                for (listener in errorListeners) {
-                    listener(error)
-                }
-            }
-        }
-
-    val canConnect: Boolean
-        get() {
-            return when (error) {
-                Error.NoServers,
-                Error.InvalidServerUrl -> false
-                else -> true
-            }
-        }
-
-    private val errorListeners = mutableListOf<(Error) -> Unit>()
-    fun addErrorListener(listener: (Error) -> Unit) = errorListeners.add(listener)
-    fun removeErrorListener(listener: (Error) -> Unit) = errorListeners.remove(listener)
-
-    var updateDisabled = false
-        set(value) {
-            if (value != field) {
-                field = value
-                if (connected) {
-                    if (value) {
-                        startTimer()
-                    } else {
-                        updateData()
-                    }
-                }
-            }
-        }
-
-    var backgroundUpdate = false
-        set(value) {
-            if (value != field) {
-                field = value
-                resetTimer()
-                if (connected) {
-                    if (value) {
-                        startTimer()
-                    } else {
-                        updateData()
-                    }
-                }
-            }
-        }
-
-    private lateinit var url: String
-    private var updateInterval = 0L
-    private var backgroundUpdateInterval = 0L
-    private var authentication = false
-    private lateinit var username: String
-    private lateinit var password: String
-
-    private val responseDeserializer = object : ResponseDeserializable<JsonObject> {
-        override fun deserialize(content: String): JsonObject {
-            return gson.fromJson(content, JsonObject::class.java)
-        }
-    }
-    private val activeRequests = mutableListOf<Request>()
-    private var sessionId = ""
-
-    private var timer = Timer()
-    private val mainThreadHandler = Handler()
-
-    private var rpcVersionChecked = false
-    private var serverSettingsUpdated = false
-    private var torrentsUpdated = false
-    private var serverStatsUpdated = false
-
-    val serverSettings = ServerSettings()
-    val torrents = mutableListOf<Torrent>()
-    val serverStats = ServerStats()
-
-    private val updatedListeners = mutableListOf<() -> Unit>()
-    fun addUpdatedListener(listener: () -> Unit) = updatedListeners.add(listener)
-    fun removeUpdatedListener(listener: () -> Unit) = updatedListeners.remove(listener)
-
-    var torrentDuplicateListener: (() -> Unit)? = null
+    var torrentAddDuplicateListener: (() -> Unit)? = null
     var torrentAddErrorListener: (() -> Unit)? = null
 
-    var torrentFinishedListener: ((Torrent) -> Unit)? = null
+    var gotTorrentFilesListener: ((Int) -> Unit)? = null
+    var torrentFileRenamedListener: ((Int, String, String) -> Unit)? = null
 
+    var gotTorrentPeersListener: ((Int) -> Unit)? = null
+
+    val torrents = mutableListOf<TorrentData>()
 
     init {
         Servers.addCurrentServerListener {
-            updateServer()
-            connect()
-        }
-    }
-
-    fun connect() {
-        if (status == Status.Disconnected && canConnect) {
-            error = Error.None
-            status = Status.Connecting
-            getServerSettings()
-        }
-    }
-
-    fun disconnect() {
-        error = Error.None
-        status = Status.Disconnected
-    }
-
-    fun addTorrentFile(fileData: ByteArray,
-                       downloadDirectory: String,
-                       wantedFiles: List<Int>,
-                       unwantedFiles: List<Int>,
-                       lowPriorityFiles: List<Int>,
-                       normalPriorityFiles: List<Int>,
-                       highPriorityFiles: List<Int>,
-                       priority: Int,
-                       start: Boolean) {
-        if (!connected) {
-            return
-        }
-
-        object : AsyncTask<Any, Any, String>() {
-            override fun doInBackground(vararg params: Any?): String {
-                return makeRequestData("torrent-add",
-                                       mapOf("metainfo" to String(Base64.encode(fileData,
-                                                                                Base64.DEFAULT)),
-                                             "download-dir" to downloadDirectory,
-                                             "files-wanted" to wantedFiles,
-                                             "files-unwanted" to unwantedFiles,
-                                             "priority-low" to lowPriorityFiles,
-                                             "priority-normal" to normalPriorityFiles,
-                                             "priority-high" to highPriorityFiles,
-                                             "bandwidthPriority" to priority,
-                                             "paused" to !start))
-            }
-
-            override fun onPostExecute(result: String) {
-                if (connected) {
-                    postRequest(result, { jsonObject ->
-                        if (isResultSuccessful(jsonObject)) {
-                            if (getReplyArguments(jsonObject)?.has("torrent-duplicate") == true) {
-                                torrentDuplicateListener?.invoke()
-                            } else {
-                                resetTimer()
-                                updateData()
-                            }
-                        } else {
-                            torrentAddErrorListener?.invoke()
-                        }
-                    })
-                }
-            }
-        }.execute()
-    }
-
-    fun addTorrentLink(link: String,
-                       downloadDirectory: String,
-                       priority: Int,
-                       start: Boolean) {
-        if (!connected) {
-            return
-        }
-
-        postRequest(makeRequestData("torrent-add",
-                                    mapOf("filename" to link,
-                                          "download-dir" to downloadDirectory,
-                                          "bandwidthPriority" to priority,
-                                          "paused" to !start)),
-                    { jsonObject ->
-                        if (isResultSuccessful(jsonObject)) {
-                            if (getReplyArguments(jsonObject)?.has("torrent-duplicate") == true) {
-                                torrentDuplicateListener?.invoke()
-                            } else {
-                                resetTimer()
-                                updateData()
-                            }
-                        } else {
-                            torrentAddErrorListener?.invoke()
-                        }
-                    })
-    }
-
-    fun removeTorrents(ids: List<Int>, deleteFiles: Boolean) {
-        if (connected) {
-            postRequest(makeRequestData("torrent-remove", mapOf("ids" to ids,
-                                                                "delete-local-data" to deleteFiles))) {
-                resetTimer()
-                updateData()
-            }
-        }
-    }
-
-    fun startTorrents(ids: List<Int>) {
-        if (connected) {
-            postRequest(makeRequestData("torrent-start", mapOf("ids" to ids))) {
-                resetTimer()
-                updateData()
-            }
-        }
-    }
-
-    fun pauseTorrents(ids: List<Int>) {
-        if (connected) {
-            postRequest(makeRequestData("torrent-stop", mapOf("ids" to ids))) {
-                resetTimer()
-                updateData()
-            }
-        }
-    }
-
-    fun checkTorrents(ids: List<Int>) {
-        if (connected) {
-            postRequest(makeRequestData("torrent-verify", mapOf("ids" to ids))) {
-                resetTimer()
-                updateData()
-            }
-        }
-    }
-
-    private fun getServerSettings() {
-        debug("get server settings")
-
-        postRequest("{\"method\": \"session-get\"}", { jsonObject ->
-            debug("got server settings")
-
-            val arguments = getReplyArguments(jsonObject)
-            if (arguments == null) {
-                error = Error.ParsingError
-                status = Status.Disconnected
-            } else {
-                serverSettings.update(arguments)
-                serverSettingsUpdated = true
-                if (!rpcVersionChecked) {
-                    rpcVersionChecked = true
-                    if (serverSettings.minimumRpcVersion > MINIMUM_RPC_VERSION) {
-                        error = Error.ServerIsTooNew
-                        status = Status.Disconnected
-                    } else if (serverSettings.rpcVersion < MINIMUM_RPC_VERSION) {
-                        error = Error.ServerIsTooOld
-                        status = Status.Disconnected
-                    } else {
-                        getTorrents()
-                        getServerStats()
-                    }
-                } else {
-                    checkIfUpdated()
-                }
-            }
-        })
-    }
-
-    fun setSessionProperty(property: String, value: Any) {
-        if (connected) {
-            postRequest(makeRequestData("session-set", mapOf(property to value)), null)
-        }
-    }
-
-    private fun getTorrents() {
-        debug("get torrents")
-
-        postRequest(
-                """
-{
-    "arguments": {
-        "fields": [
-            "activityDate",
-            "addedDate",
-            "bandwidthPriority",
-            "comment",
-            "creator",
-            "dateCreated",
-            "doneDate",
-            "downloadDir",
-            "downloadedEver",
-            "downloadLimit",
-            "downloadLimited",
-            "error",
-            "errorString",
-            "eta",
-            "hashString",
-            "haveValid",
-            "honorsSessionLimits",
-            "id",
-            "leftUntilDone",
-            "name",
-            "peer-limit",
-            "peersConnected",
-            "peersGettingFromUs",
-            "peersSendingToUs",
-            "percentDone",
-            "queuePosition",
-            "rateDownload",
-            "rateUpload",
-            "recheckProgress",
-            "seedIdleLimit",
-            "seedIdleMode",
-            "seedRatioLimit",
-            "seedRatioMode",
-            "sizeWhenDone",
-            "status",
-            "totalSize",
-            "trackerStats",
-            "uploadedEver",
-            "uploadLimit",
-            "uploadLimited",
-            "uploadRatio"
-        ]
-    },
-    "method": "torrent-get"
-}""",
-                { jsonObject ->
-                    debug("got torrents")
-
-                    object : AsyncTask<Any, Any, Pair<Boolean, List<Torrent>>>() {
-                        override fun doInBackground(vararg params: Any?): Pair<Boolean, List<Torrent>> {
-                            val torrentJsons = getReplyArguments(jsonObject)?.getAsJsonArray("torrents")
-                            torrentJsons ?: return Pair(false, emptyList())
-
-                            val newTorrents = mutableListOf<Torrent>()
-
-                            for (jsonElement in torrentJsons) {
-                                val torrentJson = jsonElement.asJsonObject
-                                val id = torrentJson["id"].asInt
-
-                                var torrent = torrents.find { it.id == id }
-                                if (torrent == null) {
-                                    torrent = Torrent(id, torrentJson, context!!)
-                                } else {
-                                    val progress = torrent.percentDone
-                                    torrent.update(torrentJson)
-                                    if (torrent.percentDone == 1.0 && progress != 1.0) {
-                                        torrentFinishedListener?.invoke(torrent)
-                                    }
-                                }
-                                newTorrents.add(torrent)
-
-                                if (torrent.filesUpdateEnabled) {
-                                    torrent.filesUpdated = false
-                                    getTorrentFiles(id, true)
-                                }
-
-                                if (torrent.peersUpdateEnabled) {
-                                    torrent.peersUpdated = false
-                                    getTorrentPeers(id, true)
-                                }
-                            }
-
-                            return Pair(true, newTorrents)
-                        }
-
-                        override fun onPostExecute(result: Pair<Boolean, List<Torrent>>) {
-                            if (result.first) {
-                                if (!torrentsUpdated && this@Rpc.status != Rpc.Status.Disconnected) {
-                                    torrents.clear()
-                                    torrents.addAll(result.second)
-                                    checkIfTorrentsUpdated()
-                                    checkIfUpdated()
-                                }
-                            } else {
-                                error = Error.ParsingError
-                                this@Rpc.status = Rpc.Status.Disconnected
-                            }
-                        }
-                    }.execute()
-                })
-    }
-
-    fun getTorrentFiles(id: Int, scheduledUpdate: Boolean) {
-        postRequest(
-                """
-{
-    "arguments": {
-        "fields": [
-            "files",
-            "fileStats"
-        ],
-        "ids": [$id]
-    },
-    "method": "torrent-get"
-}""",
-                { jsonObject ->
-                    val torrent = torrents.find { it.id == id }
-                    if (torrent != null) {
-                        val torrentsJson = getReplyArguments(jsonObject)
-                                ?.getAsJsonArray("torrents")
-
-                        if (torrentsJson == null) {
-                            error = Error.ParsingError
-                            status = Status.Disconnected
-                        } else if (torrentsJson.size() != 0) {
-                            val torrentJson = torrentsJson[0].asJsonObject
-                            val files = torrentJson.getAsJsonArray("files")
-                            val fileStats = torrentJson.getAsJsonArray("fileStats")
-                            torrent.updateFiles(files, fileStats)
-                            if (scheduledUpdate) {
-                                checkIfTorrentsUpdated()
-                                checkIfUpdated()
-                            } else {
-                                torrent.filesLoadedListener?.invoke()
-                            }
-                        }
-                    }
-                })
-    }
-
-    fun getTorrentPeers(id: Int, scheduledUpdate: Boolean) {
-        postRequest(
-                """
-{
-    "arguments": {
-        "fields": ["peers"],
-        "ids": [$id]
-    },
-    "method": "torrent-get"
-}""",
-                { jsonObject ->
-                    val torrent = torrents.find { it.id == id }
-                    if (torrent != null) {
-                        val torrentsJson = getReplyArguments(jsonObject)
-                                ?.getAsJsonArray("torrents")
-
-                        if (torrentsJson == null) {
-                            error = Error.ParsingError
-                            status = Status.Disconnected
-                        } else if (torrentsJson.size() != 0) {
-                            val torrentJson = torrentsJson[0].asJsonObject
-                            torrent.updatePeers(torrentJson.getAsJsonArray("peers"))
-                            if (scheduledUpdate) {
-                                checkIfTorrentsUpdated()
-                                checkIfUpdated()
-                            } else {
-                                torrent.peersLoadedListener?.invoke()
-                            }
-                        }
-                    }
-                })
-    }
-
-    fun setTorrentProperty(torrentId: Int,
-                           property: String,
-                           value: Any,
-                           updateOnSuccess: Boolean = false) {
-        postRequest(makeRequestData("torrent-set",
-                                    mapOf("ids" to intArrayOf(torrentId),
-                                          property to value)),
-                    {
-                        if (updateOnSuccess) {
-                            resetTimer()
-                            updateData()
-                        }
-                    })
-    }
-
-    fun setTorrentLocation(torrentId: Int,
-                           location: String,
-                           moveFiles: Boolean) {
-        if (!Rpc.connected) {
-            return
-        }
-
-        postRequest(makeRequestData("torrent-set-location",
-                                    mapOf("ids" to intArrayOf(torrentId),
-                                          "location" to location,
-                                          "move" to moveFiles)),
-                    {
-                        resetTimer()
-                        updateData()
-                    })
-    }
-
-    fun renameTorrentFile(torrentId: Int, filePath: String, newName: String) {
-        if (!Rpc.connected) {
-            return
-        }
-
-        postRequest(makeRequestData("torrent-rename-path",
-                                    mapOf("ids" to intArrayOf(torrentId),
-                                          "path" to filePath,
-                                          "name" to newName)),
-                    { jsonObject ->
-                        val arguments = getReplyArguments(jsonObject)
-                        if (arguments != null) {
-                            val id = arguments["id"]?.asInt
-                            if (id != null) {
-                                val torrent = torrents.find { it.id == id }
-                                if (torrent != null) {
-                                    torrent.fileRenamedListener?.invoke(arguments["path"].asString,
-                                                                        arguments["name"].asString)
-                                }
-                                resetTimer()
-                                updateData()
-                            }
-                        }
-                    })
-    }
-
-    private fun getServerStats() {
-        debug("get server stats")
-
-        postRequest("{\"method\": \"session-stats\"}", { jsonObject ->
-            val arguments = getReplyArguments(jsonObject)
-            if (arguments == null) {
-                error = Error.ParsingError
-                status = Status.Disconnected
-            } else {
-                serverStats.update(arguments)
-                serverStatsUpdated = true
-                checkIfUpdated()
-            }
-        })
-    }
-
-    fun updateData() {
-        serverSettingsUpdated = false
-        torrentsUpdated = false
-        serverStatsUpdated = false
-        getServerSettings()
-        getTorrents()
-        getServerStats()
-    }
-
-    private fun checkIfTorrentsUpdated() {
-        for (torrent in torrents) {
-            if (!torrent.updated) {
-                return
-            }
-        }
-        torrentsUpdated = true
-    }
-
-    private fun checkIfUpdated() {
-        if (serverSettingsUpdated && torrentsUpdated && serverStatsUpdated) {
-            if (status == Status.Connecting) {
-                status = Status.Connected
-            } else {
-                for (listener in updatedListeners) {
-                    listener()
-                }
-            }
-
-            if (!updateDisabled) {
-                debug("starting update timer")
-                startTimer()
-            }
-        }
-    }
-
-    private fun resetTimer() {
-        timer.cancel()
-        timer = Timer()
-    }
-
-    private fun startTimer() {
-        timer.schedule(if (backgroundUpdate) backgroundUpdateInterval else updateInterval) {
-            if (connected) {
-                mainThreadHandler.post { updateData() }
+            if (Servers.hasServers) {
+                updateServer()
+                connect()
             }
         }
     }
 
     private fun updateServer() {
-        disconnect()
-
-        if (!Servers.hasServers) {
-            error = Error.NoServers
-            return
+        if (Servers.hasServers) {
+            val server = Servers.currentServer!!
+            setServer(server.name,
+                      server.address,
+                      server.port,
+                      server.apiPath,
+                      server.httpsEnabled,
+                      server.selfSignedCertificateEnabled,
+                      server.selfSignedCertificate.toByteArray(),
+                      server.clientCertificateEnabled,
+                      server.clientCertificate.toByteArray(),
+                      server.authentication,
+                      server.username,
+                      server.password,
+                      server.updateInterval,
+                      server.backgroundUpdateInterval,
+                      server.timeout)
+        } else {
+            resetServer()
         }
-
-        val server = Servers.currentServer!!
-
-        try {
-            val scheme = if (server.httpsEnabled) "https" else "http"
-            url = URI(scheme, null, server.address, server.port, server.apiPath, null, null).toString()
-        } catch (error: URISyntaxException) {
-            error("invalid server url", error)
-            this.error = Error.InvalidServerUrl
-            return
-        }
-
-        FuelManager.instance.socketFactory = HttpsURLConnection.getDefaultSSLSocketFactory()
-        FuelManager.instance.hostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier()
-        if (server.clientCertificateEnabled || server.selfSignedCertificateEnabled) {
-            val certificateFactory = CertificateFactory.getInstance("X.509")
-
-            var kmf: KeyManagerFactory? = null
-            if (server.clientCertificateEnabled) {
-                val certEncoded = server.clientCertificate
-                        .substringAfter("-----BEGIN CERTIFICATE-----")
-                        .substringBefore("-----END CERTIFICATE-----")
-                val keyEncoded = server.clientCertificate
-                        .substringAfter("-----BEGIN PRIVATE KEY-----")
-                        .substringBefore("-----END PRIVATE KEY-----")
-                if (certEncoded.isNotEmpty() && keyEncoded.isNotEmpty()) {
-                    try {
-                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded,
-                                                                                        0).inputStream()) as X509Certificate
-                        val key = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(
-                                Base64.decode(keyEncoded, 0))) as RSAPrivateKey
-                        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-                        keyStore.load(null)
-                        keyStore.setCertificateEntry("cert-alias", cert)
-                        keyStore.setKeyEntry("key-alias", key, charArrayOf(), arrayOf(cert))
-                        kmf = KeyManagerFactory.getInstance("X509")
-                        kmf.init(keyStore, charArrayOf())
-                    } catch (error: IllegalArgumentException) {
-                        error("client certificate decoding error: $error")
-                    } catch (error: CertificateException) {
-                        error("client certificate parsing error: $error")
-                    }
-                }
-            }
-
-            var tmf: TrustManagerFactory? = null
-            if (server.selfSignedCertificateEnabled) {
-                val certEncoded = server.selfSignedCertificate
-                        .substringAfter("-----BEGIN CERTIFICATE-----")
-                        .substringBefore("-----END CERTIFICATE-----")
-                if (certEncoded.isNotEmpty()) {
-                    try {
-                        val cert = certificateFactory.generateCertificate(Base64.decode(certEncoded,
-                                                                                        0).inputStream()) as X509Certificate
-                        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-                        keyStore.load(null)
-                        keyStore.setCertificateEntry("cert-alias", cert)
-                        tmf = TrustManagerFactory.getInstance("X509")
-                        tmf.init(keyStore)
-                    } catch (error: IllegalArgumentException) {
-                        error("self-signed certificate decoding error: $error")
-                    } catch (error: CertificateException) {
-                        error("self-signed certificate parsing error: $error")
-                    }
-
-                    FuelManager.instance.hostnameVerifier = object : HostnameVerifier {
-                        private val serverHostname = server.address
-                        override fun verify(hostname: String, session: SSLSession?): Boolean {
-                            return (hostname == serverHostname)
-                        }
-                    }
-                }
-            }
-
-            if (kmf != null || tmf != null) {
-                val sslContext = SSLContext.getInstance("TLS")
-                sslContext.init(kmf?.keyManagers, tmf?.trustManagers, null)
-                FuelManager.instance.socketFactory = sslContext.socketFactory
-            }
-        }
-
-        authentication = server.authentication
-        username = server.username
-        password = server.password
-
-        FuelManager.instance.timeoutInMillisecond = server.timeout * 1000
-        updateInterval = (server.updateInterval * 1000).toLong()
-        backgroundUpdateInterval = (server.backgroundUpdateInterval * 1000).toLong()
-
-        error = Error.None
     }
 
-    private fun postRequest(data: String, callOnSuccess: ((JsonObject) -> Unit)?) {
-        val request = Fuel.post(url)
-                .body(data)
-                .header(Pair(SESSION_ID_HEADER, sessionId))
+    fun addStatusListener(listener: (Int) -> Unit) = statusListeners.add(listener)
+    fun removeStatusListener(listener: (Int) -> Unit) = statusListeners.remove(listener)
 
-        if (authentication) {
-            request.authenticate(username, password)
+    override fun onStatusChanged() {
+        context!!.runOnUiThread {
+            for (listener in statusListeners) {
+                listener(status())
+            }
+            super.onStatusChanged()
         }
+    }
 
-        request.responseObject(responseDeserializer,
-                               { request, response, result ->
-                                   val (jsonObject, error) = result
-                                   if (error == null) {
-                                       callOnSuccess?.invoke(jsonObject!!)
-                                   } else {
-                                       when (response.statusCode) {
-                                           HttpURLConnection.HTTP_CONFLICT -> {
-                                               val headers = response.headers
-                                               if (headers.containsKey(SESSION_ID_HEADER)) {
-                                                   sessionId = headers[SESSION_ID_HEADER]!!.first()
-                                                   postRequest(data, callOnSuccess)
-                                               } else {
-                                                   error("no session id header")
-                                                   this.error = Error.ConnectionError
-                                                   status = Status.Disconnected
-                                               }
-                                           }
-                                           HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                                               error("authentication error")
-                                               this.error = Error.Authentication
-                                               status = Status.Disconnected
-                                           }
-                                           else -> {
-                                               when (error.exception) {
-                                                   is JsonSyntaxException -> {
-                                                       error("parsing error: ${error.exception}")
-                                                       this.error = Error.ParsingError
-                                                   }
-                                                   is SocketTimeoutException -> {
-                                                       error("connection timed out: ${error.exception}")
-                                                       this.error = Error.TimedOut
-                                                   }
-                                                   else -> {
-                                                       error("connection error: ${error.exception}")
-                                                       this.error = Error.ConnectionError
-                                                   }
-                                               }
-                                               status = Status.Disconnected
-                                           }
-                                       }
-                                   }
+    fun addErrorListener(listener: (Int) -> Unit) = errorListeners.add(listener)
+    fun removeErrorListener(listener: (Int) -> Unit) = errorListeners.remove(listener)
 
-                                   activeRequests.remove(request)
-                               })
+    override fun onErrorChanged() {
+        context!!.runOnUiThread {
+            for (listener in errorListeners) {
+                listener(error())
+            }
+        }
+    }
 
-        activeRequests.add(request)
+    fun addTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.add(listener)
+    fun removeTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.remove(listener)
+
+    override fun onTorrentsUpdated() {
+        context!!.runOnUiThread {
+            val oldTorrents = torrents.toList()
+            torrents.clear()
+            val rpcTorrents = torrents()
+            for (i in 0..(rpcTorrents.size() - 1)) {
+                val torrent = rpcTorrents[i.toInt()]
+                val id = torrent.id()
+                val data = oldTorrents.find { it.id == id }
+                if (data == null) {
+                    torrents.add(TorrentData(torrent, context!!))
+                } else {
+                    torrents.add(data)
+                    data.update()
+                }
+            }
+
+            for (listener in torrentsUpdatedListeners) {
+                listener()
+            }
+        }
+    }
+
+    fun addServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.add(listener)
+    fun removeServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.remove(listener)
+
+    override fun onServerStatsUpdated() {
+        context!!.runOnUiThread {
+            for (listener in serverStatsUpdatedListeners) {
+                listener()
+            }
+        }
+    }
+
+    override fun onTorrentFinished(id: Int, hashString: String, name: String) {
+        context!!.runOnUiThread {
+            torrentFinishedListener?.invoke(id, hashString, name)
+        }
+    }
+
+    override fun onTorrentAddDuplicate() {
+        context!!.runOnUiThread {
+            torrentAddDuplicateListener?.invoke()
+        }
+    }
+
+    override fun onTorrentAddError() {
+        context!!.runOnUiThread {
+            torrentAddErrorListener?.invoke()
+        }
+    }
+
+    override fun onGotTorrentFiles(torrentId: Int) {
+        context!!.runOnUiThread {
+            gotTorrentFilesListener?.invoke(torrentId)
+        }
+    }
+
+    override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
+        context!!.runOnUiThread {
+            torrentFileRenamedListener?.invoke(torrentId, filePath, newName)
+        }
+    }
+
+    override fun onGotTorrentPeers(torrentId: Int) {
+        context!!.runOnUiThread {
+            gotTorrentPeersListener?.invoke(torrentId)
+        }
     }
 }

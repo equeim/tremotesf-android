@@ -28,19 +28,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.support.v7.widget.RecyclerView
 
-import com.google.gson.JsonObject
 import com.amjjd.alphanum.AlphanumericComparator
 
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Torrent
-
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.peer_list_item.view.*
 
 
-private class Peer(peerJson: JsonObject) {
-    val address: String = peerJson["address"].asString
+private class Peer(rpcPeer: org.equeim.libtremotesf.Peer) {
+    val address: String = rpcPeer.address
 
     var downloadSpeed = 0L
         private set(value) {
@@ -86,14 +84,14 @@ private class Peer(peerJson: JsonObject) {
         private set
 
     init {
-        update(peerJson)
+        update(rpcPeer)
     }
 
-    fun update(peerJson: JsonObject) {
-        downloadSpeed = peerJson["rateToClient"].asLong
-        uploadSpeed = peerJson["rateToPeer"].asLong
-        progress = peerJson["progress"].asDouble
-        client = peerJson["clientName"].asString
+    fun update(rpcPeer: org.equeim.libtremotesf.Peer) {
+        downloadSpeed = rpcPeer.downloadSpeed
+        uploadSpeed = rpcPeer.uploadSpeed
+        progress = rpcPeer.progress.toDouble()
+        client = rpcPeer.client
     }
 }
 
@@ -138,18 +136,20 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
 
         this.torrent = torrent
 
-        val peerJsons = torrent.peers
-        peerJsons ?: return
+        if (!torrent.isPeersLoaded) {
+            return
+        }
 
+        val rpcPeers = torrent.peers()
         val newPeers = mutableListOf<Peer>()
-        for (jsonElement in peerJsons) {
-            val peerJson = jsonElement.asJsonObject
-            val address = peerJson["address"].asString
+        for (i in 0..(rpcPeers.size() - 1)) {
+            val rpcPeer = rpcPeers[i.toInt()]
+            val address = rpcPeer.address
             var peer = peers.find { it.address == address }
             if (peer == null) {
-                peer = Peer(peerJson)
+                peer = Peer(rpcPeer)
             } else {
-                peer.update(peerJson)
+                peer.update(rpcPeer)
             }
             newPeers.add(peer)
         }

@@ -36,8 +36,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
-import android.widget.TextView
-
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
@@ -50,7 +48,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 
-
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
 
@@ -59,6 +56,8 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.design.indefiniteSnackbar
 
+import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
@@ -109,7 +108,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
         private var noPermission = false
 
-        private val rpcStatusListener = { _: Rpc.Status ->
+        private val rpcStatusListener = { _: Int ->
             updateView()
         }
 
@@ -170,7 +169,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
             updateView()
 
-            Rpc.addStatusListener(rpcStatusListener)
+            Rpc.instance.addStatusListener(rpcStatusListener)
 
             torrentFileParser.statusListener = { status ->
                 updateView()
@@ -185,14 +184,14 @@ class AddTorrentFileActivity : BaseActivity() {
             doneMenuItem = null
             pagerAdapter = null
             snackbar = null
-            Rpc.removeStatusListener(rpcStatusListener)
+            Rpc.instance.removeStatusListener(rpcStatusListener)
             torrentFileParser.statusListener = null
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
             inflater.inflate(R.menu.add_torrent_activity_menu, menu)
             doneMenuItem = menu.findItem(R.id.done)
-            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.connected)
+            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.instance.isConnected)
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -202,18 +201,18 @@ class AddTorrentFileActivity : BaseActivity() {
             val infoFragment = pagerAdapter!!.infoFragment!!
             if (infoFragment.check()) {
                 val filesData = torrentFileParser.getFilesData()
-                Rpc.addTorrentFile(torrentFileParser.fileData,
+                Rpc.instance.addTorrentFile(torrentFileParser.fileData,
                                    infoFragment.download_directory_edit.text.toString(),
-                                   filesData.wantedFiles,
-                                   filesData.unwantedFiles,
-                                   filesData.lowPriorityFiles,
-                                   filesData.normalPriorityFiles,
-                                   filesData.highPriorityFiles,
+                                   filesData.wantedFiles.toIntArray(),
+                                   filesData.unwantedFiles.toIntArray(),
+                                   filesData.lowPriorityFiles.toIntArray(),
+                                   filesData.normalPriorityFiles.toIntArray(),
+                                   filesData.highPriorityFiles.toIntArray(),
                                    when (infoFragment.priority_spinner.selectedItemPosition) {
-                                       0 -> Torrent.Priority.HIGH
-                                       1 -> Torrent.Priority.NORMAL
-                                       2 -> Torrent.Priority.LOW
-                                       else -> Torrent.Priority.NORMAL
+                                       0 -> Torrent.Priority.HighPriority
+                                       1 -> Torrent.Priority.NormalPriority
+                                       2 -> Torrent.Priority.LowPriority
+                                       else -> Torrent.Priority.NormalPriority
                                    },
                                    infoFragment.start_downloading_check_box.isChecked)
                 activity.finish()
@@ -227,7 +226,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 return
             }
 
-            if (Rpc.connected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
+            if (Rpc.instance.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                 (toolbar!!.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
@@ -248,13 +247,13 @@ class AddTorrentFileActivity : BaseActivity() {
                         TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
                         TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
-                        TorrentFileParser.Status.Loaded -> Rpc.statusString
+                        TorrentFileParser.Status.Loaded -> Rpc.instance.statusString
                         else -> null
                     }
                 }
 
                 progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
-                        (Rpc.status == Rpc.Status.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
+                        (Rpc.instance.status() == BaseRpc.Status.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -277,14 +276,14 @@ class AddTorrentFileActivity : BaseActivity() {
                 placeholder.visibility = View.VISIBLE
 
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                    when (Rpc.status) {
-                        Rpc.Status.Disconnected -> {
+                    when (Rpc.instance.status()) {
+                        BaseRpc.Status.Disconnected -> {
                             snackbar = indefiniteSnackbar(activity.contentView!!, "", getString(R.string.connect)) {
                                 snackbar = null
-                                Rpc.connect()
+                                Rpc.instance.connect()
                             }
                         }
-                        Rpc.Status.Connecting -> {
+                        BaseRpc.Status.Connecting -> {
                             if (snackbar != null) {
                                 snackbar!!.dismiss()
                                 snackbar = null
@@ -351,9 +350,9 @@ class AddTorrentFileActivity : BaseActivity() {
                                                                      R.string.priority)
 
             if (savedInstanceState == null) {
-                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
+                download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())
                 priority_spinner.setSelection(1)
-                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
+                start_downloading_check_box.isChecked = Rpc.instance.serverSettings.startAddedTorrents()
             }
         }
 

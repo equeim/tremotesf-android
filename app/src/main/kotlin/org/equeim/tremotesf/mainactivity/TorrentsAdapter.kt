@@ -49,11 +49,12 @@ import org.jetbrains.anko.intentFor
 
 import com.amjjd.alphanum.AlphanumericComparator
 
+import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -73,7 +74,7 @@ private const val DIRECTORY_FILTER = "directoryFilter"
 
 class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.TorrentsViewHolder>() {
     companion object {
-        fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
+        fun statusFilterAcceptsTorrent(torrent: TorrentData, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
                 StatusFilterMode.Active -> (torrent.status == Torrent.Status.Downloading) ||
                                            (torrent.status == Torrent.Status.Seeding)
@@ -123,28 +124,29 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         Errored
     }
 
-    private val torrents = Rpc.torrents
-    private var filteredTorrents = listOf<Torrent>()
-    private val displayedTorrents = mutableListOf<Torrent>()
+    private val torrents = Rpc.instance.torrents
+
+    private var filteredTorrents = listOf<TorrentData>()
+    private val displayedTorrents = mutableListOf<TorrentData>()
 
     val selector = Selector(activity,
                             ActionModeCallback(activity),
                             this,
                             displayedTorrents,
-                            Torrent::id,
+                            TorrentData::id,
                             R.plurals.torrents_selected)
 
-    private val filterPredicate = { torrent: Torrent ->
+    private val filterPredicate = { torrent: TorrentData ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
-        (trackerFilter.isEmpty() || (torrent.trackers.find { it.site == trackerFilter } != null)) &&
+        (trackerFilter.isEmpty() || (torrent.trackers.find { it == trackerFilter } != null)) &&
         (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
         torrent.name.contains(filterString, true)
     }
 
-    private val comparator = object : Comparator<Torrent> {
+    private val comparator = object : Comparator<TorrentData> {
         private val nameComparator = AlphanumericComparator(Collator.getInstance())
 
-        override fun compare(o1: Torrent, o2: Torrent): Int {
+        override fun compare(o1: TorrentData, o2: TorrentData): Int {
             var compared = when (sortMode) {
                 SortMode.Name -> nameComparator.compare(o1.name, o2.name)
                 SortMode.Status -> o1.status.compareTo(o2.status)
@@ -249,9 +251,10 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             Torrent.Status.Checking,
             Torrent.Status.QueuedForChecking -> 3
             Torrent.Status.Errored -> 4
+            else -> 0
         }
 
-        holder.sizeTextView.text = if (torrent.percentDone == 1.0) {
+        holder.sizeTextView.text = if (torrent.percentDone == 1.0f) {
             activity.getString(R.string.uploaded_string,
                                Utils.formatByteSize(activity, torrent.sizeWhenDone),
                                Utils.formatByteSize(activity, torrent.totalUploaded))
@@ -311,7 +314,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     fun update() {
         updateListContent()
         for ((i, torrent) in displayedTorrents.withIndex()) {
-            if (torrent.changed) {
+            if (torrent.torrent.isChanged) {
                 notifyItemChanged(i)
             }
         }
@@ -335,11 +338,11 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         directoryFilter = state.getString(DIRECTORY_FILTER)
     }
 
-    class TorrentsViewHolder(selector: Selector<Torrent, Int>,
+    class TorrentsViewHolder(selector: Selector<TorrentData, Int>,
                              private val activity: MainActivity,
-                             itemView: View) : Selector.ViewHolder<Torrent>(selector,
+                             itemView: View) : Selector.ViewHolder<TorrentData>(selector,
                                                                             itemView) {
-        override lateinit var item: Torrent
+        override lateinit var item: TorrentData
 
         val nameTextView = itemView.name_text_view!!
         val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -365,7 +368,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
     }
 
-    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Torrent>() {
+    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<TorrentData>() {
         private var startItem: MenuItem? = null
         private var pauseItem: MenuItem? = null
         private var setLocationItem: MenuItem? = null
@@ -405,10 +408,10 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
 
             when (item.itemId) {
-                R.id.start -> Rpc.startTorrents(selector.selectedItems.map(Torrent::id))
-                R.id.pause -> Rpc.pauseTorrents(selector.selectedItems.map(Torrent::id))
-                R.id.check -> Rpc.checkTorrents(selector.selectedItems.map(Torrent::id))
-                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.first())
+                R.id.start -> Rpc.instance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.pause -> Rpc.instance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.check -> Rpc.instance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.first().torrent)
                         .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
                 R.id.remove -> RemoveDialogFragment().show(activity.supportFragmentManager,
                                                            RemoveDialogFragment.TAG)
@@ -434,8 +437,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
             fun create(torrent: Torrent): SetLocationDialogFragment {
                 val fragment = SetLocationDialogFragment()
-                fragment.arguments = bundleOf(TORRENT_ID to torrent.id,
-                                              LOCATION to torrent.downloadDirectory)
+                fragment.arguments = bundleOf(TORRENT_ID to torrent.id(),
+                                              LOCATION to torrent.downloadDirectory())
                 return fragment
             }
         }
@@ -447,10 +450,9 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments!!.getString(LOCATION)) {
-                Rpc.setTorrentLocation(arguments!!.getInt(TORRENT_ID),
-                                       dialog.text_field.text.toString(),
-                                       dialog.move_files_check_box.isChecked)
-
+                Rpc.instance.setTorrentLocation(arguments!!.getInt(TORRENT_ID),
+                                                dialog.text_field.text.toString(),
+                                                dialog.move_files_check_box.isChecked)
                 (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
             }
         }
@@ -472,7 +474,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove, { _, _ ->
-                        Rpc.removeTorrents(selector.selectedItems.map(Torrent::id),
+                        Rpc.instance.removeTorrents(selector.selectedItems.map(TorrentData::id).toIntArray(),
                                            dialog.delete_files_check_box.isChecked)
                         selector.actionMode?.finish()
                     }).create()

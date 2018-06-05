@@ -58,9 +58,9 @@ open class BaseActivity : AppCompatActivity() {
         activeActivity = this
         active = true
         if (Settings.backgroundServiceEnabled) {
-            Rpc.backgroundUpdate = false
+            Rpc.instance.setBackgroundUpdate(false)
         } else {
-            Rpc.updateDisabled = false
+            Rpc.instance.isUpdateDisabled = false
         }
     }
 
@@ -79,9 +79,9 @@ open class BaseActivity : AppCompatActivity() {
                 activeActivity = null
 
                 if (Settings.backgroundServiceEnabled) {
-                    Rpc.backgroundUpdate = true
+                    Rpc.instance.setBackgroundUpdate(true)
                 } else {
-                    Rpc.updateDisabled = true
+                    Rpc.instance.isUpdateDisabled = true
                 }
             }
         }
@@ -91,7 +91,7 @@ open class BaseActivity : AppCompatActivity() {
         super.onDestroy()
         createdActivities.remove(this)
         if (isFinishing && createdActivities.isEmpty() && !Settings.backgroundServiceEnabled) {
-            Utils.shutdownApp(this)
+            Utils.shutdownApp()
         }
     }
 

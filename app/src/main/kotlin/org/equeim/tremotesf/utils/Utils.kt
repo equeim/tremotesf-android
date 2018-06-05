@@ -35,7 +35,6 @@ import android.widget.ProgressBar
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.startService
-import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.BackgroundService
 import org.equeim.tremotesf.BaseActivity
@@ -56,17 +55,17 @@ object Utils : AnkoLogger {
                 context.startService<BackgroundService>()
             }
 
-            Rpc.connect()
+            Rpc.instance.connect()
         }
     }
 
-    fun shutdownApp(context: Context) {
+    fun shutdownApp() {
         if (appIsRunning) {
             debug("shutdown app")
             appIsRunning = false
             BaseActivity.finishAllActivities()
-            Rpc.disconnect()
-            context.stopService<BackgroundService>()
+            Rpc.instance.disconnect()
+            BackgroundService.instance?.stopService()
         }
     }
 

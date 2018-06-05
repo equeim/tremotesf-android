@@ -35,10 +35,10 @@ import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 
 class ServerStatsDialogFragment : DialogFragment() {
-    private var rpcUpdatedListener: (() -> Unit)? = null
-    private val rpcStatusListener = { _: Rpc.Status ->
-        if (Rpc.connected) {
-            rpcUpdatedListener!!()
+    private var serverStatsUpdatedListener: (() -> Unit)? = null
+    private val rpcStatusListener = { _: Int ->
+        if (Rpc.instance.isConnected) {
+            serverStatsUpdatedListener!!()
         }
     }
 
@@ -63,7 +63,7 @@ class ServerStatsDialogFragment : DialogFragment() {
             val ratioFormat = DecimalFormat("0.00")
 
             val update = {
-                val sessionStats = Rpc.serverStats.currentSession
+                val sessionStats = Rpc.instance.serverStats.currentSession()
                 sessionDownloadedTextView.text = Utils.formatByteSize(context!!,
                                                                       sessionStats.downloaded)
                 sessionUploadedTextView.text = Utils.formatByteSize(context!!,
@@ -72,13 +72,12 @@ class ServerStatsDialogFragment : DialogFragment() {
                                                                sessionStats.downloaded.toDouble())
                 sessionDurationTextView.text = Utils.formatDuration(context!!, sessionStats.duration)
 
-                val totalStats = Rpc.serverStats.total
+                val totalStats = Rpc.instance.serverStats.total()
                 val sessionCount = totalStats.sessionCount
                 startedTimesTextView.text = resources.getQuantityString(R.plurals.started_times,
                                                                         sessionCount,
                                                                         sessionCount)
-                totalDownloadedTextView.text = Utils.formatByteSize(context!!,
-                                                                    totalStats.downloaded)
+                totalDownloadedTextView.text = Utils.formatByteSize(context!!, totalStats.downloaded)
                 totalUploadedTextView.text = Utils.formatByteSize(context!!, totalStats.uploaded)
                 totalRatioTextView.text = ratioFormat.format(totalStats.uploaded.toDouble() /
                                                              totalStats.downloaded.toDouble())
@@ -86,9 +85,9 @@ class ServerStatsDialogFragment : DialogFragment() {
             }
 
             update()
-            rpcUpdatedListener = update
-            Rpc.addUpdatedListener(rpcUpdatedListener!!)
-            Rpc.addStatusListener(rpcStatusListener)
+            serverStatsUpdatedListener = update
+            Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+            Rpc.instance.addStatusListener(rpcStatusListener)
         }
 
         return dialog
@@ -96,8 +95,8 @@ class ServerStatsDialogFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Rpc.removeUpdatedListener(rpcUpdatedListener!!)
-        Rpc.removeStatusListener(rpcStatusListener)
-        rpcUpdatedListener = null
+        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+        Rpc.instance.removeStatusListener(rpcStatusListener)
+        serverStatsUpdatedListener = null
     }
 }

@@ -48,19 +48,19 @@ class QueueFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        download_queue_check_box.isChecked = Rpc.serverSettings.downloadQueueEnabled
+        download_queue_check_box.isChecked = Rpc.instance.serverSettings.isDownloadQueueEnabled
         download_queue_check_box.setOnCheckedChangeListener { _, checked ->
             download_queue_edit.isEnabled = checked
-            Rpc.serverSettings.downloadQueueEnabled = checked
+            Rpc.instance.serverSettings.isDownloadQueueEnabled = checked
         }
 
         download_queue_edit.isEnabled = download_queue_check_box.isChecked
         download_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        download_queue_edit.setText(Rpc.serverSettings.downloadQueueSize.toString())
+        download_queue_edit.setText(Rpc.instance.serverSettings.downloadQueueSize().toString())
         download_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.downloadQueueSize = s.toString().toInt()
+                    Rpc.instance.serverSettings.setDownloadQueueSize(s.toString().toInt())
                 }
             }
 
@@ -73,19 +73,19 @@ class QueueFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        seed_queue_check_box.isChecked = Rpc.serverSettings.seedQueueEnabled
+        seed_queue_check_box.isChecked = Rpc.instance.serverSettings.isSeedQueueEnabled
         seed_queue_check_box.setOnCheckedChangeListener { _, checked ->
             seed_queue_edit.isEnabled = checked
-            Rpc.serverSettings.seedQueueEnabled = checked
+            Rpc.instance.serverSettings.isSeedQueueEnabled = checked
         }
 
         seed_queue_edit.isEnabled = seed_queue_check_box.isChecked
         seed_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        seed_queue_edit.setText(Rpc.serverSettings.seedQueueSize.toString())
+        seed_queue_edit.setText(Rpc.instance.serverSettings.seedQueueSize().toString())
         seed_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.seedQueueSize = s.toString().toInt()
+                    Rpc.instance.serverSettings.setSeedQueueSize(s.toString().toInt())
                 }
             }
 
@@ -98,20 +98,20 @@ class QueueFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        idle_queue_check_box.isChecked = Rpc.serverSettings.idleQueueLimited
+        idle_queue_check_box.isChecked = Rpc.instance.serverSettings.isIdleQueueLimited
         idle_queue_check_box.setOnCheckedChangeListener { _, checked ->
             idle_queue_layout.isEnabled = checked
-            Rpc.serverSettings.idleQueueLimited = checked
+            Rpc.instance.serverSettings.isIdleQueueLimited = checked
         }
 
         idle_queue_layout.isEnabled = idle_queue_check_box.isChecked
 
         idle_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_queue_edit.setText(Rpc.serverSettings.idleQueueLimit.toString())
+        idle_queue_edit.setText(Rpc.instance.serverSettings.idleQueueLimit().toString())
         idle_queue_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.serverSettings.idleQueueLimit = s.toString().toInt()
+                    Rpc.instance.serverSettings.setIdleQueueLimit(s.toString().toInt())
                 }
             }
 

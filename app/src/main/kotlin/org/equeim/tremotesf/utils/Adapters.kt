@@ -34,7 +34,6 @@ import android.widget.TextView
 import org.equeim.tremotesf.R
 
 import kotlinx.android.synthetic.main.spinner_item_with_header.view.*
-import org.jetbrains.anko.find
 
 
 class ArraySpinnerAdapter(context: Context,
