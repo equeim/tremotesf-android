@@ -91,6 +91,9 @@ class Rpc : JniRpc() {
 
     var gotTorrentPeersListener: ((Int) -> Unit)? = null
 
+    var gotDownloadDirFreeSpaceListener: ((Long) -> Unit)? = null
+    var gotFreeSpaceForPathListener: ((String, Boolean, Long) -> Unit)? = null
+
     val torrents = mutableListOf<TorrentData>()
 
     init {
@@ -218,6 +221,18 @@ class Rpc : JniRpc() {
     override fun onGotTorrentPeers(torrentId: Int) {
         context!!.runOnUiThread {
             gotTorrentPeersListener?.invoke(torrentId)
+        }
+    }
+
+    override fun onGotDownloadDirFreeSpace(bytes: Long) {
+        context!!.runOnUiThread {
+            gotDownloadDirFreeSpaceListener?.invoke(bytes)
+        }
+    }
+
+    override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
+        context!!.runOnUiThread {
+            gotFreeSpaceForPathListener?.invoke(path, success, bytes)
         }
     }
 }

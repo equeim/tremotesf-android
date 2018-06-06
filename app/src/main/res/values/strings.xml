@@ -409,4 +409,7 @@
 
     <string name="donate">Donate</string>
     <string name="donate_yandex">Yandex.Money</string>
+
+    <string name="free_space">Free space: %s</string>
+    <string name="free_space_error">Error getting free space</string>
 </resources>

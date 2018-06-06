@@ -27,6 +27,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 
+import android.text.Editable
+import android.text.TextWatcher
+
 import android.support.design.widget.Snackbar
 
 import org.jetbrains.anko.clearTask
@@ -38,6 +41,7 @@ import org.equeim.libtremotesf.BaseRpc
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.add_torrent_link_activity.*
 
@@ -68,13 +72,54 @@ class AddTorrentLinkActivity : BaseActivity() {
             priority_spinner.setSelection(1)
         }
 
+        download_directory_edit.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                val path = s.trim().toString()
+
+                if (Rpc.instance.serverSettings.canShowFreeSpaceForPath()) {
+                    Rpc.instance.getFreeSpaceForPath(path)
+                } else if (path == Rpc.instance.serverSettings.downloadDirectory()) {
+                    Rpc.instance.getDownloadDirFreeSpace()
+                } else {
+                    free_space_text_view.visibility = View.GONE
+                    free_space_text_view.text = ""
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
         updateView(savedInstanceState)
+
         Rpc.instance.addStatusListener(rpcStatusListener)
+
+        Rpc.instance.gotDownloadDirFreeSpaceListener = {
+            if (download_directory_edit.text.trim().toString() == Rpc.instance.serverSettings.downloadDirectory()) {
+                free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, it))
+                free_space_text_view.visibility = View.VISIBLE
+            }
+        }
+
+        Rpc.instance.gotFreeSpaceForPathListener = { path, success, bytes ->
+            if (path == download_directory_edit.text.trim().toString()) {
+                if (success) {
+                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, bytes))
+                } else {
+                    free_space_text_view.text = getString(R.string.free_space_error)
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.instance.gotDownloadDirFreeSpaceListener = null
+        Rpc.instance.gotFreeSpaceForPathListener = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
