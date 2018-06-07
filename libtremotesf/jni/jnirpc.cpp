@@ -224,6 +224,7 @@ namespace libtremotesf
         serverSettings()->setParent(this);
         serverSettings()->setRpc(this);
 
+        QObject::connect(this, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
         QObject::connect(this, &Rpc::connectedChanged, [=]() { onConnectedChanged(); });
         QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(); });
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(); });
@@ -512,6 +513,11 @@ namespace libtremotesf
     void JniRpc::setTorrentPeersEnabled(Torrent* torrent, bool enabled)
     {
         QMetaObject::invokeMethod(torrent, "setPeersEnabled", Q_ARG(bool, enabled));
+    }
+
+    void JniRpc::onAboutToDisconnect()
+    {
+
     }
 
     void JniRpc::onConnectedChanged()

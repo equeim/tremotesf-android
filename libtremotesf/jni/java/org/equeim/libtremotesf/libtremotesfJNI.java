@@ -347,6 +347,8 @@ public class libtremotesfJNI {
   public final static native void JniRpc_torrentSetTracker(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3, String jarg4);
   public final static native void JniRpc_torrentRemoveTrackers(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int[] jarg3);
   public final static native void JniRpc_setTorrentPeersEnabled(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, boolean jarg3);
+  public final static native void JniRpc_onAboutToDisconnect(long jarg1, JniRpc jarg1_);
+  public final static native void JniRpc_onAboutToDisconnectSwigExplicitJniRpc(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onConnectedChanged(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onConnectedChangedSwigExplicitJniRpc(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onStatusChanged(long jarg1, JniRpc jarg1_);
@@ -381,6 +383,9 @@ public class libtremotesfJNI {
   public final static native long JniServerSettings_SWIGUpcast(long jarg1);
   public final static native long JniRpc_SWIGUpcast(long jarg1);
 
+  public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {
+    jself.onAboutToDisconnect();
+  }
   public static void SwigDirector_JniRpc_onConnectedChanged(JniRpc jself) {
     jself.onConnectedChanged();
   }

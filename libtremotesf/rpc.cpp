@@ -628,6 +628,10 @@ namespace libtremotesf
 
         const bool wasConnected = isConnected();
 
+        if (wasConnected && (status == Disconnected)) {
+            emit aboutToDisconnect();
+        }
+
         mStatus = status;
         emit statusChanged();
         emit statusStringChanged();

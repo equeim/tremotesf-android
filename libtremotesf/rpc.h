@@ -216,6 +216,7 @@ namespace libtremotesf
         Error mError;
 
     signals:
+        void aboutToDisconnect();
         void connectedChanged();
         void statusChanged();
         void statusStringChanged();

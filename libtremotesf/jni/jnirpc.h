@@ -145,6 +145,7 @@ namespace libtremotesf
         void setTorrentPeersEnabled(Torrent* torrent, bool enabled);
 
     protected:
+        virtual void onAboutToDisconnect();
         virtual void onConnectedChanged();
         virtual void onStatusChanged();
         virtual void onErrorChanged();

@@ -236,6 +236,10 @@ public class JniRpc extends BaseRpc {
     libtremotesfJNI.JniRpc_setTorrentPeersEnabled(swigCPtr, this, Torrent.getCPtr(torrent), torrent, enabled);
   }
 
+  protected void onAboutToDisconnect() {
+    if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onAboutToDisconnect(swigCPtr, this); else libtremotesfJNI.JniRpc_onAboutToDisconnectSwigExplicitJniRpc(swigCPtr, this);
+  }
+
   protected void onConnectedChanged() {
     if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onConnectedChanged(swigCPtr, this); else libtremotesfJNI.JniRpc_onConnectedChangedSwigExplicitJniRpc(swigCPtr, this);
   }

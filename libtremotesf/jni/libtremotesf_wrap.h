@@ -16,6 +16,10 @@ class SwigDirector_JniRpc : public libtremotesf::JniRpc, public Swig::Director {
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
     SwigDirector_JniRpc(JNIEnv *jenv);
+    virtual void onAboutToDisconnect();
+    virtual void onAboutToDisconnectSwigPublic() {
+      libtremotesf::JniRpc::onAboutToDisconnect();
+    }
     virtual void onConnectedChanged();
     virtual void onConnectedChangedSwigPublic() {
       libtremotesf::JniRpc::onConnectedChanged();
@@ -70,10 +74,10 @@ public:
     }
 public:
     bool swig_overrides(int n) {
-      return (n < 13 ? swig_override[n] : false);
+      return (n < 14 ? swig_override[n] : false);
     }
 protected:
-    Swig::BoolArray<13> swig_override;
+    Swig::BoolArray<14> swig_override;
 };
 
 
