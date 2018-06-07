@@ -153,6 +153,7 @@ namespace libtremotesf
         virtual void onTorrentsUpdated();
         virtual void onServerStatsUpdated();
 
+        virtual void onTorrentAdded(int id, const QString& hashString, const QString& name);
         virtual void onTorrentFinished(int id, const QString& hashString, const QString& name);
 
         virtual void onTorrentAddDuplicate();

@@ -260,6 +260,10 @@ public class JniRpc extends BaseRpc {
     if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onServerStatsUpdated(swigCPtr, this); else libtremotesfJNI.JniRpc_onServerStatsUpdatedSwigExplicitJniRpc(swigCPtr, this);
   }
 
+  protected void onTorrentAdded(int id, String hashString, String name) {
+    if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onTorrentAdded(swigCPtr, this, id, hashString, name); else libtremotesfJNI.JniRpc_onTorrentAddedSwigExplicitJniRpc(swigCPtr, this, id, hashString, name);
+  }
+
   protected void onTorrentFinished(int id, String hashString, String name) {
     if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onTorrentFinished(swigCPtr, this, id, hashString, name); else libtremotesfJNI.JniRpc_onTorrentFinishedSwigExplicitJniRpc(swigCPtr, this, id, hashString, name);
   }

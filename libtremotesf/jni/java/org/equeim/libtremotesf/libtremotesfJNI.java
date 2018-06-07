@@ -359,6 +359,8 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onTorrentsUpdatedSwigExplicitJniRpc(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onServerStatsUpdatedSwigExplicitJniRpc(long jarg1, JniRpc jarg1_);
+  public final static native void JniRpc_onTorrentAdded(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
+  public final static native void JniRpc_onTorrentAddedSwigExplicitJniRpc(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinished(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinishedSwigExplicitJniRpc(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentAddDuplicate(long jarg1, JniRpc jarg1_);
@@ -400,6 +402,9 @@ public class libtremotesfJNI {
   }
   public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself) {
     jself.onServerStatsUpdated();
+  }
+  public static void SwigDirector_JniRpc_onTorrentAdded(JniRpc jself, int id, String hashString, String name) {
+    jself.onTorrentAdded(id, hashString, name);
   }
   public static void SwigDirector_JniRpc_onTorrentFinished(JniRpc jself, int id, String hashString, String name) {
     jself.onTorrentFinished(id, hashString, name);

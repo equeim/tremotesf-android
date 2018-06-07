@@ -40,6 +40,10 @@ public:
     virtual void onServerStatsUpdatedSwigPublic() {
       libtremotesf::JniRpc::onServerStatsUpdated();
     }
+    virtual void onTorrentAdded(int id, QString const &hashString, QString const &name);
+    virtual void onTorrentAddedSwigPublic(int id, QString const &hashString, QString const &name) {
+      libtremotesf::JniRpc::onTorrentAdded(id,hashString,name);
+    }
     virtual void onTorrentFinished(int id, QString const &hashString, QString const &name);
     virtual void onTorrentFinishedSwigPublic(int id, QString const &hashString, QString const &name) {
       libtremotesf::JniRpc::onTorrentFinished(id,hashString,name);
@@ -74,10 +78,10 @@ public:
     }
 public:
     bool swig_overrides(int n) {
-      return (n < 14 ? swig_override[n] : false);
+      return (n < 15 ? swig_override[n] : false);
     }
 protected:
-    Swig::BoolArray<14> swig_override;
+    Swig::BoolArray<15> swig_override;
 };
 
 

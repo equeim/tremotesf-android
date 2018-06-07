@@ -762,7 +762,7 @@ namespace libtremotesf
                                 const bool finished = (torrent->percentDone() == 1);
 
                                 if (finished && !wasFinished) {
-                                    emit torrentFinished(torrent->id(), torrent->hashString(), torrent->name());
+                                    emit torrentFinished(torrent);
                                 }
 
                                 if (torrent->isFilesEnabled()) {
@@ -779,7 +779,7 @@ namespace libtremotesf
 #endif
 
                                 if (!mFirstUpdate) {
-                                    emit torrentAdded(torrent->name());
+                                    emit torrentAdded(torrent);
                                 }
                             }
                             torrents.push_back(std::move(torrent));
