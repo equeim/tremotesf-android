@@ -418,7 +418,7 @@
     <string name="notify_on_finished">Notify on finished torrents</string>
     <string name="notify_on_added">Notify on added torrents</string>
 
-    <string name="notifications_on_connect">Notification when connecting to server</string>
+    <string name="notifications_on_connect">Notifications when connecting to server</string>
     <string name="notify_on_finished_since_last">Notify on finished torrents since last connection to server</string>
     <string name="notify_on_added_since_last">Notify on added torrents since last connection to server</string>
 </resources>
