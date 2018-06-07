@@ -82,6 +82,7 @@ class Rpc : JniRpc() {
     private val torrentsUpdatedListeners = mutableListOf<() -> Unit>()
     private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
 
+    var torrentAddedListener: ((Int, String, String) -> Unit)? = null
     var torrentFinishedListener: ((Int, String, String) -> Unit)? = null
 
     var torrentAddDuplicateListener: (() -> Unit)? = null
@@ -224,6 +225,12 @@ class Rpc : JniRpc() {
             for (listener in serverStatsUpdatedListeners) {
                 listener()
             }
+        }
+    }
+
+    override fun onTorrentAdded(id: Int, hashString: String, name: String) {
+        context!!.runOnUiThread {
+            torrentAddedListener?.invoke(id, hashString, name)
         }
     }
 

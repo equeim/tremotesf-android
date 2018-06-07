@@ -19,6 +19,18 @@
             android:dependency="@string/prefs_background_service_key"
             android:key="@string/prefs_persistent_notification_key"
             android:title="@string/prefs_persistent_notification_title"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/prefs_background_service_key"
+            android:key="@string/prefs_notify_on_finished_key"
+            android:title="@string/notify_on_finished"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/prefs_background_service_key"
+            android:key="@string/prefs_notify_on_added_key"
+            android:title="@string/notify_on_added"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications_on_connect">

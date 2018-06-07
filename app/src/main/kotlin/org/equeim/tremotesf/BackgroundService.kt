@@ -141,7 +141,16 @@ class BackgroundService : Service(), AnkoLogger {
                 startForeground()
             }
 
-            Rpc.instance.torrentFinishedListener = { id, hashString, name -> showFinishedNotification(id, hashString, name, this) }
+            Rpc.instance.torrentAddedListener = { id, hashString, name ->
+                if (Settings.notifyOnAdded) {
+                    showAddedNotification(id, hashString, name, this)
+                }
+            }
+            Rpc.instance.torrentFinishedListener = { id, hashString, name ->
+                if (Settings.notifyOnFinished) {
+                    showFinishedNotification(id, hashString, name, this)
+                }
+            }
 
             instance = this
         }
