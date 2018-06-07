@@ -159,6 +159,7 @@ class BackgroundService : Service(), AnkoLogger {
                         intentFor<MainActivity>(),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 ))
+                .setColor(resources.getColor(android.R.color.white))
                 .setOngoing(true)
 
         if (Servers.hasServers) {
