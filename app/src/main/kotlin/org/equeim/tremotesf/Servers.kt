@@ -23,6 +23,7 @@ import java.io.FileNotFoundException
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.AsyncTask
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
@@ -34,6 +35,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
+import org.jetbrains.anko.info
 
 
 private const val FILE_NAME = "servers.json"
@@ -41,7 +43,6 @@ private const val CURRENT = "current"
 private const val SERVERS = "servers"
 
 class Server {
-
     var name = ""
     var address = ""
     var port = 0
@@ -57,6 +58,7 @@ class Server {
     var updateInterval = 0
     var backgroundUpdateInterval = 0
     var timeout = 0
+    var lastTorrents = LastTorrents()
 
     fun copyTo(other: Server) {
         other.name = name
@@ -74,9 +76,20 @@ class Server {
         other.updateInterval = updateInterval
         other.backgroundUpdateInterval = backgroundUpdateInterval
         other.timeout = timeout
+        other.lastTorrents = lastTorrents
     }
 
     override fun toString() = name
+
+    class LastTorrents {
+        var saved = false
+        var torrents = mutableListOf<Torrent>()
+    }
+
+    data class Torrent(var id: Int = 0,
+                       var hashString: String = "",
+                       var name: String = "",
+                       var finished: Boolean = false)
 }
 
 @SuppressLint("StaticFieldLeak")
@@ -196,12 +209,17 @@ object Servers : AnkoLogger {
         servers.clear()
     }
 
-    private fun save() {
-        debug("saving servers file")
-        val jsonObject = JsonObject()
-        jsonObject.addProperty(CURRENT, currentServerField?.name)
-        jsonObject.add(SERVERS, gson.toJsonTree(servers))
-        context!!.getFileStreamPath(FILE_NAME).writeText(gson.toJson(jsonObject))
+    fun save() {
+        object : AsyncTask<Any, Any, Any?>() {
+            override fun doInBackground(vararg params: Any?): Any? {
+                debug("saving servers file")
+                val jsonObject = JsonObject()
+                jsonObject.addProperty(CURRENT, currentServerField?.name)
+                jsonObject.add(SERVERS, gson.toJsonTree(servers))
+                context?.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
+                return null
+            }
+        }.execute()
     }
 
     fun addServer(newServer: Server) {

@@ -27,6 +27,7 @@ import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.JniWrapper
 import org.equeim.libtremotesf.ServerStats
+import org.equeim.libtremotesf.Torrent
 
 import org.jetbrains.anko.runOnUiThread
 
@@ -131,6 +132,44 @@ class Rpc : JniRpc() {
     fun addStatusListener(listener: (Int) -> Unit) = statusListeners.add(listener)
     fun removeStatusListener(listener: (Int) -> Unit) = statusListeners.remove(listener)
 
+    override fun onConnectedChanged() {
+        context!!.runOnUiThread {
+            if (isConnected) {
+                val notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
+                val notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
+                if (notifyOnFinished || notifyOnAdded) {
+                    val server = Servers.currentServer
+                    if (server != null) {
+                        val lastTorrents = server.lastTorrents
+                        if (lastTorrents.saved) {
+                            val torrents = torrents()
+                            for (i in 0..(torrents.size() - 1)) {
+                                val torrent: Torrent = torrents[i.toInt()]
+                                val hashString: String = torrent.hashString()
+                                val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
+                                if (oldTorrent == null) {
+                                    if (notifyOnAdded) {
+                                        BackgroundService.showAddedNotification(torrent.id(),
+                                                                                hashString,
+                                                                                torrent.name(),
+                                                                                context!!)
+                                    }
+                                } else {
+                                    if (!oldTorrent.finished && (torrent.percentDone() == 1.0f) && notifyOnFinished) {
+                                        BackgroundService.showFinishedNotification(torrent.id(),
+                                                                                   hashString,
+                                                                                   torrent.name(),
+                                                                                   context!!)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onStatusChanged() {
         context!!.runOnUiThread {
             for (listener in statusListeners) {
@@ -233,6 +272,21 @@ class Rpc : JniRpc() {
     override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
         context!!.runOnUiThread {
             gotFreeSpaceForPathListener?.invoke(path, success, bytes)
+        }
+    }
+
+    override fun onAboutToDisconnect() {
+        context!!.runOnUiThread {
+            val lastTorrents = Servers.currentServer!!.lastTorrents
+            lastTorrents.torrents.clear()
+            for (torrent in torrents) {
+                lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                                                         torrent.hashString,
+                                                         torrent.name,
+                                                         torrent.percentDone == 1.0f))
+            }
+            lastTorrents.saved = true
+            Servers.save()
         }
     }
 }

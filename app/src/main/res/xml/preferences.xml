@@ -21,6 +21,18 @@
             android:title="@string/prefs_persistent_notification_title"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/notifications_on_connect">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_notify_on_finished_since_last_key"
+            android:title="@string/notify_on_finished_since_last"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_notify_on_added_since_last_key"
+            android:title="@string/notify_on_added_since_last"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/torrents">
         <CheckBoxPreference
             android:defaultValue="false"

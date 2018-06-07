@@ -76,6 +76,7 @@
     <string name="tracker_announce_url">Tracker announce URL</string>
 
     <string name="torrent_finished">Torrent finished</string>
+    <string name="torrent_added">Torrent added</string>
 
     <string name="torrent_not_found">Torrent not found</string>
     <string name="torrent_removed">Torrent removed</string>
@@ -399,6 +400,7 @@
 
     <string name="persistent_notification_channel_name">Persistent notification</string>
     <string name="finished_torrents_channel_name">Finished torrents</string>
+    <string name="added_torrents_channel_name">Added torrents</string>
 
     <string name="appearance">Appearance</string>
     <string name="torrents">Torrents</string>
@@ -412,4 +414,8 @@
 
     <string name="free_space">Free space: %s</string>
     <string name="free_space_error">Error getting free space</string>
+
+    <string name="notifications_on_connect">Notification when connecting to server</string>
+    <string name="notify_on_finished_since_last">Notify on finished torrents since last connection to server</string>
+    <string name="notify_on_added_since_last">Notify on added torrents since last connection to server</string>
 </resources>

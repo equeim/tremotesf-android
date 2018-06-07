@@ -48,11 +48,54 @@ private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
 private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
+private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
 
 class BackgroundService : Service(), AnkoLogger {
     companion object {
         var instance: BackgroundService? = null
             private set
+
+        private fun showTorrentNotification(torrentId: Int,
+                                            hashString: String,
+                                            name: String,
+                                            notificationChannel: String,
+                                            notificationTitle: String,
+                                            context: Context) {
+            val stackBuilder = TaskStackBuilder.create(context)
+            stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
+            stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
+                                                                                    TorrentPropertiesActivity.NAME to name))
+
+            (context.applicationContext as Application).notificationManager.notify(
+                    torrentId,
+                    NotificationCompat.Builder(context, notificationChannel)
+                            .setSmallIcon(R.drawable.notification_icon)
+                            .setContentTitle(notificationTitle)
+                            .setContentText(name)
+                            .setContentIntent(stackBuilder.getPendingIntent(0,
+                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
+                            .setAutoCancel(true)
+                            .setDefaults(Notification.DEFAULT_ALL)
+                            .build())
+        }
+
+        fun showFinishedNotification(id: Int, hashString: String, name: String, context: Context) {
+            showTorrentNotification(id,
+                                    hashString,
+                                    name,
+                                    FINISHED_NOTIFICATION_CHANNEL_ID,
+                                    context.getString(R.string.torrent_finished),
+                                    context)
+        }
+
+        fun showAddedNotification(id: Int, hashString: String, name: String, context: Context) {
+            showTorrentNotification(id,
+                                    hashString,
+                                    name,
+                                    ADDED_NOTIFICATION_CHANNEL_ID,
+                                    context.getString(R.string.torrent_added),
+                                    context)
+        }
     }
 
     private lateinit var notificationManager: NotificationManager
@@ -80,7 +123,7 @@ class BackgroundService : Service(), AnkoLogger {
 
             Utils.initApp(applicationContext)
 
-            notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager = (application as Application).notificationManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannels(listOf(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
@@ -88,6 +131,9 @@ class BackgroundService : Service(), AnkoLogger {
                                                                                           NotificationManager.IMPORTANCE_LOW),
                                                                       NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
                                                                                           getString(R.string.finished_torrents_channel_name),
+                                                                                          NotificationManager.IMPORTANCE_DEFAULT),
+                                                                      NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
+                                                                                          getString(R.string.added_torrents_channel_name),
                                                                                           NotificationManager.IMPORTANCE_DEFAULT)))
             }
 
@@ -95,7 +141,7 @@ class BackgroundService : Service(), AnkoLogger {
                 startForeground()
             }
 
-            Rpc.instance.torrentFinishedListener = { id, hashString, name -> showFinishedNotification(id, hashString, name) }
+            Rpc.instance.torrentFinishedListener = { id, hashString, name -> showFinishedNotification(id, hashString, name, this) }
 
             instance = this
         }
@@ -215,23 +261,5 @@ class BackgroundService : Service(), AnkoLogger {
         )
 
         return notificationBuilder.build()
-    }
-
-    private fun showFinishedNotification(id: Int, hashString: String, name: String) {
-        val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
-        stackBuilder.addNextIntent(intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
-                                                                        TorrentPropertiesActivity.NAME to name))
-
-        notificationManager.notify(id,
-                                   NotificationCompat.Builder(this, FINISHED_NOTIFICATION_CHANNEL_ID)
-                                           .setSmallIcon(R.drawable.notification_icon)
-                                           .setContentTitle(getString(R.string.torrent_finished))
-                                           .setContentText(name)
-                                           .setContentIntent(stackBuilder.getPendingIntent(0,
-                                                                                           PendingIntent.FLAG_UPDATE_CURRENT))
-                                           .setAutoCancel(true)
-                                           .setDefaults(Notification.DEFAULT_ALL)
-                                           .build())
     }
 }

@@ -47,10 +47,12 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 preferences = value.defaultSharedPreferences
                 preferences!!.registerOnSharedPreferenceChangeListener(this)
 
-                darkThemeKey = context!!.getString(R.string.prefs_dark_theme_key)
-                backgroundServiceKey = context!!.getString(R.string.prefs_background_service_key)
-                persistentNotificationKey = context!!.getString(R.string.prefs_persistent_notification_key)
-                deleteFilesKey = context!!.getString(R.string.prefs_delete_files_key)
+                darkThemeKey = value.getString(R.string.prefs_dark_theme_key)
+                backgroundServiceKey = value.getString(R.string.prefs_background_service_key)
+                persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
+                notifyOnFinishedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_finished_since_last_key)
+                notifyOnAddedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_added_since_last_key)
+                deleteFilesKey = value.getString(R.string.prefs_delete_files_key)
             }
         }
 
@@ -59,6 +61,8 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var darkThemeKey: String
     private lateinit var backgroundServiceKey: String
     private lateinit var persistentNotificationKey: String
+    private lateinit var notifyOnFinishedSinceLastConnectionKey: String
+    private lateinit var notifyOnAddedSinceLastConnectionKey: String
     private lateinit var deleteFilesKey: String
 
     private val darkTheme: Boolean
@@ -92,6 +96,16 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     val showPersistentNotification: Boolean
         get() {
             return preferences!!.getBoolean(persistentNotificationKey, false)
+        }
+
+    val notifyOnFinishedSinceLastConnection: Boolean
+        get() {
+            return preferences!!.getBoolean(notifyOnFinishedSinceLastConnectionKey, false)
+        }
+
+    val notifyOnAddedSinceLastConnection: Boolean
+        get() {
+            return preferences!!.getBoolean(notifyOnAddedSinceLastConnectionKey, false)
         }
 
     val deleteFiles: Boolean
