@@ -411,6 +411,8 @@
 
     <string name="donate">Donate</string>
     <string name="donate_yandex">Yandex.Money</string>
+    <string name="donate_message">If you like this application, you can support its development by sending a donation to the developer.</string>
+    <string name="donate_dialog_again">This dialog won\'t be shown again.</string>
 
     <string name="free_space">Free space: %s</string>
     <string name="free_space_error">Error getting free space</string>

@@ -64,6 +64,10 @@ class AboutActivity : BaseActivity() {
         pagerAdapter = PagerAdapter()
         pager.adapter = pagerAdapter
         tab_layout.setupWithViewPager(pager)
+
+        if (intent.getBooleanExtra("donate", false)) {
+            pager.currentItem = 1
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

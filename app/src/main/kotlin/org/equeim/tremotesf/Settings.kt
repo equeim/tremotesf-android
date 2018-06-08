@@ -35,6 +35,7 @@ private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
 private const val TORRENTS_STATUS_FILTER = "torrentsStatusFilter"
 private const val TORRENTS_TRACKER_FILTER = "torrentsTrackerFilter"
 private const val TORRENTS_DIRECTORY_FILTER = "torrentsFolderFilter"
+private const val DONATE_DIALOG_SHOWN = "donateDialogShown"
 
 @SuppressLint("StaticFieldLeak")
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
@@ -177,6 +178,14 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         }
         set(value) {
             preferences!!.edit().putString(TORRENTS_DIRECTORY_FILTER, value).apply()
+        }
+
+    var donateDialogShown: Boolean
+        get() {
+            return preferences!!.getBoolean(DONATE_DIALOG_SHOWN, false)
+        }
+        set(value) {
+            preferences!!.edit().putBoolean(DONATE_DIALOG_SHOWN, value).apply()
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {

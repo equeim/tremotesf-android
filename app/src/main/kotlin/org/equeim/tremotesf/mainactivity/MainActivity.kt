@@ -19,7 +19,10 @@
 
 package org.equeim.tremotesf.mainactivity
 
+import java.util.concurrent.TimeUnit
+
 import android.app.Activity
+import android.app.Dialog
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -36,7 +39,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 
+import android.support.v4.app.DialogFragment
+
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -56,6 +62,7 @@ import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
 import org.equeim.tremotesf.BaseActivity
+import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.FilePickerActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -345,7 +352,18 @@ class MainActivity : BaseActivity(), AnkoLogger {
         }
 
         if (savedInstanceState == null) {
-            if (!Servers.hasServers) {
+            if (Servers.hasServers) {
+                if (!Settings.donateDialogShown) {
+                    val info = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
+                    val currentTime = System.currentTimeMillis()
+                    val installDays = TimeUnit.DAYS.convert(currentTime - info.firstInstallTime, TimeUnit.MILLISECONDS)
+                    val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
+                    if (installDays >= 2 && updateDays >= 1) {
+                        Settings.donateDialogShown = true
+                        DonateDialogFragment().show(supportFragmentManager, null)
+                    }
+                }
+            } else {
                 startActivity<ServerEditActivity>()
             }
         } else if (Rpc.instance.isConnected) {
@@ -552,6 +570,17 @@ class MainActivity : BaseActivity(), AnkoLogger {
             drawer_layout.closeDrawer(Gravity.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    class DonateDialogFragment : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return AlertDialog.Builder(context!!)
+                    .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.donate, { _, _ ->
+                        context?.startActivity<AboutActivity>("donate" to true)
+                    }).create()
         }
     }
 }
