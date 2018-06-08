@@ -183,7 +183,7 @@ class AboutActivity : BaseActivity() {
             if (!mGoogleEnabled) {
 				activity!!.find<ViewStub>(R.id.donations__yandex_stub).inflate()
                 activity!!.find<Button>(R.id.donations__yandex_donate_button).setOnClickListener {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://yasobe.ru/na/tremotesf_android")))
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://yasobe.ru/na/equeim_tremotesf_android")))
                 }
             }
         }
