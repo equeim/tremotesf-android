@@ -1,5 +1,19 @@
 # Change Log
 
+## [Unreleased]
+### Added
+- Show available free space when adding torrents
+- Option to disable finished torrents notifications
+- Option to notify about added torrents
+- Options to notify about finished/added torrents since last connection to server
+- Donation dialog is shown once 2 days after install
+
+### Changed
+- Tremotesf now uses the same C++ backend as the Desktop/Sailfish OS version
+
+### Fixed
+- Yandex.Money donate link
+
 ## [1.6.3] - 2018-05-09
 ### Fixed
 - Crash when adding torrent file
