@@ -38,9 +38,6 @@ import android.support.v7.widget.RecyclerView
 
 import androidx.core.os.bundleOf
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
-
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
@@ -66,7 +63,7 @@ private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
 }
 
 class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
-                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory), AnkoLogger {
+                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
     init {
         initSelector(activity, ActionModeCallback())
     }
@@ -113,7 +110,6 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     }
 
     fun treeUpdated() {
-        info(currentItems.size)
         for ((i, item) in currentItems.withIndex()) {
                 if (item.changed) {
                 notifyItemChanged(i)
