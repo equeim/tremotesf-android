@@ -7,7 +7,7 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId 'org.equeim.tremotesf'
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 16
         versionName '1.7.0a'
