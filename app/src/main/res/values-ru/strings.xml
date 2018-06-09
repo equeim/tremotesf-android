@@ -82,6 +82,7 @@
     <string name="tracker_announce_url">Адрес объявлений трекера</string>
 
     <string name="torrent_finished">Торрент завершен</string>
+    <string name="torrent_added">Торрент добавлен</string>
 
     <string name="torrent_not_found">Торрент не найден</string>
     <string name="torrent_removed">Торрент удален</string>
@@ -395,6 +396,7 @@
 
     <string name="persistent_notification_channel_name">Постоянное уведомление</string>
     <string name="finished_torrents_channel_name">Завершенные торренты</string>
+    <string name="added_torrents_channel_name">Добавленные торренты</string>
 
     <string name="appearance">Внешний вид</string>
     <string name="torrents">Торренты</string>
@@ -405,4 +407,16 @@
 
     <string name="donate">Пожертвовать</string>
     <string name="donate_yandex">Яндекс.Деньги</string>
+    <string name="donate_message">Если вам понравилось это приложение, вы можете поддержать его разработку, отправив пожертвование разработчику.</string>
+    <string name="donate_dialog_again">Этот диалог не будет показан еще раз.</string>
+
+    <string name="free_space">Свободное место: %s</string>
+    <string name="free_space_error">Ошибка получения свободного места</string>
+
+    <string name="notify_on_finished">Уведомлять о завершенных торрентах</string>
+    <string name="notify_on_added">Уведомлять о добавленных торрентах</string>
+
+    <string name="notifications_on_connect">Уведомления при подключении к серверу</string>
+    <string name="notify_on_finished_since_last">Уведомлять о завершенных торрентах со времени последнего подключения</string>
+    <string name="notify_on_added_since_last">Уведомлять о добавленных торрентах со времени последнего подключения</string>
 </resources>

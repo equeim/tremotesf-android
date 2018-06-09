@@ -74,7 +74,6 @@
     <string name="tracker_announce_url">İzleyici URL\'yi duyur</string>
 
     <string name="torrent_finished">Torrent bitti</string>
-
     <string name="torrent_not_found">Torrent bulunamadı</string>
     <string name="torrent_removed">Torrent kaldırıldı</string>
 
@@ -100,8 +99,8 @@
     <string name="total_size">Toplam boyut</string>
     <string name="location">Konum</string>
     <string name="hash">Hash</string>
-    <string name="created_by">Tarafından oluşturuldu</string>
-    <string name="created_on">Üzerinde oluşturuldu</string>
+    <string name="created_by">Oluşturan</string>
+    <string name="created_on">Oluşturma tarihi</string>
     <string name="comment">Yorum</string>
 
     <string name="parent_directory_list_item_label">..</string>
@@ -155,7 +154,7 @@
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">min</string>
+    <string name="min">dakika</string>
     <string name="maximum_peers">Azami Eş</string>
 
     <string name="settings">Ayarlar</string>
@@ -197,9 +196,9 @@
     <string name="authentication">Doğrulama</string>
     <string name="username">Kullanıcı adı</string>
     <string name="password">Şifre</string>
-    <string name="update_interval">Güncelleme aralığı, s</string>
-    <string name="background_update_interval">Arka plan güncelleme aralığı, s</string>
-    <string name="timeout">Zaman aşımı, s</string>
+    <string name="update_interval">Güncelleme aralığı, saniye</string>
+    <string name="background_update_interval">Arka plan güncelleme aralığı, saniye</string>
+    <string name="timeout">Zaman aşımı, saniye</string>
 
     <string name="empty_field_error">Bu alan boş olamaz</string>
 
@@ -224,15 +223,15 @@
     <string name="start_added_torrents">Eklenen torrentleri başlat</string>
     <string name="rename_incomplete_files">Tamamlanmamış dosyaların adlarına \".part\" ekleyin</string>
     <string name="incomplete_files_directory">Eksik dosyalar için dizin</string>
-    <string name="stop_seeding_at_ratio">Göndermeyi bu oranda durdur:</string>
+    <string name="stop_seeding_at_ratio">Göndermeyi bu oranda durdur</string>
     <string name="stop_seeding_if_idle_for">Boşta kalırsa göndermeyi durdurun</string>
     <string name="maximum_active_downloads">Azami etkin indirme</string>
     <string name="maximum_active_uploads">Azami etkin yükleme</string>
     <string name="ignore_queue">Boşsa, sıra konumunu görmezden gelin</string>
     <string name="alternative_limits">Muadil sınırlar</string>
     <string name="enable">Etkinleştir</string>
-    <string name="download_kbps">İndirme, kB / s</string>
-    <string name="upload_kbps">Yükleme, kB / s</string>
+    <string name="download_kbps">İndirme, kB/s</string>
+    <string name="upload_kbps">Yükleme, kB/s</string>
     <string name="scheduled">Tarifeli</string>
     <string name="from">İtibaren</string>
     <string name="to">İçin</string>
@@ -303,7 +302,7 @@
     <string name="torrent_add_error">Torrent eklenirken hata oluştu</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
-    <string name="uploaded_string">%2$s\'dan %1$s yüklendi </string>
+    <string name="uploaded_string">%1$s\'dan %2$s yüklendi</string>
 
     <string name="torrent_paused">Durduruldu</string>
     <plurals name="torrent_downloading">
@@ -373,7 +372,6 @@
 
     <string name="persistent_notification_channel_name">Kalıcı bildirim</string>
     <string name="finished_torrents_channel_name">Bitmiş torrentler</string>
-
     <string name="appearance">Görünüm</string>
     <string name="torrents">Torrentler</string>
 
@@ -383,4 +381,4 @@
 
     <string name="donate">Bağış</string>
     <string name="donate_yandex">Yandex.Money</string>
-</resources>
+    </resources>

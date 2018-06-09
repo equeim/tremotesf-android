@@ -45,6 +45,8 @@
 
     <!-- e.g. "example.com (42)" -->
     <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="directories_spinner_text">%1$s (%2$d)</string>
+
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selezionato</item>
         <item quantity="other">%d torrent selezionati</item>
@@ -72,13 +74,13 @@
     <string name="tracker_announce_url">URL del server traccia</string>
 
     <string name="torrent_finished">Torrent completati</string>
-
     <string name="torrent_not_found">Torrent non trovato</string>
     <string name="torrent_removed">Torrent rimosso</string>
 
     <string name="details">Dettagli</string>
     <string name="files">File</string>
     <string name="trackers">Server traccia</string>
+    <string name="directories">Cartelle</string>
     <string name="peers">Peer</string>
     <string name="limits">Limiti</string>
 
@@ -368,6 +370,8 @@
     <string name="prefs_background_service_summary">Il servizio è fermato quando l\'applicazione è rimossa dalla schermata delle applicazioni recenti a meno che le notifiche persistenti non siano state abilitate</string>
     <string name="prefs_persistent_notification_title">Mostra notifiche persistenti</string>
 
+    <string name="persistent_notification_channel_name">Notifiche persistenti</string>
+    <string name="finished_torrents_channel_name">Torrent completati</string>
     <string name="appearance">Aspetto</string>
     <string name="torrents">Torrent</string>
 
@@ -375,4 +379,6 @@
 
     <string name="alternative_speed_limits">Limiti di velocità alternativi</string>
 
+    <string name="donate">Dona</string>
+    <string name="donate_yandex">Yandex.Money</string>
     </resources>

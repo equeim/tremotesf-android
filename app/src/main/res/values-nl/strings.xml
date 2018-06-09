@@ -74,6 +74,7 @@
     <string name="tracker_announce_url">Tracker-aankondigings-URL</string>
 
     <string name="torrent_finished">Torrent voltooid</string>
+    <string name="torrent_added">Torrent toegevoegd</string>
 
     <string name="torrent_not_found">Torrent niet gevonden</string>
     <string name="torrent_removed">Torrent verwijderd</string>
@@ -373,6 +374,7 @@
 
     <string name="persistent_notification_channel_name">Blijvende melding</string>
     <string name="finished_torrents_channel_name">Voltooide torrents</string>
+    <string name="added_torrents_channel_name">Toegevoegde torrents</string>
 
     <string name="appearance">Uiterlijk</string>
     <string name="torrents">Torrents</string>
@@ -383,4 +385,16 @@
 
     <string name="donate">Doneren</string>
     <string name="donate_yandex">Yandex.Money</string>
+    <string name="donate_message">Als je deze app leuk vindt, kun je de ontwikkeling ervan ondersteunen door de ontwikkelaar een kleine donatie te geven.</string>
+    <string name="donate_dialog_again">Deze dialoog zal niet opnieuw getoond worden.</string>
+
+    <string name="free_space">Vrije ruimte: %s</string>
+    <string name="free_space_error">Fout bij ophalen van vrije ruimte</string>
+
+    <string name="notify_on_finished">Voltooide torrents melden</string>
+    <string name="notify_on_added">Toegevoegde torrents melden</string>
+
+    <string name="notifications_on_connect">Melden bij verbinden met server</string>
+    <string name="notify_on_finished_since_last">Melden bij voltooide torrents sinds laatste verbinding met server</string>
+    <string name="notify_on_added_since_last">Melden bij toegevoegde torrents sinds laatste verbinding met server</string>
 </resources>
