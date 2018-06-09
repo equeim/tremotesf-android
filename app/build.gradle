@@ -1,3 +1,5 @@
+import com.android.build.OutputFile
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -38,6 +40,25 @@ android {
         fdroid {
             dimension "freedom"
             buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "x86"
+            universalApk true
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def abiCodes = ["armeabi-v7a":1, "x86":2]
+        variant.outputs.each { output ->
+            def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
+            if (baseAbiVersionCode != null) {
+                output.versionCodeOverride = baseAbiVersionCode * 1000 + variant.versionCode
+            }
         }
     }
 }
