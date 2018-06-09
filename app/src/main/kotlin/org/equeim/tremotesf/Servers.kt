@@ -35,7 +35,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import org.jetbrains.anko.info
 
 
 private const val FILE_NAME = "servers.json"

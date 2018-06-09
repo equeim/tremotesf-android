@@ -79,13 +79,13 @@ class TorrentFileParser : AnkoLogger {
 
                     fileData = stream.readBytes()
 
-                    try {
+                    return try {
                         createTree(Bdecoder(Charsets.UTF_8,
                                             fileData.inputStream()).decodeDict())
-                        return TorrentFileParser.Status.Loaded
+                        TorrentFileParser.Status.Loaded
                     } catch (error: IllegalStateException) {
                         error("error parsing torrent file", error)
-                        return TorrentFileParser.Status.ParsingError
+                        TorrentFileParser.Status.ParsingError
                     }
                 } catch (error: IOException) {
                     error("error reading torrent file", error)

@@ -355,14 +355,17 @@ class AddTorrentFileActivity : BaseActivity() {
             download_directory_edit.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable) {
                     val path = s.trim().toString()
-
-                    if (Rpc.instance.serverSettings.canShowFreeSpaceForPath()) {
-                        Rpc.instance.getFreeSpaceForPath(path)
-                    } else if (path == Rpc.instance.serverSettings.downloadDirectory()) {
-                        Rpc.instance.getDownloadDirFreeSpace()
-                    } else {
-                        free_space_text_view.visibility = View.GONE
-                        free_space_text_view.text = ""
+                    when {
+                        Rpc.instance.serverSettings.canShowFreeSpaceForPath() -> {
+                            Rpc.instance.getFreeSpaceForPath(path)
+                        }
+                        path == Rpc.instance.serverSettings.downloadDirectory() -> {
+                            Rpc.instance.getDownloadDirFreeSpace()
+                        }
+                        else -> {
+                            free_space_text_view.visibility = View.GONE
+                            free_space_text_view.text = ""
+                        }
                     }
                 }
 

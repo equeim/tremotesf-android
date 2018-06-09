@@ -22,7 +22,6 @@ package org.equeim.tremotesf
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.widget.FrameLayout
 import android.support.v7.app.AppCompatActivity
 
 import org.equeim.tremotesf.utils.Utils
@@ -97,7 +96,7 @@ open class BaseActivity : AppCompatActivity() {
 
     protected fun setPreLollipopShadow() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            Utils.setPreLollipopContentShadowOnFrame(findViewById(R.id.content_frame) as FrameLayout)
+            Utils.setPreLollipopContentShadowOnFrame(findViewById(R.id.content_frame))
         }
     }
 }
