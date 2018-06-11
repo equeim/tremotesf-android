@@ -25,17 +25,12 @@ Android remote GUI for transmission-daemon.
 - Client certificate authentication
 
 ## Build
-Download and install Android SDK. Download NDK r15c (OpenSSL does not build with newer versions) from [there](https://developer.android.com/ndk/downloads/older_releases).
-
-Download and install Qt SDK, make sure to select "Android x86" and "Android ARMv7" components.
-
-Navigate to tremotesf-android root (where build-native.sh is located).
-
-Set ANDROID_NDK_ROOT environment variable to the root directory of Android NDK bundle, and QT_ROOT to the root directory of selected Qt version (where android_armv7 and android_x86 directories are located, i.e. ~/Qt/5.11.0).
-
-Execute build-native.sh script from project root directory.
-
-Build APK in Android Studio.
+1. Download and install Android SDK. Download NDK r15c (OpenSSL does not build with newer versions) from [there](https://developer.android.com/ndk/downloads/older_releases).
+2. [Download](https://www.openssl.org/source) latest OpenSSL 1.0.x and unpack it to 3rdparty/openssl/openssl (removing version from directory name).
+3. [Download](http://download.qt.io/official_releases/qt/5.9/5.9.6/submodules/qtbase-opensource-src-5.9.6.tar.xz) Qt base submodule from 5.9 branch (5.11 has some issues with networking on Android 4.1) and unpack it to 3rdparty/qt/qtbase.
+5. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK r15c.
+6. Execute build-native.sh script from project root directory.
+7. Build APK in Android Studio.
 
 ## Translations
 Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
