@@ -84,7 +84,7 @@ class AboutActivity : BaseActivity() {
         override fun getItem(position: Int): Fragment? {
             return when (position) {
                 0 -> AboutFragment()
-                1 -> DonateFragment.newInstance(this@AboutActivity)
+                1 -> DonateFragment.newInstance()
                 2 -> AuthorsFragment()
                 3 -> TranslatorsFragment()
                 4 -> LicenseFragment()
@@ -157,7 +157,7 @@ class AboutActivity : BaseActivity() {
             private const val PAYPAL_CURRENCY_CODE = "USD"
             private const val PAYPAL_ITEM_NAME = "Support Tremotesf (Android) development"
 
-            fun newInstance(context: Context): DonateFragment {
+            fun newInstance(): DonateFragment {
                 val fragment = DonateFragment()
                 fragment.arguments = bundleOf(ARG_DEBUG to false,
                                               ARG_GOOGLE_ENABLED to BuildConfig.DONATIONS_GOOGLE,

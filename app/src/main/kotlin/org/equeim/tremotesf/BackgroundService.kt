@@ -192,7 +192,7 @@ class BackgroundService : Service(), AnkoLogger {
         Servers.removeCurrentServerListener(currentServerListener)
     }
 
-    fun stopService(stop: Boolean = true) {
+    fun stopService() {
         Rpc.instance.torrentFinishedListener = null
         if (Settings.showPersistentNotification) {
             stopForeground()
