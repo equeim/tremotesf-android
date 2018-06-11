@@ -14,7 +14,7 @@ case "$ANDROID_ARCH" in
     ;;
 esac
 
-source ../setenv-android.sh
+source "$_DIR/setenv-android.sh"
 make clean
 _PREFIX="$_DIR/install-$ANDROID_ARCH"
 ./config shared no-ssl2 no-ssl3 no-comp no-hw no-engine --prefix="$_PREFIX"  || exit 1
