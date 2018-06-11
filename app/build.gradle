@@ -26,11 +26,9 @@ android {
         main.java.srcDirs += '../libtremotesf/jni/java'
         main.jniLibs.srcDirs 'libs'
     }
-
     lintOptions {
         checkReleaseBuilds false
     }
-
     flavorDimensions("freedom")
     productFlavors {
         google {
@@ -42,7 +40,6 @@ android {
             buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
         }
     }
-
     splits {
         abi {
             enable true
@@ -51,9 +48,8 @@ android {
             universalApk true
         }
     }
-
     applicationVariants.all { variant ->
-        def abiCodes = ["armeabi-v7a":1, "x86":2]
+        def abiCodes = ["armeabi-v7a": 1, "x86": 2]
         variant.outputs.each { output ->
             def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
             if (baseAbiVersionCode != null) {
@@ -71,7 +67,7 @@ repositories {
 def support_version = '27.1.1'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation fileTree(include: '*.jar', dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.android.support:support-compat:$support_version"
     implementation "com.android.support:support-core-utils:$support_version"
