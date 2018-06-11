@@ -10,6 +10,7 @@
 
 ### Changed
 - Tremotesf now uses the same C++ backend as the Desktop/Sailfish OS version
+- Minimum Android version raised to 4.1
 
 ### Fixed
 - Yandex.Money donate link
