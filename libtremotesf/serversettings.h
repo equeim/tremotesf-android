@@ -31,9 +31,6 @@ namespace libtremotesf
     {
         Q_OBJECT
 
-        Q_ENUMS(AlternativeSpeedLimitsDays)
-        Q_ENUMS(EncryptionMode)
-
         Q_PROPERTY(bool canRenameFiles READ canRenameFiles)
         Q_PROPERTY(bool canShowFreeSpaceForPath READ canShowFreeSpaceForPath)
 
@@ -93,6 +90,7 @@ namespace libtremotesf
             Weekends = (Sunday | Saturday),
             All = (Weekdays | Weekends)
         };
+        Q_ENUM(AlternativeSpeedLimitsDays)
 
         enum EncryptionMode
         {
@@ -100,6 +98,7 @@ namespace libtremotesf
             PreferredEncryption,
             RequiredEncryption
         };
+        Q_ENUM(EncryptionMode)
 
         explicit ServerSettings(Rpc* rpc = nullptr, QObject* parent = nullptr);
 
@@ -167,7 +166,7 @@ namespace libtremotesf
         const QTime& alternativeSpeedLimitsEndTime() const;
         Q_INVOKABLE void setAlternativeSpeedLimitsEndTime(const QTime& time);
         AlternativeSpeedLimitsDays alternativeSpeedLimitsDays() const;
-        Q_INVOKABLE void setAlternativeSpeedLimitsDays(AlternativeSpeedLimitsDays days);
+        Q_INVOKABLE void setAlternativeSpeedLimitsDays(libtremotesf::ServerSettings::AlternativeSpeedLimitsDays days);
 
         int peerPort() const;
         Q_INVOKABLE void setPeerPort(int port);
@@ -176,7 +175,7 @@ namespace libtremotesf
         bool isPortForwardingEnabled() const;
         Q_INVOKABLE void setPortForwardingEnabled(bool enabled);
         EncryptionMode encryptionMode() const;
-        Q_INVOKABLE void setEncryptionMode(EncryptionMode mode);
+        Q_INVOKABLE void setEncryptionMode(libtremotesf::ServerSettings::EncryptionMode mode);
         bool isUtpEnabled() const;
         Q_INVOKABLE void setUtpEnabled(bool enabled);
         bool isPexEnabled() const;

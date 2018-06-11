@@ -3,9 +3,9 @@
 class QTime;
 
 // QTime
-%typemap(jni) QTime "jobject"
-%typemap(jtype) QTime "java.util.Date"
-%typemap(jstype) QTime "java.util.Date"
+%typemap(jni) QTime "jint"
+%typemap(jtype) QTime "int"
+%typemap(jstype) QTime "int"
 %typemap(javadirectorin) QTime "$jniinput"
 %typemap(javadirectorout) QTime "$javacall"
 
@@ -15,9 +15,7 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass($input), "getTime", "()J");
-    const jlong time = jenv->CallLongMethod($input, id);
-    $1 = QDateTime::fromMSecsSinceEpoch(time).time();
+    $1 = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
 %}
 
 %typemap(directorout) QTime
@@ -26,23 +24,17 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass($input), "getTime", "()J");
-    const jlong time = jenv->CallLongMethod($input, id);
-    $result = QDateTime::fromMSecsSinceEpoch(time).time();
+    $result = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
 %}
 
 %typemap(directorin,descriptor="Ljava/util/Date;") QTime
 %{
-    const jclass clazz = jenv->FindClass("java/util/Date");
-    const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-    $input = jenv->NewObject(clazz, id, $1.msecsSinceStartOfDay());
+    $input = $1.msecsSinceStartOfDay() / (60 * 1000);
 %}
 
 %typemap(out) QTime
 %{
-    const jclass clazz = jenv->FindClass("java/util/Date");
-    const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-    $result = jenv->NewObject(clazz, id, $1.msecsSinceStartOfDay());
+    $result = $1.msecsSinceStartOfDay() / (60 * 1000);
 %}
 
 %typemap(javain) QTime "$javainput"
@@ -52,9 +44,9 @@ class QTime;
     return $jnicall;
 }
 
-%typemap(jni) const QTime& "jobject"
-%typemap(jtype) const QTime& "java.util.Date"
-%typemap(jstype) const QTime& "java.util.Date"
+%typemap(jni) const QTime& "jint"
+%typemap(jtype) const QTime& "int"
+%typemap(jstype) const QTime& "int"
 %typemap(javadirectorin) const QTime& "$jniinput"
 %typemap(javadirectorout) const QTime& "$javacall"
 
@@ -64,9 +56,7 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass($input), "getTime", "()J");
-    const jlong time = jenv->CallLongMethod($input, id);
-    QTime $1_str(QDateTime::fromMSecsSinceEpoch(time).time());
+    QTime $1_str(QTime::fromMSecsSinceStartOfDay($input * 60 * 1000));
     $1 = &$1_str;
 %}
 
@@ -76,26 +66,20 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass($input), "getTime", "()J");
-    const jlong time = jenv->CallLongMethod($input, id);
     /* possible thread/reentrant code problem */
     static QTime $1_str;
-    $1_str = QDateTime::fromMSecsSinceEpoch(time).time();
+    $1_str = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
     $result = &$1_str;
 %}
 
 %typemap(directorin,descriptor="Ljava/util/Date;") const QTime&
 %{
-    const jclass clazz = jenv->FindClass("java/util/Date");
-    const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-    $input = jenv->NewObject(clazz, id, $1->msecsSinceStartOfDay());
+    $input = $1->msecsSinceStartOfDay() / (60 * 1000);
 %}
 
 %typemap(out) const QTime& 
 %{
-    const jclass clazz = jenv->FindClass("java/util/Date");
-    const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-    $result = jenv->NewObject(clazz, id, $1->msecsSinceStartOfDay());
+    $result = $1->msecsSinceStartOfDay() / (60 * 1000);
 %}
 
 %typemap(javain) const QTime& "$javainput"

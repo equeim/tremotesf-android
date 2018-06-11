@@ -247,19 +247,19 @@ public class ServerSettings {
     libtremotesfJNI.ServerSettings_setAlternativeSpeedLimitsScheduled(swigCPtr, this, scheduled);
   }
 
-  public java.util.Date alternativeSpeedLimitsBeginTime() {
+  public int alternativeSpeedLimitsBeginTime() {
     return libtremotesfJNI.ServerSettings_alternativeSpeedLimitsBeginTime(swigCPtr, this);
 }
 
-  public void setAlternativeSpeedLimitsBeginTime(java.util.Date time) {
+  public void setAlternativeSpeedLimitsBeginTime(int time) {
     libtremotesfJNI.ServerSettings_setAlternativeSpeedLimitsBeginTime(swigCPtr, this, time);
   }
 
-  public java.util.Date alternativeSpeedLimitsEndTime() {
+  public int alternativeSpeedLimitsEndTime() {
     return libtremotesfJNI.ServerSettings_alternativeSpeedLimitsEndTime(swigCPtr, this);
 }
 
-  public void setAlternativeSpeedLimitsEndTime(java.util.Date time) {
+  public void setAlternativeSpeedLimitsEndTime(int time) {
     libtremotesfJNI.ServerSettings_setAlternativeSpeedLimitsEndTime(swigCPtr, this, time);
   }
 

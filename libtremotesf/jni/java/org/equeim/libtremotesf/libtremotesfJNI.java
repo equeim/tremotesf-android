@@ -224,10 +224,10 @@ public class libtremotesfJNI {
   public final static native void ServerSettings_setAlternativeUploadSpeedLimit(long jarg1, ServerSettings jarg1_, int jarg2);
   public final static native boolean ServerSettings_isAlternativeSpeedLimitsScheduled(long jarg1, ServerSettings jarg1_);
   public final static native void ServerSettings_setAlternativeSpeedLimitsScheduled(long jarg1, ServerSettings jarg1_, boolean jarg2);
-  public final static native java.util.Date ServerSettings_alternativeSpeedLimitsBeginTime(long jarg1, ServerSettings jarg1_);
-  public final static native void ServerSettings_setAlternativeSpeedLimitsBeginTime(long jarg1, ServerSettings jarg1_, java.util.Date jarg2);
-  public final static native java.util.Date ServerSettings_alternativeSpeedLimitsEndTime(long jarg1, ServerSettings jarg1_);
-  public final static native void ServerSettings_setAlternativeSpeedLimitsEndTime(long jarg1, ServerSettings jarg1_, java.util.Date jarg2);
+  public final static native int ServerSettings_alternativeSpeedLimitsBeginTime(long jarg1, ServerSettings jarg1_);
+  public final static native void ServerSettings_setAlternativeSpeedLimitsBeginTime(long jarg1, ServerSettings jarg1_, int jarg2);
+  public final static native int ServerSettings_alternativeSpeedLimitsEndTime(long jarg1, ServerSettings jarg1_);
+  public final static native void ServerSettings_setAlternativeSpeedLimitsEndTime(long jarg1, ServerSettings jarg1_, int jarg2);
   public final static native int ServerSettings_alternativeSpeedLimitsDays(long jarg1, ServerSettings jarg1_);
   public final static native void ServerSettings_setAlternativeSpeedLimitsDays(long jarg1, ServerSettings jarg1_, int jarg2);
   public final static native int ServerSettings_peerPort(long jarg1, ServerSettings jarg1_);
@@ -287,8 +287,8 @@ public class libtremotesfJNI {
   public final static native void JniServerSettings_setAlternativeDownloadSpeedLimit(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setAlternativeUploadSpeedLimit(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setAlternativeSpeedLimitsScheduled(long jarg1, JniServerSettings jarg1_, boolean jarg2);
-  public final static native void JniServerSettings_setAlternativeSpeedLimitsBeginTime(long jarg1, JniServerSettings jarg1_, java.util.Date jarg2);
-  public final static native void JniServerSettings_setAlternativeSpeedLimitsEndTime(long jarg1, JniServerSettings jarg1_, java.util.Date jarg2);
+  public final static native void JniServerSettings_setAlternativeSpeedLimitsBeginTime(long jarg1, JniServerSettings jarg1_, int jarg2);
+  public final static native void JniServerSettings_setAlternativeSpeedLimitsEndTime(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setAlternativeSpeedLimitsDays(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setPeerPort(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setRandomPortEnabled(long jarg1, JniServerSettings jarg1_, boolean jarg2);

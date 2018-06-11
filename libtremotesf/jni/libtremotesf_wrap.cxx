@@ -5107,8 +5107,8 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
 }
 
 
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
   QTime *result = 0 ;
   
@@ -5118,15 +5118,13 @@ SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSe
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
   result = (QTime *) &((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsBeginTime();
   
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->msecsSinceStartOfDay());
+  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
   
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
   QTime *arg2 = 0 ;
   
@@ -5139,17 +5137,15 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass(jarg2), "getTime", "()J");
-  const jlong time = jenv->CallLongMethod(jarg2, id);
-  QTime arg2_str(QDateTime::fromMSecsSinceEpoch(time).time());
+  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
   arg2 = &arg2_str;
   
   (arg1)->setAlternativeSpeedLimitsBeginTime((QTime const &)*arg2);
 }
 
 
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
   QTime *result = 0 ;
   
@@ -5159,15 +5155,13 @@ SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSe
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
   result = (QTime *) &((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsEndTime();
   
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->msecsSinceStartOfDay());
+  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
   
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
   QTime *arg2 = 0 ;
   
@@ -5180,9 +5174,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass(jarg2), "getTime", "()J");
-  const jlong time = jenv->CallLongMethod(jarg2, id);
-  QTime arg2_str(QDateTime::fromMSecsSinceEpoch(time).time());
+  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
   arg2 = &arg2_str;
   
   (arg1)->setAlternativeSpeedLimitsEndTime((QTime const &)*arg2);
@@ -6009,7 +6001,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setAlternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setAlternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::JniServerSettings *arg1 = (libtremotesf::JniServerSettings *) 0 ;
   QTime *arg2 = 0 ;
   
@@ -6022,16 +6014,14 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass(jarg2), "getTime", "()J");
-  const jlong time = jenv->CallLongMethod(jarg2, id);
-  QTime arg2_str(QDateTime::fromMSecsSinceEpoch(time).time());
+  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
   arg2 = &arg2_str;
   
   (arg1)->setAlternativeSpeedLimitsBeginTime((QTime const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setAlternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setAlternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::JniServerSettings *arg1 = (libtremotesf::JniServerSettings *) 0 ;
   QTime *arg2 = 0 ;
   
@@ -6044,9 +6034,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  const jmethodID id = jenv->GetMethodID(jenv->GetObjectClass(jarg2), "getTime", "()J");
-  const jlong time = jenv->CallLongMethod(jarg2, id);
-  QTime arg2_str(QDateTime::fromMSecsSinceEpoch(time).time());
+  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
   arg2 = &arg2_str;
   
   (arg1)->setAlternativeSpeedLimitsEndTime((QTime const &)*arg2);

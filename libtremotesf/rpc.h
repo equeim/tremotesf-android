@@ -62,8 +62,6 @@ namespace libtremotesf
     class Rpc : public QObject
     {
         Q_OBJECT
-        Q_ENUMS(Status)
-        Q_ENUMS(Error)
         Q_PROPERTY(libtremotesf::ServerSettings* serverSettings READ serverSettings CONSTANT)
         Q_PROPERTY(libtremotesf::ServerStats* serverStats READ serverStats CONSTANT)
         Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
@@ -81,6 +79,7 @@ namespace libtremotesf
             Connecting,
             Connected
         };
+        Q_ENUM(Status)
 
         enum Error
         {
@@ -92,6 +91,7 @@ namespace libtremotesf
             ServerIsTooNew,
             ServerIsTooOld,
         };
+        Q_ENUM(Error)
 
         explicit Rpc(ServerSettings* serverSettings = nullptr, QObject* parent = nullptr);
 

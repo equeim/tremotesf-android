@@ -131,11 +131,11 @@ public class JniServerSettings extends ServerSettings {
     libtremotesfJNI.JniServerSettings_setAlternativeSpeedLimitsScheduled(swigCPtr, this, scheduled);
   }
 
-  public void setAlternativeSpeedLimitsBeginTime(java.util.Date time) {
+  public void setAlternativeSpeedLimitsBeginTime(int time) {
     libtremotesfJNI.JniServerSettings_setAlternativeSpeedLimitsBeginTime(swigCPtr, this, time);
   }
 
-  public void setAlternativeSpeedLimitsEndTime(java.util.Date time) {
+  public void setAlternativeSpeedLimitsEndTime(int time) {
     libtremotesfJNI.JniServerSettings_setAlternativeSpeedLimitsEndTime(swigCPtr, this, time);
   }
 
