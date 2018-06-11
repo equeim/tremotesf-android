@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [1.7.0] - 2018-06-11
 ### Added
 - Show available free space when adding torrents
 - Option to disable finished torrents notifications
