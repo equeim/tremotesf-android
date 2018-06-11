@@ -9,11 +9,13 @@ cd "$_BUILD_DIR" || exit 1
 _OPENSSL_LIBDIR="$(realpath ../../openssl/install-$ANDROID_ARCH/lib)"
 _OPENSSL_INCDIR="$(realpath ../../openssl/install-$ANDROID_ARCH/include)"
 
+_PREFIX="$(realpath ../install-$ANDROID_ARCH)"
+
 OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
     -v \
     -confirm-license \
     -opensource \
-    -prefix "$(realpath ../install-$ANDROID_ARCH)" \
+    -prefix "$_PREFIX" \
     -xplatform android-g++ \
     -nomake tests \
     -nomake examples \
@@ -53,3 +55,10 @@ OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
 
 make $MAKEOPTS || exit 1
 make install $MAKEOPTS || exit 1
+
+_LIBS="$_DIR/../../app/libs/$ANDROID_ARCH/"
+mkdir -p "$_LIBS"
+cp "$ANDROID_NDK_ROOT/sources/cxx-stl/gnu-libstdc++/4.9/libs/$ANDROID_ARCH/libgnustl_shared.so" "$_LIBS"
+cp "$_PREFIX/lib/libQt5Core.so" "$_LIBS"
+cp "$_PREFIX/lib/libQt5Concurrent.so" "$_LIBS"
+cp "$_PREFIX/lib/libQt5Network.so" "$_LIBS"
