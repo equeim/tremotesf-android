@@ -32,7 +32,6 @@ OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
     -no-feature-big_codecs \
     -no-feature-codecs \
     -no-feature-commandlineparser \
-    -no-feature-datestring \
     -no-feature-datetimeparser \
     -no-feature-dom \
     -no-feature-filesystemwatcher \
@@ -47,7 +46,6 @@ OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
     -no-feature-sharedmemory \
     -no-feature-statemachine \
     -no-feature-temporaryfile \
-    -no-feature-textdate \
     -no-feature-translation \
     -no-feature-xmlstream \
     -openssl-linked \
