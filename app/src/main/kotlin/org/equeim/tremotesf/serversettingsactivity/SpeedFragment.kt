@@ -298,9 +298,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         textView.text = format.format(calendar.time)
     }
 
-    fun setTime(time: Date) {
-        calendar.time = time
-        textView.text = format.format(time)
+    fun setTime(minutesFromStartOfDay: Int) {
+        calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
+        calendar.set(Calendar.MINUTE, minutesFromStartOfDay.rem(60))
+        textView.text = format.format(calendar.time)
     }
 
     class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
@@ -317,10 +318,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
             if (speedFragment != null) {
                 if (arguments!!.getBoolean("beginTime")) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
-                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsBeginTime(Date(((hourOfDay * 60) + minute) * 60 * 1000L))
+                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsBeginTime((hourOfDay * 60) + minute)
                 } else {
                     speedFragment.end_time_item.setTime(hourOfDay, minute)
-                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsEndTime(Date(((hourOfDay * 60) + minute) * 60 * 1000L))
+                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsEndTime((hourOfDay * 60) + minute)
                 }
             }
         }
