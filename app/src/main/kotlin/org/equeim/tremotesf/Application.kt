@@ -11,8 +11,6 @@ class Application : android.app.Application() {
                 System.loadLibrary("Qt5Core")
                 System.loadLibrary("Qt5Concurrent")
                 System.loadLibrary("Qt5Network")
-                System.loadLibrary("crypto")
-                System.loadLibrary("ssl")
                 System.loadLibrary("tremotesf")
                 loaded = true
             }

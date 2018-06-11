@@ -8,3 +8,9 @@
 .externalNativeBuild
 *.log
 app/libs
+3rdparty/openssl/openssl
+3rdparty/openssl/install-*
+3rdparty/qt/build-*
+3rdparty/qt/install-*
+3rdparty/qt/qtbase
+libtremotesf/build-*
