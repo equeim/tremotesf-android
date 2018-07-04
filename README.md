@@ -25,10 +25,10 @@ Android remote GUI for transmission-daemon.
 - Client certificate authentication
 
 ## Build
-1. Download and install Android SDK. Download NDK r15c (OpenSSL does not build with newer versions) from [there](https://developer.android.com/ndk/downloads/older_releases).
-2. [Download](https://www.openssl.org/source) latest OpenSSL 1.0.x and unpack it to 3rdparty/openssl/openssl (removing version from directory name).
-3. [Download](http://download.qt.io/official_releases/qt/5.9/5.9.6/submodules/qtbase-opensource-src-5.9.6.tar.xz) Qt base submodule from 5.9 branch (5.11 has some issues with networking on Android 4.1) and unpack it to 3rdparty/qt/qtbase.
-5. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK r15c.
+1. Download and install Android SDK. Download and install Android NDK (r16b or newer).
+2. [Download](https://www.openssl.org/source) latest OpenSSL 1.1.x and unpack it to 3rdparty/openssl/openssl (removing version from directory name).
+3. [Download](http://download.qt.io/official_releases/qt/5.11/5.11.1/submodules/qtbase-everywhere-src-5.11.1.tar.xz) Qt base submodule from 5.11 branch and unpack it to 3rdparty/qt/qtbase.
+5. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK.
 6. Execute build-native.sh script from project root directory.
 7. Build APK in Android Studio.
 
