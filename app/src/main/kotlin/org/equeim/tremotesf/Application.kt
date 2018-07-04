@@ -7,7 +7,7 @@ class Application : android.app.Application() {
         private var loaded = false
         fun loadLibrary() {
             if (!loaded) {
-                System.loadLibrary("gnustl_shared")
+                System.loadLibrary("c++_shared")
                 System.loadLibrary("Qt5Core")
                 System.loadLibrary("Qt5Concurrent")
                 System.loadLibrary("Qt5Network")
