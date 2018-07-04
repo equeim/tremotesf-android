@@ -231,10 +231,10 @@ namespace libtremotesf
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(); });
         QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(); });
         QObject::connect(this->serverStats(), &ServerStats::updated, [=]() { onServerStatsUpdated(); });
-        QObject::connect(this, &Rpc::torrentAdded, [=](const std::shared_ptr<Torrent>& torrent) {
+        QObject::connect(this, &Rpc::torrentAdded, [=](const Torrent* torrent) {
             onTorrentAdded(torrent->id(), torrent->hashString(), torrent->name());
         });
-        QObject::connect(this, &Rpc::torrentFinished, [=](const std::shared_ptr<Torrent>& torrent) {
+        QObject::connect(this, &Rpc::torrentFinished, [=](const Torrent* torrent) {
             onTorrentFinished(torrent->id(), torrent->hashString(), torrent->name());
         });
         QObject::connect(this, &Rpc::torrentAddDuplicate, [=]() { onTorrentAddDuplicate(); });
