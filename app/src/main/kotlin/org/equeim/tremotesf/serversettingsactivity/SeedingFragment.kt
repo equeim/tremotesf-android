@@ -62,7 +62,7 @@ class SeedingFragment : Fragment() {
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setRatioLimit(DoubleFilter.parse(s.toString())!!.toFloat())
+                    Rpc.instance.serverSettings.setRatioLimit(DoubleFilter.parse(s.toString())!!)
                 }
             }
 

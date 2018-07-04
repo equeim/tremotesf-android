@@ -254,7 +254,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             else -> 0
         }
 
-        holder.sizeTextView.text = if (torrent.percentDone == 1.0f) {
+        holder.sizeTextView.text = if (torrent.isFinished) {
             activity.getString(R.string.uploaded_string,
                                Utils.formatByteSize(activity, torrent.sizeWhenDone),
                                Utils.formatByteSize(activity, torrent.totalUploaded))

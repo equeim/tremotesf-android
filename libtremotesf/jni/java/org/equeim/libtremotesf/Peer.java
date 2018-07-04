@@ -59,11 +59,11 @@ public class Peer {
     return libtremotesfJNI.Peer_uploadSpeed_get(swigCPtr, this);
   }
 
-  public void setProgress(float value) {
+  public void setProgress(double value) {
     libtremotesfJNI.Peer_progress_set(swigCPtr, this, value);
   }
 
-  public float getProgress() {
+  public double getProgress() {
     return libtremotesfJNI.Peer_progress_get(swigCPtr, this);
   }
 

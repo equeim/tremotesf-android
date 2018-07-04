@@ -19,6 +19,8 @@
 #include "torrent.h"
 
 #include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QLocale>
 
 #include "rpc.h"
@@ -75,6 +77,7 @@ namespace libtremotesf
         const QString idleSeedingLimitModeKey(QLatin1String("seedIdleMode"));
         const QString idleSeedingLimitKey(QLatin1String("seedRatioLimit"));
         const QString downloadDirectoryKey(QLatin1String("downloadDir"));
+        const QString prioritiesKey(QLatin1String("priorities"));
         const QString creatorKey(QLatin1String("creator"));
         const QString creationDateKey(QLatin1String("dateCreated"));
         const QString commentKey(QLatin1String("comment"));
@@ -106,6 +109,14 @@ namespace libtremotesf
                 changed = true;
             }
         }
+
+        void setChanged(double& value, const double& newValue, bool& changed)
+        {
+            if (!qFuzzyCompare(newValue, value)) {
+                value = newValue;
+                changed = true;
+            }
+        }
     }
 
     const QString Torrent::idKey(QLatin1String("id"));
@@ -118,25 +129,25 @@ namespace libtremotesf
 
     }
 
-    Peer::Peer(const QString& address, const QVariantMap& peerMap)
+    Peer::Peer(const QString& address, const QJsonObject& peerMap)
         : address(address)
     {
         update(peerMap);
     }
 
-    void Peer::update(const QVariantMap& peerMap)
+    void Peer::update(const QJsonObject& peerMap)
     {
-        downloadSpeed = peerMap["rateToClient"].toLongLong();
-        uploadSpeed = peerMap["rateToPeer"].toLongLong();
-        progress = peerMap["progress"].toFloat();
-        flags = peerMap["flagStr"].toString();
-        client = peerMap["clientName"].toString();
+        downloadSpeed = peerMap[QLatin1String("rateToClient")].toDouble();
+        uploadSpeed = peerMap[QLatin1String("rateToPeer")].toDouble();
+        progress = peerMap[QLatin1String("progress")].toDouble();
+        flags = peerMap[QLatin1String("flagStr")].toString();
+        client = peerMap[QLatin1String("clientName")].toString();
     }
 
-    Torrent::Torrent(int id, const QVariantMap& torrentMap, Rpc* rpc)
+    Torrent::Torrent(int id, const QJsonObject& torrentMap, Rpc* rpc)
         : mId(id),
-          mHashString(torrentMap.value(hashStringKey).toString()),
-          mAddedDate(QDateTime::fromMSecsSinceEpoch(torrentMap.value(addedDateKey).toLongLong() * 1000)),
+          mHashString(torrentMap[hashStringKey].toString()),
+          mAddedDate(QDateTime::fromMSecsSinceEpoch(torrentMap[addedDateKey].toDouble() * 1000)),
           mFilesEnabled(false),
           mPeersEnabled(false),
           mRpc(rpc)
@@ -169,37 +180,6 @@ namespace libtremotesf
         return mErrorString;
     }
 
-    /*QString Torrent::statusString() const
-    {
-        switch (mStatus) {
-        case Paused:
-            return qApp->translate("tremotesf", "Paused", "Torrent status");
-        case Downloading:
-#ifdef TREMOTESF_SAILFISHOS
-            return qApp->translate("tremotesf", "Downloading from %n peers", nullptr, mSeeders);
-#endif
-        case StalledDownloading:
-            return qApp->translate("tremotesf", "Downloading", "Torrent status");
-        case Seeding:
-#ifdef TREMOTESF_SAILFISHOS
-            return qApp->translate("tremotesf", "Seeding to %n peers", nullptr, mLeechers);
-#endif
-        case StalledSeeding:
-            return qApp->translate("tremotesf", "Seeding", "Torrent status");
-        case QueuedForDownloading:
-        case QueuedForSeeding:
-            return qApp->translate("tremotesf", "Queued", "Torrent status");
-        case Checking:
-            return qApp->translate("tremotesf", "Checking", "Torrent status");
-        case QueuedForChecking:
-            return qApp->translate("tremotesf", "Queued for checking");
-        case Errored:
-            return mErrorString;
-        }
-
-        return QString();
-    }*/
-
     int Torrent::queuePosition() const
     {
         return mQueuePosition;
@@ -225,12 +205,17 @@ namespace libtremotesf
         return mSizeWhenDone;
     }
 
-    float Torrent::percentDone() const
+    double Torrent::percentDone() const
     {
         return mPercentDone;
     }
 
-    float Torrent::recheckProgress() const
+    bool Torrent::isFinished() const
+    {
+        return mLeftUntilDone == 0;
+    }
+
+    double Torrent::recheckProgress() const
     {
         return mRecheckProgress;
     }
@@ -308,7 +293,7 @@ namespace libtremotesf
         return mTotalUploaded;
     }
 
-    float Torrent::ratio() const
+    double Torrent::ratio() const
     {
         return mRatio;
     }
@@ -325,12 +310,12 @@ namespace libtremotesf
         mRpc->setTorrentProperty(mId, ratioLimitModeKey, mRatioLimitMode);
     }
 
-    float Torrent::ratioLimit() const
+    double Torrent::ratioLimit() const
     {
         return mRatioLimit;
     }
 
-    void Torrent::setRatioLimit(float limit)
+    void Torrent::setRatioLimit(double limit)
     {
         mRatioLimit = limit;
         emit limitsEdited();
@@ -425,6 +410,11 @@ namespace libtremotesf
     const QString& Torrent::downloadDirectory() const
     {
         return mDownloadDirectory;
+    }
+
+    bool Torrent::isSingleFile() const
+    {
+        return mSingleFile;
     }
 
     const QString& Torrent::creator() const
@@ -570,7 +560,7 @@ namespace libtremotesf
         return updated;
     }
 
-    void Torrent::update(const QVariantMap& torrentMap)
+    void Torrent::update(const QJsonObject& torrentMap)
     {
         mChanged = false;
 
@@ -578,27 +568,27 @@ namespace libtremotesf
 
         setChanged(mErrorString, torrentMap[errorStringKey].toString(), mChanged);
         setChanged(mQueuePosition, torrentMap[queuePositionKey].toInt(), mChanged);
-        setChanged(mTotalSize, torrentMap[totalSizeKey].toLongLong(), mChanged);
-        setChanged(mCompletedSize, torrentMap[completedSizeKey].toLongLong(), mChanged);
-        setChanged(mLeftUntilDone, torrentMap[leftUntilDoneKey].toLongLong(), mChanged);
-        setChanged(mSizeWhenDone, torrentMap[sizeWhenDoneKey].toLongLong(), mChanged);
-        setChanged(mPercentDone, torrentMap[percentDoneKey].toFloat(), mChanged);
-        setChanged(mRecheckProgress, torrentMap[recheckProgressKey].toFloat(), mChanged);
+        setChanged(mTotalSize, static_cast<long long>(torrentMap[totalSizeKey].toDouble()), mChanged);
+        setChanged(mCompletedSize, static_cast<long long>(torrentMap[completedSizeKey].toDouble()), mChanged);
+        setChanged(mLeftUntilDone, static_cast<long long>(torrentMap[leftUntilDoneKey].toDouble()), mChanged);
+        setChanged(mSizeWhenDone, static_cast<long long>(torrentMap[sizeWhenDoneKey].toDouble()), mChanged);
+        setChanged(mPercentDone, torrentMap[percentDoneKey].toDouble(), mChanged);
+        setChanged(mRecheckProgress, torrentMap[recheckProgressKey].toDouble(), mChanged);
         setChanged(mEta, torrentMap[etaKey].toInt(), mChanged);
 
-        setChanged(mDownloadSpeed, torrentMap[downloadSpeedKey].toLongLong(), mChanged);
-        setChanged(mUploadSpeed, torrentMap[uploadSpeedKey].toLongLong(), mChanged);
+        setChanged(mDownloadSpeed, static_cast<long long>(torrentMap[downloadSpeedKey].toDouble()), mChanged);
+        setChanged(mUploadSpeed, static_cast<long long>(torrentMap[uploadSpeedKey].toDouble()), mChanged);
 
         setChanged(mDownloadSpeedLimited, torrentMap[downloadSpeedLimitedKey].toBool(), mChanged);
         setChanged(mDownloadSpeedLimit, mRpc->serverSettings()->toKibiBytes(torrentMap[downloadSpeedLimitKey].toInt()), mChanged);
         setChanged(mUploadSpeedLimited, torrentMap[uploadSpeedLimitedKey].toBool(), mChanged);
         setChanged(mUploadSpeedLimit, mRpc->serverSettings()->toKibiBytes(torrentMap[uploadSpeedLimitKey].toInt()), mChanged);
 
-        setChanged(mTotalDownloaded, torrentMap[totalDownloadedKey].toLongLong(), mChanged);
-        setChanged(mTotalUploaded, torrentMap[totalUploadedKey].toLongLong(), mChanged);
-        setChanged(mRatio, torrentMap[ratioKey].toFloat(), mChanged);
+        setChanged(mTotalDownloaded, static_cast<long long>(torrentMap[totalDownloadedKey].toDouble()), mChanged);
+        setChanged(mTotalUploaded, static_cast<long long>(torrentMap[totalUploadedKey].toDouble()), mChanged);
+        setChanged(mRatio, torrentMap[ratioKey].toDouble(), mChanged);
         setChanged(mRatioLimitMode, static_cast<RatioLimitMode>(torrentMap[ratioLimitModeKey].toInt()), mChanged);
-        setChanged(mRatioLimit, torrentMap[ratioLimitKey].toFloat(), mChanged);
+        setChanged(mRatioLimit, torrentMap[ratioLimitKey].toDouble(), mChanged);
 
         setChanged(mSeeders, torrentMap[seedersKey].toInt(), mChanged);
         setChanged(mLeechers, torrentMap[leechersKey].toInt(), mChanged);
@@ -641,7 +631,7 @@ namespace libtremotesf
 
         setChanged(mPeersLimit, torrentMap[peersLimitKey].toInt(), mChanged);
 
-        const long long activityDate = torrentMap[activityDateKey].toLongLong() * 1000;
+        const long long activityDate = torrentMap[activityDateKey].toDouble() * 1000;
         if (activityDate > 0) {
             if (activityDate != mActivityDate.toMSecsSinceEpoch()) {
                 mActivityDate.setMSecsSinceEpoch(activityDate);
@@ -653,7 +643,7 @@ namespace libtremotesf
                 mChanged = true;
             }
         }
-        const long long doneDate = torrentMap[doneDateKey].toLongLong() * 1000;
+        const long long doneDate = torrentMap[doneDateKey].toDouble() * 1000;
         if (doneDate > 0) {
             if (doneDate != mDoneDate.toMSecsSinceEpoch()) {
                 mDoneDate.setMSecsSinceEpoch(doneDate);
@@ -671,9 +661,10 @@ namespace libtremotesf
         setChanged(mIdleSeedingLimitMode, static_cast<IdleSeedingLimitMode>(torrentMap[idleSeedingLimitModeKey].toInt()), mChanged);
         setChanged(mIdleSeedingLimit, torrentMap[idleSeedingLimitKey].toInt(), mChanged);
         setChanged(mDownloadDirectory, torrentMap[downloadDirectoryKey].toString(), mChanged);
+        setChanged(mSingleFile, torrentMap[prioritiesKey].toArray().size() == 1, mChanged);
         setChanged(mCreator, torrentMap[creatorKey].toString(), mChanged);
 
-        const long long creationDate = torrentMap[creationDateKey].toLongLong() * 1000;
+        const long long creationDate = torrentMap[creationDateKey].toDouble() * 1000;
         if (creationDate > 0) {
             if (creationDate != mCreationDate.toMSecsSinceEpoch()) {
                 mCreationDate.setMSecsSinceEpoch(creationDate);
@@ -689,8 +680,8 @@ namespace libtremotesf
         setChanged(mComment, torrentMap[commentKey].toString(), mChanged);
 
         std::vector<std::shared_ptr<Tracker>> trackers;
-        for (const QVariant& trackerVariant : torrentMap[trackerStatsKey].toList()) {
-            const QVariantMap trackerMap(trackerVariant.toMap());
+        for (const QJsonValue& trackerVariant : torrentMap[trackerStatsKey].toArray()) {
+            const QJsonObject trackerMap(trackerVariant.toObject());
             const int id = trackerMap[trackerIdKey].toInt();
 
             std::shared_ptr<Tracker> tracker;
@@ -716,26 +707,26 @@ namespace libtremotesf
         emit updated();
     }
 
-    void Torrent::updateFiles(const QVariantMap& torrentMap)
+    void Torrent::updateFiles(const QJsonObject& torrentMap)
     {
-        const QVariantList files(torrentMap[filesKey].toList());
-        const QVariantList fileStats(torrentMap[fileStatsKey].toList());
+        const QJsonArray files(torrentMap[filesKey].toArray());
+        const QJsonArray fileStats(torrentMap[fileStatsKey].toArray());
 
         if (!files.isEmpty()) {
             const bool empty = mFiles.empty();
             for (int i = 0, max = files.size(); i < max; ++i) {
-                const QVariantMap fileMap(files[i].toMap());
-                const QVariantMap fileStatsMap(fileStats[i].toMap());
+                const QJsonObject fileMap(files[i].toObject());
+                const QJsonObject fileStatsMap(fileStats[i].toObject());
                 if (empty) {
                     std::vector<QString> path;
                     for (QString& part : fileMap["name"].toString().split('/', QString::SkipEmptyParts)) {
                         path.push_back(std::move(part));
                     }
-                    mFiles.push_back(std::make_shared<TorrentFile>(std::move(path), fileMap["length"].toLongLong()));
+                    mFiles.push_back(std::make_shared<TorrentFile>(std::move(path), fileMap[QLatin1String("length")].toDouble()));
                 }
                 TorrentFile* file = mFiles[i].get();
                 file->changed = false;
-                setChanged(file->completedSize, fileStatsMap["bytesCompleted"].toLongLong(), file->changed);
+                setChanged(file->completedSize, static_cast<long long>(fileStatsMap[QLatin1String("bytesCompleted")].toDouble()), file->changed);
                 setChanged(file->wanted, fileStatsMap["wanted"].toBool(), file->changed);
                 setChanged(file->priority, static_cast<TorrentFile::Priority>(fileStatsMap["priority"].toInt()), file->changed);
             }
@@ -746,13 +737,13 @@ namespace libtremotesf
         emit filesUpdated(mFiles);
     }
 
-    void Torrent::updatePeers(const QVariantMap& torrentMap)
+    void Torrent::updatePeers(const QJsonObject& torrentMap)
     {
-        const QVariantList peers(torrentMap[peersKey].toList());
+        const QJsonArray peers(torrentMap[peersKey].toArray());
 
         std::vector<QString> addresses;
-        for (const QVariant& peer : peers) {
-            addresses.push_back(peer.toMap()["address"].toString());
+        for (const QJsonValue& peer : peers) {
+            addresses.push_back(peer.toObject()[QLatin1String("address")].toString());
         }
 
         for (std::size_t i = 0, max = mPeers.size(); i < max; ++i) {
@@ -763,9 +754,9 @@ namespace libtremotesf
             }
         }
 
-        for (const QVariant& peerVariant : peers) {
-            const QVariantMap peerMap(peerVariant.toMap());
-            const QString address(peerMap["address"].toString());
+        for (const QJsonValue& peerVariant : peers) {
+            const QJsonObject peerMap(peerVariant.toObject());
+            const QString address(peerMap[QLatin1String("address")].toString());
             int row = -1;
             for (int i = 0, max = mPeers.size(); i < max; ++i) {
                 if (mPeers[i]->address == address) {
@@ -774,7 +765,6 @@ namespace libtremotesf
                 }
             }
             if (row == -1) {
-                row = mPeers.size();
                 mPeers.push_back(std::make_shared<Peer>(address, peerMap));
             } else {
                 mPeers[row]->update(peerMap);

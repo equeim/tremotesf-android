@@ -66,7 +66,6 @@ namespace libtremotesf
         Q_PROPERTY(libtremotesf::ServerStats* serverStats READ serverStats CONSTANT)
         Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)
         Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-        //Q_PROPERTY(QString statusString READ statusString NOTIFY statusStringChanged)
         Q_PROPERTY(Error error READ error NOTIFY errorChanged)
         Q_PROPERTY(bool local READ isLocal NOTIFY connectedChanged)
         Q_PROPERTY(int torrentsCount READ torrentsCount NOTIFY torrentsUpdated)
@@ -104,7 +103,6 @@ namespace libtremotesf
 
         bool isConnected() const;
         Status status() const;
-        //QString statusString() const;
         Error error() const;
         bool isLocal() const;
 
@@ -176,11 +174,11 @@ namespace libtremotesf
         void onAuthenticationRequired(QNetworkReply*, QAuthenticator* authenticator);
 
         void postRequest(const QByteArray& data,
-                         const std::function<void(const QVariantMap&)>& callOnSuccessParse,
+                         const std::function<void(const QJsonObject&)>& callOnSuccessParse,
                          const std::function<void()>& callOnSuccess);
 
         void postRequest(const QByteArray& data,
-                         const std::function<void(const QVariantMap&)>& callOnSuccess);
+                         const std::function<void(const QJsonObject&)>& callOnSuccess);
 
         void postRequest(const QByteArray& data,
                          const std::function<void()>& callOnSuccess = nullptr);
@@ -204,7 +202,6 @@ namespace libtremotesf
         bool mRpcVersionChecked;
         bool mServerSettingsUpdated;
         bool mTorrentsUpdated;
-        bool mFirstUpdate;
         bool mServerStatsUpdated;
         QTimer* mUpdateTimer;
 
@@ -224,8 +221,8 @@ namespace libtremotesf
 
         void torrentsUpdated();
 
-        void torrentAdded(const std::shared_ptr<Torrent>& torrent);
-        void torrentFinished(const std::shared_ptr<Torrent>& torrent);
+        void torrentAdded(libtremotesf::Torrent* torrent);
+        void torrentFinished(libtremotesf::Torrent* torrent);
 
         void torrentAddDuplicate();
         void torrentAddError();

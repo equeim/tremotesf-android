@@ -65,23 +65,23 @@ class ServerStatsDialogFragment : DialogFragment() {
             val update = {
                 val sessionStats = Rpc.instance.serverStats.currentSession()
                 sessionDownloadedTextView.text = Utils.formatByteSize(context!!,
-                                                                      sessionStats.downloaded)
+                                                                      sessionStats.downloaded())
                 sessionUploadedTextView.text = Utils.formatByteSize(context!!,
-                                                                    sessionStats.uploaded)
-                sessionRatioTextView.text = ratioFormat.format(sessionStats.uploaded.toDouble() /
-                                                               sessionStats.downloaded.toDouble())
-                sessionDurationTextView.text = Utils.formatDuration(context!!, sessionStats.duration)
+                                                                    sessionStats.uploaded())
+                sessionRatioTextView.text = ratioFormat.format(sessionStats.uploaded().toDouble() /
+                                                               sessionStats.downloaded().toDouble())
+                sessionDurationTextView.text = Utils.formatDuration(context!!, sessionStats.duration())
 
                 val totalStats = Rpc.instance.serverStats.total()
-                val sessionCount = totalStats.sessionCount
+                val sessionCount = totalStats.sessionCount()
                 startedTimesTextView.text = resources.getQuantityString(R.plurals.started_times,
                                                                         sessionCount,
                                                                         sessionCount)
-                totalDownloadedTextView.text = Utils.formatByteSize(context!!, totalStats.downloaded)
-                totalUploadedTextView.text = Utils.formatByteSize(context!!, totalStats.uploaded)
-                totalRatioTextView.text = ratioFormat.format(totalStats.uploaded.toDouble() /
-                                                             totalStats.downloaded.toDouble())
-                totalDurationTextView.text = Utils.formatDuration(context!!, totalStats.duration)
+                totalDownloadedTextView.text = Utils.formatByteSize(context!!, totalStats.downloaded())
+                totalUploadedTextView.text = Utils.formatByteSize(context!!, totalStats.uploaded())
+                totalRatioTextView.text = ratioFormat.format(totalStats.uploaded().toDouble() /
+                                                             totalStats.downloaded().toDouble())
+                totalDurationTextView.text = Utils.formatDuration(context!!, totalStats.duration())
             }
 
             update()

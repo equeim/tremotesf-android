@@ -35,20 +35,20 @@ public class SessionStats {
     }
   }
 
-  public long getDownloaded() {
-    return libtremotesfJNI.SessionStats_downloaded_get(swigCPtr, this);
+  public long downloaded() {
+    return libtremotesfJNI.SessionStats_downloaded(swigCPtr, this);
   }
 
-  public long getUploaded() {
-    return libtremotesfJNI.SessionStats_uploaded_get(swigCPtr, this);
+  public long uploaded() {
+    return libtremotesfJNI.SessionStats_uploaded(swigCPtr, this);
   }
 
-  public int getDuration() {
-    return libtremotesfJNI.SessionStats_duration_get(swigCPtr, this);
+  public int duration() {
+    return libtremotesfJNI.SessionStats_duration(swigCPtr, this);
   }
 
-  public int getSessionCount() {
-    return libtremotesfJNI.SessionStats_sessionCount_get(swigCPtr, this);
+  public int sessionCount() {
+    return libtremotesfJNI.SessionStats_sessionCount(swigCPtr, this);
   }
 
 }

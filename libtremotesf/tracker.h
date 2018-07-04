@@ -19,7 +19,9 @@
 #ifndef LIBTREMOTESF_TRACKER_H
 #define LIBTREMOTESF_TRACKER_H
 
-#include <QVariantMap>
+#include <QString>
+
+class QJsonObject;
 
 namespace libtremotesf
 {
@@ -35,20 +37,19 @@ namespace libtremotesf
             Error
         };
 
-        explicit Tracker(int id, const QVariantMap& trackerMap);
+        explicit Tracker(int id, const QJsonObject& trackerMap);
 
         int id() const;
         const QString& announce() const;
         const QString& site() const;
 
         Status status() const;
-        //QString statusString() const;
         QString errorMessage() const;
 
         int peers() const;
         int nextUpdate() const;
 
-        void update(const QVariantMap& trackerMap);
+        void update(const QJsonObject& trackerMap);
 
     private:
         int mId;

@@ -111,11 +111,11 @@ public class ServerSettings {
     libtremotesfJNI.ServerSettings_setRatioLimited(swigCPtr, this, limited);
   }
 
-  public float ratioLimit() {
+  public double ratioLimit() {
     return libtremotesfJNI.ServerSettings_ratioLimit(swigCPtr, this);
   }
 
-  public void setRatioLimit(float limit) {
+  public void setRatioLimit(double limit) {
     libtremotesfJNI.ServerSettings_setRatioLimit(swigCPtr, this, limit);
   }
 

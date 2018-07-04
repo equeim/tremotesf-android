@@ -73,8 +73,8 @@ public class libtremotesfJNI {
   public final static native long Peer_downloadSpeed_get(long jarg1, Peer jarg1_);
   public final static native void Peer_uploadSpeed_set(long jarg1, Peer jarg1_, long jarg2);
   public final static native long Peer_uploadSpeed_get(long jarg1, Peer jarg1_);
-  public final static native void Peer_progress_set(long jarg1, Peer jarg1_, float jarg2);
-  public final static native float Peer_progress_get(long jarg1, Peer jarg1_);
+  public final static native void Peer_progress_set(long jarg1, Peer jarg1_, double jarg2);
+  public final static native double Peer_progress_get(long jarg1, Peer jarg1_);
   public final static native void Peer_flags_set(long jarg1, Peer jarg1_, String jarg2);
   public final static native String Peer_flags_get(long jarg1, Peer jarg1_);
   public final static native void Peer_client_set(long jarg1, Peer jarg1_, String jarg2);
@@ -91,8 +91,9 @@ public class libtremotesfJNI {
   public final static native long Torrent_completedSize(long jarg1, Torrent jarg1_);
   public final static native long Torrent_leftUntilDone(long jarg1, Torrent jarg1_);
   public final static native long Torrent_sizeWhenDone(long jarg1, Torrent jarg1_);
-  public final static native float Torrent_percentDone(long jarg1, Torrent jarg1_);
-  public final static native float Torrent_recheckProgress(long jarg1, Torrent jarg1_);
+  public final static native double Torrent_percentDone(long jarg1, Torrent jarg1_);
+  public final static native boolean Torrent_isFinished(long jarg1, Torrent jarg1_);
+  public final static native double Torrent_recheckProgress(long jarg1, Torrent jarg1_);
   public final static native int Torrent_eta(long jarg1, Torrent jarg1_);
   public final static native long Torrent_downloadSpeed(long jarg1, Torrent jarg1_);
   public final static native long Torrent_uploadSpeed(long jarg1, Torrent jarg1_);
@@ -102,9 +103,9 @@ public class libtremotesfJNI {
   public final static native int Torrent_uploadSpeedLimit(long jarg1, Torrent jarg1_);
   public final static native long Torrent_totalDownloaded(long jarg1, Torrent jarg1_);
   public final static native long Torrent_totalUploaded(long jarg1, Torrent jarg1_);
-  public final static native float Torrent_ratio(long jarg1, Torrent jarg1_);
+  public final static native double Torrent_ratio(long jarg1, Torrent jarg1_);
   public final static native int Torrent_ratioLimitMode(long jarg1, Torrent jarg1_);
-  public final static native float Torrent_ratioLimit(long jarg1, Torrent jarg1_);
+  public final static native double Torrent_ratioLimit(long jarg1, Torrent jarg1_);
   public final static native int Torrent_seeders(long jarg1, Torrent jarg1_);
   public final static native int Torrent_leechers(long jarg1, Torrent jarg1_);
   public final static native int Torrent_peersLimit(long jarg1, Torrent jarg1_);
@@ -116,6 +117,7 @@ public class libtremotesfJNI {
   public final static native int Torrent_idleSeedingLimitMode(long jarg1, Torrent jarg1_);
   public final static native int Torrent_idleSeedingLimit(long jarg1, Torrent jarg1_);
   public final static native String Torrent_downloadDirectory(long jarg1, Torrent jarg1_);
+  public final static native boolean Torrent_isSingleFile(long jarg1, Torrent jarg1_);
   public final static native String Torrent_creator(long jarg1, Torrent jarg1_);
   public final static native java.util.Date Torrent_creationDate(long jarg1, Torrent jarg1_);
   public final static native String Torrent_comment(long jarg1, Torrent jarg1_);
@@ -190,8 +192,8 @@ public class libtremotesfJNI {
   public final static native void ServerSettings_setIncompleteDirectory(long jarg1, ServerSettings jarg1_, String jarg2);
   public final static native boolean ServerSettings_isRatioLimited(long jarg1, ServerSettings jarg1_);
   public final static native void ServerSettings_setRatioLimited(long jarg1, ServerSettings jarg1_, boolean jarg2);
-  public final static native float ServerSettings_ratioLimit(long jarg1, ServerSettings jarg1_);
-  public final static native void ServerSettings_setRatioLimit(long jarg1, ServerSettings jarg1_, float jarg2);
+  public final static native double ServerSettings_ratioLimit(long jarg1, ServerSettings jarg1_);
+  public final static native void ServerSettings_setRatioLimit(long jarg1, ServerSettings jarg1_, double jarg2);
   public final static native boolean ServerSettings_isIdleSeedingLimited(long jarg1, ServerSettings jarg1_);
   public final static native void ServerSettings_setIdleSeedingLimited(long jarg1, ServerSettings jarg1_, boolean jarg2);
   public final static native int ServerSettings_idleSeedingLimit(long jarg1, ServerSettings jarg1_);
@@ -253,10 +255,10 @@ public class libtremotesfJNI {
   public final static native boolean ServerSettings_saveOnSet(long jarg1, ServerSettings jarg1_);
   public final static native void ServerSettings_setSaveOnSet(long jarg1, ServerSettings jarg1_, boolean jarg2);
   public final static native void delete_ServerSettings(long jarg1);
-  public final static native long SessionStats_downloaded_get(long jarg1, SessionStats jarg1_);
-  public final static native long SessionStats_uploaded_get(long jarg1, SessionStats jarg1_);
-  public final static native int SessionStats_duration_get(long jarg1, SessionStats jarg1_);
-  public final static native int SessionStats_sessionCount_get(long jarg1, SessionStats jarg1_);
+  public final static native long SessionStats_downloaded(long jarg1, SessionStats jarg1_);
+  public final static native long SessionStats_uploaded(long jarg1, SessionStats jarg1_);
+  public final static native int SessionStats_duration(long jarg1, SessionStats jarg1_);
+  public final static native int SessionStats_sessionCount(long jarg1, SessionStats jarg1_);
   public final static native void delete_SessionStats(long jarg1);
   public final static native long ServerStats_downloadSpeed(long jarg1, ServerStats jarg1_);
   public final static native long ServerStats_uploadSpeed(long jarg1, ServerStats jarg1_);

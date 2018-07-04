@@ -79,11 +79,15 @@ public class Torrent {
     return libtremotesfJNI.Torrent_sizeWhenDone(swigCPtr, this);
   }
 
-  public float percentDone() {
+  public double percentDone() {
     return libtremotesfJNI.Torrent_percentDone(swigCPtr, this);
   }
 
-  public float recheckProgress() {
+  public boolean isFinished() {
+    return libtremotesfJNI.Torrent_isFinished(swigCPtr, this);
+  }
+
+  public double recheckProgress() {
     return libtremotesfJNI.Torrent_recheckProgress(swigCPtr, this);
   }
 
@@ -123,7 +127,7 @@ public class Torrent {
     return libtremotesfJNI.Torrent_totalUploaded(swigCPtr, this);
   }
 
-  public float ratio() {
+  public double ratio() {
     return libtremotesfJNI.Torrent_ratio(swigCPtr, this);
   }
 
@@ -131,7 +135,7 @@ public class Torrent {
     return libtremotesfJNI.Torrent_ratioLimitMode(swigCPtr, this);
   }
 
-  public float ratioLimit() {
+  public double ratioLimit() {
     return libtremotesfJNI.Torrent_ratioLimit(swigCPtr, this);
   }
 
@@ -178,6 +182,10 @@ public class Torrent {
   public String downloadDirectory() {
     return libtremotesfJNI.Torrent_downloadDirectory(swigCPtr, this);
 }
+
+  public boolean isSingleFile() {
+    return libtremotesfJNI.Torrent_isSingleFile(swigCPtr, this);
+  }
 
   public String creator() {
     return libtremotesfJNI.Torrent_creator(swigCPtr, this);

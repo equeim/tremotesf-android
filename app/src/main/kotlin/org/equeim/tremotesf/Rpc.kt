@@ -156,7 +156,7 @@ class Rpc : JniRpc() {
                                                                                 context!!)
                                     }
                                 } else {
-                                    if (!oldTorrent.finished && (torrent.percentDone() == 1.0f) && notifyOnFinished) {
+                                    if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
                                         BackgroundService.showFinishedNotification(torrent.id(),
                                                                                    hashString,
                                                                                    torrent.name(),
@@ -290,7 +290,7 @@ class Rpc : JniRpc() {
                 lastTorrents.torrents.add(Server.Torrent(torrent.id,
                                                          torrent.hashString,
                                                          torrent.name,
-                                                         torrent.percentDone == 1.0f))
+                                                         torrent.isFinished))
             }
             lastTorrents.saved = true
             Servers.save()

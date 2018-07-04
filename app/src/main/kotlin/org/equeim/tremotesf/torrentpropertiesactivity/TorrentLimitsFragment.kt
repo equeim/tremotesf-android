@@ -147,7 +147,7 @@ class TorrentLimitsFragment : Fragment() {
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!.toFloat())
+                    Rpc.instance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!)
                 }
             }
 

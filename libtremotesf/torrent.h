@@ -24,7 +24,8 @@
 
 #include <QDateTime>
 #include <QObject>
-#include <QVariantMap>
+
+class QJsonObject;
 
 namespace libtremotesf
 {
@@ -55,13 +56,13 @@ namespace libtremotesf
 
     struct Peer
     {
-        explicit Peer(const QString& address, const QVariantMap& peerMap);
-        void update(const QVariantMap& peerMap);
+        explicit Peer(const QString& address, const QJsonObject& peerMap);
+        void update(const QJsonObject& peerMap);
 
         QString address;
         long long downloadSpeed;
         long long uploadSpeed;
-        float progress;
+        double progress;
         QString flags;
         QString client;
     };
@@ -75,15 +76,16 @@ namespace libtremotesf
         Q_PROPERTY(QString name READ name CONSTANT)
 
         Q_PROPERTY(Status status READ status NOTIFY updated)
-        //Q_PROPERTY(QString statusString READ statusString NOTIFY updated)
+        Q_PROPERTY(QString errorString READ errorString NOTIFY updated)
         Q_PROPERTY(int queuePosition READ queuePosition NOTIFY updated)
 
         Q_PROPERTY(long long totalSize READ totalSize NOTIFY updated)
         Q_PROPERTY(long long completedSize READ completedSize NOTIFY updated)
         Q_PROPERTY(long long leftUntilDone READ leftUntilDone NOTIFY updated)
         Q_PROPERTY(long long sizeWhenDone READ sizeWhenDone NOTIFY updated)
-        Q_PROPERTY(float percentDone READ percentDone NOTIFY updated)
-        Q_PROPERTY(float recheckProgress READ recheckProgress NOTIFY updated)
+        Q_PROPERTY(double percentDone READ percentDone NOTIFY updated)
+        Q_PROPERTY(bool finished READ isFinished NOTIFY updated)
+        Q_PROPERTY(double recheckProgress READ recheckProgress NOTIFY updated)
         Q_PROPERTY(int eta READ eta NOTIFY updated)
 
         Q_PROPERTY(long long downloadSpeed READ downloadSpeed NOTIFY updated)
@@ -96,9 +98,9 @@ namespace libtremotesf
 
         Q_PROPERTY(long long totalDownloaded READ totalDownloaded NOTIFY updated)
         Q_PROPERTY(long long totalUploaded READ totalUploaded NOTIFY updated)
-        Q_PROPERTY(float ratio READ ratio NOTIFY updated)
+        Q_PROPERTY(double ratio READ ratio NOTIFY updated)
         Q_PROPERTY(RatioLimitMode ratioLimitMode READ ratioLimitMode WRITE setRatioLimitMode NOTIFY updated)
-        Q_PROPERTY(float ratioLimit READ ratioLimit WRITE setRatioLimit NOTIFY updated)
+        Q_PROPERTY(double ratioLimit READ ratioLimit WRITE setRatioLimit NOTIFY updated)
 
         Q_PROPERTY(int seeders READ seeders NOTIFY updated)
         Q_PROPERTY(int leechers READ leechers NOTIFY updated)
@@ -113,6 +115,7 @@ namespace libtremotesf
         Q_PROPERTY(IdleSeedingLimitMode idleSeedingLimitMode READ idleSeedingLimitMode WRITE setIdleSeedingLimitMode)
         Q_PROPERTY(int idleSeedingLimit READ idleSeedingLimit WRITE setIdleSeedingLimit)
         Q_PROPERTY(QString downloadDirectory READ downloadDirectory NOTIFY updated)
+        Q_PROPERTY(bool singleFile READ isSingleFile NOTIFY updated)
         Q_PROPERTY(QString creator READ creator NOTIFY updated)
         Q_PROPERTY(QDateTime creationDate READ creationDate NOTIFY updated)
         Q_PROPERTY(QString comment READ comment NOTIFY updated)
@@ -159,14 +162,13 @@ namespace libtremotesf
 
         static const QString idKey;
 
-        explicit Torrent(int id, const QVariantMap& torrentMap, Rpc* rpc);
+        explicit Torrent(int id, const QJsonObject& torrentMap, Rpc* rpc);
 
         int id() const;
         const QString& hashString() const;
         const QString& name() const;
 
         Status status() const;
-        //QString statusString() const;
         QString errorString() const;
         int queuePosition() const;
 
@@ -174,8 +176,9 @@ namespace libtremotesf
         long long completedSize() const;
         long long leftUntilDone() const;
         long long sizeWhenDone() const;
-        float percentDone() const;
-        float recheckProgress() const;
+        double percentDone() const;
+        bool isFinished() const;
+        double recheckProgress() const;
         int eta() const;
 
         long long downloadSpeed() const;
@@ -193,11 +196,11 @@ namespace libtremotesf
 
         long long totalDownloaded() const;
         long long totalUploaded() const;
-        float ratio() const;
+        double ratio() const;
         RatioLimitMode ratioLimitMode() const;
         Q_INVOKABLE void setRatioLimitMode(libtremotesf::Torrent::RatioLimitMode mode);
-        float ratioLimit() const;
-        Q_INVOKABLE void setRatioLimit(float limit);
+        double ratioLimit() const;
+        Q_INVOKABLE void setRatioLimit(double limit);
 
         int seeders() const;
         int leechers() const;
@@ -217,6 +220,7 @@ namespace libtremotesf
         int idleSeedingLimit() const;
         Q_INVOKABLE void setIdleSeedingLimit(int limit);
         const QString& downloadDirectory() const;
+        bool isSingleFile() const;
         const QString& creator() const;
         const QDateTime& creationDate() const;
         const QString& comment() const;
@@ -244,9 +248,9 @@ namespace libtremotesf
 
         bool isUpdated() const;
 
-        void update(const QVariantMap& torrentMap);
-        void updateFiles(const QVariantMap& torrentMap);
-        void updatePeers(const QVariantMap& torrentMap);
+        void update(const QJsonObject& torrentMap);
+        void updateFiles(const QJsonObject& torrentMap);
+        void updatePeers(const QJsonObject& torrentMap);
 
         bool isChanged() const;
 
@@ -263,8 +267,8 @@ namespace libtremotesf
         long long mCompletedSize = 0;
         long long mLeftUntilDone = 0;
         long long mSizeWhenDone = 0;
-        float mPercentDone = 0.0f;
-        float mRecheckProgress = 0.0f;
+        double mPercentDone = 0.0;
+        double mRecheckProgress = 0.0;
         int mEta = 0;
 
         long long mDownloadSpeed = 0;
@@ -277,9 +281,9 @@ namespace libtremotesf
 
         long long mTotalDownloaded = 0;
         long long mTotalUploaded = 0;
-        float mRatio = 0.0f;
+        double mRatio = 0.0;
         RatioLimitMode mRatioLimitMode = GlobalRatioLimit;
-        float mRatioLimit = 0.0f;
+        double mRatioLimit = 0.0;
 
         int mSeeders = 0;
         int mLeechers = 0;
@@ -294,6 +298,7 @@ namespace libtremotesf
         IdleSeedingLimitMode mIdleSeedingLimitMode = GlobalIdleSeedingLimit;
         int mIdleSeedingLimit = 0;
         QString mDownloadDirectory;
+        bool mSingleFile = false;
         QString mComment;
         QString mCreator;
         QDateTime mCreationDate;
