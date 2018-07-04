@@ -16,15 +16,15 @@ OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
     -confirm-license \
     -opensource \
     -prefix "$_PREFIX" \
-    -xplatform android-g++ \
-    -nomake tests \
-    -nomake examples \
+    -xplatform android-clang \
+    -c++std c++1z \
     -android-ndk "$ANDROID_NDK_ROOT" \
     -android-sdk "$ANDROID_SDK_ROOT" \
     -android-ndk-host linux-x86_64 \
-    -android-toolchain-version 4.9 \
     -android-arch "$ANDROID_ARCH" \
     -android-ndk-platform android-16 \
+    -nomake tests \
+    -nomake examples \
     -no-dbus \
     -no-gui \
     -no-opengl \
@@ -35,20 +35,29 @@ OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
     -no-feature-codecs \
     -no-feature-commandlineparser \
     -no-feature-datetimeparser \
+    -no-feature-dnslookup \
     -no-feature-dom \
+    -no-feature-filesystemiterator \
     -no-feature-filesystemwatcher \
     -no-feature-ftp \
-    -no-feature-library \
+    -no-feature-itemmodel \
+    -no-feature-itemmodeltester \
     -no-feature-localserver \
     -no-feature-mimetype \
     -no-feature-networkdiskcache \
+    -no-feature-networkproxy \
     -no-feature-process \
     -no-feature-processenvironment \
+    -no-feature-sql \
     -no-feature-regularexpression \
     -no-feature-sharedmemory \
     -no-feature-statemachine \
+    -no-feature-systemsemaphore \
     -no-feature-temporaryfile \
+    -no-feature-testlib \
     -no-feature-translation \
+    -no-feature-udpsocket \
+    -no-feature-xml \
     -no-feature-xmlstream \
     -openssl-linked \
     -I"$_OPENSSL_INCDIR" || exit 1
@@ -58,7 +67,7 @@ make install $MAKEOPTS || exit 1
 
 _LIBS="$_DIR/../../app/libs/$ANDROID_ARCH/"
 mkdir -p "$_LIBS"
-cp "$ANDROID_NDK_ROOT/sources/cxx-stl/gnu-libstdc++/4.9/libs/$ANDROID_ARCH/libgnustl_shared.so" "$_LIBS"
+cp "$ANDROID_NDK_ROOT/sources/cxx-stl/llvm-libc++/libs/$ANDROID_ARCH/libc++_shared.so" "$_LIBS"
 cp "$_PREFIX/lib/libQt5Core.so" "$_LIBS"
 cp "$_PREFIX/lib/libQt5Concurrent.so" "$_LIBS"
 cp "$_PREFIX/lib/libQt5Network.so" "$_LIBS"
