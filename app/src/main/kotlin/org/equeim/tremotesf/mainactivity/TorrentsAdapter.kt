@@ -473,11 +473,12 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                                                      selectedCount))
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove, { _, _ ->
+                    .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.instance.removeTorrents(selector.selectedItems.map(TorrentData::id).toIntArray(),
-                                           dialog.delete_files_check_box.isChecked)
+                                dialog.delete_files_check_box.isChecked)
                         selector.actionMode?.finish()
-                    }).create()
+                    }
+                    .create()
 
             dialog.setOnShowListener {
                 dialog.delete_files_check_box.isChecked = Settings.deleteFiles

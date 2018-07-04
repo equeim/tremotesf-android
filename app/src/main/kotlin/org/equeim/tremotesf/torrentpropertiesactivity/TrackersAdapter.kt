@@ -291,11 +291,12 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                             ids.size,
                                                             ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove, { _, _ ->
+                    .setPositiveButton(R.string.remove) { _, _ ->
                         val activity = this.activity as TorrentPropertiesActivity
                         Rpc.instance.torrentRemoveTrackers(activity.torrent, ids)
                         activity.actionMode?.finish()
-                    }).create()
+                    }
+                    .create()
         }
     }
 }

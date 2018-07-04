@@ -250,9 +250,10 @@ class ServerEditActivity : BaseActivity() {
                 return AlertDialog.Builder(requireContext())
                         .setMessage(R.string.server_exists)
                         .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(R.string.overwrite, { _, _ ->
+                        .setPositiveButton(R.string.overwrite) { _, _ ->
                             (activity!!.supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
-                        }).create()
+                        }
+                        .create()
             }
         }
     }

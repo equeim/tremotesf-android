@@ -90,7 +90,7 @@ private class Peer(rpcPeer: org.equeim.libtremotesf.Peer) {
     fun update(rpcPeer: org.equeim.libtremotesf.Peer) {
         downloadSpeed = rpcPeer.downloadSpeed
         uploadSpeed = rpcPeer.uploadSpeed
-        progress = rpcPeer.progress.toDouble()
+        progress = rpcPeer.progress
         client = rpcPeer.client
     }
 }

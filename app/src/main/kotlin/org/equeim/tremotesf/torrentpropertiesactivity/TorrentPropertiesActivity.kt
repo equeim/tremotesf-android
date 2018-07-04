@@ -401,11 +401,12 @@ class TorrentPropertiesActivity : BaseActivity() {
                     .setMessage(R.string.remove_torrent_message)
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove, { _, _ ->
+                    .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.instance.removeTorrents(intArrayOf(arguments!!.getInt("id")),
-                                           dialog.delete_files_check_box.isChecked)
+                                dialog.delete_files_check_box.isChecked)
                         activity!!.finish()
-                    }).create()
+                    }
+                    .create()
         }
     }
 }

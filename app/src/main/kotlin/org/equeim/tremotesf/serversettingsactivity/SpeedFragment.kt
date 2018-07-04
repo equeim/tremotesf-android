@@ -21,7 +21,6 @@ package org.equeim.tremotesf.serversettingsactivity
 
 import java.text.DateFormat
 import java.text.DateFormatSymbols
-import java.util.Date
 import java.util.Calendar
 
 import android.app.Dialog

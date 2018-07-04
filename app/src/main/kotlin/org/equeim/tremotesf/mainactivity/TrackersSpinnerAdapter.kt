@@ -51,7 +51,7 @@ class TrackersSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(
         trackersMap.clear()
         for (torrent in Rpc.instance.torrents) {
             for (tracker in torrent.trackers) {
-                trackersMap[tracker] = trackersMap.getOrElse(tracker, { 0 }) + 1
+                trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
             }
         }
         trackers.clear()

@@ -50,7 +50,7 @@ class DirectoriesSpinnerAdapter(private val context: Context) : BaseSpinnerAdapt
     fun update() {
         directoriesMap.clear()
         for (torrent in Rpc.instance.torrents) {
-            directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory, { 0 }) + 1
+            directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory) { 0 } + 1
         }
         directories.clear()
         directories.addAll(directoriesMap.keys.sortedWith(comparator))

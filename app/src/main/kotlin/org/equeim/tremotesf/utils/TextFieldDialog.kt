@@ -23,7 +23,7 @@ fun createTextFieldDialog(context: Context,
                           onAccepted: (() -> Unit)?): AlertDialog {
     val builder = AlertDialog.Builder(context)
             .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok, { _, _ -> onAccepted?.invoke() })
+            .setPositiveButton(android.R.string.ok) { _, _ -> onAccepted?.invoke() }
             .setView(layout ?: R.layout.text_field_dialog)
 
     if (title != null) {

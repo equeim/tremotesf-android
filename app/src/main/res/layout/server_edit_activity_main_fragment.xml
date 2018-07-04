@@ -86,6 +86,7 @@
             android:background="?attr/selectableItemBackground"
             android:paddingRight="@dimen/horizontal_edge_padding"
             android:clickable="true"
+            android:focusable="true"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
             <TextView

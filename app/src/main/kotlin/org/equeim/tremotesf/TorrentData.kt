@@ -70,7 +70,7 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
         private set
     var percentDone = torrent.percentDone()
         private set
-    var isFinished = torrent.isFinished()
+    var isFinished = torrent.isFinished
         private set
     var recheckProgress = torrent.recheckProgress()
         private set
