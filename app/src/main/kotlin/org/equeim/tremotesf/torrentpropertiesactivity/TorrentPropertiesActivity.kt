@@ -397,7 +397,7 @@ class TorrentPropertiesActivity : BaseActivity() {
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(context!!)
+            return AlertDialog.Builder(requireContext())
                     .setMessage(R.string.remove_torrent_message)
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)

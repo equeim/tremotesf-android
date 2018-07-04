@@ -210,7 +210,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val fileName = arguments!!.getString(FILE_NAME)
-            return createTextFieldDialog(context!!,
+            return createTextFieldDialog(requireContext(),
                                          null,
                                          null,
                                          getString(R.string.file_name),

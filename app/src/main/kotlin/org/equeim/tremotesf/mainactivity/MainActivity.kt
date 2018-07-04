@@ -575,7 +575,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
     class DonateDialogFragment : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(context!!)
+            return AlertDialog.Builder(requireContext())
                     .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.donate, { _, _ ->

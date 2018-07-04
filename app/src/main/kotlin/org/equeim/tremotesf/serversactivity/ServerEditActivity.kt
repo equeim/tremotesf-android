@@ -247,7 +247,7 @@ class ServerEditActivity : BaseActivity() {
 
         class OverwriteDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                return AlertDialog.Builder(context!!)
+                return AlertDialog.Builder(requireContext())
                         .setMessage(R.string.server_exists)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.overwrite, { _, _ ->

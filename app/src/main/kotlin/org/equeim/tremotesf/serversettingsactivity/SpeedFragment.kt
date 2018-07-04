@@ -243,7 +243,7 @@ class SpeedFragment : Fragment() {
         end_time_item.beginTime = false
         end_time_item.setTime(Rpc.instance.serverSettings.alternativeSpeedLimitsEndTime())
 
-        days_spinner.adapter = ArraySpinnerAdapter(context!!, daysSpinnerItems.toTypedArray())
+        days_spinner.adapter = ArraySpinnerAdapter(requireContext(), daysSpinnerItems.toTypedArray())
         days_spinner.setSelection(days.indexOf(Rpc.instance.serverSettings.alternativeSpeedLimitsDays()))
         days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,

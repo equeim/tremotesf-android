@@ -444,7 +444,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return createTextFieldDialog(context!!,
+            return createTextFieldDialog(requireContext(),
                                          null,
                                          R.layout.set_location_dialog,
                                          getString(R.string.location),
@@ -467,7 +467,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             val selector = (activity as MainActivity).torrentsAdapter.selector
             val selectedCount = selector.selectedCount
 
-            val dialog = AlertDialog.Builder(context!!)
+            val dialog = AlertDialog.Builder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_torrents_message,
                                                                      selectedCount,
                                                                      selectedCount))

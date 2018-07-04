@@ -234,7 +234,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val trackerId = arguments?.getInt(TRACKER_ID) ?: -1
 
-            return createTextFieldDialog(context!!,
+            return createTextFieldDialog(requireContext(),
                                          if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker,
                                          null,
                                          getString(R.string.tracker_announce_url),
@@ -286,7 +286,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val ids = arguments!!.getIntArray("ids")
 
-            return AlertDialog.Builder(context!!)
+            return AlertDialog.Builder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,
                                                             ids.size,
                                                             ids.size))

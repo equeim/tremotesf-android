@@ -206,7 +206,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
         class RemoveDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
                 val selectedCount = (activity as ServersActivity).adapter.selector.selectedCount
-                return AlertDialog.Builder(context!!)
+                return AlertDialog.Builder(requireContext())
                         .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
                                                                 selectedCount,
                                                                 selectedCount))
