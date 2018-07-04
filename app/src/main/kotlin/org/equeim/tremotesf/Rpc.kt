@@ -103,6 +103,8 @@ class Rpc : JniRpc() {
             if (Servers.hasServers) {
                 updateServer()
                 connect()
+            } else {
+                resetServer()
             }
         }
     }
@@ -284,16 +286,18 @@ class Rpc : JniRpc() {
 
     override fun onAboutToDisconnect() {
         context!!.runOnUiThread {
-            val lastTorrents = Servers.currentServer!!.lastTorrents
-            lastTorrents.torrents.clear()
-            for (torrent in torrents) {
-                lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                                                         torrent.hashString,
-                                                         torrent.name,
-                                                         torrent.isFinished))
+            val lastTorrents = Servers.currentServer?.lastTorrents
+            if (lastTorrents != null) {
+                lastTorrents.torrents.clear()
+                for (torrent in torrents) {
+                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                            torrent.hashString,
+                            torrent.name,
+                            torrent.isFinished))
+                }
+                lastTorrents.saved = true
+                Servers.save()
             }
-            lastTorrents.saved = true
-            Servers.save()
         }
     }
 }

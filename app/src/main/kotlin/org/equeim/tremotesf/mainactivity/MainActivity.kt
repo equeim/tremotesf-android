@@ -172,7 +172,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
         updateSubtitle()
     }
 
-    private val serversListener = { serversSpinnerAdapter.update() }
+    private val serversListener = {
+        serversSpinnerAdapter.update()
+        serversSpinner.isEnabled = Servers.hasServers
+    }
     private val currentServerListener = { updateTitle() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
