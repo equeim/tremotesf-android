@@ -1,0 +1,103 @@
+<resources>
+    <string name="disconnected">已断开</string>
+    <string name="connecting">正在连接\u2026</string>
+    <string name="connected">已连接</string>
+
+    <string name="connect">连接</string>
+    <string name="disconnect">断开</string>
+    <string name="add">添加</string>
+
+    <string name="timed_out">连接已超时</string>
+    <string name="connection_error">连接出错</string>
+    <string name="authentication_error">认证出错</string>
+    <string name="parsing_error">解析出错</string>
+    <string name="server_is_too_new">服务端版本过新</string>
+    <string name="server_is_too_old">服务端版本过旧</string>
+
+    <string name="server">服务器</string>
+    <string name="server_settings">服务器设置</string>
+
+    <string name="sort">排序</string>
+    <string name="progress">进度</string>
+    <string name="eta">剩余时间</string>
+    <string name="ratio">分享率</string>
+    <string name="size">大小</string>
+    <string name="added_date">添加日期</string>
+
+    <string name="status">状态</string>
+
+    <string name="no_torrents">无种子</string>
+
+    <string name="torrents_all">全部(%d)</string>
+    <string name="torrents_active">活动的(%d)</string>
+    <string name="torrents_downloading">正在下载(%d)</string>
+    <string name="torrents_seeding">正在供种(%d)</string>
+    <string name="torrents_paused">已暂停(%d)</string>
+    <string name="torrents_checking">正在检查(%d)</string>
+    <string name="torrents_errored">已出错(%d)</string>
+
+    <plurals name="torrents_selected">
+        <item quantity="other">%d种子已选择</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="other">%d文件已选择</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="other">%dTracker已选择</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="other">%d对等方</item>
+    </plurals>
+
+    <string name="next_update">还有%s更新信息</string>
+    <string name="add_tracker">添加Tracker</string>
+    <string name="edit_tracker">编辑Tracker</string>
+
+    <string name="tracker_announce_url">Tracker宣告链接</string>
+
+    <string name="torrent_finished">下载已完成</string>
+    <string name="torrent_added">种子已添加</string>
+
+    <string name="torrent_not_found">找不到种子</string>
+    <string name="torrent_removed">种子已移除</string>
+
+    <string name="details">详细信息</string>
+    <string name="files">文件</string>
+    <string name="trackers">Trackers</string>
+    <string name="directories">文件夹</string>
+    <string name="peers">对等方</string>
+    <string name="limits">限制</string>
+
+    <string name="activity">活动</string>
+    <string name="information">信息</string>
+
+    <string name="completed">已完成</string>
+    <string name="downloaded">已下载</string>
+    <string name="uploaded">已上传</string>
+    <string name="download_speed">下载速度</string>
+    <string name="upload_speed">上传速度</string>
+    <string name="seeders">供种者</string>
+    <string name="leechers">下载者</string>
+    <string name="last_activity">最近活动</string>
+
+    <string name="total_size">总大小</string>
+    <string name="comment">注释</string>
+
+    <string name="priority">优先级</string>
+    <string name="high_priority">高</string>
+    <string name="normal_priority">普通</string>
+    <string name="low_pririty">低</string>
+    <string name="mixed_priority">混合</string>
+
+    <string name="no_files">无文件</string>
+
+    <string name="tracker_inactive">未活动</string>
+    <string name="tracker_active">活动的</string>
+    <string name="tracker_queued">排队中</string>
+    <string name="tracker_updating">正在更新</string>
+    <string name="tracker_error">错误：%s</string>
+
+    </resources>

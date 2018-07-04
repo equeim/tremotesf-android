@@ -74,6 +74,8 @@
     <string name="tracker_announce_url">İzleyici URL\'yi duyur</string>
 
     <string name="torrent_finished">Torrent bitti</string>
+    <string name="torrent_added">Torrent eklendi</string>
+
     <string name="torrent_not_found">Torrent bulunamadı</string>
     <string name="torrent_removed">Torrent kaldırıldı</string>
 
@@ -372,6 +374,8 @@
 
     <string name="persistent_notification_channel_name">Kalıcı bildirim</string>
     <string name="finished_torrents_channel_name">Bitmiş torrentler</string>
+    <string name="added_torrents_channel_name">Eklenmiş torrentler</string>
+
     <string name="appearance">Görünüm</string>
     <string name="torrents">Torrentler</string>
 
@@ -381,4 +385,16 @@
 
     <string name="donate">Bağış</string>
     <string name="donate_yandex">Yandex.Money</string>
-    </resources>
+    <string name="donate_message">Bu uygulamayı beğendiyseniz, geliştiriciye bir bağış göndererek gelişimini destekleyebilirsiniz.</string>
+    <string name="donate_dialog_again">Bu iletişim kutusu tekrar gösterilmeyecek.</string>
+
+    <string name="free_space">Boş alan: %s</string>
+    <string name="free_space_error">Boş alan elde edilirken hata oluştu</string>
+
+    <string name="notify_on_finished">Bitmiş torrentleri bildir</string>
+    <string name="notify_on_added">Eklenen torrentleri bildir</string>
+
+    <string name="notifications_on_connect">Sunucuya bağlanırken bildirimler</string>
+    <string name="notify_on_finished_since_last">Sunucuya son bağlantıdan bu yana bitmiş torrentlerİ bildir</string>
+    <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenmiş torrentlere bildirme</string>
+</resources>

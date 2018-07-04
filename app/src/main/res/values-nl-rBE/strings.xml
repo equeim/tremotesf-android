@@ -76,7 +76,7 @@
     <string name="torrent_finished">Torrent voltooid</string>
     <string name="torrent_added">Torrent toegevoegd</string>
 
-    <string name="torrent_not_found">Torrent nie’ gevonden</string>
+    <string name="torrent_not_found">Torrent niet gevonden</string>
     <string name="torrent_removed">Torrent verwijderd</string>
 
     <string name="details">Details</string>
@@ -91,7 +91,7 @@
 
     <string name="completed">Voltooid</string>
     <string name="downloaded">Gedownload</string>
-    <string name="uploaded">G’upload</string>
+    <string name="uploaded">Geüpload</string>
     <string name="download_speed">Downloadsnelheid</string>
     <string name="upload_speed">Uploadsnelheid</string>
     <string name="seeders">Seeders</string>
@@ -119,7 +119,7 @@
     <string name="mixed_priority">Gemengd</string>
 
     <string name="download_verb">Downloaden</string>
-    <string name="not_download">Nie’ downloaden</string>
+    <string name="not_download">Niet downloaden</string>
 
     <string name="no_files">Geen bestanden</string>
 
@@ -145,14 +145,14 @@
     <string name="ratio_limit">Verhoudingslimiet</string>
     <string-array name="ratio_limit_mode">
         <item>Algemene instellingen gebruiken</item>
-        <item>Seeden ong’acht verhouding</item>
+        <item>Seeden ongeacht verhouding</item>
         <item>Seeden stoppen bij verhouding</item>
     </string-array>
 
     <string name="idle_seeding">Inactief seeden</string>
     <string-array name="idle_seeding_mode">
         <item>Algemene instellingen gebruiken</item>
-        <item>Seeden ong’acht activiteit</item>
+        <item>Seeden ongeacht activiteit</item>
         <item>Seeden stoppen indien inactief voor</item>
     </string-array>
 
@@ -180,8 +180,8 @@
     <string name="remove">Verwijderen</string>
 
     <plurals name="remove_servers_message">
-        <item quantity="one">Zij’ ge zeker da’ ge %d geselecteerde server wild verwijderen?</item>
-        <item quantity="other">Zij’ ge zeker da’ ge de %d geselecteerde servers wild verwijderen?</item>
+        <item quantity="one">Zijt ge zeker dat ge %d geselecteerde server wilt verwijderen?</item>
+        <item quantity="other">Zijt ge zeker dat ge de %d geselecteerde servers wilt verwijderen?</item>
     </plurals>
 
     <string name="no_servers">Geen servers</string>
@@ -202,9 +202,9 @@
     <string name="background_update_interval">Achtergrondupdate-interval, s</string>
     <string name="timeout">Time-out, s</string>
 
-    <string name="empty_field_error">Dit veld kan nie leeg zijn</string>
+    <string name="empty_field_error">Dit veld kan niet leeg zijn</string>
 
-    <string name="server_exists">Server me’ deze naam bestaad al</string>
+    <string name="server_exists">Server met deze naam bestaat al</string>
     <string name="overwrite">Overschrijven</string>
 
     <string name="add_torrent">Torrent toevoegen</string>
@@ -295,8 +295,8 @@
     <string name="pause">Pauzeren</string>
 
     <plurals name="remove_torrents_message">
-        <item quantity="one">Zij’ ge zeker da’ ge de %d geselecteerde torrent wild verwijderen?</item>
-        <item quantity="other">Zij’ ge zeker da’ ge de %d geselecteerde torrents wild verwijderen?</item>
+        <item quantity="one">Zijt ge zeker dat ge de %d geselecteerde torrent wilt verwijderen?</item>
+        <item quantity="other">Zijt ge zeker dat ge de %d geselecteerde torrents wilt verwijderen?</item>
     </plurals>
     <string name="delete_files">Bestanden ook verwijderen van harde schijf</string>
     <string name="check_local_data">Lokale gegevens controleren</string>
@@ -322,8 +322,8 @@
     <string name="torrent_queued_for_checking">In wachtrij voor controle</string>
 
     <plurals name="remove_trackers_message">
-        <item quantity="one">Zij’ ge zeker da’ ge %d geselecteerden tracker wild verwijderen?</item>
-        <item quantity="other">Zij’ ge zeker da’ ge de %d geselecteerde trackers wild verwijderen?</item>
+        <item quantity="one">Zijt ge zeker dat ge %d geselecteerden tracker wilt verwijderen?</item>
+        <item quantity="other">Zijt ge zeker dat ge de %d geselecteerde trackers wilt verwijderen?</item>
     </plurals>
 
     <string name="invalid_server_url">Ongeldige server-URL</string>
@@ -352,7 +352,7 @@
         <item>%s YiB/s</item>
     </string-array>
 
-    <string name="remove_torrent_message">Zij’ ge zeker da’ ge dezen torrent wild verwijderen?</string>
+    <string name="remove_torrent_message">Zijt ge zeker dat ge dezen torrent wilt verwijderen?</string>
 
     <string name="set_location">Locatie instellen</string>
     <string name="move_files">Bestanden verplaatsen uit huidige map</string>
@@ -369,7 +369,7 @@
     <string name="prefs_dark_theme_title">Donker thema gebruiken</string>
     <string name="prefs_dark_theme_summary">Herstart den app voor de wijzigingen toe te passen</string>
     <string name="prefs_background_service_title">Achtergronddienst inschakelen</string>
-    <string name="prefs_background_service_summary">Den dienst word gestopt indien den app uit het scherm me recente apps word verwijderd, tenzij blijvende melding is ingeschakeld</string>
+    <string name="prefs_background_service_summary">Den dienst wordt gestopt indien dat den app uit het scherm met recente apps wordt verwijderd, tenzij dat blijvende melding is ingeschakeld</string>
     <string name="prefs_persistent_notification_title">Blijvende melding tonen</string>
 
     <string name="persistent_notification_channel_name">Blijvende melding</string>
@@ -385,8 +385,8 @@
 
     <string name="donate">Doneren</string>
     <string name="donate_yandex">Yandex.Money</string>
-    <string name="donate_message">Als ge dezen app op prijs steld, kund ge de verdere ontwikkeling dervan ondersteunen door den ontwikkelaar een kleine donatie te geven.</string>
-    <string name="donate_dialog_again">Dezen dialoog ga nie meer worden weergegeven.</string>
+    <string name="donate_message">Als ge dezen app op prijs stelt, kunt ge de verdere ontwikkeling dervan ondersteunen door den ontwikkelaar een kleine donatie te geven.</string>
+    <string name="donate_dialog_again">Dezen dialoog gaat niet meer worden weergegeven.</string>
 
     <string name="free_space">Vrije ruimte: %s</string>
     <string name="free_space_error">Fout bij verkrijgen van vrije ruimte</string>
@@ -394,7 +394,7 @@
     <string name="notify_on_finished">Voltooide torrents melden</string>
     <string name="notify_on_added">Toegevoegde torrents melden</string>
 
-    <string name="notifications_on_connect">Melden bij verbinden me’ de server</string>
-    <string name="notify_on_finished_since_last">Melden bij voltooide torrents sinds laatste verbinding me’ de server</string>
-    <string name="notify_on_added_since_last">Melden bij toegevoegde torrents sinds laatste verbinding me’ de server</string>
+    <string name="notifications_on_connect">Melden bij verbinden met de server</string>
+    <string name="notify_on_finished_since_last">Melden bij voltooide torrents sinds laatste verbinding met de server</string>
+    <string name="notify_on_added_since_last">Melden bij toegevoegde torrents sinds laatste verbinding met de server</string>
 </resources>
