@@ -11,8 +11,8 @@ android {
         applicationId 'org.equeim.tremotesf'
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 16
-        versionName '1.7.0'
+        versionCode 17
+        versionName '1.7.1'
     }
     buildTypes {
         release {

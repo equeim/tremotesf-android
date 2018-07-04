@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.7.1] - 2018-07-04
+### Changed
+- Qt updated to version 5.11.1
+- Switched to OpenSSL 1.1
+- Native libraries are now build using latest NDK
+- Qt and libtremotesf are now build using Clang
+- Updated translations
+
+### Fixed
+- Not disconnecting when removing last server
+- Servers spinner when adding first server / removing last server
+- Fixed notifications when connecting to server after disconnect
+
 ## [1.7.0] - 2018-06-11
 ### Added
 - Show available free space when adding torrents
