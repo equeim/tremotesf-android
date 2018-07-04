@@ -384,7 +384,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
             Rpc.instance.gotDownloadDirFreeSpaceListener = {
                 if (download_directory_edit.text.trim().toString() == Rpc.instance.serverSettings.downloadDirectory()) {
-                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(activity!!, it))
+                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), it))
                     free_space_text_view.visibility = View.VISIBLE
                 }
             }
@@ -392,7 +392,7 @@ class AddTorrentFileActivity : BaseActivity() {
             Rpc.instance.gotFreeSpaceForPathListener = { path, success, bytes ->
                 if (path == download_directory_edit.text.trim().toString()) {
                     if (success) {
-                        free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(activity!!, bytes))
+                        free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
                     } else {
                         free_space_text_view.text = getString(R.string.free_space_error)
                     }

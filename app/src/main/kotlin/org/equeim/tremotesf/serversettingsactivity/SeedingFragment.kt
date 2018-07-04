@@ -43,7 +43,7 @@ class SeedingFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity?.title = getString(R.string.server_settings_seeding)
+        requireActivity().title = getString(R.string.server_settings_seeding)
         return inflater.inflate(R.layout.server_settings_seeding_fragment, container, false)
     }
 

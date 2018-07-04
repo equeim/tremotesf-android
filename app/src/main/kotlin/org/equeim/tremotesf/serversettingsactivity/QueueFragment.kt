@@ -41,7 +41,7 @@ class QueueFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity?.title = getString(R.string.server_settings_queue)
+        requireActivity().title = getString(R.string.server_settings_queue)
         return inflater.inflate(R.layout.server_settings_queue_fragment, container, false)
     }
 

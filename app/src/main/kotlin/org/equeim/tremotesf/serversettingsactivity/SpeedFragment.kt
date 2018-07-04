@@ -116,13 +116,13 @@ class SpeedFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        activity?.title = getString(R.string.server_settings_speed)
+        requireActivity().title = getString(R.string.server_settings_speed)
         return inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as ServerSettingsActivity).hideKeyboard()
+        (requireActivity() as ServerSettingsActivity).hideKeyboard()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

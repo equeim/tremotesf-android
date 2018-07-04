@@ -404,7 +404,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                     .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.instance.removeTorrents(intArrayOf(arguments!!.getInt("id")),
                                 dialog.delete_files_check_box.isChecked)
-                        activity!!.finish()
+                        activity?.finish()
                     }
                     .create()
         }

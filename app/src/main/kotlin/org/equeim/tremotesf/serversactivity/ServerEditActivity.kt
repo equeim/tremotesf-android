@@ -251,7 +251,7 @@ class ServerEditActivity : BaseActivity() {
                         .setMessage(R.string.server_exists)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.overwrite) { _, _ ->
-                            (activity!!.supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
+                            (fragmentManager?.findFragmentByTag(MainFragment.TAG) as MainFragment).save()
                         }
                         .create()
             }
