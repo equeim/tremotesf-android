@@ -180,7 +180,7 @@ public class JniRpc extends BaseRpc {
     libtremotesfJNI.JniRpc_setTorrentRatioLimitMode(swigCPtr, this, Torrent.getCPtr(torrent), torrent, mode);
   }
 
-  public void setTorrentRatioLimit(Torrent torrent, float limit) {
+  public void setTorrentRatioLimit(Torrent torrent, double limit) {
     libtremotesfJNI.JniRpc_setTorrentRatioLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
   }
 

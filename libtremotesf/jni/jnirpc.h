@@ -22,7 +22,7 @@ namespace libtremotesf
         void setIncompleteDirectoryEnabled(bool enabled);
         void setIncompleteDirectory(const QString& directory);
         void setRatioLimited(bool limited);
-        void setRatioLimit(float limit);
+        void setRatioLimit(double limit);
         void setIdleSeedingLimited(bool limited);
         void setIdleSeedingLimit(int limit);
         void setDownloadQueueEnabled(bool enabled);
@@ -129,7 +129,7 @@ namespace libtremotesf
         void setTorrentUploadSpeedLimited(Torrent* torrent, bool limited);
         void setTorrentUploadSpeedLimit(Torrent* torrent, int limit);
         void setTorrentRatioLimitMode(Torrent* torrent, Torrent::RatioLimitMode mode);
-        void setTorrentRatioLimit(Torrent* torrent, float limit);
+        void setTorrentRatioLimit(Torrent* torrent, double limit);
         void setTorrentPeersLimit(Torrent* torrent, int limit);
         void setTorrentHonorSessionLimits(Torrent* torrent, bool honor);
         void setTorrentBandwidthPriority(Torrent* torrent, Torrent::Priority priority);

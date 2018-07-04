@@ -5816,15 +5816,15 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setRatioLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jfloat jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setRatioLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   libtremotesf::JniServerSettings *arg1 = (libtremotesf::JniServerSettings *) 0 ;
-  float arg2 ;
+  double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::JniServerSettings **)&jarg1; 
-  arg2 = (float)jarg2; 
+  arg2 = (double)jarg2; 
   (arg1)->setRatioLimit(arg2);
 }
 
@@ -7137,10 +7137,10 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentRatioLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jfloat jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentRatioLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jdouble jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
-  float arg3 ;
+  double arg3 ;
   std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
@@ -7151,7 +7151,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   
   smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
   arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
-  arg3 = (float)jarg3; 
+  arg3 = (double)jarg3; 
   (arg1)->setTorrentRatioLimit(arg2,arg3);
 }
 

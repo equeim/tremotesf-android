@@ -272,7 +272,7 @@ public class libtremotesfJNI {
   public final static native void JniServerSettings_setIncompleteDirectoryEnabled(long jarg1, JniServerSettings jarg1_, boolean jarg2);
   public final static native void JniServerSettings_setIncompleteDirectory(long jarg1, JniServerSettings jarg1_, String jarg2);
   public final static native void JniServerSettings_setRatioLimited(long jarg1, JniServerSettings jarg1_, boolean jarg2);
-  public final static native void JniServerSettings_setRatioLimit(long jarg1, JniServerSettings jarg1_, float jarg2);
+  public final static native void JniServerSettings_setRatioLimit(long jarg1, JniServerSettings jarg1_, double jarg2);
   public final static native void JniServerSettings_setIdleSeedingLimited(long jarg1, JniServerSettings jarg1_, boolean jarg2);
   public final static native void JniServerSettings_setIdleSeedingLimit(long jarg1, JniServerSettings jarg1_, int jarg2);
   public final static native void JniServerSettings_setDownloadQueueEnabled(long jarg1, JniServerSettings jarg1_, boolean jarg2);
@@ -335,7 +335,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_setTorrentUploadSpeedLimited(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, boolean jarg3);
   public final static native void JniRpc_setTorrentUploadSpeedLimit(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3);
   public final static native void JniRpc_setTorrentRatioLimitMode(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3);
-  public final static native void JniRpc_setTorrentRatioLimit(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, float jarg3);
+  public final static native void JniRpc_setTorrentRatioLimit(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, double jarg3);
   public final static native void JniRpc_setTorrentPeersLimit(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3);
   public final static native void JniRpc_setTorrentHonorSessionLimits(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, boolean jarg3);
   public final static native void JniRpc_setTorrentBandwidthPriority(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3);

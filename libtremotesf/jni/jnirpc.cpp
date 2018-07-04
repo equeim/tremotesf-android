@@ -64,9 +64,9 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setRatioLimited", Q_ARG(bool, limited));
     }
 
-    void JniServerSettings::setRatioLimit(float limit)
+    void JniServerSettings::setRatioLimit(double limit)
     {
-        QMetaObject::invokeMethod(this, "setRatioLimit", Q_ARG(float, limit));
+        QMetaObject::invokeMethod(this, "setRatioLimit", Q_ARG(double, limit));
     }
 
     void JniServerSettings::setIdleSeedingLimited(bool limited)
@@ -449,9 +449,9 @@ namespace libtremotesf
         QMetaObject::invokeMethod(torrent, "setRatioLimitMode", Q_ARG(libtremotesf::Torrent::RatioLimitMode, mode));
     }
 
-    void JniRpc::setTorrentRatioLimit(Torrent* torrent, float limit)
+    void JniRpc::setTorrentRatioLimit(Torrent* torrent, double limit)
     {
-        QMetaObject::invokeMethod(torrent, "setRatioLimit", Q_ARG(float, limit));
+        QMetaObject::invokeMethod(torrent, "setRatioLimit", Q_ARG(double, limit));
     }
 
     void JniRpc::setTorrentPeersLimit(Torrent* torrent, int limit)

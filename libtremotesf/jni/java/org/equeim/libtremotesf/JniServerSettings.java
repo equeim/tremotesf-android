@@ -63,7 +63,7 @@ public class JniServerSettings extends ServerSettings {
     libtremotesfJNI.JniServerSettings_setRatioLimited(swigCPtr, this, limited);
   }
 
-  public void setRatioLimit(float limit) {
+  public void setRatioLimit(double limit) {
     libtremotesfJNI.JniServerSettings_setRatioLimit(swigCPtr, this, limit);
   }
 
