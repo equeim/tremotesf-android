@@ -4229,9 +4229,39 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1mo
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1setTorrentLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jboolean jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1reannounceTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
-  int arg2 ;
+  QVariantList *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Rpc **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+    return ;
+  }
+  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetArrayLength(jarg2);
+  QVariantList arg2_str;
+  if (arg2_len) {
+    arg2_str.reserve(arg2_len);
+    for (jsize i = 0; i < arg2_len; ++i) {
+      arg2_str.push_back(arg2_pstr[i]);
+    }
+  }
+  arg2 = &arg2_str;
+  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
+  
+  (arg1)->reannounceTorrents((QVariantList const &)*arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1setTorrentsLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jstring jarg3, jboolean jarg4) {
+  libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
+  QVariantList *arg2 = 0 ;
   QString *arg3 = 0 ;
   bool arg4 ;
   
@@ -4239,7 +4269,24 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1se
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::Rpc **)&jarg1; 
-  arg2 = (int)jarg2; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+    return ;
+  }
+  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetArrayLength(jarg2);
+  QVariantList arg2_str;
+  if (arg2_len) {
+    arg2_str.reserve(arg2_len);
+    for (jsize i = 0; i < arg2_len; ++i) {
+      arg2_str.push_back(arg2_pstr[i]);
+    }
+  }
+  arg2 = &arg2_str;
+  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
+  
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
@@ -4253,7 +4300,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1se
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
   arg4 = jarg4 ? true : false; 
-  (arg1)->setTorrentLocation(arg2,(QString const &)*arg3,arg4);
+  (arg1)->setTorrentsLocation((QVariantList const &)*arg2,(QString const &)*arg3,arg4);
 }
 
 
