@@ -16,9 +16,16 @@
 
     <item
         android:id="@+id/check"
-        android:icon="?attr/refreshIcon"
+        android:icon="?attr/findInPageIcon"
         android:orderInCategory="2"
         android:title="@string/check_local_data"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/reannounce"
+        android:icon="?attr/syncIcon"
+        android:orderInCategory="2"
+        android:title="@string/reannounce"
         app:showAsAction="ifRoom"/>
 
     <item

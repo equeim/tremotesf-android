@@ -247,6 +247,7 @@ class TorrentPropertiesActivity : BaseActivity() {
             R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent!!.id()))
             R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent!!.id()))
             R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent!!.id()))
+            R.id.reannounce -> Rpc.instance.reannounceTorrents(intArrayOf(torrent!!.id()))
             R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent!!.id()),
                                                                                              torrent!!.downloadDirectory())
                     .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)

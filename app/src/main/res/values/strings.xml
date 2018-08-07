@@ -326,6 +326,7 @@
     </plurals>
     <string name="delete_files">Also delete the files on the hard disk</string>
     <string name="check_local_data">Check local data</string>
+    <string name="reannounce">Reannounce</string>
     <string name="torrent_duplicate">This torrent is already added</string>
     <string name="torrent_add_error">Error adding torrent</string>
 

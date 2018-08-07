@@ -409,6 +409,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 R.id.start -> Rpc.instance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.pause -> Rpc.instance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.check -> Rpc.instance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.reannounce -> Rpc.instance.reannounceTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray(),
                                                                       selector.selectedItems.first().downloadDirectory)
                         .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)

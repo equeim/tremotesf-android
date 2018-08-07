@@ -17,8 +17,9 @@
     <attr name="homeIcon" format="reference"/>
     <attr name="startIcon" format="reference"/>
     <attr name="pauseIcon" format="reference"/>
-    <attr name="refreshIcon" format="reference"/>
     <attr name="torrentIcon" format="reference"/>
     <attr name="sortDescendingIcon" format="reference"/>
     <attr name="sortAscendingIcon" format="reference"/>
+    <attr name="findInPageIcon" format="reference"/>
+    <attr name="syncIcon" format="reference"/>
 </resources>

@@ -22,10 +22,11 @@
         <item name="homeIcon">@drawable/ic_home_white_24dp</item>
         <item name="startIcon">@drawable/ic_play_arrow_white_24dp</item>
         <item name="pauseIcon">@drawable/ic_pause_white_24dp</item>
-        <item name="refreshIcon">@drawable/ic_refresh_white_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_white</item>
         <item name="sortDescendingIcon">@drawable/sort_descending_white</item>
         <item name="sortAscendingIcon">@drawable/sort_ascending_white</item>
+        <item name="findInPageIcon">@drawable/ic_find_in_page_white_24dp</item>
+        <item name="syncIcon">@drawable/ic_sync_white_24dp</item>
     </style>
 
     <style name="AppTheme.Dark.NoActionBar">
@@ -54,10 +55,11 @@
         <item name="homeIcon">@drawable/ic_home_black_24dp</item>
         <item name="startIcon">@drawable/ic_play_arrow_black_24dp</item>
         <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
-        <item name="refreshIcon">@drawable/ic_refresh_black_24dp</item>
         <item name="torrentIcon">@drawable/torrent_icon_black</item>
         <item name="sortDescendingIcon">@drawable/sort_descending_black</item>
         <item name="sortAscendingIcon">@drawable/sort_ascending_black</item>
+        <item name="findInPageIcon">@drawable/ic_find_in_page_black_24dp</item>
+        <item name="syncIcon">@drawable/ic_sync_black_24dp</item>
     </style>
 
     <style name="AppTheme.Light.NoActionBar">

@@ -11,8 +11,13 @@
 
     <item
         android:id="@+id/check"
-        android:icon="?attr/refreshIcon"
+        android:icon="?attr/findInPageIcon"
         android:title="@string/check_local_data"/>
+
+    <item
+        android:id="@+id/reannounce"
+        android:icon="?attr/syncIcon"
+        android:title="@string/reannounce"/>
 
     <item
         android:id="@+id/set_location"
