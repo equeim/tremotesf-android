@@ -394,9 +394,14 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "moveTorrentsToBottom", Q_ARG(QVariantList, ids));
     }
 
-    void JniRpc::setTorrentLocation(int id, const QString& location, bool moveFiles)
+    void JniRpc::reannounceTorrents(const QVariantList& ids)
     {
-        QMetaObject::invokeMethod(this, "setTorrentLocation", Q_ARG(int, id), Q_ARG(QString, location), Q_ARG(bool, moveFiles));
+        QMetaObject::invokeMethod(this, "reannounceTorrents", Q_ARG(QVariantList, ids));
+    }
+
+    void JniRpc::setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles)
+    {
+        QMetaObject::invokeMethod(this, "setTorrentsLocation", Q_ARG(QVariantList, ids), Q_ARG(QString, location), Q_ARG(bool, moveFiles));
     }
 
     void JniRpc::getTorrentFiles(int id, bool scheduled)

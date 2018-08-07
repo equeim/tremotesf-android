@@ -444,15 +444,16 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val items = (activity as MainActivity).torrentsAdapter.selector.selectedItems
             return createTextFieldDialog(requireContext(),
                                          null,
                                          R.layout.set_location_dialog,
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         arguments!!.getString(LOCATION)) {
-                Rpc.instance.setTorrentLocation(arguments!!.getInt(TORRENT_ID),
-                                                dialog.text_field.text.toString(),
-                                                dialog.move_files_check_box.isChecked)
+                                         items.firstOrNull()?.name ?: "") {
+                Rpc.instance.setTorrentsLocation(items.map(TorrentData::id).toIntArray(),
+                                                 dialog.text_field.text.toString(),
+                                                 dialog.move_files_check_box.isChecked)
                 (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
             }
         }

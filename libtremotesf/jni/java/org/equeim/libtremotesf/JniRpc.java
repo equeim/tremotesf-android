@@ -136,8 +136,12 @@ public class JniRpc extends BaseRpc {
     libtremotesfJNI.JniRpc_moveTorrentsToBottom(swigCPtr, this, ids);
   }
 
-  public void setTorrentLocation(int id, String location, boolean moveFiles) {
-    libtremotesfJNI.JniRpc_setTorrentLocation(swigCPtr, this, id, location, moveFiles);
+  public void reannounceTorrents(int[] ids) {
+    libtremotesfJNI.JniRpc_reannounceTorrents(swigCPtr, this, ids);
+  }
+
+  public void setTorrentsLocation(int[] ids, String location, boolean moveFiles) {
+    libtremotesfJNI.JniRpc_setTorrentsLocation(swigCPtr, this, ids, location, moveFiles);
   }
 
   public void getTorrentFiles(int id, boolean scheduled) {

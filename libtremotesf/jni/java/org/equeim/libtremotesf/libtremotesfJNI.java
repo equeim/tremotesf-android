@@ -325,7 +325,8 @@ public class libtremotesfJNI {
   public final static native void JniRpc_moveTorrentsUp(long jarg1, JniRpc jarg1_, int[] jarg2);
   public final static native void JniRpc_moveTorrentsDown(long jarg1, JniRpc jarg1_, int[] jarg2);
   public final static native void JniRpc_moveTorrentsToBottom(long jarg1, JniRpc jarg1_, int[] jarg2);
-  public final static native void JniRpc_setTorrentLocation(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, boolean jarg4);
+  public final static native void JniRpc_reannounceTorrents(long jarg1, JniRpc jarg1_, int[] jarg2);
+  public final static native void JniRpc_setTorrentsLocation(long jarg1, JniRpc jarg1_, int[] jarg2, String jarg3, boolean jarg4);
   public final static native void JniRpc_getTorrentFiles(long jarg1, JniRpc jarg1_, int jarg2, boolean jarg3);
   public final static native void JniRpc_getTorrentPeers(long jarg1, JniRpc jarg1_, int jarg2, boolean jarg3);
   public final static native void JniRpc_renameTorrentFile(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);

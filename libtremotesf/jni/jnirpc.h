@@ -112,7 +112,9 @@ namespace libtremotesf
         void moveTorrentsDown(const QVariantList& ids);
         void moveTorrentsToBottom(const QVariantList& ids);
 
-        void setTorrentLocation(int id, const QString& location, bool moveFiles);
+        void reannounceTorrents(const QVariantList& ids);
+
+        void setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles);
 
         void getTorrentFiles(int id, bool scheduled);
         void getTorrentPeers(int id, bool scheduled);
