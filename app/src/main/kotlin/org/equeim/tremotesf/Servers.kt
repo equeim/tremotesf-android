@@ -209,6 +209,20 @@ object Servers : AnkoLogger {
     }
 
     fun save() {
+        if (Rpc.instance.isConnected) {
+            val lastTorrents = currentServer?.lastTorrents
+            if (lastTorrents != null) {
+                lastTorrents.torrents.clear()
+                for (torrent in Rpc.instance.torrents) {
+                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                                                             torrent.hashString,
+                                                             torrent.name,
+                                                             torrent.isFinished))
+                }
+                lastTorrents.saved = true
+            }
+        }
+
         object : AsyncTask<Any, Any, Any?>() {
             override fun doInBackground(vararg params: Any?): Any? {
                 debug("saving servers file")

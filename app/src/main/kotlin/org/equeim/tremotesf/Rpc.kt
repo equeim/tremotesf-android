@@ -98,8 +98,13 @@ class Rpc : JniRpc() {
 
     val torrents = mutableListOf<TorrentData>()
 
+    private var disconnectingAfterCurrentServerChanged = false
+
     init {
         Servers.addCurrentServerListener {
+            if (isConnected) {
+                disconnectingAfterCurrentServerChanged = true
+            }
             if (Servers.hasServers) {
                 updateServer()
                 connect()
@@ -286,16 +291,9 @@ class Rpc : JniRpc() {
 
     override fun onAboutToDisconnect() {
         context!!.runOnUiThread {
-            val lastTorrents = Servers.currentServer?.lastTorrents
-            if (lastTorrents != null) {
-                lastTorrents.torrents.clear()
-                for (torrent in torrents) {
-                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                            torrent.hashString,
-                            torrent.name,
-                            torrent.isFinished))
-                }
-                lastTorrents.saved = true
+            if (disconnectingAfterCurrentServerChanged) {
+                disconnectingAfterCurrentServerChanged = false
+            } else {
                 Servers.save()
             }
         }
