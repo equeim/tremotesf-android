@@ -454,7 +454,6 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
                                                  dialog.text_field.text.toString(),
                                                  dialog.move_files_check_box.isChecked)
-                (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
             }
         }
     }
