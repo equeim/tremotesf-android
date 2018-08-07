@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
-import android.app.Dialog
 import android.content.Context
 
 import android.os.Bundle
@@ -31,17 +30,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
 import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
 import android.support.v7.view.ActionMode
 import android.support.v7.widget.Toolbar
 
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.Snackbar
-import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-
-import androidx.core.os.bundleOf
 
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -54,7 +49,6 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
-import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 import kotlinx.android.synthetic.main.torrent_properties_activity.*
 
 
@@ -89,7 +83,7 @@ class TorrentPropertiesActivity : BaseActivity() {
                                 supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
-                    supportFragmentManager.findFragmentByTag(RemoveDialogFragment.TAG)?.let { fragment ->
+                    supportFragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)?.let { fragment ->
                         supportFragmentManager.beginTransaction().remove(fragment).commit()
                     }
 
@@ -253,10 +247,11 @@ class TorrentPropertiesActivity : BaseActivity() {
             R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent!!.id()))
             R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent!!.id()))
             R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent!!.id()))
-            R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(torrent!!)
+            R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent!!.id()),
+                                                                                             torrent!!.downloadDirectory())
                     .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
-            R.id.remove -> RemoveDialogFragment.create(torrent!!.id()).show(supportFragmentManager,
-                                                                          RemoveDialogFragment.TAG)
+            R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent!!.id())).show(supportFragmentManager,
+                                                                                                        TorrentsAdapter.RemoveDialogFragment.TAG)
             else -> return false
         }
         return true
@@ -382,31 +377,6 @@ class TorrentPropertiesActivity : BaseActivity() {
                 TAB_LIMITS -> getString(R.string.limits)
                 else -> ""
             }
-        }
-    }
-
-    class RemoveDialogFragment : DialogFragment() {
-        companion object {
-            const val TAG = "org.equeim.tremotesf.TorrentPropertiesActivity.RemoveDialogFragment"
-
-            fun create(torrentId: Int): RemoveDialogFragment {
-                val fragment = RemoveDialogFragment()
-                fragment.arguments = bundleOf("id" to torrentId)
-                return fragment
-            }
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.remove_torrent_message)
-                    .setView(R.layout.remove_torrents_dialog)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove) { _, _ ->
-                        Rpc.instance.removeTorrents(intArrayOf(arguments!!.getInt("id")),
-                                dialog.delete_files_check_box.isChecked)
-                        activity?.finish()
-                    }
-                    .create()
         }
     }
 }

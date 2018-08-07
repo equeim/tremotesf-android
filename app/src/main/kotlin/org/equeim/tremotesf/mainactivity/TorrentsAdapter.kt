@@ -392,11 +392,9 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     else -> false
                 }
                 pauseItem!!.isEnabled = !startItem!!.isEnabled
-                setLocationItem!!.isEnabled = true
             } else {
                 startItem!!.isEnabled = true
                 pauseItem!!.isEnabled = true
-                setLocationItem!!.isEnabled = false
             }
 
             return true
@@ -411,10 +409,12 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 R.id.start -> Rpc.instance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.pause -> Rpc.instance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.check -> Rpc.instance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.first().torrent)
+                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray(),
+                                                                      selector.selectedItems.first().downloadDirectory)
                         .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
-                R.id.remove -> RemoveDialogFragment().show(activity.supportFragmentManager,
-                                                           RemoveDialogFragment.TAG)
+                R.id.remove -> RemoveDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray())
+                        .show(activity.supportFragmentManager,
+                              RemoveDialogFragment.TAG)
                 else -> return false
             }
 
@@ -432,26 +432,25 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     class SetLocationDialogFragment : DialogFragment() {
         companion object {
             const val TAG = "org.equeim.tremotesf.TorrentsAdapter.SetLocationDialogFragment"
-            private const val TORRENT_ID = "torrentId"
+            private const val TORRENT_IDS = "torrentIds"
             private const val LOCATION = "location"
 
-            fun create(torrent: Torrent): SetLocationDialogFragment {
+            fun create(ids: IntArray, location: String): SetLocationDialogFragment {
                 val fragment = SetLocationDialogFragment()
-                fragment.arguments = bundleOf(TORRENT_ID to torrent.id(),
-                                              LOCATION to torrent.downloadDirectory())
+                fragment.arguments = bundleOf(TORRENT_IDS to ids,
+                                              LOCATION to location)
                 return fragment
             }
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val items = (activity as MainActivity).torrentsAdapter.selector.selectedItems
             return createTextFieldDialog(requireContext(),
                                          null,
                                          R.layout.set_location_dialog,
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         items.firstOrNull()?.name ?: "") {
-                Rpc.instance.setTorrentsLocation(items.map(TorrentData::id).toIntArray(),
+                                         arguments!!.getString(LOCATION)) {
+                Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
                                                  dialog.text_field.text.toString(),
                                                  dialog.move_files_check_box.isChecked)
                 (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
@@ -462,22 +461,28 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     class RemoveDialogFragment : DialogFragment() {
         companion object {
             const val TAG = "org.equeim.tremotesf.TorrentsAdapter.RemoveDialogFragment"
+            private const val TORRENT_IDS = "torrentIds"
+
+            fun create(ids: IntArray): RemoveDialogFragment {
+                val fragment = RemoveDialogFragment()
+                fragment.arguments = bundleOf(TORRENT_IDS to ids)
+                return fragment
+            }
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val selector = (activity as MainActivity).torrentsAdapter.selector
-            val selectedCount = selector.selectedCount
+            val ids = arguments!!.getIntArray(TORRENT_IDS)
 
             val dialog = AlertDialog.Builder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_torrents_message,
-                                                                     selectedCount,
-                                                                     selectedCount))
+                                                                     ids.size,
+                                                                     ids.size))
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        Rpc.instance.removeTorrents(selector.selectedItems.map(TorrentData::id).toIntArray(),
-                                dialog.delete_files_check_box.isChecked)
-                        selector.actionMode?.finish()
+                        Rpc.instance.removeTorrents(ids,
+                                                    dialog.delete_files_check_box.isChecked)
+                        (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
                     }
                     .create()
 
