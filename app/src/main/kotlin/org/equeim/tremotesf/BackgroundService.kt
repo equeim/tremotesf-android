@@ -32,6 +32,7 @@ import android.os.Build
 
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
+import android.support.v4.content.res.ResourcesCompat
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
@@ -214,7 +215,7 @@ class BackgroundService : Service(), AnkoLogger {
                         intentFor<MainActivity>(),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 ))
-                .setColor(resources.getColor(android.R.color.white))
+                .setColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
                 .setOngoing(true)
 
         if (Servers.hasServers) {
