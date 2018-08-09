@@ -41,7 +41,7 @@ fun createTextFieldDialog(context: Context,
         textField.setText(defaultText)
 
         val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
-        okButton.isEnabled = textField.text.isNotEmpty()
+        okButton.isEnabled = textField.text!!.isNotEmpty()
 
         textField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {

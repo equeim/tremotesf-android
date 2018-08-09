@@ -82,7 +82,7 @@ class ServersActivity : BaseActivity() {
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) {
                     fab.hide()
                 } else if (dy < 0) {

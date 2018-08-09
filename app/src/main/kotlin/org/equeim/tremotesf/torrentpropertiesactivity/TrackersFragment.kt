@@ -65,7 +65,7 @@ class TrackersFragment : Fragment() {
         (trackers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) {
                     activity.fab.hide()
                 } else if (dy < 0) {
