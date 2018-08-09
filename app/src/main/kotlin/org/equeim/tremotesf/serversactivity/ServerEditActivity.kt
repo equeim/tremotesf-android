@@ -35,6 +35,8 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 
+import androidx.core.text.trimmedLength
+
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
@@ -185,7 +187,7 @@ class ServerEditActivity : BaseActivity() {
 
             val error = getString(R.string.empty_field_error)
             val checkLength = fun(edit: EditText): Boolean {
-                if (edit.text.trim().isEmpty()) {
+                if (edit.text.trimmedLength() == 0) {
                     edit.error = error
                     return false
                 }

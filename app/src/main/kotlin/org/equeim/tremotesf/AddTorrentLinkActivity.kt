@@ -32,6 +32,8 @@ import android.text.TextWatcher
 
 import android.support.design.widget.Snackbar
 
+import androidx.core.text.trimmedLength
+
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.intentFor
@@ -74,7 +76,7 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         download_directory_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                val path = s.trim().toString()
+                val path = s.toString().trim()
                 when {
                     Rpc.instance.serverSettings.canShowFreeSpaceForPath() -> {
                         Rpc.instance.getFreeSpaceForPath(path)
@@ -101,14 +103,14 @@ class AddTorrentLinkActivity : BaseActivity() {
         Rpc.instance.addStatusListener(rpcStatusListener)
 
         Rpc.instance.gotDownloadDirFreeSpaceListener = {
-            if (download_directory_edit.text.trim().toString() == Rpc.instance.serverSettings.downloadDirectory()) {
+            if (Rpc.instance.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
                 free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, it))
                 free_space_text_view.visibility = View.VISIBLE
             }
         }
 
         Rpc.instance.gotFreeSpaceForPathListener = { path, success, bytes ->
-            if (path == download_directory_edit.text.trim().toString()) {
+            if (path.contentEquals(download_directory_edit.text!!.trim())) {
                 if (success) {
                     free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, bytes))
                 } else {
@@ -134,11 +136,11 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.done) {
-            if (torrent_link_edit.text.trim().isEmpty()) {
+            if (torrent_link_edit.text!!.trimmedLength() == 0) {
                 torrent_link_edit.error = getString(R.string.empty_field_error)
             }
 
-            if (download_directory_edit.text.trim().isEmpty()) {
+            if (download_directory_edit.text!!.trimmedLength() == 0) {
                 download_directory_edit.error = getString(R.string.empty_field_error)
             }
 
