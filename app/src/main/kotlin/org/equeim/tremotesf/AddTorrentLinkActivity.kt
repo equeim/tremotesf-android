@@ -195,8 +195,8 @@ class AddTorrentLinkActivity : BaseActivity() {
                 }
                 placeholder.text = Rpc.instance.statusString
 
-                if (currentFocus != null) {
-                    inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+                currentFocus?.let { focus ->
+                    inputManager.hideSoftInputFromWindow(focus.windowToken, 0)
                 }
             }
             BaseRpc.Status.Connecting -> {

@@ -176,9 +176,7 @@ class TorrentPropertiesActivity : BaseActivity() {
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
                     actionMode?.finish()
-                    if (currentFocus != null) {
-                        inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
-                    }
+                    currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
                 }
                 if (position == TAB_TRACKERS) {
                     fab.show()

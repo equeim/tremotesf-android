@@ -166,7 +166,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     var torrentsTrackerFilter: String
         get() {
-            return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")
+            return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")!!
         }
         set(value) {
             preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).apply()
@@ -174,7 +174,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     var torrentsDirectoryFilter: String
         get() {
-            return preferences!!.getString(TORRENTS_DIRECTORY_FILTER, "")
+            return preferences!!.getString(TORRENTS_DIRECTORY_FILTER, "")!!
         }
         set(value) {
             preferences!!.edit().putString(TORRENTS_DIRECTORY_FILTER, value).apply()

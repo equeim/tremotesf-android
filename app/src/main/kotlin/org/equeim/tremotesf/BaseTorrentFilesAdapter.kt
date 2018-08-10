@@ -364,7 +364,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
 
     abstract class Item(val row: Int,
-                        val parentDirectory: Directory?,
+                        var parentDirectory: Directory?,
                         var name: String) {
         enum class WantedState {
             Wanted,
@@ -512,7 +512,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
     }
 
     class File(row: Int,
-               parentDirectory: Directory,
+               parentDirectory: Directory?,
                name: String,
                val id: Int) : Item(row, parentDirectory, name) {
         override var size = 0L

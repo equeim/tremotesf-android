@@ -124,12 +124,13 @@ class AddTorrentFileActivity : BaseActivity() {
 
             torrentFileParser = TorrentFileParser()
 
-            if (activity.intent.scheme == ContentResolver.SCHEME_FILE &&
+            val intent = activity.intent
+            if (intent.scheme == ContentResolver.SCHEME_FILE &&
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                     activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                torrentFileParser.load(activity.intent.data, activity.applicationContext)
+                intent.data?.let { torrentFileParser.load(it, activity.applicationContext) }
             }
         }
 
@@ -137,7 +138,9 @@ class AddTorrentFileActivity : BaseActivity() {
                                                 permissions: Array<out String>,
                                                 grantResults: IntArray) {
             if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-                torrentFileParser.load(activity.intent.data, activity.applicationContext)
+                activity.intent.data?.let { data ->
+                    torrentFileParser.load(data, activity.applicationContext)
+                }
             } else {
                 noPermission = true
                 updateView()
@@ -270,9 +273,9 @@ class AddTorrentFileActivity : BaseActivity() {
                 (toolbar as Toolbar).subtitle = null
                 doneMenuItem?.isVisible = false
 
-                if (activity.currentFocus != null) {
+                activity.currentFocus?.let { focus ->
                     (activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                            .hideSoftInputFromWindow(activity.currentFocus.windowToken, 0)
+                            .hideSoftInputFromWindow(focus.windowToken, 0)
                 }
 
                 tab_layout.visibility = View.GONE

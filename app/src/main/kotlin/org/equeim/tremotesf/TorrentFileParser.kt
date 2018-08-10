@@ -19,8 +19,11 @@
 
 package org.equeim.tremotesf
 
+import java.io.FileNotFoundException
 import java.io.IOException
+import java.lang.ref.WeakReference
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
@@ -65,95 +68,7 @@ class TorrentFileParser : AnkoLogger {
 
     fun load(uri: Uri, context: Context) {
         status = Status.Loading
-
-        object : AsyncTask<Any, Any, Status>() {
-            override fun doInBackground(vararg params: Any?): TorrentFileParser.Status {
-                val stream = context.contentResolver.openInputStream(uri)
-                try {
-                    val size = stream.available()
-
-                    if (size > 10 * 1024 * 1024) {
-                        error("torrent file is too large")
-                        return TorrentFileParser.Status.FileIsTooLarge
-                    }
-
-                    fileData = stream.readBytes()
-
-                    return try {
-                        createTree(Bdecoder(Charsets.UTF_8,
-                                            fileData.inputStream()).decodeDict())
-                        TorrentFileParser.Status.Loaded
-                    } catch (error: IllegalStateException) {
-                        error("error parsing torrent file", error)
-                        TorrentFileParser.Status.ParsingError
-                    }
-                } catch (error: IOException) {
-                    error("error reading torrent file", error)
-                    return TorrentFileParser.Status.ReadingError
-                } catch (error: SecurityException) {
-                    error("error reading torrent file", error)
-                    return TorrentFileParser.Status.ReadingError
-                } finally {
-                    stream.close()
-                }
-            }
-
-            override fun onPostExecute(result: TorrentFileParser.Status) {
-                this@TorrentFileParser.status = result
-            }
-        }.execute()
-    }
-
-    private fun createTree(torrentFileMap: Map<String, Any>) {
-        @Suppress("UNCHECKED_CAST")
-        val infoMap = torrentFileMap["info"] as Map<String, Any>
-
-        if (infoMap.contains("files")) {
-            val torrentDirectory = BaseTorrentFilesAdapter.Directory(0,
-                                                                     rootDirectory,
-                                                                     infoMap["name"] as String)
-            rootDirectory.addChild(torrentDirectory)
-
-            @Suppress("UNCHECKED_CAST")
-            val filesMaps = infoMap["files"] as List<Map<String, Any>>
-            for ((fileIndex, fileMap) in filesMaps.withIndex()) {
-                var directory = torrentDirectory
-
-                @Suppress("UNCHECKED_CAST")
-                val pathParts = fileMap["path"] as List<String>
-                for ((partIndex, part) in pathParts.withIndex()) {
-                    if (partIndex == pathParts.lastIndex) {
-                        val file = BaseTorrentFilesAdapter.File(directory.children.size,
-                                                                directory,
-                                                                part,
-                                                                fileIndex)
-                        file.size = fileMap["length"] as Long
-                        directory.addChild(file)
-                        files.add(file)
-                    } else {
-                        var childDirectory = directory.childrenMap[part]
-                                as BaseTorrentFilesAdapter.Directory?
-                        if (childDirectory == null) {
-                            childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
-                                                                               directory,
-                                                                               part)
-                            directory.addChild(childDirectory)
-                        }
-                        directory = childDirectory
-                    }
-                }
-            }
-        } else {
-            val file = BaseTorrentFilesAdapter.File(0,
-                                                    rootDirectory,
-                                                    infoMap["name"] as String,
-                                                    0)
-            file.size = infoMap["length"] as Long
-            rootDirectory.addChild(file)
-            files.add(file)
-        }
-
-        rootDirectory.children.first().setWanted(true)
+        TreeCreationTask(context.applicationContext, uri, this).execute()
     }
 
     fun getFilesData(): FilesData {
@@ -183,5 +98,124 @@ class TorrentFileParser : AnkoLogger {
                          lowPriorityFiles,
                          normalPriorityFiles,
                          highPriorityFiles)
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class TreeCreationTask(private val context: Context,
+                                   private val uri: Uri,
+                                   parser: TorrentFileParser) : AsyncTask<Any, Any, TorrentFileParser.Status>(), AnkoLogger {
+        private val parser = WeakReference(parser)
+        private var fileData: ByteArray? = null
+        private var rootDirectoryChild: BaseTorrentFilesAdapter.Item? = null
+        private var files: List<BaseTorrentFilesAdapter.File>? = null
+
+        override fun doInBackground(vararg params: Any?): TorrentFileParser.Status {
+            try {
+                val stream = context.contentResolver.openInputStream(uri)
+                if (stream == null) {
+                    error("openInputStream() returned null")
+                    return TorrentFileParser.Status.ReadingError
+                }
+
+                try {
+                    val size = stream.available()
+
+                    if (size > 10 * 1024 * 1024) {
+                        error("torrent file is too large")
+                        return TorrentFileParser.Status.FileIsTooLarge
+                    }
+
+                    fileData = stream.readBytes()
+
+                    return try {
+                        createTree(Bdecoder(Charsets.UTF_8,
+                                            fileData!!.inputStream()).decodeDict())
+                        TorrentFileParser.Status.Loaded
+                    } catch (error: IllegalStateException) {
+                        error("error parsing torrent file", error)
+                        TorrentFileParser.Status.ParsingError
+                    }
+                } catch (error: IOException) {
+                    error("error reading torrent file", error)
+                    return TorrentFileParser.Status.ReadingError
+                } catch (error: SecurityException) {
+                    error("error reading torrent file", error)
+                    return TorrentFileParser.Status.ReadingError
+                } finally {
+                    stream.close()
+                }
+            } catch (error: FileNotFoundException) {
+                error("file not found", error)
+                return TorrentFileParser.Status.ReadingError
+            }
+        }
+
+        override fun onPostExecute(result: TorrentFileParser.Status) {
+            parser.get()?.let { parser ->
+                if (result == TorrentFileParser.Status.Loaded) {
+                    parser.fileData = fileData!!
+                    rootDirectoryChild!!.parentDirectory = parser.rootDirectory
+                    parser.rootDirectory.addChild(rootDirectoryChild!!)
+                    parser.files.addAll(files!!)
+                }
+                parser.status = result
+            }
+        }
+
+        private fun createTree(torrentFileMap: Map<String, Any>) {
+            val files = mutableListOf<BaseTorrentFilesAdapter.File>()
+
+            @Suppress("UNCHECKED_CAST")
+            val infoMap = torrentFileMap["info"] as Map<String, Any>
+
+            if (infoMap.contains("files")) {
+                val torrentDirectory = BaseTorrentFilesAdapter.Directory(0,
+                                                                         null,
+                                                                         infoMap["name"] as String)
+
+                @Suppress("UNCHECKED_CAST")
+                val filesMaps = infoMap["files"] as List<Map<String, Any>>
+                for ((fileIndex, fileMap) in filesMaps.withIndex()) {
+                    var directory = torrentDirectory
+
+                    @Suppress("UNCHECKED_CAST")
+                    val pathParts = fileMap["path"] as List<String>
+                    for ((partIndex, part) in pathParts.withIndex()) {
+                        if (partIndex == pathParts.lastIndex) {
+                            val file = BaseTorrentFilesAdapter.File(directory.children.size,
+                                                                    directory,
+                                                                    part,
+                                                                    fileIndex)
+                            file.size = fileMap["length"] as Long
+                            directory.addChild(file)
+                            files.add(file)
+                        } else {
+                            var childDirectory = directory.childrenMap[part]
+                                    as BaseTorrentFilesAdapter.Directory?
+                            if (childDirectory == null) {
+                                childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
+                                                                                   directory,
+                                                                                   part)
+                                directory.addChild(childDirectory)
+                            }
+                            directory = childDirectory
+                        }
+                    }
+                }
+
+                rootDirectoryChild = torrentDirectory
+            } else {
+                val file = BaseTorrentFilesAdapter.File(0,
+                                                        null,
+                                                        infoMap["name"] as String,
+                                                        0)
+                file.size = infoMap["length"] as Long
+                files.add(file)
+                rootDirectoryChild = file
+            }
+
+            rootDirectoryChild!!.setWanted(true)
+            this.files = files
+        }
     }
 }

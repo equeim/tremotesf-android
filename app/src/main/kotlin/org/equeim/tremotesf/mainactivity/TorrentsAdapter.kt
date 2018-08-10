@@ -330,12 +330,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle) {
-        val state = savedInstanceState.getBundle(INSTANCE_STATE)
-        sortMode = SortMode.values()[state.getInt(SORT_MODE)]
-        sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
-        statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]
-        trackerFilter = state.getString(TRACKER_FILTER)
-        directoryFilter = state.getString(DIRECTORY_FILTER)
+        savedInstanceState.getBundle(INSTANCE_STATE)?.let { state ->
+            sortMode = SortMode.values()[state.getInt(SORT_MODE)]
+            sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
+            statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]
+            trackerFilter = state.getString(TRACKER_FILTER, "")
+            directoryFilter = state.getString(DIRECTORY_FILTER, "")
+        }
     }
 
     class TorrentsViewHolder(selector: Selector<TorrentData, Int>,
@@ -471,12 +472,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val ids = arguments!!.getIntArray(TORRENT_IDS)
+            val ids = arguments!!.getIntArray(TORRENT_IDS)!!
 
             val dialog = AlertDialog.Builder(requireContext())
-                    .setMessage(resources.getQuantityString(R.plurals.remove_torrents_message,
-                                                                     ids.size,
-                                                                     ids.size))
+                    .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
+                                else resources.getQuantityString(R.plurals.remove_torrents_message,
+                                                                 ids.size,
+                                                                 ids.size))
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->

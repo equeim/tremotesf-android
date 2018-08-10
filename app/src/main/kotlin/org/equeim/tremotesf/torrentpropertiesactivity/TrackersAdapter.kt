@@ -275,16 +275,17 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
     class RemoveDialogFragment : DialogFragment() {
         companion object {
             const val TAG = "org.equeim.tremotesf.TorrentsAdapter.RemoveDialogFragment"
+            private const val IDS = "ids"
 
             fun create(ids: IntArray): RemoveDialogFragment {
                 val fragment = RemoveDialogFragment()
-                fragment.arguments = bundleOf("ids" to ids)
+                fragment.arguments = bundleOf(IDS to ids)
                 return fragment
             }
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val ids = arguments!!.getIntArray("ids")
+            val ids = arguments!!.getIntArray(IDS)!!
 
             return AlertDialog.Builder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,

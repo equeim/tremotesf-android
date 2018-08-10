@@ -122,12 +122,14 @@
     <string-array name="ratio_limit_mode">
         <item>使用全局设置</item>
         <item>一直供源</item>
+        <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string name="idle_seeding">空闲设置</string>
     <string-array name="idle_seeding_mode">
         <item>使用全局设置</item>
         <item>一直供源</item>
+        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">分钟</string>

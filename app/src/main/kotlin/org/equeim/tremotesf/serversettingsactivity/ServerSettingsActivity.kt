@@ -105,9 +105,7 @@ class ServerSettingsActivity : BaseActivity() {
     }
 
     fun hideKeyboard() {
-        if (currentFocus != null) {
-            inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
-        }
+        currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
     class PlaceholderFragment : Fragment() {
@@ -166,7 +164,7 @@ class ServerSettingsActivity : BaseActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             items = resources.getStringArray(R.array.server_settings_items)
-            listAdapter = ArrayAdapter(activity,
+            listAdapter = ArrayAdapter(requireContext(),
                                        R.layout.server_settings_activity_main_fragment_list_item,
                                        items)
         }
