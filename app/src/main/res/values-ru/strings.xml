@@ -316,6 +316,7 @@
     </plurals>
     <string name="delete_files">Также удалить файлы на жестком диске</string>
     <string name="check_local_data">Проверить локальные данные</string>
+    <string name="reannounce">Переанонсировать</string>
     <string name="torrent_duplicate">Этот торрент уже добавлен</string>
     <string name="torrent_add_error">Ошибка добавления торрента</string>
 

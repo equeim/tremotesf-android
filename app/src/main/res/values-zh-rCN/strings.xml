@@ -31,7 +31,7 @@
     <string name="torrents_all">全部(%d)</string>
     <string name="torrents_active">活动的(%d)</string>
     <string name="torrents_downloading">正在下载(%d)</string>
-    <string name="torrents_seeding">正在供种(%d)</string>
+    <string name="torrents_seeding">正在供源(%d)</string>
     <string name="torrents_paused">已暂停(%d)</string>
     <string name="torrents_checking">正在检查(%d)</string>
     <string name="torrents_errored">已出错(%d)</string>
@@ -49,7 +49,7 @@
     </plurals>
 
     <plurals name="peers_plural">
-        <item quantity="other">%d对等方</item>
+        <item quantity="other">%d 对等方</item>
     </plurals>
 
     <string name="next_update">还有%s更新信息</string>
@@ -79,11 +79,15 @@
     <string name="uploaded">已上传</string>
     <string name="download_speed">下载速度</string>
     <string name="upload_speed">上传速度</string>
-    <string name="seeders">供种者</string>
+    <string name="seeders">供源者</string>
     <string name="leechers">下载者</string>
     <string name="last_activity">最近活动</string>
 
     <string name="total_size">总大小</string>
+    <string name="location">位置</string>
+    <string name="hash">哈希值</string>
+    <string name="created_by">创建者</string>
+    <string name="created_on">创建于</string>
     <string name="comment">注释</string>
 
     <string name="priority">优先级</string>
@@ -92,6 +96,9 @@
     <string name="low_pririty">低</string>
     <string name="mixed_priority">混合</string>
 
+    <string name="download_verb">下载</string>
+    <string name="not_download">不下载</string>
+
     <string name="no_files">无文件</string>
 
     <string name="tracker_inactive">未活动</string>
@@ -99,5 +106,88 @@
     <string name="tracker_queued">排队中</string>
     <string name="tracker_updating">正在更新</string>
     <string name="tracker_error">错误：%s</string>
+
+    <string name="no_peers">无对等方</string>
+
+    <string name="error">错误</string>
+
+    <string name="speed">速度</string>
+    <string name="honor_global_limits">以全局设置为准</string>
+    <string name="download_noun">下载速度</string>
+    <string name="upload_noun">上传速度</string>
+
+    <string name="seeding">供源设置</string>
+
+    <string name="ratio_limit">分享率限制</string>
+    <string-array name="ratio_limit_mode">
+        <item>使用全局设置</item>
+        <item>一直供源</item>
+    </string-array>
+
+    <string name="idle_seeding">空闲设置</string>
+    <string-array name="idle_seeding_mode">
+        <item>使用全局设置</item>
+        <item>一直供源</item>
+    </string-array>
+
+    <string name="min">分钟</string>
+    <string name="maximum_peers">最大对等方数量</string>
+
+    <string name="settings">设置</string>
+    <string name="servers">服务器</string>
+    <string name="notifications">通知</string>
+
+    <string name="quit">退出</string>
+
+    <string name="select_all">全选</string>
+
+    <string name="add_server">添加服务器</string>
+    <string name="edit_server">编辑服务器</string>
+
+    <string name="save">保存</string>
+
+    <string name="remove">移除</string>
+
+    <string name="no_servers">无服务器</string>
+
+    <string name="name">名称</string>
+    <string name="address_edit_hint">域名或IP地址</string>
+    <string name="port">端口</string>
+    <string name="api_path">API路径</string>
+    <string name="https">HTTPS</string>
+    <string name="certificates">证书</string>
+    <string name="server_uses_self_signed_certificate">服务端使用自签名证书</string>
+    <string name="certificate">PEM格式的证书</string>
+    <string name="use_client_certificate_authentication">使用客户端证书验证</string>
+    <string name="authentication">验证</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="update_interval">刷新间隔， s</string>
+    <string name="background_update_interval">后台刷新间隔， s</string>
+    <string name="timeout">超时， s</string>
+
+    <string name="empty_field_error">该项不可为空</string>
+
+    <string name="add_torrent_file">添加种子文件</string>
+    <string name="stop_seeding_at_ratio">到达该分享率时停止供源</string>
+    <string name="stop_seeding_if_idle_for">到达该空闲时长后停止供源</string>
+    <string name="add_torrent_link">添加磁力链接</string>
+
+    <string name="current_session">当前会话</string>
+    <string name="duration">持续时间</string>
+    <string name="server_stats">统计数据</string>
+
+    <string name="pause">暂停</string>
+
+    <string name="check_local_data">校验本地数据</string>
+    <plurals name="torrent_seeding">
+        <item quantity="other">正在为%d对等方供源</item>
+    </plurals>
+    <string name="torrent_seeding_stalled">供源中</string>
+    <string name="set_location">设置存储位置</string>
+    <string name="move_files">将文件移动到当前文件夹</string>
+
+    <string name="about">关于</string>
+    <string name="alternative_speed_limits">备选速度限制</string>
 
     </resources>
