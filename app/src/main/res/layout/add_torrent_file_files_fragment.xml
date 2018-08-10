@@ -3,9 +3,10 @@
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
-    <com.jaredrummler.fastscrollrecyclerview.FastScrollRecyclerView
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/files_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:fastScrollThumbActiveColor="?attr/colorAccent"/>
+        app:fastScrollThumbColor="?attr/colorControlActivated"
+        app:fastScrollThumbInactiveColor="?attr/colorControlNormal"/>
 </FrameLayout>
