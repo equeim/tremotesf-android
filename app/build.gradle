@@ -84,6 +84,6 @@ dependencies {
     implementation 'org.jetbrains.anko:anko-design:0.10.5'
     implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
-    implementation 'com.jaredrummler:fastscroll-recyclerview:1.0.2'
+    implementation 'com.jaredrummler:fastscroll-recyclerview:1.0.3'
     implementation 'org.sufficientlysecure:donations:2.6'
 }
