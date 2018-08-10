@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.8.0] - 2018-08-10
+### Added
+- Added ability to reannounce torrents
+- Added support of Android 9
+
+### Changed
+- Added ability set location of multiple torrents at once
+- Updated translations
+
+### Fixed
+- Improved support of self-signed certificates
+- All network requests are now aborted when disconnecting from server
+
 ## [1.7.1] - 2018-07-04
 ### Changed
 - Qt updated to version 5.11.1
@@ -70,7 +83,7 @@
 - Torrents sort mode and status filter are not reset after disconnecting
 
 ### Fixed
-- Torrent properties activity doesn't release from memory until files tree is created (memory leak when torrent has large number of files) 
+- Torrent properties activity doesn't release from memory until files tree is created (memory leak when torrent has large number of files)
 
 ## [1.4.2] - 2017-03-07
 ### Changed
