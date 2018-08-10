@@ -10,6 +10,7 @@
 - Updated translations
 
 ### Fixed
+- Crash on saving servers
 - Improved support of self-signed certificates
 - All network requests are now aborted when disconnecting from server
 
