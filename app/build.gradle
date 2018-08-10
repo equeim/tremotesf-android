@@ -5,12 +5,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId 'org.equeim.tremotesf'
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 17
         versionName '1.7.1'
     }
@@ -64,7 +64,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-def support_version = '27.1.1'
+def support_version = '28.0.0-rc01'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
