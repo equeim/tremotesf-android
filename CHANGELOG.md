@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.8.1] - 2018-08-16
+### Fixed
+- Fixed crash when disconnecting from server
+- "Remove" menu item in torrent's properties activity is now hidden when disconnecting/torrent removal
+
 ## [1.8.0] - 2018-08-10
 ### Added
 - Added ability to reannounce torrents
