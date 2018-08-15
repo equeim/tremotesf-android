@@ -137,11 +137,11 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
     }
 
     private fun updateActionMode() {
-        if (actionMode != null) {
-            actionMode!!.title = activity.resources.getQuantityString(titleStringId,
-                                                                      selectedCount,
-                                                                      selectedCount)
-            actionMode!!.invalidate()
+        actionMode?.let { actionMode ->
+            actionMode.title = activity.resources.getQuantityString(titleStringId,
+                                                                    selectedCount,
+                                                                    selectedCount)
+            actionMode.invalidate()
         }
     }
 

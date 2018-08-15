@@ -177,8 +177,10 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                     directory = directory.parentDirectory!!
                 }
 
-                RenameDialogFragment.create(torrent!!.id(), pathParts.joinToString("/"), file.name)
-                        .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
+                torrent?.let { torrent ->
+                    RenameDialogFragment.create(torrent.id(), pathParts.joinToString("/"), file.name)
+                            .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
+                }
 
                 return true
             }

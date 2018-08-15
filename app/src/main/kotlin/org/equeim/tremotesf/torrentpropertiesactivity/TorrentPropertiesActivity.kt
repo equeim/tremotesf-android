@@ -241,17 +241,19 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent!!.id()))
-            R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent!!.id()))
-            R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent!!.id()))
-            R.id.reannounce -> Rpc.instance.reannounceTorrents(intArrayOf(torrent!!.id()))
-            R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent!!.id()),
-                                                                                             torrent!!.downloadDirectory())
-                    .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
-            R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent!!.id())).show(supportFragmentManager,
-                                                                                                        TorrentsAdapter.RemoveDialogFragment.TAG)
-            else -> return false
+        torrent?.let { torrent ->
+            when (item.itemId) {
+                R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent.id()))
+                R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent.id()))
+                R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent.id()))
+                R.id.reannounce -> Rpc.instance.reannounceTorrents(intArrayOf(torrent.id()))
+                R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id()),
+                                                                                      torrent.downloadDirectory())
+                        .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
+                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id())).show(supportFragmentManager,
+                                                                                                          TorrentsAdapter.RemoveDialogFragment.TAG)
+                else -> return false
+            }
         }
         return true
     }

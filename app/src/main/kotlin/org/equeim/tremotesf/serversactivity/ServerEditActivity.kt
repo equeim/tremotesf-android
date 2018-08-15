@@ -121,7 +121,7 @@ class ServerEditActivity : BaseActivity() {
             certificates_item.isEnabled = false
             certificates_item.setChildrenEnabled(false)
             certificates_item.setOnClickListener {
-                fragmentManager!!
+                requireFragmentManager()
                         .beginTransaction()
                         .replace(android.R.id.content, CertificatesFragment())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

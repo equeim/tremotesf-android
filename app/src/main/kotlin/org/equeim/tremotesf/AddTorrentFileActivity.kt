@@ -168,7 +168,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
                 override fun onPageSelected(position: Int) {
                     if (previousPage != -1) {
-                        pagerAdapter!!.filesFragment?.adapter?.selector?.actionMode?.finish()
+                        pagerAdapter?.filesFragment?.adapter?.selector?.actionMode?.finish()
                     }
                     previousPage = position
                 }
@@ -206,8 +206,8 @@ class AddTorrentFileActivity : BaseActivity() {
             if (item.itemId != R.id.done) {
                 return false
             }
-            val infoFragment = pagerAdapter!!.infoFragment!!
-            if (infoFragment.check()) {
+            val infoFragment = pagerAdapter!!.infoFragment
+            if (infoFragment?.check() == true) {
                 val filesData = torrentFileParser.getFilesData()
                 Rpc.instance.addTorrentFile(torrentFileParser.fileData,
                                    infoFragment.download_directory_edit.text.toString(),
@@ -235,7 +235,7 @@ class AddTorrentFileActivity : BaseActivity() {
             }
 
             if (Rpc.instance.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                (toolbar!!.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
@@ -431,7 +431,7 @@ class AddTorrentFileActivity : BaseActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             retainInstance = true
-            mainFragment = fragmentManager!!.findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
+            mainFragment = requireFragmentManager().findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
         }
 
         override fun onCreateView(inflater: LayoutInflater,

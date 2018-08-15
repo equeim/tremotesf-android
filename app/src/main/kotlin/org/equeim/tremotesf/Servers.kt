@@ -294,11 +294,7 @@ object Servers : AnkoLogger {
         this.servers.removeAll(servers)
 
         if (currentServerField in servers) {
-            currentServerField = if (this.servers.isEmpty()) {
-                null
-            } else {
-                this.servers.first()
-            }
+            currentServerField = this.servers.firstOrNull()
 
             for (listener in currentServerListeners) {
                 listener()
