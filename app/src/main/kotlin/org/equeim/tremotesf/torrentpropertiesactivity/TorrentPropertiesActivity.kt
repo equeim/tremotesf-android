@@ -292,7 +292,7 @@ class TorrentPropertiesActivity : BaseActivity() {
     }
 
     private fun updateMenu() {
-        for (i in 0 until (menu!!.size() - 1)) {
+        for (i in 0 until menu!!.size()) {
             menu!!.getItem(i).isVisible = (torrent != null)
         }
         if (torrent != null) {
