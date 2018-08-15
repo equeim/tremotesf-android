@@ -142,7 +142,7 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
 
         val rpcPeers = torrent.peers()
         val newPeers = mutableListOf<Peer>()
-        for (i in 0..(rpcPeers.size() - 1)) {
+        for (i in 0 until rpcPeers.size()) {
             val rpcPeer = rpcPeers[i.toInt()]
             val address = rpcPeer.address
             var peer = peers.find { it.address == address }

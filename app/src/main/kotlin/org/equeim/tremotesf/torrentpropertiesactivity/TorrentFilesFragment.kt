@@ -302,7 +302,7 @@ class TorrentFilesFragment : Fragment() {
         private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
         override fun doInBackground(vararg params: Any?): Any? {
-            for (fileIndex in 0..(filesVector.size() - 1).toInt()) {
+            for (fileIndex in 0 until filesVector.size().toInt()) {
                 val rpcFile: TorrentFile = filesVector[fileIndex]
 
                 var currentDirectory = rootDirectory

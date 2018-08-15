@@ -128,7 +128,7 @@ class SpeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val limitsFilters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
+        val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
         download_speed_limit_check_box.isChecked = Rpc.instance.serverSettings.isDownloadSpeedLimited
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->

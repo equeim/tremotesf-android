@@ -71,7 +71,7 @@ class TorrentLimitsFragment : Fragment() {
             }
         }
 
-        download_speed_limit_edit.filters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
+        download_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
         download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
@@ -91,7 +91,7 @@ class TorrentLimitsFragment : Fragment() {
             }
         }
 
-        upload_speed_limit_edit.filters = arrayOf(IntFilter(0..(4 * 1024 * 1024 - 1)))
+        upload_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
         upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {

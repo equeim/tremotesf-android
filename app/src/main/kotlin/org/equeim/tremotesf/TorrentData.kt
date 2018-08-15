@@ -104,7 +104,7 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
     val trackers = mutableListOf<String>()
 
     init {
-        for (i in 0..(tTrackers.size() - 1)) {
+        for (i in 0 until tTrackers.size()) {
             trackers.add(tTrackers[i.toInt()].site())
         }
     }
@@ -133,7 +133,7 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
         }
 
         trackers.clear()
-        for (i in 0..(tTrackers.size() - 1)) {
+        for (i in 0 until tTrackers.size()) {
             trackers.add(tTrackers[i.toInt()].site())
         }
     }

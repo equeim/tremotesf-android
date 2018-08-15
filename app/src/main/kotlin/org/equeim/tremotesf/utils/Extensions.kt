@@ -24,7 +24,7 @@ import android.view.ViewGroup
 
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
-    for (i in 0..(childCount - 1)) {
+    for (i in 0 until childCount) {
         getChildAt(i).isEnabled = enabled
     }
 }
