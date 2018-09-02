@@ -23,41 +23,35 @@ import java.util.concurrent.TimeUnit
 
 import android.app.Activity
 import android.app.Dialog
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.Configuration
-
 import android.os.Bundle
-
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-
 import android.widget.AdapterView
 import android.widget.Spinner
 
-import android.support.v4.app.DialogFragment
-
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SearchView
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.transaction
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.design.longSnackbar
 
 import org.equeim.libtremotesf.BaseRpc
-
 import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
@@ -69,19 +63,15 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.SettingsActivity
-
 import org.equeim.tremotesf.serversactivity.ServerEditActivity
 import org.equeim.tremotesf.serversactivity.ServersActivity
-
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
-
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.side_panel_header.view.*
-
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
@@ -115,15 +105,12 @@ class MainActivity : BaseActivity(), AnkoLogger {
             if (!Rpc.instance.isConnected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
-                supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
-                        ?.let { fragment ->
-                            supportFragmentManager.beginTransaction().remove(fragment).commit()
-                        }
-
-                supportFragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
-                        ?.let { fragment ->
-                            supportFragmentManager.beginTransaction().remove(fragment).commit()
-                        }
+                supportFragmentManager.apply {
+                    findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                            ?.let { transaction { remove(it) } }
+                    findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
+                            ?.let { transaction { remove(it) } }
+                }
 
                 if (menu != null) {
                     searchMenuItem.collapseActionView()
@@ -191,7 +178,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
 
-        drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START)
+        drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
         drawerToggle = ActionBarDrawerToggle(this,
                                              drawer_layout,
                                              R.string.open_side_panel,
@@ -569,8 +556,8 @@ class MainActivity : BaseActivity(), AnkoLogger {
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(Gravity.START)) {
-            drawer_layout.closeDrawer(Gravity.START)
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }

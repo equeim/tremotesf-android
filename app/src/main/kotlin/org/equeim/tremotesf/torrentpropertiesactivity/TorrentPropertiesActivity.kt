@@ -19,24 +19,23 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
-import android.content.Context
-
 import android.os.Bundle
-
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
-import android.support.v4.view.ViewPager
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.Toolbar
+import androidx.viewpager.widget.ViewPager
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.transaction
 
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -78,28 +77,15 @@ class TorrentPropertiesActivity : BaseActivity() {
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
-                    supportFragmentManager.findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
-                            ?.let { fragment ->
-                                supportFragmentManager.beginTransaction().remove(fragment).commit()
-                    }
-
-                    supportFragmentManager.findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)?.let { fragment ->
-                        supportFragmentManager.beginTransaction().remove(fragment).commit()
-                    }
-
-                    supportFragmentManager.findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
-                            ?.let { fragment ->
-                                supportFragmentManager.beginTransaction().remove(fragment).commit()
-                            }
-
-                    supportFragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG)
-                            ?.let { fragment ->
-                                supportFragmentManager.beginTransaction().remove(fragment).commit()
-                    }
-
-                    supportFragmentManager.findFragmentByTag(TrackersAdapter.RemoveDialogFragment.TAG)
-                            ?.let { fragment ->
-                                supportFragmentManager.beginTransaction().remove(fragment).commit()
+                    supportFragmentManager.apply {
+                        val findAndRemove = { tag: String ->
+                            findFragmentByTag(tag)?.let { transaction { remove(it) } }
+                        }
+                        findAndRemove(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                        findAndRemove(TorrentsAdapter.RemoveDialogFragment.TAG)
+                        findAndRemove(TorrentFilesAdapter.RenameDialogFragment.TAG)
+                        findAndRemove(TrackersAdapter.EditTrackerDialogFragment.TAG)
+                        findAndRemove(TrackersAdapter.RemoveDialogFragment.TAG)
                     }
                 }
                 updatePlaceholderVisibility()
@@ -171,7 +157,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             private var previousPage = -1
-            private val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            private val inputManager = getSystemService<InputMethodManager>()!!
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {

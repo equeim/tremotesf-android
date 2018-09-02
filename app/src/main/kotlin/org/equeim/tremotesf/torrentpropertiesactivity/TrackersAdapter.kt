@@ -34,13 +34,11 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.support.v4.app.DialogFragment
-
-import android.support.v7.app.AlertDialog
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.RecyclerView
-
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ActionMode
+import androidx.fragment.app.DialogFragment
 import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
 
@@ -53,6 +51,7 @@ import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
+
 
 class TrackersAdapterItem(rpcTracker: Tracker) {
     val id = rpcTracker.id()

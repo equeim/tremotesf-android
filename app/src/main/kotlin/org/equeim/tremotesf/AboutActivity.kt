@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -31,19 +30,18 @@ import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.Button
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v7.widget.Toolbar
-
+import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-
-import org.jetbrains.anko.find
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
 
 import org.sufficientlysecure.donations.DonationsFragment
 
 import kotlinx.android.synthetic.main.about_activity.*
 import kotlinx.android.synthetic.main.about_activity_license_fragment.*
 import kotlinx.android.synthetic.main.about_activity_pager_fragment.*
+
 
 class AboutActivity : BaseActivity() {
     private lateinit var pagerAdapter: PagerAdapter
@@ -184,9 +182,9 @@ class AboutActivity : BaseActivity() {
             super.onActivityCreated(savedInstanceState)
 
             if (!mGoogleEnabled) {
-				requireActivity().find<ViewStub>(R.id.donations__yandex_stub).inflate()
-                requireActivity().find<Button>(R.id.donations__yandex_donate_button).setOnClickListener {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://yasobe.ru/na/equeim_tremotesf_android")))
+				requireActivity().findViewById<ViewStub>(R.id.donations__yandex_stub).inflate()
+                requireActivity().findViewById<Button>(R.id.donations__yandex_donate_button).setOnClickListener {
+                    startActivity(Intent(Intent.ACTION_VIEW, "https://yasobe.ru/na/equeim_tremotesf_android".toUri()))
                 }
             }
         }

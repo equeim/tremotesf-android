@@ -43,11 +43,10 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.TimePicker
 
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
-
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 
 import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R

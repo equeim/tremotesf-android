@@ -24,16 +24,15 @@ import java.text.Collator
 import java.util.Comparator
 
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.recyclerview.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
 

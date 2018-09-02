@@ -23,28 +23,24 @@ import java.text.Collator
 import java.util.Comparator
 
 import android.app.Dialog
-
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
-
-import org.jetbrains.anko.startActivity
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -52,9 +48,10 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
+import org.jetbrains.anko.startActivity
 
-import kotlinx.android.synthetic.main.servers_activity.*
 import kotlinx.android.synthetic.main.server_list_item.view.*
+import kotlinx.android.synthetic.main.servers_activity.*
 
 
 class ServersActivity : BaseActivity() {

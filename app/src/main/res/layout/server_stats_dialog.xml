@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:scrollbars="vertical">
 
-    <android.support.v7.widget.GridLayout
+    <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_horizontal_padding"
@@ -167,5 +167,5 @@
             android:ellipsize="end"
             android:maxLines="2"
             app:layout_columnWeight="2"/>
-    </android.support.v7.widget.GridLayout>
+    </androidx.gridlayout.widget.GridLayout>
 </ScrollView>

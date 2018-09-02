@@ -20,14 +20,12 @@
 package org.equeim.tremotesf
 
 import android.Manifest
-
 import android.content.ContentResolver
-import android.content.Context
 import android.content.pm.PackageManager
-
 import android.os.Build
 import android.os.Bundle
-
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -36,30 +34,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
-import android.text.Editable
-import android.text.TextWatcher
-
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
-
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
-
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.Snackbar
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.getSystemService
 import androidx.core.text.trimmedLength
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.contentView
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.design.indefiniteSnackbar
+import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.BaseRpc
 import org.equeim.libtremotesf.Torrent
@@ -274,7 +267,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 doneMenuItem?.isVisible = false
 
                 activity.currentFocus?.let { focus ->
-                    (activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    activity.getSystemService<InputMethodManager>()!!
                             .hideSoftInputFromWindow(focus.windowToken, 0)
                 }
 
@@ -451,7 +444,7 @@ class AddTorrentFileActivity : BaseActivity() {
             files_view.adapter = adapter
             files_view.layoutManager = LinearLayoutManager(activity)
             files_view.addItemDecoration(DividerItemDecoration(activity,
-                                                               DividerItemDecoration.VERTICAL))
+                    DividerItemDecoration.VERTICAL))
             files_view.itemAnimator = null
 
             if (parser.status == TorrentFileParser.Status.Loaded) {

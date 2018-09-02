@@ -23,12 +23,11 @@ import java.text.DecimalFormat
 
 import android.os.Bundle
 import android.text.format.DateUtils
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.Utils

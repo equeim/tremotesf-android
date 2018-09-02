@@ -25,14 +25,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
-
 import android.content.Intent
-
 import android.os.Build
 
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.TaskStackBuilder
-import android.support.v4.content.res.ResourcesCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.content.res.ResourcesCompat
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug

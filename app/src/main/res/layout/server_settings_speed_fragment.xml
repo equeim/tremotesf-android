@@ -34,7 +34,7 @@
                 android:saveEnabled="false"
                 android:text="@string/download_noun"/>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/download_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,14 +42,14 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/download_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/upload_speed_limit_check_box"
@@ -59,7 +59,7 @@
                 android:saveEnabled="false"
                 android:text="@string/upload_noun"/>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/upload_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,14 +67,14 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/upload_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -91,7 +91,7 @@
                 android:saveEnabled="false"
                 android:text="@string/enable"/>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/alternative_download_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,16 +99,16 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/alternative_download_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/download_kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/alternative_upload_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,14 +116,14 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/alternative_upload_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/upload_kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/schedule_check_box"

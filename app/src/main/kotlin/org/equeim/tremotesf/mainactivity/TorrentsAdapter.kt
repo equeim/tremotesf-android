@@ -24,30 +24,25 @@ import java.text.DecimalFormat
 import java.util.Comparator
 
 import android.app.Dialog
-
 import android.graphics.drawable.Drawable
-
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-
 import android.text.InputType
-
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.RecyclerView
-
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import org.jetbrains.anko.intentFor
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
+import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
@@ -59,7 +54,7 @@ import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
-import kotlinx.android.synthetic.main.main_activity.torrents_view
+import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 import kotlinx.android.synthetic.main.set_location_dialog.*
 import kotlinx.android.synthetic.main.torrent_list_item.view.*

@@ -19,21 +19,21 @@
 
 package org.equeim.tremotesf.serversettingsactivity
 
-import android.content.Context
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-
 import android.widget.ArrayAdapter
 import android.widget.ListView
 
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
-import android.support.v4.app.ListFragment
+import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.ListFragment
+import androidx.fragment.app.transaction
+
+import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -46,6 +46,7 @@ import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 
+
 class ServerSettingsActivity : BaseActivity() {
     private lateinit var inputManager: InputMethodManager
 
@@ -54,17 +55,15 @@ class ServerSettingsActivity : BaseActivity() {
             BaseRpc.Status.Disconnected -> {
                 if (supportFragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
                     supportFragmentManager.popBackStack()
-                    supportFragmentManager.beginTransaction()
-                            .replace(android.R.id.content,
-                                     PlaceholderFragment(),
-                                     PlaceholderFragment.TAG)
-                            .commit()
+                    supportFragmentManager.transaction {
+                        replace(android.R.id.content,
+                                PlaceholderFragment(),
+                                PlaceholderFragment.TAG)
+                    }
                 }
             }
             BaseRpc.Status.Connected -> {
-                supportFragmentManager.beginTransaction()
-                        .replace(android.R.id.content, MainFragment())
-                        .commit()
+                supportFragmentManager.transaction { replace(android.R.id.content, MainFragment()) }
             }
             else -> {
             }
@@ -75,7 +74,7 @@ class ServerSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
 
-        inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager = getSystemService<InputMethodManager>()!!
 
         supportFragmentManager.addOnBackStackChangedListener {
             if (supportFragmentManager.backStackEntryCount == 0) {
@@ -84,8 +83,7 @@ class ServerSettingsActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(android.R.id.content,
-                                                              MainFragment()).commit()
+            supportFragmentManager.transaction { replace(android.R.id.content, MainFragment()) }
         }
 
         Rpc.instance.addStatusListener(rpcStatusListener)
@@ -176,7 +174,7 @@ class ServerSettingsActivity : BaseActivity() {
         }
 
         override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
-            val fragment: Fragment = when (position) {
+            val fragment = when (position) {
                 0 -> DownloadingFragment()
                 1 -> SeedingFragment()
                 2 -> QueueFragment()
@@ -184,14 +182,13 @@ class ServerSettingsActivity : BaseActivity() {
                 4 -> NetworkFragment()
                 else -> return
             }
-
-            fragmentManager!!.beginTransaction()
-                    .replace(android.R.id.content,
-                             fragment,
-                             if (position == 3) SpeedFragment.TAG else null)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .addToBackStack(null)
-                    .commit()
+            requireFragmentManager().transaction {
+                replace(android.R.id.content,
+                        fragment,
+                        if (position == 3) SpeedFragment.TAG else null)
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                addToBackStack(null)
+            }
         }
     }
 }

@@ -22,14 +22,13 @@ package org.equeim.tremotesf
 import java.io.Serializable
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.recyclerview.widget.RecyclerView
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.Selector"

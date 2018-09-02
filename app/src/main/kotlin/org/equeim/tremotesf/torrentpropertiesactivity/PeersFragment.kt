@@ -20,14 +20,13 @@
 package org.equeim.tremotesf.torrentpropertiesactivity
 
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
@@ -77,7 +76,7 @@ class PeersFragment : Fragment() {
         peers_view.adapter = peersAdapter
         peers_view.layoutManager = LinearLayoutManager(activity)
         peers_view.addItemDecoration(DividerItemDecoration(activity,
-                                                           DividerItemDecoration.VERTICAL))
+                DividerItemDecoration.VERTICAL))
         peers_view.itemAnimator = null
     }
 

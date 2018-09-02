@@ -4,7 +4,7 @@
         android:id="@+id/search"
         android:icon="?attr/searchIcon"
         android:title="@android:string/search_go"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
 
     <item

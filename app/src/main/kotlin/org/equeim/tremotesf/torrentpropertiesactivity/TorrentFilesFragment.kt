@@ -23,14 +23,13 @@ import java.lang.ref.WeakReference
 
 import android.os.AsyncTask
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.Torrent
@@ -116,7 +115,7 @@ class TorrentFilesFragment : Fragment() {
         files_view.adapter = adapter
         files_view.layoutManager = LinearLayoutManager(activity)
         files_view.addItemDecoration(DividerItemDecoration(activity,
-                                                           DividerItemDecoration.VERTICAL))
+                DividerItemDecoration.VERTICAL))
         files_view.itemAnimator = null
 
         if (treeCreated) {

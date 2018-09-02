@@ -35,7 +35,7 @@
         android:saveEnabled="false"
         android:text="@string/stop_seeding_if_idle_for"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/idle_seeding_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,12 +43,12 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/idle_seeding_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/min"
             android:inputType="number"
             android:saveEnabled="false"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

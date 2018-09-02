@@ -20,9 +20,10 @@
 package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
-
 import android.content.Context
 import android.content.SharedPreferences
+
+import androidx.core.content.edit
 
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startService
@@ -137,7 +138,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.SortMode.Name
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_SORT_MODE, value.ordinal).apply()
+            preferences!!.edit { putInt(TORRENTS_SORT_MODE, value.ordinal) }
         }
 
     var torrentsSortOrder: TorrentsAdapter.SortOrder
@@ -149,7 +150,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.SortOrder.Ascending
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_SORT_ORDER, value.ordinal).apply()
+            preferences!!.edit { putInt(TORRENTS_SORT_ORDER, value.ordinal) }
         }
 
     var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
@@ -161,7 +162,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return TorrentsAdapter.StatusFilterMode.All
         }
         set(value) {
-            preferences!!.edit().putInt(TORRENTS_STATUS_FILTER, value.ordinal).apply()
+            preferences!!.edit { putInt(TORRENTS_STATUS_FILTER, value.ordinal) }
         }
 
     var torrentsTrackerFilter: String
@@ -169,7 +170,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")!!
         }
         set(value) {
-            preferences!!.edit().putString(TORRENTS_TRACKER_FILTER, value).apply()
+            preferences!!.edit { putString(TORRENTS_TRACKER_FILTER, value) }
         }
 
     var torrentsDirectoryFilter: String
@@ -177,7 +178,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences!!.getString(TORRENTS_DIRECTORY_FILTER, "")!!
         }
         set(value) {
-            preferences!!.edit().putString(TORRENTS_DIRECTORY_FILTER, value).apply()
+            preferences!!.edit { putString(TORRENTS_DIRECTORY_FILTER, value) }
         }
 
     var donateDialogShown: Boolean
@@ -185,7 +186,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences!!.getBoolean(DONATE_DIALOG_SHOWN, false)
         }
         set(value) {
-            preferences!!.edit().putBoolean(DONATE_DIALOG_SHOWN, value).apply()
+            preferences!!.edit { putBoolean(DONATE_DIALOG_SHOWN, value) }
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {

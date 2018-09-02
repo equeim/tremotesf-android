@@ -1,6 +1,8 @@
 package org.equeim.tremotesf
 
 import android.app.NotificationManager
+import androidx.core.content.getSystemService
+
 
 class Application : android.app.Application() {
     companion object {
@@ -20,7 +22,7 @@ class Application : android.app.Application() {
     lateinit var notificationManager: NotificationManager
 
     override fun onCreate() {
-        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService<NotificationManager>()!!
         loadLibrary()
         Settings.context = this
         Servers.context = this

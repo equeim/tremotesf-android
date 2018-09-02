@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
@@ -17,4 +17,4 @@
         android:paddingLeft="@dimen/horizontal_edge_padding"
         android:paddingRight="@dimen/horizontal_edge_padding"
         android:paddingTop="@dimen/vertical_edge_padding"/>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>

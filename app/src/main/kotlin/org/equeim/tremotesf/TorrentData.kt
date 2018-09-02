@@ -26,6 +26,7 @@ import android.content.Context
 
 import org.equeim.libtremotesf.Torrent
 
+
 class TorrentData(val torrent: Torrent, private val context: Context) {
     val id = torrent.id()
     val hashString: String = torrent.hashString()

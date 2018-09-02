@@ -20,17 +20,15 @@
 package org.equeim.tremotesf.torrentpropertiesactivity
 
 import android.os.Bundle
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.support.v4.app.Fragment
-
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 
@@ -61,7 +59,7 @@ class TrackersFragment : Fragment() {
         trackers_view.adapter = trackersAdapter
         trackers_view.layoutManager = LinearLayoutManager(activity)
         trackers_view.addItemDecoration(DividerItemDecoration(activity,
-                                                              DividerItemDecoration.VERTICAL))
+                DividerItemDecoration.VERTICAL))
         (trackers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {

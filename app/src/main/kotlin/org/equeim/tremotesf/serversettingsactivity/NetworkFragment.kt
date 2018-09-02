@@ -20,17 +20,14 @@
 package org.equeim.tremotesf.serversettingsactivity
 
 import android.os.Bundle
-
 import android.text.Editable
 import android.text.TextWatcher
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import android.widget.AdapterView
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 
 import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R

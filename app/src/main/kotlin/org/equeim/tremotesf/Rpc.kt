@@ -31,6 +31,7 @@ import org.equeim.libtremotesf.Torrent
 
 import org.jetbrains.anko.runOnUiThread
 
+
 class Rpc : JniRpc() {
     companion object {
         @SuppressLint("StaticFieldLeak")

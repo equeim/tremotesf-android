@@ -22,8 +22,9 @@ package org.equeim.tremotesf.utils
 import android.content.Context
 import android.util.AttributeSet
 
-import android.support.v4.widget.CompoundButtonCompat
-import android.support.v7.widget.AppCompatCheckBox
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.core.widget.CompoundButtonCompat
+
 
 class TristateCheckbox(context: Context,
                        attrs: AttributeSet?) : AppCompatCheckBox(context, attrs) {

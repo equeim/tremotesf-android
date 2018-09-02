@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.mainactivity
 
 import java.text.Collator
+
 import android.content.Context
 
 import com.amjjd.alphanum.AlphanumericComparator

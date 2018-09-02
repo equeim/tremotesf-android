@@ -21,21 +21,20 @@ package org.equeim.tremotesf.serversactivity
 
 import android.app.Dialog
 import android.os.Bundle
-import android.widget.EditText
-
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
-
+import androidx.appcompat.app.AlertDialog
 import androidx.core.text.trimmedLength
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.transaction
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -45,8 +44,8 @@ import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
-import kotlinx.android.synthetic.main.server_edit_activity_main_fragment.*
 import kotlinx.android.synthetic.main.server_edit_activity_certificates_fragment.*
+import kotlinx.android.synthetic.main.server_edit_activity_main_fragment.*
 
 
 class ServerEditActivity : BaseActivity() {
@@ -69,10 +68,8 @@ class ServerEditActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager
-                    .beginTransaction()
-                    .replace(android.R.id.content, MainFragment(), MainFragment.TAG)
-                    .commit()
+            supportFragmentManager.transaction { replace(android.R.id.content, MainFragment(),
+                                                         MainFragment.TAG) }
         }
     }
 
@@ -121,12 +118,11 @@ class ServerEditActivity : BaseActivity() {
             certificates_item.isEnabled = false
             certificates_item.setChildrenEnabled(false)
             certificates_item.setOnClickListener {
-                requireFragmentManager()
-                        .beginTransaction()
-                        .replace(android.R.id.content, CertificatesFragment())
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(null)
-                        .commit()
+                requireFragmentManager().transaction {
+                    replace(android.R.id.content, CertificatesFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    addToBackStack(null)
+                }
             }
             https_check_box.setOnCheckedChangeListener { _, checked ->
                 certificates_item.isEnabled = checked

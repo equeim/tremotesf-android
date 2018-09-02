@@ -23,20 +23,17 @@ import java.text.DecimalFormat
 
 import android.app.Dialog
 import android.os.Bundle
-
 import android.text.InputType
-
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import android.support.v4.app.DialogFragment
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.RecyclerView
-
+import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseTorrentFilesAdapter

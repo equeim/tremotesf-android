@@ -26,7 +26,8 @@ import java.util.Comparator
 import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.support.v7.widget.RecyclerView
+
+import androidx.recyclerview.widget.RecyclerView
 
 import com.amjjd.alphanum.AlphanumericComparator
 
