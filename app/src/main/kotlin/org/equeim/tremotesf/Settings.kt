@@ -50,6 +50,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 preferences!!.registerOnSharedPreferenceChangeListener(this)
 
                 darkThemeKey = value.getString(R.string.prefs_dark_theme_key)
+                oldColorsKey = value.getString(R.string.prefs_old_colors_key)
                 backgroundServiceKey = value.getString(R.string.prefs_background_service_key)
                 persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
                 notifyOnFinishedKey = value.getString(R.string.prefs_notify_on_finished_key)
@@ -63,6 +64,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private var preferences: SharedPreferences? = null
 
     private lateinit var darkThemeKey: String
+    private lateinit var oldColorsKey: String
     private lateinit var backgroundServiceKey: String
     private lateinit var persistentNotificationKey: String
     private lateinit var notifyOnFinishedKey: String
@@ -76,21 +78,28 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences!!.getBoolean(darkThemeKey, true)
         }
 
+    private val oldColors: Boolean
+        get() {
+            return preferences!!.getBoolean(oldColorsKey, false)
+        }
+
     val theme: Int
         get() {
+            val old = oldColors
             return if (darkTheme) {
-                R.style.AppTheme_Dark
+                if (old) R.style.AppTheme_Dark_Old else R.style.AppTheme_Dark
             } else {
-                R.style.AppTheme_Light
+                if (old) R.style.AppTheme_Light_Old else R.style.AppTheme_Light
             }
         }
 
     val themeNoActionBar: Int
         get() {
+            val old = oldColors
             return if (darkTheme) {
-                R.style.AppTheme_Dark_NoActionBar
+                if (old) R.style.AppTheme_Dark_Old_NoActionBar else R.style.AppTheme_Dark_NoActionBar
             } else {
-                R.style.AppTheme_Light_NoActionBar
+                if (old) R.style.AppTheme_Light_Old_NoActionBar else R.style.AppTheme_Light_NoActionBar
             }
         }
 

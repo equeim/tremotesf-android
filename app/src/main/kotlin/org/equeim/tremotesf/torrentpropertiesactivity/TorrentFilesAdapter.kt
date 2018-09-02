@@ -75,7 +75,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_file_list_item,
                                                                    parent,
                                                                    false)
-            Utils.setProgressBarAccentColor(view.progress_bar)
+            Utils.setProgressBarColor(view.progress_bar)
             return ItemHolder(this, selector, view)
         }
         return super.onCreateViewHolder(parent, viewType)

@@ -19,10 +19,16 @@
 
 package org.equeim.tremotesf
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
+import android.widget.TextView
 
 import androidx.fragment.app.transaction
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceViewHolder
 
 
 class SettingsActivity : BaseActivity() {
@@ -35,6 +41,26 @@ class SettingsActivity : BaseActivity() {
     class Fragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+        }
+    }
+}
+
+class MyPreferenceCategory(context: Context,
+                           attrs: AttributeSet?,
+                           defStyleAttr: Int,
+                           defStyleRes: Int) : PreferenceCategory(context, attrs, defStyleAttr, defStyleRes) {
+    constructor(context: Context,
+                attrs: AttributeSet?,
+                defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.preferenceCategoryStyle)
+    constructor(context: Context) : this(context, null)
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            val ta = holder.itemView.context.obtainStyledAttributes(intArrayOf(R.attr.colorSecondary))
+            (holder.findViewById(android.R.id.title) as? TextView)?.setTextColor(ta.getColor(0, 0))
+            ta.recycle()
         }
     }
 }

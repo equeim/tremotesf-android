@@ -136,9 +136,9 @@ object Utils : AnkoLogger {
         ta.recycle()
     }
 
-    fun setProgressBarAccentColor(progressBar: ProgressBar) {
+    fun setProgressBarColor(progressBar: ProgressBar) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            val ta = progressBar.context.obtainStyledAttributes(intArrayOf(R.attr.colorAccent))
+            val ta = progressBar.context.obtainStyledAttributes(intArrayOf(R.attr.colorSecondary))
             progressBar.progressDrawable.setColorFilter(ta.getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
             ta.recycle()
         }

@@ -225,7 +225,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item,
                                                                parent,
                                                                false)
-        Utils.setProgressBarAccentColor(view.progress_bar)
+        Utils.setProgressBarColor(view.progress_bar)
         return TorrentsViewHolder(selector, activity, view)
     }
 
