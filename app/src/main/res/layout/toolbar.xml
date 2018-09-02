@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
     android:elevation="@dimen/action_bar_elevation"
-    tools:targetApi="lollipop"/>
+    tools:targetApi="lollipop"
+    tools:ignore="Overdraw" />

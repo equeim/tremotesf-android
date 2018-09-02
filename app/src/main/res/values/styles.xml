@@ -13,6 +13,8 @@
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
+        <item name="android:importantForAutofill">noExcludeDescendants</item>
+
         <item name="selectAllIcon">@drawable/ic_select_all_white_24dp</item>
         <item name="searchIcon">@drawable/ic_search_white_24dp</item>
         <item name="addIcon">@drawable/ic_add_white_24dp</item>
@@ -59,6 +61,8 @@
         <item name="selectedBackground">@drawable/selected_background_light</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+
+        <item name="android:importantForAutofill">noExcludeDescendants</item>
 
         <item name="selectAllIcon">@drawable/ic_select_all_black_24dp</item>
         <item name="searchIcon">@drawable/ic_search_black_24dp</item>

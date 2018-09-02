@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Tremotesf</string>
-
     <string name="disconnected">Disconnected</string>
     <string name="connecting">Connecting\u2026</string>
     <string name="connected">Connected</string>

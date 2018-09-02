@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.equeim.tremotesf">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -15,7 +16,8 @@
         android:name=".Application"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark"
-        android:extractNativeLibs="false">
+        android:extractNativeLibs="false"
+        tools:targetApi="m">
 
         <activity
             android:name=".mainactivity.MainActivity"
