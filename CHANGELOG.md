@@ -1,4 +1,13 @@
-# Change Log
+# Changelog
+
+## [1.8.2] - 2018-09-02
+### Changed
+- Migrated from com.android.support support library to androidx
+- Migrated from Theme.Design theme to Theme.MaterialComponents
+- Tremotesf now uses red as accent color (you can revert it back in settings)
+
+### Fixed
+- Fixed crash when disconnecting from server
 
 ## [1.8.1] - 2018-08-16
 ### Fixed
