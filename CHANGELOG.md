@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.8.3] - 2018-09-11
+### Changed
+- OpenSSL 1.1.1 is required
+- OpenSSL is now built using Clang
+
 ## [1.8.2] - 2018-09-02
 ### Changed
 - Migrated from com.android.support support library to androidx
