@@ -83,7 +83,7 @@ dependencies {
     implementation "androidx.preference:preference:$androidx_version"
     implementation "androidx.viewpager:viewpager:$androidx_version"
 
-    implementation 'com.google.android.material:material:1.0.0-rc01'
+    implementation 'com.google.android.material:material:1.0.0-rc02'
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
