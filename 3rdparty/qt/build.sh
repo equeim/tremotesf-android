@@ -1,6 +1,13 @@
 #!/bin/bash
 
 _DIR="$(realpath $(dirname $0))"
+cd "$_DIR" || exit 1
+
+# if can't reverse, patch
+if ! patch -p0 -R --dry-run -f -i qmakemake.patch; then
+    # don't die here
+    patch -p0 -i qmakemake.patch
+fi
 
 _BUILD_DIR="$_DIR/build-$ANDROID_ARCH"
 mkdir -p "$_BUILD_DIR" || exit 1
