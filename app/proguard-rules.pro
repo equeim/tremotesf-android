@@ -17,17 +17,6 @@
 #}
 
 -dontobfuscate
-
-#-dontwarn javax.annotation.**
-#-dontwarn com.google.errorprone.annotations.**
-#-dontwarn sun.misc.Unsafe
-#-dontwarn com.google.j2objc.annotations.**
-#-dontwarn java.lang.ClassValue
-#-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
-#-dontwarn org.checkerframework.**
-#-dontwarn afu.org.checkerframework.**
-#
--keep class android.support.v7.widget.SearchView { *; }
 -keep class org.qtproject.qt5.android.QtNative { *; }
 -keep class org.equeim.libtremotesf.** { *; }
 -dontwarn com.simplecityapps.recyclerview_fastscroll.views.FastScrollPopup
