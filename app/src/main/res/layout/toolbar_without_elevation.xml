@@ -5,4 +5,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
+    style="@style/Widget.AppCompat.Toolbar"
     tools:ignore="Overdraw"/>

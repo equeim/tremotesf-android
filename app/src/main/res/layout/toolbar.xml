@@ -6,5 +6,6 @@
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
     android:elevation="@dimen/action_bar_elevation"
+    style="@style/Widget.AppCompat.Toolbar"
     tools:targetApi="lollipop"
     tools:ignore="Overdraw" />
