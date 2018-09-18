@@ -599,15 +599,11 @@ namespace libtremotesf
 
     }
 
-    JniWrapper::JniWrapper(JniRpc* rpc)
+    JniWrapper::JniWrapper()
         : mApp(new QCoreApplication(argc, argv)),
           mThread(new QThread())
     {
-        rpc->moveToThread(mThread);
-        /*QObject::connect(mThread, &QThread::finished, [=]() {
-            mRpc->deleteLater();
-            mRpc = nullptr;
-        });*/
+        mApp->setApplicationName(QLatin1String("Tremotesf"));
         mThread->start();
     }
 
@@ -616,5 +612,10 @@ namespace libtremotesf
         mThread->quit();
         mThread->wait();
         mApp->deleteLater();
+    }
+
+    void JniWrapper::setRpc(JniRpc* rpc)
+    {
+        rpc->moveToThread(mThread);
     }
 }

@@ -8234,16 +8234,13 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1cha
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1JniWrapper(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1JniWrapper(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::JniWrapper *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  result = (libtremotesf::JniWrapper *)new libtremotesf::JniWrapper(arg1);
+  result = (libtremotesf::JniWrapper *)new libtremotesf::JniWrapper();
   *(libtremotesf::JniWrapper **)&jresult = result; 
   return jresult;
 }
@@ -8256,6 +8253,20 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Jni
   (void)jcls;
   arg1 = *(libtremotesf::JniWrapper **)&jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniWrapper_1setRpc(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  libtremotesf::JniWrapper *arg1 = (libtremotesf::JniWrapper *) 0 ;
+  libtremotesf::JniRpc *arg2 = (libtremotesf::JniRpc *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(libtremotesf::JniWrapper **)&jarg1; 
+  arg2 = *(libtremotesf::JniRpc **)&jarg2; 
+  (arg1)->setRpc(arg2);
 }
 
 

@@ -384,8 +384,9 @@ public class libtremotesfJNI {
   public final static native void delete_JniRpc(long jarg1);
   public final static native void JniRpc_director_connect(JniRpc obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void JniRpc_change_ownership(JniRpc obj, long cptr, boolean take_or_release);
-  public final static native long new_JniWrapper(long jarg1, JniRpc jarg1_);
+  public final static native long new_JniWrapper();
   public final static native void delete_JniWrapper(long jarg1);
+  public final static native void JniWrapper_setRpc(long jarg1, JniWrapper jarg1_, long jarg2, JniRpc jarg2_);
   public final static native long JniServerSettings_SWIGUpcast(long jarg1);
   public final static native long JniRpc_SWIGUpcast(long jarg1);
 

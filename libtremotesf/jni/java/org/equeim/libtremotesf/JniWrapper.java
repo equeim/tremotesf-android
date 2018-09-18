@@ -35,8 +35,12 @@ public class JniWrapper {
     }
   }
 
-  public JniWrapper(JniRpc rpc) {
-    this(libtremotesfJNI.new_JniWrapper(JniRpc.getCPtr(rpc), rpc), true);
+  public JniWrapper() {
+    this(libtremotesfJNI.new_JniWrapper(), true);
+  }
+
+  public void setRpc(JniRpc rpc) {
+    libtremotesfJNI.JniWrapper_setRpc(swigCPtr, this, JniRpc.getCPtr(rpc), rpc);
   }
 
 }

@@ -173,9 +173,9 @@ namespace libtremotesf
     class JniWrapper
     {
     public:
-        JniWrapper(JniRpc* rpc);
+        JniWrapper();
         virtual ~JniWrapper();
-
+        void setRpc(JniRpc* rpc);
     private:
         QCoreApplication* mApp;
         QThread* mThread;
