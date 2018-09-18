@@ -1,0 +1,17 @@
+--- qtbase/src/corelib/global/qlogging.cpp	2018-09-18 21:24:34.291165644 +0300
++++ qtbase/src/corelib/global/qlogging.cpp	2018-09-18 21:24:42.923193249 +0300
+@@ -1666,9 +1666,14 @@
+     case QtFatalMsg: priority = ANDROID_LOG_FATAL; break;
+     };
+ 
++#ifdef QT_MESSAGELOGCONTEXT
+     __android_log_print(priority, qPrintable(QCoreApplication::applicationName()),
+                         "%s:%d (%s): %s\n", context.file, context.line,
+                         context.function, qPrintable(formattedMessage));
++#else
++    __android_log_print(priority, qPrintable(QCoreApplication::applicationName()),
++                        "%s\n", qPrintable(formattedMessage));
++#endif
+ 
+     return true; // Prevent further output to stderr
+ }
