@@ -14,6 +14,11 @@ if ! patch -p0 -R --dry-run -f -i logging.patch; then
     patch -p0 -i logging.patch || exit 1
 fi
 
+# if can't reverse, patch
+if ! patch -p0 -R --dry-run -f -i donottryondemand.patch; then
+    patch -p0 -i donottryondemand.patch || exit 1
+fi
+
 _BUILD_DIR="$_DIR/build-$ANDROID_ARCH"
 mkdir -p "$_BUILD_DIR" || exit 1
 cd "$_BUILD_DIR" || exit 1
