@@ -41,8 +41,9 @@ class Rpc : JniRpc() {
         val instance: Rpc
             get() {
                 if (instanceField == null) {
+                    wrapperInstanceField = JniWrapper()
                     instanceField = Rpc()
-                    wrapperInstanceField = JniWrapper(instanceField)
+                    wrapperInstanceField!!.setRpc(instanceField)
                 }
                 return instanceField!!
             }
