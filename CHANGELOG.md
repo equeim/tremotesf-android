@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.4] - 2018-09-19
+### Changed
+- Connection error messages are now displayed in a toast
+
+### Fixed
+- Fixed loading of system CA certificates
+- Fixed action bar height in landscape mode
+- Added tag to log entries
+
 ## [1.8.3] - 2018-09-11
 ### Changed
 - OpenSSL 1.1.1 is required
