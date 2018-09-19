@@ -3662,6 +3662,23 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1er
 }
 
 
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1errorMessage(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Rpc **)&jarg1; 
+  result = (QString *) &((libtremotesf::Rpc const *)arg1)->errorMessage();
+  
+  jresult = jenv->NewString(reinterpret_cast<const jchar*>(result->constData()), result->size());
+  
+  return jresult;
+}
+
+
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1isLocal(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;

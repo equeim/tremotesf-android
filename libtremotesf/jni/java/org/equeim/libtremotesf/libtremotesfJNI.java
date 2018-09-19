@@ -146,6 +146,7 @@ public class libtremotesfJNI {
   public final static native boolean BaseRpc_isConnected(long jarg1, BaseRpc jarg1_);
   public final static native int BaseRpc_status(long jarg1, BaseRpc jarg1_);
   public final static native int BaseRpc_error(long jarg1, BaseRpc jarg1_);
+  public final static native String BaseRpc_errorMessage(long jarg1, BaseRpc jarg1_);
   public final static native boolean BaseRpc_isLocal(long jarg1, BaseRpc jarg1_);
   public final static native int BaseRpc_torrentsCount(long jarg1, BaseRpc jarg1_);
   public final static native boolean BaseRpc_backgroundUpdate(long jarg1, BaseRpc jarg1_);

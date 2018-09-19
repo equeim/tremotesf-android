@@ -145,6 +145,11 @@ namespace libtremotesf
         return mError;
     }
 
+    const QString& Rpc::errorMessage() const
+    {
+        return mErrorMessage;
+    }
+
     bool Rpc::isLocal() const
     {
         return mLocal;
@@ -167,9 +172,8 @@ namespace libtremotesf
             const int interval = [=]() {
                 if (background) {
                     return mBackgroundUpdateInterval;
-                } else {
-                    return mUpdateInterval;
                 }
+                return mUpdateInterval;
             }();
             if (mUpdateTimer->isActive()) {
                 mUpdateTimer->stop();
@@ -248,14 +252,9 @@ namespace libtremotesf
                 hostName == QHostInfo::localHostName()) {
                 return true;
             }
-
             const QHostAddress ipAddress(hostName);
-            if (!ipAddress.isNull() &&
-                (ipAddress.isLoopback() || QNetworkInterface::allAddresses().contains(ipAddress))) {
-                return true;
-            }
-
-            return false;
+            return !ipAddress.isNull() &&
+                    (ipAddress.isLoopback() || QNetworkInterface::allAddresses().contains(ipAddress));
         }();
 
         if (wasConnected) {
@@ -313,7 +312,7 @@ namespace libtremotesf
                                         {QLatin1String("priority-high"), std::move(highPriorityFiles)},
                                         {QLatin1String("priority-normal"), std::move(normalPriorityFiles)},
                                         {QLatin1String("priority-low"), std::move(lowPriorityFiles)},
-                                        {QLatin1String("bandwidthPriority"), std::move(bandwidthPriority)},
+                                        {QLatin1String("bandwidthPriority"), bandwidthPriority},
                                         {QLatin1String("paused"), !start}});
             });
             auto watcher = new QFutureWatcher<QByteArray>(this);
@@ -624,7 +623,6 @@ namespace libtremotesf
 
         mStatus = status;
         emit statusChanged();
-        emit statusStringChanged();
 
         switch (mStatus) {
         case Disconnected:
@@ -667,11 +665,11 @@ namespace libtremotesf
         }
     }
 
-    void Rpc::setError(Error error)
+    void Rpc::setError(Error error, const QString& errorMessage)
     {
         if (error != mError) {
             mError = error;
-            emit statusStringChanged();
+            mErrorMessage = errorMessage;
             emit errorChanged();
         }
     }
@@ -919,7 +917,7 @@ namespace libtremotesf
                         postRequest(data, callOnSuccessParse);
                     } else {
                         qWarning() << reply->error() << reply->errorString();
-                        setError(ConnectionError);
+                        setError(ConnectionError, reply->errorString());
                         setStatus(Disconnected);
                     }
                 }

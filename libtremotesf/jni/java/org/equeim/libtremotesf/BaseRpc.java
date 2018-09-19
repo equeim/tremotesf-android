@@ -71,6 +71,10 @@ public class BaseRpc {
     return libtremotesfJNI.BaseRpc_error(swigCPtr, this);
   }
 
+  public String errorMessage() {
+    return libtremotesfJNI.BaseRpc_errorMessage(swigCPtr, this);
+}
+
   public boolean isLocal() {
     return libtremotesfJNI.BaseRpc_isLocal(swigCPtr, this);
   }

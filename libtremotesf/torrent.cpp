@@ -110,7 +110,7 @@ namespace libtremotesf
             }
         }
 
-        void setChanged(double& value, const double& newValue, bool& changed)
+        void setChanged(double& value, double newValue, bool& changed)
         {
             if (!qFuzzyCompare(newValue, value)) {
                 value = newValue;
@@ -148,8 +148,6 @@ namespace libtremotesf
         : mId(id),
           mHashString(torrentMap.value(hashStringKey).toString()),
           mAddedDate(QDateTime::fromMSecsSinceEpoch(torrentMap.value(addedDateKey).toDouble() * 1000)),
-          mFilesEnabled(false),
-          mPeersEnabled(false),
           mRpc(rpc)
     {
         update(torrentMap);
