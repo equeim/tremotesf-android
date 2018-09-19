@@ -87,8 +87,8 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
-    implementation 'org.jetbrains.anko:anko-commons:0.10.5'
-    implementation 'org.jetbrains.anko:anko-design:0.10.5'
+    implementation 'org.jetbrains.anko:anko-commons:0.10.6'
+    implementation 'org.jetbrains.anko:anko-design:0.10.6'
 
     implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
