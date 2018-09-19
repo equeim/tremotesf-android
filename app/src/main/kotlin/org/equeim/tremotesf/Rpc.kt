@@ -21,6 +21,7 @@ package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
 
 import org.equeim.libtremotesf.BaseRpc
 import org.equeim.libtremotesf.JniRpc
@@ -194,8 +195,14 @@ class Rpc : JniRpc() {
 
     override fun onErrorChanged() {
         context!!.runOnUiThread {
+            val error = error()
             for (listener in errorListeners) {
-                listener(error())
+                listener(error)
+            }
+            if (error == BaseRpc.Error.ConnectionError) {
+                context?.let { context ->
+                    Toast.makeText(context, errorMessage(), Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
