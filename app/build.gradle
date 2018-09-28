@@ -64,7 +64,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-def androidx_version = '1.0.0-rc02'
+def androidx_version = '1.0.0'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
@@ -83,7 +83,7 @@ dependencies {
     implementation "androidx.preference:preference:$androidx_version"
     implementation "androidx.viewpager:viewpager:$androidx_version"
 
-    implementation 'com.google.android.material:material:1.0.0-rc02'
+    implementation 'com.google.android.material:material:1.0.0'
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
