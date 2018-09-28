@@ -1,23 +1,19 @@
 #!/bin/bash
 
+function _patch_if_needed() {
+    # if can't reverse, patch
+    if ! patch -p0 -R --dry-run -f -i $1; then
+        patch -p0 -i $1 || ($2 && die)
+    fi
+}
+
 _DIR="$(realpath $(dirname $0))"
 cd "$_DIR" || exit 1
 
-# if can't reverse, patch
-if ! patch -p0 -R --dry-run -f -i qmakemake.patch; then
-    # don't die here
-    patch -p0 -i qmakemake.patch
-fi
-
-# if can't reverse, patch
-if ! patch -p0 -R --dry-run -f -i logging.patch; then
-    patch -p0 -i logging.patch || exit 1
-fi
-
-# if can't reverse, patch
-if ! patch -p0 -R --dry-run -f -i donottryondemand.patch; then
-    patch -p0 -i donottryondemand.patch || exit 1
-fi
+_patch_if_needed r18.patch false
+_patch_if_needed qmakemake.patch false
+_patch_if_needed logging.patch true
+_patch_if_needed donottryondemand.patch true
 
 _BUILD_DIR="$_DIR/build-$ANDROID_ARCH"
 mkdir -p "$_BUILD_DIR" || exit 1
