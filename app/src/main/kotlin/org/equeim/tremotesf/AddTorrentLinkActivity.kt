@@ -52,7 +52,7 @@ class AddTorrentLinkActivity : BaseActivity() {
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
-    private var rpcStatusListener = { _: Int ->
+    private var rpcStatusListener: (Int) -> Unit = {
         updateView()
     }
 
@@ -187,7 +187,7 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         when (Rpc.instance.status()) {
             BaseRpc.Status.Disconnected -> {
-                snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
+                snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.instance.connect()
                 }

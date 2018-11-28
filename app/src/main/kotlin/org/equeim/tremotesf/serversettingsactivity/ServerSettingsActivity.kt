@@ -117,7 +117,7 @@ class ServerSettingsActivity : BaseActivity() {
             placeholder.text = Rpc.instance.statusString
             when (status) {
                 BaseRpc.Status.Disconnected -> {
-                    snackbar = indefiniteSnackbar(requireActivity().contentView!!, "", getString(R.string.connect)) {
+                    snackbar = requireActivity().contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                         snackbar = null
                         Rpc.instance.connect()
                     }

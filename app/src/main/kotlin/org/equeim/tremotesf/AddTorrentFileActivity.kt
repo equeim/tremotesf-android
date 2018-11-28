@@ -106,7 +106,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
         private var noPermission = false
 
-        private val rpcStatusListener = { _: Int ->
+        private val rpcStatusListener: (Int) -> Unit = {
             updateView()
         }
 
@@ -279,7 +279,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                     when (Rpc.instance.status()) {
                         BaseRpc.Status.Disconnected -> {
-                            snackbar = indefiniteSnackbar(activity.contentView!!, "", getString(R.string.connect)) {
+                            snackbar = activity.contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                                 snackbar = null
                                 Rpc.instance.connect()
                             }

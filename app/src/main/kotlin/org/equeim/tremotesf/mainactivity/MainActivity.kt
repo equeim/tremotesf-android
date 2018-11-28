@@ -138,7 +138,7 @@ class MainActivity : BaseActivity(), AnkoLogger {
         updatePlaceholder()
     }
 
-    private val rpcErrorListener = { _: Int ->
+    private val rpcErrorListener: (Int) -> Unit = {
         updateTitle()
         updateMenuItems()
         serversSpinner.isEnabled = Servers.hasServers
@@ -335,10 +335,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
         Servers.addCurrentServerListener(currentServerListener)
 
         Rpc.instance.torrentAddDuplicateListener = {
-            longSnackbar(coordinator_layout, R.string.torrent_duplicate)
+            coordinator_layout.longSnackbar(R.string.torrent_duplicate)
         }
         Rpc.instance.torrentAddErrorListener = {
-            longSnackbar(coordinator_layout, R.string.torrent_add_error)
+            coordinator_layout.longSnackbar(R.string.torrent_add_error)
         }
 
         if (savedInstanceState == null) {

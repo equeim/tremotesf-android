@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 class ServerStatsDialogFragment : DialogFragment() {
     private var serverStatsUpdatedListener: (() -> Unit)? = null
-    private val rpcStatusListener = { _: Int ->
+    private val rpcStatusListener: (Int) -> Unit = {
         if (Rpc.instance.isConnected) {
             serverStatsUpdatedListener!!()
         }

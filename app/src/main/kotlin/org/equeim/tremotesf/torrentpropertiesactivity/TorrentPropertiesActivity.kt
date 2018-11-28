@@ -99,7 +99,7 @@ class TorrentPropertiesActivity : BaseActivity() {
         when (status) {
             BaseRpc.Status.Disconnected -> {
                 torrent = null
-                snackbar = indefiniteSnackbar(contentView!!, "", getString(R.string.connect)) {
+                snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.instance.connect()
                 }

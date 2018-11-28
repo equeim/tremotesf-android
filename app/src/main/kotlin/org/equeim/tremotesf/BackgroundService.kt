@@ -99,9 +99,9 @@ class BackgroundService : Service(), AnkoLogger {
 
     private lateinit var notificationManager: NotificationManager
 
-    private val rpcStatusListener = { _: Int -> updatePersistentNotification() }
+    private val rpcStatusListener: (Int) -> Unit = { updatePersistentNotification() }
     private val serverStatsUpdatedListener = { updatePersistentNotification() }
-    private val rpcErrorListener = { _: Int -> updatePersistentNotification() }
+    private val rpcErrorListener: (Int) -> Unit = { updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
     override fun onBind(intent: Intent) = null
