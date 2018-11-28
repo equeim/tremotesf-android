@@ -47,18 +47,6 @@ import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
-private fun idsFromItems(items: List<BaseTorrentFilesAdapter.Item>): List<Int> {
-    val ids = mutableListOf<Int>()
-    for (item in items) {
-        if (item is BaseTorrentFilesAdapter.Directory) {
-            ids.addAll(item.childrenIds)
-        } else {
-            ids.add((item as BaseTorrentFilesAdapter.File).id)
-        }
-    }
-    return ids
-}
-
 class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                           rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
     init {
@@ -96,14 +84,12 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         }
     }
 
-    override fun setSelectedItemsWanted(wanted: Boolean) {
-        super.setSelectedItemsWanted(wanted)
-        Rpc.instance.setTorrentFilesWanted(torrent, idsFromItems(selector.selectedItems).toIntArray(), wanted)
+    override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
+        Rpc.instance.setTorrentFilesWanted(torrent, ids, wanted)
     }
 
-    override fun setSelectedItemsPriority(priority: Item.Priority) {
-        super.setSelectedItemsPriority(priority)
-        Rpc.instance.setTorrentFilesPriority(torrent, idsFromItems(selector.selectedItems).toIntArray(), priority.toTorrentFilePriority())
+    override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
+        Rpc.instance.setTorrentFilesPriority(torrent, ids, priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {

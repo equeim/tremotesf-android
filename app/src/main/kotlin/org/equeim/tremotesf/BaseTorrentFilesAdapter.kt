@@ -220,17 +220,29 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         return index
     }
 
-    protected open fun setSelectedItemsWanted(wanted: Boolean) {
+    private fun setSelectedItemsWanted(wanted: Boolean) {
+        val ids = mutableListOf<Int>()
         for (item in selector.selectedItems) {
-            item.setWanted(wanted)
+            item.setWanted(wanted, ids)
             notifyItemChanged(getItemPosition(item))
         }
+        onSetFilesWanted(ids.toIntArray(), wanted)
     }
 
-    protected open fun setSelectedItemsPriority(priority: Item.Priority) {
+    private fun setSelectedItemsPriority(priority: Item.Priority) {
+        val ids = mutableListOf<Int>()
         for (item in selector.selectedItems) {
-            item.priority = priority
+            item.setPriority(priority, ids)
         }
+        onSetFilesPriority(ids.toIntArray(), priority)
+    }
+
+    protected open fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
+
+    }
+
+    protected open fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
+
     }
 
     private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -256,7 +268,9 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
         init {
             checkBox.setOnClickListener {
-                item.setWanted(checkBox.isChecked)
+                val ids = mutableListOf<Int>()
+                item.setWanted(checkBox.isChecked, ids)
+                adapter.onSetFilesWanted(ids.toIntArray(), checkBox.isChecked)
             }
         }
 
@@ -410,9 +424,11 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             }
 
         abstract val wantedState: WantedState
-        abstract fun setWanted(wanted: Boolean)
+        abstract fun setWanted(wanted: Boolean, ids: MutableList<Int>? = null)
 
         abstract var priority: Priority
+
+        abstract fun setPriority(priority: Priority, ids: MutableList<Int>? = null)
 
         abstract val changed: Boolean
     }
@@ -454,9 +470,9 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 return first
             }
 
-        override fun setWanted(wanted: Boolean) {
+        override fun setWanted(wanted: Boolean, ids: MutableList<Int>?) {
             for (item in children) {
-                item.setWanted(wanted)
+                item.setWanted(wanted, ids)
             }
         }
 
@@ -473,12 +489,12 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 }
                 return first
             }
-            set(value) {
-                field = value
-                for (item in children) {
-                    item.priority = value
-                }
+
+        override fun setPriority(priority: Priority, ids: MutableList<Int>?) {
+            for (item in children) {
+                item.setPriority(priority, ids)
             }
+        }
 
         override val changed: Boolean
             get() = children.any(BaseTorrentFilesAdapter.Item::changed)
@@ -538,12 +554,13 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 }
             }
 
-        override fun setWanted(wanted: Boolean) {
+        override fun setWanted(wanted: Boolean, ids: MutableList<Int>?) {
             wantedState = if (wanted) {
                 WantedState.Wanted
             } else {
                 WantedState.Unwanted
             }
+            ids?.add(id)
         }
 
         override var priority = Priority.Normal
@@ -553,6 +570,11 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                     changed = true
                 }
             }
+
+        override fun setPriority(priority: Priority, ids: MutableList<Int>?) {
+            this.priority = priority
+            ids?.add(id)
+        }
 
         override var changed = false
     }
