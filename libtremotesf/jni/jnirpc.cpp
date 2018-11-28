@@ -9,6 +9,7 @@
 #include <memory>
 
 Q_DECLARE_METATYPE(libtremotesf::Server)
+Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 
 namespace libtremotesf
 {
@@ -221,6 +222,7 @@ namespace libtremotesf
         qRegisterMetaType<Torrent::Priority>();
         qRegisterMetaType<Torrent::RatioLimitMode>();
         qRegisterMetaType<Torrent::IdleSeedingLimitMode>();
+        qRegisterMetaType<TorrentFile::Priority>();
 
         serverSettings()->setParent(this);
         serverSettings()->setRpc(this);
