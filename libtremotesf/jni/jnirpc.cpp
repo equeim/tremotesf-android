@@ -605,7 +605,7 @@ namespace libtremotesf
         : mApp(new QCoreApplication(argc, argv)),
           mThread(new QThread())
     {
-        mApp->setApplicationName(QLatin1String("Tremotesf"));
+        mApp->setApplicationName(QLatin1String("LibTremotesf"));
         mThread->start();
     }
 
