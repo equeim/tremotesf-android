@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.5] - 2018-12-22
+### Changed
+- Updated Qt to version 5.12.0
+- Updated OpenSSL to version 1.1.1a
+- C++ backend's log entries now has "LibTremotesf" tag
+- Updated translations
+
+### Fixed
+- Fixed setting files' download state by ticking checkbox
+- Fixed setting files' priority
+
 ## [1.8.4] - 2018-09-19
 ### Changed
 - Connection error messages are now displayed in a toast
