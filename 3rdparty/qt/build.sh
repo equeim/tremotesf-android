@@ -24,56 +24,63 @@ _OPENSSL_INCDIR="$(realpath ../../openssl/install-$ANDROID_ARCH/include)"
 
 _PREFIX="$(realpath ../install-$ANDROID_ARCH)"
 
-OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure \
-    -v \
-    -confirm-license \
-    -opensource \
-    -prefix "$_PREFIX" \
-    -xplatform android-clang \
-    -c++std c++1z \
-    -android-ndk "$ANDROID_NDK_ROOT" \
-    -android-sdk "$ANDROID_SDK_ROOT" \
-    -android-ndk-host linux-x86_64 \
-    -android-arch "$ANDROID_ARCH" \
-    -android-ndk-platform android-16 \
-    -nomake tests \
-    -nomake examples \
-    -no-dbus \
-    -no-gui \
-    -no-opengl \
-    -no-widgets \
-    -no-feature-animation \
-    -no-feature-bearermanagement \
-    -no-feature-big_codecs \
-    -no-feature-codecs \
-    -no-feature-commandlineparser \
-    -no-feature-datetimeparser \
-    -no-feature-dnslookup \
-    -no-feature-dom \
-    -no-feature-filesystemiterator \
-    -no-feature-filesystemwatcher \
-    -no-feature-ftp \
-    -no-feature-itemmodel \
-    -no-feature-itemmodeltester \
-    -no-feature-localserver \
-    -no-feature-mimetype \
-    -no-feature-networkdiskcache \
-    -no-feature-networkproxy \
-    -no-feature-process \
-    -no-feature-processenvironment \
-    -no-feature-sql \
-    -no-feature-regularexpression \
-    -no-feature-sharedmemory \
-    -no-feature-statemachine \
-    -no-feature-systemsemaphore \
-    -no-feature-temporaryfile \
-    -no-feature-testlib \
-    -no-feature-translation \
-    -no-feature-udpsocket \
-    -no-feature-xml \
-    -no-feature-xmlstream \
-    -openssl-linked \
-    -I"$_OPENSSL_INCDIR" || exit 1
+_FLAGS=("-v"
+    "-confirm-license"
+    "-opensource"
+    "-prefix $_PREFIX"
+    "-xplatform android-clang"
+    "-c++std c++1z"
+    "-android-ndk $ANDROID_NDK_ROOT"
+    "-android-sdk $ANDROID_SDK_ROOT"
+    "-android-ndk-host linux-x86_64"
+    "-android-arch $ANDROID_ARCH"
+    "-android-ndk-platform android-16"
+    "-nomake tests"
+    "-nomake examples"
+    "-no-dbus"
+    "-no-gui"
+    "-no-opengl"
+    "-no-widgets"
+    "-no-feature-animation"
+    "-no-feature-bearermanagement"
+    "-no-feature-big_codecs"
+    "-no-feature-codecs"
+    "-no-feature-commandlineparser"
+    "-no-feature-datetimeparser"
+    "-no-feature-dnslookup"
+    "-no-feature-dom"
+    "-no-feature-filesystemiterator"
+    "-no-feature-filesystemwatcher"
+    "-no-feature-ftp"
+    "-no-feature-itemmodel"
+    "-no-feature-itemmodeltester"
+    "-no-feature-localserver"
+    "-no-feature-mimetype"
+    "-no-feature-networkdiskcache"
+    "-no-feature-networkproxy"
+    "-no-feature-process"
+    "-no-feature-processenvironment"
+    "-no-feature-sql"
+    "-no-feature-sharedmemory"
+    "-no-feature-statemachine"
+    "-no-feature-systemsemaphore"
+    "-no-feature-temporaryfile"
+    "-no-feature-testlib"
+    "-no-feature-translation"
+    "-no-feature-udpsocket"
+    "-no-feature-xml"
+    "-no-feature-xmlstream"
+    "-openssl-linked"
+    "-I$_OPENSSL_INCDIR"
+)
+
+if [ -f ../qtbase/dist/changes-5.12.0 ]; then
+    _FLAGS+=("-no-feature-dtls")
+else
+    _FLAGS+=("-no-feature-regularexpression")
+fi
+
+OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure ${_FLAGS[@]} || exit 1
 
 make $MAKEOPTS || exit 1
 make install $MAKEOPTS || exit 1
