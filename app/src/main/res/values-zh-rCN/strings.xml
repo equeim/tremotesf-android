@@ -122,14 +122,12 @@
     <string-array name="ratio_limit_mode">
         <item>使用全局设置</item>
         <item>一直供源</item>
-        <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string name="idle_seeding">空闲设置</string>
     <string-array name="idle_seeding_mode">
         <item>使用全局设置</item>
         <item>一直供源</item>
-        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">分钟</string>
@@ -149,6 +147,10 @@
     <string name="save">保存</string>
 
     <string name="remove">移除</string>
+
+    <plurals name="remove_servers_message">
+        <item quantity="other">你确定要移除 %d 个已选的服务端吗？</item>
+    </plurals>
 
     <string name="no_servers">无服务器</string>
 
@@ -170,26 +172,170 @@
 
     <string name="empty_field_error">该项不可为空</string>
 
+    <string name="server_exists">已存在与该项同名的服务器</string>
+    <string name="overwrite">覆盖</string>
+
+    <string name="add_torrent">添加种子</string>
     <string name="add_torrent_file">添加种子文件</string>
+    <string name="storage_permission_error">需要存储权限</string>
+    <string name="file_is_too_large">文件过大</string>
+    <string name="file_reading_error">读取文件时遇到了错误</string>
+    <string name="file_parsing_error">解析文件出错</string>
+
+    <string name="download_directory">下载文件夹</string>
+
+    <string name="server_settings_downloading">正在下载</string>
+    <string name="server_settings_seeding">供源</string>
+    <string name="server_settings_queue">传输队列</string>
+    <string name="server_settings_speed">速度</string>
+    <string name="server_settings_network">网络</string>
+
+    <string name="start_added_torrents">开始添加的种子</string>
+    <string name="rename_incomplete_files">在未完成文件的文件名加上\".part\"后缀</string>
+    <string name="incomplete_files_directory">保存未完成文件的文件夹</string>
     <string name="stop_seeding_at_ratio">到达该分享率时停止供源</string>
     <string name="stop_seeding_if_idle_for">到达该空闲时长后停止供源</string>
+    <string name="maximum_active_downloads">允许的最大活动下载数</string>
+    <string name="maximum_active_uploads">允许的最大活动上传数</string>
+    <string name="ignore_queue">空闲该时段后忽略队列优先级</string>
+    <string name="alternative_limits">备选限制</string>
+    <string name="enable">启用</string>
+    <string name="download_kbps">下载， kB/s</string>
+    <string name="upload_kbps">上传， kB/s</string>
+    <string name="scheduled">计划的</string>
+    <string name="from">从</string>
+    <string name="to">到</string>
+    <string name="every_day">每日</string>
+    <string name="weekdays">工作日</string>
+    <string name="weekends">周末</string>
+    <string name="connection">连接</string>
+    <string name="peer_port">对等方端口</string>
+    <string name="random_port">启动时使用随机端口</string>
+    <string name="port_forwarding">启用端口转发</string>
+    <string name="encryption">加密</string>
+    <string-array name="encryption_items">
+        <item>允许加密</item>
+        <item>偏好加密</item>
+        <item>要求加密</item>
+    </string-array>
+    <string name="enable_utp">启用 uTP</string>
+    <string name="enable_pex">启用 PEX</string>
+    <string name="enable_dht">启用 DHT</string>
+    <string name="enable_lpd">启用 LPD</string>
+    <string name="peer_limits">对等方限制</string>
+    <string name="maximum_peers_per_torrent">每个种子最大对等方数量</string>
+    <string name="maximum_peers_globally">全局最大对等方数量</string>
+
+    <string name="open_side_panel">打开侧边面板</string>
+    <string name="close_side_panel">关闭侧边面板</string>
+    <string name="start_downloading_after_adding">添加之后开始下载</string>
+
+    <string name="torrent_link">磁力链</string>
     <string name="add_torrent_link">添加磁力链接</string>
 
+    <string name="select_file">选择文件</string>
+    <string name="primary_storage">主要存储</string>
+
     <string name="current_session">当前会话</string>
+    <string name="total">总计</string>
     <string name="duration">持续时间</string>
+    <string name="close">关闭</string>
     <string name="server_stats">统计数据</string>
 
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">%1$d 天 %2$d 小时</string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">%1$d 小时 %2$d 分</string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">%1$d 分 %2$d 秒</string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds">%d 秒</string>
+
+    <plurals name="started_times">
+        <item quantity="other">已启动 %d 次</item>
+    </plurals>
+
+    <string name="start">开始</string>
     <string name="pause">暂停</string>
 
+    <plurals name="remove_torrents_message">
+        <item quantity="other">你确定要移除 %d 个已选的种子吗？</item>
+    </plurals>
+    <string name="delete_files">同时删除硬盘中的文件</string>
     <string name="check_local_data">校验本地数据</string>
+    <string name="reannounce">重新宣告</string>
+    <string name="torrent_duplicate">已经添加了该种子</string>
+    <string name="torrent_add_error">添加种子出错</string>
+
+    <!-- e.g. "100 MiB, uploaded 200 MiB" -->
+    <string name="uploaded_string">%1$s, 已上传 %2$s</string>
+
+    <string name="torrent_paused">已暂停</string>
+    <plurals name="torrent_downloading">
+        <item quantity="other">正在从 %d 个对等方下载</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">正在下载</string>
     <plurals name="torrent_seeding">
         <item quantity="other">正在为%d对等方供源</item>
     </plurals>
     <string name="torrent_seeding_stalled">供源中</string>
+    <string name="torrent_queued">已加入队列</string>
+    <string name="torrent_checking">正在检查 (%s%%)</string>
+    <string name="torrent_queued_for_checking">已加入检查队列</string>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="other">你确定要移除 %d 个已选的Tracker吗？</item>
+    </plurals>
+
+    <string name="invalid_server_url">非法的服务器链接</string>
+
+    <string name="remove_torrent_message">确定要移除这个种子吗</string>
+
     <string name="set_location">设置存储位置</string>
     <string name="move_files">将文件移动到当前文件夹</string>
 
+    <string name="rename">重命名</string>
+
+    <string name="file_name">文件名</string>
+
     <string name="about">关于</string>
+    <string name="authors">作者</string>
+    <string name="translators">翻译者</string>
+    <string name="license">许可</string>
+
+    <string name="prefs_dark_theme_title">使用暗色主题</string>
+    <string name="prefs_dark_theme_summary">重启应用以保存更改</string>
+
+    <string name="prefs_old_colors_title">使用旧的配色</string>
+    <string name="prefs_old_colors_summary">重启应用以保存更改</string>
+
+    <string name="prefs_background_service_title">启用后台服务</string>
+    <string name="prefs_background_service_summary">当应用从最近任务屏幕中移除后服务将会停止，除非启用持久通知</string>
+    <string name="prefs_persistent_notification_title">显示持久通知</string>
+
+    <string name="persistent_notification_channel_name">持久通知</string>
+    <string name="finished_torrents_channel_name">已完成的种子</string>
+    <string name="added_torrents_channel_name">已添加的种子</string>
+
+    <string name="appearance">外观</string>
+    <string name="torrents">种子</string>
+
+    <string name="prefs_delete_files_title">当移除种子时同时删除硬盘中的文件</string>
+
     <string name="alternative_speed_limits">备选速度限制</string>
 
+    <string name="donate">捐赠</string>
+    <string name="donate_message">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
+    <string name="donate_dialog_again">该对话框将不会再次出现。</string>
+
+    <string name="free_space">可用空间： %s</string>
+    <string name="free_space_error">获取可用空间出错</string>
+
+    <string name="notify_on_finished">当一个种子完成后发送通知</string>
+    <string name="notify_on_added">添加新种子时推送通知</string>
+
+    <string name="notifications_on_connect">连接至服务端时的通知</string>
     </resources>

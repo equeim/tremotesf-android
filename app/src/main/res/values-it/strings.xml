@@ -74,6 +74,8 @@
     <string name="tracker_announce_url">URL del server traccia</string>
 
     <string name="torrent_finished">Torrent completati</string>
+    <string name="torrent_added">Torrent aggiunto</string>
+
     <string name="torrent_not_found">Torrent non trovato</string>
     <string name="torrent_removed">Torrent rimosso</string>
 
@@ -298,6 +300,7 @@
     </plurals>
     <string name="delete_files">Elimina anche i file sul disco</string>
     <string name="check_local_data">Controlla i dati locali</string>
+    <string name="reannounce">Riannuncia</string>
     <string name="torrent_duplicate">Questo torrent è già stato aggiunto</string>
     <string name="torrent_add_error">Errore nell\'aggiunta del torrent</string>
 
@@ -366,12 +369,18 @@
 
     <string name="prefs_dark_theme_title">Usa tema scuro</string>
     <string name="prefs_dark_theme_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
+
+    <string name="prefs_old_colors_title">Usa vecchio tema</string>
+    <string name="prefs_old_colors_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
+
     <string name="prefs_background_service_title">Abilita servizio in background</string>
     <string name="prefs_background_service_summary">Il servizio è fermato quando l\'applicazione è rimossa dalla schermata delle applicazioni recenti a meno che le notifiche persistenti non siano state abilitate</string>
     <string name="prefs_persistent_notification_title">Mostra notifiche persistenti</string>
 
     <string name="persistent_notification_channel_name">Notifiche persistenti</string>
     <string name="finished_torrents_channel_name">Torrent completati</string>
+    <string name="added_torrents_channel_name">Torrent aggiunti</string>
+
     <string name="appearance">Aspetto</string>
     <string name="torrents">Torrent</string>
 
@@ -381,4 +390,16 @@
 
     <string name="donate">Dona</string>
     <string name="donate_yandex">Yandex.Money</string>
-    </resources>
+    <string name="donate_message">Se ti piace questa applicazione, puoi supportare lo sviluppo mandando una donazione allo sviluppatore.</string>
+    <string name="donate_dialog_again">Questa fineastra non verrà più mostrata.</string>
+
+    <string name="free_space">Spazio libero: %s</string>
+    <string name="free_space_error">Errore nel calcolo dello spazio libero</string>
+
+    <string name="notify_on_finished">Notifica al completamento del torrent</string>
+    <string name="notify_on_added">Notifica all\'aggiunta del torrent</string>
+
+    <string name="notifications_on_connect">Notifiche alla connessione al server</string>
+    <string name="notify_on_finished_since_last">Notifica al complementamento dei torrent data l\'ultima connessione al server</string>
+    <string name="notify_on_added_since_last">Notifica all\'aggiunta dei torrent data l\'ultima connessione al server</string>
+</resources>

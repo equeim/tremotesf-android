@@ -368,6 +368,7 @@
 
     <string name="prefs_dark_theme_title">Karanlık temayı kullan</string>
     <string name="prefs_dark_theme_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlat</string>
+
     <string name="prefs_background_service_title">Arka plan hizmetini etkinleştir</string>
     <string name="prefs_background_service_summary">Kalıcı bildirim etkin olmadıkça uygulama son uygulamalar ekranından kaldırıldığında hizmet durdurulur</string>
     <string name="prefs_persistent_notification_title">Kalıcı bildirimi göster</string>

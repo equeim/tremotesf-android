@@ -300,6 +300,7 @@
     </plurals>
     <string name="delete_files">Bestanden ook verwijderen van harde schijf</string>
     <string name="check_local_data">Lokale gegevens controleren</string>
+    <string name="reannounce">Heraankondiging</string>
     <string name="torrent_duplicate">Deze torrent is al toegevoegd</string>
     <string name="torrent_add_error">Fout bij toevoegen van torrent</string>
 
@@ -368,6 +369,10 @@
 
     <string name="prefs_dark_theme_title">Donker thema gebruiken</string>
     <string name="prefs_dark_theme_summary">Herstart de app om de wijzigingen toe te passen</string>
+
+    <string name="prefs_old_colors_title">Oude kleuren gebruiken</string>
+    <string name="prefs_old_colors_summary">Herstart de app om de wijzigingen toe te passen</string>
+
     <string name="prefs_background_service_title">Achtergronddienst inschakelen</string>
     <string name="prefs_background_service_summary">De dienst wordt gestopt indien de app uit het scherm met recente apps verwijderd wordt, tenzij blijvende melding ingeschakeld is</string>
     <string name="prefs_persistent_notification_title">Blijvende melding tonen</string>

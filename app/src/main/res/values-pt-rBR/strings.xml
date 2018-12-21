@@ -99,6 +99,7 @@
     <string name="last_activity">Última atividade</string>
 
     <string name="total_size">Tamanho total</string>
+    <string name="location">Localização</string>
     <string name="created_by">Criado por</string>
     <string name="created_on">Criado em</string>
     <string name="comment">Comentário</string>
@@ -187,7 +188,9 @@
     <string name="api_path">Caminho da API</string>
     <string name="https">HTTPS</string>
     <string name="certificates">Certificados</string>
+    <string name="server_uses_self_signed_certificate">Servidor usa certificado auto-assinado </string>
     <string name="certificate">Certificado no formato PEM</string>
+    <string name="use_client_certificate_authentication">Use certificado de autenticação de cliente</string>
     <string name="authentication">Autenticação</string>
     <string name="username">Usuário</string>
     <string name="password">Senha</string>
@@ -256,6 +259,8 @@
     <string name="add_torrent_link">Adicionar link do torrent</string>
 
     <string name="select_file">Selecionar arquivo</string>
+    <string name="primary_storage">Armazenamento primário</string>
+
     <string name="current_session">Sessão atual</string>
     <string name="total">Total</string>
     <string name="duration">Duração</string>
@@ -305,6 +310,11 @@
     <string name="torrent_checking">Verificando (%s%%)</string>
     <string name="torrent_queued_for_checking">Na fila para verificação</string>
 
+    <plurals name="remove_trackers_message">
+        <item quantity="one">Você tem certeza que deseja remover %d rastreador selecionado?</item>
+        <item quantity="other">Você tem certeza que deseja remover %d rastreadores selecionados?</item>
+    </plurals>
+
     <string name="invalid_server_url">Endereço de servidor inválido</string>
 
     <string-array name="size_units">
@@ -347,6 +357,7 @@
 
     <string name="prefs_dark_theme_title">Usar tema escuro</string>
     <string name="prefs_dark_theme_summary">Reinicie o aplicativo para aplicar mudanças</string>
+
     <string name="prefs_background_service_title">Ativar serviço em segundo plano</string>
     <string name="prefs_background_service_summary">O serviço é parado quando o aplicativo é removido da tela de apps recentes, a menos que a notificação persistente esteja ativa</string>
     <string name="prefs_persistent_notification_title">Mostrar notificação persistente</string>
