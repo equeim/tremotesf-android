@@ -365,7 +365,6 @@ class MainActivity : BaseActivity(), AnkoLogger {
                 torrentsAdapter.filterString = restoredSearchQuery!!
             }
             torrentsAdapter.restoreInstanceState(savedInstanceState)
-            torrentsAdapter.update()
             torrentsAdapter.selector.restoreInstanceState(savedInstanceState)
         }
     }
