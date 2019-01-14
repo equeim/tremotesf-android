@@ -59,4 +59,8 @@ class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAd
         notifyDataSetChanged()
         serversSpinner.setSelection(servers.indexOf(Servers.currentServer))
     }
+
+    fun updateCurrentServer() {
+        serversSpinner.setSelection(servers.indexOf(Servers.currentServer))
+    }
 }

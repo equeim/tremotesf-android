@@ -163,7 +163,11 @@ class MainActivity : BaseActivity(), AnkoLogger {
         serversSpinnerAdapter.update()
         serversSpinner.isEnabled = Servers.hasServers
     }
-    private val currentServerListener = { updateTitle() }
+
+    private val currentServerListener = {
+        updateTitle()
+        serversSpinnerAdapter.updateCurrentServer()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
