@@ -43,7 +43,7 @@ class IntFilter(private val range: IntRange) : InputFilter {
     }
 }
 
-class DoubleFilter(private val range: IntRange) : InputFilter {
+class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputFilter {
     companion object {
         private val parser = DecimalFormat()
         private var fallbackParser: DecimalFormat? = null

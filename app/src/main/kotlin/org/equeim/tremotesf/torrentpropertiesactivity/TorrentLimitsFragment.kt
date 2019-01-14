@@ -122,7 +122,7 @@ class TorrentLimitsFragment : Fragment() {
 
         ratio_limit_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.ratio_limit_mode),
                                                                     R.string.ratio_limit)
-        ratio_limit_edit.filters = arrayOf(DoubleFilter(0..10000))
+        ratio_limit_edit.filters = arrayOf(DoubleFilter(0.0..10000.0))
         ratio_limit_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,

@@ -56,7 +56,7 @@ class SeedingFragment : Fragment() {
         }
 
         ratio_limit_edit.isEnabled = ratio_limit_check_box.isChecked
-        ratio_limit_edit.filters = arrayOf(DoubleFilter(0..10000))
+        ratio_limit_edit.filters = arrayOf(DoubleFilter(0.0..10000.0))
         ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.instance.serverSettings.ratioLimit()))
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
