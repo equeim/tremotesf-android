@@ -208,7 +208,6 @@ class MainActivity : BaseActivity(), AnkoLogger {
         serversSpinner = sidePanelHeader.servers_spinner
         serversSpinner.isEnabled = Servers.hasServers
         serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
-        serversSpinner.adapter = serversSpinnerAdapter
         serversSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>,
                                         view: View?,

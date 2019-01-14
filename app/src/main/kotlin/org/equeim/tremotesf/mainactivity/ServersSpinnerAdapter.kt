@@ -41,6 +41,7 @@ class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAd
     }
 
     init {
+        serversSpinner.adapter = this
         update()
     }
 
