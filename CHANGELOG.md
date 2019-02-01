@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Tremotesf now remebmers used download directories and shows them in dropdown menu when adding torrent / changing location
+
+### Fixed
+- Fixed resetting of servers spinner's current item after orientation change
+- Fixed updating of  servers spinner's current item after changing current server in ServersActivity
+- Fixed Ratio Limit Mode and Idle Seeding Mode spinners with zh_CN translation
+- Fixed toggling alternative speed limits from MainActivity menu
+
 ## [1.8.5] - 2018-12-22
 ### Changed
 - Updated Qt to version 5.12.0
