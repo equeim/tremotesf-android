@@ -459,7 +459,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
             R.id.add_torrent_file -> startFilePickerActivity()
             R.id.add_torrent_link -> startActivity<AddTorrentLinkActivity>()
             R.id.server_settings -> startActivity<ServerSettingsActivity>()
-            R.id.alternative_speed_limits -> { Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked }
+            R.id.alternative_speed_limits -> {
+                menuItem.isChecked = !menuItem.isChecked
+                Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
+            }
             R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
             else -> return false
         }
