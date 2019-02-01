@@ -63,6 +63,7 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_main_fragment.*
+import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 
@@ -216,6 +217,7 @@ class AddTorrentFileActivity : BaseActivity() {
                                        else -> Torrent.Priority.NormalPriority
                                    },
                                    infoFragment.start_downloading_check_box.isChecked)
+                infoFragment.directoriesAdapter?.save()
                 activity.finish()
                 return true
             }
@@ -336,6 +338,8 @@ class AddTorrentFileActivity : BaseActivity() {
     }
 
     class InfoFragment : Fragment() {
+        var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
+
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
                                   savedInstanceState: Bundle?): View {
@@ -373,6 +377,8 @@ class AddTorrentFileActivity : BaseActivity() {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 }
             })
+
+            directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit)
 
             if (savedInstanceState == null) {
                 download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())

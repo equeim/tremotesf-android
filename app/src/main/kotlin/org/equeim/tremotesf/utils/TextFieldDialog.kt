@@ -24,6 +24,7 @@ import android.content.DialogInterface
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
@@ -36,9 +37,11 @@ import kotlinx.android.synthetic.main.text_field_dialog.*
 fun createTextFieldDialog(context: Context,
                           title: Int?,
                           layout: Int?,
+                          textFieldId: Int?,
                           hint: String,
                           inputType: Int,
                           defaultText: String?,
+                          onShow: (() -> Unit)?,
                           onAccepted: (() -> Unit)?): AlertDialog {
     val builder = AlertDialog.Builder(context)
             .setNegativeButton(android.R.string.cancel, null)
@@ -55,7 +58,11 @@ fun createTextFieldDialog(context: Context,
         val textFieldLayout = dialog.text_field_layout!!
         textFieldLayout.hint = hint
 
-        val textField = dialog.text_field!!
+        val textField = if (textFieldId == null) {
+            dialog.text_field!!
+        } else {
+            dialog.findViewById<EditText>(textFieldId)!!
+        }
         textField.inputType = inputType
         textField.setText(defaultText)
 
@@ -82,6 +89,8 @@ fun createTextFieldDialog(context: Context,
 
         context.getSystemService<InputMethodManager>()!!.showSoftInput(textField,
                                                                        InputMethodManager.SHOW_IMPLICIT)
+
+        onShow?.invoke()
     }
 
     return dialog

@@ -44,6 +44,7 @@ import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.add_torrent_link_activity.*
+import kotlinx.android.synthetic.main.download_directory_edit.*
 
 
 class AddTorrentLinkActivity : BaseActivity() {
@@ -51,6 +52,8 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
+
+    private lateinit var directoriesAdapter: AddTorrentDirectoriesAdapter
 
     private var rpcStatusListener: (Int) -> Unit = {
         updateView()
@@ -95,6 +98,8 @@ class AddTorrentLinkActivity : BaseActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+
+        directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit)
 
         updateView(savedInstanceState)
 
@@ -155,6 +160,8 @@ class AddTorrentLinkActivity : BaseActivity() {
                                    else -> Torrent.Priority.NormalPriority
                                },
                                start_downloading_check_box.isChecked)
+
+            directoriesAdapter.save()
 
             finish()
 

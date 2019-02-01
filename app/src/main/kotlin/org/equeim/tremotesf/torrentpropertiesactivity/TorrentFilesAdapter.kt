@@ -198,9 +198,11 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             return createTextFieldDialog(requireContext(),
                                          null,
                                          null,
+                                         null,
                                          getString(R.string.file_name),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         fileName) {
+                                         fileName,
+                                         null) {
                 val path = arguments!!.getString(FILE_PATH)
                 val newName = dialog.text_field.text.toString()
                 Rpc.instance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)

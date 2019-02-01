@@ -45,6 +45,7 @@ import com.amjjd.alphanum.AlphanumericComparator
 import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
@@ -54,6 +55,7 @@ import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
+import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 import kotlinx.android.synthetic.main.set_location_dialog.*
@@ -440,17 +442,25 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
         }
 
+        private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
+
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return createTextFieldDialog(requireContext(),
                                          null,
                                          R.layout.set_location_dialog,
+                                         R.id.download_directory_edit,
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         arguments!!.getString(LOCATION)) {
-                Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
-                                                 dialog.text_field.text.toString(),
-                                                 dialog.move_files_check_box.isChecked)
-            }
+                                         arguments!!.getString(LOCATION),
+                                         {
+                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(dialog.download_directory_dropdown, dialog.download_directory_edit)
+                                         },
+                                         {
+                                             Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
+                                                                              dialog.download_directory_edit.text.toString(),
+                                                                              dialog.move_files_check_box.isChecked)
+                                             directoriesAdapter?.save()
+                                         })
         }
     }
 

@@ -236,9 +236,11 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
             return createTextFieldDialog(requireContext(),
                                          if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker,
                                          null,
+                                         null,
                                          getString(R.string.tracker_announce_url),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         arguments?.getString(ANNOUNCE)) {
+                                         arguments?.getString(ANNOUNCE),
+                                         null) {
                 val torrent = (activity as TorrentPropertiesActivity).torrent
                 val textField = dialog.text_field!!
                 if (trackerId == -1) {

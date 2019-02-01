@@ -58,6 +58,7 @@ class Server {
     var backgroundUpdateInterval = 0
     var timeout = 0
     var lastTorrents = LastTorrents()
+    var addTorrentDialogDirectories = arrayOf<String>()
 
     fun copyTo(other: Server) {
         other.name = name
@@ -76,6 +77,7 @@ class Server {
         other.backgroundUpdateInterval = backgroundUpdateInterval
         other.timeout = timeout
         other.lastTorrents = lastTorrents
+        other.addTorrentDialogDirectories = addTorrentDialogDirectories
     }
 
     override fun toString() = name

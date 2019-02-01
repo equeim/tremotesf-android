@@ -2,8 +2,6 @@
 <resources>
     <attr name="selectedBackground" format="reference"/>
 
-    <attr name="progressBarStyleHorizontal" format="reference"/>
-
     <attr name="selectAllIcon" format="reference"/>
     <attr name="searchIcon" format="reference"/>
     <attr name="addIcon" format="reference"/>
@@ -22,4 +20,6 @@
     <attr name="sortAscendingIcon" format="reference"/>
     <attr name="findInPageIcon" format="reference"/>
     <attr name="syncIcon" format="reference"/>
+    <attr name="removeIcon" format="reference"/>
+    <attr name="dropdownArrowIcon" format="reference"/>
 </resources>
