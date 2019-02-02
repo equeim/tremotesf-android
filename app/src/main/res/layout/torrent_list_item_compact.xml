@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:id="@+id/selected_background_view"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/horizontal_edge_padding"
+        android:paddingRight="@dimen/horizontal_edge_padding"
+        android:background="?attr/selectedBackground">
+
+        <TextView
+            android:id="@+id/name_text_view"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:drawableLeft="?attr/torrentIcon"
+            android:drawablePadding="8dp"
+            android:drawableStart="?attr/torrentIcon"
+            android:textAppearance="?attr/textAppearanceListItemSmall"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/download_speed_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/upload_speed_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/progress_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+</FrameLayout>

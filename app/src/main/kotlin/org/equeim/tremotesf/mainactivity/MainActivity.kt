@@ -195,6 +195,9 @@ class MainActivity : BaseActivity(), AnkoLogger {
         torrents_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
+        Settings.torrentCompactViewListener = {
+            torrents_view.adapter = torrentsAdapter
+        }
         Settings.torrentNameMultilineListener = {
             torrents_view.adapter = torrentsAdapter
         }
@@ -401,6 +404,8 @@ class MainActivity : BaseActivity(), AnkoLogger {
         Rpc.instance.torrentAddErrorListener = null
         Servers.removeServersListener(serversListener)
         Servers.removeCurrentServerListener(currentServerListener)
+        Settings.torrentCompactViewListener = null
+        Settings.torrentNameMultilineListener = null
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

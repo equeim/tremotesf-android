@@ -111,6 +111,8 @@
 
     <string name="progress_string">%s%%</string>
 
+    <string name="progress_string_with_dot">\u00b7 %s%%</string>
+
     <!-- e.g. "100 MiB of 200 MiB (50%)" -->
     <string name="completed_string">%1$s of %2$s (%3$s%%)</string>
 
@@ -399,6 +401,7 @@
     <string name="prefs_old_colors_title">Use old colors</string>
     <string name="prefs_old_colors_summary">Restart app to apply changes</string>
 
+    <string name="prefs_torrent_compact_view_title">Use compact view for torrents</string>
     <string name="prefs_torrent_name_multiline_title">Display torrents\' names on multiple lines</string>
 
     <string name="prefs_background_service_title">Enable background service</string>

@@ -8,5 +8,6 @@
     <string name="prefs_notify_on_finished_since_last_key" translatable="false">notifyOnFinishedSinceLast</string>
     <string name="prefs_notify_on_added_since_last_key" translatable="false">notifyOnAddedSinceLast</string>
     <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>
+    <string name="prefs_torrent_compact_view_key" translatable="false">torrentCompactView</string>
     <string name="prefs_torrent_name_multiline_key" translatable="false">torrentNameMultiline</string>
 </resources>
