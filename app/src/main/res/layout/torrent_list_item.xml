@@ -21,9 +21,6 @@
             android:drawableLeft="?attr/torrentIcon"
             android:drawablePadding="8dp"
             android:drawableStart="?attr/torrentIcon"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:singleLine="true"
             android:textAppearance="?attr/textAppearanceListItemSmall" />
 
         <TextView

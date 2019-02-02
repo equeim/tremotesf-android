@@ -51,6 +51,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
                 darkThemeKey = value.getString(R.string.prefs_dark_theme_key)
                 oldColorsKey = value.getString(R.string.prefs_old_colors_key)
+                torrentNameMultilineKey = value.getString(R.string.prefs_torrent_name_multiline_key)
                 backgroundServiceKey = value.getString(R.string.prefs_background_service_key)
                 persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
                 notifyOnFinishedKey = value.getString(R.string.prefs_notify_on_finished_key)
@@ -65,6 +66,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var darkThemeKey: String
     private lateinit var oldColorsKey: String
+    private lateinit var torrentNameMultilineKey: String
     private lateinit var backgroundServiceKey: String
     private lateinit var persistentNotificationKey: String
     private lateinit var notifyOnFinishedKey: String
@@ -102,6 +104,13 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 if (old) R.style.AppTheme_Light_Old_NoActionBar else R.style.AppTheme_Light_NoActionBar
             }
         }
+
+    val torrentNameMultiline: Boolean
+        get() {
+            return preferences!!.getBoolean(torrentNameMultilineKey, false)
+        }
+
+    var torrentNameMultilineListener: (() -> Unit)? = null
 
     val backgroundServiceEnabled: Boolean
         get() {
@@ -200,6 +209,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
         when (key) {
+            torrentNameMultilineKey -> torrentNameMultilineListener?.invoke()
             backgroundServiceKey -> {
                 if (backgroundServiceEnabled) {
                     context!!.startService<BackgroundService>()

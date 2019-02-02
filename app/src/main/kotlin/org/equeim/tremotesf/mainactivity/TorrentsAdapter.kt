@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -355,6 +356,14 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         val downloadSpeedTextView = itemView.download_speed_text_view!!
         val uploadSpeedTextView = itemView.upload_speed_text_view!!
         val statusTextView = itemView.status_text_view!!
+
+        init {
+            if (!Settings.torrentNameMultiline) {
+                nameTextView.ellipsize = TextUtils.TruncateAt.END
+                nameTextView.maxLines = 1
+                nameTextView.setSingleLine(true)
+            }
+        }
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {

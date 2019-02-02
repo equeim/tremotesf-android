@@ -195,6 +195,10 @@ class MainActivity : BaseActivity(), AnkoLogger {
         torrents_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
+        Settings.torrentNameMultilineListener = {
+            torrents_view.adapter = torrentsAdapter
+        }
+
         side_panel.setNavigationItemSelectedListener { menuItem ->
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {

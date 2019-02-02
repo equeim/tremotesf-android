@@ -11,6 +11,11 @@
             android:key="@string/prefs_old_colors_key"
             android:summary="@string/prefs_old_colors_summary"
             android:title="@string/prefs_old_colors_title"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_torrent_name_multiline_key"
+            android:title="@string/prefs_torrent_name_multiline_title"/>
     </org.equeim.tremotesf.MyPreferenceCategory>
 
     <org.equeim.tremotesf.MyPreferenceCategory android:title="@string/notifications">
