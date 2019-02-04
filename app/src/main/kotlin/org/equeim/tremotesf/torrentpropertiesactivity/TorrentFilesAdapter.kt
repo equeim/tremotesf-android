@@ -206,7 +206,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                 val path = arguments!!.getString(FILE_PATH)
                 val newName = dialog.text_field.text.toString()
                 Rpc.instance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
-                (activity as TorrentPropertiesActivity).actionMode?.finish()
+                (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
             }
         }
     }

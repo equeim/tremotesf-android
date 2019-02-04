@@ -53,6 +53,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentData
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -472,6 +473,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                 R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray(),
                                                                       selector.selectedItems.first().downloadDirectory)
                         .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
+                R.id.rename -> {
+                    val torrent = selector.selectedItems.first()
+                    TorrentFilesAdapter.RenameDialogFragment.create(torrent.id,
+                                                                    torrent.name,
+                                                                    torrent.name)
+                            .show(activity.supportFragmentManager, TorrentFilesAdapter.RenameDialogFragment.TAG)
+                }
                 R.id.remove -> RemoveDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray())
                         .show(activity.supportFragmentManager,
                               RemoveDialogFragment.TAG)
@@ -550,7 +558,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.instance.removeTorrents(ids,
                                                     dialog.delete_files_check_box.isChecked)
-                        (activity as? MainActivity)?.torrentsAdapter?.selector?.actionMode?.finish()
+                        (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
                     }
                     .create()
 

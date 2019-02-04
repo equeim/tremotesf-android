@@ -45,6 +45,7 @@ import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
@@ -58,7 +59,7 @@ private const val TAB_PEERS = 3
 private const val TAB_LIMITS = 4
 private const val TABS_COUNT = 5
 
-class TorrentPropertiesActivity : BaseActivity() {
+class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     companion object {
         const val HASH = "org.equeim.TorrentPropertiesActivity.HASH"
         const val NAME = "org.equeim.TorrentPropertiesActivity.NAME"
@@ -139,7 +140,7 @@ class TorrentPropertiesActivity : BaseActivity() {
 
     private lateinit var pagerAdapter: PagerAdapter
 
-    var actionMode: ActionMode? = null
+    override var actionMode: ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -236,6 +237,10 @@ class TorrentPropertiesActivity : BaseActivity() {
                 R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id()),
                                                                                       torrent.downloadDirectory())
                         .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
+                R.id.rename -> TorrentFilesAdapter.RenameDialogFragment.create(torrent.id(),
+                                                                               torrent.name(),
+                                                                               torrent.name())
+                        .show(supportFragmentManager, TorrentFilesAdapter.RenameDialogFragment.TAG)
                 R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id())).show(supportFragmentManager,
                                                                                                           TorrentsAdapter.RemoveDialogFragment.TAG)
                 else -> return false

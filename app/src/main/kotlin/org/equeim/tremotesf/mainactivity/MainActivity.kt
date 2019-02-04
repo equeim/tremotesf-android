@@ -36,6 +36,7 @@ import android.widget.Spinner
 
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -60,12 +61,14 @@ import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.FilePickerActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.SettingsActivity
 import org.equeim.tremotesf.serversactivity.ServerEditActivity
 import org.equeim.tremotesf.serversactivity.ServersActivity
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
@@ -73,9 +76,10 @@ import org.equeim.tremotesf.utils.setChildrenEnabled
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.side_panel_header.view.*
 
+
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
-class MainActivity : BaseActivity(), AnkoLogger {
+class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
@@ -100,6 +104,9 @@ class MainActivity : BaseActivity(), AnkoLogger {
     lateinit var torrentsAdapter: TorrentsAdapter
         private set
 
+    override val actionMode: ActionMode?
+        get() = torrentsAdapter.selector.actionMode
+
     private val rpcStatusListener = { status: Int ->
         if (status == BaseRpc.Status.Disconnected || status == BaseRpc.Status.Connected) {
             if (!Rpc.instance.isConnected) {
@@ -107,6 +114,8 @@ class MainActivity : BaseActivity(), AnkoLogger {
 
                 supportFragmentManager.apply {
                     findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
+                            ?.let { transaction { remove(it) } }
+                    findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
                             ?.let { transaction { remove(it) } }
                     findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
                             ?.let { transaction { remove(it) } }

@@ -218,4 +218,8 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
             return false
         }
     }
+
+    interface ActionModeActivity {
+        val actionMode: ActionMode?
+    }
 }
