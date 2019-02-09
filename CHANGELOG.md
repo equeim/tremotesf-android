@@ -3,6 +3,12 @@
 ## [Unreleased]
 ### Added
 - Tremotesf now remebmers used download directories and shows them in dropdown menu when adding torrent / changing location
+- Added option to enable compact view for torrents
+- Added option to show torrents' names on multiple lines
+- Added ability to rename torrent directly from its context menu or its properties screen's menu
+
+### Changed
+- Updated translations
 
 ### Fixed
 - Fixed resetting of servers spinner's current item after orientation change
