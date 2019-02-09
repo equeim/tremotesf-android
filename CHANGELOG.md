@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.9.0] - 2019-02-09
 ### Added
 - Tremotesf now remebmers used download directories and shows them in dropdown menu when adding torrent / changing location
 - Added option to enable compact view for torrents
