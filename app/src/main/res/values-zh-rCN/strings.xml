@@ -19,7 +19,7 @@
 
     <string name="sort">排序</string>
     <string name="progress">进度</string>
-    <string name="eta">剩余时间</string>
+    <string name="eta">预计剩余时间</string>
     <string name="ratio">分享率</string>
     <string name="size">大小</string>
     <string name="added_date">添加日期</string>
@@ -37,22 +37,22 @@
     <string name="torrents_errored">已出错(%d)</string>
 
     <plurals name="torrents_selected">
-        <item quantity="other">%d种子已选择</item>
+        <item quantity="other">%d 种子已选择</item>
     </plurals>
 
     <plurals name="files_selected">
-        <item quantity="other">%d文件已选择</item>
+        <item quantity="other">%d 文件已选择</item>
     </plurals>
 
     <plurals name="trackers_selected">
-        <item quantity="other">%dTracker已选择</item>
+        <item quantity="other">%d Tracker已选择</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="other">%d 对等方</item>
     </plurals>
 
-    <string name="next_update">还有%s更新信息</string>
+    <string name="next_update">%s 后更新信息</string>
     <string name="add_tracker">添加Tracker</string>
     <string name="edit_tracker">编辑Tracker</string>
 
@@ -90,6 +90,9 @@
     <string name="created_on">创建于</string>
     <string name="comment">注释</string>
 
+    <!-- e.g. "100 MiB of 200 MiB (50%)" -->
+    <string name="completed_string">%1$s, 共 %2$s (%3$s%%)</string>
+
     <string name="priority">优先级</string>
     <string name="high_priority">高</string>
     <string name="normal_priority">普通</string>
@@ -107,6 +110,7 @@
     <string name="tracker_updating">正在更新</string>
     <string name="tracker_error">错误：%s</string>
 
+    <string name="loading">正在加载 \u2026</string>
     <string name="no_peers">无对等方</string>
 
     <string name="error">错误</string>
@@ -129,7 +133,7 @@
     <string-array name="idle_seeding_mode">
         <item>使用全局设置</item>
         <item>一直供源</item>
-        <item>@string/stop_seeding_at_ratio</item>
+        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">分钟</string>
@@ -145,6 +149,10 @@
 
     <string name="add_server">添加服务器</string>
     <string name="edit_server">编辑服务器</string>
+
+    <plurals name="servers_selected">
+        <item quantity="other">%d 服务器已选择</item>
+    </plurals>
 
     <string name="save">保存</string>
 
@@ -186,7 +194,7 @@
 
     <string name="download_directory">下载文件夹</string>
 
-    <string name="server_settings_downloading">正在下载</string>
+    <string name="server_settings_downloading">下载</string>
     <string name="server_settings_seeding">供源</string>
     <string name="server_settings_queue">传输队列</string>
     <string name="server_settings_speed">速度</string>
@@ -230,7 +238,7 @@
 
     <string name="open_side_panel">打开侧边面板</string>
     <string name="close_side_panel">关闭侧边面板</string>
-    <string name="start_downloading_after_adding">添加之后开始下载</string>
+    <string name="start_downloading_after_adding">添加之后立即开始下载</string>
 
     <string name="torrent_link">磁力链</string>
     <string name="add_torrent_link">添加磁力链接</string>
@@ -281,7 +289,7 @@
     </plurals>
     <string name="torrent_downloading_stalled">正在下载</string>
     <plurals name="torrent_seeding">
-        <item quantity="other">正在为%d对等方供源</item>
+        <item quantity="other">正在向 %d 个对等方供源</item>
     </plurals>
     <string name="torrent_seeding_stalled">供源中</string>
     <string name="torrent_queued">已加入队列</string>
@@ -314,9 +322,12 @@
     <string name="prefs_old_colors_title">使用旧的配色</string>
     <string name="prefs_old_colors_summary">重启应用以保存更改</string>
 
+    <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
+    <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>
+
     <string name="prefs_background_service_title">启用后台服务</string>
     <string name="prefs_background_service_summary">当应用从最近任务屏幕中移除后服务将会停止，除非启用持久通知</string>
-    <string name="prefs_persistent_notification_title">显示持久通知</string>
+    <string name="prefs_persistent_notification_title">推送持久通知</string>
 
     <string name="persistent_notification_channel_name">持久通知</string>
     <string name="finished_torrents_channel_name">已完成的种子</string>
@@ -336,8 +347,10 @@
     <string name="free_space">可用空间： %s</string>
     <string name="free_space_error">获取可用空间出错</string>
 
-    <string name="notify_on_finished">当一个种子完成后发送通知</string>
+    <string name="notify_on_finished">在种子完成后推送通知</string>
     <string name="notify_on_added">添加新种子时推送通知</string>
 
     <string name="notifications_on_connect">连接至服务端时的通知</string>
-    </resources>
+    <string name="notify_on_finished_since_last">通知自上次连接至服务器完成的种子</string>
+    <string name="notify_on_added_since_last">通知自上次连接至服务器添加的种子</string>
+</resources>
