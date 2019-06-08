@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="AppTheme"/>
 
     <style name="AppTheme.Dark" parent="@style/Theme.MaterialComponents">
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#000000</item>
         <item name="colorSecondary">#ef5350</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
 
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
@@ -13,7 +14,7 @@
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
-        <item name="android:importantForAutofill">noExcludeDescendants</item>
+        <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
         <item name="selectAllIcon">@drawable/ic_select_all_white_24dp</item>
         <item name="searchIcon">@drawable/ic_search_white_24dp</item>
@@ -64,7 +65,7 @@
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
-        <item name="android:importantForAutofill">noExcludeDescendants</item>
+        <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
         <item name="selectAllIcon">@drawable/ic_select_all_black_24dp</item>
         <item name="searchIcon">@drawable/ic_search_black_24dp</item>
