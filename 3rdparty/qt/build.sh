@@ -12,7 +12,6 @@ cd "$_DIR" || exit 1
 
 _patch_if_needed r18.patch false
 _patch_if_needed qmakemake.patch false
-_patch_if_needed logging.patch true
 _patch_if_needed donottryondemand.patch true
 
 _BUILD_DIR="$_DIR/build-$ANDROID_ARCH"
