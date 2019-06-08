@@ -242,7 +242,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                          arguments?.getString(ANNOUNCE),
                                          null) {
                 val torrent = (activity as TorrentPropertiesActivity).torrent
-                val textField = dialog.text_field!!
+                val textField = dialog!!.text_field!!
                 if (trackerId == -1) {
                     Rpc.instance.torrentAddTracker(torrent, textField.text.toString())
                 } else {

@@ -78,14 +78,14 @@ class AboutActivity : BaseActivity() {
 
         override fun getCount() = 5
 
-        override fun getItem(position: Int): Fragment? {
+        override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> AboutFragment()
                 1 -> DonateFragment.newInstance()
                 2 -> AuthorsFragment()
                 3 -> TranslatorsFragment()
                 4 -> LicenseFragment()
-                else -> null
+                else -> Fragment()
             }
         }
 

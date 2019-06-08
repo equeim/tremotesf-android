@@ -300,7 +300,7 @@ class AddTorrentFileActivity : BaseActivity() {
         }
 
         class PagerAdapter(private val mainFragment: Fragment) : FragmentPagerAdapter(
-                mainFragment.fragmentManager) {
+                mainFragment.requireFragmentManager()) {
             var infoFragment: InfoFragment? = null
                 private set
             var filesFragment: FilesFragment? = null

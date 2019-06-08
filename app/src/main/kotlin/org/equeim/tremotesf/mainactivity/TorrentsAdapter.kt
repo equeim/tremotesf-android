@@ -522,12 +522,12 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments!!.getString(LOCATION),
                                          {
-                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(dialog.download_directory_dropdown, dialog.download_directory_edit)
+                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(dialog!!.download_directory_dropdown, dialog!!.download_directory_edit)
                                          },
                                          {
                                              Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
-                                                                              dialog.download_directory_edit.text.toString(),
-                                                                              dialog.move_files_check_box.isChecked)
+                                                                              dialog!!.download_directory_edit.text.toString(),
+                                                                              dialog!!.move_files_check_box.isChecked)
                                              directoriesAdapter?.save()
                                          })
         }
@@ -557,7 +557,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.instance.removeTorrents(ids,
-                                                    dialog.delete_files_check_box.isChecked)
+                                                    dialog!!.delete_files_check_box.isChecked)
                         (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
                     }
                     .create()

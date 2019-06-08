@@ -209,7 +209,7 @@ class ServerEditActivity : BaseActivity() {
                     timeoutOk) {
                 if (nameEditText != activity.server?.name &&
                         Servers.servers.find { it.name == nameEditText } != null) {
-                    OverwriteDialogFragment().show(fragmentManager, null)
+                    OverwriteDialogFragment().show(requireFragmentManager(), null)
                 } else {
                     save()
                 }

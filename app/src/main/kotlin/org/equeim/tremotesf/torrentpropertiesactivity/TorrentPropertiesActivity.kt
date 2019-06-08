@@ -325,14 +325,14 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
             return TABS_COUNT
         }
 
-        override fun getItem(position: Int): Fragment? {
+        override fun getItem(position: Int): Fragment {
             return when (position) {
                 TAB_DETAILS -> TorrentDetailsFragment()
                 TAB_FILES -> TorrentFilesFragment()
                 TAB_TRACKERS -> TrackersFragment()
                 TAB_PEERS -> PeersFragment()
                 TAB_LIMITS -> TorrentLimitsFragment()
-                else -> null
+                else -> Fragment()
             }
         }
 

@@ -417,7 +417,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
         Settings.torrentNameMultilineListener = null
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         drawerToggle.onConfigurationChanged(newConfig)
     }
