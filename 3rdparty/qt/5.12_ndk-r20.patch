@@ -1,0 +1,29 @@
+From 067664531853a1e857c777c1cc56fc64b272e021 Mon Sep 17 00:00:00 2001
+From: BogDan Vatra <bogdan@kde.org>
+Date: Thu, 13 Jun 2019 09:38:48 +0300
+Subject: [PATCH] Android: Fix build with NDKr20
+
+In NDK r20 clang adds -lc++ library automatically which leads to link fails.
+
+[ChangeLog][Android] Fix NDK r20 linking.
+
+Task-number: QTBUG-76293
+Change-Id: I6675180a3555d1ad9047d7a9ce1c03333cf0ab35
+Reviewed-by: Jörg Bornemann <joerg.bornemann@qt.io>
+ 
+---
+
+diff --git a/mkspecs/android-clang/qmake.conf b/mkspecs/android-clang/qmake.conf
+index a077c70..975d437 100644
+--- a/mkspecs/android-clang/qmake.conf
++++ b/mkspecs/android-clang/qmake.conf
+@@ -31,7 +31,7 @@
+ 
+ QMAKE_CFLAGS += -gcc-toolchain $$NDK_TOOLCHAIN_PATH -fno-limit-debug-info
+ 
+-QMAKE_LINK    = $$QMAKE_CXX $$QMAKE_CFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a
++QMAKE_LINK    = $$QMAKE_CXX $$QMAKE_CFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -nostdlib++
+ equals(ANDROID_TARGET_ARCH, armeabi-v7a): QMAKE_LINK += -Wl,--exclude-libs,libunwind.a
+ 
+ QMAKE_CFLAGS += -DANDROID_HAS_WSTRING --sysroot=$$NDK_ROOT/sysroot \
+ 

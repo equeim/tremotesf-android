@@ -2,17 +2,57 @@
 
 function _patch_if_needed() {
     # if can't reverse, patch
-    if ! patch -p0 -R --dry-run -f -i $1; then
-        patch -p0 -i $1 || ($2 && die)
+    if ! patch -p1 -R --dry-run -f -i ../$1; then
+        if (! patch -p1 -i ../$1) && [ $2 = true ]; then
+            exit 1
+        fi
     fi
+}
+
+function _trim() {
+    awk '{$1=$1};1'
 }
 
 _DIR="$(realpath $(dirname $0))"
 cd "$_DIR" || exit 1
 
-_patch_if_needed r18.patch false
+cd qtbase
+
+if [ ! -f dist/changes-5.11.3 ]; then
+    echo "Minimum Qt version is 5.11.3, aborting"
+    exit 1
+fi
+
 _patch_if_needed qmakemake.patch false
 _patch_if_needed donottryondemand.patch true
+
+_QT_VERSION=$(grep MODULE_VERSION .qmake.conf | cut -d= -f2 | _trim)
+_QT_VERSION_MINOR=$(echo $_QT_VERSION | cut -d'.' -f2)
+_QT_VERSION_PATCH=$(echo $_QT_VERSION | cut -d'.' -f3)
+_NDK_REVISION=$(grep Pkg.Revision "$ANDROID_NDK_ROOT/source.properties" | cut -d= -f2 | _trim | cut -d'.' -f1)
+
+case "$_QT_VERSION_MINOR" in
+    11)
+        # fix for GCC 9 host compiler
+        _patch_if_needed 5.11_qrandom_gcc9.patch true
+
+        # fix for NDK r18 and newer, works with r16 and r17 too
+        _patch_if_needed 5.11_ndk-r18.patch true
+
+        if [ $_NDK_REVISION -ge 20 ]; then
+            # fix for NDK r20 and newer
+            _patch_if_needed 5.11_ndk-r20.patch true
+        fi
+    ;;
+    12)
+        if [ "$_QT_VERSION_PATCH" -le 3 -a "$_NDK_REVISION" -ge 20 ]; then
+            # fix for NDK r20 and newer
+            _patch_if_needed 5.12_ndk-r20.patch true
+        fi
+    ;;
+esac
+
+cd -
 
 _BUILD_DIR="$_DIR/build-$ANDROID_ARCH"
 mkdir -p "$_BUILD_DIR" || exit 1
@@ -73,7 +113,7 @@ _FLAGS=("-v"
     "-I$_OPENSSL_INCDIR"
 )
 
-if [ -f ../qtbase/dist/changes-5.12.0 ]; then
+if [ $_QT_VERSION_MINOR -ge 12 ]; then
     _FLAGS+=("-no-feature-dtls")
 fi
 

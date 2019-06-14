@@ -1,5 +1,5 @@
---- qtbase/mkspecs/android-clang/qmake.conf
-+++ qtbase/mkspecs/android-clang/qmake.conf
+--- a/mkspecs/android-clang/qmake.conf
++++ b/mkspecs/android-clang/qmake.conf
 @@ -40,7 +40,7 @@ QMAKE_CFLAGS += -DANDROID_HAS_WSTRING --sysroot=$$NDK_ROOT/sysroot \
  ANDROID_SOURCES_CXX_STL_LIBDIR = $$NDK_ROOT/sources/cxx-stl/llvm-libc++/libs/$$ANDROID_TARGET_ARCH
  
