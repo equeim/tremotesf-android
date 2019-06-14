@@ -50,6 +50,12 @@ case "$_QT_VERSION_MINOR" in
             _patch_if_needed 5.12_ndk-r20.patch true
         fi
     ;;
+    13)
+        if [ "$_QT_VERSION_PATCH" -eq 0 -a "$_NDK_REVISION" -ge 20 ]; then
+            # fix for NDK r20 and newer
+            _patch_if_needed 5.12_ndk-r20.patch true
+        fi
+    ;;
 esac
 
 cd -
