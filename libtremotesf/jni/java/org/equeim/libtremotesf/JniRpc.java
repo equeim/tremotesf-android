@@ -76,16 +76,8 @@ public class JniRpc extends BaseRpc {
     libtremotesfJNI.JniRpc_disconnect(swigCPtr, this);
   }
 
-  public boolean backgroundUpdate() {
-    return libtremotesfJNI.JniRpc_backgroundUpdate(swigCPtr, this);
-  }
-
   public void setBackgroundUpdate(boolean background) {
     libtremotesfJNI.JniRpc_setBackgroundUpdate(swigCPtr, this, background);
-  }
-
-  public boolean isUpdateDisabled() {
-    return libtremotesfJNI.JniRpc_isUpdateDisabled(swigCPtr, this);
   }
 
   public void setUpdateDisabled(boolean disabled) {

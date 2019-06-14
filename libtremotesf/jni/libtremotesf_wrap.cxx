@@ -6470,21 +6470,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1dis
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1backgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  result = (bool)((libtremotesf::JniRpc const *)arg1)->backgroundUpdate();
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setBackgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   bool arg2 ;
@@ -6495,21 +6480,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = jarg2 ? true : false; 
   (arg1)->setBackgroundUpdate(arg2);
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1isUpdateDisabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  result = (bool)((libtremotesf::JniRpc const *)arg1)->isUpdateDisabled();
-  jresult = (jboolean)result; 
-  return jresult;
 }
 
 

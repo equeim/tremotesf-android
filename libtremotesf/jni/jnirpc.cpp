@@ -306,19 +306,9 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "disconnect");
     }
 
-    bool JniRpc::backgroundUpdate() const
-    {
-        return this->backgroundUpdate();
-    }
-
     void JniRpc::setBackgroundUpdate(bool background)
     {
         QMetaObject::invokeMethod(this, "setBackgroundUpdate", Q_ARG(bool, background));
-    }
-
-    bool JniRpc::isUpdateDisabled() const
-    {
-        return this->isUpdateDisabled();
     }
 
     void JniRpc::setUpdateDisabled(bool disabled)

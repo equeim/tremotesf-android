@@ -81,10 +81,7 @@ namespace libtremotesf
         void connect();
         void disconnect();
 
-        bool backgroundUpdate() const;
         void setBackgroundUpdate(bool background);
-
-        bool isUpdateDisabled() const;
         void setUpdateDisabled(bool disabled);
 
         void addTorrentFile(const QByteArray& fileData,

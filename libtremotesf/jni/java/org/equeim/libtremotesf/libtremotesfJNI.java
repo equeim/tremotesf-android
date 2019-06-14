@@ -311,9 +311,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_resetServer(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_connect(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_disconnect(long jarg1, JniRpc jarg1_);
-  public final static native boolean JniRpc_backgroundUpdate(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setBackgroundUpdate(long jarg1, JniRpc jarg1_, boolean jarg2);
-  public final static native boolean JniRpc_isUpdateDisabled(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setUpdateDisabled(long jarg1, JniRpc jarg1_, boolean jarg2);
   public final static native void JniRpc_addTorrentFile(long jarg1, JniRpc jarg1_, byte[] jarg2, String jarg3, int[] jarg4, int[] jarg5, int[] jarg6, int[] jarg7, int[] jarg8, int jarg9, boolean jarg10);
   public final static native void JniRpc_addTorrentLink(long jarg1, JniRpc jarg1_, String jarg2, String jarg3, int jarg4, boolean jarg5);
