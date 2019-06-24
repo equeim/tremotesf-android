@@ -178,7 +178,7 @@ class TorrentFilesFragment : Fragment() {
 
         val filesVector: TorrentFilesVector = newTorrent.files()
 
-        if (filesVector.size() == 0L) {
+        if (filesVector.isEmpty()) {
             if (treeCreated || creatingTree) {
                 resetTree()
             }
@@ -301,15 +301,12 @@ class TorrentFilesFragment : Fragment() {
         private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
         override fun doInBackground(vararg params: Any?): Any? {
-            for (fileIndex in 0 until filesVector.size().toInt()) {
-                val rpcFile: TorrentFile = filesVector[fileIndex]
-
+            for ((fileIndex, rpcFile: TorrentFile) in filesVector.withIndex()) {
                 var currentDirectory = rootDirectory
 
                 val path: StringsVector = rpcFile.path
-                val lastPartIndex = (path.size() - 1).toInt()
-                for (partIndex in 0..lastPartIndex) {
-                    val part: String = path[partIndex]
+                val lastPartIndex = (path.size - 1)
+                for ((partIndex, part: String) in path.withIndex()) {
                     if (partIndex == lastPartIndex) {
                         val file = BaseTorrentFilesAdapter.File(currentDirectory.children.size,
                                                                 currentDirectory,

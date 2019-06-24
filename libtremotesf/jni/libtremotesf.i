@@ -21,7 +21,6 @@
 %include "qtime.i"
 
 #define Q_OBJECT
-#define Q_ENUMS(T)
 #define Q_ENUM(T)
 #define Q_PROPERTY(T)
 #define Q_INVOKABLE
@@ -90,23 +89,17 @@ namespace libtremotesf
 }
 
 %shared_ptr(libtremotesf::Torrent)
-
-%ignore std::vector<std::shared_ptr<libtremotesf::Torrent>>::vector;
 %template(TorrentsVector) std::vector<std::shared_ptr<libtremotesf::Torrent>>;
 
 %shared_ptr(libtremotesf::TorrentFile)
-%ignore std::vector<std::shared_ptr<libtremotesf::TorrentFile>>::vector;
 %template(TorrentFilesVector) std::vector<std::shared_ptr<libtremotesf::TorrentFile>>;
 
 %shared_ptr(libtremotesf::Tracker)
-%ignore std::vector<std::shared_ptr<libtremotesf::Tracker>>::vector;
 %template(TrackersVector) std::vector<std::shared_ptr<libtremotesf::Tracker>>;
 
 %shared_ptr(libtremotesf::Peer)
-%ignore std::vector<std::shared_ptr<libtremotesf::Peer>>::vector;
 %template(TorrentPeersVector) std::vector<std::shared_ptr<libtremotesf::Peer>>;
 
-%ignore std::vector<QString>::vector;
 %template(StringsVector) std::vector<QString>;
 
 %include "../torrent.h"

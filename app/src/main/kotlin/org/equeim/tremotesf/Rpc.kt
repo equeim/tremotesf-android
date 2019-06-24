@@ -154,8 +154,7 @@ class Rpc : JniRpc() {
                         val lastTorrents = server.lastTorrents
                         if (lastTorrents.saved) {
                             val torrents = torrents()
-                            for (i in 0 until torrents.size()) {
-                                val torrent: Torrent = torrents[i.toInt()]
+                            for (torrent: Torrent in torrents) {
                                 val hashString: String = torrent.hashString()
                                 val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
                                 if (oldTorrent == null) {
@@ -215,8 +214,7 @@ class Rpc : JniRpc() {
             val oldTorrents = torrents.toList()
             torrents.clear()
             val rpcTorrents = torrents()
-            for (i in 0 until rpcTorrents.size()) {
-                val torrent = rpcTorrents[i.toInt()]
+            for (torrent: Torrent in rpcTorrents) {
                 val id = torrent.id()
                 val data = oldTorrents.find { it.id == id }
                 if (data == null) {

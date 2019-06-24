@@ -159,8 +159,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
         val rpcTrackers = torrent.trackers()
         val newTrackers = mutableListOf<TrackersAdapterItem>()
-        for (i in 0 until rpcTrackers.size()) {
-            val rpcTracker = rpcTrackers[i.toInt()]
+        for (rpcTracker: Tracker in rpcTrackers) {
             val id = rpcTracker.id()
             var tracker = trackers.find { it.id == id }
             if (tracker == null) {

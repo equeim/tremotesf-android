@@ -89,7 +89,7 @@ namespace libtremotesf
             AuthenticationError,
             ParseError,
             ServerIsTooNew,
-            ServerIsTooOld,
+            ServerIsTooOld
         };
         Q_ENUM(Error)
 

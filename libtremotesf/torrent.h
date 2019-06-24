@@ -140,7 +140,7 @@ namespace libtremotesf
         {
             GlobalRatioLimit,
             SingleRatioLimit,
-            UnlimitedRatio,
+            UnlimitedRatio
         };
         Q_ENUM(RatioLimitMode)
 

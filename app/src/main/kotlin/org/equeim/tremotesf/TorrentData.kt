@@ -25,6 +25,7 @@ import java.util.Date
 import android.content.Context
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.Tracker
 
 
 class TorrentData(val torrent: Torrent, private val context: Context) {
@@ -105,8 +106,8 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
     val trackers = mutableListOf<String>()
 
     init {
-        for (i in 0 until tTrackers.size()) {
-            trackers.add(tTrackers[i.toInt()].site())
+        for (tracker: Tracker in tTrackers) {
+            trackers.add(tracker.site())
         }
     }
 
@@ -134,8 +135,8 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
         }
 
         trackers.clear()
-        for (i in 0 until tTrackers.size()) {
-            trackers.add(tTrackers[i.toInt()].site())
+        for (tracker: Tracker in tTrackers) {
+            trackers.add(tracker.site())
         }
     }
 }
