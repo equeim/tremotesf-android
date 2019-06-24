@@ -41,12 +41,12 @@ class QString;
 
 %typemap(directorin,descriptor="Ljava/lang/String;") QString
 %{
-    $input = jenv->NewString(reinterpret_cast<const jchar*>($1.constData()), $1.size());
+    $input = jenv->NewString($1.utf16(), $1.size());
 %}
 
 %typemap(out) QString
 %{
-    $result = jenv->NewString(reinterpret_cast<const jchar*>($1.constData()), $1.size());
+    $result = jenv->NewString($1.utf16(), $1.size());
 %}
 
 %typemap(javain) QString "$javainput"
@@ -103,12 +103,12 @@ class QString;
 
 %typemap(directorin,descriptor="Ljava/lang/String;") const QString&
 %{
-    $input = jenv->NewString(reinterpret_cast<const jchar*>($1.constData()), $1.size());
+    $input = jenv->NewString($1.utf16(), $1.size());
 %}
 
 %typemap(out) const QString& 
 %{
-    $result = jenv->NewString(reinterpret_cast<const jchar*>($1->constData()), $1->size());
+    $result = jenv->NewString($1->utf16(), $1->size());
 %}
 
 %typemap(javain) const QString& "$javainput"
