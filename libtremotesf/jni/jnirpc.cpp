@@ -1,28 +1,21 @@
 #include "jnirpc.h"
 
+#include <array>
+#include <string>
+
 #include <QThread>
 #include <QCoreApplication>
 
+#include <jni.h>
+
 #include "rpc.h"
 #include "serverstats.h"
-
-#include <memory>
 
 Q_DECLARE_METATYPE(libtremotesf::Server)
 Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 
 namespace libtremotesf
 {
-    namespace
-    {
-        int argc = 1;
-        std::unique_ptr<char[]> arg(new char[1]{0});
-        //std::unique_ptr<char*[]> argvU(new char*[1]{arg.get()});
-        char* argR = arg.get();
-        //char** argv = argvU.get();
-        char** argv = &argR;
-    }
-
     JniServerSettings::JniServerSettings(Rpc* rpc, QObject* parent)
         : ServerSettings(rpc, parent)
     {
@@ -249,6 +242,10 @@ namespace libtremotesf
 
         QObject::connect(this, &Rpc::gotDownloadDirFreeSpace, [=](long long bytes) { onGotDownloadDirFreeSpace(bytes); });
         QObject::connect(this, &Rpc::gotFreeSpaceForPath, [=](const QString& path, bool success, long long bytes) { onGotFreeSpaceForPath(path, success, bytes); });
+
+        auto thread = new QThread();
+        thread->start();
+        moveToThread(thread);
     }
 
     JniServerSettings* JniRpc::serverSettings() const
@@ -589,24 +586,14 @@ namespace libtremotesf
     {
 
     }
+}
 
-    JniWrapper::JniWrapper()
-        : mApp(new QCoreApplication(argc, argv)),
-          mThread(new QThread())
-    {
-        mApp->setApplicationName(QLatin1String("LibTremotesf"));
-        mThread->start();
-    }
-
-    JniWrapper::~JniWrapper()
-    {
-        mThread->quit();
-        mThread->wait();
-        mApp->deleteLater();
-    }
-
-    void JniWrapper::setRpc(JniRpc* rpc)
-    {
-        rpc->moveToThread(mThread);
-    }
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
+{
+    static int argc = 0;
+    static std::string arg;
+    static std::array<char*, 1> argv { &arg.front() };
+    new QCoreApplication(argc, argv.data());
+    QCoreApplication::setApplicationName(QLatin1String("LibTremotesf"));
+    return JNI_VERSION_1_2;
 }

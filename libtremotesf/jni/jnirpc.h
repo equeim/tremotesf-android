@@ -166,17 +166,6 @@ namespace libtremotesf
         virtual void onGotDownloadDirFreeSpace(long long bytes);
         virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes);
     };
-
-    class JniWrapper
-    {
-    public:
-        JniWrapper();
-        virtual ~JniWrapper();
-        void setRpc(JniRpc* rpc);
-    private:
-        QCoreApplication* mApp;
-        QThread* mThread;
-    };
 }
 
 #endif // LIBTREMOTESF_JNIRPC_H
