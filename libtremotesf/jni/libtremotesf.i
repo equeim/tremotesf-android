@@ -103,7 +103,9 @@ namespace libtremotesf
 
 %template(StringsVector) std::vector<QString>;
 
+%immutable;
 %include "../torrent.h"
+%mutable;
 %include "../tracker.h"
 %include "../rpc.h"
 %include "../serversettings.h"

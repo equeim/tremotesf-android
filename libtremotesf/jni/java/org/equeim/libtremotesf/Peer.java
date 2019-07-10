@@ -40,49 +40,25 @@ public class Peer {
     }
   }
 
-  public void setAddress(String value) {
-    libtremotesfJNI.Peer_address_set(swigCPtr, this, value);
-  }
-
   public String getAddress() {
     return libtremotesfJNI.Peer_address_get(swigCPtr, this);
 }
 
-  public void setDownloadSpeed(long value) {
-    libtremotesfJNI.Peer_downloadSpeed_set(swigCPtr, this, value);
-  }
-
   public long getDownloadSpeed() {
     return libtremotesfJNI.Peer_downloadSpeed_get(swigCPtr, this);
-  }
-
-  public void setUploadSpeed(long value) {
-    libtremotesfJNI.Peer_uploadSpeed_set(swigCPtr, this, value);
   }
 
   public long getUploadSpeed() {
     return libtremotesfJNI.Peer_uploadSpeed_get(swigCPtr, this);
   }
 
-  public void setProgress(double value) {
-    libtremotesfJNI.Peer_progress_set(swigCPtr, this, value);
-  }
-
   public double getProgress() {
     return libtremotesfJNI.Peer_progress_get(swigCPtr, this);
-  }
-
-  public void setFlags(String value) {
-    libtremotesfJNI.Peer_flags_set(swigCPtr, this, value);
   }
 
   public String getFlags() {
     return libtremotesfJNI.Peer_flags_get(swigCPtr, this);
 }
-
-  public void setClient(String value) {
-    libtremotesfJNI.Peer_client_set(swigCPtr, this, value);
-  }
 
   public String getClient() {
     return libtremotesfJNI.Peer_client_get(swigCPtr, this);

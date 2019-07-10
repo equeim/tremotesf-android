@@ -40,49 +40,25 @@ public class TorrentFile {
     }
   }
 
-  public void setPath(StringsVector value) {
-    libtremotesfJNI.TorrentFile_path_set(swigCPtr, this, StringsVector.getCPtr(value), value);
-  }
-
   public StringsVector getPath() {
     long cPtr = libtremotesfJNI.TorrentFile_path_get(swigCPtr, this);
     return (cPtr == 0) ? null : new StringsVector(cPtr, false);
-  }
-
-  public void setSize(long value) {
-    libtremotesfJNI.TorrentFile_size_set(swigCPtr, this, value);
   }
 
   public long getSize() {
     return libtremotesfJNI.TorrentFile_size_get(swigCPtr, this);
   }
 
-  public void setCompletedSize(long value) {
-    libtremotesfJNI.TorrentFile_completedSize_set(swigCPtr, this, value);
-  }
-
   public long getCompletedSize() {
     return libtremotesfJNI.TorrentFile_completedSize_get(swigCPtr, this);
-  }
-
-  public void setWanted(boolean value) {
-    libtremotesfJNI.TorrentFile_wanted_set(swigCPtr, this, value);
   }
 
   public boolean getWanted() {
     return libtremotesfJNI.TorrentFile_wanted_get(swigCPtr, this);
   }
 
-  public void setPriority(int value) {
-    libtremotesfJNI.TorrentFile_priority_set(swigCPtr, this, value);
-  }
-
   public int getPriority() {
     return libtremotesfJNI.TorrentFile_priority_get(swigCPtr, this);
-  }
-
-  public void setChanged(boolean value) {
-    libtremotesfJNI.TorrentFile_changed_set(swigCPtr, this, value);
   }
 
   public boolean getChanged() {
