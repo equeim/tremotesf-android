@@ -24,6 +24,7 @@ if [ ! -f dist/changes-5.11.3 ]; then
 fi
 
 _patch_if_needed qmakemake.patch false
+_patch_if_needed java7.patch false
 _patch_if_needed donottryondemand.patch true
 
 _QT_VERSION=$(grep MODULE_VERSION .qmake.conf | cut -d= -f2 | _trim)
