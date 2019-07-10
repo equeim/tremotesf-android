@@ -13,7 +13,7 @@ namespace libtremotesf
     class JniServerSettings : public ServerSettings
     {
     public:
-        explicit JniServerSettings(QObject* parent = nullptr);
+        explicit JniServerSettings(Rpc* rpc, QObject* parent = nullptr);
 
         void setDownloadDirectory(const QString& directory);
         void setStartAddedTorrents(bool start);

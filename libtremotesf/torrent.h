@@ -291,7 +291,9 @@ namespace libtremotesf
 
         QDateTime mAddedDate;
         QDateTime mActivityDate;
+        long long mActivityDateTime = -1;
         QDateTime mDoneDate;
+        long long mDoneDateTime = -1;
 
         bool mHonorSessionLimits = false;
         Priority mBandwidthPriority = NormalPriority;
@@ -302,6 +304,7 @@ namespace libtremotesf
         QString mComment;
         QString mCreator;
         QDateTime mCreationDate;
+        long long mCreationDateTime = -1;
 
         bool mFilesEnabled = false;
         bool mFilesLoaded = false;

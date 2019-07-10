@@ -36,10 +36,6 @@ public class ServerSettings {
     }
   }
 
-  public void setRpc(BaseRpc rpc) {
-    libtremotesfJNI.ServerSettings_setRpc(swigCPtr, this, BaseRpc.getCPtr(rpc), rpc);
-  }
-
   public int rpcVersion() {
     return libtremotesfJNI.ServerSettings_rpcVersion(swigCPtr, this);
   }

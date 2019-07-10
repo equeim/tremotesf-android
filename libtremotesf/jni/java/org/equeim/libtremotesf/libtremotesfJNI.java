@@ -205,7 +205,6 @@ public class libtremotesfJNI {
   public final static native void BaseRpc_getDownloadDirFreeSpace(long jarg1, BaseRpc jarg1_);
   public final static native void BaseRpc_getFreeSpaceForPath(long jarg1, BaseRpc jarg1_, String jarg2);
   public final static native void delete_BaseRpc(long jarg1);
-  public final static native void ServerSettings_setRpc(long jarg1, ServerSettings jarg1_, long jarg2, BaseRpc jarg2_);
   public final static native int ServerSettings_rpcVersion(long jarg1, ServerSettings jarg1_);
   public final static native int ServerSettings_minimumRpcVersion(long jarg1, ServerSettings jarg1_);
   public final static native boolean ServerSettings_canRenameFiles(long jarg1, ServerSettings jarg1_);

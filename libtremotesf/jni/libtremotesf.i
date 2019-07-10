@@ -31,6 +31,7 @@ namespace libtremotesf
     %ignore Server;
     
     %ignore Rpc::Rpc;
+    %ignore Rpc::setServerSettings;
     %ignore Rpc::setServer(const libtremotesf::Server& server);
     %ignore Rpc::setSessionProperty;
     %ignore Rpc::setSessionProperties;

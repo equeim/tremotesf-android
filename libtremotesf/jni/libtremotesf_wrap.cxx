@@ -5380,20 +5380,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Bas
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setRpc(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
-  libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  libtremotesf::Rpc *arg2 = (libtremotesf::Rpc *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  (void)jarg2_;
-  arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
-  arg2 = *(libtremotesf::Rpc **)&jarg2; 
-  (arg1)->setRpc(arg2);
-}
-
-
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1rpcVersion(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;

@@ -23,8 +23,8 @@ namespace libtremotesf
         char** argv = &argR;
     }
 
-    JniServerSettings::JniServerSettings(QObject* parent)
-        : ServerSettings(nullptr, parent)
+    JniServerSettings::JniServerSettings(Rpc* rpc, QObject* parent)
+        : ServerSettings(rpc, parent)
     {
         qRegisterMetaType<AlternativeSpeedLimitsDays>();
         qRegisterMetaType<EncryptionMode>();
@@ -216,7 +216,7 @@ namespace libtremotesf
     }
 
     JniRpc::JniRpc()
-        : Rpc(new JniServerSettings())
+        : Rpc(false)
     {
         qRegisterMetaType<Server>();
         qRegisterMetaType<Torrent::Priority>();
@@ -224,8 +224,7 @@ namespace libtremotesf
         qRegisterMetaType<Torrent::IdleSeedingLimitMode>();
         qRegisterMetaType<TorrentFile::Priority>();
 
-        serverSettings()->setParent(this);
-        serverSettings()->setRpc(this);
+        setServerSettings(new JniServerSettings(this, this));
 
         QObject::connect(this, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
         QObject::connect(this, &Rpc::connectedChanged, [=]() { onConnectedChanged(); });
