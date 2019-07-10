@@ -45,7 +45,7 @@ case "$_QT_VERSION_MINOR" in
         fi
     ;;
     12)
-        if [ "$_QT_VERSION_PATCH" -le 3 -a "$_NDK_REVISION" -ge 20 ]; then
+        if [ "$_QT_VERSION_PATCH" -le 4 -a "$_NDK_REVISION" -ge 20 ]; then
             # fix for NDK r20 and newer
             _patch_if_needed 5.12_ndk-r20.patch true
         fi
