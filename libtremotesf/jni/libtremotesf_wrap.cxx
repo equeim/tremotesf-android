@@ -3180,20 +3180,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Pee
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1idKey_1get(JNIEnv *jenv, jclass jcls) {
-  jstring jresult = 0 ;
-  QString *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  result = (QString *) &libtremotesf::Torrent::idKey;
-  
-  jresult = jenv->NewString(result->utf16(), result->size());
-  
-  return jresult;
-}
-
-
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1id(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;

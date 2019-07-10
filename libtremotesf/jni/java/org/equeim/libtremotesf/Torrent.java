@@ -40,10 +40,6 @@ public class Torrent {
     }
   }
 
-  public static String getIdKey() {
-    return libtremotesfJNI.Torrent_idKey_get();
-}
-
   public int id() {
     return libtremotesfJNI.Torrent_id(swigCPtr, this);
   }

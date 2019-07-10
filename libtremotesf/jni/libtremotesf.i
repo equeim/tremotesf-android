@@ -39,6 +39,7 @@ namespace libtremotesf
     %rename("BaseRpc") Rpc;
 
     %ignore Torrent::Torrent;
+    %ignore Torrent::idKey;
     %ignore Torrent::setDownloadSpeedLimited;
     %ignore Torrent::setDownloadSpeedLimit;
     %ignore Torrent::setUploadSpeedLimited;

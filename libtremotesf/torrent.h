@@ -160,7 +160,7 @@ namespace libtremotesf
         };
         Q_ENUM(IdleSeedingLimitMode)
 
-        static const QString idKey;
+        static const QLatin1String idKey;
 
         explicit Torrent(int id, const QJsonObject& torrentMap, Rpc* rpc);
 

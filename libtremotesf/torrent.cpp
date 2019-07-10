@@ -119,7 +119,7 @@ namespace libtremotesf
         }
     }
 
-    const QString Torrent::idKey(QLatin1String("id"));
+    const QLatin1String Torrent::idKey("id");
 
     TorrentFile::TorrentFile(std::vector<QString>&& path, long long size)
         : path(std::move(path)),

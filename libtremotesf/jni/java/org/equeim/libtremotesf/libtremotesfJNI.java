@@ -98,7 +98,6 @@ public class libtremotesfJNI {
   public final static native String Peer_flags_get(long jarg1, Peer jarg1_);
   public final static native String Peer_client_get(long jarg1, Peer jarg1_);
   public final static native void delete_Peer(long jarg1);
-  public final static native String Torrent_idKey_get();
   public final static native int Torrent_id(long jarg1, Torrent jarg1_);
   public final static native String Torrent_hashString(long jarg1, Torrent jarg1_);
   public final static native String Torrent_name(long jarg1, Torrent jarg1_);
