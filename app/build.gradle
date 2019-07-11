@@ -49,7 +49,7 @@ android {
         }
     }
     applicationVariants.all { variant ->
-        def abiCodes = ["armeabi-v7a": 1, "x86": 2]
+        def abiCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
         variant.outputs.each { output ->
             def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
             if (baseAbiVersionCode != null) {
