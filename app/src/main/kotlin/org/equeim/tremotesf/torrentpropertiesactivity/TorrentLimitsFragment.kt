@@ -237,7 +237,7 @@ class TorrentLimitsFragment : Fragment() {
         idle_seeding_spinner.setSelection(when (torrent!!.idleSeedingLimitMode()) {
                                               Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit -> 0
                                               Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit -> 2
-                                              Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding -> 3
+                                              Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding -> 1
                                               else -> 0
                                           })
         idle_seeding_edit.setText(torrent!!.idleSeedingLimit().toString())
