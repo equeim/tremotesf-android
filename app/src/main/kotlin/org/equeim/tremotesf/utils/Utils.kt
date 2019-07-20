@@ -46,6 +46,8 @@ import org.equeim.tremotesf.Settings
 private var appIsRunning = false
 
 object Utils : AnkoLogger {
+    private val decimalFormat by lazy { DecimalFormat("0.#") }
+
     fun initApp(context: Context) {
         if (!appIsRunning) {
             debug("init app")
@@ -81,13 +83,13 @@ object Utils : AnkoLogger {
 
     fun formatByteSize(context: Context, bytes: Long): String {
         val (size, unit) = calculateSize(bytes)
-        val numberString = DecimalFormat("0.#").format(size)
+        val numberString = decimalFormat.format(size)
         return context.resources.getStringArray(R.array.size_units)[unit].format(numberString)
     }
 
     fun formatByteSpeed(context: Context, bytes: Long): String {
         val (size, unit) = calculateSize(bytes)
-        val numberString = DecimalFormat("0.#").format(size)
+        val numberString = decimalFormat.format(size)
         return context.resources.getStringArray(R.array.speed_units)[unit].format(numberString)
     }
 
