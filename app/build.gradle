@@ -90,6 +90,6 @@ dependencies {
 
     implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
-    implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.20'
+    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.0'
     implementation 'org.sufficientlysecure:donations:2.6'
 }
