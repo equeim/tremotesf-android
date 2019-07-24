@@ -141,7 +141,9 @@ public class libtremotesfJNI {
   public final static native boolean Torrent_isFilesEnabled(long jarg1, Torrent jarg1_);
   public final static native boolean Torrent_isFilesLoaded(long jarg1, Torrent jarg1_);
   public final static native long Torrent_files(long jarg1, Torrent jarg1_);
+  public final static native boolean Torrent_isFilesChanged(long jarg1, Torrent jarg1_);
   public final static native long Torrent_trackers(long jarg1, Torrent jarg1_);
+  public final static native boolean Torrent_isTrackersAddedOrRemoved(long jarg1, Torrent jarg1_);
   public final static native boolean Torrent_isPeersEnabled(long jarg1, Torrent jarg1_);
   public final static native boolean Torrent_isPeersLoaded(long jarg1, Torrent jarg1_);
   public final static native long Torrent_peers(long jarg1, Torrent jarg1_);

@@ -3982,6 +3982,24 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1f
 }
 
 
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isFilesChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
+  std::shared_ptr< libtremotesf::Torrent > *smartarg1 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg1;
+  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
+  result = (bool)(arg1)->isFilesChanged();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1trackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
@@ -3996,6 +4014,24 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1t
   arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
   result = (std::vector< std::shared_ptr< libtremotesf::Tracker > > *) &((libtremotesf::Torrent const *)arg1)->trackers();
   *(std::vector< std::shared_ptr< libtremotesf::Tracker > > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isTrackersAddedOrRemoved(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
+  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
+  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
+  result = (bool)((libtremotesf::Torrent const *)arg1)->isTrackersAddedOrRemoved();
+  jresult = (jboolean)result; 
   return jresult;
 }
 
@@ -5901,15 +5937,15 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  QTime *result = 0 ;
+  QTime result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
-  result = (QTime *) &((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsBeginTime();
+  result = ((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsBeginTime();
   
-  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  jresult = (&result)->msecsSinceStartOfDay() / (60 * 1000);
   
   return jresult;
 }
@@ -5917,7 +5953,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsBeginTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  QTime *arg2 = 0 ;
+  QTime arg2 ;
   
   (void)jenv;
   (void)jcls;
@@ -5928,25 +5964,24 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
-  arg2 = &arg2_str;
+  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000);
   
-  (arg1)->setAlternativeSpeedLimitsBeginTime((QTime const &)*arg2);
+  (arg1)->setAlternativeSpeedLimitsBeginTime(arg2);
 }
 
 
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  QTime *result = 0 ;
+  QTime result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
-  result = (QTime *) &((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsEndTime();
+  result = ((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsEndTime();
   
-  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  jresult = (&result)->msecsSinceStartOfDay() / (60 * 1000);
   
   return jresult;
 }
@@ -5954,7 +5989,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1setAlternativeSpeedLimitsEndTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  QTime *arg2 = 0 ;
+  QTime arg2 ;
   
   (void)jenv;
   (void)jcls;
@@ -5965,10 +6000,9 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  QTime arg2_str(QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000));
-  arg2 = &arg2_str;
+  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000);
   
-  (arg1)->setAlternativeSpeedLimitsEndTime((QTime const &)*arg2);
+  (arg1)->setAlternativeSpeedLimitsEndTime(arg2);
 }
 
 

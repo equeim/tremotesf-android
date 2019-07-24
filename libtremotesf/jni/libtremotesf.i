@@ -29,7 +29,6 @@
 namespace libtremotesf
 {
     %ignore Server;
-    
     %ignore Rpc::Rpc;
     %ignore Rpc::setServerSettings;
     %ignore Rpc::setServer(const libtremotesf::Server& server);
@@ -66,6 +65,7 @@ namespace libtremotesf
     %ignore Torrent::updateFiles;
     %ignore Torrent::updatePeers;
     %ignore TorrentFile::TorrentFile;
+    %ignore TorrentFile::update;
     %ignore Peer::Peer;
     %ignore Peer::update;
 
@@ -80,13 +80,11 @@ namespace libtremotesf
     %immutable SessionStats::uploaded;
     %immutable SessionStats::duration;
     %immutable SessionStats::sessionCount;
-    
     %ignore ServerSettings::ServerSettings;
     %ignore ServerSettings::toKibiBytes;
     %ignore ServerSettings::fromKibiBytes;
     %ignore ServerSettings::save;
     %ignore ServerSettings::update;
-    
     %ignore JniServerSettings::JniServerSettings;
 }
 

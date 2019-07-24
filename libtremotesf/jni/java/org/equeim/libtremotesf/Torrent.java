@@ -212,8 +212,16 @@ public class Torrent {
     return new TorrentFilesVector(libtremotesfJNI.Torrent_files(swigCPtr, this), false);
   }
 
+  public boolean isFilesChanged() {
+    return libtremotesfJNI.Torrent_isFilesChanged(swigCPtr, this);
+  }
+
   public TrackersVector trackers() {
     return new TrackersVector(libtremotesfJNI.Torrent_trackers(swigCPtr, this), false);
+  }
+
+  public boolean isTrackersAddedOrRemoved() {
+    return libtremotesfJNI.Torrent_isTrackersAddedOrRemoved(swigCPtr, this);
   }
 
   public boolean isPeersEnabled() {
