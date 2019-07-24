@@ -22,7 +22,6 @@ package org.equeim.tremotesf
 import android.content.Context
 import android.widget.Toast
 
-import org.equeim.libtremotesf.BaseRpc
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.ServerStats
@@ -50,18 +49,18 @@ class Rpc : JniRpc() {
     val statusString: String
         get() {
             return when (status()) {
-                BaseRpc.Status.Disconnected -> when (error()) {
-                    BaseRpc.Error.NoError -> context!!.getString(R.string.disconnected)
-                    BaseRpc.Error.TimedOut -> context!!.getString(R.string.timed_out)
-                    BaseRpc.Error.ConnectionError -> context!!.getString(R.string.connection_error)
-                    BaseRpc.Error.AuthenticationError -> context!!.getString(R.string.authentication_error)
-                    BaseRpc.Error.ParseError -> context!!.getString(R.string.parsing_error)
-                    BaseRpc.Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
-                    BaseRpc.Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
+                Status.Disconnected -> when (error()) {
+                    Error.NoError -> context!!.getString(R.string.disconnected)
+                    Error.TimedOut -> context!!.getString(R.string.timed_out)
+                    Error.ConnectionError -> context!!.getString(R.string.connection_error)
+                    Error.AuthenticationError -> context!!.getString(R.string.authentication_error)
+                    Error.ParseError -> context!!.getString(R.string.parsing_error)
+                    Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
+                    Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
                     else -> context!!.getString(R.string.disconnected)
                 }
-                BaseRpc.Status.Connecting -> context!!.getString(R.string.connecting)
-                BaseRpc.Status.Connected -> context!!.getString(R.string.connected)
+                Status.Connecting -> context!!.getString(R.string.connecting)
+                Status.Connected -> context!!.getString(R.string.connected)
                 else -> context!!.getString(R.string.disconnected)
             }
         }
@@ -184,7 +183,7 @@ class Rpc : JniRpc() {
             for (listener in errorListeners) {
                 listener(error)
             }
-            if (error == BaseRpc.Error.ConnectionError) {
+            if (error == Error.ConnectionError) {
                 context?.let { context ->
                     Toast.makeText(context, errorMessage(), Toast.LENGTH_LONG).show()
                 }

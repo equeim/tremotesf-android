@@ -8,7 +8,7 @@
 
 package org.equeim.libtremotesf;
 
-public class JniRpc extends BaseRpc {
+public class JniRpc extends Rpc {
   private transient long swigCPtr;
 
   protected JniRpc(long cPtr, boolean cMemoryOwn) {

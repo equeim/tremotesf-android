@@ -54,7 +54,7 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.intentFor
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -256,7 +256,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 }
 
                 progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
-                        (Rpc.instance.status() == BaseRpc.Status.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
+                        (Rpc.instance.status() == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -280,13 +280,13 @@ class AddTorrentFileActivity : BaseActivity() {
 
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                     when (Rpc.instance.status()) {
-                        BaseRpc.Status.Disconnected -> {
+                        RpcStatus.Disconnected -> {
                             snackbar = activity.contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                                 snackbar = null
                                 Rpc.instance.connect()
                             }
                         }
-                        BaseRpc.Status.Connecting -> {
+                        RpcStatus.Connecting -> {
                             if (snackbar != null) {
                                 snackbar!!.dismiss()
                                 snackbar = null

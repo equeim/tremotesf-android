@@ -40,7 +40,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -98,7 +98,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
     private val rpcStatusListener: (Int) -> Unit = { status ->
         when (status) {
-            BaseRpc.Status.Disconnected -> {
+            RpcStatus.Disconnected -> {
                 torrent = null
                 snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
@@ -106,14 +106,14 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
                 }
                 placeholder.text = Rpc.instance.statusString
             }
-            BaseRpc.Status.Connecting -> {
+            RpcStatus.Connecting -> {
                 if (snackbar != null) {
                     snackbar!!.dismiss()
                     snackbar = null
                 }
                 placeholder.text = getString(R.string.connecting)
             }
-            BaseRpc.Status.Connected -> {
+            RpcStatus.Connected -> {
                 torrent = Rpc.instance.torrents.find { it.hashString == hash }?.torrent
                 if (torrent == null) {
                     placeholder.text = getString(R.string.torrent_not_found)
@@ -121,7 +121,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
             }
         }
 
-        progress_bar.visibility = if (status == BaseRpc.Status.Connecting) {
+        progress_bar.visibility = if (status == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

@@ -52,7 +52,7 @@ import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.AboutActivity
 import org.equeim.tremotesf.AddTorrentFileActivity
 import org.equeim.tremotesf.AddTorrentLinkActivity
@@ -108,7 +108,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
         get() = torrentsAdapter.selector.actionMode
 
     private val rpcStatusListener = { status: Int ->
-        if (status == BaseRpc.Status.Disconnected || status == BaseRpc.Status.Connected) {
+        if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
             if (!Rpc.instance.isConnected) {
                 torrentsAdapter.selector.actionMode?.finish()
 
@@ -468,7 +468,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
 
         when (menuItem.itemId) {
             R.id.connect -> {
-                if (Rpc.instance.status() == BaseRpc.Status.Disconnected) {
+                if (Rpc.instance.status() == RpcStatus.Disconnected) {
                     Rpc.instance.connect()
                 } else {
                     Rpc.instance.disconnect()
@@ -513,9 +513,9 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
         val connectMenuItem = menu!!.findItem(R.id.connect)
         connectMenuItem.isEnabled = Servers.hasServers
         connectMenuItem.title = when (Rpc.instance.status()) {
-            BaseRpc.Status.Disconnected -> getString(R.string.connect)
-            BaseRpc.Status.Connecting,
-            BaseRpc.Status.Connected -> getString(R.string.disconnect)
+            RpcStatus.Disconnected -> getString(R.string.connect)
+            RpcStatus.Connecting,
+            RpcStatus.Connected -> getString(R.string.disconnect)
             else -> getString(R.string.connect)
         }
 
@@ -529,7 +529,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
     }
 
     private fun updatePlaceholder() {
-        placeholder.text = if (Rpc.instance.status() == BaseRpc.Status.Connected) {
+        placeholder.text = if (Rpc.instance.status() == RpcStatus.Connected) {
             if (torrentsAdapter.itemCount == 0) {
                 getString(R.string.no_torrents)
             } else {
@@ -539,7 +539,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
             Rpc.instance.statusString
         }
 
-        progress_bar.visibility = if (Rpc.instance.status() == BaseRpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.instance.status() == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

@@ -4266,7 +4266,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Tra
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1serverSettings(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1serverSettings(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   libtremotesf::ServerSettings *result = 0 ;
@@ -4281,7 +4281,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1s
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   libtremotesf::ServerStats *result = 0 ;
@@ -4296,7 +4296,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1s
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1torrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1torrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   std::vector< std::shared_ptr< libtremotesf::Torrent > > *result = 0 ;
@@ -4311,7 +4311,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1t
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1torrentByHash(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1torrentByHash(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QString *arg2 = 0 ;
@@ -4341,7 +4341,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1t
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1torrentById(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1torrentById(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   int arg2 ;
@@ -4358,7 +4358,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1t
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1isConnected(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1isConnected(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool result;
@@ -4373,7 +4373,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc
 }
 
 
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1status(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1status(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   libtremotesf::Rpc::Status result;
@@ -4388,7 +4388,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1st
 }
 
 
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1error(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1error(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   libtremotesf::Rpc::Error result;
@@ -4403,7 +4403,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1er
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1errorMessage(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1errorMessage(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QString *result = 0 ;
@@ -4420,7 +4420,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1isLocal(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1isLocal(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool result;
@@ -4435,7 +4435,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc
 }
 
 
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1torrentsCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1torrentsCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   int result;
@@ -4450,7 +4450,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1to
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1backgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1backgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool result;
@@ -4465,7 +4465,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1setBackgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1setBackgroundUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool arg2 ;
   
@@ -4478,7 +4478,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1se
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1isUpdateDisabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1isUpdateDisabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool result;
@@ -4493,7 +4493,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1setUpdateDisabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1setUpdateDisabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   bool arg2 ;
   
@@ -4506,7 +4506,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1se
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1resetServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1resetServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
   (void)jenv;
@@ -4517,7 +4517,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1re
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
   (void)jenv;
@@ -4528,7 +4528,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1co
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1disconnect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1disconnect(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
   (void)jenv;
@@ -4539,7 +4539,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1di
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jintArray jarg7, jintArray jarg8, jint jarg9, jboolean jarg10) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jintArray jarg7, jintArray jarg8, jint jarg9, jboolean jarg10) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QByteArray *arg2 = 0 ;
   QString *arg3 = 0 ;
@@ -4674,7 +4674,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ad
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1addTorrentLink(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jstring jarg3, jint jarg4, jboolean jarg5) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1addTorrentLink(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jstring jarg3, jint jarg4, jboolean jarg5) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QString *arg2 = 0 ;
   QString *arg3 = 0 ;
@@ -4715,7 +4715,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ad
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1startTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1startTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4745,7 +4745,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1st
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1startTorrentsNow(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1startTorrentsNow(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4775,7 +4775,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1st
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1pauseTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1pauseTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4805,7 +4805,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1pa
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1removeTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jboolean jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1removeTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jboolean jarg3) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   bool arg3 ;
@@ -4837,7 +4837,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1re
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1checkTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1checkTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4867,7 +4867,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ch
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1moveTorrentsToTop(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1moveTorrentsToTop(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4897,7 +4897,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1mo
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1moveTorrentsUp(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1moveTorrentsUp(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4927,7 +4927,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1mo
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1moveTorrentsDown(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1moveTorrentsDown(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4957,7 +4957,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1mo
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1moveTorrentsToBottom(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1moveTorrentsToBottom(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -4987,7 +4987,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1mo
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1reannounceTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1reannounceTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   
@@ -5017,7 +5017,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1re
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1setTorrentsLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jstring jarg3, jboolean jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1setTorrentsLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jstring jarg3, jboolean jarg4) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QVariantList *arg2 = 0 ;
   QString *arg3 = 0 ;
@@ -5062,7 +5062,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1se
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1getTorrentFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jboolean jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1getTorrentFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jboolean jarg3) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   int arg2 ;
   bool arg3 ;
@@ -5077,7 +5077,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ge
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1getTorrentPeers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jboolean jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1getTorrentPeers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jboolean jarg3) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   int arg2 ;
   bool arg3 ;
@@ -5092,7 +5092,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ge
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1renameTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1renameTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   int arg2 ;
   QString *arg3 = 0 ;
@@ -5131,7 +5131,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1re
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1getDownloadDirFreeSpace(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1getDownloadDirFreeSpace(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
   (void)jenv;
@@ -5142,7 +5142,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ge
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1getFreeSpaceForPath(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1getFreeSpaceForPath(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   QString *arg2 = 0 ;
   
@@ -5166,7 +5166,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_BaseRpc_1ge
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1BaseRpc(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Rpc(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
   (void)jenv;

@@ -36,7 +36,7 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.intentFor
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
@@ -241,7 +241,7 @@ class BackgroundService : Service(), AnkoLogger {
             notificationBuilder.setContentText(Rpc.instance.statusString)
         }
 
-        if (Rpc.instance.status() == BaseRpc.Status.Disconnected) {
+        if (Rpc.instance.status() == RpcStatus.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),

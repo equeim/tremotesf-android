@@ -38,7 +38,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -52,7 +52,7 @@ class ServerSettingsActivity : BaseActivity() {
 
     private val rpcStatusListener = fun(status: Int) {
         when (status) {
-            BaseRpc.Status.Disconnected -> {
+            RpcStatus.Disconnected -> {
                 if (supportFragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
                     supportFragmentManager.popBackStack()
                     supportFragmentManager.transaction {
@@ -62,7 +62,7 @@ class ServerSettingsActivity : BaseActivity() {
                     }
                 }
             }
-            BaseRpc.Status.Connected -> {
+            RpcStatus.Connected -> {
                 supportFragmentManager.transaction { replace(android.R.id.content, MainFragment()) }
             }
             else -> {
@@ -116,21 +116,21 @@ class ServerSettingsActivity : BaseActivity() {
         private var rpcStatusListener: (Int) -> Unit = { status ->
             placeholder.text = Rpc.instance.statusString
             when (status) {
-                BaseRpc.Status.Disconnected -> {
+                RpcStatus.Disconnected -> {
                     snackbar = requireActivity().contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                         snackbar = null
                         Rpc.instance.connect()
                     }
                     progress_bar.visibility = View.GONE
                 }
-                BaseRpc.Status.Connecting -> {
+                RpcStatus.Connecting -> {
                     if (snackbar != null) {
                         snackbar!!.dismiss()
                         snackbar = null
                     }
                     progress_bar.visibility = View.VISIBLE
                 }
-                BaseRpc.Status.Connected -> {
+                RpcStatus.Connected -> {
                 }
             }
         }

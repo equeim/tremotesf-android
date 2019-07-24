@@ -35,7 +35,6 @@ namespace libtremotesf
     %ignore Rpc::setSessionProperty;
     %ignore Rpc::setSessionProperties;
     %ignore Rpc::setTorrentProperty;
-    %rename("BaseRpc") Rpc;
 
     %ignore Torrent::Torrent;
     %ignore Torrent::idKey;

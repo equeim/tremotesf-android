@@ -37,7 +37,7 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.BaseRpc
+import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -193,7 +193,7 @@ class AddTorrentLinkActivity : BaseActivity() {
         doneMenuItem?.isVisible = Rpc.instance.isConnected
 
         when (Rpc.instance.status()) {
-            BaseRpc.Status.Disconnected -> {
+            RpcStatus.Disconnected -> {
                 snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.instance.connect()
@@ -204,7 +204,7 @@ class AddTorrentLinkActivity : BaseActivity() {
                     inputManager.hideSoftInputFromWindow(focus.windowToken, 0)
                 }
             }
-            BaseRpc.Status.Connecting -> {
+            RpcStatus.Connecting -> {
                 if (snackbar != null) {
                     snackbar!!.dismiss()
                     snackbar = null
@@ -227,7 +227,7 @@ class AddTorrentLinkActivity : BaseActivity() {
             scroll_view.visibility = View.GONE
         }
 
-        progress_bar.visibility = if (Rpc.instance.status() == BaseRpc.Status.Connecting) {
+        progress_bar.visibility = if (Rpc.instance.status() == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
