@@ -19,14 +19,12 @@
 
 package org.equeim.tremotesf
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 
 import org.equeim.libtremotesf.BaseRpc
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
-import org.equeim.libtremotesf.JniWrapper
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
 
@@ -35,19 +33,7 @@ import org.jetbrains.anko.runOnUiThread
 
 class Rpc : JniRpc() {
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        private var instanceField: Rpc? = null
-        private var wrapperInstanceField: JniWrapper? = null
-
-        val instance: Rpc
-            get() {
-                if (instanceField == null) {
-                    wrapperInstanceField = JniWrapper()
-                    instanceField = Rpc()
-                    wrapperInstanceField!!.setRpc(instanceField)
-                }
-                return instanceField!!
-            }
+        val instance by lazy { Rpc() }
     }
 
     var context: Context? = null
