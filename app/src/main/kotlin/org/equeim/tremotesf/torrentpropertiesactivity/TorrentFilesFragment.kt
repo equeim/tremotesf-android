@@ -184,7 +184,7 @@ class TorrentFilesFragment : Fragment() {
             }
         } else {
             if (treeCreated || creatingTree) {
-                updateTree()
+                updateTree(filesVector)
             } else {
                 beginCreatingTree(filesVector)
             }
@@ -249,23 +249,22 @@ class TorrentFilesFragment : Fragment() {
         this.files.addAll(files)
 
         if (updateAfterCreate) {
-            doUpdateTree()
+            doUpdateTree(torrent!!.files())
         }
 
         adapter?.restoreInstanceState(null, rootDirectory)
     }
 
-    private fun updateTree() {
+    private fun updateTree(files: TorrentFilesVector) {
         if (creatingTree) {
             updateAfterCreate = true
             resetAfterCreate = false
         } else {
-            doUpdateTree()
+            doUpdateTree(files)
         }
     }
 
-    private fun doUpdateTree() {
-        val rpcFiles = torrent!!.files()
+    private fun doUpdateTree(rpcFiles: TorrentFilesVector) {
         for ((i, file) in files.withIndex()) {
             updateFile(file, rpcFiles[i])
         }
