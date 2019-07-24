@@ -176,17 +176,19 @@ class TorrentFilesFragment : Fragment() {
 
         torrent = newTorrent
 
-        val filesVector: TorrentFilesVector = newTorrent.files()
-
-        if (filesVector.isEmpty()) {
-            if (treeCreated || creatingTree) {
-                resetTree()
+        if (treeCreated || creatingTree) {
+            if (newTorrent.isFilesChanged) {
+                val rpcFiles: TorrentFilesVector = newTorrent.files()
+                if (rpcFiles.isEmpty()) {
+                    resetTree()
+                } else {
+                    updateTree(rpcFiles)
+                }
             }
         } else {
-            if (treeCreated || creatingTree) {
-                updateTree(filesVector)
-            } else {
-                beginCreatingTree(filesVector)
+            val rpcFiles: TorrentFilesVector = newTorrent.files()
+            if (!rpcFiles.isEmpty()) {
+                beginCreatingTree(rpcFiles)
             }
         }
     }
@@ -227,11 +229,11 @@ class TorrentFilesFragment : Fragment() {
         updatePlaceholder()
     }
 
-    private fun beginCreatingTree(filesVector: TorrentFilesVector) {
+    private fun beginCreatingTree(rpcFiles: TorrentFilesVector) {
         creatingTree = true
         updateProgressBar()
         updatePlaceholder()
-        TreeCreationTask(WeakReference(this), filesVector).execute()
+        TreeCreationTask(WeakReference(this), rpcFiles).execute()
     }
 
     private fun endCreatingTree(rootDirectory: BaseTorrentFilesAdapter.Directory,
@@ -255,18 +257,18 @@ class TorrentFilesFragment : Fragment() {
         adapter?.restoreInstanceState(null, rootDirectory)
     }
 
-    private fun updateTree(files: TorrentFilesVector) {
+    private fun updateTree(rpcFiles: TorrentFilesVector) {
         if (creatingTree) {
             updateAfterCreate = true
             resetAfterCreate = false
         } else {
-            doUpdateTree(files)
+            doUpdateTree(rpcFiles)
         }
     }
 
     private fun doUpdateTree(rpcFiles: TorrentFilesVector) {
-        for ((i, file) in files.withIndex()) {
-            updateFile(file, rpcFiles[i])
+        for ((file, rpcFile: TorrentFile) in files.zip(rpcFiles)) {
+            updateFile(file, rpcFile)
         }
         adapter?.treeUpdated()
     }
@@ -294,13 +296,13 @@ class TorrentFilesFragment : Fragment() {
     }
 
     private class TreeCreationTask(private val fragment: WeakReference<TorrentFilesFragment>,
-                                   private val filesVector: TorrentFilesVector) : AsyncTask<Any, Any, Any?>() {
+                                   private val rpcFiles: TorrentFilesVector) : AsyncTask<Any, Any, Any?>() {
 
         private val rootDirectory = BaseTorrentFilesAdapter.Directory()
         private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
         override fun doInBackground(vararg params: Any?): Any? {
-            for ((fileIndex, rpcFile: TorrentFile) in filesVector.withIndex()) {
+            for ((fileIndex, rpcFile: TorrentFile) in rpcFiles.withIndex()) {
                 var currentDirectory = rootDirectory
 
                 val path: StringsVector = rpcFile.path
