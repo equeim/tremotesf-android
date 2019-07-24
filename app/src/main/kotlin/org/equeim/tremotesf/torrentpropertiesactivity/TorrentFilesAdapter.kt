@@ -93,9 +93,10 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     }
 
     fun treeUpdated() {
+        val add = if (hasHeaderItem) 1 else 0
         for ((i, item) in currentItems.withIndex()) {
-                if (item.changed) {
-                notifyItemChanged(i)
+            if (item.changed) {
+                notifyItemChanged(i + add)
             }
         }
         selector.actionMode?.invalidate()
