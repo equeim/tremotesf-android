@@ -102,11 +102,11 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
     var downloadDirectory: String = torrent.downloadDirectory()
         private set
 
-    private val tTrackers = torrent.trackers()
+    private val rpcTrackers = torrent.trackers()
     val trackers = mutableListOf<String>()
 
     init {
-        for (tracker: Tracker in tTrackers) {
+        for (tracker: Tracker in rpcTrackers) {
             trackers.add(tracker.site())
         }
     }
@@ -132,11 +132,13 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
             seeders = torrent.seeders()
             leechers = torrent.leechers()
             downloadDirectory = torrent.downloadDirectory()
-        }
 
-        trackers.clear()
-        for (tracker: Tracker in tTrackers) {
-            trackers.add(tracker.site())
+            if (torrent.isTrackersAddedOrRemoved) {
+                trackers.clear()
+                for (tracker: Tracker in rpcTrackers) {
+                    trackers.add(tracker.site())
+                }
+            }
         }
     }
 }
