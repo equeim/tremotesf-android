@@ -90,7 +90,6 @@ class TorrentFilesFragment : Fragment() {
     private var treeCreated = false
 
     private var creatingTree = false
-    private var updateAfterCreate = false
     private var resetAfterCreate = false
 
     private var adapter: TorrentFilesAdapter? = null
@@ -159,7 +158,6 @@ class TorrentFilesFragment : Fragment() {
     }
 
     fun update() {
-        updateAfterCreate = false
         resetAfterCreate = false
 
         val newTorrent = activity?.torrent
@@ -175,21 +173,23 @@ class TorrentFilesFragment : Fragment() {
         }
 
         torrent = newTorrent
-
-        if (treeCreated || creatingTree) {
-            if (newTorrent.isFilesChanged) {
-                val rpcFiles: TorrentFilesVector = newTorrent.files()
-                if (rpcFiles.isEmpty()) {
+        if (newTorrent.isFilesLoaded) {
+            val rpcFiles: TorrentFilesVector = newTorrent.files()
+            if (rpcFiles.isEmpty()) {
+                if (treeCreated || creatingTree) {
                     resetTree()
-                } else {
-                    updateTree(rpcFiles)
+                }
+            } else {
+                if (treeCreated) {
+                    if (newTorrent.isFilesChanged) {
+                        updateTree(rpcFiles)
+                    }
+                } else if (!creatingTree) {
+                    beginCreatingTree(rpcFiles)
                 }
             }
-        } else {
-            val rpcFiles: TorrentFilesVector = newTorrent.files()
-            if (!rpcFiles.isEmpty()) {
-                beginCreatingTree(rpcFiles)
-            }
+        } else if (treeCreated || creatingTree) {
+            resetTree()
         }
     }
 
@@ -214,7 +214,6 @@ class TorrentFilesFragment : Fragment() {
 
     private fun resetTree() {
         if (creatingTree) {
-            updateAfterCreate = false
             resetAfterCreate = true
         } else {
             doResetTree()
@@ -250,23 +249,10 @@ class TorrentFilesFragment : Fragment() {
         this.rootDirectory = rootDirectory
         this.files.addAll(files)
 
-        if (updateAfterCreate) {
-            doUpdateTree(torrent!!.files())
-        }
-
         adapter?.restoreInstanceState(null, rootDirectory)
     }
 
     private fun updateTree(rpcFiles: TorrentFilesVector) {
-        if (creatingTree) {
-            updateAfterCreate = true
-            resetAfterCreate = false
-        } else {
-            doUpdateTree(rpcFiles)
-        }
-    }
-
-    private fun doUpdateTree(rpcFiles: TorrentFilesVector) {
         for ((file, rpcFile: TorrentFile) in files.zip(rpcFiles)) {
             updateFile(file, rpcFile)
         }
