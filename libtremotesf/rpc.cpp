@@ -530,10 +530,11 @@ namespace libtremotesf
                         const std::shared_ptr<Torrent> torrent(torrentById(id));
                         if (!torrentsVariants.isEmpty() && torrent) {
                             torrent->updateFiles(torrentsVariants.first().toObject());
-                            emit gotTorrentFiles(id);
                             if (scheduled) {
                                 checkIfTorrentsUpdated();
                                 startUpdateTimer();
+                            } else {
+                                emit gotTorrentFiles(id);
                             }
                         }
                     });
@@ -557,10 +558,11 @@ namespace libtremotesf
                         const std::shared_ptr<Torrent> torrent(torrentById(id));
                         if (!torrentsVariants.isEmpty() && torrent) {
                             torrent->updatePeers(torrentsVariants.first().toObject());
-                            emit gotTorrentPeers(id);
                             if (scheduled) {
                                 checkIfTorrentsUpdated();
                                 startUpdateTimer();
+                            } else {
+                                emit gotTorrentPeers(id);
                             }
                         }
                     });
