@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2019 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
