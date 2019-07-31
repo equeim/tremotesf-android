@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.1] - 2019-08-01
+### Added
+- 64-bit support for native libraries
+- NDK r20 support
+
+### Changed
+- Minor performance improvements
+- Updated translations
+
+### Fixed
+- Fixed light navigation bar with dark theme on some Android devices
+- Fixed crash when torrent is using 'Seed regardless of activity' mode
+- Fixed updating torrent's file list when inside directory
+
 ## [1.9.0] - 2019-02-09
 ### Added
 - Tremotesf now remebmers used download directories and shows them in dropdown menu when adding torrent / changing location
