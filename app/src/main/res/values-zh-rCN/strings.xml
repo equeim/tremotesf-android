@@ -31,7 +31,7 @@
     <string name="torrents_all">全部(%d)</string>
     <string name="torrents_active">活动的(%d)</string>
     <string name="torrents_downloading">正在下载(%d)</string>
-    <string name="torrents_seeding">正在供源(%d)</string>
+    <string name="torrents_seeding">正在做种(%d)</string>
     <string name="torrents_paused">已暂停(%d)</string>
     <string name="torrents_checking">正在检查(%d)</string>
     <string name="torrents_errored">已出错(%d)</string>
@@ -49,10 +49,10 @@
     </plurals>
 
     <plurals name="peers_plural">
-        <item quantity="other">%d 对等方</item>
+        <item quantity="other">%d 节点</item>
     </plurals>
 
-    <string name="next_update">%s 后更新信息</string>
+    <string name="next_update">%s 后请求更多节点</string>
     <string name="add_tracker">添加Tracker</string>
     <string name="edit_tracker">编辑Tracker</string>
 
@@ -68,7 +68,7 @@
     <string name="files">文件</string>
     <string name="trackers">Trackers</string>
     <string name="directories">文件夹</string>
-    <string name="peers">对等方</string>
+    <string name="peers">节点</string>
     <string name="limits">限制</string>
 
     <string name="activity">活动</string>
@@ -79,7 +79,7 @@
     <string name="uploaded">已上传</string>
     <string name="download_speed">下载速度</string>
     <string name="upload_speed">上传速度</string>
-    <string name="seeders">供源者</string>
+    <string name="seeders">上传者</string>
     <string name="leechers">下载者</string>
     <string name="last_activity">最近活动</string>
 
@@ -111,7 +111,7 @@
     <string name="tracker_error">错误：%s</string>
 
     <string name="loading">正在加载 \u2026</string>
-    <string name="no_peers">无对等方</string>
+    <string name="no_peers">无节点</string>
 
     <string name="error">错误</string>
 
@@ -120,24 +120,24 @@
     <string name="download_noun">下载速度</string>
     <string name="upload_noun">上传速度</string>
 
-    <string name="seeding">供源设置</string>
+    <string name="seeding">做种</string>
 
     <string name="ratio_limit">分享率限制</string>
     <string-array name="ratio_limit_mode">
         <item>使用全局设置</item>
-        <item>一直供源</item>
+        <item>忽略分享率做种</item>
         <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string name="idle_seeding">空闲设置</string>
     <string-array name="idle_seeding_mode">
         <item>使用全局设置</item>
-        <item>一直供源</item>
+        <item>忽略活动做种</item>
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">分钟</string>
-    <string name="maximum_peers">最大对等方数量</string>
+    <string name="maximum_peers">最大节点数</string>
 
     <string name="settings">设置</string>
     <string name="servers">服务器</string>
@@ -195,7 +195,7 @@
     <string name="download_directory">下载文件夹</string>
 
     <string name="server_settings_downloading">下载</string>
-    <string name="server_settings_seeding">供源</string>
+    <string name="server_settings_seeding">做种</string>
     <string name="server_settings_queue">传输队列</string>
     <string name="server_settings_speed">速度</string>
     <string name="server_settings_network">网络</string>
@@ -203,8 +203,8 @@
     <string name="start_added_torrents">开始添加的种子</string>
     <string name="rename_incomplete_files">在未完成文件的文件名加上\".part\"后缀</string>
     <string name="incomplete_files_directory">保存未完成文件的文件夹</string>
-    <string name="stop_seeding_at_ratio">到达该分享率时停止供源</string>
-    <string name="stop_seeding_if_idle_for">到达该空闲时长后停止供源</string>
+    <string name="stop_seeding_at_ratio">到达该分享率时停止做种</string>
+    <string name="stop_seeding_if_idle_for">到达该空闲时长后停止做种</string>
     <string name="maximum_active_downloads">允许的最大活动下载数</string>
     <string name="maximum_active_uploads">允许的最大活动上传数</string>
     <string name="ignore_queue">空闲该时段后忽略队列优先级</string>
@@ -222,7 +222,7 @@
     <string name="peer_port">对等方端口</string>
     <string name="random_port">启动时使用随机端口</string>
     <string name="port_forwarding">启用端口转发</string>
-    <string name="encryption">加密</string>
+    <string name="encryption">加密模式</string>
     <string-array name="encryption_items">
         <item>允许加密</item>
         <item>偏好加密</item>
@@ -232,9 +232,9 @@
     <string name="enable_pex">启用 PEX</string>
     <string name="enable_dht">启用 DHT</string>
     <string name="enable_lpd">启用 LPD</string>
-    <string name="peer_limits">对等方限制</string>
-    <string name="maximum_peers_per_torrent">每个种子最大对等方数量</string>
-    <string name="maximum_peers_globally">全局最大对等方数量</string>
+    <string name="peer_limits">节点限制</string>
+    <string name="maximum_peers_per_torrent">单个种子最大节点数</string>
+    <string name="maximum_peers_globally">全局最大节点数</string>
 
     <string name="open_side_panel">打开侧边面板</string>
     <string name="close_side_panel">关闭侧边面板</string>
@@ -285,13 +285,13 @@
 
     <string name="torrent_paused">已暂停</string>
     <plurals name="torrent_downloading">
-        <item quantity="other">正在从 %d 个对等方下载</item>
+        <item quantity="other">正在从 %d 个节点下载</item>
     </plurals>
     <string name="torrent_downloading_stalled">正在下载</string>
     <plurals name="torrent_seeding">
-        <item quantity="other">正在向 %d 个对等方供源</item>
+        <item quantity="other">正在向 %d 个节点上传</item>
     </plurals>
-    <string name="torrent_seeding_stalled">供源中</string>
+    <string name="torrent_seeding_stalled">做种中</string>
     <string name="torrent_queued">已加入队列</string>
     <string name="torrent_checking">正在检查 (%s%%)</string>
     <string name="torrent_queued_for_checking">已加入检查队列</string>

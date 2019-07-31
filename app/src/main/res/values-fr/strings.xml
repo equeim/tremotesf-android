@@ -2,6 +2,52 @@
     <string name="disconnected">Déconnecté</string>
     <string name="connected">Connecté</string>
 
+    <string name="connect">Se connecter</string>
+    <string name="disconnect">Se déconnecter</string>
+    <string name="add">Ajouter</string>
+
+    <string name="timed_out">Délai de connexion dépassé</string>
+    <string name="connection_error">Erreur de connexion</string>
+    <string name="authentication_error">Erreur d\'authentification</string>
+    <string name="parsing_error">Erreur d\'analyse</string>
+    <string name="server_is_too_new">La version du serveur est trop récente</string>
+    <string name="server_is_too_old">La version du serveur est trop ancienne</string>
+
+    <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
+
+    <string name="current_server_string">%1$s (%2$s)</string>
+
+    <string name="download_speed_string">\u2193 %s</string>
+    <string name="upload_speed_string">\u2191 %s</string>
+
+    <string name="server">Serveur</string>
+    <string name="server_settings">Paramètres serveur</string>
+
+    <string name="sort">Tri</string>
+    <string name="progress">Accompli</string>
+    <string name="eta">ETA</string>
+    <string name="ratio">Ratio</string>
+    <string name="size">Taille</string>
+    <string name="added_date">Date d\'ajout</string>
+
+    <string name="status">Statut</string>
+
+    <string name="no_torrents">Aucun torrent</string>
+
+    <string name="torrents_all">Tout (1 %d)</string>
+    <string name="torrents_active">Actif (%d)</string>
+    <string name="torrents_downloading">En téléchargement (%d)</string>
+    <string name="torrents_seeding">Seeding (%d)</string>
+    <string name="torrents_paused">En pause (%d)</string>
+    <string name="torrents_checking">Vérification (%d)</string>
+    <string name="torrents_errored">Erreur (%d)</string>
+
+    <!-- e.g. "example.com (42)" -->
+    <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="directories_spinner_text">%1$s (%2$d)</string>
+
+    <string name="next_update">Prochaine mise à jour après %s</string>
+    <string name="add_tracker">Ajouter un tracker</string>
     <string name="progress_string">%s%%</string>
 
     <string name="priority">Priorité</string>

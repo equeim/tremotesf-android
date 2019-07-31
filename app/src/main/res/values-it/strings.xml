@@ -109,6 +109,8 @@
 
     <string name="progress_string">%s%%</string>
 
+    <string name="progress_string_with_dot">\u00b7 %s%%</string>
+
     <!-- e.g. "100 MiB of 200 MiB (50%)" -->
     <string name="completed_string">%1$s di %2$s (%3$s%%)</string>
 
@@ -372,6 +374,9 @@
 
     <string name="prefs_old_colors_title">Usa vecchio tema</string>
     <string name="prefs_old_colors_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
+
+    <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
+    <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>
 
     <string name="prefs_background_service_title">Abilita servizio in background</string>
     <string name="prefs_background_service_summary">Il servizio è fermato quando l\'applicazione è rimossa dalla schermata delle applicazioni recenti a meno che le notifiche persistenti non siano state abilitate</string>

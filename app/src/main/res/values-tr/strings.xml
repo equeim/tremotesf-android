@@ -109,6 +109,8 @@
 
     <string name="progress_string">%s%%</string>
 
+    <string name="progress_string_with_dot">\u00b7 %s%%</string>
+
     <!-- e.g. "100 MiB of 200 MiB (50%)" -->
     <string name="completed_string">%2$s\'dan %1$s (%%%3$s)</string>
 
@@ -300,6 +302,7 @@
     </plurals>
     <string name="delete_files">Ayrıca sabit diskteki dosyaları da silin</string>
     <string name="check_local_data">Yerel verileri kontrol et</string>
+    <string name="reannounce">Yeniden bildirme</string>
     <string name="torrent_duplicate">Bu torrent zaten eklenmiş</string>
     <string name="torrent_add_error">Torrent eklenirken hata oluştu</string>
 
@@ -368,6 +371,12 @@
 
     <string name="prefs_dark_theme_title">Karanlık temayı kullan</string>
     <string name="prefs_dark_theme_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlat</string>
+
+    <string name="prefs_old_colors_title">Eski renkleri kullan</string>
+    <string name="prefs_old_colors_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlatın</string>
+
+    <string name="prefs_torrent_compact_view_title">Torrentler için dar görünüm kullanın</string>
+    <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda gösterme</string>
 
     <string name="prefs_background_service_title">Arka plan hizmetini etkinleştir</string>
     <string name="prefs_background_service_summary">Kalıcı bildirim etkin olmadıkça uygulama son uygulamalar ekranından kaldırıldığında hizmet durdurulur</string>
