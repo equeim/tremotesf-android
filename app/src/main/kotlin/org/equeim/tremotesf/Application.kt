@@ -13,7 +13,6 @@ class Application : android.app.Application() {
                 QtNative.setClassLoader(classLoader)
                 System.loadLibrary("c++_shared")
                 System.loadLibrary("Qt5Core")
-                System.loadLibrary("Qt5Concurrent")
                 System.loadLibrary("Qt5Network")
                 System.loadLibrary("tremotesf")
                 loaded = true

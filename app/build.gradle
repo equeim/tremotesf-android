@@ -13,6 +13,12 @@ android {
         targetSdkVersion 28
         versionCode 25
         versionName '1.9.1'
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared', '-DANDROID_ARM_NEON=ON'
+            }
+        }
     }
     buildTypes {
         release {
@@ -22,9 +28,16 @@ android {
         }
     }
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        main.java.srcDirs += '../libtremotesf/jni/java'
-        main.jniLibs.srcDirs 'libs'
+        main {
+            java.srcDirs 'src/main/kotlin', '../libtremotesf/jni/java'
+            jniLibs.srcDirs 'libs'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path '../libtremotesf/CMakeLists.txt'
+            version '3.10.2'
+        }
     }
     lintOptions {
         checkReleaseBuilds false

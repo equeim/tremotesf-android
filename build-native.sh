@@ -3,7 +3,6 @@
 function _build() {
     "$_DIR"/3rdparty/openssl/build.sh || return 1
     "$_DIR"/3rdparty/qt/build.sh || return 1
-    "$_DIR"/libtremotesf/build.sh || return 1
     return 0
 }
 
