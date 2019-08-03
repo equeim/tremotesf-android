@@ -18,8 +18,8 @@ cd "$_DIR" || exit 1
 
 cd qtbase
 
-if [ ! -f dist/changes-5.11.3 ]; then
-    echo "Minimum Qt version is 5.11.3, aborting"
+if [ ! -f dist/changes-5.12.0 ]; then
+    echo "Minimum Qt version is 5.12.0, aborting"
     exit 1
 fi
 
@@ -33,18 +33,6 @@ _QT_VERSION_PATCH=$(echo $_QT_VERSION | cut -d'.' -f3)
 _NDK_REVISION=$(grep Pkg.Revision "$ANDROID_NDK_ROOT/source.properties" | cut -d= -f2 | _trim | cut -d'.' -f1)
 
 case "$_QT_VERSION_MINOR" in
-    11)
-        # fix for GCC 9 host compiler
-        _patch_if_needed 5.11_qrandom_gcc9.patch true
-
-        # fix for NDK r18 and newer, works with r16 and r17 too
-        _patch_if_needed 5.11_ndk-r18.patch true
-
-        if [ $_NDK_REVISION -ge 20 ]; then
-            # fix for NDK r20 and newer
-            _patch_if_needed 5.11_ndk-r20.patch true
-        fi
-    ;;
     12)
         if [ "$_QT_VERSION_PATCH" -le 4 -a "$_NDK_REVISION" -ge 20 ]; then
             # fix for NDK r20 and newer
@@ -93,6 +81,7 @@ _FLAGS=("-v"
     "-no-feature-datetimeparser"
     "-no-feature-dnslookup"
     "-no-feature-dom"
+    "-no-feature-dtls"
     "-no-feature-filesystemiterator"
     "-no-feature-filesystemwatcher"
     "-no-feature-ftp"
@@ -119,10 +108,6 @@ _FLAGS=("-v"
     "-openssl-linked"
     "-I$_OPENSSL_INCDIR"
 )
-
-if [ $_QT_VERSION_MINOR -ge 12 ]; then
-    _FLAGS+=("-no-feature-dtls")
-fi
 
 OPENSSL_LIBS="-L$_OPENSSL_LIBDIR -lssl -lcrypto" ../qtbase/configure ${_FLAGS[@]} || exit 1
 

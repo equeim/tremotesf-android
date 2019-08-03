@@ -27,7 +27,7 @@ Android remote GUI for transmission-daemon.
 ## Build
 1. Download and install Android Studio 3.4. Download and install Android NDK (r16b or newer).
 2. [Download](https://www.openssl.org/source) latest OpenSSL 1.1.1 and unpack it to 3rdparty/openssl/openssl (removing version from directory name).
-3. [Download](http://download.qt.io/official_releases/qt/5.12/5.12.3/submodules/qtbase-everywhere-src-5.12.3.tar.xz) Qt base submodule (5.11.3 or newer) and unpack it to 3rdparty/qt/qtbase.
+3. [Download](http://download.qt.io/official_releases/qt/5.12/5.12.4/submodules/qtbase-everywhere-src-5.12.4.tar.xz) Qt base submodule (5.12 or newer) and unpack it to 3rdparty/qt/qtbase.
 5. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK.
 6. Execute build-native.sh script from project root directory.
 7. Build APK in Android Studio.
