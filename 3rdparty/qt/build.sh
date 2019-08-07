@@ -2,9 +2,19 @@
 
 function _patch_if_needed() {
     # if can't reverse, patch
-    if ! patch -p1 -R --dry-run -f -i ../$1; then
-        if (! patch -p1 -i ../$1) && [ $2 = true ]; then
-            exit 1
+    echo
+    echo "Applying patch $1"
+    if patch -p1 -R --dry-run -f -i ../"$1" > /dev/null; then
+        echo 'Already applied'
+    else
+        local _output="$(patch -p1 -i ../"$1")" _code=$?
+        if [ $_code -ne 0 ]; then
+            printf "%s\n" "$_output"
+            if [ "$2" = true ]; then
+                echo 'Failed to apply patch, exiting'
+                exit 1
+            fi
+            echo 'Failed to apply patch, continuing'
         fi
     fi
 }
@@ -12,6 +22,9 @@ function _patch_if_needed() {
 function _trim() {
     awk '{$1=$1};1'
 }
+
+echo
+echo "Building Qt for $ANDROID_ARCH"
 
 _DIR="$(realpath $(dirname $0))"
 cd "$_DIR" || exit 1
@@ -27,25 +40,9 @@ _patch_if_needed qmakemake.patch false
 _patch_if_needed java7.patch false
 _patch_if_needed donottryondemand.patch true
 
-_QT_VERSION=$(grep MODULE_VERSION .qmake.conf | cut -d= -f2 | _trim)
-_QT_VERSION_MINOR=$(echo $_QT_VERSION | cut -d'.' -f2)
-_QT_VERSION_PATCH=$(echo $_QT_VERSION | cut -d'.' -f3)
-_NDK_REVISION=$(grep Pkg.Revision "$ANDROID_NDK_ROOT/source.properties" | cut -d= -f2 | _trim | cut -d'.' -f1)
-
-case "$_QT_VERSION_MINOR" in
-    12)
-        if [ "$_QT_VERSION_PATCH" -le 4 -a "$_NDK_REVISION" -ge 20 ]; then
-            # fix for NDK r20 and newer
-            _patch_if_needed 5.12_ndk-r20.patch true
-        fi
-    ;;
-    13)
-        if [ "$_QT_VERSION_PATCH" -eq 0 -a "$_NDK_REVISION" -ge 20 ]; then
-            # fix for NDK r20 and newer
-            _patch_if_needed 5.12_ndk-r20.patch true
-        fi
-    ;;
-esac
+_patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
+_patch_if_needed mips.patch false
+_patch_if_needed ndk-r19.patch true
 
 cd -
 
