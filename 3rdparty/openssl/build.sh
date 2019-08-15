@@ -8,7 +8,7 @@ readonly build_dir="$top_dir/build-$ANDROID_ARCH"
 mkdir -p "$build_dir" || exit 1
 cd "$build_dir" || exit 1
 
-cflags="-fvisibility=hidden -fvisibility-inlines-hidden -O2 -D__ANDROID_API__=$ANDROID_API"
+cflags="-fvisibility=hidden -fvisibility-inlines-hidden -O2 -flto=thin -D__ANDROID_API__=$ANDROID_API"
 case "$ANDROID_ARCH" in
     'armeabi-v7a')
         readonly target='android-arm'

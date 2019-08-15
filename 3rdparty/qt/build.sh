@@ -41,9 +41,15 @@ _patch_if_needed java7.patch false
 _patch_if_needed donottryondemand.patch true
 _patch_if_needed o2.patch true
 
+# NDK r19 toolchain
 _patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
 _patch_if_needed mips.patch false
 _patch_if_needed ndk-r19.patch true
+
+# LTO
+_patch_if_needed thin-lto.patch true
+_patch_if_needed ltcg-armv7.patch true
+_patch_if_needed openssl-test-ltcg.patch true
 
 cd -
 
@@ -67,6 +73,7 @@ _FLAGS=("-v"
     "-android-ndk-host linux-x86_64"
     "-android-arch $ANDROID_ARCH"
     "-android-ndk-platform android-$ANDROID_API"
+    "-ltcg"
     "-nomake examples"
     "-nomake tests"
     "-no-dbus"

@@ -1,0 +1,14 @@
+--- a/mkspecs/features/link_ltcg.prf 2019-06-12 23:59:14.000000000 +0300
++++ b/mkspecs/features/link_ltcg.prf       2019-08-08 02:53:40.396795838 +0300
+@@ -18,7 +18,10 @@
+         QMAKE_LFLAGS_SHLIB += $$QMAKE_CFLAGS_SHLIB
+         QMAKE_LFLAGS_PLUGIN += $$QMAKE_CFLAGS_SHLIB
+     } else {
+-        QMAKE_LFLAGS_LTCG = $$QMAKE_CXXFLAGS $$QMAKE_LFLAGS_LTCG
++        QMAKE_LFLAGS_LTCG = -Wl,-O2 $$QMAKE_CXXFLAGS $$QMAKE_LFLAGS_LTCG
++        contains(QMAKE_LFLAGS_LTCG, -Oz) || contains(QMAKE_LFLAGS_LTCG, -Os) {
++            QMAKE_LFLAGS_LTCG += -O2
++        }
+         QMAKE_LFLAGS_APP += $$QMAKE_CXXFLAGS_APP
+         QMAKE_LFLAGS_SHLIB += $$QMAKE_CXXFLAGS_SHLIB
+         QMAKE_LFLAGS_PLUGIN += $$QMAKE_CFLAGS_SHLIB 
