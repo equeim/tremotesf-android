@@ -39,6 +39,7 @@ fi
 _patch_if_needed qmakemake.patch false
 _patch_if_needed java7.patch false
 _patch_if_needed donottryondemand.patch true
+_patch_if_needed o2.patch true
 
 _patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
 _patch_if_needed mips.patch false
