@@ -16,7 +16,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_STL=c++_shared', '-DANDROID_ARM_NEON=ON'
+                arguments '-DANDROID_STL=c++_shared'
             }
         }
     }
