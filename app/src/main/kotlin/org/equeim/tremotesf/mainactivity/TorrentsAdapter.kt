@@ -249,6 +249,22 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     private fun updateListContent() {
         filteredTorrents = torrents.filter(filterPredicate)
 
+        if (displayedTorrents.isEmpty()) {
+            displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
+            notifyItemRangeInserted(0, displayedTorrents.size)
+            return
+        }
+
+        if (filteredTorrents.isEmpty()) {
+            if (displayedTorrents.isNotEmpty()) {
+                val size = displayedTorrents.size
+                displayedTorrents.clear()
+                notifyItemRangeRemoved(0, size)
+                selector.clearRemovedItems()
+            }
+            return
+        }
+
         run {
             var i = 0
             while (i < displayedTorrents.size) {
@@ -279,10 +295,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     fun update() {
+        val wasEmpty = displayedTorrents.isEmpty()
         updateListContent()
-        for ((i, torrent) in displayedTorrents.withIndex()) {
-            if (torrent.torrent.isChanged) {
-                notifyItemChanged(i)
+        if (!wasEmpty) {
+            for ((i, torrent) in displayedTorrents.withIndex()) {
+                if (torrent.torrent.isChanged) {
+                    notifyItemChanged(i)
+                }
             }
         }
         selector.actionMode?.invalidate()
