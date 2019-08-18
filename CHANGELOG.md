@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.2] - 2019-08-18
+### Changed
+- Raised minimum NDK version to r19
+- Raised minimum Qt version to 5.12
+- libtremotesf is now built using CMake, which also adds syntax highlighting and autocompletion in Android Studio
+- Enabled LTO for native libraries
+
+### Fixed
+- Fixed freeze when connecting to server with large number of torrents
+
 ## [1.9.1] - 2019-08-01
 ### Added
 - 64-bit support for native libraries
