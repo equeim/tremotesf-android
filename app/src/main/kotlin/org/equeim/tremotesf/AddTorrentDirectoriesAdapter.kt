@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.text.Collator
-
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -28,7 +26,7 @@ import android.widget.EditText
 
 import androidx.appcompat.widget.ListPopupWindow
 
-import com.amjjd.alphanum.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 
 class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapter<String>(textEdit.context, R.layout.download_directory_dropdown_item, android.R.id.text1) {
     companion object {
@@ -57,7 +55,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapte
     }
 
     init {
-        val comparator = AlphanumericComparator(Collator.getInstance())
+        val comparator = AlphanumericComparator()
         val items = Servers.currentServer?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
         for (torrent in Rpc.instance.torrents) {
             items.add(torrent.downloadDirectory)

@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import java.io.Serializable
-import java.text.Collator
 import java.util.Comparator
 
 import android.os.Bundle
@@ -34,9 +33,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
-
 import org.equeim.libtremotesf.TorrentFile
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.TristateCheckbox
 
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
@@ -60,7 +58,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         }
 
     private val comparator = object : Comparator<Item> {
-        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+        private val nameComparator = AlphanumericComparator()
 
         override fun compare(item1: Item,
                              item2: Item): Int {

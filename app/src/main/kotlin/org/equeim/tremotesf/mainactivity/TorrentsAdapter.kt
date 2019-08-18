@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.mainactivity
 
-import java.text.Collator
 import java.text.DecimalFormat
 import java.util.Comparator
 
@@ -43,7 +42,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
 import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.Torrent
@@ -55,6 +53,7 @@ import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
@@ -145,7 +144,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     private val comparator = object : Comparator<TorrentData> {
-        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+        private val nameComparator = AlphanumericComparator()
 
         override fun compare(o1: TorrentData, o2: TorrentData): Int {
             var compared = when (sortMode) {

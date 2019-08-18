@@ -101,7 +101,6 @@ dependencies {
     implementation 'org.jetbrains.anko:anko-commons:0.10.8'
     implementation 'org.jetbrains.anko:anko-design:0.10.8'
 
-    implementation 'com.github.amjjd:java-alphanum:0.2'
     implementation 'io.github.raindev:benjamin:1.0.0'
     implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.0'
     implementation 'org.sufficientlysecure:donations:2.6'

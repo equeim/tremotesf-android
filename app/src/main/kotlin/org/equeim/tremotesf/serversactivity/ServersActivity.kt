@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.serversactivity
 
-import java.text.Collator
 import java.util.Comparator
 
 import android.app.Dialog
@@ -40,8 +39,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
-
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
@@ -52,6 +49,7 @@ import org.jetbrains.anko.startActivity
 
 import kotlinx.android.synthetic.main.server_list_item.view.*
 import kotlinx.android.synthetic.main.servers_activity.*
+import org.equeim.tremotesf.utils.AlphanumericComparator
 
 
 class ServersActivity : BaseActivity() {
@@ -118,7 +116,7 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
     private val servers = mutableListOf<Server>()
 
     private val comparator = object : Comparator<Server> {
-        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+        private val nameComparator = AlphanumericComparator()
         override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
     }
 

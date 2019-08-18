@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
-import java.text.Collator
 import java.text.DecimalFormat
 import java.util.Comparator
 
@@ -29,10 +28,9 @@ import android.view.ViewGroup
 
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
-
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.peer_list_item.view.*
@@ -101,7 +99,7 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
     private val peers = mutableListOf<Peer>()
 
     private val comparator = object : Comparator<Peer> {
-        private val stringComparator = AlphanumericComparator(Collator.getInstance())
+        private val stringComparator = AlphanumericComparator()
         override fun compare(o1: Peer, o2: Peer) = stringComparator.compare(o1.address, o2.address)
     }
 

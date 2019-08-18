@@ -19,16 +19,14 @@
 
 package org.equeim.tremotesf.mainactivity
 
-import java.text.Collator
 import java.util.Comparator
 
 import android.widget.Spinner
 
-import com.amjjd.alphanum.AlphanumericComparator
-
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
@@ -36,7 +34,7 @@ class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAd
     val servers = mutableListOf<Server>()
 
     private val comparator = object : Comparator<Server> {
-        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+        private val nameComparator = AlphanumericComparator()
         override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
     }
 

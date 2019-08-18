@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
-import java.text.Collator
 import java.util.Comparator
 
 import android.app.Dialog
@@ -40,13 +39,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
-
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
@@ -78,7 +76,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
     private var torrent: Torrent? = null
     private val trackers = mutableListOf<TrackersAdapterItem>()
     private val comparator = object : Comparator<TrackersAdapterItem> {
-        private val stringComparator = AlphanumericComparator(Collator.getInstance())
+        private val stringComparator = AlphanumericComparator()
         override fun compare(o1: TrackersAdapterItem, o2: TrackersAdapterItem) = stringComparator.compare(o1.announce,
                                                                                                           o2.announce)
     }

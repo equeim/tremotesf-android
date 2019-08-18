@@ -19,21 +19,18 @@
 
 package org.equeim.tremotesf.mainactivity
 
-import java.text.Collator
-
 import android.content.Context
-
-import com.amjjd.alphanum.AlphanumericComparator
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.BaseSpinnerAdapter
 
 
 class DirectoriesSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.directories) {
     private val directoriesMap = mutableMapOf<String, Int>()
     val directories = mutableListOf<String>()
-    private val comparator = AlphanumericComparator(Collator.getInstance())
+    private val comparator = AlphanumericComparator()
 
     override fun getItem(position: Int): String {
         if (position == 0) {

@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import java.io.File
-import java.text.Collator
 import java.util.Comparator
 
 import android.Manifest
@@ -44,7 +43,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-import com.amjjd.alphanum.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 
 import kotlinx.android.synthetic.main.file_picker_activity.*
 
@@ -123,7 +122,7 @@ private class FilePickerAdapter(private val activity: FilePickerActivity) : Recy
 
     private val filesFilter = { file: File -> file.isDirectory || file.name.endsWith(".torrent") }
     private val comparator = object : Comparator<File> {
-        private val nameComparator = AlphanumericComparator(Collator.getInstance())
+        private val nameComparator = AlphanumericComparator()
 
         override fun compare(file1: File,
                              file2: File): Int {
