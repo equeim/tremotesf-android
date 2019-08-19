@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.3] - 2019-08-20
+### Fixed
+- Fixed crash when torrent's name contains number larger than 32-bit integer
+
 ## [1.9.2] - 2019-08-18
 ### Changed
 - Raised minimum NDK version to r19
