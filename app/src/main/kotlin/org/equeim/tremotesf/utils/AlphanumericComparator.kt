@@ -20,7 +20,10 @@
 
 package org.equeim.tremotesf.utils
 
+import java.lang.NumberFormatException
 import java.text.Collator
+
+import kotlin.math.sign
 
 class AlphanumericComparator : Comparator<String> {
     private val collator = Collator.getInstance()
@@ -66,7 +69,21 @@ class AlphanumericComparator : Comparator<String> {
                 if (s2IsDigit) {
                     s1Slice = slice(s1, s1Length, s1Index, true)
                     s2Slice = slice(s2, s2Length, s2Index, true)
-                    result = s1Slice.toInt() - s2Slice.toInt()
+                    val s1Number: Long
+                    try {
+                        s1Number = s1Slice.toLong()
+                    } catch (e: NumberFormatException) {
+                        result = 1
+                        break
+                    }
+                    val s2Number: Long
+                    try {
+                        s2Number = s2Slice.toLong()
+                    } catch (e: NumberFormatException) {
+                        result = -1
+                        break
+                    }
+                    result = (s1Number - s2Number).sign
                 } else {
                     result = -1
                 }
