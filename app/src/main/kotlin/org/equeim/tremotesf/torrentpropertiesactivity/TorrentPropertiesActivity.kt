@@ -32,7 +32,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -80,7 +80,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
                     supportFragmentManager.apply {
                         val findAndRemove = { tag: String ->
-                            findFragmentByTag(tag)?.let { transaction { remove(it) } }
+                            findFragmentByTag(tag)?.let { commit { remove(it) } }
                         }
                         findAndRemove(TorrentsAdapter.SetLocationDialogFragment.TAG)
                         findAndRemove(TorrentsAdapter.RemoveDialogFragment.TAG)
@@ -314,7 +314,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
         }
     }
 
-    inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager) {
+    inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         var detailsFragment: TorrentDetailsFragment? = null
         var filesFragment: TorrentFilesFragment? = null
         var trackersFragment: TrackersFragment? = null

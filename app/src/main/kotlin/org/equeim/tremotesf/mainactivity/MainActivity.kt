@@ -41,7 +41,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -114,11 +114,11 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
 
                 supportFragmentManager.apply {
                     findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
-                            ?.let { transaction { remove(it) } }
+                            ?.let { commit { remove(it) } }
                     findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
-                            ?.let { transaction { remove(it) } }
+                            ?.let { commit { remove(it) } }
                     findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
-                            ?.let { transaction { remove(it) } }
+                            ?.let { commit { remove(it) } }
                 }
 
                 if (menu != null) {

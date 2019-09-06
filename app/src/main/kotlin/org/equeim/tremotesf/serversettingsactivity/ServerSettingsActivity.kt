@@ -31,7 +31,7 @@ import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.ListFragment
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 
 import com.google.android.material.snackbar.Snackbar
 
@@ -55,7 +55,7 @@ class ServerSettingsActivity : BaseActivity() {
             RpcStatus.Disconnected -> {
                 if (supportFragmentManager.findFragmentByTag(PlaceholderFragment.TAG) == null) {
                     supportFragmentManager.popBackStack()
-                    supportFragmentManager.transaction {
+                    supportFragmentManager.commit {
                         replace(android.R.id.content,
                                 PlaceholderFragment(),
                                 PlaceholderFragment.TAG)
@@ -63,7 +63,7 @@ class ServerSettingsActivity : BaseActivity() {
                 }
             }
             RpcStatus.Connected -> {
-                supportFragmentManager.transaction { replace(android.R.id.content, MainFragment()) }
+                supportFragmentManager.commit { replace(android.R.id.content, MainFragment()) }
             }
             else -> {
             }
@@ -83,7 +83,7 @@ class ServerSettingsActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.transaction { replace(android.R.id.content, MainFragment()) }
+            supportFragmentManager.commit { replace(android.R.id.content, MainFragment()) }
         }
 
         Rpc.instance.addStatusListener(rpcStatusListener)
@@ -182,7 +182,7 @@ class ServerSettingsActivity : BaseActivity() {
                 4 -> NetworkFragment()
                 else -> return
             }
-            requireFragmentManager().transaction {
+            requireFragmentManager().commit {
                 replace(android.R.id.content,
                         fragment,
                         if (position == 3) SpeedFragment.TAG else null)

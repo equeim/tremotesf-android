@@ -73,7 +73,7 @@ class AboutActivity : BaseActivity() {
 
     }
 
-    private inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager) {
+    private inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         var donateFragment: DonateFragment? = null
 
         override fun getCount() = 5

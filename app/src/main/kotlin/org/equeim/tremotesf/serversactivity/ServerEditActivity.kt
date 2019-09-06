@@ -34,7 +34,7 @@ import androidx.core.text.trimmedLength
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
@@ -68,7 +68,7 @@ class ServerEditActivity : BaseActivity() {
         }
 
         if (savedInstanceState == null) {
-            supportFragmentManager.transaction { replace(android.R.id.content, MainFragment(),
+            supportFragmentManager.commit { replace(android.R.id.content, MainFragment(),
                                                          MainFragment.TAG) }
         }
     }
@@ -118,7 +118,7 @@ class ServerEditActivity : BaseActivity() {
             certificates_item.isEnabled = false
             certificates_item.setChildrenEnabled(false)
             certificates_item.setOnClickListener {
-                requireFragmentManager().transaction {
+                requireFragmentManager().commit {
                     replace(android.R.id.content, CertificatesFragment())
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     addToBackStack(null)

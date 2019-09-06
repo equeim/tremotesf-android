@@ -21,7 +21,7 @@ package org.equeim.tremotesf
 
 import android.os.Bundle
 
-import androidx.fragment.app.transaction
+import androidx.fragment.app.commit
 import androidx.preference.PreferenceFragmentCompat
 
 
@@ -29,7 +29,7 @@ class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
-        supportFragmentManager.transaction { replace(android.R.id.content, Fragment()) }
+        supportFragmentManager.commit { replace(android.R.id.content, Fragment()) }
     }
 
     class Fragment : PreferenceFragmentCompat() {
