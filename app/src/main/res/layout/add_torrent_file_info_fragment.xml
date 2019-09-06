@@ -27,13 +27,13 @@
             android:id="@+id/priority_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
 
         <CheckBox
             android:id="@+id/start_downloading_check_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
             android:text="@string/start_downloading_after_adding"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -57,7 +57,11 @@
                     android:inputType="textUri"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <include layout="@layout/download_directory_edit"/>
+            <include
+                layout="@layout/download_directory_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
 
             <TextView
                 android:id="@+id/free_space_text_view"
@@ -69,13 +73,13 @@
                 android:id="@+id/priority_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
 
             <CheckBox
                 android:id="@+id/start_downloading_check_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
                 android:text="@string/start_downloading_after_adding"/>
         </LinearLayout>
     </ScrollView>
