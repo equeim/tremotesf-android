@@ -1,5 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <org.equeim.tremotesf.MyPreferenceCategory android:title="@string/appearance">
+    <PreferenceCategory android:title="@string/appearance">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/prefs_dark_theme_key"
@@ -25,17 +25,17 @@
             android:key="@string/prefs_torrent_name_multiline_key"
             android:title="@string/prefs_torrent_name_multiline_title"
             app:singleLineTitle="false"/>
-    </org.equeim.tremotesf.MyPreferenceCategory>
+    </PreferenceCategory>
 
-    <org.equeim.tremotesf.MyPreferenceCategory android:title="@string/torrents">
+    <PreferenceCategory android:title="@string/torrents">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefs_delete_files_key"
             android:title="@string/prefs_delete_files_title"
             app:singleLineTitle="false"/>
-    </org.equeim.tremotesf.MyPreferenceCategory>
+    </PreferenceCategory>
 
-    <org.equeim.tremotesf.MyPreferenceCategory android:title="@string/notifications">
+    <PreferenceCategory android:title="@string/notifications">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefs_background_service_key"
@@ -63,9 +63,9 @@
             android:key="@string/prefs_notify_on_added_key"
             android:title="@string/notify_on_added"
             app:singleLineTitle="false"/>
-    </org.equeim.tremotesf.MyPreferenceCategory>
+    </PreferenceCategory>
 
-    <org.equeim.tremotesf.MyPreferenceCategory android:title="@string/notifications_on_connect">
+    <PreferenceCategory android:title="@string/notifications_on_connect">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/prefs_notify_on_finished_since_last_key"
@@ -77,5 +77,5 @@
             android:key="@string/prefs_notify_on_added_since_last_key"
             android:title="@string/notify_on_added_since_last"
             app:singleLineTitle="false"/>
-    </org.equeim.tremotesf.MyPreferenceCategory>
+    </PreferenceCategory>
 </PreferenceScreen>
