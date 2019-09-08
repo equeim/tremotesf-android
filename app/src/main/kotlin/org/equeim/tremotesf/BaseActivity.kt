@@ -57,9 +57,7 @@ open class BaseActivity : AppCompatActivity() {
         super.onStart()
         activeActivity = this
         active = true
-        if (Settings.backgroundServiceEnabled) {
-            Rpc.instance.setBackgroundUpdate(false)
-        } else {
+        if (!Settings.showPersistentNotification) {
             Rpc.instance.isUpdateDisabled = false
         }
     }
@@ -78,9 +76,7 @@ open class BaseActivity : AppCompatActivity() {
             if (activeActivity === this) {
                 activeActivity = null
 
-                if (Settings.backgroundServiceEnabled) {
-                    Rpc.instance.setBackgroundUpdate(true)
-                } else {
+                if (!Settings.showPersistentNotification) {
                     Rpc.instance.isUpdateDisabled = true
                 }
             }
@@ -90,8 +86,8 @@ open class BaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         createdActivities.remove(this)
-        if (isFinishing && createdActivities.isEmpty() && !Settings.backgroundServiceEnabled) {
-            Utils.shutdownApp()
+        if (isFinishing && createdActivities.isEmpty() && !Settings.showPersistentNotification) {
+            Utils.shutdownApp(this)
         }
     }
 

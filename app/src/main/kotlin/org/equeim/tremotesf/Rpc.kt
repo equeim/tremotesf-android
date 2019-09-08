@@ -144,14 +144,14 @@ class Rpc : JniRpc() {
                                 val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
                                 if (oldTorrent == null) {
                                     if (notifyOnAdded) {
-                                        BackgroundService.showAddedNotification(torrent.id(),
+                                        ForegroundService.showAddedNotification(torrent.id(),
                                                                                 hashString,
                                                                                 torrent.name(),
                                                                                 context!!)
                                     }
                                 } else {
                                     if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                                        BackgroundService.showFinishedNotification(torrent.id(),
+                                        ForegroundService.showFinishedNotification(torrent.id(),
                                                                                    hashString,
                                                                                    torrent.name(),
                                                                                    context!!)

@@ -32,11 +32,14 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 
+import androidx.core.content.ContextCompat
+
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
-import org.jetbrains.anko.startService
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.stopService
 
-import org.equeim.tremotesf.BackgroundService
+import org.equeim.tremotesf.ForegroundService
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -53,21 +56,21 @@ object Utils : AnkoLogger {
             debug("init app")
             appIsRunning = true
 
-            if (Settings.backgroundServiceEnabled) {
-                context.startService<BackgroundService>()
+            if (Settings.showPersistentNotification) {
+                ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())
             }
 
             Rpc.instance.connect()
         }
     }
 
-    fun shutdownApp() {
+    fun shutdownApp(context: Context) {
         if (appIsRunning) {
             debug("shutdown app")
             appIsRunning = false
             BaseActivity.finishAllActivities()
             Rpc.instance.disconnect()
-            BackgroundService.instance?.stopService()
+            context.stopService<ForegroundService>()
         }
     }
 

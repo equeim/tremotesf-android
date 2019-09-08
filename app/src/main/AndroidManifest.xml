@@ -133,6 +133,6 @@
                 android:value=".mainactivity.MainActivity"/>
         </activity>
 
-        <service android:name=".BackgroundService"/>
+        <service android:name=".ForegroundService"/>
     </application>
 </manifest>

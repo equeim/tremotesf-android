@@ -49,9 +49,9 @@ private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
 private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
 
-class BackgroundService : Service(), AnkoLogger {
+class ForegroundService : Service(), AnkoLogger {
     companion object {
-        var instance: BackgroundService? = null
+        var instance: ForegroundService? = null
             private set
 
         private fun showTorrentNotification(torrentId: Int,
@@ -108,7 +108,7 @@ class BackgroundService : Service(), AnkoLogger {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == Intent.ACTION_SHUTDOWN) {
-            Utils.shutdownApp()
+            Utils.shutdownApp(this)
             return START_NOT_STICKY
         }
 
@@ -118,8 +118,6 @@ class BackgroundService : Service(), AnkoLogger {
                 ACTION_DISCONNECT -> Rpc.instance.disconnect()
             }
         } else {
-            debug("service started")
-
             Utils.initApp(applicationContext)
 
             notificationManager = (application as Application).notificationManager
@@ -136,10 +134,6 @@ class BackgroundService : Service(), AnkoLogger {
                                                                                           NotificationManager.IMPORTANCE_DEFAULT)))
             }
 
-            if (Settings.showPersistentNotification) {
-                startForeground()
-            }
-
             Rpc.instance.torrentAddedListener = { id, hashString, name ->
                 if (Settings.notifyOnAdded) {
                     showAddedNotification(id, hashString, name, this)
@@ -151,7 +145,17 @@ class BackgroundService : Service(), AnkoLogger {
                 }
             }
 
+            Rpc.instance.addStatusListener(rpcStatusListener)
+            Rpc.instance.addErrorListener(rpcErrorListener)
+            Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener)
+
+            Servers.addCurrentServerListener(currentServerListener)
+
+            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+
             instance = this
+
+            debug("service started")
         }
 
         return START_STICKY
@@ -160,43 +164,11 @@ class BackgroundService : Service(), AnkoLogger {
     override fun onDestroy() {
         super.onDestroy()
         debug("service destroyed")
+        Rpc.instance.torrentAddedListener = null
         Rpc.instance.torrentFinishedListener = null
         Rpc.instance.removeStatusListener(rpcStatusListener)
         Rpc.instance.removeErrorListener(rpcErrorListener)
         Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
-        instance = null
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        debug("task removed")
-        if (!Settings.showPersistentNotification) {
-            Utils.shutdownApp()
-        }
-    }
-
-    fun startForeground() {
-        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
-        Rpc.instance.addStatusListener(rpcStatusListener)
-        Rpc.instance.addErrorListener(rpcErrorListener)
-        Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener)
-        Servers.addCurrentServerListener(currentServerListener)
-    }
-
-    fun stopForeground() {
-        super.stopForeground(true)
-        Rpc.instance.removeStatusListener(rpcStatusListener)
-        Rpc.instance.removeErrorListener(rpcErrorListener)
-        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
-        Servers.removeCurrentServerListener(currentServerListener)
-    }
-
-    fun stopService() {
-        Rpc.instance.torrentFinishedListener = null
-        if (Settings.showPersistentNotification) {
-            stopForeground()
-        }
-        stopSelf()
         instance = null
     }
 
@@ -247,7 +219,7 @@ class BackgroundService : Service(), AnkoLogger {
                     getString(R.string.connect),
                     PendingIntent.getService(this,
                                              0,
-                                             intentFor<BackgroundService>().setAction(ACTION_CONNECT),
+                                             intentFor<ForegroundService>().setAction(ACTION_CONNECT),
                                              PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             notificationBuilder.addAction(
@@ -255,7 +227,7 @@ class BackgroundService : Service(), AnkoLogger {
                     getString(R.string.disconnect),
                     PendingIntent.getService(this,
                                              0,
-                                             intentFor<BackgroundService>().setAction(ACTION_DISCONNECT),
+                                             intentFor<ForegroundService>().setAction(ACTION_DISCONNECT),
                                              PendingIntent.FLAG_UPDATE_CURRENT))
         }
 
@@ -264,7 +236,7 @@ class BackgroundService : Service(), AnkoLogger {
                 getString(R.string.quit),
                 PendingIntent.getService(this,
                                          0,
-                                         intentFor<BackgroundService>().setAction(Intent.ACTION_SHUTDOWN),
+                                         intentFor<ForegroundService>().setAction(Intent.ACTION_SHUTDOWN),
                                          PendingIntent.FLAG_UPDATE_CURRENT)
         )
 

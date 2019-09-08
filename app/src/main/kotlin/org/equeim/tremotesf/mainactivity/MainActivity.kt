@@ -217,7 +217,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
                 R.id.settings -> startActivity<SettingsActivity>()
                 R.id.servers -> startActivity<ServersActivity>()
                 R.id.about -> startActivity<AboutActivity>()
-                R.id.quit -> Utils.shutdownApp()
+                R.id.quit -> Utils.shutdownApp(this)
                 else -> return@setNavigationItemSelectedListener false
             }
             return@setNavigationItemSelectedListener true

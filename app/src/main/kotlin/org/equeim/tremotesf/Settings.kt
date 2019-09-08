@@ -24,9 +24,11 @@ import android.content.Context
 import android.content.SharedPreferences
 
 import androidx.core.content.edit
+import androidx.core.content.ContextCompat
 
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.startService
+import org.jetbrains.anko.stopService
+import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
@@ -53,7 +55,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 oldColorsKey = value.getString(R.string.prefs_old_colors_key)
                 torrentCompactViewKey = value.getString(R.string.prefs_torrent_compact_view_key)
                 torrentNameMultilineKey = value.getString(R.string.prefs_torrent_name_multiline_key)
-                backgroundServiceKey = value.getString(R.string.prefs_background_service_key)
                 persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
                 notifyOnFinishedKey = value.getString(R.string.prefs_notify_on_finished_key)
                 notifyOnAddedKey = value.getString(R.string.prefs_notify_on_added_key)
@@ -69,7 +70,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var oldColorsKey: String
     private lateinit var torrentCompactViewKey: String
     private lateinit var torrentNameMultilineKey: String
-    private lateinit var backgroundServiceKey: String
     private lateinit var persistentNotificationKey: String
     private lateinit var notifyOnFinishedKey: String
     private lateinit var notifyOnAddedKey: String
@@ -120,11 +120,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         }
 
     var torrentNameMultilineListener: (() -> Unit)? = null
-
-    val backgroundServiceEnabled: Boolean
-        get() {
-            return preferences!!.getBoolean(backgroundServiceKey, false)
-        }
 
     val showPersistentNotification: Boolean
         get() {
@@ -220,20 +215,11 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         when (key) {
             torrentCompactViewKey -> torrentCompactViewListener?.invoke()
             torrentNameMultilineKey -> torrentNameMultilineListener?.invoke()
-            backgroundServiceKey -> {
-                if (backgroundServiceEnabled) {
-                    context!!.startService<BackgroundService>()
-                } else {
-                    BackgroundService.instance?.stopService()
-                }
-            }
             persistentNotificationKey -> {
-                if (BackgroundService.instance != null) {
-                    if (showPersistentNotification) {
-                        BackgroundService.instance?.startForeground()
-                    } else {
-                        BackgroundService.instance?.stopForeground()
-                    }
+                if (showPersistentNotification) {
+                    ContextCompat.startForegroundService(context!!, context!!.intentFor<ForegroundService>())
+                } else {
+                    context!!.stopService<ForegroundService>()
                 }
             }
         }
