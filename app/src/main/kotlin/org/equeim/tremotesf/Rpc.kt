@@ -19,29 +19,55 @@
 
 package org.equeim.tremotesf
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+
+import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.content.getSystemService
+
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.runOnUiThread
 
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
-
-import org.jetbrains.anko.runOnUiThread
-
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 
 class Rpc : JniRpc() {
     companion object {
+        private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
+        private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
+
         val instance by lazy { Rpc() }
     }
 
     var context: Context? = null
         set(value) {
             field = value
-            if (field != null) {
+            if (value == null) {
+                notificationManager = null
+            } else {
+                notificationManager = value.getSystemService()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    notificationManager?.createNotificationChannels(listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
+                                                                                               value.getString(R.string.finished_torrents_channel_name),
+                                                                                               NotificationManager.IMPORTANCE_DEFAULT),
+                                                                           NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
+                                                                                               value.getString(R.string.added_torrents_channel_name),
+                                                                                               NotificationManager.IMPORTANCE_DEFAULT)))
+                }
+
                 updateServer()
             }
         }
+    private var notificationManager: NotificationManager? = null
 
     val serverSettings: JniServerSettings = serverSettings()
     val serverStats: ServerStats = serverStats()
@@ -69,9 +95,6 @@ class Rpc : JniRpc() {
     private val errorListeners = mutableListOf<(Int) -> Unit>()
     private val torrentsUpdatedListeners = mutableListOf<() -> Unit>()
     private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
-
-    var torrentAddedListener: ((Int, String, String) -> Unit)? = null
-    var torrentFinishedListener: ((Int, String, String) -> Unit)? = null
 
     var torrentAddDuplicateListener: (() -> Unit)? = null
     var torrentAddErrorListener: (() -> Unit)? = null
@@ -144,17 +167,17 @@ class Rpc : JniRpc() {
                                 val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
                                 if (oldTorrent == null) {
                                     if (notifyOnAdded) {
-                                        ForegroundService.showAddedNotification(torrent.id(),
-                                                                                hashString,
-                                                                                torrent.name(),
-                                                                                context!!)
+                                        showAddedNotification(torrent.id(),
+                                                              hashString,
+                                                              torrent.name(),
+                                                              context!!)
                                     }
                                 } else {
                                     if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                                        ForegroundService.showFinishedNotification(torrent.id(),
-                                                                                   hashString,
-                                                                                   torrent.name(),
-                                                                                   context!!)
+                                        showFinishedNotification(torrent.id(),
+                                                                 hashString,
+                                                                 torrent.name(),
+                                                                 context!!)
                                     }
                                 }
                             }
@@ -229,13 +252,17 @@ class Rpc : JniRpc() {
 
     override fun onTorrentAdded(id: Int, hashString: String, name: String) {
         context!!.runOnUiThread {
-            torrentAddedListener?.invoke(id, hashString, name)
+            if (Settings.notifyOnAdded) {
+                showAddedNotification(id, hashString, name, this)
+            }
         }
     }
 
     override fun onTorrentFinished(id: Int, hashString: String, name: String) {
         context!!.runOnUiThread {
-            torrentFinishedListener?.invoke(id, hashString, name)
+            if (Settings.notifyOnFinished) {
+                showFinishedNotification(id, hashString, name, this)
+            }
         }
     }
 
@@ -289,5 +316,47 @@ class Rpc : JniRpc() {
                 Servers.save()
             }
         }
+    }
+
+    private fun showTorrentNotification(torrentId: Int,
+                                        hashString: String,
+                                        name: String,
+                                        notificationChannel: String,
+                                        notificationTitle: String,
+                                        context: Context) {
+        val stackBuilder = TaskStackBuilder.create(context)
+        stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
+        stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
+                TorrentPropertiesActivity.NAME to name))
+
+        notificationManager?.notify(
+                torrentId,
+                NotificationCompat.Builder(context, notificationChannel)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle(notificationTitle)
+                        .setContentText(name)
+                        .setContentIntent(stackBuilder.getPendingIntent(0,
+                                PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setAutoCancel(true)
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .build())
+    }
+
+    private fun showFinishedNotification(id: Int, hashString: String, name: String, context: Context) {
+        showTorrentNotification(id,
+                hashString,
+                name,
+                FINISHED_NOTIFICATION_CHANNEL_ID,
+                context.getString(R.string.torrent_finished),
+                context)
+    }
+
+    private fun showAddedNotification(id: Int, hashString: String, name: String, context: Context) {
+        showTorrentNotification(id,
+                hashString,
+                name,
+                ADDED_NOTIFICATION_CHANNEL_ID,
+                context.getString(R.string.torrent_added),
+                context)
     }
 }

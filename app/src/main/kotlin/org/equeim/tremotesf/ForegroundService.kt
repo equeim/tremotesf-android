@@ -24,12 +24,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
+import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 
 import org.jetbrains.anko.AnkoLogger
@@ -38,7 +37,6 @@ import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.mainactivity.MainActivity
-import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 import org.equeim.tremotesf.utils.Utils
 
 
@@ -46,55 +44,13 @@ private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
 private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
 private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
-private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
-private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
 
 class ForegroundService : Service(), AnkoLogger {
     companion object {
         var instance: ForegroundService? = null
             private set
 
-        private fun showTorrentNotification(torrentId: Int,
-                                            hashString: String,
-                                            name: String,
-                                            notificationChannel: String,
-                                            notificationTitle: String,
-                                            context: Context) {
-            val stackBuilder = TaskStackBuilder.create(context)
-            stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
-            stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
-                                                                                    TorrentPropertiesActivity.NAME to name))
 
-            (context.applicationContext as Application).notificationManager.notify(
-                    torrentId,
-                    NotificationCompat.Builder(context, notificationChannel)
-                            .setSmallIcon(R.drawable.notification_icon)
-                            .setContentTitle(notificationTitle)
-                            .setContentText(name)
-                            .setContentIntent(stackBuilder.getPendingIntent(0,
-                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
-                            .setAutoCancel(true)
-                            .setDefaults(Notification.DEFAULT_ALL)
-                            .build())
-        }
-
-        fun showFinishedNotification(id: Int, hashString: String, name: String, context: Context) {
-            showTorrentNotification(id,
-                                    hashString,
-                                    name,
-                                    FINISHED_NOTIFICATION_CHANNEL_ID,
-                                    context.getString(R.string.torrent_finished),
-                                    context)
-        }
-
-        fun showAddedNotification(id: Int, hashString: String, name: String, context: Context) {
-            showTorrentNotification(id,
-                                    hashString,
-                                    name,
-                                    ADDED_NOTIFICATION_CHANNEL_ID,
-                                    context.getString(R.string.torrent_added),
-                                    context)
-        }
     }
 
     private lateinit var notificationManager: NotificationManager
@@ -120,29 +76,12 @@ class ForegroundService : Service(), AnkoLogger {
         } else {
             Utils.initApp(applicationContext)
 
-            notificationManager = (application as Application).notificationManager
+            notificationManager = getSystemService()!!
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationManager.createNotificationChannels(listOf(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
-                                                                                          getString(R.string.persistent_notification_channel_name),
-                                                                                          NotificationManager.IMPORTANCE_LOW),
-                                                                      NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
-                                                                                          getString(R.string.finished_torrents_channel_name),
-                                                                                          NotificationManager.IMPORTANCE_DEFAULT),
-                                                                      NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
-                                                                                          getString(R.string.added_torrents_channel_name),
-                                                                                          NotificationManager.IMPORTANCE_DEFAULT)))
-            }
-
-            Rpc.instance.torrentAddedListener = { id, hashString, name ->
-                if (Settings.notifyOnAdded) {
-                    showAddedNotification(id, hashString, name, this)
-                }
-            }
-            Rpc.instance.torrentFinishedListener = { id, hashString, name ->
-                if (Settings.notifyOnFinished) {
-                    showFinishedNotification(id, hashString, name, this)
-                }
+                notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
+                                                                                  getString(R.string.persistent_notification_channel_name),
+                                                                                  NotificationManager.IMPORTANCE_LOW))
             }
 
             Rpc.instance.addStatusListener(rpcStatusListener)
@@ -164,8 +103,6 @@ class ForegroundService : Service(), AnkoLogger {
     override fun onDestroy() {
         super.onDestroy()
         debug("service destroyed")
-        Rpc.instance.torrentAddedListener = null
-        Rpc.instance.torrentFinishedListener = null
         Rpc.instance.removeStatusListener(rpcStatusListener)
         Rpc.instance.removeErrorListener(rpcErrorListener)
         Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)

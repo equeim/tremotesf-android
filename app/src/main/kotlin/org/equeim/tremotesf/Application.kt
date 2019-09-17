@@ -1,7 +1,5 @@
 package org.equeim.tremotesf
 
-import android.app.NotificationManager
-import androidx.core.content.getSystemService
 import org.qtproject.qt5.android.QtNative
 
 
@@ -20,10 +18,7 @@ class Application : android.app.Application() {
         }
     }
 
-    lateinit var notificationManager: NotificationManager
-
     override fun onCreate() {
-        notificationManager = getSystemService<NotificationManager>()!!
         loadLibrary(classLoader)
         Settings.context = this
         Servers.context = this
