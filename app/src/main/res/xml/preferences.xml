@@ -53,6 +53,7 @@
             app:title="@string/prefs_background_update_interval_title"
             app:entries="@array/prefs_background_update_interval_entries"
             app:entryValues="@array/prefs_background_update_interval_values"
+            app:defaultValue="0"
             app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
