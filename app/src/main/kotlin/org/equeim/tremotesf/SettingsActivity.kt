@@ -19,10 +19,14 @@
 
 package org.equeim.tremotesf
 
+import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
 
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.commit
+import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
@@ -35,10 +39,21 @@ class SettingsActivity : BaseActivity() {
     }
 
     class Fragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+        private lateinit var persistentNotificationKey: String
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
             preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+            persistentNotificationKey = getString(R.string.prefs_persistent_notification_key)
+            findPreference<Preference>(persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    PersistentNotificationWarningFragment().show(requireFragmentManager(), null)
+                    false
+                } else {
+                    true
+                }
+            }
         }
 
         override fun onDestroy() {
@@ -49,13 +64,31 @@ class SettingsActivity : BaseActivity() {
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
             when (key) {
                 getString(R.string.prefs_notify_on_finished_key),
-                getString(R.string.prefs_notify_on_added_key) -> updateBackgroundUpdatePreference()
+                getString(R.string.prefs_notify_on_added_key),
+                persistentNotificationKey -> updateBackgroundUpdatePreference()
             }
+        }
+
+        fun enablePersistentNotification() {
+            findPreference<CheckBoxPreference>(persistentNotificationKey)?.isChecked = true
         }
 
         private fun updateBackgroundUpdatePreference() {
             findPreference<Preference>(getString(R.string.prefs_background_update_interval_key))
-                    ?.isEnabled = Settings.notifyOnFinished || Settings.notifyOnAdded
+                    ?.isEnabled = (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
+        }
+    }
+
+    class PersistentNotificationWarningFragment : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            return AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.persistent_notification_warning)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        (fragmentManager?.findFragmentById(android.R.id.content) as? Fragment)
+                                ?.enablePersistentNotification()
+                    }
+                    .create()
         }
     }
 }
