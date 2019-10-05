@@ -58,6 +58,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
                 notifyOnFinishedKey = value.getString(R.string.prefs_notify_on_finished_key)
                 notifyOnAddedKey = value.getString(R.string.prefs_notify_on_added_key)
+                backgroundUpdateIntervalKey = value.getString(R.string.prefs_background_update_interval_key)
                 notifyOnFinishedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_finished_since_last_key)
                 notifyOnAddedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_added_since_last_key)
                 deleteFilesKey = value.getString(R.string.prefs_delete_files_key)
@@ -73,6 +74,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var persistentNotificationKey: String
     private lateinit var notifyOnFinishedKey: String
     private lateinit var notifyOnAddedKey: String
+    private lateinit var backgroundUpdateIntervalKey: String
     private lateinit var notifyOnFinishedSinceLastConnectionKey: String
     private lateinit var notifyOnAddedSinceLastConnectionKey: String
     private lateinit var deleteFilesKey: String
@@ -134,6 +136,16 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     val notifyOnAdded: Boolean
         get() {
             return preferences!!.getBoolean(notifyOnAddedKey, false)
+        }
+
+    val backgroundUpdateInterval: Long
+        get() {
+            return try {
+                preferences!!.getString(backgroundUpdateIntervalKey, "0")?.toLong() ?: 0
+            } catch (ignore: NumberFormatException) {
+                0
+            }
+
         }
 
     val notifyOnFinishedSinceLastConnection: Boolean

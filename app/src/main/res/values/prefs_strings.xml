@@ -4,6 +4,27 @@
     <string name="prefs_persistent_notification_key" translatable="false">persistentNotification</string>
     <string name="prefs_notify_on_finished_key" translatable="false">notifyOnFinished</string>
     <string name="prefs_notify_on_added_key" translatable="false">notifyOnAdded</string>
+    <string name="prefs_background_update_interval_key" translatable="false">backgroundUpdateInterval</string>
+    <string-array name="prefs_background_update_interval_values" translatable="false">
+        <item>0</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Disabled</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+    </string-array>
     <string name="prefs_notify_on_finished_since_last_key" translatable="false">notifyOnFinishedSinceLast</string>
     <string name="prefs_notify_on_added_since_last_key" translatable="false">notifyOnAddedSinceLast</string>
     <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>

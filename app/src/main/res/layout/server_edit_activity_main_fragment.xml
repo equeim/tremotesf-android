@@ -161,19 +161,6 @@
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/background_update_interval_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/background_update_interval"
-                    android:inputType="number"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
-
-                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/timeout_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

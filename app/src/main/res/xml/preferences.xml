@@ -47,6 +47,13 @@
             android:key="@string/prefs_notify_on_added_key"
             android:title="@string/notify_on_added"
             app:singleLineTitle="false"/>
+
+        <ListPreference
+            app:key="@string/prefs_background_update_interval_key"
+            app:title="@string/prefs_background_update_interval_title"
+            app:entries="@array/prefs_background_update_interval_entries"
+            app:entryValues="@array/prefs_background_update_interval_values"
+            app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/persistent_notification">

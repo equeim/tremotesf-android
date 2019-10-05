@@ -184,6 +184,10 @@ public class Rpc {
     libtremotesfJNI.Rpc_getFreeSpaceForPath(swigCPtr, this, path);
   }
 
+  public void updateData() {
+    libtremotesfJNI.Rpc_updateData(swigCPtr, this);
+  }
+
   public final static class Status {
     public final static int Disconnected = 0;
     public final static int Connecting = Disconnected + 1;

@@ -620,6 +620,19 @@ namespace libtremotesf
         }
     }
 
+    void Rpc::updateData()
+    {
+        mServerSettingsUpdated = false;
+        mTorrentsUpdated = false;
+        mServerStatsUpdated = false;
+
+        mUpdateTimer->stop();
+
+        getServerSettings();
+        getTorrents();
+        getServerStats();
+    }
+
     void Rpc::setStatus(Status status)
     {
         if (status == mStatus) {
@@ -840,19 +853,6 @@ namespace libtremotesf
                 mUpdateTimer->start();
             }
         }
-    }
-
-    void Rpc::updateData()
-    {
-        mServerSettingsUpdated = false;
-        mTorrentsUpdated = false;
-        mServerStatsUpdated = false;
-
-        mUpdateTimer->stop();
-
-        getServerSettings();
-        getTorrents();
-        getServerStats();
     }
 
     void Rpc::onAuthenticationRequired(QNetworkReply*, QAuthenticator* authenticator)

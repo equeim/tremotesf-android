@@ -1,9 +1,12 @@
 package org.equeim.tremotesf
 
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
+
 import org.qtproject.qt5.android.QtNative
 
 
-class Application : android.app.Application() {
+class Application : android.app.Application(), AnkoLogger {
     companion object {
         private var loaded = false
         fun loadLibrary(classLoader: ClassLoader) {
@@ -19,6 +22,7 @@ class Application : android.app.Application() {
     }
 
     override fun onCreate() {
+        info("Application.onCreate")
         loadLibrary(classLoader)
         Settings.context = this
         Servers.context = this

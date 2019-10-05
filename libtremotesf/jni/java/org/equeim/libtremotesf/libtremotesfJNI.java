@@ -193,6 +193,7 @@ public class libtremotesfJNI {
   public final static native void Rpc_renameTorrentFile(long jarg1, Rpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void Rpc_getDownloadDirFreeSpace(long jarg1, Rpc jarg1_);
   public final static native void Rpc_getFreeSpaceForPath(long jarg1, Rpc jarg1_, String jarg2);
+  public final static native void Rpc_updateData(long jarg1, Rpc jarg1_);
   public final static native void delete_Rpc(long jarg1);
   public final static native int ServerSettings_rpcVersion(long jarg1, ServerSettings jarg1_);
   public final static native int ServerSettings_minimumRpcVersion(long jarg1, ServerSettings jarg1_);
@@ -368,6 +369,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_torrentSetTracker(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int jarg3, String jarg4);
   public final static native void JniRpc_torrentRemoveTrackers(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, int[] jarg3);
   public final static native void JniRpc_setTorrentPeersEnabled(long jarg1, JniRpc jarg1_, long jarg2, Torrent jarg2_, boolean jarg3);
+  public final static native void JniRpc_updateData(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onAboutToDisconnect(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onAboutToDisconnectSwigExplicitJniRpc(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onConnectedChanged(long jarg1, JniRpc jarg1_);

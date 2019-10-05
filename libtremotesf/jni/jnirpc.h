@@ -143,6 +143,8 @@ namespace libtremotesf
         void torrentRemoveTrackers(Torrent* torrent, const QVariantList& ids);
         void setTorrentPeersEnabled(Torrent* torrent, bool enabled);
 
+        void updateData();
+
     protected:
         virtual void onAboutToDisconnect();
         virtual void onConnectedChanged();

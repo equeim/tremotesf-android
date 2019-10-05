@@ -22,6 +22,7 @@ package org.equeim.tremotesf
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
 
@@ -45,6 +46,10 @@ open class BaseActivity : AppCompatActivity() {
             }
             createdActivities.clear()
         }
+
+        fun showToast(text: String) {
+            activeActivity?.let { Toast.makeText(it, text, Toast.LENGTH_LONG).show() }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +60,14 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        activeActivity = this
-        active = true
-        if (!Settings.showPersistentNotification) {
+
+        if (activeActivity == null) {
+            Rpc.instance.cancelUpdateWorker()
             Rpc.instance.isUpdateDisabled = false
         }
+
+        activeActivity = this
+        active = true
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -77,7 +85,9 @@ open class BaseActivity : AppCompatActivity() {
                 activeActivity = null
 
                 if (!Settings.showPersistentNotification) {
+                    Servers.save()
                     Rpc.instance.isUpdateDisabled = true
+                    Rpc.instance.enqueueUpdateWorker()
                 }
             }
         }
@@ -86,9 +96,6 @@ open class BaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         createdActivities.remove(this)
-        if (isFinishing && createdActivities.isEmpty() && !Settings.showPersistentNotification) {
-            Utils.shutdownApp(this)
-        }
     }
 
     protected fun setPreLollipopShadow() {

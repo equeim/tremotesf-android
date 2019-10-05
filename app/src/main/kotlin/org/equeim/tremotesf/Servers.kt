@@ -20,15 +20,22 @@
 package org.equeim.tremotesf
 
 import java.io.FileNotFoundException
+import kotlin.system.measureTimeMillis
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.AsyncTask
+
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
+import org.jetbrains.anko.info
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonObject
@@ -41,24 +48,38 @@ private const val FILE_NAME = "servers.json"
 private const val CURRENT = "current"
 private const val SERVERS = "servers"
 
-class Server {
-    var name = ""
-    var address = ""
-    var port = 0
-    var apiPath = ""
-    var httpsEnabled = false
-    var selfSignedCertificateEnabled = false
-    var selfSignedCertificate = ""
-    var clientCertificateEnabled = false
-    var clientCertificate = ""
-    var authentication = false
-    var username = ""
-    var password = ""
-    var updateInterval = 0
-    var backgroundUpdateInterval = 0
-    var timeout = 0
-    var lastTorrents = LastTorrents()
-    var addTorrentDialogDirectories = arrayOf<String>()
+private const val MINIMUM_PORT = 0
+private const val MAXIMUM_PORT = 65535
+private const val DEFAULT_PORT = 9091
+private const val DEFAULT_API_PATH = "/transmission/rpc"
+private const val MINIMUM_UPDATE_INTERVAL = 1
+private const val MAXIMUM_UPDATE_INTERVAL = 3600
+private const val DEFAULT_UPDATE_INTERVAL = 5
+private const val MINIMUM_TIMEOUT = 5
+private const val MAXIMUM_TIMEOUT = 60
+private const val DEFAULT_TIMEOUT = 30
+
+data class Server(var name: String = "",
+                var address: String = "",
+                var port: Int = DEFAULT_PORT,
+                var apiPath: String = DEFAULT_API_PATH,
+                var httpsEnabled: Boolean = false,
+                var selfSignedCertificateEnabled: Boolean = false,
+                var selfSignedCertificate: String = "",
+                var clientCertificateEnabled: Boolean = false,
+                var clientCertificate: String = "",
+                var authentication: Boolean = false,
+                var username: String = "",
+                var password: String = "",
+                var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
+                var timeout: Int = DEFAULT_TIMEOUT,
+                var lastTorrents: LastTorrents = LastTorrents(),
+                var addTorrentDialogDirectories: Array<String> = arrayOf()) {
+    companion object {
+        val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
+        val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
+        val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
+    }
 
     fun copyTo(other: Server) {
         other.name = name
@@ -74,7 +95,6 @@ class Server {
         other.username = username
         other.password = password
         other.updateInterval = updateInterval
-        other.backgroundUpdateInterval = backgroundUpdateInterval
         other.timeout = timeout
         other.lastTorrents = lastTorrents
         other.addTorrentDialogDirectories = addTorrentDialogDirectories
@@ -82,15 +102,13 @@ class Server {
 
     override fun toString() = name
 
-    class LastTorrents {
-        var saved = false
-        var torrents = mutableListOf<Torrent>()
-    }
+    data class Torrent(val id: Int,
+                       val hashString: String,
+                       val name: String,
+                       val finished: Boolean)
 
-    data class Torrent(var id: Int = 0,
-                       var hashString: String = "",
-                       var name: String = "",
-                       var finished: Boolean = false)
+    data class LastTorrents(var saved: Boolean = false,
+                            var torrents: MutableList<Torrent> = mutableListOf())
 }
 
 @SuppressLint("StaticFieldLeak")
@@ -104,8 +122,6 @@ object Servers : AnkoLogger {
                 load()
             }
         }
-
-    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     val servers = mutableListOf<Server>()
 
@@ -135,6 +151,8 @@ object Servers : AnkoLogger {
             }
         }
 
+    @Volatile private var saveData: SaveData? = null
+
     private fun load() {
         try {
             val stream = context!!.openFileInput(FILE_NAME)
@@ -142,35 +160,29 @@ object Servers : AnkoLogger {
                 val jsonObject = JsonParser().parse(stream.reader()).asJsonObject
 
                 if (jsonObject.has(SERVERS)) {
-                    for ((i, jsonElement) in jsonObject.getAsJsonArray(SERVERS).withIndex()) {
+                    val gson = Gson()
+                    for (jsonElement in jsonObject.getAsJsonArray(SERVERS)) {
                         val server = gson.fromJson(jsonElement, Server::class.java)
-                        if (server.name.isEmpty()) {
-                            error("server's name can't be empty")
-                            server.name = i.toString()
+                        info("Reading server \"${server}\"")
+                        if (server.name.isBlank()) {
+                            error("Server's name is empty, skip")
+                            continue
                         }
-                        if (server.address.isEmpty()) {
-                            error("server's address can't be empty")
-                            server.address = "example.com"
-                        }
-                        if (server.port < 0) {
-                            error("server's port can't be less than 0")
-                            server.port = 9091
+                        if (server.port !in Server.portRange) {
+                            error("Server's port is not in range, set default")
+                            server.port = DEFAULT_PORT
                         }
                         if (server.apiPath.isEmpty()) {
-                            error("server's API path can't be empty")
-                            server.apiPath = "/transmission/rpc"
+                            error("Server's API path can't be empty, set default")
+                            server.apiPath = DEFAULT_API_PATH
                         }
-                        if (server.updateInterval < 1) {
-                            error("server's update interval can't be less than 1")
-                            server.updateInterval = 5
+                        if (server.updateInterval !in Server.updateIntervalRange) {
+                            error("Server's update interval is not in range, set default")
+                            server.updateInterval = DEFAULT_UPDATE_INTERVAL
                         }
-                        if (server.backgroundUpdateInterval < 1) {
-                            error("server's background update interval can't be less than 1")
-                            server.backgroundUpdateInterval = 60
-                        }
-                        if (server.timeout < 1) {
-                            error("server's timeout can't be less than 1")
-                            server.timeout = 30
+                        if (server.timeout !in Server.timeoutRange) {
+                            error("Server's timeout is not in range, set default")
+                            server.timeout = DEFAULT_TIMEOUT
                         }
                         servers.add(server)
                     }
@@ -186,22 +198,22 @@ object Servers : AnkoLogger {
                     save()
                 }
             } catch (error: JsonIOException) {
-                error("error parsing servers file", error)
+                error("Error parsing servers file", error)
                 reset()
             } catch (error: JsonParseException) {
-                error("error parsing servers file", error)
+                error("Error parsing servers file", error)
                 reset()
             } catch (error: IllegalStateException) {
-                error("error parsing servers file", error)
+                error("Error parsing servers file", error)
                 reset()
             } catch (error: JsonSyntaxException) {
-                error("error parsing servers file", error)
+                error("Error parsing servers file", error)
                 reset()
             } finally {
                 stream.close()
             }
         } catch (error: FileNotFoundException) {
-            debug("servers file not found")
+            info("Servers file not found")
         }
     }
 
@@ -211,30 +223,27 @@ object Servers : AnkoLogger {
     }
 
     fun save() {
-        if (Rpc.instance.isConnected) {
-            val lastTorrents = currentServer?.lastTorrents
-            if (lastTorrents != null) {
-                lastTorrents.torrents.clear()
-                for (torrent in Rpc.instance.torrents) {
-                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                                                             torrent.hashString,
-                                                             torrent.name,
-                                                             torrent.isFinished))
-                }
-                lastTorrents.saved = true
+        info("Servers.save()")
+        val lastTorrents = currentServerField?.lastTorrents
+        if (lastTorrents != null) {
+            lastTorrents.torrents.clear()
+            for (torrent in Rpc.instance.torrents) {
+                lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                                                         torrent.hashString,
+                                                         torrent.name,
+                                                         torrent.isFinished))
             }
+            lastTorrents.saved = true
         }
 
-        object : AsyncTask<Any, Any, Any?>() {
-            override fun doInBackground(vararg params: Any?): Any? {
-                debug("saving servers file")
-                val jsonObject = JsonObject()
-                jsonObject.addProperty(CURRENT, currentServerField?.name)
-                jsonObject.add(SERVERS, gson.toJsonTree(servers))
-                context?.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
-                return null
-            }
-        }.execute()
+        saveData = SaveData(currentServerField?.name,
+                            servers.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
+
+        WorkManager.getInstance(context!!).enqueueUniqueWork(
+                SaveWorker.UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.APPEND,
+                OneTimeWorkRequest.from(SaveWorker::class.java)
+        )
     }
 
     fun addServer(newServer: Server) {
@@ -309,4 +318,34 @@ object Servers : AnkoLogger {
 
         save()
     }
+
+    class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+        companion object {
+            const val UNIQUE_WORK_NAME = "ServersSaveWorker"
+        }
+
+        override fun doWork(): Result {
+            val data = saveData
+            saveData = null
+            info("SaveWorker.doWork(), saveData=$data")
+            val elapsed = measureTimeMillis {
+                if (data != null) {
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val jsonObject = JsonObject()
+                    jsonObject.addProperty(CURRENT, data.currentServerName)
+                    jsonObject.add(SERVERS, gson.toJsonTree(data.servers))
+                    context?.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
+                }
+            }
+            info("SaveWorker.doWork() return, elapsed time: $elapsed ms")
+            return Result.success()
+        }
+
+        override fun onStopped() {
+            saveData = null
+        }
+    }
+
+    private class SaveData(val currentServerName: String?,
+                           val servers: List<Server>)
 }

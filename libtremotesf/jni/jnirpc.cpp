@@ -512,6 +512,11 @@ namespace libtremotesf
         QMetaObject::invokeMethod(torrent, "setPeersEnabled", Q_ARG(bool, enabled));
     }
 
+    void JniRpc::updateData()
+    {
+        QMetaObject::invokeMethod(this, "updateData");
+    }
+
     void JniRpc::onAboutToDisconnect()
     {
 

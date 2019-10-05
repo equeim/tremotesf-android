@@ -5166,6 +5166,17 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1getFre
 }
 
 
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1updateData(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Rpc **)&jarg1; 
+  (arg1)->updateData();
+}
+
+
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Rpc(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
   
@@ -8309,6 +8320,17 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
   arg3 = jarg3 ? true : false; 
   (arg1)->setTorrentPeersEnabled(arg2,arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1updateData(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  (arg1)->updateData();
 }
 
 

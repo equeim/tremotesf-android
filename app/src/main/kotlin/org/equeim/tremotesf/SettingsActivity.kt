@@ -19,9 +19,11 @@
 
 package org.equeim.tremotesf
 
+import android.content.SharedPreferences
 import android.os.Bundle
 
 import androidx.fragment.app.commit
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
 
@@ -32,9 +34,28 @@ class SettingsActivity : BaseActivity() {
         supportFragmentManager.commit { replace(android.R.id.content, Fragment()) }
     }
 
-    class Fragment : PreferenceFragmentCompat() {
+    class Fragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+            updateBackgroundUpdatePreference()
+            preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        }
+
+        override fun onDestroy() {
+            preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+            super.onDestroy()
+        }
+
+        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+            when (key) {
+                getString(R.string.prefs_notify_on_finished_key),
+                getString(R.string.prefs_notify_on_added_key) -> updateBackgroundUpdatePreference()
+            }
+        }
+
+        private fun updateBackgroundUpdatePreference() {
+            findPreference<Preference>(getString(R.string.prefs_background_update_interval_key))
+                    ?.isEnabled = Settings.notifyOnFinished || Settings.notifyOnAdded
         }
     }
 }

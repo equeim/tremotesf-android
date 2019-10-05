@@ -35,7 +35,7 @@ import android.widget.ProgressBar
 import androidx.core.content.ContextCompat
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
+import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.stopService
 
@@ -46,14 +46,13 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Settings
 
 
-private var appIsRunning = false
-
 object Utils : AnkoLogger {
+    private var appIsRunning = false
     private val decimalFormat by lazy { DecimalFormat("0.#") }
 
     fun initApp(context: Context) {
         if (!appIsRunning) {
-            debug("init app")
+            info("Utils.initApp()")
             appIsRunning = true
 
             if (Settings.showPersistentNotification) {
@@ -66,7 +65,7 @@ object Utils : AnkoLogger {
 
     fun shutdownApp(context: Context) {
         if (appIsRunning) {
-            debug("shutdown app")
+            info("Utils.shutdownApp()")
             appIsRunning = false
             BaseActivity.finishAllActivities()
             Rpc.instance.disconnect()

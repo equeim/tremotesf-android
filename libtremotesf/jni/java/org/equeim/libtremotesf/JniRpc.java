@@ -233,6 +233,10 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_setTorrentPeersEnabled(swigCPtr, this, Torrent.getCPtr(torrent), torrent, enabled);
   }
 
+  public void updateData() {
+    libtremotesfJNI.JniRpc_updateData(swigCPtr, this);
+  }
+
   protected void onAboutToDisconnect() {
     if (getClass() == JniRpc.class) libtremotesfJNI.JniRpc_onAboutToDisconnect(swigCPtr, this); else libtremotesfJNI.JniRpc_onAboutToDisconnectSwigExplicitJniRpc(swigCPtr, this);
   }

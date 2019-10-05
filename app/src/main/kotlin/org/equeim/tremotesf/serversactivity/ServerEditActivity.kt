@@ -54,7 +54,7 @@ class ServerEditActivity : BaseActivity() {
     }
 
     private var server: Server? = null
-    private val newServer = Server()
+    private lateinit var newServer: Server
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +63,7 @@ class ServerEditActivity : BaseActivity() {
 
         val serverName = intent.getStringExtra(SERVER)
         server = Servers.servers.find { it.name == serverName }
-        if (server != null) {
-            server!!.copyTo(newServer)
-        }
+        newServer = server?.copy() ?: Server()
 
         if (savedInstanceState == null) {
             supportFragmentManager.commit { replace(android.R.id.content, MainFragment(),
@@ -111,7 +109,7 @@ class ServerEditActivity : BaseActivity() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            port_edit.filters = arrayOf(IntFilter(0..65535))
+            port_edit.filters = arrayOf(IntFilter(Server.portRange))
 
             https_check_box.isChecked = false
 
@@ -138,31 +136,21 @@ class ServerEditActivity : BaseActivity() {
                 password_edit.isEnabled = checked
             }
 
-            update_interval_edit.filters = arrayOf(IntFilter(1..3600))
-            background_update_interval_edit.filters = arrayOf(IntFilter(0..10800))
-            timeout_edit.filters = arrayOf(IntFilter(5..60))
+            update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
+            timeout_edit.filters = arrayOf(IntFilter(Server.timeoutRange))
 
             if (savedInstanceState == null) {
-                val server = activity.server
-                if (server == null) {
-                    port_edit.setText("9091")
-                    api_path_edit.setText("/transmission/rpc")
-                    update_interval_edit.setText("5")
-                    background_update_interval_edit.setText("60")
-                    timeout_edit.setText("30")
-                } else {
-                    name_edit.setText(server.name)
-                    address_edit.setText(server.address)
-                    port_edit.setText(server.port.toString())
-                    api_path_edit.setText(server.apiPath)
-                    https_check_box.isChecked = server.httpsEnabled
-                    authentication_check_box.isChecked = server.authentication
-                    username_edit.setText(server.username)
-                    password_edit.setText(server.password)
-                    update_interval_edit.setText(server.updateInterval.toString())
-                    background_update_interval_edit.setText(server.backgroundUpdateInterval.toString())
-                    timeout_edit.setText(server.timeout.toString())
-                }
+                val server = activity.newServer
+                name_edit.setText(server.name)
+                address_edit.setText(server.address)
+                port_edit.setText(server.port.toString())
+                api_path_edit.setText(server.apiPath)
+                https_check_box.isChecked = server.httpsEnabled
+                authentication_check_box.isChecked = server.authentication
+                username_edit.setText(server.username)
+                password_edit.setText(server.password)
+                update_interval_edit.setText(server.updateInterval.toString())
+                timeout_edit.setText(server.timeout.toString())
             }
         }
 
@@ -195,7 +183,6 @@ class ServerEditActivity : BaseActivity() {
             val portOk = checkLength(port_edit)
             val apiPathOk = checkLength(api_path_edit)
             val updateIntervalOk = checkLength(update_interval_edit)
-            val backgroundUpdateIntervalOk = checkLength(background_update_interval_edit)
             val timeoutOk = checkLength(timeout_edit)
 
             val nameEditText = name_edit.text.toString()
@@ -205,7 +192,6 @@ class ServerEditActivity : BaseActivity() {
                     portOk &&
                     apiPathOk &&
                     updateIntervalOk &&
-                    backgroundUpdateIntervalOk &&
                     timeoutOk) {
                 if (nameEditText != activity.server?.name &&
                         Servers.servers.find { it.name == nameEditText } != null) {
@@ -230,7 +216,6 @@ class ServerEditActivity : BaseActivity() {
                 username = username_edit.text.toString().trim()
                 password = password_edit.text.toString().trim()
                 updateInterval = update_interval_edit.text.toString().toInt()
-                backgroundUpdateInterval = background_update_interval_edit.text.toString().toInt()
                 timeout = timeout_edit.text.toString().toInt()
             }
 

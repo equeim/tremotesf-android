@@ -19,20 +19,36 @@
 
 package org.equeim.tremotesf
 
+import java.util.concurrent.TimeUnit
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
-import android.widget.Toast
+
+import androidx.concurrent.futures.CallbackToFutureAdapter
 
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ListenableWorker
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+
+import com.google.common.util.concurrent.ListenableFuture
+
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.runOnUiThread
+import org.jetbrains.anko.warn
 
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
@@ -40,7 +56,7 @@ import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 
-class Rpc : JniRpc() {
+class Rpc : JniRpc(), AnkoLogger {
     companion object {
         private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
         private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
@@ -68,6 +84,7 @@ class Rpc : JniRpc() {
             }
         }
     private var notificationManager: NotificationManager? = null
+    private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     val serverSettings: JniServerSettings = serverSettings()
     val serverStats: ServerStats = serverStats()
@@ -141,7 +158,7 @@ class Rpc : JniRpc() {
                       server.username,
                       server.password,
                       server.updateInterval,
-                      server.backgroundUpdateInterval,
+                      0,
                       server.timeout)
         } else {
             resetServer()
@@ -184,16 +201,21 @@ class Rpc : JniRpc() {
                         }
                     }
                 }
+
+                handleWorkerCompleter(true)
             }
         }
     }
 
     override fun onStatusChanged() {
         context!!.runOnUiThread {
+            val s = status()
             for (listener in statusListeners) {
-                listener(status())
+                listener(s)
             }
-            super.onStatusChanged()
+            if (s == Status.Disconnected) {
+                handleWorkerCompleter(false)
+            }
         }
     }
 
@@ -207,9 +229,7 @@ class Rpc : JniRpc() {
                 listener(error)
             }
             if (error == Error.ConnectionError) {
-                context?.let { context ->
-                    Toast.makeText(context, errorMessage(), Toast.LENGTH_LONG).show()
-                }
+                BaseActivity.showToast(errorMessage())
             }
         }
     }
@@ -236,6 +256,8 @@ class Rpc : JniRpc() {
             for (listener in torrentsUpdatedListeners) {
                 listener()
             }
+
+            handleWorkerCompleter(true)
         }
     }
 
@@ -358,5 +380,64 @@ class Rpc : JniRpc() {
                 ADDED_NOTIFICATION_CHANNEL_ID,
                 context.getString(R.string.torrent_added),
                 context)
+    }
+
+    fun enqueueUpdateWorker() {
+        val interval = Settings.backgroundUpdateInterval
+        if (interval > 0 && (Settings.notifyOnFinished || Settings.notifyOnAdded)) {
+            info("Rpc.enqueueUpdateWorker(), interval=$interval")
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            val request = PeriodicWorkRequest.Builder(UpdateWorker::class.java, interval, TimeUnit.MINUTES)
+                    .setInitialDelay(interval, TimeUnit.MINUTES)
+                    .setConstraints(constraints)
+                    .build()
+            WorkManager.getInstance(context!!).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+        }
+    }
+
+    fun cancelUpdateWorker() {
+        info("Rpc.cancelUpdateWorker()")
+        WorkManager.getInstance(context!!).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME)
+    }
+
+    private fun handleWorkerCompleter(connected: Boolean) {
+        updateWorkerCompleter?.let { completer ->
+            info("Rpc.handleWorkerCompleter()")
+            if (connected) {
+                Servers.save()
+            }
+            completer.set(ListenableWorker.Result.success())
+            updateWorkerCompleter = null
+        }
+    }
+
+    class UpdateWorker(context: Context, workerParameters: WorkerParameters) : ListenableWorker(context, workerParameters), AnkoLogger {
+        companion object {
+            const val UNIQUE_WORK_NAME = "RpcUpdateWorker"
+        }
+
+        override fun startWork(): ListenableFuture<Result> {
+            info("Rpc.UpdateWorker.startWork()")
+
+            if (BaseActivity.activeActivity != null) {
+                warn("Rpc.UpdateWorker.startWork(), activity is not null, return")
+                return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
+            }
+
+            if (!Settings.notifyOnFinished && !Settings.notifyOnAdded) {
+                warn("Rpc.UpdateWorker.startWork(), notifications are disabled, return")
+                return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
+            }
+
+            return CallbackToFutureAdapter.getFuture { completer ->
+                instance.updateWorkerCompleter = completer
+                if (instance.status() == Status.Disconnected) {
+                    instance.connect()
+                } else {
+                    instance.updateData()
+                }
+                javaClass.simpleName
+            }
+        }
     }
 }
