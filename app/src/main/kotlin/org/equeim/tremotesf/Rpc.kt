@@ -171,8 +171,16 @@ class Rpc : JniRpc(), AnkoLogger {
     override fun onConnectedChanged() {
         context!!.runOnUiThread {
             if (isConnected) {
-                val notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
-                val notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
+                val notifyOnFinished: Boolean
+                val notifyOnAdded: Boolean
+                if (updateWorkerCompleter == null) {
+                    notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
+                    notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
+                } else {
+                    notifyOnFinished = Settings.notifyOnFinished
+                    notifyOnAdded = Settings.notifyOnAdded
+                }
+
                 if (notifyOnFinished || notifyOnAdded) {
                     val server = Servers.currentServer
                     if (server != null) {
