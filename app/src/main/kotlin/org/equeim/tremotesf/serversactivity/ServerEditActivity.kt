@@ -129,11 +129,11 @@ class ServerEditActivity : BaseActivity() {
 
             authentication_check_box.isChecked = false
 
-            username_edit.isEnabled = false
-            password_edit.isEnabled = false
+            username_edit_layout.isEnabled = false
+            password_edit_layout.isEnabled = false
             authentication_check_box.setOnCheckedChangeListener { _, checked ->
-                username_edit.isEnabled = checked
-                password_edit.isEnabled = checked
+                username_edit_layout.isEnabled = checked
+                password_edit_layout.isEnabled = checked
             }
 
             update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))

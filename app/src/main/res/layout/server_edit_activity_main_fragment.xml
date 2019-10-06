@@ -115,6 +115,7 @@
                 android:text="@string/authentication"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/username_edit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
@@ -129,6 +130,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_edit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
