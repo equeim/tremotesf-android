@@ -439,4 +439,14 @@
     <string name="persistent_notification_warning">Enabling persistent notification will prevent application from switching to background update mode and may cause excessive battery drain</string>
 
     <string name="prefs_background_update_interval_title">Background update interval</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Disabled</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+    </string-array>
 </resources>
