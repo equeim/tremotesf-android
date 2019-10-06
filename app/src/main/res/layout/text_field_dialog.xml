@@ -1,15 +1,20 @@
-<com.google.android.material.textfield.TextInputLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text_field_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/dialog_horizontal_padding"
-    android:paddingRight="@dimen/dialog_horizontal_padding"
-    android:paddingTop="@dimen/vertical_edge_padding">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/text_field"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_field_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </com.google.android.material.textfield.TextInputEditText>
-</com.google.android.material.textfield.TextInputLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dialog_horizontal_padding"
+        android:layout_marginRight="@dimen/dialog_horizontal_padding"
+        android:layout_marginTop="@dimen/vertical_edge_padding">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
+</FrameLayout>
