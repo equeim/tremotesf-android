@@ -41,13 +41,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/download_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -66,13 +66,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/upload_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -98,13 +98,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/download_kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/alternative_download_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/download_kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -115,13 +115,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/upload_kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/alternative_upload_speed_limit_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/upload_kbps"
                     android:inputType="number"
                     android:saveEnabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>

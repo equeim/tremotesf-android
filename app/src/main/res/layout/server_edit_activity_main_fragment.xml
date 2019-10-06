@@ -21,52 +21,52 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="@string/name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/name"
                     android:inputType="text"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/address_edit_hint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/address_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/address_edit_hint"
                     android:inputType="textUri"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/port">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/port_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/port"
                     android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/api_path">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/api_path_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/api_path"
                     android:inputType="textUri"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,13 +118,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp">
+                android:layout_marginStart="16dp"
+                android:hint="@string/username">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/username_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/username"
                     android:inputType="textNoSuggestions" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -132,39 +132,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp">
+                android:layout_marginStart="16dp"
+                android:hint="@string/password">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/update_interval">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/update_interval_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/update_interval"
                     android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/timeout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/timeout_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/timeout"
                     android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>

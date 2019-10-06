@@ -24,13 +24,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/peer_port">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/peer_port_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/peer_port"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -100,13 +100,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/maximum_peers_per_torrent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/peers_per_torrent_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/maximum_peers_per_torrent"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -114,13 +114,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/maximum_peers_globally">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/peers_globally_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/maximum_peers_globally"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>

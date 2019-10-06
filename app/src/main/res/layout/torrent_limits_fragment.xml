@@ -40,6 +40,7 @@
             android:id="@+id/download_speed_limit_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/kbps"
             android:layout_marginLeft="24dp"
             android:layout_marginStart="24dp">
 
@@ -47,7 +48,6 @@
                 android:id="@+id/download_speed_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/kbps"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -65,13 +65,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp">
+            android:layout_marginStart="24dp"
+            android:hint="@string/kbps">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/upload_speed_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/kbps"
                 android:inputType="number"
                 android:saveEnabled="false">
 
@@ -123,13 +123,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/min">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/idle_seeding_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/min"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -144,13 +144,13 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/maximum_peers">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/maximum_peers_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/maximum_peers"
                 android:inputType="number"
                 android:saveEnabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>

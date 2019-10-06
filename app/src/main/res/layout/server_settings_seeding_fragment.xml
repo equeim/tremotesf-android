@@ -41,13 +41,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:hint="@string/min">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/idle_seeding_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/min"
             android:inputType="number"
             android:saveEnabled="false"/>
     </com.google.android.material.textfield.TextInputLayout>

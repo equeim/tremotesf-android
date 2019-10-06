@@ -10,13 +10,13 @@
         android:id="@+id/text_field_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:hint="@string/download_directory">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/download_directory_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/download_directory"
             android:inputType="textUri" />
     </com.google.android.material.textfield.TextInputLayout>
 

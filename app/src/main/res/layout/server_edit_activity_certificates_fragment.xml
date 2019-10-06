@@ -26,14 +26,14 @@
             android:id="@+id/self_signed_certificate_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/certificate">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/self_signed_certificate_edit"
                 android:layout_width="match_parent"
                 android:layout_height="128dp"
                 android:gravity="top|start"
-                android:hint="@string/certificate"
                 android:inputType="textMultiLine|textUri"
                 android:scrollbars="vertical"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -49,14 +49,14 @@
             android:id="@+id/client_certificate_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/certificate">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/client_certificate_edit"
                 android:layout_width="match_parent"
                 android:layout_height="128dp"
                 android:gravity="top|start"
-                android:hint="@string/certificate"
                 android:inputType="textMultiLine|textUri"
                 android:scrollbars="vertical"/>
         </com.google.android.material.textfield.TextInputLayout>
