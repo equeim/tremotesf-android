@@ -489,6 +489,7 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
             startActivity(intentFor<AddTorrentFileActivity>().setData(data.data))
         }
