@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 
 import androidx.core.content.edit
@@ -42,51 +41,34 @@ private const val DONATE_DIALOG_SHOWN = "donateDialogShown"
 
 @SuppressLint("StaticFieldLeak")
 object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
-    var context: Context? = null
-        set(value) {
-            field = value
-            if (value == null) {
-                preferences = null
-            } else {
-                preferences = value.defaultSharedPreferences
-                preferences!!.registerOnSharedPreferenceChangeListener(this)
+    private val context = Application.instance
 
-                darkThemeKey = value.getString(R.string.prefs_dark_theme_key)
-                oldColorsKey = value.getString(R.string.prefs_old_colors_key)
-                torrentCompactViewKey = value.getString(R.string.prefs_torrent_compact_view_key)
-                torrentNameMultilineKey = value.getString(R.string.prefs_torrent_name_multiline_key)
-                persistentNotificationKey = value.getString(R.string.prefs_persistent_notification_key)
-                notifyOnFinishedKey = value.getString(R.string.prefs_notify_on_finished_key)
-                notifyOnAddedKey = value.getString(R.string.prefs_notify_on_added_key)
-                backgroundUpdateIntervalKey = value.getString(R.string.prefs_background_update_interval_key)
-                notifyOnFinishedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_finished_since_last_key)
-                notifyOnAddedSinceLastConnectionKey = value.getString(R.string.prefs_notify_on_added_since_last_key)
-                deleteFilesKey = value.getString(R.string.prefs_delete_files_key)
-            }
-        }
+    private val preferences = context.defaultSharedPreferences
 
-    private var preferences: SharedPreferences? = null
+    private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
+    private val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
+    private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
+    private val torrentNameMultilineKey = context.getString(R.string.prefs_torrent_name_multiline_key)
+    private val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
+    private val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
+    private val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
+    private val backgroundUpdateIntervalKey = context.getString(R.string.prefs_background_update_interval_key)
+    private val notifyOnFinishedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_finished_since_last_key)
+    private val notifyOnAddedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_added_since_last_key)
+    private val deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
 
-    private lateinit var darkThemeKey: String
-    private lateinit var oldColorsKey: String
-    private lateinit var torrentCompactViewKey: String
-    private lateinit var torrentNameMultilineKey: String
-    private lateinit var persistentNotificationKey: String
-    private lateinit var notifyOnFinishedKey: String
-    private lateinit var notifyOnAddedKey: String
-    private lateinit var backgroundUpdateIntervalKey: String
-    private lateinit var notifyOnFinishedSinceLastConnectionKey: String
-    private lateinit var notifyOnAddedSinceLastConnectionKey: String
-    private lateinit var deleteFilesKey: String
+    init {
+        preferences.registerOnSharedPreferenceChangeListener(this)
+    }
 
     private val darkTheme: Boolean
         get() {
-            return preferences!!.getBoolean(darkThemeKey, true)
+            return preferences.getBoolean(darkThemeKey, true)
         }
 
     private val oldColors: Boolean
         get() {
-            return preferences!!.getBoolean(oldColorsKey, false)
+            return preferences.getBoolean(oldColorsKey, false)
         }
 
     val theme: Int
@@ -111,37 +93,37 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     val torrentCompactView: Boolean
         get() {
-            return preferences!!.getBoolean(torrentCompactViewKey, false)
+            return preferences.getBoolean(torrentCompactViewKey, false)
         }
 
     var torrentCompactViewListener: (() -> Unit)? = null
 
     val torrentNameMultiline: Boolean
         get() {
-            return preferences!!.getBoolean(torrentNameMultilineKey, false)
+            return preferences.getBoolean(torrentNameMultilineKey, false)
         }
 
     var torrentNameMultilineListener: (() -> Unit)? = null
 
     val showPersistentNotification: Boolean
         get() {
-            return preferences!!.getBoolean(persistentNotificationKey, false)
+            return preferences.getBoolean(persistentNotificationKey, false)
         }
 
     val notifyOnFinished: Boolean
         get() {
-            return preferences!!.getBoolean(notifyOnFinishedKey, true)
+            return preferences.getBoolean(notifyOnFinishedKey, true)
         }
 
     val notifyOnAdded: Boolean
         get() {
-            return preferences!!.getBoolean(notifyOnAddedKey, false)
+            return preferences.getBoolean(notifyOnAddedKey, false)
         }
 
     val backgroundUpdateInterval: Long
         get() {
             return try {
-                preferences!!.getString(backgroundUpdateIntervalKey, "0")?.toLong() ?: 0
+                preferences.getString(backgroundUpdateIntervalKey, "0")?.toLong() ?: 0
             } catch (ignore: NumberFormatException) {
                 0
             }
@@ -150,77 +132,77 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     val notifyOnFinishedSinceLastConnection: Boolean
         get() {
-            return preferences!!.getBoolean(notifyOnFinishedSinceLastConnectionKey, false)
+            return preferences.getBoolean(notifyOnFinishedSinceLastConnectionKey, false)
         }
 
     val notifyOnAddedSinceLastConnection: Boolean
         get() {
-            return preferences!!.getBoolean(notifyOnAddedSinceLastConnectionKey, false)
+            return preferences.getBoolean(notifyOnAddedSinceLastConnectionKey, false)
         }
 
     val deleteFiles: Boolean
         get() {
-            return preferences!!.getBoolean(deleteFilesKey, false)
+            return preferences.getBoolean(deleteFilesKey, false)
         }
 
     var torrentsSortMode: TorrentsAdapter.SortMode
         get() {
-            val int = preferences!!.getInt(TORRENTS_SORT_MODE, 0)
+            val int = preferences.getInt(TORRENTS_SORT_MODE, 0)
             if (int in TorrentsAdapter.SortMode.values().indices) {
                 return TorrentsAdapter.SortMode.values()[int]
             }
             return TorrentsAdapter.SortMode.Name
         }
         set(value) {
-            preferences!!.edit { putInt(TORRENTS_SORT_MODE, value.ordinal) }
+            preferences.edit { putInt(TORRENTS_SORT_MODE, value.ordinal) }
         }
 
     var torrentsSortOrder: TorrentsAdapter.SortOrder
         get() {
-            val int = preferences!!.getInt(TORRENTS_SORT_ORDER, 0)
+            val int = preferences.getInt(TORRENTS_SORT_ORDER, 0)
             if (int in TorrentsAdapter.SortOrder.values().indices) {
                 return TorrentsAdapter.SortOrder.values()[int]
             }
             return TorrentsAdapter.SortOrder.Ascending
         }
         set(value) {
-            preferences!!.edit { putInt(TORRENTS_SORT_ORDER, value.ordinal) }
+            preferences.edit { putInt(TORRENTS_SORT_ORDER, value.ordinal) }
         }
 
     var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
         get() {
-            val int = preferences!!.getInt(TORRENTS_STATUS_FILTER, 0)
+            val int = preferences.getInt(TORRENTS_STATUS_FILTER, 0)
             if (int in TorrentsAdapter.StatusFilterMode.values().indices) {
                 return TorrentsAdapter.StatusFilterMode.values()[int]
             }
             return TorrentsAdapter.StatusFilterMode.All
         }
         set(value) {
-            preferences!!.edit { putInt(TORRENTS_STATUS_FILTER, value.ordinal) }
+            preferences.edit { putInt(TORRENTS_STATUS_FILTER, value.ordinal) }
         }
 
     var torrentsTrackerFilter: String
         get() {
-            return preferences!!.getString(TORRENTS_TRACKER_FILTER, "")!!
+            return preferences.getString(TORRENTS_TRACKER_FILTER, "") ?: ""
         }
         set(value) {
-            preferences!!.edit { putString(TORRENTS_TRACKER_FILTER, value) }
+            preferences.edit { putString(TORRENTS_TRACKER_FILTER, value) }
         }
 
     var torrentsDirectoryFilter: String
         get() {
-            return preferences!!.getString(TORRENTS_DIRECTORY_FILTER, "")!!
+            return preferences.getString(TORRENTS_DIRECTORY_FILTER, "") ?: ""
         }
         set(value) {
-            preferences!!.edit { putString(TORRENTS_DIRECTORY_FILTER, value) }
+            preferences.edit { putString(TORRENTS_DIRECTORY_FILTER, value) }
         }
 
     var donateDialogShown: Boolean
         get() {
-            return preferences!!.getBoolean(DONATE_DIALOG_SHOWN, false)
+            return preferences.getBoolean(DONATE_DIALOG_SHOWN, false)
         }
         set(value) {
-            preferences!!.edit { putBoolean(DONATE_DIALOG_SHOWN, value) }
+            preferences.edit { putBoolean(DONATE_DIALOG_SHOWN, value) }
         }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
@@ -229,9 +211,9 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             torrentNameMultilineKey -> torrentNameMultilineListener?.invoke()
             persistentNotificationKey -> {
                 if (showPersistentNotification) {
-                    ContextCompat.startForegroundService(context!!, context!!.intentFor<ForegroundService>())
+                    ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())
                 } else {
-                    context!!.stopService<ForegroundService>()
+                    context.stopService<ForegroundService>()
                 }
             }
         }

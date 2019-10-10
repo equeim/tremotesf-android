@@ -113,17 +113,13 @@ data class Server(var name: String = "",
 
 @SuppressLint("StaticFieldLeak")
 object Servers : AnkoLogger {
-    var context: Context? = null
-        set(value) {
-            field = value
-            if (field == null) {
-                reset()
-            } else {
-                load()
-            }
-        }
+    private val context = Application.instance
 
     val servers = mutableListOf<Server>()
+
+    init {
+        load()
+    }
 
     private val serversListeners = mutableListOf<() -> Unit>()
     fun addServersListener(listener: () -> Unit) = serversListeners.add(listener)
@@ -155,7 +151,7 @@ object Servers : AnkoLogger {
 
     private fun load() {
         try {
-            val stream = context!!.openFileInput(FILE_NAME)
+            val stream = context.openFileInput(FILE_NAME)
             try {
                 val jsonObject = JsonParser().parse(stream.reader()).asJsonObject
 
@@ -239,7 +235,7 @@ object Servers : AnkoLogger {
         saveData = SaveData(currentServerField?.name,
                             servers.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
 
-        WorkManager.getInstance(context!!).enqueueUniqueWork(
+        WorkManager.getInstance(context).enqueueUniqueWork(
                 SaveWorker.UNIQUE_WORK_NAME,
                 ExistingWorkPolicy.APPEND,
                 OneTimeWorkRequest.from(SaveWorker::class.java)
@@ -334,7 +330,7 @@ object Servers : AnkoLogger {
                     val jsonObject = JsonObject()
                     jsonObject.addProperty(CURRENT, data.currentServerName)
                     jsonObject.add(SERVERS, gson.toJsonTree(data.servers))
-                    context?.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
+                    context.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
                 }
             }
             info("SaveWorker.doWork() return, elapsed time: $elapsed ms")

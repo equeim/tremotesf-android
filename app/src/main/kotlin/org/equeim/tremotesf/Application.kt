@@ -12,7 +12,5 @@ class Application : android.app.Application(), AnkoLogger {
         super.onCreate()
         info("Application.onCreate")
         instance = this
-        Settings.context = this
-        Servers.context = this
     }
 }
