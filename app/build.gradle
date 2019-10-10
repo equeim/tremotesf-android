@@ -98,7 +98,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.0.0'
 
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation 'org.jetbrains.anko:anko-commons:0.10.8'
     implementation 'org.jetbrains.anko:anko-design:0.10.8'

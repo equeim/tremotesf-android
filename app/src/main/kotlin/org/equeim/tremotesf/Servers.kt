@@ -153,7 +153,7 @@ object Servers : AnkoLogger {
         try {
             val stream = context.openFileInput(FILE_NAME)
             try {
-                val jsonObject = JsonParser().parse(stream.reader()).asJsonObject
+                val jsonObject = JsonParser.parseReader(stream.reader()).asJsonObject
 
                 if (jsonObject.has(SERVERS)) {
                     val gson = Gson()
