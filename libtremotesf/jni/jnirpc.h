@@ -5,9 +5,6 @@
 #include "serversettings.h"
 #include "torrent.h"
 
-class QCoreApplication;
-class QThread;
-
 namespace libtremotesf
 {
     class JniServerSettings : public ServerSettings
@@ -81,7 +78,6 @@ namespace libtremotesf
         void connect();
         void disconnect();
 
-        void setBackgroundUpdate(bool background);
         void setUpdateDisabled(bool disabled);
 
         void addTorrentFile(const QByteArray& fileData,
@@ -100,21 +96,13 @@ namespace libtremotesf
                             bool start);
 
         void startTorrents(const QVariantList& ids);
-        void startTorrentsNow(const QVariantList& ids);
         void pauseTorrents(const QVariantList& ids);
         void removeTorrents(const QVariantList& ids, bool deleteFiles);
         void checkTorrents(const QVariantList& ids);
-        void moveTorrentsToTop(const QVariantList& ids);
-        void moveTorrentsUp(const QVariantList& ids);
-        void moveTorrentsDown(const QVariantList& ids);
-        void moveTorrentsToBottom(const QVariantList& ids);
 
         void reannounceTorrents(const QVariantList& ids);
 
         void setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles);
-
-        void getTorrentFiles(int id, bool scheduled);
-        void getTorrentPeers(int id, bool scheduled);
 
         void renameTorrentFile(int torrentId,
                                const QString& filePath,
@@ -137,7 +125,6 @@ namespace libtremotesf
         void setTorrentFilesEnabled(Torrent* torrent, bool enabled);
         void setTorrentFilesWanted(Torrent* torrent, const QVariantList& files, bool wanted);
         void setTorrentFilesPriority(Torrent* torrent, const QVariantList& files, TorrentFile::Priority priority);
-        void torrentRenameFile(Torrent* torrent, const QString& path, const QString& newName);
         void torrentAddTracker(Torrent* torrent, const QString& announce);
         void torrentSetTracker(Torrent* torrent, int trackerId, const QString& announce);
         void torrentRemoveTrackers(Torrent* torrent, const QVariantList& ids);
@@ -146,27 +133,26 @@ namespace libtremotesf
         void updateData();
 
     protected:
-        virtual void onAboutToDisconnect();
-        virtual void onConnectedChanged();
-        virtual void onStatusChanged();
-        virtual void onErrorChanged();
+        virtual void onAboutToDisconnect() = 0;
+        virtual void onStatusChanged(Rpc::Status status) = 0;
+        virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
 
-        virtual void onTorrentsUpdated();
-        virtual void onServerStatsUpdated();
+        virtual void onTorrentsUpdated(std::vector<std::shared_ptr<Torrent>> torrents) = 0;
+        virtual void onServerStatsUpdated() = 0;
 
-        virtual void onTorrentAdded(int id, const QString& hashString, const QString& name);
-        virtual void onTorrentFinished(int id, const QString& hashString, const QString& name);
+        virtual void onTorrentAdded(int id, const QString& hashString, const QString& name) = 0;
+        virtual void onTorrentFinished(int id, const QString& hashString, const QString& name) = 0;
 
-        virtual void onTorrentAddDuplicate();
-        virtual void onTorrentAddError();
+        virtual void onTorrentAddDuplicate() = 0;
+        virtual void onTorrentAddError() = 0;
 
-        virtual void onGotTorrentFiles(int torrentId);
-        virtual void onTorrentFileRenamed(int torrentId, const QString& filePath, const QString& newName);
+        virtual void onGotTorrentFiles(int torrentId) = 0;
+        virtual void onTorrentFileRenamed(int torrentId, const QString& filePath, const QString& newName) = 0;
 
-        virtual void onGotTorrentPeers(int torrentId);
+        virtual void onGotTorrentPeers(int torrentId) = 0;
 
-        virtual void onGotDownloadDirFreeSpace(long long bytes);
-        virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes);
+        virtual void onGotDownloadDirFreeSpace(long long bytes) = 0;
+        virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes) = 0;
     };
 }
 

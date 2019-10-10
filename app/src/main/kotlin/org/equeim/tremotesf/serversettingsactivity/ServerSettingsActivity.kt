@@ -38,10 +38,10 @@ import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
@@ -86,12 +86,12 @@ class ServerSettingsActivity : BaseActivity() {
             supportFragmentManager.commit { replace(android.R.id.content, MainFragment()) }
         }
 
-        Rpc.instance.addStatusListener(rpcStatusListener)
+        Rpc.addStatusListener(rpcStatusListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.removeStatusListener(rpcStatusListener)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -114,12 +114,12 @@ class ServerSettingsActivity : BaseActivity() {
         private var snackbar: Snackbar? = null
 
         private var rpcStatusListener: (Int) -> Unit = { status ->
-            placeholder.text = Rpc.instance.statusString
+            placeholder.text = Rpc.statusString
             when (status) {
                 RpcStatus.Disconnected -> {
                     snackbar = requireActivity().contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                         snackbar = null
-                        Rpc.instance.connect()
+                        Rpc.nativeInstance.connect()
                     }
                     progress_bar.visibility = View.GONE
                 }
@@ -145,13 +145,13 @@ class ServerSettingsActivity : BaseActivity() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            rpcStatusListener(Rpc.instance.status())
-            Rpc.instance.addStatusListener(rpcStatusListener)
+            rpcStatusListener(Rpc.status)
+            Rpc.addStatusListener(rpcStatusListener)
         }
 
         override fun onDestroyView() {
             super.onDestroyView()
-            Rpc.instance.removeStatusListener(rpcStatusListener)
+            Rpc.removeStatusListener(rpcStatusListener)
             snackbar = null
         }
     }

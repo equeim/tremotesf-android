@@ -57,10 +57,10 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapte
     init {
         val comparator = AlphanumericComparator()
         val items = Servers.currentServer?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
-        for (torrent in Rpc.instance.torrents) {
+        for (torrent in Rpc.torrents) {
             items.add(torrent.downloadDirectory)
         }
-        val downloadDirectory = Rpc.instance.serverSettings.downloadDirectory()
+        val downloadDirectory = Rpc.serverSettings.downloadDirectory()
         items.add(downloadDirectory)
         addAll(items)
     }

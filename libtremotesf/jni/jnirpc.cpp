@@ -220,10 +220,9 @@ namespace libtremotesf
         setServerSettings(new JniServerSettings(this, this));
 
         QObject::connect(this, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
-        QObject::connect(this, &Rpc::connectedChanged, [=]() { onConnectedChanged(); });
-        QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(); });
-        QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(); });
-        QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(); });
+        QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(status()); });
+        QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(error(), errorMessage()); });
+        QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(torrents()); });
         QObject::connect(this->serverStats(), &ServerStats::updated, [=]() { onServerStatsUpdated(); });
         QObject::connect(this, &Rpc::torrentAdded, [=](const Torrent* torrent) {
             onTorrentAdded(torrent->id(), torrent->hashString(), torrent->name());
@@ -302,11 +301,6 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "disconnect");
     }
 
-    void JniRpc::setBackgroundUpdate(bool background)
-    {
-        QMetaObject::invokeMethod(this, "setBackgroundUpdate", Q_ARG(bool, background));
-    }
-
     void JniRpc::setUpdateDisabled(bool disabled)
     {
         QMetaObject::invokeMethod(this, "setUpdateDisabled", Q_ARG(bool, disabled));
@@ -342,10 +336,10 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "startTorrents", Q_ARG(QVariantList, ids));
     }
 
-    void JniRpc::startTorrentsNow(const QVariantList& ids)
+    /*void JniRpc::startTorrentsNow(const QVariantList& ids)
     {
         QMetaObject::invokeMethod(this, "startTorrentsNow", Q_ARG(QVariantList, ids));
-    }
+    }*/
 
     void JniRpc::pauseTorrents(const QVariantList& ids)
     {
@@ -362,7 +356,7 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "checkTorrents", Q_ARG(QVariantList, ids));
     }
 
-    void JniRpc::moveTorrentsToTop(const QVariantList& ids)
+    /*void JniRpc::moveTorrentsToTop(const QVariantList& ids)
     {
         QMetaObject::invokeMethod(this, "moveTorrentsToTop", Q_ARG(QVariantList, ids));
     }
@@ -380,7 +374,7 @@ namespace libtremotesf
     void JniRpc::moveTorrentsToBottom(const QVariantList& ids)
     {
         QMetaObject::invokeMethod(this, "moveTorrentsToBottom", Q_ARG(QVariantList, ids));
-    }
+    }*/
 
     void JniRpc::reannounceTorrents(const QVariantList& ids)
     {
@@ -392,7 +386,7 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setTorrentsLocation", Q_ARG(QVariantList, ids), Q_ARG(QString, location), Q_ARG(bool, moveFiles));
     }
 
-    void JniRpc::getTorrentFiles(int id, bool scheduled)
+    /*void JniRpc::getTorrentFiles(int id, bool scheduled)
     {
         QMetaObject::invokeMethod(this, "getTorrentFiles", Q_ARG(int, id), Q_ARG(bool, scheduled));
     }
@@ -400,7 +394,7 @@ namespace libtremotesf
     void JniRpc::getTorrentPeers(int id, bool scheduled)
     {
         QMetaObject::invokeMethod(this, "getTorrentPeers", Q_ARG(int, id), Q_ARG(bool, scheduled));
-    }
+    }*/
 
     void JniRpc::renameTorrentFile(int torrentId, const QString& filePath, const QString& newName)
     {
@@ -487,11 +481,6 @@ namespace libtremotesf
         QMetaObject::invokeMethod(torrent, "setFilesPriority", Q_ARG(QVariantList, files), Q_ARG(libtremotesf::TorrentFile::Priority, priority));
     }
 
-    void JniRpc::torrentRenameFile(Torrent* torrent, const QString& path, const QString& newName)
-    {
-        QMetaObject::invokeMethod(torrent, "renameFile", Q_ARG(QString, path), Q_ARG(QString, newName));
-    }
-
     void JniRpc::torrentAddTracker(Torrent* torrent, const QString& announce)
     {
         QMetaObject::invokeMethod(torrent, "addTracker", Q_ARG(QString, announce));
@@ -516,84 +505,9 @@ namespace libtremotesf
     {
         QMetaObject::invokeMethod(this, "updateData");
     }
-
-    void JniRpc::onAboutToDisconnect()
-    {
-
-    }
-
-    void JniRpc::onConnectedChanged()
-    {
-
-    }
-
-    void JniRpc::onStatusChanged()
-    {
-
-    }
-
-    void JniRpc::onErrorChanged()
-    {
-
-    }
-
-    void JniRpc::onTorrentsUpdated()
-    {
-
-    }
-
-    void JniRpc::onServerStatsUpdated()
-    {
-
-    }
-
-    void JniRpc::onTorrentAdded(int id, const QString& hashString, const QString& name)
-    {
-
-    }
-
-    void JniRpc::onTorrentFinished(int id, const QString& hashString, const QString& name)
-    {
-
-    }
-
-    void JniRpc::onTorrentAddDuplicate()
-    {
-
-    }
-
-    void JniRpc::onTorrentAddError()
-    {
-
-    }
-
-    void JniRpc::onGotTorrentFiles(int torrentId)
-    {
-
-    }
-
-    void JniRpc::onTorrentFileRenamed(int torrentId, const QString& filePath, const QString& newName)
-    {
-
-    }
-
-    void JniRpc::onGotTorrentPeers(int torrentId)
-    {
-
-    }
-
-    void JniRpc::onGotDownloadDirFreeSpace(long long bytes)
-    {
-
-    }
-
-    void JniRpc::onGotFreeSpaceForPath(const QString& path, bool success, long long bytes)
-    {
-
-    }
 }
 
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*)
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM*, void*)
 {
     static int argc = 0;
     static std::string arg;

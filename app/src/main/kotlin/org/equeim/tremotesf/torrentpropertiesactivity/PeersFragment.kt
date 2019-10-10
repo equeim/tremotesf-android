@@ -45,8 +45,8 @@ class PeersFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.instance.setTorrentPeersEnabled(torrent, true)
-                    Rpc.instance.gotTorrentPeersListener = gotTorrentPeersListener
+                    Rpc.nativeInstance.setTorrentPeersEnabled(torrent, true)
+                    Rpc.gotTorrentPeersListener = gotTorrentPeersListener
                 }
             }
         }
@@ -83,12 +83,12 @@ class PeersFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         update()
-        Rpc.instance.gotTorrentPeersListener = gotTorrentPeersListener
+        Rpc.gotTorrentPeersListener = gotTorrentPeersListener
     }
 
     override fun onStop() {
         super.onStop()
-        Rpc.instance.gotTorrentPeersListener = null
+        Rpc.gotTorrentPeersListener = null
     }
 
     override fun onDestroyView() {

@@ -35,7 +35,6 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.intentFor
 
-import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.Utils
 
@@ -70,8 +69,8 @@ class ForegroundService : Service(), AnkoLogger {
 
         if (instance == this) {
             when (intent?.action) {
-                ACTION_CONNECT -> Rpc.instance.connect()
-                ACTION_DISCONNECT -> Rpc.instance.disconnect()
+                ACTION_CONNECT -> Rpc.nativeInstance.connect()
+                ACTION_DISCONNECT -> Rpc.nativeInstance.disconnect()
             }
         } else {
             Utils.initApp(applicationContext)
@@ -84,9 +83,9 @@ class ForegroundService : Service(), AnkoLogger {
                                                                                   NotificationManager.IMPORTANCE_LOW))
             }
 
-            Rpc.instance.addStatusListener(rpcStatusListener)
-            Rpc.instance.addErrorListener(rpcErrorListener)
-            Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener)
+            Rpc.addStatusListener(rpcStatusListener)
+            Rpc.addErrorListener(rpcErrorListener)
+            Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
 
             Servers.addCurrentServerListener(currentServerListener)
 
@@ -103,9 +102,9 @@ class ForegroundService : Service(), AnkoLogger {
     override fun onDestroy() {
         super.onDestroy()
         debug("service destroyed")
-        Rpc.instance.removeStatusListener(rpcStatusListener)
-        Rpc.instance.removeErrorListener(rpcErrorListener)
-        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
+        Rpc.removeStatusListener(rpcStatusListener)
+        Rpc.removeErrorListener(rpcErrorListener)
+        Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
         instance = null
     }
 
@@ -140,17 +139,17 @@ class ForegroundService : Service(), AnkoLogger {
             notificationBuilder.setShowWhen(false)
         }
 
-        if (Rpc.instance.isConnected) {
+        if (Rpc.isConnected) {
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.instance.serverStats.downloadSpeed()),
+                                                                               Rpc.serverStats.downloadSpeed()),
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.instance.serverStats.uploadSpeed())))
+                                                                               Rpc.serverStats.uploadSpeed())))
         } else {
-            notificationBuilder.setContentText(Rpc.instance.statusString)
+            notificationBuilder.setContentText(Rpc.statusString)
         }
 
-        if (Rpc.instance.status() == RpcStatus.Disconnected) {
+        if (Rpc.status == RpcStatus.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),

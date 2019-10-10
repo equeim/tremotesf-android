@@ -50,63 +50,168 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.warn
 
+import org.qtproject.qt5.android.QtNative
+
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
 
-class Rpc : JniRpc(), AnkoLogger {
-    companion object {
-        private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
-        private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
 
-        val instance by lazy { Rpc() }
+typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
+typealias RpcError = org.equeim.libtremotesf.Rpc.Error
+
+object Rpc : AnkoLogger {
+    private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
+    private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
+
+    private val context = Application.instance
+
+    init {
+        QtNative.setClassLoader(context.classLoader)
+        System.loadLibrary("c++_shared")
+        System.loadLibrary("Qt5Core")
+        System.loadLibrary("Qt5Network")
+        System.loadLibrary("tremotesf")
     }
 
-    var context: Context? = null
-        set(value) {
-            field = value
-            if (value == null) {
-                notificationManager = null
-            } else {
-                notificationManager = value.getSystemService()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    notificationManager?.createNotificationChannels(listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
-                                                                                               value.getString(R.string.finished_torrents_channel_name),
-                                                                                               NotificationManager.IMPORTANCE_DEFAULT),
-                                                                           NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
-                                                                                               value.getString(R.string.added_torrents_channel_name),
-                                                                                               NotificationManager.IMPORTANCE_DEFAULT)))
-                }
-
-                updateServer()
+    val nativeInstance: JniRpc = object : JniRpc(), AnkoLogger {
+        override fun onStatusChanged(status: Int) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onStatusChanged(status)
             }
         }
-    private var notificationManager: NotificationManager? = null
+
+        override fun onErrorChanged(error: Int, errorMessage: String) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onErrorChanged(error, errorMessage)
+            }
+        }
+
+        override fun onTorrentsUpdated(torrents: TorrentsVector) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentsUpdated(torrents)
+            }
+        }
+
+        override fun onServerStatsUpdated() {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onServerStatsUpdated()
+            }
+        }
+
+        override fun onTorrentAdded(id: Int, hashString: String, name: String) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentAdded(id, hashString, name)
+            }
+        }
+
+        override fun onTorrentFinished(id: Int, hashString: String, name: String) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentFinished(id, hashString, name)
+            }
+        }
+
+        override fun onTorrentAddDuplicate() {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentAddDuplicate()
+            }
+        }
+
+        override fun onTorrentAddError() {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentAddError()
+            }
+        }
+
+        override fun onGotTorrentFiles(torrentId: Int) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onGotTorrentFiles(torrentId)
+            }
+        }
+
+        override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
+            }
+        }
+
+        override fun onGotTorrentPeers(torrentId: Int) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onGotTorrentPeers(torrentId)
+            }
+        }
+
+        override fun onGotDownloadDirFreeSpace(bytes: Long) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onGotDownloadDirFreeSpace(bytes)
+            }
+        }
+
+        override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onGotFreeSpaceForPath(path, success, bytes)
+            }
+        }
+
+        override fun onAboutToDisconnect() {
+            context.runOnUiThread {
+                org.equeim.tremotesf.Rpc.onAboutToDisconnect()
+            }
+        }
+    }
+
+    private val notificationManager: NotificationManager = context.getSystemService()!!
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannels(listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
+                    context.getString(R.string.finished_torrents_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
+                            context.getString(R.string.added_torrents_channel_name),
+                            NotificationManager.IMPORTANCE_DEFAULT)))
+        }
+
+        updateServer()
+    }
+
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
-    val serverSettings: JniServerSettings = serverSettings()
-    val serverStats: ServerStats = serverStats()
+    val serverSettings: JniServerSettings = nativeInstance.serverSettings()
+    val serverStats: ServerStats = nativeInstance.serverStats()
+
+    var status: Int = RpcStatus.Disconnected
+        private set
+
+    val isConnected: Boolean
+        get() = (status == RpcStatus.Connected)
 
     val statusString: String
         get() {
-            return when (status()) {
-                Status.Disconnected -> when (error()) {
-                    Error.NoError -> context!!.getString(R.string.disconnected)
-                    Error.TimedOut -> context!!.getString(R.string.timed_out)
-                    Error.ConnectionError -> context!!.getString(R.string.connection_error)
-                    Error.AuthenticationError -> context!!.getString(R.string.authentication_error)
-                    Error.ParseError -> context!!.getString(R.string.parsing_error)
-                    Error.ServerIsTooNew -> context!!.getString(R.string.server_is_too_new)
-                    Error.ServerIsTooOld -> context!!.getString(R.string.server_is_too_old)
-                    else -> context!!.getString(R.string.disconnected)
+            return when (status) {
+                RpcStatus.Disconnected -> when (error) {
+                    RpcError.NoError -> context.getString(R.string.disconnected)
+                    RpcError.TimedOut -> context.getString(R.string.timed_out)
+                    RpcError.ConnectionError -> context.getString(R.string.connection_error)
+                    RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
+                    RpcError.ParseError -> context.getString(R.string.parsing_error)
+                    RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
+                    RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                    else -> context.getString(R.string.disconnected)
                 }
-                Status.Connecting -> context!!.getString(R.string.connecting)
-                Status.Connected -> context!!.getString(R.string.connected)
-                else -> context!!.getString(R.string.disconnected)
+                RpcStatus.Connecting -> context.getString(R.string.connecting)
+                RpcStatus.Connected -> context.getString(R.string.connected)
+                else -> context.getString(R.string.disconnected)
             }
         }
+
+    var error: Int = RpcError.NoError
+        private set
+    var errorMessage: String = ""
+        private set
 
     private val statusListeners = mutableListOf<(Int) -> Unit>()
     private val errorListeners = mutableListOf<(Int) -> Unit>()
@@ -125,6 +230,7 @@ class Rpc : JniRpc(), AnkoLogger {
     var gotFreeSpaceForPathListener: ((String, Boolean, Long) -> Unit)? = null
 
     val torrents = mutableListOf<TorrentData>()
+    private var firstTorrentsAfterConnection = false
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -135,9 +241,9 @@ class Rpc : JniRpc(), AnkoLogger {
             }
             if (Servers.hasServers) {
                 updateServer()
-                connect()
+                nativeInstance.connect()
             } else {
-                resetServer()
+                nativeInstance.resetServer()
             }
         }
     }
@@ -145,206 +251,178 @@ class Rpc : JniRpc(), AnkoLogger {
     private fun updateServer() {
         if (Servers.hasServers) {
             val server = Servers.currentServer!!
-            setServer(server.name,
-                      server.address,
-                      server.port,
-                      server.apiPath,
-                      server.httpsEnabled,
-                      server.selfSignedCertificateEnabled,
-                      server.selfSignedCertificate.toByteArray(),
-                      server.clientCertificateEnabled,
-                      server.clientCertificate.toByteArray(),
-                      server.authentication,
-                      server.username,
-                      server.password,
-                      server.updateInterval,
-                      0,
-                      server.timeout)
+            nativeInstance.setServer(server.name,
+                                     server.address,
+                                     server.port,
+                                     server.apiPath,
+                                     server.httpsEnabled,
+                                     server.selfSignedCertificateEnabled,
+                                     server.selfSignedCertificate.toByteArray(),
+                                     server.clientCertificateEnabled,
+                                     server.clientCertificate.toByteArray(),
+                                     server.authentication,
+                                     server.username,
+                                     server.password,
+                                     server.updateInterval,
+                                     0,
+                                     server.timeout)
         } else {
-            resetServer()
+            nativeInstance.resetServer()
         }
     }
 
     fun addStatusListener(listener: (Int) -> Unit) = statusListeners.add(listener)
     fun removeStatusListener(listener: (Int) -> Unit) = statusListeners.remove(listener)
 
-    override fun onConnectedChanged() {
-        context!!.runOnUiThread {
-            if (isConnected) {
-                val notifyOnFinished: Boolean
-                val notifyOnAdded: Boolean
-                if (updateWorkerCompleter == null) {
-                    notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
-                    notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
-                } else {
-                    notifyOnFinished = Settings.notifyOnFinished
-                    notifyOnAdded = Settings.notifyOnAdded
-                }
-
-                if (notifyOnFinished || notifyOnAdded) {
-                    val server = Servers.currentServer
-                    if (server != null) {
-                        val lastTorrents = server.lastTorrents
-                        if (lastTorrents.saved) {
-                            val torrents = torrents()
-                            for (torrent: Torrent in torrents) {
-                                val hashString: String = torrent.hashString()
-                                val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
-                                if (oldTorrent == null) {
-                                    if (notifyOnAdded) {
-                                        showAddedNotification(torrent.id(),
-                                                              hashString,
-                                                              torrent.name(),
-                                                              context!!)
-                                    }
-                                } else {
-                                    if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                                        showFinishedNotification(torrent.id(),
-                                                                 hashString,
-                                                                 torrent.name(),
-                                                                 context!!)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                handleWorkerCompleter(true)
-            }
+    private fun onStatusChanged(newStatus: Int) {
+        status = newStatus
+        for (listener in statusListeners) {
+            listener(status)
         }
-    }
-
-    override fun onStatusChanged() {
-        context!!.runOnUiThread {
-            val s = status()
-            for (listener in statusListeners) {
-                listener(s)
-            }
-            if (s == Status.Disconnected) {
-                handleWorkerCompleter(false)
-            }
+        when (status) {
+            RpcStatus.Connected -> firstTorrentsAfterConnection = true
+            RpcStatus.Disconnected -> handleWorkerCompleter()
         }
     }
 
     fun addErrorListener(listener: (Int) -> Unit) = errorListeners.add(listener)
     fun removeErrorListener(listener: (Int) -> Unit) = errorListeners.remove(listener)
 
-    override fun onErrorChanged() {
-        context!!.runOnUiThread {
-            val error = error()
-            for (listener in errorListeners) {
-                listener(error)
-            }
-            if (error == Error.ConnectionError) {
-                BaseActivity.showToast(errorMessage())
-            }
+    private fun onErrorChanged(newError: Int, newErrorMessage: String) {
+        error = newError
+        errorMessage = newErrorMessage
+        for (listener in errorListeners) {
+            listener(error)
+        }
+        if (error == RpcError.ConnectionError) {
+            BaseActivity.showToast(errorMessage)
         }
     }
 
     fun addTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.add(listener)
     fun removeTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.remove(listener)
 
-    override fun onTorrentsUpdated() {
-        context!!.runOnUiThread {
-            val oldTorrents = torrents.toList()
-            torrents.clear()
-            val rpcTorrents = torrents()
-            for (torrent: Torrent in rpcTorrents) {
-                val id = torrent.id()
-                val data = oldTorrents.find { it.id == id }
-                if (data == null) {
-                    torrents.add(TorrentData(torrent, context!!))
-                } else {
-                    torrents.add(data)
-                    data.update()
+    private fun onTorrentsUpdated(newTorrents: TorrentsVector) {
+        val oldTorrents = torrents.toList()
+        torrents.clear()
+        for (torrent: Torrent in newTorrents) {
+            val id = torrent.id()
+            val data = oldTorrents.find { it.id == id }
+            if (data == null) {
+                torrents.add(TorrentData(torrent, context))
+            } else {
+                torrents.add(data)
+                data.update()
+            }
+        }
+
+        for (listener in torrentsUpdatedListeners) {
+            listener()
+        }
+
+        if (firstTorrentsAfterConnection) {
+            showNotificationsSinceLastConnection()
+            firstTorrentsAfterConnection = false
+        }
+        handleWorkerCompleter()
+    }
+
+    private fun showNotificationsSinceLastConnection() {
+        val notifyOnFinished: Boolean
+        val notifyOnAdded: Boolean
+        if (updateWorkerCompleter == null) {
+            notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
+            notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
+        } else {
+            notifyOnFinished = Settings.notifyOnFinished
+            notifyOnAdded = Settings.notifyOnAdded
+        }
+
+        if (notifyOnFinished || notifyOnAdded) {
+            val server = Servers.currentServer
+            if (server != null) {
+                val lastTorrents = server.lastTorrents
+                if (lastTorrents.saved) {
+                    for (torrent in torrents) {
+                        val hashString: String = torrent.hashString
+                        val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
+                        if (oldTorrent == null) {
+                            if (notifyOnAdded) {
+                                showAddedNotification(torrent.id,
+                                        hashString,
+                                        torrent.name,
+                                        context)
+                            }
+                        } else {
+                            if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
+                                showFinishedNotification(torrent.id,
+                                        hashString,
+                                        torrent.name,
+                                        context)
+                            }
+                        }
+                    }
                 }
             }
-
-            for (listener in torrentsUpdatedListeners) {
-                listener()
-            }
-
-            handleWorkerCompleter(true)
         }
     }
 
     fun addServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.add(listener)
     fun removeServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.remove(listener)
 
-    override fun onServerStatsUpdated() {
-        context!!.runOnUiThread {
-            for (listener in serverStatsUpdatedListeners) {
-                listener()
-            }
+    private fun onServerStatsUpdated() {
+        for (listener in serverStatsUpdatedListeners) {
+            listener()
         }
     }
 
-    override fun onTorrentAdded(id: Int, hashString: String, name: String) {
-        context!!.runOnUiThread {
-            if (Settings.notifyOnAdded) {
-                showAddedNotification(id, hashString, name, this)
-            }
+    private fun onTorrentAdded(id: Int, hashString: String, name: String) {
+        if (Settings.notifyOnAdded) {
+            showAddedNotification(id, hashString, name, context)
         }
     }
 
-    override fun onTorrentFinished(id: Int, hashString: String, name: String) {
-        context!!.runOnUiThread {
-            if (Settings.notifyOnFinished) {
-                showFinishedNotification(id, hashString, name, this)
-            }
+    private fun onTorrentFinished(id: Int, hashString: String, name: String) {
+        if (Settings.notifyOnFinished) {
+            showFinishedNotification(id, hashString, name, context)
         }
     }
 
-    override fun onTorrentAddDuplicate() {
-        context!!.runOnUiThread {
-            torrentAddDuplicateListener?.invoke()
-        }
+    private fun onTorrentAddDuplicate() {
+        torrentAddDuplicateListener?.invoke()
     }
 
-    override fun onTorrentAddError() {
-        context!!.runOnUiThread {
-            torrentAddErrorListener?.invoke()
-        }
+    private fun onTorrentAddError() {
+        torrentAddErrorListener?.invoke()
     }
 
-    override fun onGotTorrentFiles(torrentId: Int) {
-        context!!.runOnUiThread {
+    private fun onGotTorrentFiles(torrentId: Int) {
+        context.runOnUiThread {
             gotTorrentFilesListener?.invoke(torrentId)
         }
     }
 
-    override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-        context!!.runOnUiThread {
-            torrentFileRenamedListener?.invoke(torrentId, filePath, newName)
-        }
+    private fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
+        torrentFileRenamedListener?.invoke(torrentId, filePath, newName)
     }
 
-    override fun onGotTorrentPeers(torrentId: Int) {
-        context!!.runOnUiThread {
-            gotTorrentPeersListener?.invoke(torrentId)
-        }
+    private fun onGotTorrentPeers(torrentId: Int) {
+        gotTorrentPeersListener?.invoke(torrentId)
     }
 
-    override fun onGotDownloadDirFreeSpace(bytes: Long) {
-        context!!.runOnUiThread {
-            gotDownloadDirFreeSpaceListener?.invoke(bytes)
-        }
+    private fun onGotDownloadDirFreeSpace(bytes: Long) {
+        gotDownloadDirFreeSpaceListener?.invoke(bytes)
     }
 
-    override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-        context!!.runOnUiThread {
-            gotFreeSpaceForPathListener?.invoke(path, success, bytes)
-        }
+    private fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
+        gotFreeSpaceForPathListener?.invoke(path, success, bytes)
     }
 
-    override fun onAboutToDisconnect() {
-        context!!.runOnUiThread {
-            if (disconnectingAfterCurrentServerChanged) {
-                disconnectingAfterCurrentServerChanged = false
-            } else {
-                Servers.save()
-            }
+    private fun onAboutToDisconnect() {
+        if (disconnectingAfterCurrentServerChanged) {
+            disconnectingAfterCurrentServerChanged = false
+        } else {
+            Servers.save()
         }
     }
 
@@ -359,7 +437,7 @@ class Rpc : JniRpc(), AnkoLogger {
         stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
                 TorrentPropertiesActivity.NAME to name))
 
-        notificationManager?.notify(
+        notificationManager.notify(
                 torrentId,
                 NotificationCompat.Builder(context, notificationChannel)
                         .setSmallIcon(R.drawable.notification_icon)
@@ -399,19 +477,19 @@ class Rpc : JniRpc(), AnkoLogger {
                     .setInitialDelay(interval, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
-            WorkManager.getInstance(context!!).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
         }
     }
 
     fun cancelUpdateWorker() {
         info("Rpc.cancelUpdateWorker()")
-        WorkManager.getInstance(context!!).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME)
+        WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME)
     }
 
-    private fun handleWorkerCompleter(connected: Boolean) {
+    private fun handleWorkerCompleter() {
         updateWorkerCompleter?.let { completer ->
             info("Rpc.handleWorkerCompleter()")
-            if (connected) {
+            if (isConnected) {
                 Servers.save()
             }
             completer.set(ListenableWorker.Result.success())
@@ -438,11 +516,11 @@ class Rpc : JniRpc(), AnkoLogger {
             }
 
             return CallbackToFutureAdapter.getFuture { completer ->
-                instance.updateWorkerCompleter = completer
-                if (instance.status() == Status.Disconnected) {
-                    instance.connect()
+                updateWorkerCompleter = completer
+                if (status == RpcStatus.Disconnected) {
+                    nativeInstance.connect()
                 } else {
-                    instance.updateData()
+                    nativeInstance.updateData()
                 }
                 javaClass.simpleName
             }

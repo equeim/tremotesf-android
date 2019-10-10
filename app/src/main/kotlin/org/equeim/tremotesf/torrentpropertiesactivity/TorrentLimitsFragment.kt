@@ -56,7 +56,7 @@ class TorrentLimitsFragment : Fragment() {
 
         global_limits_check_box.setOnCheckedChangeListener { _, checked ->
             if (!updating) {
-                Rpc.instance.setTorrentHonorSessionLimits(torrent, checked)
+                Rpc.nativeInstance.setTorrentHonorSessionLimits(torrent, checked)
             }
         }
 
@@ -64,7 +64,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                Rpc.instance.setTorrentDownloadSpeedLimited(torrent, checked)
+                Rpc.nativeInstance.setTorrentDownloadSpeedLimited(torrent, checked)
             }
         }
 
@@ -72,7 +72,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentDownloadSpeedLimit(torrent, string.toString().toInt())
+                    Rpc.nativeInstance.setTorrentDownloadSpeedLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -84,7 +84,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                Rpc.instance.setTorrentUploadSpeedLimited(torrent, checked)
+                Rpc.nativeInstance.setTorrentUploadSpeedLimited(torrent, checked)
             }
         }
 
@@ -92,7 +92,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentUploadSpeedLimit(torrent, string.toString().toInt())
+                    Rpc.nativeInstance.setTorrentUploadSpeedLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -108,7 +108,7 @@ class TorrentLimitsFragment : Fragment() {
                                         position: Int,
                                         id: Long) {
                 if (!updating) {
-                    Rpc.instance.setTorrentBandwidthPriority(torrent, when (position) {
+                    Rpc.nativeInstance.setTorrentBandwidthPriority(torrent, when (position) {
                         0 -> Torrent.Priority.HighPriority
                         1 -> Torrent.Priority.NormalPriority
                         2 -> Torrent.Priority.LowPriority
@@ -130,7 +130,7 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 ratio_limit_edit.isEnabled = (position == 2)
                 if (!updating) {
-                    Rpc.instance.setTorrentRatioLimitMode(torrent, when (position) {
+                    Rpc.nativeInstance.setTorrentRatioLimitMode(torrent, when (position) {
                         0 -> Torrent.RatioLimitMode.GlobalRatioLimit
                         1 -> Torrent.RatioLimitMode.UnlimitedRatio
                         2 -> Torrent.RatioLimitMode.SingleRatioLimit
@@ -144,7 +144,7 @@ class TorrentLimitsFragment : Fragment() {
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!)
+                    Rpc.nativeInstance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!)
                 }
             }
 
@@ -161,7 +161,7 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 idle_seeding_layout.isEnabled = (position == 2)
                 if (!updating) {
-                    Rpc.instance.setTorrentIdleSeedingLimitMode(torrent, when (position) {
+                    Rpc.nativeInstance.setTorrentIdleSeedingLimitMode(torrent, when (position) {
                         0 -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
                         1 -> Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding
                         2 -> Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit
@@ -176,7 +176,7 @@ class TorrentLimitsFragment : Fragment() {
         idle_seeding_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentIdleSeedingLimit(torrent, string.toString().toInt())
+                    Rpc.nativeInstance.setTorrentIdleSeedingLimit(torrent, string.toString().toInt())
                 }
             }
 
@@ -188,7 +188,7 @@ class TorrentLimitsFragment : Fragment() {
         maximum_peers_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.instance.setTorrentPeersLimit(torrent, string.toString().toInt())
+                    Rpc.nativeInstance.setTorrentPeersLimit(torrent, string.toString().toInt())
                 }
             }
 

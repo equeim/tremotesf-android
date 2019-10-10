@@ -59,7 +59,7 @@ object Utils : AnkoLogger {
                 ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())
             }
 
-            Rpc.instance.connect()
+            Rpc.nativeInstance.connect()
         }
     }
 
@@ -68,7 +68,7 @@ object Utils : AnkoLogger {
             info("Utils.shutdownApp()")
             appIsRunning = false
             BaseActivity.finishAllActivities()
-            Rpc.instance.disconnect()
+            Rpc.nativeInstance.disconnect()
             context.stopService<ForegroundService>()
         }
     }

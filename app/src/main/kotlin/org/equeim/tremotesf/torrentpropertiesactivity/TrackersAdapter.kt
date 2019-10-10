@@ -241,9 +241,9 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                 val torrent = (activity as TorrentPropertiesActivity).torrent
                 val textField = dialog!!.text_field!!
                 if (trackerId == -1) {
-                    Rpc.instance.torrentAddTracker(torrent, textField.text.toString())
+                    Rpc.nativeInstance.torrentAddTracker(torrent, textField.text.toString())
                 } else {
-                    Rpc.instance.torrentSetTracker(torrent, trackerId, textField.text.toString())
+                    Rpc.nativeInstance.torrentSetTracker(torrent, trackerId, textField.text.toString())
                 }
             }
         }
@@ -292,7 +292,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         val activity = this.activity as TorrentPropertiesActivity
-                        Rpc.instance.torrentRemoveTrackers(activity.torrent, ids)
+                        Rpc.nativeInstance.torrentRemoveTrackers(activity.torrent, ids)
                         activity.actionMode?.finish()
                     }
                     .create()

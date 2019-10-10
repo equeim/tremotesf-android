@@ -124,7 +124,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         Errored
     }
 
-    private val torrents = Rpc.instance.torrents
+    private val torrents = Rpc.torrents
 
     private var filteredTorrents = listOf<TorrentData>()
     private val displayedTorrents = mutableListOf<TorrentData>()
@@ -484,10 +484,10 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             }
 
             when (item.itemId) {
-                R.id.start -> Rpc.instance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.pause -> Rpc.instance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.check -> Rpc.instance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.reannounce -> Rpc.instance.reannounceTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.start -> Rpc.nativeInstance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.pause -> Rpc.nativeInstance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.check -> Rpc.nativeInstance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray(),
                                                                       selector.selectedItems.first().downloadDirectory)
                         .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
@@ -543,7 +543,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                              directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(dialog!!.download_directory_dropdown, dialog!!.download_directory_edit)
                                          },
                                          {
-                                             Rpc.instance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
+                                             Rpc.nativeInstance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
                                                                               dialog!!.download_directory_edit.text.toString(),
                                                                               dialog!!.move_files_check_box.isChecked)
                                              directoriesAdapter?.save()
@@ -574,7 +574,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setView(R.layout.remove_torrents_dialog)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        Rpc.instance.removeTorrents(ids,
+                        Rpc.nativeInstance.removeTorrents(ids,
                                                     dialog!!.delete_files_check_box.isChecked)
                         (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
                     }

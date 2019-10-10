@@ -36,7 +36,7 @@ class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdap
 
     override fun getItem(position: Int): String {
         return when (position) {
-            0 -> context.getString(R.string.torrents_all, Rpc.instance.torrents.size)
+            0 -> context.getString(R.string.torrents_all, Rpc.torrents.size)
             1 -> context.getString(R.string.torrents_active, activeTorrents)
             2 -> context.getString(R.string.torrents_downloading, downloadingTorrents)
             3 -> context.getString(R.string.torrents_seeding, seedingTorrents)
@@ -59,7 +59,7 @@ class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdap
         checkingTorrents = 0
         erroredTorrents = 0
 
-        for (torrent in Rpc.instance.torrents) {
+        for (torrent in Rpc.torrents) {
             if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Active)) {
                 activeTorrents++
             }

@@ -62,8 +62,8 @@ open class BaseActivity : AppCompatActivity() {
         super.onStart()
 
         if (activeActivity == null) {
-            Rpc.instance.cancelUpdateWorker()
-            Rpc.instance.isUpdateDisabled = false
+            Rpc.cancelUpdateWorker()
+            Rpc.nativeInstance.setUpdateDisabled(false)
         }
 
         activeActivity = this
@@ -86,8 +86,8 @@ open class BaseActivity : AppCompatActivity() {
 
                 if (!Settings.showPersistentNotification) {
                     Servers.save()
-                    Rpc.instance.isUpdateDisabled = true
-                    Rpc.instance.enqueueUpdateWorker()
+                    Rpc.nativeInstance.setUpdateDisabled(true)
+                    Rpc.enqueueUpdateWorker()
                 }
             }
         }

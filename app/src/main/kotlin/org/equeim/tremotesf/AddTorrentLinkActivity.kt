@@ -37,7 +37,6 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -79,11 +78,11 @@ class AddTorrentLinkActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {
                 val path = s.toString().trim()
                 when {
-                    Rpc.instance.serverSettings.canShowFreeSpaceForPath() -> {
-                        Rpc.instance.getFreeSpaceForPath(path)
+                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                        Rpc.nativeInstance.getFreeSpaceForPath(path)
                     }
-                    path == Rpc.instance.serverSettings.downloadDirectory() -> {
-                        Rpc.instance.getDownloadDirFreeSpace()
+                    path == Rpc.serverSettings.downloadDirectory() -> {
+                        Rpc.nativeInstance.getDownloadDirFreeSpace()
                     }
                     else -> {
                         free_space_text_view.visibility = View.GONE
@@ -103,16 +102,16 @@ class AddTorrentLinkActivity : BaseActivity() {
 
         updateView(savedInstanceState)
 
-        Rpc.instance.addStatusListener(rpcStatusListener)
+        Rpc.addStatusListener(rpcStatusListener)
 
-        Rpc.instance.gotDownloadDirFreeSpaceListener = {
-            if (Rpc.instance.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
+        Rpc.gotDownloadDirFreeSpaceListener = {
+            if (Rpc.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
                 free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, it))
                 free_space_text_view.visibility = View.VISIBLE
             }
         }
 
-        Rpc.instance.gotFreeSpaceForPathListener = { path, success, bytes ->
+        Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
             if (path.contentEquals(download_directory_edit.text!!.trim())) {
                 if (success) {
                     free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, bytes))
@@ -125,15 +124,15 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Rpc.instance.removeStatusListener(rpcStatusListener)
-        Rpc.instance.gotDownloadDirFreeSpaceListener = null
-        Rpc.instance.gotFreeSpaceForPathListener = null
+        Rpc.removeStatusListener(rpcStatusListener)
+        Rpc.gotDownloadDirFreeSpaceListener = null
+        Rpc.gotFreeSpaceForPathListener = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.add_torrent_activity_menu, menu)
         doneMenuItem = menu.findItem(R.id.done)
-        doneMenuItem!!.isVisible = Rpc.instance.isConnected
+        doneMenuItem!!.isVisible = Rpc.isConnected
         return true
     }
 
@@ -151,7 +150,7 @@ class AddTorrentLinkActivity : BaseActivity() {
                 return false
             }
 
-            Rpc.instance.addTorrentLink(torrent_link_edit.text.toString(),
+            Rpc.nativeInstance.addTorrentLink(torrent_link_edit.text.toString(),
                                download_directory_edit.text.toString(),
                                when (priority_spinner.selectedItemPosition) {
                                    0 -> Torrent.Priority.HighPriority
@@ -190,15 +189,15 @@ class AddTorrentLinkActivity : BaseActivity() {
     }
 
     private fun updateView(savedInstanceState: Bundle? = null) {
-        doneMenuItem?.isVisible = Rpc.instance.isConnected
+        doneMenuItem?.isVisible = Rpc.isConnected
 
-        when (Rpc.instance.status()) {
+        when (Rpc.status) {
             RpcStatus.Disconnected -> {
                 snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
-                    Rpc.instance.connect()
+                    Rpc.nativeInstance.connect()
                 }
-                placeholder.text = Rpc.instance.statusString
+                placeholder.text = Rpc.statusString
 
                 currentFocus?.let { focus ->
                     inputManager.hideSoftInputFromWindow(focus.windowToken, 0)
@@ -213,13 +212,13 @@ class AddTorrentLinkActivity : BaseActivity() {
             }
             else -> {
                 if (savedInstanceState == null) {
-                    download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())
-                    start_downloading_check_box.isChecked = Rpc.instance.serverSettings.startAddedTorrents()
+                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+                    start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
                 }
             }
         }
 
-        if (Rpc.instance.isConnected) {
+        if (Rpc.isConnected) {
             scroll_view.visibility = View.VISIBLE
             placeholder_layout.visibility = View.GONE
         } else {
@@ -227,7 +226,7 @@ class AddTorrentLinkActivity : BaseActivity() {
             scroll_view.visibility = View.GONE
         }
 
-        progress_bar.visibility = if (Rpc.instance.status() == RpcStatus.Connecting) {
+        progress_bar.visibility = if (Rpc.status == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

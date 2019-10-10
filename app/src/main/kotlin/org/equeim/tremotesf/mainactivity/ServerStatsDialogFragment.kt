@@ -37,7 +37,7 @@ import kotlinx.android.synthetic.main.server_stats_dialog.*
 class ServerStatsDialogFragment : DialogFragment() {
     private var serverStatsUpdatedListener: (() -> Unit)? = null
     private val rpcStatusListener: (Int) -> Unit = {
-        if (Rpc.instance.isConnected) {
+        if (Rpc.isConnected) {
             serverStatsUpdatedListener!!()
         }
     }
@@ -63,7 +63,7 @@ class ServerStatsDialogFragment : DialogFragment() {
             val ratioFormat = DecimalFormat("0.00")
 
             val update = {
-                val sessionStats = Rpc.instance.serverStats.currentSession()
+                val sessionStats = Rpc.serverStats.currentSession()
                 sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),
                                                                       sessionStats.downloaded())
                 sessionUploadedTextView.text = Utils.formatByteSize(requireContext(),
@@ -72,7 +72,7 @@ class ServerStatsDialogFragment : DialogFragment() {
                                                                sessionStats.downloaded().toDouble())
                 sessionDurationTextView.text = Utils.formatDuration(requireContext(), sessionStats.duration())
 
-                val totalStats = Rpc.instance.serverStats.total()
+                val totalStats = Rpc.serverStats.total()
                 val sessionCount = totalStats.sessionCount()
                 startedTimesTextView.text = resources.getQuantityString(R.plurals.started_times,
                                                                         sessionCount,
@@ -86,8 +86,8 @@ class ServerStatsDialogFragment : DialogFragment() {
 
             update()
             serverStatsUpdatedListener = update
-            Rpc.instance.addServerStatsUpdatedListener(serverStatsUpdatedListener!!)
-            Rpc.instance.addStatusListener(rpcStatusListener)
+            Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+            Rpc.addStatusListener(rpcStatusListener)
         }
 
         return dialog
@@ -95,8 +95,8 @@ class ServerStatsDialogFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Rpc.instance.removeServerStatsUpdatedListener(serverStatsUpdatedListener!!)
-        Rpc.instance.removeStatusListener(rpcStatusListener)
+        Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+        Rpc.removeStatusListener(rpcStatusListener)
         serverStatsUpdatedListener = null
     }
 }

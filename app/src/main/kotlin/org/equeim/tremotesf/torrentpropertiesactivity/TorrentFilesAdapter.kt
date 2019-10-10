@@ -85,11 +85,11 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     }
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        Rpc.instance.setTorrentFilesWanted(torrent, ids, wanted)
+        Rpc.nativeInstance.setTorrentFilesWanted(torrent, ids, wanted)
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        Rpc.instance.setTorrentFilesPriority(torrent, ids, priority.toTorrentFilePriority())
+        Rpc.nativeInstance.setTorrentFilesPriority(torrent, ids, priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {
@@ -132,7 +132,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             super.onCreateActionMode(mode, menu)
-            if (Rpc.instance.serverSettings.canRenameFiles()) {
+            if (Rpc.serverSettings.canRenameFiles()) {
                 mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
                 renameItem = menu.findItem(R.id.rename)
             }
@@ -206,7 +206,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                                          null) {
                 val path = arguments!!.getString(FILE_PATH)
                 val newName = dialog!!.text_field.text.toString()
-                Rpc.instance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
+                Rpc.nativeInstance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
                 (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
             }
         }

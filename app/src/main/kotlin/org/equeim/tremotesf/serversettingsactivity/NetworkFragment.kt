@@ -50,11 +50,11 @@ class NetworkFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         peer_port_edit.filters = arrayOf(IntFilter(0..65535))
-        peer_port_edit.setText(Rpc.instance.serverSettings.peerPort().toString())
+        peer_port_edit.setText(Rpc.serverSettings.peerPort().toString())
         peer_port_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setPeerPort(s.toString().toInt())
+                    Rpc.serverSettings.setPeerPort(s.toString().toInt())
                 }
             }
 
@@ -67,19 +67,19 @@ class NetworkFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        random_port_check_box.isChecked = Rpc.instance.serverSettings.isRandomPortEnabled
+        random_port_check_box.isChecked = Rpc.serverSettings.isRandomPortEnabled
         random_port_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isRandomPortEnabled = checked
+            Rpc.serverSettings.isRandomPortEnabled = checked
         }
 
-        port_forwarding_check_box.isChecked = Rpc.instance.serverSettings.isPortForwardingEnabled
+        port_forwarding_check_box.isChecked = Rpc.serverSettings.isPortForwardingEnabled
         port_forwarding_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isPortForwardingEnabled = checked
+            Rpc.serverSettings.isPortForwardingEnabled = checked
         }
 
         encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption_items),
                                                                    R.string.encryption)
-        encryption_spinner.setSelection(when (Rpc.instance.serverSettings.encryptionMode()) {
+        encryption_spinner.setSelection(when (Rpc.serverSettings.encryptionMode()) {
                                             ServerSettings.EncryptionMode.AllowedEncryption -> 0
                                             ServerSettings.EncryptionMode.PreferredEncryption -> 1
                                             ServerSettings.EncryptionMode.RequiredEncryption -> 2
@@ -90,7 +90,7 @@ class NetworkFragment : Fragment() {
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                Rpc.instance.serverSettings.setEncryptionMode(when (position) {
+                Rpc.serverSettings.setEncryptionMode(when (position) {
                     0 -> ServerSettings.EncryptionMode.AllowedEncryption
                     1 -> ServerSettings.EncryptionMode.PreferredEncryption
                     2 -> ServerSettings.EncryptionMode.RequiredEncryption
@@ -101,32 +101,32 @@ class NetworkFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        utp_check_box.isChecked = Rpc.instance.serverSettings.isUtpEnabled
+        utp_check_box.isChecked = Rpc.serverSettings.isUtpEnabled
         utp_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isUtpEnabled = checked
+            Rpc.serverSettings.isUtpEnabled = checked
         }
 
-        pex_check_box.isChecked = Rpc.instance.serverSettings.isPexEnabled
+        pex_check_box.isChecked = Rpc.serverSettings.isPexEnabled
         pex_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isPexEnabled = checked
+            Rpc.serverSettings.isPexEnabled = checked
         }
 
-        dht_check_box.isChecked = Rpc.instance.serverSettings.isDhtEnabled
+        dht_check_box.isChecked = Rpc.serverSettings.isDhtEnabled
         dht_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isDhtEnabled = checked
+            Rpc.serverSettings.isDhtEnabled = checked
         }
 
-        lpd_check_box.isChecked = Rpc.instance.serverSettings.isLpdEnabled
+        lpd_check_box.isChecked = Rpc.serverSettings.isLpdEnabled
         lpd_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.isLpdEnabled = checked
+            Rpc.serverSettings.isLpdEnabled = checked
         }
 
         peers_per_torrent_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_per_torrent_edit.setText(Rpc.instance.serverSettings.maximumPeersPerTorrent().toString())
+        peers_per_torrent_edit.setText(Rpc.serverSettings.maximumPeersPerTorrent().toString())
         peers_per_torrent_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setMaximumPeersPerTorrent(s.toString().toInt())
+                    Rpc.serverSettings.setMaximumPeersPerTorrent(s.toString().toInt())
                 }
             }
 
@@ -140,11 +140,11 @@ class NetworkFragment : Fragment() {
         })
 
         peers_globally_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_globally_edit.setText(Rpc.instance.serverSettings.maximumPeersGlobally().toString())
+        peers_globally_edit.setText(Rpc.serverSettings.maximumPeersGlobally().toString())
         peers_globally_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setMaximumPeersGlobally(s.toString().toInt())
+                    Rpc.serverSettings.setMaximumPeersGlobally(s.toString().toInt())
                 }
             }
 

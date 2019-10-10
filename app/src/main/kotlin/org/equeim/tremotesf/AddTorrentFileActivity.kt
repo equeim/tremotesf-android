@@ -54,7 +54,6 @@ import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 import org.jetbrains.anko.intentFor
 
-import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -171,7 +170,7 @@ class AddTorrentFileActivity : BaseActivity() {
 
             updateView()
 
-            Rpc.instance.addStatusListener(rpcStatusListener)
+            Rpc.addStatusListener(rpcStatusListener)
 
             torrentFileParser.statusListener = { status ->
                 updateView()
@@ -186,14 +185,14 @@ class AddTorrentFileActivity : BaseActivity() {
             doneMenuItem = null
             pagerAdapter = null
             snackbar = null
-            Rpc.instance.removeStatusListener(rpcStatusListener)
+            Rpc.removeStatusListener(rpcStatusListener)
             torrentFileParser.statusListener = null
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
             inflater.inflate(R.menu.add_torrent_activity_menu, menu)
             doneMenuItem = menu.findItem(R.id.done)
-            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.instance.isConnected)
+            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.isConnected)
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -203,7 +202,7 @@ class AddTorrentFileActivity : BaseActivity() {
             val infoFragment = pagerAdapter!!.infoFragment
             if (infoFragment?.check() == true) {
                 val filesData = torrentFileParser.getFilesData()
-                Rpc.instance.addTorrentFile(torrentFileParser.fileData,
+                Rpc.nativeInstance.addTorrentFile(torrentFileParser.fileData,
                                    infoFragment.download_directory_edit.text.toString(),
                                    filesData.wantedFiles.toIntArray(),
                                    filesData.unwantedFiles.toIntArray(),
@@ -229,7 +228,7 @@ class AddTorrentFileActivity : BaseActivity() {
                 return
             }
 
-            if (Rpc.instance.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
+            if (Rpc.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
                 (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
@@ -250,13 +249,13 @@ class AddTorrentFileActivity : BaseActivity() {
                         TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
                         TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
-                        TorrentFileParser.Status.Loaded -> Rpc.instance.statusString
+                        TorrentFileParser.Status.Loaded -> Rpc.statusString
                         else -> null
                     }
                 }
 
                 progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
-                        (Rpc.instance.status() == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
+                        (Rpc.status == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -279,11 +278,11 @@ class AddTorrentFileActivity : BaseActivity() {
                 placeholder.visibility = View.VISIBLE
 
                 if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                    when (Rpc.instance.status()) {
+                    when (Rpc.status) {
                         RpcStatus.Disconnected -> {
                             snackbar = activity.contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                                 snackbar = null
-                                Rpc.instance.connect()
+                                Rpc.nativeInstance.connect()
                             }
                         }
                         RpcStatus.Connecting -> {
@@ -358,11 +357,11 @@ class AddTorrentFileActivity : BaseActivity() {
                 override fun afterTextChanged(s: Editable) {
                     val path = s.toString().trim()
                     when {
-                        Rpc.instance.serverSettings.canShowFreeSpaceForPath() -> {
-                            Rpc.instance.getFreeSpaceForPath(path)
+                        Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                            Rpc.nativeInstance.getFreeSpaceForPath(path)
                         }
-                        path == Rpc.instance.serverSettings.downloadDirectory() -> {
-                            Rpc.instance.getDownloadDirFreeSpace()
+                        path == Rpc.serverSettings.downloadDirectory() -> {
+                            Rpc.nativeInstance.getDownloadDirFreeSpace()
                         }
                         else -> {
                             free_space_text_view.visibility = View.GONE
@@ -381,19 +380,19 @@ class AddTorrentFileActivity : BaseActivity() {
             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit)
 
             if (savedInstanceState == null) {
-                download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())
+                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
                 priority_spinner.setSelection(1)
-                start_downloading_check_box.isChecked = Rpc.instance.serverSettings.startAddedTorrents()
+                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
             }
 
-            Rpc.instance.gotDownloadDirFreeSpaceListener = {
-                if (Rpc.instance.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
+            Rpc.gotDownloadDirFreeSpaceListener = {
+                if (Rpc.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
                     free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), it))
                     free_space_text_view.visibility = View.VISIBLE
                 }
             }
 
-            Rpc.instance.gotFreeSpaceForPathListener = { path, success, bytes ->
+            Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
                 if (path.contentEquals(download_directory_edit.text!!.trim())) {
                     if (success) {
                         free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
@@ -406,8 +405,8 @@ class AddTorrentFileActivity : BaseActivity() {
 
         override fun onDestroyView() {
             super.onDestroyView()
-            Rpc.instance.gotDownloadDirFreeSpaceListener = null
-            Rpc.instance.gotFreeSpaceForPathListener = null
+            Rpc.gotDownloadDirFreeSpaceListener = null
+            Rpc.gotFreeSpaceForPathListener = null
         }
 
         fun check(): Boolean {

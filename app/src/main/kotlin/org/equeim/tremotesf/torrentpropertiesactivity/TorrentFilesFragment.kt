@@ -66,9 +66,9 @@ class TorrentFilesFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.instance.setTorrentFilesEnabled(value, true)
-                    Rpc.instance.gotTorrentFilesListener = gotTorrentFilesListener
-                    Rpc.instance.torrentFileRenamedListener = fileRenamedListener
+                    Rpc.nativeInstance.setTorrentFilesEnabled(value, true)
+                    Rpc.gotTorrentFilesListener = gotTorrentFilesListener
+                    Rpc.torrentFileRenamedListener = fileRenamedListener
                 }
             }
         }
@@ -128,14 +128,14 @@ class TorrentFilesFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         update()
-        Rpc.instance.gotTorrentFilesListener = gotTorrentFilesListener
-        Rpc.instance.torrentFileRenamedListener = fileRenamedListener
+        Rpc.gotTorrentFilesListener = gotTorrentFilesListener
+        Rpc.torrentFileRenamedListener = fileRenamedListener
     }
 
     override fun onStop() {
         super.onStop()
-        Rpc.instance.gotTorrentFilesListener = null
-        Rpc.instance.torrentFileRenamedListener = null
+        Rpc.gotTorrentFilesListener = null
+        Rpc.torrentFileRenamedListener = null
     }
 
     override fun onDestroyView() {

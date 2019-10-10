@@ -26,43 +26,32 @@
 #define Q_INVOKABLE
 #define signals private
 
+%immutable;
+
 namespace libtremotesf
 {
     %ignore Server;
-    %ignore Rpc::Rpc;
-    %ignore Rpc::setServerSettings;
-    %ignore Rpc::setServer(const libtremotesf::Server& server);
-    %ignore Rpc::setSessionProperty;
-    %ignore Rpc::setSessionProperties;
-    %ignore Rpc::setTorrentProperty;
+    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem, notmatch$name="serverStats") "Rpc::.*$";
 
+    %rename($ignore, regextarget=1, fullname=1) "Torrent::set.*$";
     %ignore Torrent::Torrent;
     %ignore Torrent::idKey;
-    %ignore Torrent::setDownloadSpeedLimited;
-    %ignore Torrent::setDownloadSpeedLimit;
-    %ignore Torrent::setUploadSpeedLimited;
-    %ignore Torrent::setUploadSpeedLimit;
-    %ignore Torrent::setRatioLimitMode;
-    %ignore Torrent::setRatioLimit;
-    %ignore Torrent::setPeersLimit;
-    %ignore Torrent::setHonorSessionLimits;
-    %ignore Torrent::setBandwidthPriority;
-    %ignore Torrent::setIdleSeedingLimitMode;
-    %ignore Torrent::setIdleSeedingLimit;
-    %ignore Torrent::setFilesEnabled;
+    %ignore Torrent::isFilesEnabled;
     %ignore Torrent::isFilesUpdated;
-    %ignore Torrent::setFilesWanted;
-    %ignore Torrent::setFilesPriority;
     %ignore Torrent::renameFile;
     %ignore Torrent::addTracker;
     %ignore Torrent::setTracker;
     %ignore Torrent::removeTrackers;
-    %ignore Torrent::setPeersEnabled;
+    %ignore Torrent::isPeersEnabled;
     %ignore Torrent::isPeersUpdated;
     %ignore Torrent::isUpdated;
     %ignore Torrent::update;
     %ignore Torrent::updateFiles;
     %ignore Torrent::updatePeers;
+    %ignore Torrent::doneDate;
+    %ignore Torrent::isSingleFile;
+    %ignore Torrent::queuePosition;
+
     %ignore TorrentFile::TorrentFile;
     %ignore TorrentFile::update;
     %ignore Peer::Peer;
@@ -75,15 +64,16 @@ namespace libtremotesf
     %ignore ServerStats::update;
     %ignore SessionStats::SessionStats;
     %ignore SessionStats::update;
-    %immutable SessionStats::downloaded;
-    %immutable SessionStats::uploaded;
-    %immutable SessionStats::duration;
-    %immutable SessionStats::sessionCount;
     %ignore ServerSettings::ServerSettings;
     %ignore ServerSettings::toKibiBytes;
     %ignore ServerSettings::fromKibiBytes;
     %ignore ServerSettings::save;
     %ignore ServerSettings::update;
+    %ignore ServerSettings::minimumRpcVersion;
+    %ignore ServerSettings::rpcVersion;
+    %ignore ServerSettings::saveOnSet;
+    %ignore ServerSettings::trashTorrentFiles;
+    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem) "ServerSettings::set.*$";
     %ignore JniServerSettings::JniServerSettings;
 }
 
@@ -101,9 +91,7 @@ namespace libtremotesf
 
 %template(StringsVector) std::vector<QString>;
 
-%immutable;
 %include "../torrent.h"
-%mutable;
 %include "../tracker.h"
 %include "../rpc.h"
 %include "../serversettings.h"
@@ -111,4 +99,3 @@ namespace libtremotesf
 
 %feature("director") libtremotesf::JniRpc;
 %include "jnirpc.h"
-

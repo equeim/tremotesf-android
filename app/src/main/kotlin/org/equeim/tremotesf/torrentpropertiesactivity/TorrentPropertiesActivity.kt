@@ -40,11 +40,11 @@ import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.Rpc.Status as RpcStatus
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
@@ -74,7 +74,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
                 field = value
                 if (value == null) {
                     needUpdate = true
-                    if (Rpc.instance.isConnected) {
+                    if (Rpc.isConnected) {
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
@@ -102,9 +102,9 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
                 torrent = null
                 snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
-                    Rpc.instance.connect()
+                    Rpc.nativeInstance.connect()
                 }
-                placeholder.text = Rpc.instance.statusString
+                placeholder.text = Rpc.statusString
             }
             RpcStatus.Connecting -> {
                 if (snackbar != null) {
@@ -114,7 +114,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
                 placeholder.text = getString(R.string.connecting)
             }
             RpcStatus.Connected -> {
-                torrent = Rpc.instance.torrents.find { it.hashString == hash }?.torrent
+                torrent = Rpc.torrents.find { it.hashString == hash }?.torrent
                 if (torrent == null) {
                     placeholder.text = getString(R.string.torrent_not_found)
                 }
@@ -129,7 +129,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     }
 
     private val torrentsUpdatedListener = {
-        torrent = Rpc.instance.torrents.find { it.hashString == hash }?.torrent
+        torrent = Rpc.torrents.find { it.hashString == hash }?.torrent
     }
 
     private var menu: Menu? = null
@@ -185,13 +185,13 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
             }
         }
 
-        rpcStatusListener(Rpc.instance.status())
-        if (!Rpc.instance.isConnected) {
+        rpcStatusListener(Rpc.status)
+        if (!Rpc.isConnected) {
             updatePlaceholderVisibility()
         }
 
-        Rpc.instance.addStatusListener(rpcStatusListener)
-        Rpc.instance.addTorrentsUpdatedListener(torrentsUpdatedListener)
+        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.addTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
     override fun onStart() {
@@ -203,18 +203,18 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
     override fun onStop() {
         super.onStop()
-        Rpc.instance.removeTorrentsUpdatedListener(torrentsUpdatedListener)
+        Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        Rpc.instance.removeStatusListener(rpcStatusListener)
-        Rpc.instance.removeTorrentsUpdatedListener(torrentsUpdatedListener)
+        Rpc.removeStatusListener(rpcStatusListener)
+        Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
         if (isFinishing && torrent != null) {
-            Rpc.instance.setTorrentFilesEnabled(torrent, false)
-            Rpc.instance.setTorrentPeersEnabled(torrent, false)
+            Rpc.nativeInstance.setTorrentFilesEnabled(torrent, false)
+            Rpc.nativeInstance.setTorrentPeersEnabled(torrent, false)
         }
     }
 
@@ -230,10 +230,10 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         torrent?.let { torrent ->
             when (item.itemId) {
-                R.id.start -> Rpc.instance.startTorrents(intArrayOf(torrent.id()))
-                R.id.pause -> Rpc.instance.pauseTorrents(intArrayOf(torrent.id()))
-                R.id.check -> Rpc.instance.checkTorrents(intArrayOf(torrent.id()))
-                R.id.reannounce -> Rpc.instance.reannounceTorrents(intArrayOf(torrent.id()))
+                R.id.start -> Rpc.nativeInstance.startTorrents(intArrayOf(torrent.id()))
+                R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id()))
+                R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id()))
+                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id()))
                 R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id()),
                                                                                       torrent.downloadDirectory())
                         .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
@@ -297,7 +297,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     }
 
     private fun updatePlaceholderVisibility() {
-        if (Rpc.instance.isConnected && torrent != null) {
+        if (Rpc.isConnected && torrent != null) {
             (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or

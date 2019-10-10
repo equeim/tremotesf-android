@@ -47,11 +47,11 @@ class DownloadingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        download_directory_edit.setText(Rpc.instance.serverSettings.downloadDirectory())
+        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
         download_directory_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setDownloadDirectory(s.toString())
+                    Rpc.serverSettings.setDownloadDirectory(s.toString())
                 }
             }
 
@@ -64,29 +64,29 @@ class DownloadingFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        start_torrents_check_box.isChecked = Rpc.instance.serverSettings.startAddedTorrents()
+        start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
         start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.setStartAddedTorrents(checked)
+            Rpc.serverSettings.setStartAddedTorrents(checked)
         }
 
-        rename_incomplete_files_check_box.isChecked = Rpc.instance.serverSettings.renameIncompleteFiles()
+        rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles()
         rename_incomplete_files_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.instance.serverSettings.setRenameIncompleteFiles(checked)
+            Rpc.serverSettings.setRenameIncompleteFiles(checked)
         }
 
-        incomplete_files_directory_check_box.isChecked = Rpc.instance.serverSettings.isIncompleteDirectoryEnabled
+        incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.isIncompleteDirectoryEnabled
         incomplete_files_directory_check_box.setOnCheckedChangeListener { _, checked ->
             incomplete_files_directory_edit.isEnabled = checked
-            Rpc.instance.serverSettings.isIncompleteDirectoryEnabled = checked
+            Rpc.serverSettings.isIncompleteDirectoryEnabled = checked
         }
 
         incomplete_files_directory_edit.isEnabled = incomplete_files_directory_check_box.isChecked
-        incomplete_files_directory_edit.setText(Rpc.instance.serverSettings.incompleteDirectory())
+        incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory())
 
         incomplete_files_directory_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setIncompleteDirectory(s.toString())
+                    Rpc.serverSettings.setIncompleteDirectory(s.toString())
                 }
             }
 

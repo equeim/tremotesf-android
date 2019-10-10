@@ -129,20 +129,20 @@ class SpeedFragment : Fragment() {
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
-        download_speed_limit_check_box.isChecked = Rpc.instance.serverSettings.isDownloadSpeedLimited
+        download_speed_limit_check_box.isChecked = Rpc.serverSettings.isDownloadSpeedLimited
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout!!.isEnabled = checked
-            Rpc.instance.serverSettings.isDownloadSpeedLimited = checked
+            Rpc.serverSettings.isDownloadSpeedLimited = checked
         }
 
         download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked
 
         download_speed_limit_edit.filters = limitsFilters
-        download_speed_limit_edit.setText(Rpc.instance.serverSettings.downloadSpeedLimit().toString())
+        download_speed_limit_edit.setText(Rpc.serverSettings.downloadSpeedLimit().toString())
         download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setDownloadSpeedLimit(s.toString().toInt())
+                    Rpc.serverSettings.setDownloadSpeedLimit(s.toString().toInt())
                 }
             }
 
@@ -155,20 +155,20 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        upload_speed_limit_check_box.isChecked = Rpc.instance.serverSettings.isUploadSpeedLimited
+        upload_speed_limit_check_box.isChecked = Rpc.serverSettings.isUploadSpeedLimited
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
-            Rpc.instance.serverSettings.isUploadSpeedLimited = checked
+            Rpc.serverSettings.isUploadSpeedLimited = checked
         }
 
         upload_speed_limit_layout.isEnabled = upload_speed_limit_check_box.isChecked
 
         upload_speed_limit_edit.filters = limitsFilters
-        upload_speed_limit_edit.setText(Rpc.instance.serverSettings.uploadSpeedLimit().toString())
+        upload_speed_limit_edit.setText(Rpc.serverSettings.uploadSpeedLimit().toString())
         upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setUploadSpeedLimit(s.toString().toInt())
+                    Rpc.serverSettings.setUploadSpeedLimit(s.toString().toInt())
                 }
             }
 
@@ -181,22 +181,22 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        alternative_limits_check_box.isChecked = Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled
+        alternative_limits_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
         alternative_limits_check_box.setOnCheckedChangeListener { _, checked ->
             alternative_download_speed_limit_layout!!.isEnabled = checked
             alternative_upload_speed_limit_layout!!.isEnabled = checked
-            Rpc.instance.serverSettings.isAlternativeSpeedLimitsEnabled = checked
+            Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = checked
         }
 
         alternative_download_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
         alternative_upload_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
 
         alternative_download_speed_limit_edit.filters = limitsFilters
-        alternative_download_speed_limit_edit.setText(Rpc.instance.serverSettings.alternativeDownloadSpeedLimit().toString())
+        alternative_download_speed_limit_edit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit().toString())
         alternative_download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setAlternativeDownloadSpeedLimit(s.toString().toInt())
+                    Rpc.serverSettings.setAlternativeDownloadSpeedLimit(s.toString().toInt())
                 }
             }
 
@@ -210,11 +210,11 @@ class SpeedFragment : Fragment() {
         })
 
         alternative_upload_speed_limit_edit.filters = limitsFilters
-        alternative_upload_speed_limit_edit.setText(Rpc.instance.serverSettings.alternativeUploadSpeedLimit().toString())
+        alternative_upload_speed_limit_edit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit().toString())
         alternative_upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 if (s.isNotEmpty()) {
-                    Rpc.instance.serverSettings.setAlternativeUploadSpeedLimit(s.toString().toInt())
+                    Rpc.serverSettings.setAlternativeUploadSpeedLimit(s.toString().toInt())
                 }
             }
 
@@ -227,28 +227,28 @@ class SpeedFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        schedule_check_box.isChecked = Rpc.instance.serverSettings.isAlternativeSpeedLimitsScheduled
+        schedule_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsScheduled
         schedule_check_box.setOnCheckedChangeListener { _, checked ->
             schedule_layout.setChildrenEnabled(checked)
-            Rpc.instance.serverSettings.isAlternativeSpeedLimitsScheduled = checked
+            Rpc.serverSettings.isAlternativeSpeedLimitsScheduled = checked
         }
 
         schedule_layout.setChildrenEnabled(schedule_check_box.isChecked)
 
         begin_time_item.beginTime = true
-        begin_time_item.setTime(Rpc.instance.serverSettings.alternativeSpeedLimitsBeginTime())
+        begin_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime())
 
         end_time_item.beginTime = false
-        end_time_item.setTime(Rpc.instance.serverSettings.alternativeSpeedLimitsEndTime())
+        end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime())
 
         days_spinner.adapter = ArraySpinnerAdapter(requireContext(), daysSpinnerItems.toTypedArray())
-        days_spinner.setSelection(days.indexOf(Rpc.instance.serverSettings.alternativeSpeedLimitsDays()))
+        days_spinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays()))
         days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                Rpc.instance.serverSettings.setAlternativeSpeedLimitsDays(days[position])
+                Rpc.serverSettings.setAlternativeSpeedLimitsDays(days[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -316,10 +316,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
             if (speedFragment != null) {
                 if (arguments!!.getBoolean("beginTime")) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
-                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsBeginTime((hourOfDay * 60) + minute)
+                    Rpc.serverSettings.setAlternativeSpeedLimitsBeginTime((hourOfDay * 60) + minute)
                 } else {
                     speedFragment.end_time_item.setTime(hourOfDay, minute)
-                    Rpc.instance.serverSettings.setAlternativeSpeedLimitsEndTime((hourOfDay * 60) + minute)
+                    Rpc.serverSettings.setAlternativeSpeedLimitsEndTime((hourOfDay * 60) + minute)
                 }
             }
         }
