@@ -43,6 +43,9 @@ import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
+import org.equeim.tremotesf.setFilesPriority
+import org.equeim.tremotesf.setFilesWanted
+
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
@@ -85,11 +88,11 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     }
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        Rpc.nativeInstance.setTorrentFilesWanted(torrent?.torrent, ids, wanted)
+        torrent?.torrent?.setFilesWanted(ids, wanted)
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        Rpc.nativeInstance.setTorrentFilesPriority(torrent?.torrent, ids, priority.toTorrentFilePriority())
+        torrent?.torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {

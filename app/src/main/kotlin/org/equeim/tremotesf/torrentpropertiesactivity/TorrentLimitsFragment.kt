@@ -32,11 +32,22 @@ import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 
 import org.equeim.libtremotesf.Torrent
-import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
+
+import org.equeim.tremotesf.setDownloadSpeedLimited
+import org.equeim.tremotesf.setBandwidthPriority
+import org.equeim.tremotesf.setDownloadSpeedLimit
+import org.equeim.tremotesf.setHonorSessionLimits
+import org.equeim.tremotesf.setIdleSeedingLimit
+import org.equeim.tremotesf.setIdleSeedingLimitMode
+import org.equeim.tremotesf.setPeersLimit
+import org.equeim.tremotesf.setRatioLimit
+import org.equeim.tremotesf.setRatioLimitMode
+import org.equeim.tremotesf.setUploadSpeedLimit
+import org.equeim.tremotesf.setUploadSpeedLimited
 
 import kotlinx.android.synthetic.main.torrent_limits_fragment.*
 
@@ -56,7 +67,7 @@ class TorrentLimitsFragment : Fragment() {
 
         global_limits_check_box.setOnCheckedChangeListener { _, checked ->
             if (!updating) {
-                Rpc.nativeInstance.setTorrentHonorSessionLimits(torrent, checked)
+                torrent?.setHonorSessionLimits(checked)
             }
         }
 
@@ -64,7 +75,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             download_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                Rpc.nativeInstance.setTorrentDownloadSpeedLimited(torrent, checked)
+                torrent?.setDownloadSpeedLimited(checked)
             }
         }
 
@@ -72,7 +83,7 @@ class TorrentLimitsFragment : Fragment() {
         download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.nativeInstance.setTorrentDownloadSpeedLimit(torrent, string.toString().toInt())
+                    torrent?.setDownloadSpeedLimit(string.toString().toInt())
                 }
             }
 
@@ -84,7 +95,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
             upload_speed_limit_layout.isEnabled = checked
             if (!updating) {
-                Rpc.nativeInstance.setTorrentUploadSpeedLimited(torrent, checked)
+                torrent?.setUploadSpeedLimited(checked)
             }
         }
 
@@ -92,7 +103,7 @@ class TorrentLimitsFragment : Fragment() {
         upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.nativeInstance.setTorrentUploadSpeedLimit(torrent, string.toString().toInt())
+                    torrent?.setUploadSpeedLimit(string.toString().toInt())
                 }
             }
 
@@ -108,7 +119,7 @@ class TorrentLimitsFragment : Fragment() {
                                         position: Int,
                                         id: Long) {
                 if (!updating) {
-                    Rpc.nativeInstance.setTorrentBandwidthPriority(torrent, when (position) {
+                    torrent?.setBandwidthPriority(when (position) {
                         0 -> Torrent.Priority.HighPriority
                         1 -> Torrent.Priority.NormalPriority
                         2 -> Torrent.Priority.LowPriority
@@ -130,7 +141,7 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 ratio_limit_edit.isEnabled = (position == 2)
                 if (!updating) {
-                    Rpc.nativeInstance.setTorrentRatioLimitMode(torrent, when (position) {
+                    torrent?.setRatioLimitMode(when (position) {
                         0 -> Torrent.RatioLimitMode.GlobalRatioLimit
                         1 -> Torrent.RatioLimitMode.UnlimitedRatio
                         2 -> Torrent.RatioLimitMode.SingleRatioLimit
@@ -144,7 +155,7 @@ class TorrentLimitsFragment : Fragment() {
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.nativeInstance.setTorrentRatioLimit(torrent, DoubleFilter.parse(string.toString())!!)
+                    torrent?.setRatioLimit(DoubleFilter.parse(string.toString())!!)
                 }
             }
 
@@ -161,7 +172,7 @@ class TorrentLimitsFragment : Fragment() {
                                         id: Long) {
                 idle_seeding_layout.isEnabled = (position == 2)
                 if (!updating) {
-                    Rpc.nativeInstance.setTorrentIdleSeedingLimitMode(torrent, when (position) {
+                    torrent?.setIdleSeedingLimitMode(when (position) {
                         0 -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
                         1 -> Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding
                         2 -> Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit
@@ -176,7 +187,7 @@ class TorrentLimitsFragment : Fragment() {
         idle_seeding_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.nativeInstance.setTorrentIdleSeedingLimit(torrent, string.toString().toInt())
+                    torrent?.setIdleSeedingLimit(string.toString().toInt())
                 }
             }
 
@@ -188,7 +199,7 @@ class TorrentLimitsFragment : Fragment() {
         maximum_peers_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(string: Editable) {
                 if (!updating && string.isNotEmpty()) {
-                    Rpc.nativeInstance.setTorrentPeersLimit(torrent, string.toString().toInt())
+                    torrent?.setPeersLimit(string.toString().toInt())
                 }
             }
 

@@ -50,6 +50,9 @@ import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
+import org.equeim.tremotesf.setFilesEnabled
+import org.equeim.tremotesf.setPeersEnabled
+
 import kotlinx.android.synthetic.main.torrent_properties_activity.*
 
 
@@ -214,8 +217,10 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
         if (isFinishing && torrent != null) {
-            Rpc.nativeInstance.setTorrentFilesEnabled(torrent?.torrent, false)
-            Rpc.nativeInstance.setTorrentPeersEnabled(torrent?.torrent, false)
+            torrent?.torrent?.apply {
+                setFilesEnabled(false)
+                setPeersEnabled(false)
+            }
         }
     }
 

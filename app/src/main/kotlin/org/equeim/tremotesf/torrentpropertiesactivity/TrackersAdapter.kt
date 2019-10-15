@@ -42,10 +42,13 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
+
+import org.equeim.tremotesf.addTracker
+import org.equeim.tremotesf.setTracker
+import org.equeim.tremotesf.removeTrackers
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
@@ -241,9 +244,9 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                 val torrent = (activity as TorrentPropertiesActivity).torrent?.torrent
                 val textField = dialog!!.text_field!!
                 if (trackerId == -1) {
-                    Rpc.nativeInstance.torrentAddTracker(torrent, textField.text.toString())
+                    torrent?.addTracker(textField.text.toString())
                 } else {
-                    Rpc.nativeInstance.torrentSetTracker(torrent, trackerId, textField.text.toString())
+                    torrent?.setTracker(trackerId, textField.text.toString())
                 }
             }
         }
@@ -292,7 +295,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         val activity = this.activity as TorrentPropertiesActivity
-                        Rpc.nativeInstance.torrentRemoveTrackers(activity.torrent?.torrent, ids)
+                        activity.torrent?.torrent?.removeTrackers(ids)
                         activity.actionMode?.finish()
                     }
                     .create()

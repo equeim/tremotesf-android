@@ -39,6 +39,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.TorrentData
 
+import org.equeim.tremotesf.setFilesEnabled
+
 import kotlinx.android.synthetic.main.torrent_files_fragment.*
 
 
@@ -66,7 +68,7 @@ class TorrentFilesFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.nativeInstance.setTorrentFilesEnabled(value.torrent, true)
+                    value.torrent.setFilesEnabled(true)
                     Rpc.gotTorrentFilesListener = gotTorrentFilesListener
                     Rpc.torrentFileRenamedListener = fileRenamedListener
                 }

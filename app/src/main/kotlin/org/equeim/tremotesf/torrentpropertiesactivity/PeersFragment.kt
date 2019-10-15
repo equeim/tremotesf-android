@@ -32,6 +32,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.TorrentData
 
+import org.equeim.tremotesf.setPeersEnabled
+
 import kotlinx.android.synthetic.main.peers_fragment.*
 
 
@@ -45,7 +47,7 @@ class PeersFragment : Fragment() {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.nativeInstance.setTorrentPeersEnabled(value.torrent, true)
+                    value.torrent.setPeersEnabled(true)
                     Rpc.gotTorrentPeersListener = gotTorrentPeersListener
                 }
             }
