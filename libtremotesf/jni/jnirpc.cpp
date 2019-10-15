@@ -219,6 +219,8 @@ namespace libtremotesf
 
         setServerSettings(new JniServerSettings(this, this));
 
+        setUpdateDisabled(true);
+
         QObject::connect(this, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
         QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(status()); });
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(error(), errorMessage()); });
