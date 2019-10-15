@@ -34,6 +34,7 @@ import androidx.core.content.res.ResourcesCompat
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.mainactivity.MainActivity
@@ -103,16 +104,32 @@ class ForegroundService : Service(), AnkoLogger {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        debug("service destroyed")
+        info("ForegroundService.onDestroy()}")
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
-        instance = null
+
+        // isPersistentNotificationActive() works only on API 23+, so
+        // remove notification here explicitly to make sure that it is gone
+        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID)
+
+        super.onDestroy()
+    }
+
+    private fun isPersistentNotificationActive(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return notificationManager.activeNotifications.any { it.id == PERSISTENT_NOTIFICATION_ID }
+        }
+        return true
     }
 
     private fun updatePersistentNotification() {
-        notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+        // Sometimes updatePersistentNotification() is called after system has already removed notification
+        // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
+        // to avoid creating a new notification
+        if (isPersistentNotificationActive()) {
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+        }
     }
 
     private fun buildPersistentNotification(): Notification {
