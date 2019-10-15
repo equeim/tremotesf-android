@@ -28,8 +28,7 @@ import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
 
 
-class TorrentData(val torrent: Torrent, private val context: Context) {
-    val id = torrent.id()
+class TorrentData(val id: Int, val torrent: Torrent, private val context: Context) {
     val hashString: String = torrent.hashString()
 
     var name: String = torrent.name()

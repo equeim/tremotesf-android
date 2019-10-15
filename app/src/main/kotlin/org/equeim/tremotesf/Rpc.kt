@@ -320,7 +320,7 @@ object Rpc : AnkoLogger {
             val id = torrent.id()
             val data = oldTorrents.find { it.id == id }
             if (data == null) {
-                torrents.add(TorrentData(torrent, context))
+                torrents.add(TorrentData(id, torrent, context))
             } else {
                 torrents.add(data)
                 data.update()
