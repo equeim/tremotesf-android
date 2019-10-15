@@ -91,8 +91,9 @@ object Rpc : AnkoLogger {
         }
 
         override fun onTorrentsUpdated(torrents: TorrentsVector) {
+            val list = torrents.toList()
             context.runOnUiThread {
-                Rpc.onTorrentsUpdated(torrents)
+                onTorrentsUpdated(list)
             }
         }
 
@@ -312,10 +313,10 @@ object Rpc : AnkoLogger {
     fun addTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.add(listener)
     fun removeTorrentsUpdatedListener(listener: () -> Unit) = torrentsUpdatedListeners.remove(listener)
 
-    private fun onTorrentsUpdated(newTorrents: TorrentsVector) {
+    private fun onTorrentsUpdated(newTorrents: List<Torrent>) {
         val oldTorrents = torrents.toList()
         torrents.clear()
-        for (torrent: Torrent in newTorrents) {
+        for (torrent in newTorrents) {
             val id = torrent.id()
             val data = oldTorrents.find { it.id == id }
             if (data == null) {
