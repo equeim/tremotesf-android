@@ -25,18 +25,17 @@ import android.os.Bundle
 import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+
+import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.utils.Utils
 
 
-private val createdActivities = mutableListOf<BaseActivity>()
-
 @SuppressLint("Registered")
 open class BaseActivity : AppCompatActivity() {
-    protected var creating = true
-    protected var active = false
-
     companion object {
+        private val createdActivities = mutableListOf<BaseActivity>()
         var activeActivity: BaseActivity? = null
             private set
 
@@ -52,10 +51,16 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    protected var creating = true
+    protected var active = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createdActivities.add(this)
-        Utils.initApp(applicationContext)
+        if (Settings.showPersistentNotification) {
+            ContextCompat.startForegroundService(this, intentFor<ForegroundService>())
+        }
+        Rpc.connectOnce()
     }
 
     override fun onStart() {
@@ -76,8 +81,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        super.onStop()
-
         if (!isChangingConfigurations) {
             active = false
 
@@ -91,11 +94,12 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
         }
+        super.onStop()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         createdActivities.remove(this)
+        super.onDestroy()
     }
 
     protected fun setPreLollipopShadow() {

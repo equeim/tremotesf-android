@@ -68,8 +68,6 @@ class ForegroundService : Service(), AnkoLogger {
         }
 
         if (!started) {
-            Utils.initApp(applicationContext)
-
             notificationManager = getSystemService()!!
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
@@ -84,6 +82,8 @@ class ForegroundService : Service(), AnkoLogger {
             Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
 
             Servers.addCurrentServerListener(currentServerListener)
+
+            Rpc.connectOnce()
 
             started = true
 

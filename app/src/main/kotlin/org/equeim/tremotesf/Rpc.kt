@@ -70,8 +70,8 @@ object Rpc : AnkoLogger {
     private val context = Application.instance
 
     init {
-        QtNative.setClassLoader(context.classLoader)
         System.loadLibrary("c++_shared")
+        QtNative.setClassLoader(context.classLoader)
         System.loadLibrary("Qt5Core")
         System.loadLibrary("Qt5Network")
         System.loadLibrary("tremotesf")
@@ -165,19 +165,6 @@ object Rpc : AnkoLogger {
 
     private val notificationManager: NotificationManager = context.getSystemService()!!
 
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannels(listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
-                    context.getString(R.string.finished_torrents_channel_name),
-                    NotificationManager.IMPORTANCE_DEFAULT),
-                    NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
-                            context.getString(R.string.added_torrents_channel_name),
-                            NotificationManager.IMPORTANCE_DEFAULT)))
-        }
-
-        updateServer()
-    }
-
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     val serverSettings: JniServerSettings = nativeInstance.serverSettings()
@@ -234,41 +221,64 @@ object Rpc : AnkoLogger {
 
     private var disconnectingAfterCurrentServerChanged = false
 
+    private var connectedOnce = false
+
     init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannels(listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
+                    context.getString(R.string.finished_torrents_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
+                            context.getString(R.string.added_torrents_channel_name),
+                            NotificationManager.IMPORTANCE_DEFAULT)))
+        }
+
         Servers.addCurrentServerListener {
             if (isConnected) {
                 disconnectingAfterCurrentServerChanged = true
             }
-            if (Servers.hasServers) {
-                updateServer()
-                nativeInstance.connect()
+
+            val server = Servers.currentServer
+            if (server != null) {
+                setServer(server)
             } else {
                 nativeInstance.resetServer()
             }
         }
+
+        Servers.currentServer?.let { setServer(it) }
     }
 
-    private fun updateServer() {
-        if (Servers.hasServers) {
-            val server = Servers.currentServer!!
-            nativeInstance.setServer(server.name,
-                                     server.address,
-                                     server.port,
-                                     server.apiPath,
-                                     server.httpsEnabled,
-                                     server.selfSignedCertificateEnabled,
-                                     server.selfSignedCertificate.toByteArray(),
-                                     server.clientCertificateEnabled,
-                                     server.clientCertificate.toByteArray(),
-                                     server.authentication,
-                                     server.username,
-                                     server.password,
-                                     server.updateInterval,
-                                     0,
-                                     server.timeout)
-        } else {
-            nativeInstance.resetServer()
+    private fun setServer(server: Server) {
+        nativeInstance.setServer(
+                server.name,
+                server.address,
+                server.port,
+                server.apiPath,
+                server.httpsEnabled,
+                server.selfSignedCertificateEnabled,
+                server.selfSignedCertificate.toByteArray(),
+                server.clientCertificateEnabled,
+                server.clientCertificate.toByteArray(),
+                server.authentication,
+                server.username,
+                server.password,
+                server.updateInterval,
+                0,
+                server.timeout
+        )
+    }
+
+    fun connectOnce() {
+        if (!connectedOnce) {
+            nativeInstance.connect()
+            connectedOnce = true
         }
+    }
+
+    fun disconnectOnShutdown() {
+        nativeInstance.disconnect()
+        connectedOnce = false
     }
 
     fun addStatusListener(listener: (Int) -> Unit) = statusListeners.add(listener)

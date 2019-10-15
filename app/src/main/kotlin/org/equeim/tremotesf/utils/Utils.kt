@@ -32,45 +32,24 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 
-import androidx.core.content.ContextCompat
-
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.ForegroundService
 import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.Settings
 
 
 object Utils : AnkoLogger {
-    private var appIsRunning = false
     private val decimalFormat by lazy { DecimalFormat("0.#") }
 
-    fun initApp(context: Context) {
-        if (!appIsRunning) {
-            info("Utils.initApp()")
-            appIsRunning = true
-
-            if (Settings.showPersistentNotification) {
-                ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())
-            }
-
-            Rpc.nativeInstance.connect()
-        }
-    }
-
     fun shutdownApp(context: Context) {
-        if (appIsRunning) {
-            info("Utils.shutdownApp()")
-            appIsRunning = false
-            BaseActivity.finishAllActivities()
-            Rpc.nativeInstance.disconnect()
-            context.stopService<ForegroundService>()
-        }
+        info("Utils.shutdownApp()")
+        BaseActivity.finishAllActivities()
+        Rpc.disconnectOnShutdown()
+        context.stopService<ForegroundService>()
     }
 
     private fun calculateSize(bytes: Long): Pair<Double, Int> {
