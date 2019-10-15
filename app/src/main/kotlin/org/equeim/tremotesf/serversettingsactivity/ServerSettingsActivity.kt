@@ -74,7 +74,7 @@ class ServerSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setTheme(Settings.theme)
 
-        inputManager = getSystemService<InputMethodManager>()!!
+        inputManager = getSystemService()!!
 
         supportFragmentManager.addOnBackStackChangedListener {
             if (supportFragmentManager.backStackEntryCount == 0) {

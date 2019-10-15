@@ -80,85 +80,85 @@ object Rpc : AnkoLogger {
     val nativeInstance: JniRpc = object : JniRpc(), AnkoLogger {
         override fun onStatusChanged(status: Int) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onStatusChanged(status)
+                Rpc.onStatusChanged(status)
             }
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onErrorChanged(error, errorMessage)
+                Rpc.onErrorChanged(error, errorMessage)
             }
         }
 
         override fun onTorrentsUpdated(torrents: TorrentsVector) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentsUpdated(torrents)
+                Rpc.onTorrentsUpdated(torrents)
             }
         }
 
         override fun onServerStatsUpdated() {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onServerStatsUpdated()
+                Rpc.onServerStatsUpdated()
             }
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentAdded(id, hashString, name)
+                Rpc.onTorrentAdded(id, hashString, name)
             }
         }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentFinished(id, hashString, name)
+                Rpc.onTorrentFinished(id, hashString, name)
             }
         }
 
         override fun onTorrentAddDuplicate() {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentAddDuplicate()
+                Rpc.onTorrentAddDuplicate()
             }
         }
 
         override fun onTorrentAddError() {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentAddError()
+                Rpc.onTorrentAddError()
             }
         }
 
         override fun onGotTorrentFiles(torrentId: Int) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onGotTorrentFiles(torrentId)
+                Rpc.onGotTorrentFiles(torrentId)
             }
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
+                Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
             }
         }
 
         override fun onGotTorrentPeers(torrentId: Int) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onGotTorrentPeers(torrentId)
+                Rpc.onGotTorrentPeers(torrentId)
             }
         }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onGotDownloadDirFreeSpace(bytes)
+                Rpc.onGotDownloadDirFreeSpace(bytes)
             }
         }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onGotFreeSpaceForPath(path, success, bytes)
+                Rpc.onGotFreeSpaceForPath(path, success, bytes)
             }
         }
 
         override fun onAboutToDisconnect() {
             context.runOnUiThread {
-                org.equeim.tremotesf.Rpc.onAboutToDisconnect()
+                Rpc.onAboutToDisconnect()
             }
         }
     }
@@ -360,15 +360,13 @@ object Rpc : AnkoLogger {
                             if (notifyOnAdded) {
                                 showAddedNotification(torrent.id,
                                         hashString,
-                                        torrent.name,
-                                        context)
+                                        torrent.name)
                             }
                         } else {
                             if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
                                 showFinishedNotification(torrent.id,
                                         hashString,
-                                        torrent.name,
-                                        context)
+                                        torrent.name)
                             }
                         }
                     }
@@ -388,13 +386,13 @@ object Rpc : AnkoLogger {
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {
         if (Settings.notifyOnAdded) {
-            showAddedNotification(id, hashString, name, context)
+            showAddedNotification(id, hashString, name)
         }
     }
 
     private fun onTorrentFinished(id: Int, hashString: String, name: String) {
         if (Settings.notifyOnFinished) {
-            showFinishedNotification(id, hashString, name, context)
+            showFinishedNotification(id, hashString, name)
         }
     }
 
@@ -440,8 +438,7 @@ object Rpc : AnkoLogger {
                                         hashString: String,
                                         name: String,
                                         notificationChannel: String,
-                                        notificationTitle: String,
-                                        context: Context) {
+                                        notificationTitle: String) {
         val stackBuilder = TaskStackBuilder.create(context)
         stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
         stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
@@ -460,22 +457,20 @@ object Rpc : AnkoLogger {
                         .build())
     }
 
-    private fun showFinishedNotification(id: Int, hashString: String, name: String, context: Context) {
+    private fun showFinishedNotification(id: Int, hashString: String, name: String) {
         showTorrentNotification(id,
                 hashString,
                 name,
                 FINISHED_NOTIFICATION_CHANNEL_ID,
-                context.getString(R.string.torrent_finished),
-                context)
+                context.getString(R.string.torrent_finished))
     }
 
-    private fun showAddedNotification(id: Int, hashString: String, name: String, context: Context) {
+    private fun showAddedNotification(id: Int, hashString: String, name: String) {
         showTorrentNotification(id,
                 hashString,
                 name,
                 ADDED_NOTIFICATION_CHANNEL_ID,
-                context.getString(R.string.torrent_added),
-                context)
+                context.getString(R.string.torrent_added))
     }
 
     fun enqueueUpdateWorker() {

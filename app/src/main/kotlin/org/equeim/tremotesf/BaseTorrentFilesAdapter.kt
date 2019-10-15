@@ -495,7 +495,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         }
 
         override val changed: Boolean
-            get() = children.any(BaseTorrentFilesAdapter.Item::changed)
+            get() = children.any(Item::changed)
 
         val children = mutableListOf<Item>()
         val childrenMap = mutableMapOf<String, Item>()
@@ -509,19 +509,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             children.clear()
             childrenMap.clear()
         }
-
-        val childrenIds: List<Int>
-            get() {
-                val ids = mutableListOf<Int>()
-                for (item in children) {
-                    if (item is Directory) {
-                        ids.addAll(item.childrenIds)
-                    } else {
-                        ids.add((item as File).id)
-                    }
-                }
-                return ids
-            }
     }
 
     class File(row: Int,

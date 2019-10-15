@@ -103,7 +103,7 @@ class TorrentFileParser : AnkoLogger {
     @SuppressLint("StaticFieldLeak")
     private class TreeCreationTask(private val context: Context,
                                    private val uri: Uri,
-                                   parser: TorrentFileParser) : AsyncTask<Any, Any, TorrentFileParser.Status>(), AnkoLogger {
+                                   parser: TorrentFileParser) : AsyncTask<Any, Any, Status>(), AnkoLogger {
         private val parser = WeakReference(parser)
         private var fileData: ByteArray? = null
         private var rootDirectoryChild: BaseTorrentFilesAdapter.Item? = null

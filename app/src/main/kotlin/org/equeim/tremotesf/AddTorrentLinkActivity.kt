@@ -64,7 +64,7 @@ class AddTorrentLinkActivity : BaseActivity() {
         setTheme(Settings.theme)
         setContentView(R.layout.add_torrent_link_activity)
 
-        inputManager = getSystemService<InputMethodManager>()!!
+        inputManager = getSystemService()!!
 
         priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)

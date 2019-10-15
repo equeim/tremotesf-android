@@ -411,7 +411,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (!Settings.torrentNameMultiline) {
                 nameTextView.ellipsize = TextUtils.TruncateAt.END
                 nameTextView.maxLines = 1
-                nameTextView.setSingleLine(true)
+                nameTextView.isSingleLine = true
             }
         }
 

@@ -66,8 +66,6 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
         private set
     var completedSize = torrent.completedSize()
         private set
-    var leftUntilDone = torrent.leftUntilDone()
-        private set
     var sizeWhenDone = torrent.sizeWhenDone()
         private set
     var percentDone = torrent.percentDone()
@@ -118,7 +116,6 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
             errorString = torrent.errorString()
             totalSize = torrent.totalSize()
             completedSize = torrent.completedSize()
-            leftUntilDone = torrent.leftUntilDone()
             sizeWhenDone = torrent.sizeWhenDone()
             percentDone = torrent.percentDone()
             isFinished = torrent.isFinished
