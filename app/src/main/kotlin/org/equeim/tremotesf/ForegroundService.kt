@@ -44,6 +44,7 @@ private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
 private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
 private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
+private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
 
 class ForegroundService : Service(), AnkoLogger {
     private var started = false
@@ -61,7 +62,7 @@ class ForegroundService : Service(), AnkoLogger {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId")
 
-        if (intent?.action == Intent.ACTION_SHUTDOWN) {
+        if (intent?.action == ACTION_SHUTDOWN) {
             Utils.shutdownApp(this)
             return START_NOT_STICKY
         }
@@ -186,7 +187,7 @@ class ForegroundService : Service(), AnkoLogger {
                 getString(R.string.quit),
                 PendingIntent.getService(this,
                                          0,
-                                         intentFor<ForegroundService>().setAction(Intent.ACTION_SHUTDOWN),
+                                         intentFor<ForegroundService>().setAction(ACTION_SHUTDOWN),
                                          PendingIntent.FLAG_UPDATE_CURRENT)
         )
 
