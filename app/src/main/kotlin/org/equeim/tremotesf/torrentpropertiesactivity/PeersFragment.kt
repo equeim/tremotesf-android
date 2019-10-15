@@ -28,9 +28,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.TorrentData
 
 import kotlinx.android.synthetic.main.peers_fragment.*
 
@@ -40,19 +40,19 @@ class PeersFragment : Fragment() {
 
     private var peersAdapter: PeersAdapter? = null
 
-    private var torrent: Torrent? = null
+    private var torrent: TorrentData? = null
         set(value) {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.nativeInstance.setTorrentPeersEnabled(torrent, true)
+                    Rpc.nativeInstance.setTorrentPeersEnabled(value.torrent, true)
                     Rpc.gotTorrentPeersListener = gotTorrentPeersListener
                 }
             }
         }
 
     private val gotTorrentPeersListener = { torrentId: Int ->
-        if (torrentId == torrent?.id()) {
+        if (torrentId == torrent?.id) {
             update()
         }
     }
@@ -104,7 +104,7 @@ class PeersFragment : Fragment() {
             if (torrent == null) {
                 progress_bar!!.visibility = View.GONE
             } else {
-                if (torrent!!.isPeersLoaded) {
+                if (torrent!!.torrent.isPeersLoaded) {
                     progress_bar!!.visibility = View.GONE
                     placeholder!!.visibility = if (peersAdapter!!.itemCount == 0) {
                         View.VISIBLE

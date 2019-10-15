@@ -35,11 +35,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
@@ -53,7 +53,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         initSelector(activity, ActionModeCallback())
     }
 
-    private val torrent: Torrent?
+    private val torrent: TorrentData?
         get() {
             return activity.torrent
         }
@@ -85,11 +85,11 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
     }
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        Rpc.nativeInstance.setTorrentFilesWanted(torrent, ids, wanted)
+        Rpc.nativeInstance.setTorrentFilesWanted(torrent?.torrent, ids, wanted)
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        Rpc.nativeInstance.setTorrentFilesPriority(torrent, ids, priority.toTorrentFilePriority())
+        Rpc.nativeInstance.setTorrentFilesPriority(torrent?.torrent, ids, priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {
@@ -162,7 +162,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                 }
 
                 torrent?.let { torrent ->
-                    RenameDialogFragment.create(torrent.id(), pathParts.joinToString("/"), file.name)
+                    RenameDialogFragment.create(torrent.id, pathParts.joinToString("/"), file.name)
                             .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
                 }
 

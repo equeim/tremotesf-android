@@ -203,7 +203,7 @@ class TorrentLimitsFragment : Fragment() {
     }
 
     fun update() {
-        torrent = (activity as TorrentPropertiesActivity).torrent
+        torrent = (activity as TorrentPropertiesActivity).torrent?.torrent
 
         if (!isAdded || torrent == null) {
             return

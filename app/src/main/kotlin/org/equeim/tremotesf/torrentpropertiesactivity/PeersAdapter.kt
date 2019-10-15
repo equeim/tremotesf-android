@@ -120,7 +120,7 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
     }
 
     fun update() {
-        val torrent = activity.torrent
+        val torrent = activity.torrent?.torrent
 
         if (torrent == null) {
             if (this.torrent == null) {

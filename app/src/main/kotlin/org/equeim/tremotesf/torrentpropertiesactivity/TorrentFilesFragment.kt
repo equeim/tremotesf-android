@@ -32,12 +32,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.equeim.libtremotesf.StringsVector
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.TorrentData
 
 import kotlinx.android.synthetic.main.torrent_files_fragment.*
 
@@ -61,12 +61,12 @@ class TorrentFilesFragment : Fragment() {
             return getActivity() as? TorrentPropertiesActivity
         }
 
-    private var torrent: Torrent? = null
+    private var torrent: TorrentData? = null
         set(value) {
             if (value != field) {
                 field = value
                 if (value != null) {
-                    Rpc.nativeInstance.setTorrentFilesEnabled(value, true)
+                    Rpc.nativeInstance.setTorrentFilesEnabled(value.torrent, true)
                     Rpc.gotTorrentFilesListener = gotTorrentFilesListener
                     Rpc.torrentFileRenamedListener = fileRenamedListener
                 }
@@ -74,12 +74,12 @@ class TorrentFilesFragment : Fragment() {
         }
 
     private val gotTorrentFilesListener = { torrentId: Int ->
-        if (torrentId == torrent?.id()) {
+        if (torrentId == torrent?.id) {
             update()
         }
     }
     private val fileRenamedListener = { torrentId: Int, filePath: String, newName: String ->
-        if (torrentId == torrent?.id()) {
+        if (torrentId == torrent?.id) {
             fileRenamed(filePath, newName)
         }
     }
@@ -173,15 +173,15 @@ class TorrentFilesFragment : Fragment() {
         }
 
         torrent = newTorrent
-        if (newTorrent.isFilesLoaded) {
-            val rpcFiles: TorrentFilesVector = newTorrent.files()
+        if (newTorrent.torrent.isFilesLoaded) {
+            val rpcFiles: TorrentFilesVector = newTorrent.torrent.files()
             if (rpcFiles.isEmpty()) {
                 if (treeCreated || creatingTree) {
                     resetTree()
                 }
             } else {
                 if (treeCreated) {
-                    if (newTorrent.isFilesChanged) {
+                    if (newTorrent.torrent.isFilesChanged) {
                         updateTree(rpcFiles)
                     }
                 } else if (!creatingTree) {
@@ -263,7 +263,7 @@ class TorrentFilesFragment : Fragment() {
         if (torrent == null) {
             return
         }
-        placeholder?.visibility = if (torrent!!.isFilesLoaded && !creatingTree && adapter!!.itemCount == 0) {
+        placeholder?.visibility = if (torrent!!.torrent.isFilesLoaded && !creatingTree && adapter!!.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
@@ -274,7 +274,7 @@ class TorrentFilesFragment : Fragment() {
         if (torrent == null) {
             return
         }
-        progress_bar?.visibility = if (!torrent!!.isFilesLoaded || creatingTree) {
+        progress_bar?.visibility = if (!torrent!!.torrent.isFilesLoaded || creatingTree) {
             View.VISIBLE
         } else {
             View.GONE

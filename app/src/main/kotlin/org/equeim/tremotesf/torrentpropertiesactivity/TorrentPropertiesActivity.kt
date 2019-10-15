@@ -47,6 +47,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
+import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 
 import kotlinx.android.synthetic.main.torrent_properties_activity.*
@@ -67,7 +68,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
     lateinit var hash: String
 
-    var torrent: Torrent? = null
+    var torrent: TorrentData? = null
         set(value) {
             var needUpdate = (active || creating)
             if (value !== field) {
@@ -114,7 +115,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
                 placeholder.text = getString(R.string.connecting)
             }
             RpcStatus.Connected -> {
-                torrent = Rpc.torrents.find { it.hashString == hash }?.torrent
+                torrent = Rpc.torrents.find { it.hashString == hash }
                 if (torrent == null) {
                     placeholder.text = getString(R.string.torrent_not_found)
                 }
@@ -129,7 +130,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     }
 
     private val torrentsUpdatedListener = {
-        torrent = Rpc.torrents.find { it.hashString == hash }?.torrent
+        torrent = Rpc.torrents.find { it.hashString == hash }
     }
 
     private var menu: Menu? = null
@@ -213,8 +214,8 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
         if (isFinishing && torrent != null) {
-            Rpc.nativeInstance.setTorrentFilesEnabled(torrent, false)
-            Rpc.nativeInstance.setTorrentPeersEnabled(torrent, false)
+            Rpc.nativeInstance.setTorrentFilesEnabled(torrent?.torrent, false)
+            Rpc.nativeInstance.setTorrentPeersEnabled(torrent?.torrent, false)
         }
     }
 
@@ -230,18 +231,18 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         torrent?.let { torrent ->
             when (item.itemId) {
-                R.id.start -> Rpc.nativeInstance.startTorrents(intArrayOf(torrent.id()))
-                R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id()))
-                R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id()))
-                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id()))
-                R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id()),
-                                                                                      torrent.downloadDirectory())
+                R.id.start -> Rpc.nativeInstance.startTorrents(intArrayOf(torrent.id))
+                R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
+                R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
+                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
+                R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id),
+                                                                                      torrent.downloadDirectory)
                         .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
-                R.id.rename -> TorrentFilesAdapter.RenameDialogFragment.create(torrent.id(),
-                                                                               torrent.name(),
-                                                                               torrent.name())
+                R.id.rename -> TorrentFilesAdapter.RenameDialogFragment.create(torrent.id,
+                                                                               torrent.name,
+                                                                               torrent.name)
                         .show(supportFragmentManager, TorrentFilesAdapter.RenameDialogFragment.TAG)
-                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id())).show(supportFragmentManager,
+                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id)).show(supportFragmentManager,
                                                                                                           TorrentsAdapter.RemoveDialogFragment.TAG)
                 else -> return false
             }
@@ -269,7 +270,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
     private fun update() {
         if (torrent != null) {
-            title = torrent!!.name()
+            title = torrent!!.name
         }
 
         if (menu != null) {
@@ -287,7 +288,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
             menu!!.getItem(i).isVisible = (torrent != null)
         }
         if (torrent != null) {
-            startMenuItem.isVisible = when (torrent!!.status()) {
+            startMenuItem.isVisible = when (torrent!!.status) {
                 Torrent.Status.Paused,
                 Torrent.Status.Errored -> true
                 else -> false

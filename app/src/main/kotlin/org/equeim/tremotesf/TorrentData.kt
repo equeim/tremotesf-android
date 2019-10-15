@@ -100,6 +100,9 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
     var downloadDirectory: String = torrent.downloadDirectory()
         private set
 
+    var isChanged = false
+        private set
+
     private val rpcTrackers = torrent.trackers()
     val trackers = mutableListOf<String>()
 
@@ -110,7 +113,8 @@ class TorrentData(val torrent: Torrent, private val context: Context) {
     }
 
     fun update() {
-        if (torrent.isChanged) {
+        isChanged = torrent.isChanged
+        if (isChanged) {
             name = torrent.name()
             status = torrent.status()
             errorString = torrent.errorString()
