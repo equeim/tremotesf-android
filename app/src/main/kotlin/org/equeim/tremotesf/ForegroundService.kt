@@ -33,7 +33,6 @@ import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
@@ -47,13 +46,7 @@ private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 
 class ForegroundService : Service(), AnkoLogger {
-    companion object {
-        var instance: ForegroundService? = null
-            private set
-
-
-    }
-
+    private var started = false
     private lateinit var notificationManager: NotificationManager
 
     private val rpcStatusListener: (Int) -> Unit = { updatePersistentNotification() }
@@ -66,26 +59,24 @@ class ForegroundService : Service(), AnkoLogger {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId")
+
         if (intent?.action == Intent.ACTION_SHUTDOWN) {
             Utils.shutdownApp(this)
             return START_NOT_STICKY
         }
 
-        if (instance == this) {
-            when (intent?.action) {
-                ACTION_CONNECT -> Rpc.nativeInstance.connect()
-                ACTION_DISCONNECT -> Rpc.nativeInstance.disconnect()
-            }
-        } else {
+        if (!started) {
             Utils.initApp(applicationContext)
 
             notificationManager = getSystemService()!!
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
-                                                                                  getString(R.string.persistent_notification_channel_name),
-                                                                                  NotificationManager.IMPORTANCE_LOW))
+                        getString(R.string.persistent_notification_channel_name),
+                        NotificationManager.IMPORTANCE_LOW))
             }
+
+            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
 
             Rpc.addStatusListener(rpcStatusListener)
             Rpc.addErrorListener(rpcErrorListener)
@@ -93,11 +84,14 @@ class ForegroundService : Service(), AnkoLogger {
 
             Servers.addCurrentServerListener(currentServerListener)
 
-            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+            started = true
 
-            instance = this
+            info("Service started")
+        }
 
-            debug("service started")
+        when (intent?.action) {
+            ACTION_CONNECT -> Rpc.nativeInstance.connect()
+            ACTION_DISCONNECT -> Rpc.nativeInstance.disconnect()
         }
 
         return START_STICKY
