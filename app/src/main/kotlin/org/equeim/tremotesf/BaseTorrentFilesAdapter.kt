@@ -424,7 +424,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         abstract val wantedState: WantedState
         abstract fun setWanted(wanted: Boolean, ids: MutableList<Int>? = null)
 
-        abstract var priority: Priority
+        abstract val priority: Priority
 
         abstract fun setPriority(priority: Priority, ids: MutableList<Int>? = null)
 
@@ -474,7 +474,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             }
         }
 
-        override var priority = Priority.Normal
+        override val priority: Priority
             get() {
                 val first = children.first().priority
                 if (first == Priority.Mixed) {
