@@ -26,6 +26,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Build
+import android.os.IBinder
 
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -59,7 +60,9 @@ class ForegroundService : Service(), AnkoLogger {
     private val rpcErrorListener: (Int) -> Unit = { updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
-    override fun onBind(intent: Intent) = null
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == Intent.ACTION_SHUTDOWN) {
