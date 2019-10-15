@@ -185,7 +185,9 @@ private class FilePickerAdapter(private val activity: FilePickerActivity) : Recy
     }
 
     fun init() {
-        files.addAll(currentDirectory.listFiles(filesFilter).sortedWith(comparator))
+        currentDirectory.listFiles(filesFilter)?.let { it ->
+            files.addAll(it.sortedWith(comparator))
+        }
         notifyItemRangeInserted(1, files.size)
     }
 

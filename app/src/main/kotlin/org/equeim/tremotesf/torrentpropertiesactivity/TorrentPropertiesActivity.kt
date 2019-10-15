@@ -149,7 +149,7 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
         setContentView(R.layout.torrent_properties_activity)
         setPreLollipopShadow()
 
-        hash = intent.getStringExtra(HASH)
+        hash = intent.getStringExtra(HASH)!!
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
