@@ -95,7 +95,7 @@ class DownloadingFragment : Fragment(R.layout.server_settings_downloading_fragme
     }
 
     override fun onDestroyView() {
+        (requireActivity() as ServerSettingsActivity).hideKeyboard()
         super.onDestroyView()
-        (activity as ServerSettingsActivity).hideKeyboard()
     }
 }

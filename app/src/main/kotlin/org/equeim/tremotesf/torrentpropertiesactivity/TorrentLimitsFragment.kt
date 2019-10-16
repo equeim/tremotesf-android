@@ -208,7 +208,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
     }
 
     fun update() {
-        torrent = (activity as TorrentPropertiesActivity).torrent?.torrent
+        torrent = (requireActivity() as TorrentPropertiesActivity).torrent?.torrent
 
         if (!isAdded || torrent == null) {
             return

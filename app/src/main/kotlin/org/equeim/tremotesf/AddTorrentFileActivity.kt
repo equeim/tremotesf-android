@@ -415,7 +415,7 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
 
             val parser = mainFragment.torrentFileParser
 
-            adapter = Adapter(activity as AppCompatActivity,
+            adapter = Adapter(requireActivity() as AppCompatActivity,
                               parser.rootDirectory)
 
             files_view.adapter = adapter

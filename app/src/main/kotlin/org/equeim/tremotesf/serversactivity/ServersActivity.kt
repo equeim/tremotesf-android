@@ -196,14 +196,14 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
 
         class RemoveDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                val selectedCount = (activity as ServersActivity).adapter.selector.selectedCount
+                val selectedCount = (requireActivity() as ServersActivity).adapter.selector.selectedCount
                 return AlertDialog.Builder(requireContext())
                         .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
                                                                 selectedCount,
                                                                 selectedCount))
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.remove) { _, _ ->
-                            val adapter = (activity as ServersActivity).adapter
+                            val adapter = (requireActivity() as ServersActivity).adapter
                             Servers.removeServers(adapter.selector.selectedItems)
                             adapter.selector.actionMode?.finish()
                         }

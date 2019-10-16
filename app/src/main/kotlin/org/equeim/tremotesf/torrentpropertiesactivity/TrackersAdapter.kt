@@ -241,7 +241,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments?.getString(ANNOUNCE),
                                          null) {
-                val torrent = (activity as TorrentPropertiesActivity).torrent?.torrent
+                val torrent = (requireActivity() as TorrentPropertiesActivity).torrent?.torrent
                 val textField = dialog!!.text_field!!
                 if (trackerId == -1) {
                     torrent?.addTracker(textField.text.toString())
@@ -294,7 +294,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                             ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        val activity = this.activity as TorrentPropertiesActivity
+                        val activity = requireActivity() as TorrentPropertiesActivity
                         activity.torrent?.torrent?.removeTrackers(ids)
                         activity.actionMode?.finish()
                     }

@@ -98,7 +98,7 @@ class SeedingFragment : Fragment(R.layout.server_settings_seeding_fragment) {
     }
 
     override fun onDestroyView() {
+        (requireActivity() as ServerSettingsActivity).hideKeyboard()
         super.onDestroyView()
-        (activity as ServerSettingsActivity).hideKeyboard()
     }
 }

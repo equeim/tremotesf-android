@@ -38,7 +38,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        hash_text_view.text = (activity as TorrentPropertiesActivity).hash
+        hash_text_view.text = (requireActivity() as TorrentPropertiesActivity).hash
     }
 
     override fun onDestroyView() {
@@ -54,7 +54,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
     fun update() {
         val activity = this.activity
         if (activity != null && view != null) {
-            val torrent = (activity as TorrentPropertiesActivity).torrent
+            val torrent = (requireActivity() as TorrentPropertiesActivity).torrent
             torrent ?: return
 
             if (!torrent.isChanged && !firstUpdate) return

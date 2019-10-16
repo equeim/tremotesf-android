@@ -155,7 +155,7 @@ class NetworkFragment : Fragment(R.layout.server_settings_network_fragment) {
     }
 
     override fun onDestroyView() {
+        (requireActivity() as ServerSettingsActivity).hideKeyboard()
         super.onDestroyView()
-        (activity as ServerSettingsActivity).hideKeyboard()
     }
 }

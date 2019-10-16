@@ -81,9 +81,7 @@ class ServerEditActivity : BaseActivity(false) {
         }
 
         private val activity: ServerEditActivity
-            get() {
-                return getActivity() as ServerEditActivity
-            }
+            get() = requireActivity() as ServerEditActivity
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -232,9 +230,7 @@ class ServerEditActivity : BaseActivity(false) {
 
     class CertificatesFragment : Fragment(R.layout.server_edit_activity_certificates_fragment) {
         private val activity: ServerEditActivity
-            get() {
-                return getActivity() as ServerEditActivity
-            }
+            get() = requireActivity() as ServerEditActivity
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
