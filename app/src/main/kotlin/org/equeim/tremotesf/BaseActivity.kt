@@ -20,10 +20,10 @@
 package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
@@ -33,7 +33,12 @@ import org.equeim.tremotesf.utils.Utils
 
 
 @SuppressLint("Registered")
-open class BaseActivity : AppCompatActivity() {
+open class BaseActivity(@LayoutRes contentLayoutId: Int,
+                        private val noActionBar: Boolean,
+                        private val setPreLollipopShadow: Boolean = noActionBar) : AppCompatActivity(contentLayoutId) {
+    constructor(noActionBar: Boolean,
+                setPreLollipopShadow: Boolean = noActionBar) : this(0, noActionBar, setPreLollipopShadow)
+
     companion object {
         private val createdActivities = mutableListOf<BaseActivity>()
         var activeActivity: BaseActivity? = null
@@ -55,7 +60,18 @@ open class BaseActivity : AppCompatActivity() {
     protected var active = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (noActionBar) {
+            setTheme(Settings.themeNoActionBar)
+        } else {
+            setTheme(Settings.theme)
+        }
+
         super.onCreate(savedInstanceState)
+
+        if (noActionBar && setPreLollipopShadow) {
+            Utils.setPreLollipopContentShadow(this)
+        }
+
         createdActivities.add(this)
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, intentFor<ForegroundService>())
@@ -100,11 +116,5 @@ open class BaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         createdActivities.remove(this)
         super.onDestroy()
-    }
-
-    protected fun setPreLollipopShadow() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            Utils.setPreLollipopContentShadowOnFrame(findViewById(R.id.content_frame))
-        }
     }
 }

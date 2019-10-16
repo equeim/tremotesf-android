@@ -31,10 +31,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
 
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : BaseActivity(false) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(Settings.theme)
         supportFragmentManager.commit { replace(android.R.id.content, Fragment()) }
     }
 

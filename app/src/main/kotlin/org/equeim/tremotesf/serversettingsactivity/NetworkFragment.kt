@@ -38,12 +38,12 @@ import org.equeim.tremotesf.utils.IntFilter
 import kotlinx.android.synthetic.main.server_settings_network_fragment.*
 
 
-class NetworkFragment : Fragment() {
+class NetworkFragment : Fragment(R.layout.server_settings_network_fragment) {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+                              savedInstanceState: Bundle?): View? {
         requireActivity().title = getString(R.string.server_settings_network)
-        return inflater.inflate(R.layout.server_settings_network_fragment, container, false)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

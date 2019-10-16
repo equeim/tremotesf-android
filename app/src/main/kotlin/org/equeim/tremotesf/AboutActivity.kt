@@ -43,15 +43,11 @@ import kotlinx.android.synthetic.main.about_activity_license_fragment.*
 import kotlinx.android.synthetic.main.about_activity_pager_fragment.*
 
 
-class AboutActivity : BaseActivity() {
+class AboutActivity : BaseActivity(R.layout.about_activity, true) {
     private lateinit var pagerAdapter: PagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.themeNoActionBar)
-        setContentView(R.layout.about_activity)
-        setPreLollipopShadow()
 
         title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
@@ -116,13 +112,7 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    class AboutFragment : Fragment() {
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
-        }
-
+    class AboutFragment : Fragment(R.layout.about_activity_pager_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.about)
@@ -190,13 +180,7 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    class AuthorsFragment : Fragment() {
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
-        }
-
+    class AuthorsFragment : Fragment(R.layout.about_activity_pager_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.authors)
@@ -210,13 +194,7 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    class TranslatorsFragment : Fragment() {
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.about_activity_pager_fragment, container, false)
-        }
-
+    class TranslatorsFragment : Fragment(R.layout.about_activity_pager_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.translators)
@@ -225,13 +203,7 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    class LicenseFragment : Fragment() {
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.about_activity_license_fragment, container, false)
-        }
-
+    class LicenseFragment : Fragment(R.layout.about_activity_license_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             val inputStream = resources.openRawResource(R.raw.license)

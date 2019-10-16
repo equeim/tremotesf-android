@@ -21,14 +21,12 @@ package org.equeim.tremotesf.utils
 
 import java.text.DecimalFormat
 
+import android.app.Activity
 import android.content.Context
-
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
-
 import android.os.Build
 import android.view.View
-
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 
@@ -105,18 +103,26 @@ object Utils : AnkoLogger {
 
     fun setPreLollipopContentShadow(view: View) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            setPreLollipopContentShadowOnFrame(view.findViewById(R.id.content_frame) as FrameLayout)
+            setPreLollipopContentShadowOnFrame(view.findViewById(R.id.content_frame) as? FrameLayout)
         }
     }
 
-    fun setPreLollipopContentShadowOnFrame(contentFrame: FrameLayout) {
-        val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
-        val windowContentOverlay = ta.getDrawable(0)
-        if (windowContentOverlay != null) {
-            contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
-                                                            windowContentOverlay))
+    fun setPreLollipopContentShadow(activity: Activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            setPreLollipopContentShadowOnFrame(activity.findViewById(R.id.content_frame) as? FrameLayout)
         }
-        ta.recycle()
+    }
+
+    private fun setPreLollipopContentShadowOnFrame(contentFrame: FrameLayout?) {
+        if (contentFrame != null) {
+            val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
+            val windowContentOverlay = ta.getDrawable(0)
+            if (windowContentOverlay != null) {
+                contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
+                        windowContentOverlay))
+            }
+            ta.recycle()
+        }
     }
 
     fun setProgressBarColor(progressBar: ProgressBar) {

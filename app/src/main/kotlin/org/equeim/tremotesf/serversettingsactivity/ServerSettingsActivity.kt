@@ -47,7 +47,7 @@ import org.equeim.tremotesf.Settings
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 
 
-class ServerSettingsActivity : BaseActivity() {
+class ServerSettingsActivity : BaseActivity(false) {
     private lateinit var inputManager: InputMethodManager
 
     private val rpcStatusListener = fun(status: Int) {
@@ -72,7 +72,6 @@ class ServerSettingsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(Settings.theme)
 
         inputManager = getSystemService()!!
 
@@ -106,7 +105,7 @@ class ServerSettingsActivity : BaseActivity() {
         currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
-    class PlaceholderFragment : Fragment() {
+    class PlaceholderFragment : Fragment(R.layout.server_settings_placeholder_fragment) {
         companion object {
             const val TAG = "org.equeim.tremotesf.ServerSettingsActivity.PlaceholderFragment"
         }
@@ -133,14 +132,6 @@ class ServerSettingsActivity : BaseActivity() {
                 RpcStatus.Connected -> {
                 }
             }
-        }
-
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.server_settings_placeholder_fragment,
-                                    container,
-                                    false)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

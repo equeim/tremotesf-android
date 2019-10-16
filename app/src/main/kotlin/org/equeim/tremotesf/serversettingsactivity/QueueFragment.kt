@@ -35,12 +35,12 @@ import org.equeim.tremotesf.utils.IntFilter
 import kotlinx.android.synthetic.main.server_settings_queue_fragment.*
 
 
-class QueueFragment : Fragment() {
+class QueueFragment : Fragment(R.layout.server_settings_queue_fragment) {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+                              savedInstanceState: Bundle?): View? {
         requireActivity().title = getString(R.string.server_settings_queue)
-        return inflater.inflate(R.layout.server_settings_queue_fragment, container, false)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

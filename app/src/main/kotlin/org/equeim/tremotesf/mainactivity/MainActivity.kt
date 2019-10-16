@@ -79,7 +79,7 @@ import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
-class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
+class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.ActionModeActivity, AnkoLogger {
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
@@ -181,11 +181,6 @@ class MainActivity : BaseActivity(), Selector.ActionModeActivity, AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         debug("MainActivity onCreate")
-
-        setTheme(Settings.themeNoActionBar)
-
-        setContentView(R.layout.main_activity)
-        setPreLollipopShadow()
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)

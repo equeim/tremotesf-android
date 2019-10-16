@@ -23,9 +23,7 @@ import java.text.DecimalFormat
 
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 
 import androidx.fragment.app.Fragment
 
@@ -35,14 +33,8 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.torrent_details_fragment.*
 
 
-class TorrentDetailsFragment : Fragment() {
+class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
     private var firstUpdate = true
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.torrent_details_fragment, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,8 +42,8 @@ class TorrentDetailsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         firstUpdate = true
+        super.onDestroyView()
     }
 
     override fun onStart() {

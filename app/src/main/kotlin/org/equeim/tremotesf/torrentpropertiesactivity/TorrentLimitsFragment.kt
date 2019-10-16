@@ -52,15 +52,9 @@ import org.equeim.tremotesf.setUploadSpeedLimited
 import kotlinx.android.synthetic.main.torrent_limits_fragment.*
 
 
-class TorrentLimitsFragment : Fragment() {
+class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
     private var torrent: Torrent? = null
     private var updating = false
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.torrent_limits_fragment, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -66,13 +66,7 @@ import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 
-class AddTorrentFileActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setTheme(Settings.themeNoActionBar)
-        setContentView(R.layout.add_torrent_file_activity)
-    }
-
+class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, true, false) {
     override fun onSupportNavigateUp(): Boolean {
         val intent = intentFor<MainActivity>()
         if (isTaskRoot) {
@@ -91,7 +85,7 @@ class AddTorrentFileActivity : BaseActivity() {
         }
     }
 
-    class MainFragment : Fragment() {
+    class MainFragment : Fragment(R.layout.add_torrent_file_main_fragment) {
         private val activity: AddTorrentFileActivity
             get() {
                 return getActivity() as AddTorrentFileActivity
@@ -138,14 +132,6 @@ class AddTorrentFileActivity : BaseActivity() {
                 noPermission = true
                 updateView()
             }
-        }
-
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.add_torrent_file_main_fragment,
-                                    container,
-                                    false)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -336,16 +322,8 @@ class AddTorrentFileActivity : BaseActivity() {
         }
     }
 
-    class InfoFragment : Fragment() {
+    class InfoFragment : Fragment(R.layout.add_torrent_file_info_fragment) {
         var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
-
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.add_torrent_file_info_fragment,
-                                    container,
-                                    false)
-        }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
@@ -418,7 +396,7 @@ class AddTorrentFileActivity : BaseActivity() {
         }
     }
 
-    class FilesFragment : Fragment() {
+    class FilesFragment : Fragment(R.layout.add_torrent_file_files_fragment) {
         private lateinit var mainFragment: MainFragment
 
         private var instanceState: Bundle? = null
@@ -430,12 +408,6 @@ class AddTorrentFileActivity : BaseActivity() {
             super.onCreate(savedInstanceState)
             retainInstance = true
             mainFragment = requireFragmentManager().findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
-        }
-
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
-            return inflater.inflate(R.layout.add_torrent_file_files_fragment, container, false)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

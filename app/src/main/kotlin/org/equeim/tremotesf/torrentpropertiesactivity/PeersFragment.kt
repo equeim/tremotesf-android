@@ -37,7 +37,7 @@ import org.equeim.tremotesf.setPeersEnabled
 import kotlinx.android.synthetic.main.peers_fragment.*
 
 
-class PeersFragment : Fragment() {
+class PeersFragment : Fragment(R.layout.peers_fragment) {
     private lateinit var activity: TorrentPropertiesActivity
 
     private var peersAdapter: PeersAdapter? = null
@@ -62,12 +62,6 @@ class PeersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = getActivity() as TorrentPropertiesActivity
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.peers_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

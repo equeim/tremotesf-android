@@ -52,16 +52,12 @@ import kotlinx.android.synthetic.main.servers_activity.*
 import org.equeim.tremotesf.utils.AlphanumericComparator
 
 
-class ServersActivity : BaseActivity() {
+class ServersActivity : BaseActivity(R.layout.servers_activity, true) {
     lateinit var adapter: ServersAdapter
     private val serversListener = { update() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.themeNoActionBar)
-        setContentView(R.layout.servers_activity)
-        setPreLollipopShadow()
 
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)

@@ -59,7 +59,7 @@ import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
 import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
 
 
-class SpeedFragment : Fragment() {
+class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
     companion object {
         const val TAG = "org.equeim.tremotesf.ServerSettingsActivity.SpeedFragment"
     }
@@ -114,9 +114,9 @@ class SpeedFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+                              savedInstanceState: Bundle?): View? {
         requireActivity().title = getString(R.string.server_settings_speed)
-        return inflater.inflate(R.layout.server_settings_speed_fragment, container, false)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onDestroyView() {

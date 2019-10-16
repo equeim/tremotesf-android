@@ -63,7 +63,7 @@ private const val TAB_PEERS = 3
 private const val TAB_LIMITS = 4
 private const val TABS_COUNT = 5
 
-class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
+class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activity, true), Selector.ActionModeActivity {
     companion object {
         const val HASH = "org.equeim.TorrentPropertiesActivity.HASH"
         const val NAME = "org.equeim.TorrentPropertiesActivity.NAME"
@@ -148,10 +148,6 @@ class TorrentPropertiesActivity : BaseActivity(), Selector.ActionModeActivity {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.themeNoActionBar)
-        setContentView(R.layout.torrent_properties_activity)
-        setPreLollipopShadow()
 
         hash = intent.getStringExtra(HASH)!!
 

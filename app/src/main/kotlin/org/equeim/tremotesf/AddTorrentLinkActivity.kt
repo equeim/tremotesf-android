@@ -46,7 +46,7 @@ import kotlinx.android.synthetic.main.add_torrent_link_activity.*
 import kotlinx.android.synthetic.main.download_directory_edit.*
 
 
-class AddTorrentLinkActivity : BaseActivity() {
+class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, false) {
     private lateinit var inputManager: InputMethodManager
 
     private var doneMenuItem: MenuItem? = null
@@ -60,9 +60,6 @@ class AddTorrentLinkActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.theme)
-        setContentView(R.layout.add_torrent_link_activity)
 
         inputManager = getSystemService()!!
 

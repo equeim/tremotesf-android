@@ -48,14 +48,11 @@ import org.equeim.tremotesf.utils.AlphanumericComparator
 import kotlinx.android.synthetic.main.file_picker_activity.*
 
 
-class FilePickerActivity : BaseActivity() {
+class FilePickerActivity : BaseActivity(R.layout.file_picker_activity, false) {
     private lateinit var adapter: FilePickerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.theme)
-        setContentView(R.layout.file_picker_activity)
 
         setResult(Activity.RESULT_CANCELED)
 

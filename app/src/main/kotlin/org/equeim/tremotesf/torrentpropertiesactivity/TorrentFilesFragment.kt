@@ -55,7 +55,7 @@ private fun updateFile(file: BaseTorrentFilesAdapter.File,
     }
 }
 
-class TorrentFilesFragment : Fragment() {
+class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     private var instanceState: Bundle? = null
 
     private val activity: TorrentPropertiesActivity?
@@ -100,12 +100,6 @@ class TorrentFilesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         retainInstance = true
         update()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.torrent_files_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -48,7 +48,7 @@ import kotlinx.android.synthetic.main.server_edit_activity_certificates_fragment
 import kotlinx.android.synthetic.main.server_edit_activity_main_fragment.*
 
 
-class ServerEditActivity : BaseActivity() {
+class ServerEditActivity : BaseActivity(false) {
     companion object {
         const val SERVER = "org.equeim.tremotesf.ServerEditActivity.SERVER"
     }
@@ -58,8 +58,6 @@ class ServerEditActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setTheme(Settings.theme)
 
         val serverName = intent.getStringExtra(SERVER)
         server = Servers.servers.find { it.name == serverName }
@@ -79,7 +77,7 @@ class ServerEditActivity : BaseActivity() {
         return super.onSupportNavigateUp()
     }
 
-    class MainFragment : Fragment() {
+    class MainFragment : Fragment(R.layout.server_edit_activity_main_fragment) {
         companion object {
             const val TAG = "org.equeim.tremotesf.ServerEditActivity.MainFragment"
         }
@@ -96,14 +94,14 @@ class ServerEditActivity : BaseActivity() {
 
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
+                                  savedInstanceState: Bundle?): View? {
             if (activity.server == null) {
                 activity.title = getString(R.string.add_server)
             } else {
                 activity.title = getString(R.string.edit_server)
             }
 
-            return inflater.inflate(R.layout.server_edit_activity_main_fragment, container, false)
+            return super.onCreateView(inflater, container, savedInstanceState)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -241,7 +239,7 @@ class ServerEditActivity : BaseActivity() {
         }
     }
 
-    class CertificatesFragment : Fragment() {
+    class CertificatesFragment : Fragment(R.layout.server_edit_activity_certificates_fragment) {
         private val activity: ServerEditActivity
             get() {
                 return getActivity() as ServerEditActivity
@@ -249,11 +247,9 @@ class ServerEditActivity : BaseActivity() {
 
         override fun onCreateView(inflater: LayoutInflater,
                                   container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View {
+                                  savedInstanceState: Bundle?): View? {
             activity.title = getString(R.string.certificates)
-            return inflater.inflate(R.layout.server_edit_activity_certificates_fragment,
-                                    container,
-                                    false)
+            return super.onCreateView(inflater, container, savedInstanceState)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

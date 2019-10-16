@@ -36,19 +36,13 @@ import kotlinx.android.synthetic.main.torrent_properties_activity.fab
 import kotlinx.android.synthetic.main.trackers_fragment.*
 
 
-class TrackersFragment : Fragment() {
+class TrackersFragment : Fragment(R.layout.trackers_fragment) {
     private lateinit var activity: TorrentPropertiesActivity
     private var trackersAdapter: TrackersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = getActivity() as TorrentPropertiesActivity
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.trackers_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
