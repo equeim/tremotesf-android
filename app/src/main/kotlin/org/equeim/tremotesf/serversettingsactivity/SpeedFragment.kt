@@ -109,11 +109,6 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (requireActivity() as ServerSettingsActivity).hideKeyboard()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -248,6 +243,11 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().setTitle(R.string.server_settings_speed)
+    }
+
+    override fun onDestroyView() {
+        (requireActivity() as ServerSettingsActivity).hideKeyboard()
+        super.onDestroyView()
     }
 }
 

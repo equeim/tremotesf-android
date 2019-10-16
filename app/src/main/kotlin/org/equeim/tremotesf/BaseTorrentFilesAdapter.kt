@@ -338,19 +338,13 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            super.onDestroyActionMode(mode)
             downloadItem = null
             notDownloadItem = null
             lowPriorityItem = null
             normalPriorityItem = null
             highPriorityItem = null
             mixedPriorityItem = null
-
-            if (hasHeaderItem) {
-                notifyItemRangeChanged(1, currentItems.size)
-            } else {
-                notifyItemRangeChanged(0, currentItems.size)
-            }
+            super.onDestroyActionMode(mode)
         }
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {

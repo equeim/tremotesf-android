@@ -88,8 +88,8 @@ class PeersFragment : Fragment(R.layout.peers_fragment) {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         peersAdapter = null
+        super.onDestroyView()
     }
 
     fun update() {

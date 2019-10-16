@@ -73,8 +73,8 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment) {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         trackersAdapter = null
+        super.onDestroyView()
     }
 
     override fun onStart() {

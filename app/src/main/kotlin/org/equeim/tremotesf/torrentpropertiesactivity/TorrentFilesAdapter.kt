@@ -176,8 +176,8 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            super.onDestroyActionMode(mode)
             renameItem = null
+            super.onDestroyActionMode(mode)
         }
     }
 

@@ -89,8 +89,8 @@ class ServerSettingsActivity : BaseActivity(false) {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Rpc.removeStatusListener(rpcStatusListener)
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -141,9 +141,9 @@ class ServerSettingsActivity : BaseActivity(false) {
         }
 
         override fun onDestroyView() {
-            super.onDestroyView()
             Rpc.removeStatusListener(rpcStatusListener)
             snackbar = null
+            super.onDestroyView()
         }
     }
 

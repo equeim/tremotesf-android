@@ -94,9 +94,9 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener!!)
         Rpc.removeStatusListener(rpcStatusListener)
         serverStatsUpdatedListener = null
+        super.onDestroyView()
     }
 }

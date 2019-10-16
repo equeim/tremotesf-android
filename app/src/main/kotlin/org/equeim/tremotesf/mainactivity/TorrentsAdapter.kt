@@ -508,10 +508,10 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            super.onDestroyActionMode(mode)
             startItem = null
             pauseItem = null
             setLocationItem = null
+            super.onDestroyActionMode(mode)
         }
     }
 

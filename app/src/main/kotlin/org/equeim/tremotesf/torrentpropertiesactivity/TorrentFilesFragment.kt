@@ -135,13 +135,13 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         adapter = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         resetTree()
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -167,12 +167,12 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
         }
 
         override fun onDestroyView() {
-            super.onDestroyView()
             doneMenuItem = null
             pagerAdapter = null
             snackbar = null
             Rpc.removeStatusListener(rpcStatusListener)
             torrentFileParser.statusListener = null
+            super.onDestroyView()
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -382,9 +382,9 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
         }
 
         override fun onDestroyView() {
-            super.onDestroyView()
             Rpc.gotDownloadDirFreeSpaceListener = null
             Rpc.gotFreeSpaceForPathListener = null
+            super.onDestroyView()
         }
 
         fun check(): Boolean {
@@ -430,8 +430,8 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
         }
 
         override fun onDestroyView() {
-            super.onDestroyView()
             adapter = null
+            super.onDestroyView()
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

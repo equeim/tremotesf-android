@@ -120,10 +120,10 @@ class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, 
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.gotDownloadDirFreeSpaceListener = null
         Rpc.gotFreeSpaceForPathListener = null
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

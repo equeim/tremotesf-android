@@ -207,8 +207,6 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
@@ -218,6 +216,8 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
                 setPeersEnabled(false)
             }
         }
+
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -89,8 +89,8 @@ class ServersActivity : BaseActivity(R.layout.servers_activity, true) {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Servers.removeServersListener(serversListener)
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

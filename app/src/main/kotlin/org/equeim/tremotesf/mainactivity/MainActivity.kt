@@ -400,7 +400,6 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         debug("MainActivity onDestroy")
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
@@ -410,6 +409,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         Servers.removeCurrentServerListener(currentServerListener)
         Settings.torrentCompactViewListener = null
         Settings.torrentNameMultilineListener = null
+        super.onDestroy()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

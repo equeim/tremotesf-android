@@ -264,13 +264,12 @@ class ServerEditActivity : BaseActivity(false) {
         }
 
         override fun onDestroyView() {
-            super.onDestroyView()
-
             val newServer = activity.newServer
             newServer.selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
             newServer.selfSignedCertificate = self_signed_certificate_edit.text.toString()
             newServer.clientCertificateEnabled = client_certificate_check_box.isChecked
             newServer.clientCertificate = client_certificate_edit.text.toString()
+            super.onDestroyView()
         }
     }
 }
