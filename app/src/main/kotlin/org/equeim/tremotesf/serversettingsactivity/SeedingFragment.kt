@@ -24,9 +24,7 @@ import java.text.DecimalFormat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 
 import androidx.fragment.app.Fragment
 
@@ -39,13 +37,6 @@ import kotlinx.android.synthetic.main.server_settings_seeding_fragment.*
 
 
 class SeedingFragment : Fragment(R.layout.server_settings_seeding_fragment) {
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        requireActivity().title = getString(R.string.server_settings_seeding)
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -99,6 +90,11 @@ class SeedingFragment : Fragment(R.layout.server_settings_seeding_fragment) {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        requireActivity().setTitle(R.string.server_settings_seeding)
     }
 
     override fun onDestroyView() {

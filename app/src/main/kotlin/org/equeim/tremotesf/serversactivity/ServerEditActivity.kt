@@ -21,12 +21,10 @@ package org.equeim.tremotesf.serversactivity
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 
 import androidx.appcompat.app.AlertDialog
@@ -92,18 +90,6 @@ class ServerEditActivity : BaseActivity(false) {
             setHasOptionsMenu(true)
         }
 
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            if (activity.server == null) {
-                activity.title = getString(R.string.add_server)
-            } else {
-                activity.title = getString(R.string.edit_server)
-            }
-
-            return super.onCreateView(inflater, container, savedInstanceState)
-        }
-
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
@@ -150,6 +136,11 @@ class ServerEditActivity : BaseActivity(false) {
                 update_interval_edit.setText(server.updateInterval.toString())
                 timeout_edit.setText(server.timeout.toString())
             }
+        }
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            activity.setTitle(if (activity.server == null) R.string.add_server else R.string.edit_server)
         }
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -245,13 +236,6 @@ class ServerEditActivity : BaseActivity(false) {
                 return getActivity() as ServerEditActivity
             }
 
-        override fun onCreateView(inflater: LayoutInflater,
-                                  container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            activity.title = getString(R.string.certificates)
-            return super.onCreateView(inflater, container, savedInstanceState)
-        }
-
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
@@ -276,6 +260,11 @@ class ServerEditActivity : BaseActivity(false) {
                 client_certificate_check_box.isChecked = newServer.clientCertificateEnabled
                 client_certificate_edit.setText(newServer.clientCertificate)
             }
+        }
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            activity.setTitle(R.string.certificates)
         }
 
         override fun onDestroyView() {

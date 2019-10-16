@@ -34,10 +34,7 @@ import android.text.TextWatcher
 
 import android.util.AttributeSet
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -110,13 +107,6 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
             daysSpinnerItems.add(dayNames[day])
             day = nextDay(day)
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        requireActivity().title = getString(R.string.server_settings_speed)
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -253,6 +243,11 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        requireActivity().setTitle(R.string.server_settings_speed)
     }
 }
 
