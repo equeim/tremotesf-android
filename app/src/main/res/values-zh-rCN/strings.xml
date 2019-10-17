@@ -347,4 +347,5 @@
     <string name="notifications_on_connect">连接至服务端时的通知</string>
     <string name="notify_on_finished_since_last">通知自上次连接至服务器完成的种子</string>
     <string name="notify_on_added_since_last">通知自上次连接至服务器添加的种子</string>
-</resources>
+
+    </resources>

@@ -423,4 +423,22 @@
     <string name="notifications_on_connect">Уведомления при подключении к серверу</string>
     <string name="notify_on_finished_since_last">Уведомлять о завершенных торрентах со времени последнего подключения</string>
     <string name="notify_on_added_since_last">Уведомлять о добавленных торрентах со времени последнего подключения</string>
+
+    <string name="persistent_notification">Постоянное уведомление</string>
+
+    <string name="persistent_notification_warning">Включение постоянного уведомления не позволит приложению переходить в режим фонового обновления и может вызвать повышенный расход батареи</string>
+
+    <string name="prefs_background_update_interval_title">Интервал фонового обновления</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Отключено</item>
+        <item>15 минут</item>
+        <item>30 минут</item>
+        <item>1 час</item>
+        <item>3 часа</item>
+        <item>6 часов</item>
+        <item>12 часов</item>
+        <item>24 часа</item>
+    </string-array>
+
+    <string name="connection_settings">Настройки подключения</string>
 </resources>

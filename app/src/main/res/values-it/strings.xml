@@ -401,4 +401,10 @@
     <string name="notifications_on_connect">Notifiche alla connessione al server</string>
     <string name="notify_on_finished_since_last">Notifica al complementamento dei torrent data l\'ultima connessione al server</string>
     <string name="notify_on_added_since_last">Notifica all\'aggiunta dei torrent data l\'ultima connessione al server</string>
-</resources>
+
+    <string name="persistent_notification">Notifiche persistenti</string>
+
+    <string name="persistent_notification_warning">Abilitando le notifiche persistenti eviterà che l\'applicazione vada in sincronizzazione in background. Questo potrebbe causare un consumo di batteria eccessivo.</string>
+
+    <string name="prefs_background_update_interval_title">Intervallo di aggiornamento in background</string>
+    </resources>

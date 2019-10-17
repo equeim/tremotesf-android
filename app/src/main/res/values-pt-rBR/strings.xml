@@ -381,4 +381,5 @@
     <string name="notifications_on_connect">Notificações ao conectar-se ao servidor</string>
     <string name="notify_on_finished_since_last">Notificar sobre torrents finalizados desde a última conexão ao servidor</string>
     <string name="notify_on_added_since_last">Notificar sobre torrents adicionados desde a última conexão ao servidor</string>
-</resources>
+
+    </resources>

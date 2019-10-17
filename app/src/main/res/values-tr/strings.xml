@@ -401,4 +401,5 @@
     <string name="notifications_on_connect">Sunucuya bağlanırken bildirimler</string>
     <string name="notify_on_finished_since_last">Sunucuya son bağlantıdan bu yana bitmiş torrentlerİ bildir</string>
     <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenmiş torrentlere bildirme</string>
-</resources>
+
+    </resources>

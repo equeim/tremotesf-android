@@ -401,4 +401,21 @@
     <string name="notifications_on_connect">Melden bij verbinden met server</string>
     <string name="notify_on_finished_since_last">Melden bij voltooide torrents sinds laatste verbinding met server</string>
     <string name="notify_on_added_since_last">Melden bij toegevoegde torrents sinds laatste verbinding met server</string>
-</resources>
+
+    <string name="persistent_notification">Blijvende melding</string>
+
+    <string name="persistent_notification_warning">Door de blijvende melding in te schakelen zal de app niet naar de achtergrondmodus kunnen omschakelen, wat de batterij sneller kan doen leeglopen</string>
+
+    <string name="prefs_background_update_interval_title">Achtergrondupdate-interval</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Uitgeschakeld</item>
+        <item>15 minuten</item>
+        <item>30 minuten</item>
+        <item>1 uur</item>
+        <item>3 uur</item>
+        <item>6 uur</item>
+        <item>12 uur</item>
+        <item>24 uur</item>
+    </string-array>
+
+    </resources>
