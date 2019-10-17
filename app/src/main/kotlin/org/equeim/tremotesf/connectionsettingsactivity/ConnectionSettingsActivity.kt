@@ -44,7 +44,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
-import org.equeim.tremotesf.Settings
 import org.jetbrains.anko.startActivity
 
 import kotlinx.android.synthetic.main.server_list_item.view.*

@@ -156,7 +156,6 @@
     <string name="maximum_peers">Máximo de pares</string>
 
     <string name="settings">Configurações</string>
-    <string name="servers">Servidores</string>
     <string name="notifications">Notificações</string>
 
     <string name="quit">Sair</string>
@@ -195,7 +194,6 @@
     <string name="username">Usuário</string>
     <string name="password">Senha</string>
     <string name="update_interval">Intervalo de atualização, s</string>
-    <string name="background_update_interval">Intervalo de atualização em segundo plano, s</string>
     <string name="empty_field_error">Este campo não pode estar vazio</string>
 
     <string name="server_exists">Servidor com este nome já existe</string>
@@ -315,8 +313,6 @@
         <item quantity="other">Você tem certeza que deseja remover %d rastreadores selecionados?</item>
     </plurals>
 
-    <string name="invalid_server_url">Endereço de servidor inválido</string>
-
     <string-array name="size_units">
         <item>%s B</item>
         <item>%s KiB</item>
@@ -358,8 +354,6 @@
     <string name="prefs_dark_theme_title">Usar tema escuro</string>
     <string name="prefs_dark_theme_summary">Reinicie o aplicativo para aplicar mudanças</string>
 
-    <string name="prefs_background_service_title">Ativar serviço em segundo plano</string>
-    <string name="prefs_background_service_summary">O serviço é parado quando o aplicativo é removido da tela de apps recentes, a menos que a notificação persistente esteja ativa</string>
     <string name="prefs_persistent_notification_title">Mostrar notificação persistente</string>
 
     <string name="persistent_notification_channel_name">Notificação persistente</string>

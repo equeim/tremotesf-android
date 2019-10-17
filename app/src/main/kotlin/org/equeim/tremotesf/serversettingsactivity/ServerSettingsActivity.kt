@@ -20,9 +20,7 @@
 package org.equeim.tremotesf.serversettingsactivity
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -42,7 +40,6 @@ import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
-import org.equeim.tremotesf.Settings
 
 import kotlinx.android.synthetic.main.server_settings_placeholder_fragment.*
 

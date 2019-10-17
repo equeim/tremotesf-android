@@ -140,7 +140,6 @@
     <string name="maximum_peers">最大节点数</string>
 
     <string name="settings">设置</string>
-    <string name="servers">服务器</string>
     <string name="notifications">通知</string>
 
     <string name="quit">退出</string>
@@ -177,7 +176,6 @@
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="update_interval">刷新间隔， s</string>
-    <string name="background_update_interval">后台刷新间隔， s</string>
     <string name="timeout">超时， s</string>
 
     <string name="empty_field_error">该项不可为空</string>
@@ -300,8 +298,6 @@
         <item quantity="other">你确定要移除 %d 个已选的Tracker吗？</item>
     </plurals>
 
-    <string name="invalid_server_url">非法的服务器链接</string>
-
     <string name="remove_torrent_message">确定要移除这个种子吗</string>
 
     <string name="set_location">设置存储位置</string>
@@ -325,8 +321,6 @@
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
     <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>
 
-    <string name="prefs_background_service_title">启用后台服务</string>
-    <string name="prefs_background_service_summary">当应用从最近任务屏幕中移除后服务将会停止，除非启用持久通知</string>
     <string name="prefs_persistent_notification_title">推送持久通知</string>
 
     <string name="persistent_notification_channel_name">持久通知</string>

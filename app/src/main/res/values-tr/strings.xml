@@ -162,7 +162,6 @@
     <string name="maximum_peers">Azami Eş</string>
 
     <string name="settings">Ayarlar</string>
-    <string name="servers">Sunucular</string>
     <string name="notifications">Bildirimler</string>
 
     <string name="quit">Çıkış</string>
@@ -201,7 +200,6 @@
     <string name="username">Kullanıcı adı</string>
     <string name="password">Şifre</string>
     <string name="update_interval">Güncelleme aralığı, saniye</string>
-    <string name="background_update_interval">Arka plan güncelleme aralığı, saniye</string>
     <string name="timeout">Zaman aşımı, saniye</string>
 
     <string name="empty_field_error">Bu alan boş olamaz</string>
@@ -329,8 +327,6 @@
         <item quantity="other">Seçilen %d izleyiciyi kaldırmak istediğinizden emin misiniz?</item>
     </plurals>
 
-    <string name="invalid_server_url">Geçersiz sunucu URL\'si</string>
-
     <string-array name="size_units">
         <item>%s B</item>
         <item>%s KiB</item>
@@ -378,8 +374,6 @@
     <string name="prefs_torrent_compact_view_title">Torrentler için dar görünüm kullanın</string>
     <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda gösterme</string>
 
-    <string name="prefs_background_service_title">Arka plan hizmetini etkinleştir</string>
-    <string name="prefs_background_service_summary">Kalıcı bildirim etkin olmadıkça uygulama son uygulamalar ekranından kaldırıldığında hizmet durdurulur</string>
     <string name="prefs_persistent_notification_title">Kalıcı bildirimi göster</string>
 
     <string name="persistent_notification_channel_name">Kalıcı bildirim</string>

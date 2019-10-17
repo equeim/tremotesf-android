@@ -46,7 +46,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Selector
-import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 

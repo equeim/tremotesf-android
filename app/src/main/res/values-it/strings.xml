@@ -162,7 +162,6 @@
     <string name="maximum_peers">Peer massimi</string>
 
     <string name="settings">Impostazioni</string>
-    <string name="servers">Server</string>
     <string name="notifications">Notifiche</string>
 
     <string name="quit">Esci</string>
@@ -201,7 +200,6 @@
     <string name="username">Nome utente</string>
     <string name="password">Password</string>
     <string name="update_interval">Intervallo di aggiornamento, s</string>
-    <string name="background_update_interval">Intervallo di aggiornamento in background, s</string>
     <string name="timeout">Timeout, s</string>
 
     <string name="empty_field_error">Questo campo non può essere vuoto</string>
@@ -329,8 +327,6 @@
         <item quantity="other">Rimuovere i %d server traccia selezionati?</item>
     </plurals>
 
-    <string name="invalid_server_url">Indirizzo server invalido</string>
-
     <string-array name="size_units">
         <item>%s B</item>
         <item>%s KiB</item>
@@ -378,8 +374,6 @@
     <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
     <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>
 
-    <string name="prefs_background_service_title">Abilita servizio in background</string>
-    <string name="prefs_background_service_summary">Il servizio è fermato quando l\'applicazione è rimossa dalla schermata delle applicazioni recenti a meno che le notifiche persistenti non siano state abilitate</string>
     <string name="prefs_persistent_notification_title">Mostra notifiche persistenti</string>
 
     <string name="persistent_notification_channel_name">Notifiche persistenti</string>

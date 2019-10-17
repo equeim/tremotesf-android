@@ -170,7 +170,6 @@
     <string name="maximum_peers">Максимальное количество пиров</string>
 
     <string name="settings">Настройки</string>
-    <string name="servers">Серверы</string>
     <string name="notifications">Уведомления</string>
 
     <string name="quit">Выйти</string>
@@ -213,7 +212,6 @@
     <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
     <string name="update_interval">Интервал обновления, с</string>
-    <string name="background_update_interval">Фоновый интервал обновления, с</string>
     <string name="timeout">Таймаут, с</string>
 
     <string name="empty_field_error">Это поле должно быть заполнено</string>
@@ -351,8 +349,6 @@
         <item quantity="other">Вы уверены, что хотите удалить %d выбранных трекеров?</item>
     </plurals>
 
-    <string name="invalid_server_url">Неправильный адрес сервера</string>
-
     <string-array name="size_units">
         <item>%s Б</item>
         <item>%s КиБ</item>
@@ -400,8 +396,6 @@
     <string name="prefs_torrent_compact_view_title">Компактное представление торрентов</string>
     <string name="prefs_torrent_name_multiline_title">Отображать названия торрентов на нескольких строках</string>
 
-    <string name="prefs_background_service_title">Включить фоновый сервис</string>
-    <string name="prefs_background_service_summary">Сервис останавливается, когда приложение удаляется из списка недавних, если постоянное уведомление выключено</string>
     <string name="prefs_persistent_notification_title">Показывать постоянное уведомление</string>
 
     <string name="persistent_notification_channel_name">Постоянное уведомление</string>

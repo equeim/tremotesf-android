@@ -170,7 +170,6 @@
     <string name="maximum_peers">Maximum peers</string>
 
     <string name="settings">Settings</string>
-    <string name="servers">Servers</string>
     <string name="notifications">Notifications</string>
 
     <string name="quit">Quit</string>
@@ -209,7 +208,6 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="update_interval">Update interval, s</string>
-    <string name="background_update_interval">Background update interval, s</string>
     <string name="timeout">Timeout, s</string>
 
     <string name="empty_field_error">This field can\'t be empty</string>
@@ -355,8 +353,6 @@
         <item quantity="other">Are you sure you want to remove %d selected trackers?</item>
     </plurals>
 
-    <string name="invalid_server_url">Invalid server url</string>
-
     <string-array name="size_units">
         <item>%s B</item>
         <item>%s KiB</item>
@@ -404,8 +400,6 @@
     <string name="prefs_torrent_compact_view_title">Use compact view for torrents</string>
     <string name="prefs_torrent_name_multiline_title">Display torrents\' names on multiple lines</string>
 
-    <string name="prefs_background_service_title">Enable background service</string>
-    <string name="prefs_background_service_summary">Service is stopped when app is removed from recent apps screen unless persistent notification is enabled</string>
     <string name="prefs_persistent_notification_title">Show persistent notification</string>
 
     <string name="persistent_notification_channel_name">Persistent notification</string>

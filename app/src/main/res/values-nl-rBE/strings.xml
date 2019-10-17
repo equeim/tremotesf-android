@@ -162,7 +162,6 @@
     <string name="maximum_peers">Maximaal aantal peers</string>
 
     <string name="settings">Instellingen</string>
-    <string name="servers">Servers</string>
     <string name="notifications">Meldingen</string>
 
     <string name="quit">Afsluiten</string>
@@ -201,7 +200,6 @@
     <string name="username">Gebruikersnaam</string>
     <string name="password">Paswoord</string>
     <string name="update_interval">Update-interval, s</string>
-    <string name="background_update_interval">Achtergrondupdate-interval, s</string>
     <string name="timeout">Time-out, s</string>
 
     <string name="empty_field_error">Dit veld kan niet leeg zijn</string>
@@ -329,8 +327,6 @@
         <item quantity="other">Zijt ge zeker dat ge de %d geselecteerde trackers wilt verwijderen?</item>
     </plurals>
 
-    <string name="invalid_server_url">Ongeldige server-URL</string>
-
     <string-array name="size_units">
         <item>%s B</item>
         <item>%s KiB</item>
@@ -378,8 +374,6 @@
     <string name="prefs_torrent_compact_view_title">Compacte weergave gebruiken voor torrents</string>
     <string name="prefs_torrent_name_multiline_title">Torrentnamen weergaven op meerdere regels</string>
 
-    <string name="prefs_background_service_title">Achtergronddienst inschakelen</string>
-    <string name="prefs_background_service_summary">Den dienst wordt gestopt indien dat den app uit het scherm met recente apps wordt verwijderd, tenzij dat blijvende melding is ingeschakeld</string>
     <string name="prefs_persistent_notification_title">Blijvende melding tonen</string>
 
     <string name="persistent_notification_channel_name">Blijvende melding</string>
