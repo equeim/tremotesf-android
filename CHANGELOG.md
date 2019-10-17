@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Added support of Android 10
+
+### Changed
+- Enabling persistent notification now prevents app from switching to background update mode
+- Minor performance improvements
+
+### Removed
+- Removed per-server background update intervals
+
+### Fixed
+- Fixed background update on newer Android versions
+
 ## [1.9.3] - 2019-08-20
 ### Fixed
 - Fixed crash when torrent's name contains number larger than 32-bit integer
