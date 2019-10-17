@@ -45,18 +45,18 @@
         </activity>
 
         <activity
-            android:name=".serversactivity.ServersActivity"
-            android:label="@string/servers">
+            android:name=".connectionsettingsactivity.ConnectionSettingsActivity"
+            android:label="@string/connection_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainactivity.MainActivity"/>
         </activity>
 
         <activity
-            android:name=".serversactivity.ServerEditActivity">
+            android:name=".connectionsettingsactivity.ServerEditActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".serversactivity.ServersActivity"/>
+                android:value=".connectionsettingsactivity.ConnectionSettingsActivity"/>
         </activity>
 
         <activity

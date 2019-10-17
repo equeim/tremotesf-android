@@ -65,8 +65,8 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.SettingsActivity
-import org.equeim.tremotesf.serversactivity.ServerEditActivity
-import org.equeim.tremotesf.serversactivity.ServersActivity
+import org.equeim.tremotesf.connectionsettingsactivity.ServerEditActivity
+import org.equeim.tremotesf.connectionsettingsactivity.ConnectionSettingsActivity
 import org.equeim.tremotesf.serversettingsactivity.ServerSettingsActivity
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
@@ -210,7 +210,6 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {
                 R.id.settings -> startActivity<SettingsActivity>()
-                R.id.servers -> startActivity<ServersActivity>()
                 R.id.about -> startActivity<AboutActivity>()
                 R.id.quit -> Utils.shutdownApp(this)
                 else -> return@setNavigationItemSelectedListener false
@@ -232,6 +231,11 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        sidePanelHeader.connection_settings_item.setOnClickListener {
+            drawer_layout.closeDrawers()
+            startActivity<ConnectionSettingsActivity>()
         }
 
         listSettingsLayout = sidePanelHeader.list_settings_layout

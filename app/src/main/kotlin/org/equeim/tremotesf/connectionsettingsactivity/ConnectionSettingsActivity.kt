@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.serversactivity
+package org.equeim.tremotesf.connectionsettingsactivity
 
 import java.util.Comparator
 
@@ -52,7 +52,7 @@ import kotlinx.android.synthetic.main.servers_activity.*
 import org.equeim.tremotesf.utils.AlphanumericComparator
 
 
-class ServersActivity : BaseActivity(R.layout.servers_activity, true) {
+class ConnectionSettingsActivity : BaseActivity(R.layout.servers_activity, true) {
     lateinit var adapter: ServersAdapter
     private val serversListener = { update() }
 
@@ -108,7 +108,7 @@ class ServersActivity : BaseActivity(R.layout.servers_activity, true) {
     }
 }
 
-class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+class ServersAdapter(activity: ConnectionSettingsActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
     private val servers = mutableListOf<Server>()
 
     private val comparator = object : Comparator<Server> {
@@ -196,14 +196,14 @@ class ServersAdapter(activity: ServersActivity) : RecyclerView.Adapter<ServersAd
 
         class RemoveDialogFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                val selectedCount = (requireActivity() as ServersActivity).adapter.selector.selectedCount
+                val selectedCount = (requireActivity() as ConnectionSettingsActivity).adapter.selector.selectedCount
                 return AlertDialog.Builder(requireContext())
                         .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
                                                                 selectedCount,
                                                                 selectedCount))
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(R.string.remove) { _, _ ->
-                            val adapter = (requireActivity() as ServersActivity).adapter
+                            val adapter = (requireActivity() as ConnectionSettingsActivity).adapter
                             Servers.removeServers(adapter.selector.selectedItems)
                             adapter.selector.actionMode?.finish()
                         }

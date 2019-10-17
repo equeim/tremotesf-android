@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.serversactivity
+package org.equeim.tremotesf.connectionsettingsactivity
 
 import android.app.Dialog
 import android.os.Bundle
@@ -38,7 +38,6 @@ import org.equeim.tremotesf.BaseActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
-import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
 

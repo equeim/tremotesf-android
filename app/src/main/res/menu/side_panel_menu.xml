@@ -4,10 +4,6 @@
         android:title="@string/settings"/>
 
     <item
-        android:id="@+id/servers"
-        android:title="@string/servers"/>
-
-    <item
         android:id="@+id/about"
         android:title="@string/about"/>
 
