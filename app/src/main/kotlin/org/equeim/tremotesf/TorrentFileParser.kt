@@ -105,9 +105,9 @@ class TorrentFileParser : AnkoLogger {
                                    private val uri: Uri,
                                    parser: TorrentFileParser) : AsyncTask<Any, Any, Status>(), AnkoLogger {
         private val parser = WeakReference(parser)
-        private var fileData: ByteArray? = null
-        private var rootDirectoryChild: BaseTorrentFilesAdapter.Item? = null
-        private var files: List<BaseTorrentFilesAdapter.File>? = null
+        private lateinit var fileData: ByteArray
+        private lateinit var rootDirectoryChild: BaseTorrentFilesAdapter.Item
+        private lateinit var files: List<BaseTorrentFilesAdapter.File>
 
         override fun doInBackground(vararg params: Any?): TorrentFileParser.Status {
             try {
@@ -129,7 +129,7 @@ class TorrentFileParser : AnkoLogger {
 
                     return try {
                         createTree(Bdecoder(Charsets.UTF_8,
-                                            fileData!!.inputStream()).decodeDict())
+                                            fileData.inputStream()).decodeDict())
                         TorrentFileParser.Status.Loaded
                     } catch (error: IllegalStateException) {
                         error("error parsing torrent file", error)
@@ -153,10 +153,10 @@ class TorrentFileParser : AnkoLogger {
         override fun onPostExecute(result: TorrentFileParser.Status) {
             parser.get()?.let { parser ->
                 if (result == TorrentFileParser.Status.Loaded) {
-                    parser.fileData = fileData!!
-                    rootDirectoryChild!!.parentDirectory = parser.rootDirectory
-                    parser.rootDirectory.addChild(rootDirectoryChild!!)
-                    parser.files.addAll(files!!)
+                    parser.fileData = fileData
+                    rootDirectoryChild.parentDirectory = parser.rootDirectory
+                    parser.rootDirectory.addChild(rootDirectoryChild)
+                    parser.files.addAll(files)
                 }
                 parser.status = result
             }
@@ -214,7 +214,7 @@ class TorrentFileParser : AnkoLogger {
                 rootDirectoryChild = file
             }
 
-            rootDirectoryChild!!.setWanted(true)
+            rootDirectoryChild.setWanted(true)
             this.files = files
         }
     }

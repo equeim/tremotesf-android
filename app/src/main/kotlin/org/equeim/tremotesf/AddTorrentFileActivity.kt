@@ -138,7 +138,7 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
             Utils.setPreLollipopContentShadow(view)
 
             activity.setSupportActionBar(toolbar as Toolbar)
-            activity.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             pagerAdapter = PagerAdapter(this)
             pager.adapter = pagerAdapter
@@ -177,15 +177,16 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
 
         override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
             inflater.inflate(R.menu.add_torrent_activity_menu, menu)
-            doneMenuItem = menu.findItem(R.id.done)
-            doneMenuItem!!.isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.isConnected)
+            doneMenuItem = menu.findItem(R.id.done).apply {
+                isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.isConnected)
+            }
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
             if (item.itemId != R.id.done) {
                 return false
             }
-            val infoFragment = pagerAdapter!!.infoFragment
+            val infoFragment = pagerAdapter?.infoFragment
             if (infoFragment?.check() == true) {
                 val filesData = torrentFileParser.getFilesData()
                 Rpc.nativeInstance.addTorrentFile(torrentFileParser.fileData,
@@ -254,8 +255,8 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
                 doneMenuItem?.isVisible = false
 
                 activity.currentFocus?.let { focus ->
-                    activity.getSystemService<InputMethodManager>()!!
-                            .hideSoftInputFromWindow(focus.windowToken, 0)
+                    activity.getSystemService<InputMethodManager>()
+                            ?.hideSoftInputFromWindow(focus.windowToken, 0)
                 }
 
                 tab_layout.visibility = View.GONE
@@ -272,10 +273,8 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
                             }
                         }
                         RpcStatus.Connecting -> {
-                            if (snackbar != null) {
-                                snackbar!!.dismiss()
-                                snackbar = null
-                            }
+                            snackbar?.dismiss()
+                            snackbar = null
                         }
                         else -> {
                         }
@@ -363,15 +362,17 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
                 start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
             }
 
-            Rpc.gotDownloadDirFreeSpaceListener = {
-                if (Rpc.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
-                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), it))
+            Rpc.gotDownloadDirFreeSpaceListener = { bytes ->
+                val text = download_directory_edit.text?.trim()
+                if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
+                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
                     free_space_text_view.visibility = View.VISIBLE
                 }
             }
 
             Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
-                if (path.contentEquals(download_directory_edit.text!!.trim())) {
+                val text = download_directory_edit.text?.trim()
+                if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     if (success) {
                         free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
                     } else {
@@ -415,8 +416,8 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
 
             val parser = mainFragment.torrentFileParser
 
-            adapter = Adapter(requireActivity() as AppCompatActivity,
-                              parser.rootDirectory)
+            val adapter = Adapter(requireActivity() as AppCompatActivity, parser.rootDirectory)
+            this.adapter = adapter
 
             files_view.adapter = adapter
             files_view.layoutManager = LinearLayoutManager(activity)
@@ -425,7 +426,7 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
             files_view.itemAnimator = null
 
             if (parser.status == TorrentFileParser.Status.Loaded) {
-                adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
+                adapter.restoreInstanceState(instanceState ?: savedInstanceState)
             }
         }
 

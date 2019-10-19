@@ -169,10 +169,10 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
     fun saveInstanceState(outState: Bundle) {
         val path = mutableListOf<Int>()
-        var directory = currentDirectory
-        while (directory != rootDirectory) {
+        var directory: Directory? = currentDirectory
+        while (directory != null) {
             path.add(0, directory.row)
-            directory = directory.parentDirectory!!
+            directory = directory.parentDirectory
         }
         outState.putSerializable(BUNDLE_KEY, path as Serializable)
         selector.saveInstanceState(outState)
@@ -191,12 +191,12 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             val path = savedInstanceState.getSerializable(BUNDLE_KEY) as List<Int>
             var directory: Directory? = rootDirectory
             for (row in path) {
-                directory = directory!!.children.find { it.row == row } as? Directory
+                directory = directory?.children?.find { it.row == row } as? Directory
                 if (directory == null) {
                     break
                 }
             }
-            if (directory !== rootDirectory && directory !== null) {
+            if (directory !== rootDirectory && directory != null) {
                 navigateTo(directory)
                 root = false
             }
@@ -361,7 +361,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
                 else -> return false
             }
 
-            selector.actionMode!!.invalidate()
+            selector.actionMode?.invalidate()
 
             return true
         }

@@ -46,6 +46,7 @@ class IntFilter(private val range: IntRange) : InputFilter {
 class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputFilter {
     companion object {
         private val parser = DecimalFormat()
+        private val position = ParsePosition(0)
         private var fallbackParser: DecimalFormat? = null
 
         init {
@@ -56,13 +57,14 @@ class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputF
             }
         }
 
+        private fun fallbackParse(string: String): Number? {
+            position.index = 0
+            return fallbackParser?.parse(string, position)
+        }
+
         fun parse(string: String): Double? {
-            var position = ParsePosition(0)
-            var number = parser.parse(string, position)
-            if (number == null && fallbackParser != null) {
-                position = ParsePosition(0)
-                number = fallbackParser!!.parse(string, position)
-            }
+            position.index = 0
+            val number = parser.parse(string, position) ?: fallbackParse(string)
             if (number == null || position.index != string.length) {
                 return null
             }

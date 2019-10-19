@@ -52,7 +52,7 @@ class AboutActivity : BaseActivity(R.layout.about_activity, true) {
         title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
         setSupportActionBar(toolbar as Toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         pagerAdapter = PagerAdapter()
         pager.adapter = pagerAdapter

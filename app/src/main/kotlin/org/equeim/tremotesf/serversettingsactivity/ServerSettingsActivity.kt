@@ -120,10 +120,8 @@ class ServerSettingsActivity : BaseActivity(false) {
                     progress_bar.visibility = View.GONE
                 }
                 RpcStatus.Connecting -> {
-                    if (snackbar != null) {
-                        snackbar!!.dismiss()
-                        snackbar = null
-                    }
+                    snackbar?.dismiss()
+                    snackbar = null
                     progress_bar.visibility = View.VISIBLE
                 }
                 RpcStatus.Connected -> {

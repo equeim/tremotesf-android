@@ -35,18 +35,16 @@ import kotlinx.android.synthetic.main.trackers_fragment.*
 
 
 class TrackersFragment : Fragment(R.layout.trackers_fragment) {
-    private lateinit var activity: TorrentPropertiesActivity
-    private var trackersAdapter: TrackersAdapter? = null
+    private val activity: TorrentPropertiesActivity
+        get() = requireActivity() as TorrentPropertiesActivity
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity = getActivity() as TorrentPropertiesActivity
-    }
+    private var trackersAdapter: TrackersAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        trackersAdapter = TrackersAdapter(activity)
+        val trackersAdapter = TrackersAdapter(activity)
+        this.trackersAdapter = trackersAdapter
 
         trackers_view.adapter = trackersAdapter
         trackers_view.layoutManager = LinearLayoutManager(activity)
@@ -66,7 +64,7 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment) {
 
         if (savedInstanceState != null) {
             update()
-            trackersAdapter!!.selector.restoreInstanceState(savedInstanceState)
+            trackersAdapter.selector.restoreInstanceState(savedInstanceState)
         }
     }
 

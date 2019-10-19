@@ -47,8 +47,6 @@ import kotlinx.android.synthetic.main.download_directory_edit.*
 
 
 class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, false) {
-    private lateinit var inputManager: InputMethodManager
-
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
@@ -60,8 +58,6 @@ class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        inputManager = getSystemService()!!
 
         priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)
@@ -101,15 +97,17 @@ class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, 
 
         Rpc.addStatusListener(rpcStatusListener)
 
-        Rpc.gotDownloadDirFreeSpaceListener = {
-            if (Rpc.serverSettings.downloadDirectory()!!.contentEquals(download_directory_edit.text!!.trim())) {
-                free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, it))
+        Rpc.gotDownloadDirFreeSpaceListener = { bytes ->
+            val text = download_directory_edit.text?.trim()
+            if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
+                free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, bytes))
                 free_space_text_view.visibility = View.VISIBLE
             }
         }
 
         Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
-            if (path.contentEquals(download_directory_edit.text!!.trim())) {
+            val text = download_directory_edit.text?.trim()
+            if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                 if (success) {
                     free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(this, bytes))
                 } else {
@@ -128,18 +126,17 @@ class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.add_torrent_activity_menu, menu)
-        doneMenuItem = menu.findItem(R.id.done)
-        doneMenuItem!!.isVisible = Rpc.isConnected
+        doneMenuItem = menu.findItem(R.id.done).apply { isVisible = Rpc.isConnected }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.done) {
-            if (torrent_link_edit.text!!.trimmedLength() == 0) {
+            if (torrent_link_edit.text?.trimmedLength() == 0) {
                 torrent_link_edit.error = getString(R.string.empty_field_error)
             }
 
-            if (download_directory_edit.text!!.trimmedLength() == 0) {
+            if (download_directory_edit.text?.trimmedLength() == 0) {
                 download_directory_edit.error = getString(R.string.empty_field_error)
             }
 
@@ -197,14 +194,12 @@ class AddTorrentLinkActivity : BaseActivity(R.layout.add_torrent_link_activity, 
                 placeholder.text = Rpc.statusString
 
                 currentFocus?.let { focus ->
-                    inputManager.hideSoftInputFromWindow(focus.windowToken, 0)
+                    getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(focus.windowToken, 0)
                 }
             }
             RpcStatus.Connecting -> {
-                if (snackbar != null) {
-                    snackbar!!.dismiss()
-                    snackbar = null
-                }
+                snackbar?.dismiss()
+                snackbar = null
                 placeholder.text = getString(R.string.connecting)
             }
             else -> {

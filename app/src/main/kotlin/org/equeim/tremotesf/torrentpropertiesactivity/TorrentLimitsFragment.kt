@@ -206,46 +206,47 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
     }
 
     fun update() {
-        torrent = (requireActivity() as TorrentPropertiesActivity).torrent?.torrent
-
-        if (!isAdded || torrent == null) {
+        if (!isAdded) {
             return
         }
 
+        val torrent = (activity as? TorrentPropertiesActivity)?.torrent?.torrent ?: return
+        this.torrent = torrent
+
         updating = true
 
-        global_limits_check_box.isChecked = torrent!!.honorSessionLimits()
+        global_limits_check_box.isChecked = torrent.honorSessionLimits()
 
-        download_speed_limit_check_box.isChecked = torrent!!.isDownloadSpeedLimited
-        download_speed_limit_edit.setText(torrent!!.downloadSpeedLimit().toString())
+        download_speed_limit_check_box.isChecked = torrent.isDownloadSpeedLimited
+        download_speed_limit_edit.setText(torrent.downloadSpeedLimit().toString())
 
-        upload_speed_limit_check_box.isChecked = torrent!!.isUploadSpeedLimited
-        upload_speed_limit_edit.setText(torrent!!.uploadSpeedLimit().toString())
+        upload_speed_limit_check_box.isChecked = torrent.isUploadSpeedLimited
+        upload_speed_limit_edit.setText(torrent.uploadSpeedLimit().toString())
 
-        priority_spinner.setSelection(when (torrent!!.bandwidthPriority()) {
+        priority_spinner.setSelection(when (torrent.bandwidthPriority()) {
                                           Torrent.Priority.LowPriority -> 2
                                           Torrent.Priority.NormalPriority -> 1
                                           Torrent.Priority.HighPriority -> 0
                                           else -> 0
                                       })
 
-        ratio_limit_spinner.setSelection(when (torrent!!.ratioLimitMode()) {
+        ratio_limit_spinner.setSelection(when (torrent.ratioLimitMode()) {
                                              Torrent.RatioLimitMode.GlobalRatioLimit -> 0
                                              Torrent.RatioLimitMode.SingleRatioLimit -> 2
                                              Torrent.RatioLimitMode.UnlimitedRatio -> 1
                                              else -> 0
                                          })
-        ratio_limit_edit.setText(DecimalFormat("0.00").format(torrent!!.ratioLimit()))
+        ratio_limit_edit.setText(DecimalFormat("0.00").format(torrent.ratioLimit()))
 
-        idle_seeding_spinner.setSelection(when (torrent!!.idleSeedingLimitMode()) {
+        idle_seeding_spinner.setSelection(when (torrent.idleSeedingLimitMode()) {
                                               Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit -> 0
                                               Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit -> 2
                                               Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding -> 1
                                               else -> 0
                                           })
-        idle_seeding_edit.setText(torrent!!.idleSeedingLimit().toString())
+        idle_seeding_edit.setText(torrent.idleSeedingLimit().toString())
 
-        maximum_peers_edit.setText(torrent!!.peersLimit().toString())
+        maximum_peers_edit.setText(torrent.peersLimit().toString())
 
         updating = false
     }

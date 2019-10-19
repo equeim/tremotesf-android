@@ -149,19 +149,19 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             return true
         }
 
-        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-            if (super.onActionItemClicked(mode, item)) {
+        override fun onActionItemClicked(mode: ActionMode, menuItem: MenuItem): Boolean {
+            if (super.onActionItemClicked(mode, menuItem)) {
                 return true
             }
 
-            if (item == renameItem) {
+            if (menuItem == renameItem) {
                 val file = selector.selectedItems.first()
 
                 val pathParts = mutableListOf<String>()
-                var directory = file
-                while (directory != rootDirectory) {
-                    pathParts.add(0, directory.name)
-                    directory = directory.parentDirectory!!
+                var item: Item? = file
+                while (item != null) {
+                    pathParts.add(0, item.name)
+                    item = item.parentDirectory
                 }
 
                 torrent?.let { torrent ->
@@ -198,7 +198,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val fileName = arguments!!.getString(FILE_NAME)
+            val fileName = requireArguments().getString(FILE_NAME)
             return createTextFieldDialog(requireContext(),
                                          null,
                                          null,
@@ -207,9 +207,9 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          fileName,
                                          null) {
-                val path = arguments!!.getString(FILE_PATH)
-                val newName = dialog!!.text_field.text.toString()
-                Rpc.nativeInstance.renameTorrentFile(arguments!!.getInt(TORRENT_ID), path, newName)
+                val path = requireArguments().getString(FILE_PATH)
+                val newName = requireDialog().text_field.text.toString()
+                Rpc.nativeInstance.renameTorrentFile(requireArguments().getInt(TORRENT_ID), path, newName)
                 (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
             }
         }

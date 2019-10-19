@@ -38,7 +38,7 @@ class ServerStatsDialogFragment : DialogFragment() {
     private var serverStatsUpdatedListener: (() -> Unit)? = null
     private val rpcStatusListener: (Int) -> Unit = {
         if (Rpc.isConnected) {
-            serverStatsUpdatedListener!!()
+            serverStatsUpdatedListener?.invoke()
         }
     }
 
@@ -86,7 +86,7 @@ class ServerStatsDialogFragment : DialogFragment() {
 
             update()
             serverStatsUpdatedListener = update
-            Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+            Rpc.addServerStatsUpdatedListener(update)
             Rpc.addStatusListener(rpcStatusListener)
         }
 
@@ -94,7 +94,7 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     override fun onDestroyView() {
-        Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener!!)
+        serverStatsUpdatedListener?.let { Rpc.removeServerStatsUpdatedListener(it) }
         Rpc.removeStatusListener(rpcStatusListener)
         serverStatsUpdatedListener = null
         super.onDestroyView()

@@ -56,10 +56,8 @@ private fun updateFile(file: BaseTorrentFilesAdapter.File,
 class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     private var instanceState: Bundle? = null
 
-    private val activity: TorrentPropertiesActivity?
-        get() {
-            return getActivity() as? TorrentPropertiesActivity
-        }
+    private val activity: TorrentPropertiesActivity
+        get() = requireActivity() as TorrentPropertiesActivity
 
     private var torrent: TorrentData? = null
         set(value) {
@@ -103,7 +101,8 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TorrentFilesAdapter(activity!!, rootDirectory)
+        val adapter = TorrentFilesAdapter(activity, rootDirectory)
+        this.adapter = adapter
 
         files_view.adapter = adapter
         files_view.layoutManager = LinearLayoutManager(activity)
@@ -112,7 +111,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
         files_view.itemAnimator = null
 
         if (treeCreated) {
-            adapter!!.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
+            adapter.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
         }
 
         updateProgressBar()
@@ -154,7 +153,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     fun update() {
         resetAfterCreate = false
 
-        val newTorrent = activity?.torrent
+        val newTorrent = activity.torrent
 
         if (newTorrent == null) {
             if (torrent != null) {
@@ -254,10 +253,8 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     }
 
     private fun updatePlaceholder() {
-        if (torrent == null) {
-            return
-        }
-        placeholder?.visibility = if (torrent!!.torrent.isFilesLoaded && !creatingTree && adapter!!.itemCount == 0) {
+        val torrent = this.torrent ?: return
+        placeholder?.visibility = if (torrent.torrent.isFilesLoaded && !creatingTree && adapter?.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
@@ -265,10 +262,8 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     }
 
     private fun updateProgressBar() {
-        if (torrent == null) {
-            return
-        }
-        progress_bar?.visibility = if (!torrent!!.torrent.isFilesLoaded || creatingTree) {
+        val torrent = this.torrent ?: return
+        progress_bar?.visibility = if (!torrent.torrent.isFilesLoaded || creatingTree) {
             View.VISIBLE
         } else {
             View.GONE

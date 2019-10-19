@@ -59,7 +59,7 @@ class ConnectionSettingsActivity : BaseActivity(R.layout.servers_activity, true)
         super.onCreate(savedInstanceState)
 
         setSupportActionBar(toolbar as Toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         adapter = ServersAdapter(this)
         servers_view.adapter = adapter

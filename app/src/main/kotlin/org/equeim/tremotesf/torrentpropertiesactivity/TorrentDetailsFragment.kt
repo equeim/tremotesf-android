@@ -78,8 +78,8 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
             total_size_text_view.text = Utils.formatByteSize(activity, torrent.totalSize)
 
             val dir = torrent.downloadDirectory
-            if (dir != location_text_view!!.text.toString()) {
-                location_text_view!!.text = dir
+            if (!dir.contentEquals(location_text_view.text)) {
+                location_text_view.text = dir
             }
 
             creator_text_view.text = torrent.torrent.creator()
@@ -87,7 +87,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
             added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate.time)
 
             val comment: String = torrent.torrent.comment()
-            if (comment != comment_text_view.text.toString()) {
+            if (!comment.contentEquals(comment_text_view.text)) {
                 comment_text_view.text = comment
             }
         }

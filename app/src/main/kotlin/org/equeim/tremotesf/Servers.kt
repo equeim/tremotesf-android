@@ -273,7 +273,7 @@ object Servers : AnkoLogger {
     }
 
     fun setServer(server: Server, newServer: Server) {
-        val currentChanged = (server == currentServerField) || (newServer.name == currentServerField!!.name)
+        val currentChanged = (server == currentServerField) || (newServer.name == currentServerField?.name)
 
         if (newServer.name != server.name) {
             val overwriteServer = servers.find { it.name == newServer.name }

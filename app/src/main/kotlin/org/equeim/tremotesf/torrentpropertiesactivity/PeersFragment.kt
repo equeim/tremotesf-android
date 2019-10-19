@@ -93,20 +93,20 @@ class PeersFragment : Fragment(R.layout.peers_fragment) {
     fun update() {
         if (isAdded) {
             torrent = activity.torrent
-            peersAdapter!!.update()
+            peersAdapter?.update()
 
             if (torrent == null) {
-                progress_bar!!.visibility = View.GONE
+                progress_bar.visibility = View.GONE
             } else {
-                if (torrent!!.torrent.isPeersLoaded) {
-                    progress_bar!!.visibility = View.GONE
-                    placeholder!!.visibility = if (peersAdapter!!.itemCount == 0) {
+                if (torrent?.torrent?.isPeersLoaded == true) {
+                    progress_bar.visibility = View.GONE
+                    placeholder.visibility = if (peersAdapter?.itemCount == 0) {
                         View.VISIBLE
                     } else {
                         View.GONE
                     }
                 } else {
-                    progress_bar!!.visibility = View.VISIBLE
+                    progress_bar.visibility = View.VISIBLE
                 }
             }
         }

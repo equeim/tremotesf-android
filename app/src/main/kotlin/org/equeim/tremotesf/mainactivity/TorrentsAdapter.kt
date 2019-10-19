@@ -463,13 +463,13 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             super.onPrepareActionMode(mode, menu)
 
             if (selector.selectedCount == 1) {
-                val status = selector.selectedItems.first().status
-                startItem!!.isEnabled = when (status) {
+                val startEnabled = when (selector.selectedItems.first().status) {
                     Torrent.Status.Paused,
                     Torrent.Status.Errored -> true
                     else -> false
                 }
-                pauseItem!!.isEnabled = !startItem!!.isEnabled
+                startItem!!.isEnabled = startEnabled
+                pauseItem!!.isEnabled = !startEnabled
             } else {
                 startItem!!.isEnabled = true
                 pauseItem!!.isEnabled = true
@@ -538,14 +538,14 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                                          R.id.download_directory_edit,
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         arguments!!.getString(LOCATION),
+                                         requireArguments().getString(LOCATION),
                                          {
-                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(dialog!!.download_directory_dropdown, dialog!!.download_directory_edit)
+                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(requireDialog().download_directory_dropdown, requireDialog().download_directory_edit)
                                          },
                                          {
-                                             Rpc.nativeInstance.setTorrentsLocation(arguments!!.getIntArray(TORRENT_IDS),
-                                                                              dialog!!.download_directory_edit.text.toString(),
-                                                                              dialog!!.move_files_check_box.isChecked)
+                                             Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
+                                                                                    requireDialog().download_directory_edit.text.toString(),
+                                                                                    requireDialog().move_files_check_box.isChecked)
                                              directoriesAdapter?.save()
                                          })
         }
@@ -564,7 +564,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val ids = arguments!!.getIntArray(TORRENT_IDS)!!
+            val ids = requireArguments().getIntArray(TORRENT_IDS)!!
 
             val dialog = AlertDialog.Builder(requireContext())
                     .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
@@ -575,7 +575,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.nativeInstance.removeTorrents(ids,
-                                                    dialog!!.delete_files_check_box.isChecked)
+                                                    requireDialog().delete_files_check_box.isChecked)
                         (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
                     }
                     .create()

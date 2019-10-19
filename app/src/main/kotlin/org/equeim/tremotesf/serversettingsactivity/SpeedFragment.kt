@@ -116,7 +116,7 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
 
         download_speed_limit_check_box.isChecked = Rpc.serverSettings.isDownloadSpeedLimited
         download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            download_speed_limit_layout!!.isEnabled = checked
+            download_speed_limit_layout.isEnabled = checked
             Rpc.serverSettings.isDownloadSpeedLimited = checked
         }
 
@@ -168,8 +168,8 @@ class SpeedFragment : Fragment(R.layout.server_settings_speed_fragment) {
 
         alternative_limits_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
         alternative_limits_check_box.setOnCheckedChangeListener { _, checked ->
-            alternative_download_speed_limit_layout!!.isEnabled = checked
-            alternative_upload_speed_limit_layout!!.isEnabled = checked
+            alternative_download_speed_limit_layout.isEnabled = checked
+            alternative_upload_speed_limit_layout.isEnabled = checked
             Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = checked
         }
 
@@ -261,7 +261,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
     init {
         inflate(context, R.layout.server_settings_time_picker_item, this)
         titleTextView = title_text_view
-        textView = text_view!!
+        textView = text_view
 
         val ta = context.theme.obtainStyledAttributes(attrs,
                                                       intArrayOf(android.R.attr.title),
@@ -301,15 +301,15 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return TimePickerDialog(activity,
                                     this,
-                                    arguments!!.getInt("hourOfDay"),
-                                    arguments!!.getInt("minute"),
+                                    requireArguments().getInt("hourOfDay"),
+                                    requireArguments().getInt("minute"),
                                     android.text.format.DateFormat.is24HourFormat(activity))
         }
 
         override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-            val speedFragment = fragmentManager!!.findFragmentByTag(SpeedFragment.TAG) as SpeedFragment?
+            val speedFragment = requireFragmentManager().findFragmentByTag(SpeedFragment.TAG) as? SpeedFragment
             if (speedFragment != null) {
-                if (arguments!!.getBoolean("beginTime")) {
+                if (requireArguments().getBoolean("beginTime")) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
                     Rpc.serverSettings.setAlternativeSpeedLimitsBeginTime((hourOfDay * 60) + minute)
                 } else {

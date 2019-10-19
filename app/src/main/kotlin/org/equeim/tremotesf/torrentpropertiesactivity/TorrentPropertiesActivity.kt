@@ -110,10 +110,8 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
                 placeholder.text = Rpc.statusString
             }
             RpcStatus.Connecting -> {
-                if (snackbar != null) {
-                    snackbar!!.dismiss()
-                    snackbar = null
-                }
+                snackbar?.dismiss()
+                snackbar = null
                 placeholder.text = getString(R.string.connecting)
             }
             RpcStatus.Connected -> {
@@ -151,7 +149,7 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
         hash = intent.getStringExtra(HASH)!!
 
         setSupportActionBar(toolbar as Toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         title = intent.getStringExtra(NAME)
 
@@ -262,20 +260,17 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
 
     override fun onBackPressed() {
         if (!(pager.currentItem == TAB_FILES &&
-                pagerAdapter.filesFragment != null &&
-                pagerAdapter.filesFragment!!.onBackPressed())) {
+                pagerAdapter.filesFragment?.onBackPressed() == true)) {
             super.onBackPressed()
         }
     }
 
     private fun update() {
-        if (torrent != null) {
-            title = torrent!!.name
+        torrent?.let { torrent ->
+            title = torrent.name
         }
 
-        if (menu != null) {
-            updateMenu()
-        }
+        updateMenu()
 
         pagerAdapter.detailsFragment?.update()
         pagerAdapter.filesFragment?.update()
@@ -284,11 +279,13 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
     }
 
     private fun updateMenu() {
-        for (i in 0 until menu!!.size()) {
-            menu!!.getItem(i).isVisible = (torrent != null)
+        val menu = this.menu ?: return
+
+        for (i in 0 until menu.size()) {
+            menu.getItem(i).isVisible = (torrent != null)
         }
-        if (torrent != null) {
-            startMenuItem.isVisible = when (torrent!!.status) {
+        torrent?.let { torrent ->
+            startMenuItem.isVisible = when (torrent.status) {
                 Torrent.Status.Paused,
                 Torrent.Status.Errored -> true
                 else -> false

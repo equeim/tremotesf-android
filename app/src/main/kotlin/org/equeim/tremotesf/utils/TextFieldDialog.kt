@@ -28,6 +28,7 @@ import android.widget.EditText
 
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
+import androidx.core.text.trimmedLength
 
 import org.equeim.tremotesf.R
 
@@ -55,8 +56,7 @@ fun createTextFieldDialog(context: Context,
     val dialog = builder.create()
 
     dialog.setOnShowListener {
-        val textFieldLayout = dialog.text_field_layout!!
-        textFieldLayout.hint = hint
+        dialog.text_field_layout?.hint = hint
 
         val textField = if (textFieldId == null) {
             dialog.text_field!!
@@ -67,11 +67,11 @@ fun createTextFieldDialog(context: Context,
         textField.setText(defaultText)
 
         val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
-        okButton.isEnabled = textField.text!!.isNotEmpty()
+        okButton.isEnabled = defaultText?.trimmedLength() != 0
 
         textField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                okButton.isEnabled = s.isNotEmpty()
+                okButton.isEnabled = s.trimmedLength() != 0
             }
 
             override fun beforeTextChanged(s: CharSequence?,
@@ -87,8 +87,8 @@ fun createTextFieldDialog(context: Context,
             }
         })
 
-        context.getSystemService<InputMethodManager>()!!.showSoftInput(textField,
-                                                                       InputMethodManager.SHOW_IMPLICIT)
+        context.getSystemService<InputMethodManager>()?.showSoftInput(textField,
+                                                                      InputMethodManager.SHOW_IMPLICIT)
 
         onShow?.invoke()
     }

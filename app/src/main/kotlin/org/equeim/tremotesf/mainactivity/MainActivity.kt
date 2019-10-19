@@ -183,8 +183,10 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         debug("MainActivity onCreate")
 
         setSupportActionBar(toolbar as Toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
+        }
 
         drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
         drawerToggle = ActionBarDrawerToggle(this,
@@ -376,9 +378,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             }
         } else if (Rpc.isConnected) {
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
-            if (restoredSearchQuery != null) {
-                torrentsAdapter.filterString = restoredSearchQuery!!
-            }
+            restoredSearchQuery?.let { torrentsAdapter.filterString = it }
             torrentsAdapter.restoreInstanceState(savedInstanceState)
             torrentsAdapter.selector.restoreInstanceState(savedInstanceState)
         }
@@ -506,11 +506,9 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     }
 
     private fun updateMenuItems() {
-        if (menu == null) {
-            return
-        }
+        val menu = this.menu ?: return
 
-        val connectMenuItem = menu!!.findItem(R.id.connect)
+        val connectMenuItem = menu.findItem(R.id.connect)
         connectMenuItem.isEnabled = Servers.hasServers
         connectMenuItem.title = when (Rpc.status) {
             RpcStatus.Disconnected -> getString(R.string.connect)
@@ -521,11 +519,11 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
 
         val connected = Rpc.isConnected
         searchMenuItem.isVisible = connected
-        menu!!.findItem(R.id.add_torrent_file).isEnabled = connected
-        menu!!.findItem(R.id.add_torrent_link).isEnabled = connected
-        menu!!.findItem(R.id.server_settings).isEnabled = connected
-        menu!!.findItem(R.id.alternative_speed_limits).isEnabled = connected
-        menu!!.findItem(R.id.server_stats).isEnabled = connected
+        menu.findItem(R.id.add_torrent_file).isEnabled = connected
+        menu.findItem(R.id.add_torrent_link).isEnabled = connected
+        menu.findItem(R.id.server_settings).isEnabled = connected
+        menu.findItem(R.id.alternative_speed_limits).isEnabled = connected
+        menu.findItem(R.id.server_stats).isEnabled = connected
     }
 
     private fun updatePlaceholder() {
@@ -547,7 +545,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     }
 
     private fun updateSubtitle() {
-        supportActionBar!!.subtitle = if (Rpc.isConnected) {
+        supportActionBar?.subtitle = if (Rpc.isConnected) {
             getString(R.string.main_activity_subtitle,
                       Utils.formatByteSpeed(this, Rpc.serverStats.downloadSpeed()),
                       Utils.formatByteSpeed(this, Rpc.serverStats.uploadSpeed()))
