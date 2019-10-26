@@ -197,6 +197,7 @@ namespace libtremotesf
 
         bool mBackgroundUpdate;
         bool mUpdateDisabled;
+        bool mUpdating;
 
         QUrl mServerUrl;
         bool mAuthentication;

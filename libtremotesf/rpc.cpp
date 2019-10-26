@@ -71,6 +71,22 @@ namespace libtremotesf
         {
             return (parseResult.value(QJsonKeyStringInit("result")).toString() == QLatin1String("success"));
         }
+
+        bool isAddressLocal(const QString& address)
+        {
+            if (address == QHostInfo::localHostName()) {
+                return true;
+            }
+
+            const QHostAddress ipAddress(address);
+
+            if (ipAddress.isNull()) {
+                return address == QHostInfo::fromName(QHostAddress(QHostAddress::LocalHost).toString()).hostName() ||
+                       address == QHostInfo::fromName(QHostAddress(QHostAddress::LocalHostIPv6).toString()).hostName();
+            }
+
+            return ipAddress.isLoopback() || QNetworkInterface::allAddresses().contains(ipAddress);
+        }
     }
 
     Rpc::Rpc(bool createServerSettings, QObject* parent)
@@ -79,6 +95,7 @@ namespace libtremotesf
           mAuthenticationRequested(false),
           mBackgroundUpdate(false),
           mUpdateDisabled(false),
+          mUpdating(false),
           mAuthentication(false),
           mUpdateInterval(0),
           mBackgroundUpdateInterval(0),
@@ -207,7 +224,7 @@ namespace libtremotesf
                 if (disabled) {
                     mUpdateTimer->stop();
                 } else {
-                    startUpdateTimer();
+                    updateData();
                 }
             }
             emit updateDisabledChanged();
@@ -217,9 +234,6 @@ namespace libtremotesf
     void Rpc::setServer(const Server& server)
     {
         mNetwork->clearAccessCache();
-
-        const bool wasConnected = (mStatus != Disconnected);
-
         disconnect();
 
         mServerUrl.setHost(server.address);
@@ -254,20 +268,7 @@ namespace libtremotesf
         mBackgroundUpdateInterval = server.backgroundUpdateInterval * 1000; // msecs
         mUpdateTimer->setInterval(mUpdateInterval);
 
-        mLocal = [=]() {
-            const QString hostName = mServerUrl.host();
-            if (hostName == QLatin1String("localhost") ||
-                hostName == QHostInfo::localHostName()) {
-                return true;
-            }
-            const QHostAddress ipAddress(hostName);
-            return !ipAddress.isNull() &&
-                    (ipAddress.isLoopback() || QNetworkInterface::allAddresses().contains(ipAddress));
-        }();
-
-        if (wasConnected) {
-            connect();
-        }
+        mLocal = isAddressLocal(server.address);
     }
 
     void Rpc::resetServer()
@@ -287,7 +288,7 @@ namespace libtremotesf
 
     void Rpc::connect()
     {
-        if (!mServerUrl.isEmpty()) {
+        if (mStatus == Disconnected && !mServerUrl.isEmpty()) {
             setError(NoError);
             setStatus(Connecting);
             getServerSettings();
@@ -622,15 +623,19 @@ namespace libtremotesf
 
     void Rpc::updateData()
     {
-        mServerSettingsUpdated = false;
-        mTorrentsUpdated = false;
-        mServerStatsUpdated = false;
+        if (isConnected() && !mUpdating) {
+            mServerSettingsUpdated = false;
+            mTorrentsUpdated = false;
+            mServerStatsUpdated = false;
 
-        mUpdateTimer->stop();
+            mUpdateTimer->stop();
 
-        getServerSettings();
-        getTorrents();
-        getServerStats();
+            mUpdating = true;
+
+            getServerSettings();
+            getTorrents();
+            getServerStats();
+        }
     }
 
     void Rpc::setStatus(Status status)
@@ -660,6 +665,8 @@ namespace libtremotesf
             }
             mNetworkRequests.clear();
 
+            mUpdating = false;
+
             mAuthenticationRequested = false;
             mRpcVersionChecked = false;
             mServerSettingsUpdated = false;
@@ -678,6 +685,7 @@ namespace libtremotesf
         }
         case Connecting:
             qDebug() << "connecting";
+            mUpdating = true;
             break;
         case Connected:
         {
@@ -852,6 +860,7 @@ namespace libtremotesf
             if (!mUpdateDisabled) {
                 mUpdateTimer->start();
             }
+            mUpdating = false;
         }
     }
 

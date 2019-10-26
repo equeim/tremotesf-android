@@ -242,6 +242,7 @@ object Rpc : AnkoLogger {
             val server = Servers.currentServer
             if (server != null) {
                 setServer(server)
+                nativeInstance.connect()
             } else {
                 nativeInstance.resetServer()
             }
