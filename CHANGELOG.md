@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.10.0] - 2019-10-26
 ### Added
 - Added support of Android 10
 
