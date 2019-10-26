@@ -19,7 +19,9 @@
 
 package org.equeim.tremotesf
 
+import java.io.BufferedReader
 import java.io.FileNotFoundException
+import java.io.IOException
 import kotlin.system.measureTimeMillis
 
 import android.annotation.SuppressLint
@@ -35,13 +37,12 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
 import org.jetbrains.anko.info
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
-import com.google.gson.JsonParser
-import com.google.gson.JsonSyntaxException
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.JsonException
 
 
 private const val FILE_NAME = "servers.json"
@@ -59,6 +60,7 @@ private const val MINIMUM_TIMEOUT = 5
 private const val MAXIMUM_TIMEOUT = 60
 private const val DEFAULT_TIMEOUT = 30
 
+@Serializable
 data class Server(var name: String = "",
                 var address: String = "",
                 var port: Int = DEFAULT_PORT,
@@ -102,11 +104,13 @@ data class Server(var name: String = "",
 
     override fun toString() = name
 
+    @Serializable
     data class Torrent(val id: Int,
                        val hashString: String,
                        val name: String,
                        val finished: Boolean)
 
+    @Serializable
     data class LastTorrents(var saved: Boolean = false,
                             var torrents: MutableList<Torrent> = mutableListOf())
 }
@@ -151,65 +155,50 @@ object Servers : AnkoLogger {
 
     private fun load() {
         try {
-            val stream = context.openFileInput(FILE_NAME)
-            try {
-                val jsonObject = JsonParser.parseReader(stream.reader()).asJsonObject
-
-                if (jsonObject.has(SERVERS)) {
-                    val gson = Gson()
-                    for (jsonElement in jsonObject.getAsJsonArray(SERVERS)) {
-                        val server = gson.fromJson(jsonElement, Server::class.java)
-                        info("Reading server \"${server}\"")
-                        if (server.name.isBlank()) {
-                            error("Server's name is empty, skip")
-                            continue
-                        }
-                        if (server.port !in Server.portRange) {
-                            error("Server's port is not in range, set default")
-                            server.port = DEFAULT_PORT
-                        }
-                        if (server.apiPath.isEmpty()) {
-                            error("Server's API path can't be empty, set default")
-                            server.apiPath = DEFAULT_API_PATH
-                        }
-                        if (server.updateInterval !in Server.updateIntervalRange) {
-                            error("Server's update interval is not in range, set default")
-                            server.updateInterval = DEFAULT_UPDATE_INTERVAL
-                        }
-                        if (server.timeout !in Server.timeoutRange) {
-                            error("Server's timeout is not in range, set default")
-                            server.timeout = DEFAULT_TIMEOUT
-                        }
-                        servers.add(server)
-                    }
+            val fileData = context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
+            val saveData = Json(JsonConfiguration.Stable).parse(SaveData.serializer(), fileData)
+            for (server in saveData.servers) {
+                info("Reading server \"${server}\"")
+                if (server.name.isBlank()) {
+                    error("Server's name is empty, skip")
+                    continue
                 }
-
-                if (jsonObject.has(CURRENT)) {
-                    val currentServerName = jsonObject[CURRENT].asString
-                    currentServerField = servers.find { it.name == currentServerName }
+                if (server.port !in Server.portRange) {
+                    error("Server's port is not in range, set default")
+                    server.port = DEFAULT_PORT
                 }
-
-                if (currentServerField == null && servers.isNotEmpty()) {
-                    currentServerField = servers.first()
-                    save()
+                if (server.apiPath.isEmpty()) {
+                    error("Server's API path can't be empty, set default")
+                    server.apiPath = DEFAULT_API_PATH
                 }
-            } catch (error: JsonIOException) {
-                error("Error parsing servers file", error)
-                reset()
-            } catch (error: JsonParseException) {
-                error("Error parsing servers file", error)
-                reset()
-            } catch (error: IllegalStateException) {
-                error("Error parsing servers file", error)
-                reset()
-            } catch (error: JsonSyntaxException) {
-                error("Error parsing servers file", error)
-                reset()
-            } finally {
-                stream.close()
+                if (server.updateInterval !in Server.updateIntervalRange) {
+                    error("Server's update interval is not in range, set default")
+                    server.updateInterval = DEFAULT_UPDATE_INTERVAL
+                }
+                if (server.timeout !in Server.timeoutRange) {
+                    error("Server's timeout is not in range, set default")
+                    server.timeout = DEFAULT_TIMEOUT
+                }
+                servers.add(server)
+            }
+
+            currentServerField = servers.find { it.name == saveData.currentServerName }
+
+            if (currentServerField == null && servers.isNotEmpty()) {
+                currentServerField = servers.first()
+                save()
             }
         } catch (error: FileNotFoundException) {
-            info("Servers file not found")
+            info("Error opening servers file", error)
+        } catch (error: IOException) {
+            error("Error reading servers file", error)
+            reset()
+        } catch (error: JsonException) {
+            error("Error parsing servers file", error)
+            reset()
+        } catch (error: SerializationException) {
+            error("Error deserializing servers file", error)
+            reset()
         }
     }
 
@@ -326,11 +315,19 @@ object Servers : AnkoLogger {
             info("SaveWorker.doWork(), saveData=$data")
             val elapsed = measureTimeMillis {
                 if (data != null) {
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    val jsonObject = JsonObject()
-                    jsonObject.addProperty(CURRENT, data.currentServerName)
-                    jsonObject.add(SERVERS, gson.toJsonTree(data.servers))
-                    context.getFileStreamPath(FILE_NAME)?.writeText(gson.toJson(jsonObject))
+                    try {
+                        context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use { writer ->
+                            writer.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
+                        }
+                    } catch (error: FileNotFoundException) {
+                        error("Failed to open servers file", error)
+                    } catch (error: IOException) {
+                        error("Failed to save servers file", error)
+                    } catch (error: JsonException) {
+                        error("Failed to encode servers to JSON", error)
+                    } catch (error: SerializationException) {
+                        error("Failed to serialize servers", error)
+                    }
                 }
             }
             info("SaveWorker.doWork() return, elapsed time: $elapsed ms")
@@ -342,6 +339,7 @@ object Servers : AnkoLogger {
         }
     }
 
-    private class SaveData(val currentServerName: String?,
-                           val servers: List<Server>)
+    @Serializable
+    private class SaveData(@SerialName(CURRENT) val currentServerName: String?,
+                           @SerialName(SERVERS) val servers: List<Server>)
 }

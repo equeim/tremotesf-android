@@ -20,3 +20,14 @@
 -keep class org.qtproject.qt5.android.QtNative { *; }
 -keep class org.equeim.libtremotesf.** { *; }
 -dontwarn com.simplecityapps.recyclerview_fastscroll.views.FastScrollPopup
+
+# kotlinx.serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class org.equeim.tremotesf.**$$serializer { *; } # <-- change package name to your app's
+-keepclassmembers class org.equeim.tremotesf.** { # <-- change package name to your app's
+    *** Companion;
+}
+-keepclasseswithmembers class org.equeim.tremotesf.** { # <-- change package name to your app's
+    kotlinx.serialization.KSerializer serializer(...);
+}
