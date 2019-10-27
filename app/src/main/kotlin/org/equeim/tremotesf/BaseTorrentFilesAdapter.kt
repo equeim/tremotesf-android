@@ -170,7 +170,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
     fun saveInstanceState(outState: Bundle) {
         val path = mutableListOf<Int>()
         var directory: Directory? = currentDirectory
-        while (directory != null) {
+        while (directory != null && directory != rootDirectory) {
             path.add(0, directory.row)
             directory = directory.parentDirectory
         }
