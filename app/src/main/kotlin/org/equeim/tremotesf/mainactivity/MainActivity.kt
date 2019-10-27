@@ -158,7 +158,9 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         statusSpinnerAdapter.update()
         trackersSpinnerAdapter.update()
         directoriesSpinnerAdapter.update()
-        torrentsAdapter.update()
+        if (!creating) {
+            torrentsAdapter.update()
+        }
         updatePlaceholder()
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
@@ -380,6 +382,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
             restoredSearchQuery?.let { torrentsAdapter.filterString = it }
             torrentsAdapter.restoreInstanceState(savedInstanceState)
+            torrentsAdapter.update()
             torrentsAdapter.selector.restoreInstanceState(savedInstanceState)
         }
     }
