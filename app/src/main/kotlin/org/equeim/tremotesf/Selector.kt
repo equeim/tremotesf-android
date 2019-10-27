@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.io.Serializable
-
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -33,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.Selector"
 
-class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppCompatActivity,
+abstract class Selector<ItemType, IdType>(private val activity: AppCompatActivity,
                                                       private val actionModeCallback: ActionModeCallback<ItemType>,
                                                       private val adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
                                                       private val items: Collection<ItemType>,
@@ -41,7 +39,7 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
                                                       private val titleStringId: Int) {
     var actionMode: ActionMode? = null
     val selectedItems = mutableListOf<ItemType>()
-    private val selectedIds = mutableListOf<IdType>()
+    protected val selectedIds = mutableListOf<IdType>()
 
     var hasHeaderItem = false
 
@@ -146,14 +144,14 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
 
     fun saveInstanceState(outState: Bundle) {
         if (actionMode != null) {
-            outState.putSerializable(BUNDLE_KEY, selectedIds as Serializable)
+            putIdsToBundle(outState)
         }
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY)) {
             @Suppress("UNCHECKED_CAST")
-            val ids = savedInstanceState.getSerializable(BUNDLE_KEY) as List<IdType>
+            val ids = getIdsFromBundle(savedInstanceState)
             for (item in items) {
                 val id = idFromItem(item)
                 if (ids.contains(id)) {
@@ -165,7 +163,10 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
         }
     }
 
-    abstract class ViewHolder<T : Any>(protected val selector: Selector<T, out Serializable>,
+    abstract fun putIdsToBundle(bundle: Bundle)
+    abstract fun getIdsFromBundle(bundle: Bundle): List<IdType>
+
+    abstract class ViewHolder<T>(protected val selector: Selector<T, *>,
                                        itemView: View) : RecyclerView.ViewHolder(itemView),
                                                          View.OnClickListener,
                                                          View.OnLongClickListener {
@@ -198,8 +199,8 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
         }
     }
 
-    abstract class ActionModeCallback<T : Any> : ActionMode.Callback {
-        lateinit var selector: Selector<T, out Serializable>
+    abstract class ActionModeCallback<T> : ActionMode.Callback {
+        lateinit var selector: Selector<T, *>
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             return false
@@ -221,5 +222,35 @@ class Selector<ItemType : Any, IdType : Serializable>(private val activity: AppC
 
     interface ActionModeActivity {
         val actionMode: ActionMode?
+    }
+}
+
+class IntSelector<ItemType>(activity: AppCompatActivity,
+                            actionModeCallback: ActionModeCallback<ItemType>,
+                            adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
+                            items: Collection<ItemType>,
+                            idFromItem: (ItemType) -> Int,
+                            titleStringId: Int) : Selector<ItemType, Int>(activity, actionModeCallback, adapter, items, idFromItem, titleStringId) {
+    override fun getIdsFromBundle(bundle: Bundle): List<Int> {
+        return bundle.getIntArray(BUNDLE_KEY)?.toList() ?: emptyList()
+    }
+
+    override fun putIdsToBundle(bundle: Bundle) {
+        bundle.putIntArray(BUNDLE_KEY, selectedIds.toIntArray())
+    }
+}
+
+class StringSelector<ItemType>(activity: AppCompatActivity,
+                               actionModeCallback: ActionModeCallback<ItemType>,
+                               adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
+                               items: Collection<ItemType>,
+                               idFromItem: (ItemType) -> String,
+                               titleStringId: Int) : Selector<ItemType, String>(activity, actionModeCallback, adapter, items, idFromItem, titleStringId) {
+    override fun getIdsFromBundle(bundle: Bundle): List<String> {
+        return bundle.getStringArray(BUNDLE_KEY)?.toList() ?: emptyList()
+    }
+
+    override fun putIdsToBundle(bundle: Bundle) {
+        bundle.putStringArray(BUNDLE_KEY, selectedIds.toTypedArray())
     }
 }

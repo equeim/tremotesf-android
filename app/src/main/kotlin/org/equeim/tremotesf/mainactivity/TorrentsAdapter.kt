@@ -46,6 +46,7 @@ import org.jetbrains.anko.intentFor
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
+import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
@@ -129,12 +130,12 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     private var filteredTorrents = listOf<TorrentData>()
     private val displayedTorrents = mutableListOf<TorrentData>()
 
-    val selector = Selector(activity,
-                            ActionModeCallback(activity),
-                            this,
-                            displayedTorrents,
-                            TorrentData::id,
-                            R.plurals.torrents_selected)
+    val selector = IntSelector(activity,
+                               ActionModeCallback(activity),
+                               this,
+                               displayedTorrents,
+                               TorrentData::id,
+                               R.plurals.torrents_selected)
 
     private val filterPredicate = { torrent: TorrentData ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&

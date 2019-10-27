@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.io.Serializable
 import java.util.Comparator
 
 import android.os.Bundle
@@ -76,12 +75,12 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
     protected fun initSelector(activity: AppCompatActivity,
                                actionModeCallback: BaseActionModeCallback) {
-        selector = Selector(activity,
-                            actionModeCallback,
-                            this,
-                            currentItems,
-                            Item::row,
-                            R.plurals.files_selected)
+        selector = IntSelector(activity,
+                               actionModeCallback,
+                               this,
+                               currentItems,
+                               Item::row,
+                               R.plurals.files_selected)
     }
 
     override fun getItemCount(): Int {
@@ -174,7 +173,7 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             path.add(0, directory.row)
             directory = directory.parentDirectory
         }
-        outState.putSerializable(BUNDLE_KEY, path as Serializable)
+        outState.putIntArray(BUNDLE_KEY, path.toIntArray())
         selector.saveInstanceState(outState)
     }
 
@@ -186,19 +185,19 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
         var root = true
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY)) {
-            @Suppress("UNCHECKED_CAST")
-            val path = savedInstanceState.getSerializable(BUNDLE_KEY) as List<Int>
-            var directory: Directory? = rootDirectory
-            for (row in path) {
-                directory = directory?.children?.find { it.row == row } as? Directory
-                if (directory == null) {
-                    break
+        if (savedInstanceState != null) {
+            savedInstanceState.getIntArray(BUNDLE_KEY)?.let { path ->
+                var directory: Directory? = rootDirectory
+                for (row in path) {
+                    directory = directory?.children?.find { it.row == row } as? Directory
+                    if (directory == null) {
+                        break
+                    }
                 }
-            }
-            if (directory !== rootDirectory && directory != null) {
-                navigateTo(directory)
-                root = false
+                if (directory !== rootDirectory && directory != null) {
+                    navigateTo(directory)
+                    root = false
+                }
             }
         }
 
