@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
+import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.utils.AlphanumericComparator
@@ -84,12 +85,12 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                                                                           o2.announce)
     }
 
-    val selector = Selector(activity,
-                            ActionModeCallback(),
-                            this,
-                            trackers,
-                            TrackersAdapterItem::id,
-                            R.plurals.trackers_selected)
+    val selector = IntSelector(activity,
+                               ActionModeCallback(),
+                               this,
+                               trackers,
+                               TrackersAdapterItem::id,
+                               R.plurals.trackers_selected)
 
     override fun getItemCount(): Int {
         return trackers.size

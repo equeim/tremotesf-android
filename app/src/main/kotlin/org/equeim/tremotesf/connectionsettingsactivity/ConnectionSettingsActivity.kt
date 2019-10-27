@@ -44,11 +44,13 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
+import org.equeim.tremotesf.StringSelector
+import org.equeim.tremotesf.utils.AlphanumericComparator
+
 import org.jetbrains.anko.startActivity
 
 import kotlinx.android.synthetic.main.server_list_item.view.*
 import kotlinx.android.synthetic.main.servers_activity.*
-import org.equeim.tremotesf.utils.AlphanumericComparator
 
 
 class ConnectionSettingsActivity : BaseActivity(R.layout.servers_activity, true) {
@@ -115,12 +117,12 @@ class ServersAdapter(activity: ConnectionSettingsActivity) : RecyclerView.Adapte
         override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
     }
 
-    val selector = Selector(activity,
-                            ActionModeCallback(activity),
-                            this,
-                            servers,
-                            Server::name,
-                            R.plurals.servers_selected)
+    val selector = StringSelector(activity,
+                                  ActionModeCallback(activity),
+                                  this,
+                                  servers,
+                                  Server::name,
+                                  R.plurals.servers_selected)
 
     override fun getItemCount(): Int {
         return servers.size
