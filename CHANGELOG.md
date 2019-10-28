@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.1] - 2019-10-29
+### Fixed
+- Fixed crash when adding new tracker
+- Fixed restoring selected torrents after device rotation
+- Fixed restoring current directory after device rotation in torrent's files view
+
 ## [1.10.0] - 2019-10-26
 ### Added
 - Added support of Android 10
