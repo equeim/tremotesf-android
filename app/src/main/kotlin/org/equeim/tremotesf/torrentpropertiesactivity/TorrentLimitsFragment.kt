@@ -210,7 +210,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
             return
         }
 
-        val torrent = (activity as? TorrentPropertiesActivity)?.torrent?.torrent ?: return
+        val torrent = (fragmentManager?.findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment?)?.torrent?.torrent ?: return
         this.torrent = torrent
 
         updating = true

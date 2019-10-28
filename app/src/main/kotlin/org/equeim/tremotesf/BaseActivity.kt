@@ -56,8 +56,10 @@ open class BaseActivity(@LayoutRes contentLayoutId: Int,
         }
     }
 
-    protected var creating = true
-    protected var active = false
+    var creating = true
+        private set
+    var active = false
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (noActionBar) {

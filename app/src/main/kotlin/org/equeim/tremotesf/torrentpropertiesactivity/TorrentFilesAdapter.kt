@@ -29,6 +29,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
@@ -50,15 +51,15 @@ import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
-class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
+class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
                           rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
     init {
-        initSelector(activity, ActionModeCallback())
+        initSelector(fragment.requireActivity() as AppCompatActivity, ActionModeCallback())
     }
 
     private val torrent: TorrentData?
         get() {
-            return activity.torrent
+            return fragment.torrent
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -78,10 +79,11 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
             holder as ItemHolder
             val item = holder.item
             holder.progressBar.progress = (item.progress * 100).toInt()
-            holder.progressTextView.text = activity.getString(R.string.completed_string,
-                                                              Utils.formatByteSize(activity,
+            val context = fragment.requireContext()
+            holder.progressTextView.text = context.getString(R.string.completed_string,
+                                                              Utils.formatByteSize(context,
                                                                                    item.completedSize),
-                                                              Utils.formatByteSize(activity,
+                                                              Utils.formatByteSize(context,
                                                                                    item.size),
                                                               DecimalFormat("0.#").format(item.progress * 100))
         }
@@ -166,7 +168,7 @@ class TorrentFilesAdapter(private val activity: TorrentPropertiesActivity,
 
                 torrent?.let { torrent ->
                     RenameDialogFragment.create(torrent.id, pathParts.joinToString("/"), file.name)
-                            .show(activity.supportFragmentManager, RenameDialogFragment.TAG)
+                            .show(fragment.requireFragmentManager(), RenameDialogFragment.TAG)
                 }
 
                 return true

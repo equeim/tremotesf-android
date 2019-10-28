@@ -56,11 +56,11 @@ private fun updateFile(file: BaseTorrentFilesAdapter.File,
 class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     private var instanceState: Bundle? = null
 
-    private val activity: TorrentPropertiesActivity
-        get() = requireActivity() as TorrentPropertiesActivity
+    private val torrentPropertiesFragment: TorrentPropertiesFragment
+        get() = requireFragmentManager().findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment
 
-    private var torrent: TorrentData? = null
-        set(value) {
+    var torrent: TorrentData? = null
+        private set(value) {
             if (value != field) {
                 field = value
                 if (value != null) {
@@ -90,7 +90,8 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     private var creatingTree = false
     private var resetAfterCreate = false
 
-    private var adapter: TorrentFilesAdapter? = null
+    var adapter: TorrentFilesAdapter? = null
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,18 +102,19 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TorrentFilesAdapter(activity, rootDirectory)
+        val adapter = TorrentFilesAdapter(this, rootDirectory)
         this.adapter = adapter
 
         files_view.adapter = adapter
-        files_view.layoutManager = LinearLayoutManager(activity)
-        files_view.addItemDecoration(DividerItemDecoration(activity,
-                DividerItemDecoration.VERTICAL))
+        files_view.layoutManager = LinearLayoutManager(requireContext())
+        files_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         files_view.itemAnimator = null
 
         if (treeCreated) {
             adapter.restoreInstanceState(if (instanceState == null) savedInstanceState else instanceState)
         }
+
+        adapter.isAtRootDirectoryListener = torrentPropertiesFragment::setBackPressedCallbackEnabledState
 
         updateProgressBar()
         updatePlaceholder()
@@ -146,14 +148,10 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
         adapter?.saveInstanceState(outState)
     }
 
-    fun onBackPressed(): Boolean {
-        return adapter?.navigateUp() ?: false
-    }
-
     fun update() {
         resetAfterCreate = false
 
-        val newTorrent = activity.torrent
+        val newTorrent = torrentPropertiesFragment.torrent
 
         if (newTorrent == null) {
             if (torrent != null) {

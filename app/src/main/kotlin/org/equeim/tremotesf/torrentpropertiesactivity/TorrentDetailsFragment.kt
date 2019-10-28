@@ -38,7 +38,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        hash_text_view.text = (requireActivity() as TorrentPropertiesActivity).hash
+        hash_text_view.text = (requireFragmentManager().findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment).hash
     }
 
     override fun onDestroyView() {
@@ -52,30 +52,29 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
     }
 
     fun update() {
-        val activity = this.activity
-        if (activity != null && view != null) {
-            val torrent = (requireActivity() as TorrentPropertiesActivity).torrent
+        if (isAdded) {
+            val torrent = (fragmentManager?.findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment?)?.torrent
             torrent ?: return
 
             if (!torrent.isChanged && !firstUpdate) return
 
             firstUpdate = false
 
-            completed_text_view.text = Utils.formatByteSize(activity, torrent.completedSize)
-            downloaded_text_view.text = Utils.formatByteSize(activity,
+            completed_text_view.text = Utils.formatByteSize(requireContext(), torrent.completedSize)
+            downloaded_text_view.text = Utils.formatByteSize(requireContext(),
                                                              torrent.totalDownloaded)
-            uploaded_text_view.text = Utils.formatByteSize(activity, torrent.totalUploaded)
+            uploaded_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
 
             ratio_text_view.text = DecimalFormat("0.00").format(torrent.ratio)
 
-            download_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.downloadSpeed)
-            upload_speed_text_view.text = Utils.formatByteSpeed(activity, torrent.uploadSpeed)
-            eta_text_view.text = Utils.formatDuration(activity, torrent.eta)
+            download_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
+            upload_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
+            eta_text_view.text = Utils.formatDuration(requireContext(), torrent.eta)
             seeders_text_view.text = torrent.seeders.toString()
             leechers_text_view.text = torrent.leechers.toString()
             last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.torrent.activityDate().time)
 
-            total_size_text_view.text = Utils.formatByteSize(activity, torrent.totalSize)
+            total_size_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
 
             val dir = torrent.downloadDirectory
             if (!dir.contentEquals(location_text_view.text)) {

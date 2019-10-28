@@ -30,20 +30,20 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 
-import kotlinx.android.synthetic.main.torrent_properties_activity.fab
+import kotlinx.android.synthetic.main.torrent_properties_fragment.fab
 import kotlinx.android.synthetic.main.trackers_fragment.*
 
 
 class TrackersFragment : Fragment(R.layout.trackers_fragment) {
-    private val activity: TorrentPropertiesActivity
-        get() = requireActivity() as TorrentPropertiesActivity
+    private val torrentPropertiesFragment: TorrentPropertiesFragment
+        get() = requireFragmentManager().findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment
 
     private var trackersAdapter: TrackersAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val trackersAdapter = TrackersAdapter(activity)
+        val trackersAdapter = TrackersAdapter(torrentPropertiesFragment)
         this.trackersAdapter = trackersAdapter
 
         trackers_view.adapter = trackersAdapter
@@ -55,9 +55,9 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment) {
         trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0) {
-                    activity.fab.hide()
+                    torrentPropertiesFragment.fab.hide()
                 } else if (dy < 0) {
-                    activity.fab.show()
+                    torrentPropertiesFragment.fab.show()
                 }
             }
         })

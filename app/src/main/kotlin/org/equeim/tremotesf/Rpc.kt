@@ -58,6 +58,7 @@ import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesFragment
 
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
@@ -443,8 +444,8 @@ object Rpc : AnkoLogger {
                                         notificationTitle: String) {
         val stackBuilder = TaskStackBuilder.create(context)
         stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
-        stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to hashString,
-                TorrentPropertiesActivity.NAME to name))
+        stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesFragment.HASH to hashString,
+                                                                                TorrentPropertiesFragment.NAME to name))
 
         notificationManager.notify(
                 torrentId,

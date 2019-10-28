@@ -36,12 +36,10 @@ import kotlinx.android.synthetic.main.peers_fragment.*
 
 
 class PeersFragment : Fragment(R.layout.peers_fragment) {
-    private lateinit var activity: TorrentPropertiesActivity
-
     private var peersAdapter: PeersAdapter? = null
 
-    private var torrent: TorrentData? = null
-        set(value) {
+    var torrent: TorrentData? = null
+        private set(value) {
             if (value != field) {
                 field = value
                 if (value != null) {
@@ -57,15 +55,10 @@ class PeersFragment : Fragment(R.layout.peers_fragment) {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity = getActivity() as TorrentPropertiesActivity
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        peersAdapter = PeersAdapter(activity)
+        peersAdapter = PeersAdapter(this)
 
         peers_view.adapter = peersAdapter
         peers_view.layoutManager = LinearLayoutManager(activity)
@@ -92,7 +85,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment) {
 
     fun update() {
         if (isAdded) {
-            torrent = activity.torrent
+            torrent = (fragmentManager?.findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment?)?.torrent
             peersAdapter?.update()
 
             if (torrent == null) {

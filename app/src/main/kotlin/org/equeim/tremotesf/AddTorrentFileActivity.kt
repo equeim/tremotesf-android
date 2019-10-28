@@ -22,7 +22,6 @@ package org.equeim.tremotesf
 import android.Manifest
 import android.content.ContentResolver
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -34,9 +33,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
@@ -61,7 +63,7 @@ import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
-import kotlinx.android.synthetic.main.add_torrent_file_main_fragment.*
+import kotlinx.android.synthetic.main.add_torrent_file_fragment.*
 import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
@@ -84,239 +86,266 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
             super.onBackPressed()
         }
     }
+}
 
-    class MainFragment : Fragment(R.layout.add_torrent_file_main_fragment) {
-        private val activity: AddTorrentFileActivity
-            get() {
-                return getActivity() as AddTorrentFileActivity
+class AddTorrentFileFragment : Fragment(R.layout.add_torrent_file_fragment) {
+    private val activity: AddTorrentFileActivity
+        get() {
+            return getActivity() as AddTorrentFileActivity
+        }
+
+    private var doneMenuItem: MenuItem? = null
+    private var pagerAdapter: PagerAdapter? = null
+    private var backPressedCallback: OnBackPressedCallback? = null
+    private var snackbar: Snackbar? = null
+
+    lateinit var torrentFileParser: TorrentFileParser
+        private set
+
+    private var noPermission = false
+
+    private val rpcStatusListener: (Int) -> Unit = {
+        updateView()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+        setHasOptionsMenu(true)
+
+        torrentFileParser = TorrentFileParser()
+
+        val intent = activity.intent
+        if (intent.scheme == ContentResolver.SCHEME_FILE &&
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+        } else {
+            intent.data?.let { torrentFileParser.load(it, activity.applicationContext) }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
+            activity.intent.data?.let { data ->
+                torrentFileParser.load(data, activity.applicationContext)
             }
-
-        private var doneMenuItem: MenuItem? = null
-        private var pagerAdapter: PagerAdapter? = null
-        private var snackbar: Snackbar? = null
-
-        lateinit var torrentFileParser: TorrentFileParser
-            private set
-
-        private var noPermission = false
-
-        private val rpcStatusListener: (Int) -> Unit = {
+        } else {
+            noPermission = true
             updateView()
         }
+    }
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            retainInstance = true
-            setHasOptionsMenu(true)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Utils.setPreLollipopContentShadow(view)
 
-            torrentFileParser = TorrentFileParser()
+        activity.setSupportActionBar(toolbar as Toolbar)
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-            val intent = activity.intent
-            if (intent.scheme == ContentResolver.SCHEME_FILE &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                    activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
-            } else {
-                intent.data?.let { torrentFileParser.load(it, activity.applicationContext) }
-            }
+        val pagerAdapter = PagerAdapter(this)
+        this.pagerAdapter = pagerAdapter
+        pager.adapter = pagerAdapter
+        tab_layout.setupWithViewPager(pager)
+
+        val backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(this, false) {
+            pagerAdapter.filesFragment?.adapter?.navigateUp()
         }
+        this.backPressedCallback = backPressedCallback
+        setBackPressedCallbackEnabledState()
 
-        override fun onRequestPermissionsResult(requestCode: Int,
-                                                permissions: Array<out String>,
-                                                grantResults: IntArray) {
-            if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-                activity.intent.data?.let { data ->
-                    torrentFileParser.load(data, activity.applicationContext)
+        pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            private var previousPage = -1
+            private val inputManager = requireContext().getSystemService<InputMethodManager>()!!
+
+            override fun onPageSelected(position: Int) {
+                if (previousPage != -1) {
+                    pagerAdapter.filesFragment?.adapter?.selector?.actionMode?.finish()
+                    requireActivity().currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
                 }
-            } else {
-                noPermission = true
-                updateView()
+                setBackPressedCallbackEnabledState()
+                previousPage = position
             }
-        }
+        })
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            Utils.setPreLollipopContentShadow(view)
+        updateView()
 
-            activity.setSupportActionBar(toolbar as Toolbar)
-            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        Rpc.addStatusListener(rpcStatusListener)
 
-            pagerAdapter = PagerAdapter(this)
-            pager.adapter = pagerAdapter
-            pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-                private var previousPage = -1
-
-                override fun onPageSelected(position: Int) {
-                    if (previousPage != -1) {
-                        pagerAdapter?.filesFragment?.adapter?.selector?.actionMode?.finish()
-                    }
-                    previousPage = position
-                }
-            })
-            tab_layout.setupWithViewPager(pager)
-
+        torrentFileParser.statusListener = { status ->
             updateView()
-
-            Rpc.addStatusListener(rpcStatusListener)
-
-            torrentFileParser.statusListener = { status ->
-                updateView()
-                if (status == TorrentFileParser.Status.Loaded) {
-                    pagerAdapter?.filesFragment?.treeCreated()
-                }
+            if (status == TorrentFileParser.Status.Loaded) {
+                pagerAdapter.filesFragment?.treeCreated()
             }
         }
+    }
 
-        override fun onDestroyView() {
-            doneMenuItem = null
-            pagerAdapter = null
-            snackbar = null
-            Rpc.removeStatusListener(rpcStatusListener)
-            torrentFileParser.statusListener = null
-            super.onDestroyView()
+    private fun setBackPressedCallbackEnabledState() {
+        backPressedCallback?.isEnabled = if (pager.currentItem == PagerAdapter.Fragments.Files.ordinal) {
+            !(pagerAdapter?.filesFragment?.adapter?.isAtRootDirectory ?: true)
+        } else {
+            false
         }
+    }
 
-        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-            inflater.inflate(R.menu.add_torrent_activity_menu, menu)
-            doneMenuItem = menu.findItem(R.id.done).apply {
-                isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.isConnected)
-            }
+    override fun onDestroyView() {
+        doneMenuItem = null
+        pagerAdapter = null
+        backPressedCallback = null
+        snackbar = null
+        Rpc.removeStatusListener(rpcStatusListener)
+        torrentFileParser.statusListener = null
+        super.onDestroyView()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.add_torrent_activity_menu, menu)
+        doneMenuItem = menu.findItem(R.id.done).apply {
+            isVisible = (torrentFileParser.status == TorrentFileParser.Status.Loaded && Rpc.isConnected)
         }
+    }
 
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            if (item.itemId != R.id.done) {
-                return false
-            }
-            val infoFragment = pagerAdapter?.infoFragment
-            if (infoFragment?.check() == true) {
-                val filesData = torrentFileParser.getFilesData()
-                Rpc.nativeInstance.addTorrentFile(torrentFileParser.fileData,
-                                   infoFragment.download_directory_edit.text.toString(),
-                                   filesData.wantedFiles.toIntArray(),
-                                   filesData.unwantedFiles.toIntArray(),
-                                   filesData.lowPriorityFiles.toIntArray(),
-                                   filesData.normalPriorityFiles.toIntArray(),
-                                   filesData.highPriorityFiles.toIntArray(),
-                                   when (infoFragment.priority_spinner.selectedItemPosition) {
-                                       0 -> Torrent.Priority.HighPriority
-                                       1 -> Torrent.Priority.NormalPriority
-                                       2 -> Torrent.Priority.LowPriority
-                                       else -> Torrent.Priority.NormalPriority
-                                   },
-                                   infoFragment.start_downloading_check_box.isChecked)
-                infoFragment.directoriesAdapter?.save()
-                activity.finish()
-                return true
-            }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId != R.id.done) {
             return false
         }
+        val infoFragment = pagerAdapter?.infoFragment
+        if (infoFragment?.check() == true) {
+            val filesData = torrentFileParser.getFilesData()
+            Rpc.nativeInstance.addTorrentFile(torrentFileParser.fileData,
+                                              infoFragment.download_directory_edit.text.toString(),
+                                              filesData.wantedFiles.toIntArray(),
+                                              filesData.unwantedFiles.toIntArray(),
+                                              filesData.lowPriorityFiles.toIntArray(),
+                                              filesData.normalPriorityFiles.toIntArray(),
+                                              filesData.highPriorityFiles.toIntArray(),
+                                              when (infoFragment.priority_spinner.selectedItemPosition) {
+                                                  0 -> Torrent.Priority.HighPriority
+                                                  1 -> Torrent.Priority.NormalPriority
+                                                  2 -> Torrent.Priority.LowPriority
+                                                  else -> Torrent.Priority.NormalPriority
+                                              },
+                                              infoFragment.start_downloading_check_box.isChecked)
+            infoFragment.directoriesAdapter?.save()
+            activity.finish()
+            return true
+        }
+        return false
+    }
 
-        private fun updateView() {
-            if (view == null) {
-                return
+    private fun updateView() {
+        if (view == null) {
+            return
+        }
+
+        if (Rpc.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
+            (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+            (toolbar as Toolbar).subtitle = torrentFileParser.torrentName
+            doneMenuItem?.isVisible = true
+
+            tab_layout.visibility = View.VISIBLE
+            pager.visibility = View.VISIBLE
+
+            placeholder_layout.visibility = View.GONE
+        } else {
+            placeholder.text = if (noPermission) {
+                getString(R.string.storage_permission_error)
+            } else {
+                when (torrentFileParser.status) {
+                    TorrentFileParser.Status.Loading -> getString(R.string.loading)
+                    TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
+                    TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
+                    TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
+                    TorrentFileParser.Status.Loaded -> Rpc.statusString
+                    else -> null
+                }
             }
 
-            if (Rpc.isConnected && torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
-                                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                (toolbar as Toolbar).subtitle = torrentFileParser.torrentName
-                doneMenuItem?.isVisible = true
-
-                tab_layout.visibility = View.VISIBLE
-                pager.visibility = View.VISIBLE
-
-                placeholder_layout.visibility = View.GONE
+            progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
+                    (Rpc.status == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
+                View.VISIBLE
             } else {
-                placeholder.text = if (noPermission) {
-                    getString(R.string.storage_permission_error)
-                } else {
-                    when (torrentFileParser.status) {
-                        TorrentFileParser.Status.Loading -> getString(R.string.loading)
-                        TorrentFileParser.Status.FileIsTooLarge -> getString(R.string.file_is_too_large)
-                        TorrentFileParser.Status.ReadingError -> getString(R.string.file_reading_error)
-                        TorrentFileParser.Status.ParsingError -> getString(R.string.file_parsing_error)
-                        TorrentFileParser.Status.Loaded -> Rpc.statusString
-                        else -> null
-                    }
-                }
+                View.GONE
+            }
 
-                progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
-                        (Rpc.status == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
+            placeholder_layout.visibility = View.VISIBLE
 
-                placeholder_layout.visibility = View.VISIBLE
+            (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
+            (toolbar as Toolbar).subtitle = null
+            doneMenuItem?.isVisible = false
 
-                (toolbar.layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
-                (toolbar as Toolbar).subtitle = null
-                doneMenuItem?.isVisible = false
+            activity.currentFocus?.let { focus ->
+                activity.getSystemService<InputMethodManager>()
+                        ?.hideSoftInputFromWindow(focus.windowToken, 0)
+            }
 
-                activity.currentFocus?.let { focus ->
-                    activity.getSystemService<InputMethodManager>()
-                            ?.hideSoftInputFromWindow(focus.windowToken, 0)
-                }
+            tab_layout.visibility = View.GONE
+            pager.visibility = View.GONE
+            pager.currentItem = 0
+            placeholder.visibility = View.VISIBLE
 
-                tab_layout.visibility = View.GONE
-                pager.visibility = View.GONE
-                pager.currentItem = 0
-                placeholder.visibility = View.VISIBLE
-
-                if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                    when (Rpc.status) {
-                        RpcStatus.Disconnected -> {
-                            snackbar = activity.contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
-                                snackbar = null
-                                Rpc.nativeInstance.connect()
-                            }
-                        }
-                        RpcStatus.Connecting -> {
-                            snackbar?.dismiss()
+            if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
+                when (Rpc.status) {
+                    RpcStatus.Disconnected -> {
+                        snackbar = activity.contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
                             snackbar = null
+                            Rpc.nativeInstance.connect()
                         }
-                        else -> {
-                        }
+                    }
+                    RpcStatus.Connecting -> {
+                        snackbar?.dismiss()
+                        snackbar = null
+                    }
+                    else -> {
                     }
                 }
             }
         }
+    }
 
-        class PagerAdapter(private val mainFragment: Fragment) : FragmentPagerAdapter(
-                mainFragment.requireFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-            var infoFragment: InfoFragment? = null
-                private set
-            var filesFragment: FilesFragment? = null
-                private set
+    class PagerAdapter(private val mainFragment: AddTorrentFileFragment) : FragmentPagerAdapter(mainFragment.requireFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        enum class Fragments {
+            Info,
+            Files
+        }
 
-            override fun getCount(): Int {
-                return 2
+        var infoFragment: InfoFragment? = null
+            private set
+        var filesFragment: FilesFragment? = null
+            private set
+
+        override fun getCount(): Int {
+            return Fragments.values().size
+        }
+
+        override fun getItem(position: Int): Fragment {
+            return when (position) {
+                Fragments.Info.ordinal -> InfoFragment()
+                Fragments.Files.ordinal -> FilesFragment()
+                else -> Fragment()
             }
+        }
 
-            override fun getItem(position: Int): Fragment {
-                if (position == 1) {
-                    return FilesFragment()
-                }
-                return InfoFragment()
-            }
-
-            override fun instantiateItem(container: ViewGroup, position: Int): Any {
-                val fragment = super.instantiateItem(container, position)
-                if (position == 0) {
-                    infoFragment = fragment as InfoFragment
-                } else {
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
+            val fragment = super.instantiateItem(container, position)
+            when (position) {
+                Fragments.Info.ordinal -> infoFragment = fragment as InfoFragment
+                Fragments.Files.ordinal -> {
                     filesFragment = fragment as FilesFragment
+                    mainFragment.setBackPressedCallbackEnabledState()
                 }
-                return fragment
             }
+            return fragment
+        }
 
-            override fun getPageTitle(position: Int): CharSequence {
-                return when (position) {
-                    0 -> mainFragment.getString(R.string.information)
-                    1 -> mainFragment.getString(R.string.files)
-                    else -> ""
-                }
+        override fun getPageTitle(position: Int): CharSequence {
+            return when (position) {
+                Fragments.Info.ordinal -> mainFragment.getString(R.string.information)
+                Fragments.Files.ordinal -> mainFragment.getString(R.string.files)
+                else -> ""
             }
         }
     }
@@ -398,7 +427,7 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
     }
 
     class FilesFragment : Fragment(R.layout.add_torrent_file_files_fragment) {
-        private lateinit var mainFragment: MainFragment
+        private lateinit var mainFragment: AddTorrentFileFragment
 
         private var instanceState: Bundle? = null
 
@@ -408,7 +437,7 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             retainInstance = true
-            mainFragment = requireFragmentManager().findFragmentById(R.id.add_torrent_activity_main_fragment) as MainFragment
+            mainFragment = requireFragmentManager().findFragmentById(R.id.add_torrent_file_fragment) as AddTorrentFileFragment
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -418,6 +447,8 @@ class AddTorrentFileActivity : BaseActivity(R.layout.add_torrent_file_activity, 
 
             val adapter = Adapter(requireActivity() as AppCompatActivity, parser.rootDirectory)
             this.adapter = adapter
+
+            adapter.isAtRootDirectoryListener = mainFragment::setBackPressedCallbackEnabledState
 
             files_view.adapter = adapter
             files_view.layoutManager = LinearLayoutManager(activity)

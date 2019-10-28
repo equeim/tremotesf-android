@@ -34,6 +34,7 @@ import android.view.ViewGroup
 import android.view.View
 
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.DialogFragment
 import androidx.core.os.bundleOf
@@ -76,7 +77,7 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
     }
 }
 
-class TrackersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
+class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
     private var torrent: Torrent? = null
     private val trackers = mutableListOf<TrackersAdapterItem>()
     private val comparator = object : Comparator<TrackersAdapterItem> {
@@ -85,7 +86,9 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                                                                           o2.announce)
     }
 
-    val selector = IntSelector(activity,
+    private val context = torrentPropertiesFragment.requireContext()
+
+    val selector = IntSelector(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
                                ActionModeCallback(),
                                this,
                                trackers,
@@ -109,15 +112,15 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         holder.item = tracker
         holder.nameTextView.text = tracker.announce
         holder.statusTextView.text = when (tracker.status) {
-            Tracker.Status.Inactive -> activity.getString(R.string.tracker_inactive)
-            Tracker.Status.Active -> activity.getString(R.string.tracker_active)
-            Tracker.Status.Queued -> activity.getString(R.string.tracker_queued)
-            Tracker.Status.Updating -> activity.getString(R.string.tracker_updating)
+            Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
+            Tracker.Status.Active -> context.getString(R.string.tracker_active)
+            Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
+            Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
             else -> {
                 if (tracker.errorMessage.isEmpty()) {
-                    activity.getString(R.string.error)
+                    context.getString(R.string.error)
                 } else {
-                    activity.getString(R.string.tracker_error, tracker.errorMessage)
+                    context.getString(R.string.tracker_error, tracker.errorMessage)
                 }
             }
         }
@@ -125,7 +128,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         if (tracker.status == Tracker.Status.Error) {
             holder.peersTextView.visibility = View.GONE
         } else {
-            holder.peersTextView.text = activity.resources.getQuantityString(R.plurals.peers_plural,
+            holder.peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
                                                                              tracker.peers,
                                                                              tracker.peers)
             holder.peersTextView.visibility = View.VISIBLE
@@ -134,7 +137,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
         if (tracker.nextUpdate < 0) {
             holder.nextUpdateTextView.visibility = View.GONE
         } else {
-            holder.nextUpdateTextView.text = activity.getString(R.string.next_update,
+            holder.nextUpdateTextView.text = context.getString(R.string.next_update,
                                                                 DateUtils.formatElapsedTime(tracker.nextUpdate.toLong()))
             holder.nextUpdateTextView.visibility = View.VISIBLE
         }
@@ -143,7 +146,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
     }
 
     fun update() {
-        val torrent = activity.torrent?.torrent
+        val torrent = torrentPropertiesFragment.torrent?.torrent
 
         if (torrent == null) {
             if (this.torrent == null) {
@@ -212,11 +215,11 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                if (activity.supportFragmentManager.findFragmentByTag(EditTrackerDialogFragment.TAG) == null) {
+                if (torrentPropertiesFragment.requireFragmentManager().findFragmentByTag(EditTrackerDialogFragment.TAG) == null) {
                     val fragment = EditTrackerDialogFragment()
                     fragment.arguments = bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
                                                   EditTrackerDialogFragment.ANNOUNCE to item.announce)
-                    fragment.show(activity.supportFragmentManager, EditTrackerDialogFragment.TAG)
+                    fragment.show(torrentPropertiesFragment.requireFragmentManager(), EditTrackerDialogFragment.TAG)
                 }
             } else {
                 super.onClick(view)
@@ -242,7 +245,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          arguments?.getString(ANNOUNCE),
                                          null) {
-                val torrent = (requireActivity() as TorrentPropertiesActivity).torrent?.torrent
+                val torrent = (requireFragmentManager().findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment?)?.torrent?.torrent
                 val textField = requireDialog().text_field!!
                 if (trackerId == -1) {
                     torrent?.addTracker(textField.text.toString())
@@ -266,7 +269,7 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
 
             if (item.itemId == R.id.remove) {
                 RemoveDialogFragment.create(selector.selectedItems.map(TrackersAdapterItem::id).toIntArray())
-                        .show(activity.supportFragmentManager, RemoveDialogFragment.TAG)
+                        .show(torrentPropertiesFragment.requireFragmentManager(), RemoveDialogFragment.TAG)
                 return true
             }
 
@@ -295,9 +298,8 @@ class TrackersAdapter(private val activity: TorrentPropertiesActivity) : Recycle
                                                             ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        val activity = requireActivity() as TorrentPropertiesActivity
-                        activity.torrent?.torrent?.removeTrackers(ids)
-                        activity.actionMode?.finish()
+                        (requireFragmentManager().findFragmentById(R.id.torrent_properties_fragment) as TorrentPropertiesFragment?)?.torrent?.torrent?.removeTrackers(ids)
+                        (requireActivity() as TorrentPropertiesActivity).actionMode?.finish()
                     }
                     .create()
         }

@@ -28,26 +28,29 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 
+import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ActionMode
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
@@ -61,7 +64,6 @@ import org.equeim.tremotesf.FilePickerActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
-import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.SettingsActivity
@@ -73,46 +75,45 @@ import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.side_panel_header.view.*
+import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 
 private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.MainActivity.searchQuery"
 
-class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.ActionModeActivity, AnkoLogger {
+class MainActivity : BaseActivity(R.layout.main_activity, true)
+
+class TorrentsListFragment : Fragment(R.layout.torrents_list_fragment), AnkoLogger {
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private var menu: Menu? = null
-    private lateinit var searchMenuItem: MenuItem
-    private lateinit var searchView: SearchView
+    private var searchMenuItem: MenuItem? = null
+    private var searchView: SearchView? = null
     private var restoredSearchQuery: String? = null
 
-    private lateinit var serversSpinner: Spinner
-    private lateinit var serversSpinnerAdapter: ServersSpinnerAdapter
+    private var serversSpinner: Spinner? = null
+    private var serversSpinnerAdapter: ServersSpinnerAdapter? = null
 
-    private lateinit var listSettingsLayout: ViewGroup
-    private lateinit var sortSpinner: Spinner
-    private lateinit var statusSpinner: Spinner
-    private lateinit var statusSpinnerAdapter: StatusFilterSpinnerAdapter
+    private var listSettingsLayout: ViewGroup? = null
+    private var sortSpinner: Spinner? = null
+    private var statusSpinner: Spinner? = null
+    private var statusSpinnerAdapter: StatusFilterSpinnerAdapter? = null
 
-    private lateinit var trackersSpinner: Spinner
-    private lateinit var trackersSpinnerAdapter: TrackersSpinnerAdapter
+    private var trackersSpinner: Spinner? = null
+    private var trackersSpinnerAdapter: TrackersSpinnerAdapter? = null
 
-    private lateinit var directoriesSpinner: Spinner
-    private lateinit var directoriesSpinnerAdapter: DirectoriesSpinnerAdapter
+    private var directoriesSpinner: Spinner? = null
+    private var directoriesSpinnerAdapter: DirectoriesSpinnerAdapter? = null
 
-    lateinit var torrentsAdapter: TorrentsAdapter
+    var torrentsAdapter: TorrentsAdapter? = null
         private set
-
-    override val actionMode: ActionMode?
-        get() = torrentsAdapter.selector.actionMode
 
     private val rpcStatusListener = { status: Int ->
         if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
             if (!Rpc.isConnected) {
-                torrentsAdapter.selector.actionMode?.finish()
+                torrentsAdapter?.selector?.actionMode?.finish()
 
-                supportFragmentManager.apply {
+                requireFragmentManager().apply {
                     findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
                             ?.let { commit { remove(it) } }
                     findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
@@ -121,23 +122,25 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
                             ?.let { commit { remove(it) } }
                 }
 
-                if (menu != null) {
-                    searchMenuItem.collapseActionView()
-                }
+                searchMenuItem?.collapseActionView()
             }
 
-            torrentsAdapter.update()
+            torrentsAdapter?.update()
 
             updateSubtitle()
-            listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
-            statusSpinnerAdapter.update()
+            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
+            statusSpinnerAdapter?.update()
 
-            trackersSpinnerAdapter.update()
-            directoriesSpinnerAdapter.update()
-            
+            trackersSpinnerAdapter?.update()
+            directoriesSpinnerAdapter?.update()
+
             if (Rpc.isConnected) {
-                trackersSpinner.setSelection(trackersSpinnerAdapter.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
-                directoriesSpinner.setSelection(directoriesSpinnerAdapter.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
+                trackersSpinnerAdapter?.let {
+                    trackersSpinner?.setSelection(it.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+                }
+                directoriesSpinnerAdapter?.let {
+                    directoriesSpinner?.setSelection(it.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
+                }
             }
 
             menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
@@ -150,16 +153,16 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     private val rpcErrorListener: (Int) -> Unit = {
         updateTitle()
         updateMenuItems()
-        serversSpinner.isEnabled = Servers.hasServers
+        serversSpinner?.isEnabled = Servers.hasServers
         updatePlaceholder()
     }
 
     private val torrentsUpdatedListener = {
-        statusSpinnerAdapter.update()
-        trackersSpinnerAdapter.update()
-        directoriesSpinnerAdapter.update()
-        if (!creating) {
-            torrentsAdapter.update()
+        statusSpinnerAdapter?.update()
+        trackersSpinnerAdapter?.update()
+        directoriesSpinnerAdapter?.update()
+        if ((activity as BaseActivity?)?.creating != true) {
+            torrentsAdapter?.update()
         }
         updatePlaceholder()
 
@@ -171,36 +174,42 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     }
 
     private val serversListener = {
-        serversSpinnerAdapter.update()
-        serversSpinner.isEnabled = Servers.hasServers
+        serversSpinnerAdapter?.update()
+        serversSpinner?.isEnabled = Servers.hasServers
     }
 
-    private val currentServerListener = {
+    private val currentServerListener: () -> Unit = {
         updateTitle()
-        serversSpinnerAdapter.updateCurrentServer()
+        serversSpinnerAdapter?.updateCurrentServer()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        debug("MainActivity onCreate")
+        setHasOptionsMenu(true)
+    }
 
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (requireActivity() as AppCompatActivity).apply {
+            setSupportActionBar(this@TorrentsListFragment.toolbar as Toolbar)
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setHomeButtonEnabled(true)
+            }
         }
 
         drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
-        drawerToggle = ActionBarDrawerToggle(this,
+        drawerToggle = ActionBarDrawerToggle(requireActivity(),
                                              drawer_layout,
                                              R.string.open_side_panel,
                                              R.string.close_side_panel)
+        drawer_layout.addDrawerListener(drawerToggle)
 
-        torrentsAdapter = TorrentsAdapter(this)
+        val torrentsAdapter = TorrentsAdapter(requireActivity() as MainActivity, this)
+        this.torrentsAdapter = torrentsAdapter
 
         torrents_view.adapter = torrentsAdapter
-        torrents_view.layoutManager = LinearLayoutManager(this)
-        torrents_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        torrents_view.layoutManager = LinearLayoutManager(requireContext())
+        torrents_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         Settings.torrentCompactViewListener = {
@@ -213,9 +222,9 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         side_panel.setNavigationItemSelectedListener { menuItem ->
             drawer_layout.closeDrawers()
             when (menuItem.itemId) {
-                R.id.settings -> startActivity<SettingsActivity>()
-                R.id.about -> startActivity<AboutActivity>()
-                R.id.quit -> Utils.shutdownApp(this)
+                R.id.settings -> requireContext().startActivity<SettingsActivity>()
+                R.id.about -> requireContext().startActivity<AboutActivity>()
+                R.id.quit -> Utils.shutdownApp(requireContext())
                 else -> return@setNavigationItemSelectedListener false
             }
             return@setNavigationItemSelectedListener true
@@ -223,9 +232,11 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
 
         val sidePanelHeader = side_panel.getHeaderView(0)
 
-        serversSpinner = sidePanelHeader.servers_spinner
+        val serversSpinner = sidePanelHeader.servers_spinner
+        this.serversSpinner = serversSpinner
         serversSpinner.isEnabled = Servers.hasServers
-        serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
+        val serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
+        this.serversSpinnerAdapter = serversSpinnerAdapter
         serversSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>,
                                         view: View?,
@@ -239,13 +250,15 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
 
         sidePanelHeader.connection_settings_item.setOnClickListener {
             drawer_layout.closeDrawers()
-            startActivity<ConnectionSettingsActivity>()
+            requireContext().startActivity<ConnectionSettingsActivity>()
         }
 
-        listSettingsLayout = sidePanelHeader.list_settings_layout
+        val listSettingsLayout = sidePanelHeader.list_settings_layout
+        this.listSettingsLayout = listSettingsLayout
         listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
 
-        sortSpinner = sidePanelHeader.sort_spinner
+        val sortSpinner = sidePanelHeader.sort_spinner
+        this.sortSpinner = sortSpinner
         sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
                                                             R.string.sort)
         sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
@@ -274,8 +287,10 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             sortOrderButton.setImageResource(getSortOrderButtonIcon())
         }
 
-        statusSpinner = sidePanelHeader.status_spinner
-        statusSpinnerAdapter = StatusFilterSpinnerAdapter(this)
+        val statusSpinner = sidePanelHeader.status_spinner
+        this.statusSpinner = statusSpinner
+        val statusSpinnerAdapter = StatusFilterSpinnerAdapter(requireContext())
+        this.statusSpinnerAdapter = statusSpinnerAdapter
         statusSpinner.adapter = statusSpinnerAdapter
         statusSpinner.setSelection(Settings.torrentsStatusFilter.ordinal)
         statusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -297,8 +312,10 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        trackersSpinner = sidePanelHeader.trackers_spinner
-        trackersSpinnerAdapter = TrackersSpinnerAdapter(this)
+        val trackersSpinner = sidePanelHeader.trackers_spinner
+        this.trackersSpinner = trackersSpinner
+        val trackersSpinnerAdapter = TrackersSpinnerAdapter(requireContext())
+        this.trackersSpinnerAdapter = trackersSpinnerAdapter
         trackersSpinner.adapter = trackersSpinnerAdapter
         trackersSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             private var previousPosition = -1
@@ -323,8 +340,10 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        directoriesSpinner = sidePanelHeader.directories_spinner
-        directoriesSpinnerAdapter = DirectoriesSpinnerAdapter(this)
+        val directoriesSpinner = sidePanelHeader.directories_spinner
+        this.directoriesSpinner = directoriesSpinner
+        val directoriesSpinnerAdapter = DirectoriesSpinnerAdapter(requireContext())
+        this.directoriesSpinnerAdapter = directoriesSpinnerAdapter
         directoriesSpinner.adapter = directoriesSpinnerAdapter
         directoriesSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             private var previousPosition = -1
@@ -366,17 +385,17 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         if (savedInstanceState == null) {
             if (Servers.hasServers) {
                 if (!Settings.donateDialogShown) {
-                    val info = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
+                    val info = requireActivity().packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
                     val currentTime = System.currentTimeMillis()
                     val installDays = TimeUnit.DAYS.convert(currentTime - info.firstInstallTime, TimeUnit.MILLISECONDS)
                     val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
                     if (installDays >= 2 && updateDays >= 1) {
                         Settings.donateDialogShown = true
-                        DonateDialogFragment().show(supportFragmentManager, null)
+                        DonateDialogFragment().show(requireFragmentManager(), null)
                     }
                 }
             } else {
-                startActivity<ServerEditActivity>()
+                requireContext().startActivity<ServerEditActivity>()
             }
         } else if (Rpc.isConnected) {
             restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
@@ -387,6 +406,36 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         }
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        drawerToggle.syncState()
+
+        val backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+            isEnabled = false
+        }
+
+        backPressedCallback.isEnabled = drawer_layout.isDrawerOpen(GravityCompat.START)
+
+        drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {
+
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                backPressedCallback.isEnabled = true
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                backPressedCallback.isEnabled = false
+            }
+        })
+    }
+
     override fun onStart() {
         super.onStart()
         torrentsUpdatedListener()
@@ -395,19 +444,13 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        drawerToggle.syncState()
-    }
-
     override fun onStop() {
         super.onStop()
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
     }
 
-    override fun onDestroy() {
-        debug("MainActivity onDestroy")
+    override fun onDestroyView() {
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.torrentAddDuplicateListener = null
@@ -416,7 +459,29 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         Servers.removeCurrentServerListener(currentServerListener)
         Settings.torrentCompactViewListener = null
         Settings.torrentNameMultilineListener = null
-        super.onDestroy()
+
+        menu = null
+        searchMenuItem = null
+        searchView = null
+        restoredSearchQuery = null
+
+        serversSpinner = null
+        serversSpinnerAdapter = null
+
+        listSettingsLayout = null
+        sortSpinner = null
+        statusSpinner = null
+        statusSpinnerAdapter = null
+
+        trackersSpinner = null
+        trackersSpinnerAdapter = null
+
+        directoriesSpinner = null
+        directoriesSpinnerAdapter = null
+
+        torrentsAdapter = null
+
+        super.onDestroyView()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -426,22 +491,28 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        torrentsAdapter.saveInstanceState(outState)
-        torrentsAdapter.selector.saveInstanceState(outState)
-        if (menu != null && !searchView.isIconified) {
-            outState.putString(SEARCH_QUERY_KEY, searchView.query.toString())
+        torrentsAdapter?.apply {
+            saveInstanceState(outState)
+            selector.saveInstanceState(outState)
+        }
+        searchView?.let {
+            if (!it.isIconified) {
+                outState.putString(SEARCH_QUERY_KEY, it.query.toString())
+            }
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         this.menu = menu
-        menuInflater.inflate(R.menu.main_activity_menu, menu)
+        inflater.inflate(R.menu.main_activity_menu, menu)
 
-        searchMenuItem = menu.findItem(R.id.search)
-        searchView = searchMenuItem.actionView as SearchView
+        val searchMenuItem = menu.findItem(R.id.search)
+        this.searchMenuItem = searchMenuItem
+        val searchView = searchMenuItem.actionView as SearchView
+        this.searchView = searchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                torrentsAdapter.filterString = newText.trim()
+                torrentsAdapter?.filterString = newText.trim()
                 updatePlaceholder()
                 return true
             }
@@ -459,8 +530,6 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         updateMenuItems()
 
         menu.findItem(R.id.alternative_speed_limits).isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
-
-        return true
     }
 
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
@@ -477,13 +546,13 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
-            R.id.add_torrent_link -> startActivity<AddTorrentLinkActivity>()
-            R.id.server_settings -> startActivity<ServerSettingsActivity>()
+            R.id.add_torrent_link -> requireContext().startActivity<AddTorrentLinkActivity>()
+            R.id.server_settings -> requireContext().startActivity<ServerSettingsActivity>()
             R.id.alternative_speed_limits -> {
                 menuItem.isChecked = !menuItem.isChecked
                 Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
             }
-            R.id.server_stats -> ServerStatsDialogFragment().show(supportFragmentManager, null)
+            R.id.server_stats -> ServerStatsDialogFragment().show(requireFragmentManager(), null)
             else -> return false
         }
 
@@ -493,18 +562,28 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
-            startActivity(intentFor<AddTorrentFileActivity>().setData(data.data))
+            requireContext().startActivity(requireContext().intentFor<AddTorrentFileActivity>().setData(data.data))
         }
     }
 
     private fun updateTitle() {
-        title = if (Servers.hasServers) {
+        requireActivity().title = if (Servers.hasServers) {
             val currentServer = Servers.currentServer!!
             getString(R.string.current_server_string,
                       currentServer.name,
                       currentServer.address)
         } else {
             getString(R.string.app_name)
+        }
+    }
+
+    private fun updateSubtitle() {
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = if (Rpc.isConnected) {
+            getString(R.string.main_activity_subtitle,
+                      Utils.formatByteSpeed(requireContext(), Rpc.serverStats.downloadSpeed()),
+                      Utils.formatByteSpeed(requireContext(), Rpc.serverStats.uploadSpeed()))
+        } else {
+            null
         }
     }
 
@@ -521,7 +600,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         }
 
         val connected = Rpc.isConnected
-        searchMenuItem.isVisible = connected
+        searchMenuItem?.isVisible = connected
         menu.findItem(R.id.add_torrent_file).isEnabled = connected
         menu.findItem(R.id.add_torrent_link).isEnabled = connected
         menu.findItem(R.id.server_settings).isEnabled = connected
@@ -531,7 +610,7 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
 
     private fun updatePlaceholder() {
         placeholder.text = if (Rpc.status == RpcStatus.Connected) {
-            if (torrentsAdapter.itemCount == 0) {
+            if (torrentsAdapter?.itemCount ?: 0 == 0) {
                 getString(R.string.no_torrents)
             } else {
                 null
@@ -547,18 +626,8 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
         }
     }
 
-    private fun updateSubtitle() {
-        supportActionBar?.subtitle = if (Rpc.isConnected) {
-            getString(R.string.main_activity_subtitle,
-                      Utils.formatByteSpeed(this, Rpc.serverStats.downloadSpeed()),
-                      Utils.formatByteSpeed(this, Rpc.serverStats.uploadSpeed()))
-        } else {
-            null
-        }
-    }
-
     private fun getSortOrderButtonIcon(): Int {
-        val ta = obtainStyledAttributes(intArrayOf(if (torrentsAdapter.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
+        val ta = requireContext().obtainStyledAttributes(intArrayOf(if (torrentsAdapter?.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
             R.attr.sortAscendingIcon
         } else {
             R.attr.sortDescendingIcon
@@ -571,19 +640,11 @@ class MainActivity : BaseActivity(R.layout.main_activity, true), Selector.Action
     private fun startFilePickerActivity() {
         try {
             startActivityForResult(Intent(Intent.ACTION_GET_CONTENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .setType("application/x-bittorrent"),
-                    0)
+                                           .addCategory(Intent.CATEGORY_OPENABLE)
+                                           .setType("application/x-bittorrent"),
+                                   0)
         } catch (error: ActivityNotFoundException) {
-            startActivityForResult(intentFor<FilePickerActivity>(), 0)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
+            startActivityForResult(requireContext().intentFor<FilePickerActivity>(), 0)
         }
     }
 

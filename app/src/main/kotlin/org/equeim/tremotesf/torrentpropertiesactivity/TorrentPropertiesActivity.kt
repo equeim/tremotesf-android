@@ -19,13 +19,18 @@
 
 package org.equeim.tremotesf.torrentpropertiesactivity
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
@@ -37,7 +42,6 @@ import androidx.fragment.app.commit
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 
-import org.jetbrains.anko.contentView
 import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.libtremotesf.Torrent
@@ -52,17 +56,24 @@ import org.equeim.tremotesf.mainactivity.TorrentsAdapter
 import org.equeim.tremotesf.setFilesEnabled
 import org.equeim.tremotesf.setPeersEnabled
 
-import kotlinx.android.synthetic.main.torrent_properties_activity.*
+import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
-
-private const val TAB_DETAILS = 0
-private const val TAB_FILES = 1
-private const val TAB_TRACKERS = 2
-private const val TAB_PEERS = 3
-private const val TAB_LIMITS = 4
-private const val TABS_COUNT = 5
 
 class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activity, true), Selector.ActionModeActivity {
+    override var actionMode: ActionMode? = null
+
+    override fun onSupportActionModeStarted(mode: ActionMode) {
+        super.onSupportActionModeStarted(mode)
+        actionMode = mode
+    }
+
+    override fun onSupportActionModeFinished(mode: ActionMode) {
+        super.onSupportActionModeFinished(mode)
+        actionMode = null
+    }
+}
+
+class TorrentPropertiesFragment : Fragment(R.layout.torrent_properties_fragment) {
     companion object {
         const val HASH = "org.equeim.TorrentPropertiesActivity.HASH"
         const val NAME = "org.equeim.TorrentPropertiesActivity.NAME"
@@ -72,7 +83,8 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
 
     var torrent: TorrentData? = null
         set(value) {
-            var needUpdate = (active || creating)
+            val activity = requireActivity() as BaseActivity
+            var needUpdate = (activity.active || activity.creating)
             if (value !== field) {
                 field = value
                 if (value == null) {
@@ -81,7 +93,7 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
                         placeholder.text = getString(R.string.torrent_removed)
                     }
 
-                    supportFragmentManager.apply {
+                    requireFragmentManager().apply {
                         val findAndRemove = { tag: String ->
                             findFragmentByTag(tag)?.let { commit { remove(it) } }
                         }
@@ -103,7 +115,7 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
         when (status) {
             RpcStatus.Disconnected -> {
                 torrent = null
-                snackbar = contentView?.indefiniteSnackbar("", getString(R.string.connect)) {
+                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }
@@ -134,51 +146,57 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
     }
 
     private var menu: Menu? = null
-    private lateinit var startMenuItem: MenuItem
-    private lateinit var pauseMenuItem: MenuItem
+    private var startMenuItem: MenuItem? = null
+    private var pauseMenuItem: MenuItem? = null
 
     private var snackbar: Snackbar? = null
 
-    private lateinit var pagerAdapter: PagerAdapter
-
-    override var actionMode: ActionMode? = null
+    private var pagerAdapter: PagerAdapter? = null
+    private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
-        hash = intent.getStringExtra(HASH)!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        hash = requireActivity().intent.getStringExtra(HASH)!!
 
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        pagerAdapter = PagerAdapter(this, requireContext())
+        pager.adapter = pagerAdapter
+        tab_layout.setupWithViewPager(pager)
 
-        title = intent.getStringExtra(NAME)
+        val backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(this, false) {
+            pagerAdapter?.filesFragment?.adapter?.navigateUp()
+        }
+        this.backPressedCallback = backPressedCallback
+        setBackPressedCallbackEnabledState()
 
         pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             private var previousPage = -1
-            private val inputManager = getSystemService<InputMethodManager>()!!
+            private val inputManager = requireContext().getSystemService<InputMethodManager>()!!
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
-                    actionMode?.finish()
-                    currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
+                    (requireActivity() as TorrentPropertiesActivity).apply {
+                        actionMode?.finish()
+                        currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
+                    }
                 }
-                if (position == TAB_TRACKERS) {
+                if (position == PagerAdapter.TAB_TRACKERS) {
                     fab.show()
                 } else {
                     fab.hide()
                 }
+                setBackPressedCallbackEnabledState()
                 previousPage = position
             }
         })
 
-        pagerAdapter = PagerAdapter()
-        pager.adapter = pagerAdapter
-        tab_layout.setupWithViewPager(pager)
-
         fab.setOnClickListener {
-            if (supportFragmentManager.findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
+            if (requireFragmentManager().findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
                 val fragment = TrackersAdapter.EditTrackerDialogFragment()
-                fragment.show(supportFragmentManager, TrackersAdapter.EditTrackerDialogFragment.TAG)
+                fragment.show(requireFragmentManager(), TrackersAdapter.EditTrackerDialogFragment.TAG)
             }
         }
 
@@ -191,9 +209,26 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
         Rpc.addTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
+    fun setBackPressedCallbackEnabledState() {
+        backPressedCallback?.isEnabled = if (pager.currentItem == PagerAdapter.TAB_FILES) {
+            !(pagerAdapter?.filesFragment?.adapter?.isAtRootDirectory ?: true)
+        } else {
+            false
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (requireActivity() as AppCompatActivity).apply {
+            setSupportActionBar(toolbar as Toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            title = intent.getStringExtra(NAME)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
-        if (!creating) {
+        if (!(requireActivity() as BaseActivity).creating) {
             torrentsUpdatedListener()
         }
     }
@@ -203,27 +238,33 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        menu = null
+        startMenuItem = null
+        pauseMenuItem = null
+        snackbar = null
+        pagerAdapter = null
+        backPressedCallback = null
+
         Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
 
-        if (isFinishing && torrent != null) {
+        if (requireActivity().isFinishing && torrent != null) {
             torrent?.torrent?.apply {
                 setFilesEnabled(false)
                 setPeersEnabled(false)
             }
         }
 
-        super.onDestroy()
+        super.onDestroyView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         this.menu = menu
-        menuInflater.inflate(R.menu.torrent_properties_activity_menu, menu)
+        inflater.inflate(R.menu.torrent_properties_activity_menu, menu)
         startMenuItem = menu.findItem(R.id.start)
         pauseMenuItem = menu.findItem(R.id.pause)
         updateMenu()
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -235,47 +276,32 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
                 R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id),
                                                                                       torrent.downloadDirectory)
-                        .show(supportFragmentManager, TorrentsAdapter.SetLocationDialogFragment.TAG)
+                        .show(requireFragmentManager(), TorrentsAdapter.SetLocationDialogFragment.TAG)
                 R.id.rename -> TorrentFilesAdapter.RenameDialogFragment.create(torrent.id,
                                                                                torrent.name,
                                                                                torrent.name)
-                        .show(supportFragmentManager, TorrentFilesAdapter.RenameDialogFragment.TAG)
-                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id)).show(supportFragmentManager,
-                                                                                                          TorrentsAdapter.RemoveDialogFragment.TAG)
+                        .show(requireFragmentManager(), TorrentFilesAdapter.RenameDialogFragment.TAG)
+                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id)).show(requireFragmentManager(),
+                                                                                                        TorrentsAdapter.RemoveDialogFragment.TAG)
                 else -> return false
             }
         }
         return true
     }
 
-    override fun onSupportActionModeStarted(mode: ActionMode) {
-        super.onSupportActionModeStarted(mode)
-        actionMode = mode
-    }
-
-    override fun onSupportActionModeFinished(mode: ActionMode) {
-        super.onSupportActionModeFinished(mode)
-        actionMode = null
-    }
-
-    override fun onBackPressed() {
-        if (!(pager.currentItem == TAB_FILES &&
-                pagerAdapter.filesFragment?.onBackPressed() == true)) {
-            super.onBackPressed()
-        }
-    }
-
     private fun update() {
         torrent?.let { torrent ->
-            title = torrent.name
+            activity?.title = torrent.name
         }
 
         updateMenu()
 
-        pagerAdapter.detailsFragment?.update()
-        pagerAdapter.filesFragment?.update()
-        pagerAdapter.trackersFragment?.update()
-        pagerAdapter.peersFragment?.update()
+        pagerAdapter?.apply {
+            detailsFragment?.update()
+            filesFragment?.update()
+            trackersFragment?.update()
+            peersFragment?.update()
+        }
     }
 
     private fun updateMenu() {
@@ -285,12 +311,12 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
             menu.getItem(i).isVisible = (torrent != null)
         }
         torrent?.let { torrent ->
-            startMenuItem.isVisible = when (torrent.status) {
+            startMenuItem?.isVisible = when (torrent.status) {
                 Torrent.Status.Paused,
                 Torrent.Status.Errored -> true
                 else -> false
             }
-            pauseMenuItem.isVisible = !startMenuItem.isVisible
+            pauseMenuItem?.isVisible = !(startMenuItem?.isVisible ?: true)
         }
     }
 
@@ -312,7 +338,16 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
         }
     }
 
-    inner class PagerAdapter : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    class PagerAdapter(private val mainFragment: TorrentPropertiesFragment, private val context: Context) : FragmentPagerAdapter(mainFragment.requireFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        companion object {
+            const val TAB_DETAILS = 0
+            const val TAB_FILES = 1
+            const val TAB_TRACKERS = 2
+            const val TAB_PEERS = 3
+            const val TAB_LIMITS = 4
+            const val TABS_COUNT = 5
+        }
+
         var detailsFragment: TorrentDetailsFragment? = null
         var filesFragment: TorrentFilesFragment? = null
         var trackersFragment: TrackersFragment? = null
@@ -343,6 +378,7 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
                 }
                 TAB_FILES -> {
                     filesFragment = fragment as TorrentFilesFragment
+                    mainFragment.setBackPressedCallbackEnabledState()
                 }
                 TAB_TRACKERS -> {
                     trackersFragment = fragment as TrackersFragment
@@ -360,11 +396,11 @@ class TorrentPropertiesActivity : BaseActivity(R.layout.torrent_properties_activ
 
         override fun getPageTitle(position: Int): CharSequence {
             return when (position) {
-                TAB_DETAILS -> getString(R.string.details)
-                TAB_FILES -> getString(R.string.files)
-                TAB_TRACKERS -> getString(R.string.trackers)
-                TAB_PEERS -> getString(R.string.peers)
-                TAB_LIMITS -> getString(R.string.limits)
+                TAB_DETAILS -> context.getString(R.string.details)
+                TAB_FILES -> context.getString(R.string.files)
+                TAB_TRACKERS -> context.getString(R.string.trackers)
+                TAB_PEERS -> context.getString(R.string.peers)
+                TAB_LIMITS -> context.getString(R.string.limits)
                 else -> ""
             }
         }

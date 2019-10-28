@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,28 +50,26 @@ import org.equeim.tremotesf.utils.AlphanumericComparator
 
 import org.jetbrains.anko.startActivity
 
+import kotlinx.android.synthetic.main.connection_settings_fragment.*
 import kotlinx.android.synthetic.main.server_list_item.view.*
-import kotlinx.android.synthetic.main.servers_activity.*
 
 
-class ConnectionSettingsActivity : BaseActivity(R.layout.servers_activity, true) {
-    lateinit var adapter: ServersAdapter
+class ConnectionSettingsActivity : BaseActivity(R.layout.connection_settings_activity, true)
+
+class ConnectionSettingsFragment : Fragment(R.layout.connection_settings_fragment) {
+    var adapter: ServersAdapter? = null
     private val serversListener = { update() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        adapter = ServersAdapter(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val adapter = ServersAdapter(requireActivity() as AppCompatActivity)
+        this.adapter = adapter
         servers_view.adapter = adapter
-        servers_view.layoutManager = LinearLayoutManager(this)
-        servers_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        servers_view.layoutManager = LinearLayoutManager(requireContext())
+        servers_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         fab.setOnClickListener {
-            startActivity<ServerEditActivity>()
+            requireContext().startActivity<ServerEditActivity>()
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -89,126 +88,134 @@ class ConnectionSettingsActivity : BaseActivity(R.layout.servers_activity, true)
         Servers.addServersListener(serversListener)
     }
 
-    override fun onDestroy() {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (requireActivity() as AppCompatActivity).apply {
+            setSupportActionBar(this@ConnectionSettingsFragment.toolbar as Toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+    }
+
+    override fun onDestroyView() {
         Servers.removeServersListener(serversListener)
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        adapter.selector.saveInstanceState(outState)
+        adapter?.selector?.saveInstanceState(outState)
     }
 
     fun update() {
-        adapter.update()
-        placeholder.visibility = if (adapter.itemCount == 0) {
+        adapter?.update()
+        placeholder.visibility = if (adapter?.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
         }
     }
-}
 
-class ServersAdapter(activity: ConnectionSettingsActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
-    private val servers = mutableListOf<Server>()
+    class ServersAdapter(activity: AppCompatActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+        private val servers = mutableListOf<Server>()
 
-    private val comparator = object : Comparator<Server> {
-        private val nameComparator = AlphanumericComparator()
-        override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
-    }
+        private val comparator = object : Comparator<Server> {
+            private val nameComparator = AlphanumericComparator()
+            override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
+        }
 
-    val selector = StringSelector(activity,
-                                  ActionModeCallback(activity),
-                                  this,
-                                  servers,
-                                  Server::name,
-                                  R.plurals.servers_selected)
+        val selector = StringSelector(activity,
+                                      ActionModeCallback(activity),
+                                      this,
+                                      servers,
+                                      Server::name,
+                                      R.plurals.servers_selected)
 
-    override fun getItemCount(): Int {
-        return servers.size
-    }
+        override fun getItemCount(): Int {
+            return servers.size
+        }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(this,
-                          selector,
-                          LayoutInflater.from(parent.context).inflate(R.layout.server_list_item,
-                                                                      parent,
-                                                                      false))
-    }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(this,
+                              selector,
+                              LayoutInflater.from(parent.context).inflate(R.layout.server_list_item,
+                                                                          parent,
+                                                                          false))
+        }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val server = servers[position]
-        holder.item = server
-        holder.radioButton.isChecked = (server === Servers.currentServer)
-        holder.textView.text = server.name
-        holder.updateSelectedBackground()
-    }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val server = servers[position]
+            holder.item = server
+            holder.radioButton.isChecked = (server === Servers.currentServer)
+            holder.textView.text = server.name
+            holder.updateSelectedBackground()
+        }
 
-    fun update() {
-        servers.clear()
-        servers.addAll(Servers.servers.sortedWith(comparator))
-        notifyDataSetChanged()
-    }
+        fun update() {
+            servers.clear()
+            servers.addAll(Servers.servers.sortedWith(comparator))
+            notifyDataSetChanged()
+        }
 
-    class ViewHolder(adapter: ServersAdapter,
-                     selector: Selector<Server, String>,
-                     itemView: View) : Selector.ViewHolder<Server>(selector, itemView) {
-        override lateinit var item: Server
+        class ViewHolder(adapter: ServersAdapter,
+                         selector: Selector<Server, String>,
+                         itemView: View) : Selector.ViewHolder<Server>(selector, itemView) {
+            override lateinit var item: Server
 
-        val radioButton = itemView.radio_button!!
-        val textView = itemView.text_view!!
+            val radioButton = itemView.radio_button!!
+            val textView = itemView.text_view!!
 
-        init {
-            radioButton.setOnClickListener {
-                if (item !== Servers.currentServer) {
-                    Servers.currentServer = item
-                    adapter.notifyItemRangeChanged(0, adapter.itemCount)
+            init {
+                radioButton.setOnClickListener {
+                    if (item !== Servers.currentServer) {
+                        Servers.currentServer = item
+                        adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                    }
+                }
+            }
+
+            override fun onClick(view: View) {
+                if (selector.actionMode == null) {
+                    itemView.context.startActivity<ServerEditActivity>(ServerEditActivity.SERVER to item.name)
+                } else {
+                    super.onClick(view)
                 }
             }
         }
 
-        override fun onClick(view: View) {
-            if (selector.actionMode == null) {
-                itemView.context.startActivity<ServerEditActivity>(ServerEditActivity.SERVER to item.name)
-            } else {
-                super.onClick(view)
-            }
-        }
-    }
-
-    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Server>() {
-        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
-            return true
-        }
-
-        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-            if (super.onActionItemClicked(mode, item)) {
+        private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Server>() {
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
                 return true
             }
 
-            if (selector.hasSelection && item.itemId == R.id.remove) {
-                RemoveDialogFragment().show(activity.supportFragmentManager, null)
-                return true
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                if (super.onActionItemClicked(mode, item)) {
+                    return true
+                }
+
+                if (selector.hasSelection && item.itemId == R.id.remove) {
+                    RemoveDialogFragment().show(activity.supportFragmentManager, null)
+                    return true
+                }
+
+                return false
             }
 
-            return false
-        }
-
-        class RemoveDialogFragment : DialogFragment() {
-            override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                val selectedCount = (requireActivity() as ConnectionSettingsActivity).adapter.selector.selectedCount
-                return AlertDialog.Builder(requireContext())
-                        .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
-                                                                selectedCount,
-                                                                selectedCount))
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(R.string.remove) { _, _ ->
-                            val adapter = (requireActivity() as ConnectionSettingsActivity).adapter
-                            Servers.removeServers(adapter.selector.selectedItems)
-                            adapter.selector.actionMode?.finish()
-                        }
-                        .create()
+            class RemoveDialogFragment : DialogFragment() {
+                override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+                    val selector = (requireFragmentManager().findFragmentById(R.id.connection_settings_fragment) as ConnectionSettingsFragment).adapter!!.selector
+                    val selectedCount = selector.selectedCount
+                    return AlertDialog.Builder(requireContext())
+                            .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
+                                                                    selectedCount,
+                                                                    selectedCount))
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .setPositiveButton(R.string.remove) { _, _ ->
+                                Servers.removeServers(selector.selectedItems)
+                                selector.actionMode?.finish()
+                            }
+                            .create()
+                }
             }
         }
     }

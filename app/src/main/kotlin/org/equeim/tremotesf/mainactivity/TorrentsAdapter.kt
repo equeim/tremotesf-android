@@ -23,6 +23,7 @@ import java.text.DecimalFormat
 import java.util.Comparator
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -54,16 +55,17 @@ import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter
 import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
+import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.download_directory_edit.*
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.remove_torrents_dialog.*
 import kotlinx.android.synthetic.main.set_location_dialog.*
 import kotlinx.android.synthetic.main.torrent_list_item.view.*
 import kotlinx.android.synthetic.main.torrent_list_item_compact.view.*
+import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 
 private const val INSTANCE_STATE = "org.equeim.tremotesf.mainactivity.TorrentsAdapter"
@@ -73,7 +75,7 @@ private const val STATUS_FILTER_MODE = "statusFilterMode"
 private const val TRACKER_FILTER = "trackerFilter"
 private const val DIRECTORY_FILTER = "directoryFilter"
 
-class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
+class TorrentsAdapter(private val activity: MainActivity, private val fragment: TorrentsListFragment) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: TorrentData, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
@@ -192,7 +194,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrents_view.scrollToPosition(0)
+                fragment.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -201,7 +203,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrents_view.scrollToPosition(0)
+                fragment.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -210,7 +212,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrents_view.scrollToPosition(0)
+                fragment.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -219,7 +221,7 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             if (value != field) {
                 field = value
                 updateListContent()
-                activity.torrents_view.scrollToPosition(0)
+                fragment.torrents_view.scrollToPosition(0)
             }
         }
 
@@ -341,23 +343,23 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             super.update(torrent)
 
             sizeTextView.text = if (torrent.isFinished) {
-                activity.getString(R.string.uploaded_string,
-                                   Utils.formatByteSize(activity, torrent.sizeWhenDone),
-                                   Utils.formatByteSize(activity, torrent.totalUploaded))
+                context.getString(R.string.uploaded_string,
+                                   Utils.formatByteSize(context, torrent.sizeWhenDone),
+                                   Utils.formatByteSize(context, torrent.totalUploaded))
             } else {
-                activity.getString(R.string.completed_string,
-                                   Utils.formatByteSize(activity, torrent.completedSize),
-                                   Utils.formatByteSize(activity, torrent.sizeWhenDone),
+                context.getString(R.string.completed_string,
+                                   Utils.formatByteSize(context, torrent.completedSize),
+                                   Utils.formatByteSize(context, torrent.sizeWhenDone),
                                    DecimalFormat("0.#").format(torrent.percentDone * 100))
             }
-            etaTextView.text = Utils.formatDuration(activity, torrent.eta)
+            etaTextView.text = Utils.formatDuration(context, torrent.eta)
 
             progressBar.progress = (torrent.percentDone * 100).toInt()
-            downloadSpeedTextView.text = activity.getString(R.string.download_speed_string,
-                                                            Utils.formatByteSpeed(activity,
+            downloadSpeedTextView.text = context.getString(R.string.download_speed_string,
+                                                            Utils.formatByteSpeed(context,
                                                                                   torrent.downloadSpeed))
-            uploadSpeedTextView.text = activity.getString(R.string.upload_speed_string,
-                                                          Utils.formatByteSpeed(activity,
+            uploadSpeedTextView.text = context.getString(R.string.upload_speed_string,
+                                                          Utils.formatByteSpeed(context,
                                                                                 torrent.uploadSpeed))
 
             statusTextView.text = torrent.statusString
@@ -365,8 +367,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
     }
 
     class TorrentsViewHolderCompact(selector: Selector<TorrentData, Int>,
-                                    activity: MainActivity,
-                                    itemView: View) : BaseTorrentsViewHolder(selector, activity, itemView) {
+                                    context: Context,
+                                    itemView: View) : BaseTorrentsViewHolder(selector, context, itemView) {
         private val progressTextView = itemView.progress_text_view!!
 
         override fun update(torrent: TorrentData) {
@@ -375,26 +377,26 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
             downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
                 ""
             } else {
-                activity.getString(R.string.download_speed_string,
-                                   Utils.formatByteSpeed(activity,
+                context.getString(R.string.download_speed_string,
+                                   Utils.formatByteSpeed(context,
                                                          torrent.downloadSpeed))
             }
 
             uploadSpeedTextView.text = if (torrent.uploadSpeed == 0L) {
                 ""
             } else {
-                activity.getString(R.string.upload_speed_string,
-                                   Utils.formatByteSpeed(activity,
+                context.getString(R.string.upload_speed_string,
+                                   Utils.formatByteSpeed(context,
                                                          torrent.uploadSpeed))
             }
 
-            progressTextView.text = activity.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
+            progressTextView.text = context.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
                                                        DecimalFormat("0.#").format(torrent.percentDone * 100))
         }
     }
 
     open class BaseTorrentsViewHolder(selector: Selector<TorrentData, Int>,
-                             protected val activity: MainActivity,
+                             protected val context: Context,
                              itemView: View) : Selector.ViewHolder<TorrentData>(selector,
                                                                             itemView) {
         override lateinit var item: TorrentData
@@ -439,8 +441,8 @@ class TorrentsAdapter(private val activity: MainActivity) : RecyclerView.Adapter
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                activity.startActivity(activity.intentFor<TorrentPropertiesActivity>(TorrentPropertiesActivity.HASH to item.hashString,
-                                                                                     TorrentPropertiesActivity.NAME to item.name))
+                context.startActivity(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesFragment.HASH to item.hashString,
+                                                                                   TorrentPropertiesFragment.NAME to item.name))
             } else {
                 super.onClick(view)
             }

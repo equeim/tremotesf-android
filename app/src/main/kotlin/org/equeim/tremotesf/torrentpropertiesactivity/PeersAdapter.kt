@@ -94,7 +94,7 @@ private class Peer(rpcPeer: org.equeim.libtremotesf.Peer) {
     }
 }
 
-class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerView.Adapter<PeersAdapter.ViewHolder>() {
+class PeersAdapter(private val fragment: PeersFragment) : RecyclerView.Adapter<PeersAdapter.ViewHolder>() {
     private var torrent: Torrent? = null
     private val peers = mutableListOf<Peer>()
 
@@ -106,21 +106,22 @@ class PeersAdapter(private val activity: TorrentPropertiesActivity) : RecyclerVi
     override fun getItemCount() = peers.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(activity).inflate(R.layout.peer_list_item, parent, false))
+        return ViewHolder(LayoutInflater.from(fragment.requireContext()).inflate(R.layout.peer_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val peer = peers[position]
 
         holder.addressTextView.text = peer.address
-        holder.downloadSpeedTextView.text = activity.getString(R.string.download_speed_string, Utils.formatByteSpeed(activity, peer.downloadSpeed))
-        holder.uploadSpeedTextView.text = activity.getString(R.string.upload_speed_string, Utils.formatByteSpeed(activity, peer.uploadSpeed))
-        holder.progressTextView.text = activity.getString(R.string.progress_string, DecimalFormat("0.#").format(peer.progress * 100))
+        val context = fragment.requireContext()
+        holder.downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
+        holder.uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
+        holder.progressTextView.text = context.getString(R.string.progress_string, DecimalFormat("0.#").format(peer.progress * 100))
         holder.clientTextView.text = peer.client
     }
 
     fun update() {
-        val torrent = activity.torrent?.torrent
+        val torrent = fragment.torrent?.torrent
 
         if (torrent == null) {
             if (this.torrent == null) {

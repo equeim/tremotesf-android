@@ -34,37 +34,40 @@ import android.os.Bundle
 import android.os.Environment
 
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.utils.AlphanumericComparator
 
-import kotlinx.android.synthetic.main.file_picker_activity.*
+import kotlinx.android.synthetic.main.file_picker_fragment.*
 
 
-class FilePickerActivity : BaseActivity(R.layout.file_picker_activity, false) {
-    private lateinit var adapter: FilePickerAdapter
+class FilePickerActivity : BaseActivity(R.layout.file_picker_activity, false)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class FilePickerFragment : Fragment(R.layout.file_picker_fragment) {
+    private var adapter: FilePickerAdapter? = null
 
-        setResult(Activity.RESULT_CANCELED)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireActivity().setResult(Activity.RESULT_CANCELED)
 
-        adapter = FilePickerAdapter(this)
+        val adapter = FilePickerAdapter(this)
+        this.adapter = adapter
 
         files_view.adapter = adapter
-        files_view.layoutManager = LinearLayoutManager(this)
-        files_view.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        files_view.layoutManager = LinearLayoutManager(requireContext())
+        files_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         files_view.itemAnimator = null
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             files_view.visibility = View.GONE
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
@@ -72,14 +75,13 @@ class FilePickerActivity : BaseActivity(R.layout.file_picker_activity, false) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.file_picker_activity_menu, menu)
-        return true
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.file_picker_activity_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.primary_storage) {
-            adapter.navigateToHome()
+            adapter?.navigateToHome()
             return true
         }
         return false
@@ -90,167 +92,171 @@ class FilePickerActivity : BaseActivity(R.layout.file_picker_activity, false) {
                                             grantResults: IntArray) {
         if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
             files_view.visibility = View.VISIBLE
-            adapter.init()
+            adapter?.init()
         } else {
             placeholder.text = getString(R.string.storage_permission_error)
         }
     }
 
     fun finish(fileUri: Uri) {
-        setResult(Activity.RESULT_OK, Intent().setData(fileUri))
-        finish()
+        requireActivity().apply {
+            setResult(Activity.RESULT_OK, Intent().setData(fileUri))
+            finish()
+        }
     }
 
     fun updatePlaceholder() {
-        placeholder.text = if (adapter.files.isEmpty()) {
+        placeholder.text = if (adapter?.files?.isEmpty() == true) {
             getString(R.string.no_files)
         } else {
             null
         }
     }
-}
 
-private const val TYPE_HEADER = 0
-private const val TYPE_ITEM = 1
+    private class FilePickerAdapter(private val fragment: FilePickerFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        companion object {
+            private const val TYPE_HEADER = 0
+            private const val TYPE_ITEM = 1
+        }
 
-private class FilePickerAdapter(private val activity: FilePickerActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var currentDirectory = Environment.getExternalStorageDirectory()
-    val files = mutableListOf<File>()
+        private var currentDirectory = Environment.getExternalStorageDirectory()
+        val files = mutableListOf<File>()
 
-    private val filesFilter = { file: File -> file.isDirectory || file.name.endsWith(".torrent") }
-    private val comparator = object : Comparator<File> {
-        private val nameComparator = AlphanumericComparator()
+        private val filesFilter = { file: File -> file.isDirectory || file.name.endsWith(".torrent") }
+        private val comparator = object : Comparator<File> {
+            private val nameComparator = AlphanumericComparator()
 
-        override fun compare(file1: File,
-                             file2: File): Int {
-            if (file1.isDirectory == file2.isDirectory) {
-                return nameComparator.compare(file1.name, file2.name)
+            override fun compare(file1: File,
+                                 file2: File): Int {
+                if (file1.isDirectory == file2.isDirectory) {
+                    return nameComparator.compare(file1.name, file2.name)
+                }
+
+                if (file1.isDirectory) {
+                    return -1
+                }
+
+                return 1
+            }
+        }
+
+        private val hasHeaderItem: Boolean
+            get() {
+                return (currentDirectory.parentFile != null)
             }
 
-            if (file1.isDirectory) {
-                return -1
-            }
-
-            return 1
-        }
-    }
-
-    private val hasHeaderItem: Boolean
-        get() {
-            return (currentDirectory.parentFile != null)
-        }
-
-    override fun getItemCount(): Int {
-        if (hasHeaderItem) {
-            return files.size + 1
-        }
-        return files.size
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        if (hasHeaderItem && position == 0) {
-            return TYPE_HEADER
-        }
-        return TYPE_ITEM
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == TYPE_HEADER) {
-            return HeaderHolder(activity.layoutInflater.inflate(R.layout.up_list_item,
-                                                                parent,
-                                                                false))
-        }
-        return ItemHolder(activity.layoutInflater.inflate(R.layout.file_picker_activity_list_item,
-                                                          parent,
-                                                          false))
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == TYPE_ITEM) {
-            holder as ItemHolder
-
-            val file = if (hasHeaderItem) {
-                files[position - 1]
-            } else {
-                files[position]
-            }
-
-            holder.file = file
-            holder.textView.text = file.name
-            holder.iconDrawable.level = if (file.isDirectory) 0 else 1
-        }
-    }
-
-    fun init() {
-        currentDirectory.listFiles(filesFilter)?.let { it ->
-            files.addAll(it.sortedWith(comparator))
-        }
-        notifyItemRangeInserted(1, files.size)
-    }
-
-    fun navigateToHome() {
-        val homeDirectory = Environment.getExternalStorageDirectory()
-        if (currentDirectory != homeDirectory) {
-            navigateTo(homeDirectory)
-        }
-    }
-
-    private fun navigateUp() {
-        val parentDirectory = currentDirectory.parentFile
-        if (parentDirectory != null) {
-            navigateTo(parentDirectory)
-        }
-    }
-
-    private fun navigateTo(directory: File) {
-        val hadHeaderItem = hasHeaderItem
-        currentDirectory = directory
-        val count = files.size
-        files.clear()
-        if (hadHeaderItem) {
+        override fun getItemCount(): Int {
             if (hasHeaderItem) {
-                notifyItemRangeRemoved(1, count)
-            } else {
-                notifyItemRangeRemoved(0, count + 1)
+                return files.size + 1
             }
-        } else {
-            notifyItemRangeRemoved(0, count)
+            return files.size
         }
 
-        val newFiles = currentDirectory.listFiles(filesFilter)
-        if (newFiles != null) {
-            files.addAll(newFiles.sortedWith(comparator))
-            if (hasHeaderItem) {
-                notifyItemRangeInserted(1, files.size)
-            } else {
-                notifyItemRangeInserted(0, files.size)
+        override fun getItemViewType(position: Int): Int {
+            if (hasHeaderItem && position == 0) {
+                return TYPE_HEADER
             }
+            return TYPE_ITEM
         }
 
-        activity.updatePlaceholder()
-    }
-
-    private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        init {
-            itemView.setOnClickListener { navigateUp() }
-        }
-    }
-
-    private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        lateinit var file: File
-        val textView = itemView as TextView
-        val iconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.compoundDrawables.first()
-        } else {
-            textView.compoundDrawablesRelative.first()
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            if (viewType == TYPE_HEADER) {
+                return HeaderHolder(fragment.layoutInflater.inflate(R.layout.up_list_item,
+                                                                    parent,
+                                                                    false))
+            }
+            return ItemHolder(fragment.layoutInflater.inflate(R.layout.file_picker_activity_list_item,
+                                                              parent,
+                                                              false))
         }
 
-        init {
-            itemView.setOnClickListener {
-                if (file.isDirectory) {
-                    navigateTo(file)
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            if (holder.itemViewType == TYPE_ITEM) {
+                holder as ItemHolder
+
+                val file = if (hasHeaderItem) {
+                    files[position - 1]
                 } else {
-                    activity.finish(Uri.fromFile(file))
+                    files[position]
+                }
+
+                holder.file = file
+                holder.textView.text = file.name
+                holder.iconDrawable.level = if (file.isDirectory) 0 else 1
+            }
+        }
+
+        fun init() {
+            currentDirectory.listFiles(filesFilter)?.let { it ->
+                files.addAll(it.sortedWith(comparator))
+            }
+            notifyItemRangeInserted(1, files.size)
+        }
+
+        fun navigateToHome() {
+            val homeDirectory = Environment.getExternalStorageDirectory()
+            if (currentDirectory != homeDirectory) {
+                navigateTo(homeDirectory)
+            }
+        }
+
+        private fun navigateUp() {
+            val parentDirectory = currentDirectory.parentFile
+            if (parentDirectory != null) {
+                navigateTo(parentDirectory)
+            }
+        }
+
+        private fun navigateTo(directory: File) {
+            val hadHeaderItem = hasHeaderItem
+            currentDirectory = directory
+            val count = files.size
+            files.clear()
+            if (hadHeaderItem) {
+                if (hasHeaderItem) {
+                    notifyItemRangeRemoved(1, count)
+                } else {
+                    notifyItemRangeRemoved(0, count + 1)
+                }
+            } else {
+                notifyItemRangeRemoved(0, count)
+            }
+
+            val newFiles = currentDirectory.listFiles(filesFilter)
+            if (newFiles != null) {
+                files.addAll(newFiles.sortedWith(comparator))
+                if (hasHeaderItem) {
+                    notifyItemRangeInserted(1, files.size)
+                } else {
+                    notifyItemRangeInserted(0, files.size)
+                }
+            }
+
+            fragment.updatePlaceholder()
+        }
+
+        private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            init {
+                itemView.setOnClickListener { navigateUp() }
+            }
+        }
+
+        private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            lateinit var file: File
+            val textView = itemView as TextView
+            val iconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                textView.compoundDrawables.first()
+            } else {
+                textView.compoundDrawablesRelative.first()
+            }
+
+            init {
+                itemView.setOnClickListener {
+                    if (file.isDirectory) {
+                        navigateTo(file)
+                    } else {
+                        fragment.finish(Uri.fromFile(file))
+                    }
                 }
             }
         }
