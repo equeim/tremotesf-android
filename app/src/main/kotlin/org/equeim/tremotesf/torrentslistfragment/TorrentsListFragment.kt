@@ -42,6 +42,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.commit
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -110,13 +111,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             if (!Rpc.isConnected) {
                 torrentsAdapter?.selector?.actionMode?.finish()
 
-                requireFragmentManager().apply {
-                    findFragmentByTag(TorrentsAdapter.SetLocationDialogFragment.TAG)
-                            ?.let { commit { remove(it) } }
-                    findFragmentByTag(TorrentFilesAdapter.RenameDialogFragment.TAG)
-                            ?.let { commit { remove(it) } }
-                    findFragmentByTag(TorrentsAdapter.RemoveDialogFragment.TAG)
-                            ?.let { commit { remove(it) } }
+                val navController = findNavController()
+                if (navController.currentDestination is DialogFragmentNavigator.Destination) {
+                    navController.popBackStack()
                 }
 
                 searchMenuItem?.collapseActionView()
@@ -238,7 +235,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
                     if (installDays >= 2 && updateDays >= 1) {
                         Settings.donateDialogShown = true
-                        DonateDialogFragment().show(requireFragmentManager(), null)
+                        findNavController().navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                     }
                 }
                 torrentsAdapter.update()
@@ -554,7 +551,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 menuItem.isChecked = !menuItem.isChecked
                 Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
             }
-            R.id.server_stats -> ServerStatsDialogFragment().show(requireFragmentManager(), null)
+            R.id.server_stats -> findNavController().navigate(R.id.serverStatsDialogFragment)
             else -> return false
         }
 

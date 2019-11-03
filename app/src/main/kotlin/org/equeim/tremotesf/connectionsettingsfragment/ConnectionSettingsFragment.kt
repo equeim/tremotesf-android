@@ -186,29 +186,31 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 }
 
                 if (selector.hasSelection && item.itemId == R.id.remove) {
-                    RemoveDialogFragment().show(activity.supportFragmentManager, null)
+                    activity.findNavController(R.id.nav_host).navigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
                     return true
                 }
 
                 return false
             }
+        }
+    }
 
-            class RemoveDialogFragment : DialogFragment() {
-                override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                    val selector = (requireFragmentManager().primaryNavigationFragment as ConnectionSettingsFragment).adapter!!.selector
-                    val selectedCount = selector.selectedCount
-                    return AlertDialog.Builder(requireContext())
-                            .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
-                                                                    selectedCount,
-                                                                    selectedCount))
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .setPositiveButton(R.string.remove) { _, _ ->
-                                Servers.removeServers(selector.selectedItems)
-                                selector.actionMode?.finish()
-                            }
-                            .create()
-                }
-            }
+    class RemoveServerDialogFragment : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val selector = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter?.selector
+            val selectedCount = selector?.selectedCount ?: 0
+            return AlertDialog.Builder(requireContext())
+                    .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
+                                                            selectedCount,
+                                                            selectedCount))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.remove) { _, _ ->
+                        selector?.apply {
+                            Servers.removeServers(selectedItems)
+                            actionMode?.finish()
+                        }
+                    }
+                    .create()
         }
     }
 }

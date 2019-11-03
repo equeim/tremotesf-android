@@ -43,6 +43,7 @@ import android.widget.TimePicker
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.findNavController
 
 import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R
@@ -261,11 +262,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         ta.recycle()
 
         setOnClickListener {
-            val fragment = TimePickerFragment()
-            fragment.arguments = bundleOf("beginTime" to beginTime,
-                                          "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
-                                          "minute" to calendar.get(Calendar.MINUTE))
-            fragment.show((context as AppCompatActivity).supportFragmentManager, null)
+            findNavController().navigate(R.id.action_speedFragment_to_timePickerFragment,
+                                         bundleOf("beginTime" to beginTime,
+                                                  "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
+                                                  "minute" to calendar.get(Calendar.MINUTE)))
         }
     }
 
@@ -288,18 +288,24 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+        companion object {
+            const val BEGIN_TIME = "beginTime"
+            const val HOUR_OF_DAY = "hourOfDay"
+            const val MINUTE = "minute"
+        }
+
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return TimePickerDialog(activity,
                                     this,
-                                    requireArguments().getInt("hourOfDay"),
-                                    requireArguments().getInt("minute"),
+                                    requireArguments().getInt(HOUR_OF_DAY),
+                                    requireArguments().getInt(MINUTE),
                                     android.text.format.DateFormat.is24HourFormat(activity))
         }
 
         override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-            val speedFragment = requireFragmentManager().findFragmentByTag(SpeedFragment.TAG) as? SpeedFragment
+            val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
             if (speedFragment != null) {
-                if (requireArguments().getBoolean("beginTime")) {
+                if (requireArguments().getBoolean(BEGIN_TIME)) {
                     speedFragment.begin_time_item.setTime(hourOfDay, minute)
                     Rpc.serverSettings.setAlternativeSpeedLimitsBeginTime((hourOfDay * 60) + minute)
                 } else {

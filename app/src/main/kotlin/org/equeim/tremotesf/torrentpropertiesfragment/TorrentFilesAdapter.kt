@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
@@ -167,8 +168,10 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
                 }
 
                 torrent?.let { torrent ->
-                    RenameDialogFragment.create(torrent.id, pathParts.joinToString("/"), file.name)
-                            .show(fragment.requireFragmentManager(), RenameDialogFragment.TAG)
+                    fragment.findNavController().navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+                                                          bundleOf(TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                                   TorrentRenameDialogFragment.FILE_PATH to pathParts.joinToString("/"),
+                                                                   TorrentRenameDialogFragment.FILE_NAME to file.name))
                 }
 
                 return true
@@ -183,20 +186,11 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         }
     }
 
-    class RenameDialogFragment : DialogFragment() {
+    class TorrentRenameDialogFragment : DialogFragment() {
         companion object {
-            const val TAG = "org.equeim.tremotesf.torrentpropertiesactivity.TorrentFilesAdapter.RenameDialogFragment"
-            private const val TORRENT_ID = "torrentId"
-            private const val FILE_PATH = "filePath"
-            private const val FILE_NAME = "fileName"
-
-            fun create(torrentId: Int, filePath: String, fileName: String): RenameDialogFragment {
-                val fragment = RenameDialogFragment()
-                fragment.arguments = bundleOf(TORRENT_ID to torrentId,
-                                              FILE_PATH to filePath,
-                                              FILE_NAME to fileName)
-                return fragment
-            }
+            const val TORRENT_ID = "torrentId"
+            const val FILE_PATH = "filePath"
+            const val FILE_NAME = "fileName"
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

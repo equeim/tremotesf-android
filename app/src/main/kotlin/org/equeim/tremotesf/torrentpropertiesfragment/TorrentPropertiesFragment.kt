@@ -27,12 +27,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.viewpager.widget.ViewPager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.DialogFragmentNavigator
+import androidx.navigation.fragment.findNavController
 
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -151,10 +154,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         })
 
         fab.setOnClickListener {
-            if (requireFragmentManager().findFragmentByTag(TrackersAdapter.EditTrackerDialogFragment.TAG) == null) {
-                val fragment = TrackersAdapter.EditTrackerDialogFragment()
-                fragment.show(requireFragmentManager(), TrackersAdapter.EditTrackerDialogFragment.TAG)
-            }
+            findNavController().navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
         rpcStatusListener(Rpc.status)
@@ -216,15 +216,16 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> TorrentsAdapter.SetLocationDialogFragment.create(intArrayOf(torrent.id),
-                                                                                      torrent.downloadDirectory)
-                        .show(requireFragmentManager(), TorrentsAdapter.SetLocationDialogFragment.TAG)
-                R.id.rename -> TorrentFilesAdapter.RenameDialogFragment.create(torrent.id,
-                                                                               torrent.name,
-                                                                               torrent.name)
-                        .show(requireFragmentManager(), TorrentFilesAdapter.RenameDialogFragment.TAG)
-                R.id.remove -> TorrentsAdapter.RemoveDialogFragment.create(intArrayOf(torrent.id)).show(requireFragmentManager(),
-                                                                                                        TorrentsAdapter.RemoveDialogFragment.TAG)
+                R.id.set_location -> findNavController().navigate(R.id.action_torrentPropertiesFragment_to_setLocationDialogFragment,
+                                                                  bundleOf(TorrentsAdapter.SetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                                           TorrentsAdapter.SetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
+                R.id.rename ->
+                    findNavController().navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+                                                 bundleOf(TorrentFilesAdapter.TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                          TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_PATH to torrent.name,
+                                                          TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_NAME to torrent.name))
+                R.id.remove -> findNavController().navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
+                                                            bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id)))
                 else -> return false
             }
         }
@@ -245,15 +246,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                     placeholder.text = getString(R.string.torrent_removed)
                 }
 
-                requireFragmentManager().apply {
-                    val findAndRemove = { tag: String ->
-                        findFragmentByTag(tag)?.let { commit { remove(it) } }
-                    }
-                    findAndRemove(TorrentsAdapter.SetLocationDialogFragment.TAG)
-                    findAndRemove(TorrentsAdapter.RemoveDialogFragment.TAG)
-                    findAndRemove(TorrentFilesAdapter.RenameDialogFragment.TAG)
-                    findAndRemove(TrackersAdapter.EditTrackerDialogFragment.TAG)
-                    findAndRemove(TrackersAdapter.RemoveDialogFragment.TAG)
+                val navController = findNavController()
+                if (navController.currentDestination is DialogFragmentNavigator.Destination) {
+                    navController.popBackStack()
                 }
             }
             updatePlaceholderVisibility()

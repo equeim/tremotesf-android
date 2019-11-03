@@ -168,7 +168,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 timeoutOk) {
             if (nameEditText != server?.name &&
                     Servers.servers.find { it.name == nameEditText } != null) {
-                OverwriteDialogFragment().show(requireFragmentManager(), null)
+                findNavController().navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
             } else {
                 save()
             }
@@ -200,16 +200,16 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         certificatesModel.certificatesData.value = null
 
-        activity?.onBackPressed()
+        findNavController().popBackStack(R.id.serverEditFragment, true)
     }
 
-    class OverwriteDialogFragment : DialogFragment() {
+    class ServerOverwriteDialogFragment : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return AlertDialog.Builder(requireContext())
                     .setMessage(R.string.server_exists)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.overwrite) { _, _ ->
-                        (parentFragment as? ServerEditFragment)?.save()
+                        (parentFragmentManager.primaryNavigationFragment as? ServerEditFragment)?.save()
                     }
                     .create()
         }

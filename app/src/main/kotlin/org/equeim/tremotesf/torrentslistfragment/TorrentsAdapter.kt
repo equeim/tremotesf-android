@@ -490,19 +490,20 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.check -> Rpc.nativeInstance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.set_location -> SetLocationDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray(),
-                                                                      selector.selectedItems.first().downloadDirectory)
-                        .show(activity.supportFragmentManager, SetLocationDialogFragment.TAG)
+                R.id.set_location -> activity.findNavController(R.id.nav_host)
+                        .navigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
+                                  bundleOf(SetLocationDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentData::id).toIntArray(),
+                                           SetLocationDialogFragment.LOCATION to selector.selectedItems.first().downloadDirectory))
                 R.id.rename -> {
                     val torrent = selector.selectedItems.first()
-                    TorrentFilesAdapter.RenameDialogFragment.create(torrent.id,
-                                                                    torrent.name,
-                                                                    torrent.name)
-                            .show(activity.supportFragmentManager, TorrentFilesAdapter.RenameDialogFragment.TAG)
+                    activity.findNavController(R.id.nav_host).navigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
+                                                                       bundleOf(TorrentFilesAdapter.TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                                                TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_PATH to torrent.name,
+                                                                                TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_NAME to torrent.name))
                 }
-                R.id.remove -> RemoveDialogFragment.create(selector.selectedItems.map(TorrentData::id).toIntArray())
-                        .show(activity.supportFragmentManager,
-                              RemoveDialogFragment.TAG)
+                R.id.remove -> activity.findNavController(R.id.nav_host)
+                        .navigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
+                                  bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentData::id).toIntArray()))
                 else -> return false
             }
 
@@ -519,16 +520,8 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
 
     class SetLocationDialogFragment : DialogFragment() {
         companion object {
-            const val TAG = "org.equeim.tremotesf.TorrentsAdapter.SetLocationDialogFragment"
-            private const val TORRENT_IDS = "torrentIds"
-            private const val LOCATION = "location"
-
-            fun create(ids: IntArray, location: String): SetLocationDialogFragment {
-                val fragment = SetLocationDialogFragment()
-                fragment.arguments = bundleOf(TORRENT_IDS to ids,
-                                              LOCATION to location)
-                return fragment
-            }
+            const val TORRENT_IDS = "torrentIds"
+            const val LOCATION = "location"
         }
 
         private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
@@ -553,16 +546,9 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
         }
     }
 
-    class RemoveDialogFragment : DialogFragment() {
+    class RemoveTorrentDialogFragment : DialogFragment() {
         companion object {
-            const val TAG = "org.equeim.tremotesf.TorrentsAdapter.RemoveDialogFragment"
-            private const val TORRENT_IDS = "torrentIds"
-
-            fun create(ids: IntArray): RemoveDialogFragment {
-                val fragment = RemoveDialogFragment()
-                fragment.arguments = bundleOf(TORRENT_IDS to ids)
-                return fragment
-            }
+            const val TORRENT_IDS = "torrentIds"
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

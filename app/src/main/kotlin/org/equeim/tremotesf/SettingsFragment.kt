@@ -26,6 +26,7 @@ import androidx.annotation.Keep
 
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -45,7 +46,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             persistentNotificationKey = getString(R.string.prefs_persistent_notification_key)
             findPreference<Preference>(persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
-                    PersistentNotificationWarningFragment().show(requireFragmentManager(), null)
+                    findNavController().navigate(R.id.action_settingsFragment_to_persistentNotificationWarningFragment)
                     false
                 } else {
                     true
@@ -81,7 +82,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                         .setMessage(R.string.persistent_notification_warning)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
-                            (requireFragmentManager().findFragmentById(R.id.content_frame) as PreferenceFragment?)
+                            ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(R.id.content_frame) as PreferenceFragment?)
                                     ?.enablePersistentNotification()
                         }
                         .create()
