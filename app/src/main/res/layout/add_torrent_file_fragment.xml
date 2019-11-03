@@ -12,7 +12,7 @@
 
         <include
             android:id="@+id/toolbar"
-            layout="@layout/toolbar_without_elevation"/>
+            layout="@layout/toolbar_without_elevation" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"

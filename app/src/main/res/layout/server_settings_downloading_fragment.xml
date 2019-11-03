@@ -1,62 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/horizontal_edge_padding"
-        android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/vertical_edge_padding"
-        android:paddingTop="@dimen/vertical_edge_padding">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/download_directory">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/download_directory_edit"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:saveEnabled="false"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginLeft="@dimen/horizontal_edge_padding"
+                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/vertical_edge_padding"
+                android:paddingTop="@dimen/vertical_edge_padding">
 
-        <CheckBox
-            android:id="@+id/start_torrents_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/start_added_torrents"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/download_directory">
 
-        <CheckBox
-            android:id="@+id/rename_incomplete_files_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/rename_incomplete_files"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/download_directory_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/incomplete_files_directory_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/incomplete_files_directory"/>
+                <CheckBox
+                    android:id="@+id/start_torrents_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/start_added_torrents"/>
 
-        <EditText
-            android:id="@+id/incomplete_files_directory_edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:inputType="textUri"
-            android:saveEnabled="false"/>
-    </LinearLayout>
-</ScrollView>
+                <CheckBox
+                    android:id="@+id/rename_incomplete_files_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/rename_incomplete_files"/>
+
+                <CheckBox
+                    android:id="@+id/incomplete_files_directory_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/incomplete_files_directory"/>
+
+                <EditText
+                    android:id="@+id/incomplete_files_directory_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:inputType="textUri"
+                    android:saveEnabled="false"/>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</LinearLayout>

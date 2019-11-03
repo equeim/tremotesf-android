@@ -2,7 +2,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="AppTheme"/>
 
-    <style name="AppTheme.Dark" parent="@style/Theme.MaterialComponents">
+    <style name="AppTheme.Dark" parent="@style/Theme.MaterialComponents.NoActionBar">
+        <item name="windowActionModeOverlay">true</item>
+
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#000000</item>
         <item name="colorSecondary">#ef5350</item>
@@ -42,19 +44,9 @@
         <item name="colorSecondary">#80cbc4</item>
     </style>
 
-    <style name="AppTheme.Dark.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.Light" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
-    </style>
 
-    <style name="AppTheme.Dark.Old.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionModeOverlay">true</item>
-    </style>
-
-    <style name="AppTheme.Light" parent="@style/Theme.MaterialComponents.Light">
         <item name="colorPrimary">#f5f5f5</item>
         <item name="colorPrimaryDark">#ff757575</item>
         <item name="colorSecondary">#b71c1c</item>
@@ -91,18 +83,6 @@
 
     <style name="AppTheme.Light.Old">
         <item name="colorSecondary">#008577</item>
-    </style>
-
-    <style name="AppTheme.Light.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionModeOverlay">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Old.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionModeOverlay">true</item>
     </style>
 
     <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">

@@ -31,12 +31,12 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.navigation.NavDeepLinkBuilder
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
-import org.equeim.tremotesf.mainactivity.MainActivity
 import org.equeim.tremotesf.utils.Utils
 
 
@@ -130,12 +130,10 @@ class ForegroundService : Service(), AnkoLogger {
     private fun buildPersistentNotification(): Notification {
         val notificationBuilder = NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentIntent(PendingIntent.getActivity(
-                        this,
-                        0,
-                        intentFor<MainActivity>(),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                ))
+                .setContentIntent(NavDeepLinkBuilder(applicationContext)
+                                          .setGraph(R.navigation.nav_main)
+                                          .setDestination(R.id.torrentsListFragment)
+                                          .createPendingIntent())
                 .setColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
                 .setOngoing(true)
 

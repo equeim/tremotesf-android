@@ -21,13 +21,9 @@ package org.equeim.tremotesf.utils
 
 import java.text.DecimalFormat
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.PorterDuff
-import android.graphics.drawable.LayerDrawable
 import android.os.Build
-import android.view.View
-import android.widget.FrameLayout
 import android.widget.ProgressBar
 
 import org.jetbrains.anko.AnkoLogger
@@ -35,7 +31,7 @@ import org.jetbrains.anko.info
 import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.ForegroundService
-import org.equeim.tremotesf.BaseActivity
+import org.equeim.tremotesf.NavigationActivity
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 
@@ -45,7 +41,7 @@ object Utils : AnkoLogger {
 
     fun shutdownApp(context: Context) {
         info("Utils.shutdownApp()")
-        BaseActivity.finishAllActivities()
+        NavigationActivity.finishAllActivities()
         Rpc.disconnectOnShutdown()
         context.stopService<ForegroundService>()
     }
@@ -99,30 +95,6 @@ object Utils : AnkoLogger {
         }
 
         return context.getString(R.string.duration_seconds, dseconds)
-    }
-
-    fun setPreLollipopContentShadow(view: View) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            setPreLollipopContentShadowOnFrame(view.findViewById(R.id.content_frame) as? FrameLayout)
-        }
-    }
-
-    fun setPreLollipopContentShadow(activity: Activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            setPreLollipopContentShadowOnFrame(activity.findViewById(R.id.content_frame) as? FrameLayout)
-        }
-    }
-
-    private fun setPreLollipopContentShadowOnFrame(contentFrame: FrameLayout?) {
-        if (contentFrame != null) {
-            val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
-            val windowContentOverlay = ta.getDrawable(0)
-            if (windowContentOverlay != null) {
-                contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
-                        windowContentOverlay))
-            }
-            ta.recycle()
-        }
     }
 
     fun setProgressBarColor(progressBar: ProgressBar) {

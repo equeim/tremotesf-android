@@ -51,13 +51,8 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
 
     protected val currentItems = mutableListOf<Item>()
 
-    val isAtRootDirectory: Boolean
-        get() = (currentDirectory === rootDirectory)
-
-    var isAtRootDirectoryListener: (() -> Unit)? = null
-
     protected val hasHeaderItem: Boolean
-        get() = !isAtRootDirectory
+        get() = (currentDirectory !== rootDirectory)
 
     private val comparator = object : Comparator<Item> {
         private val nameComparator = AlphanumericComparator()
@@ -149,8 +144,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
     private fun navigateTo(directory: Directory) {
         val hadHeaderItem = hasHeaderItem
 
-        val callRootDirectoryListener = (currentDirectory === rootDirectory || directory === rootDirectory)
-
         currentDirectory = directory
         val count = currentItems.size
         currentItems.clear()
@@ -170,10 +163,6 @@ abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) :
             notifyItemRangeInserted(0, currentItems.size)
         }
         selector.hasHeaderItem = hasHeaderItem
-
-        if (callRootDirectoryListener) {
-            isAtRootDirectoryListener?.invoke()
-        }
     }
 
     fun saveInstanceState(outState: Bundle) {

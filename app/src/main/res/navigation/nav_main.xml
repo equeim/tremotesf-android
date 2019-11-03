@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@+id/torrentsListFragment">
+
+    <fragment
+        android:id="@+id/torrentsListFragment"
+        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsListFragment">
+        <action
+            android:id="@+id/action_torrentsListFragment_to_torrentPropertiesFragment"
+            app:destination="@id/torrentPropertiesFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_connectionSettingsFragment"
+            app:destination="@id/connectionSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_addTorrentFileFragment"
+            app:destination="@id/addTorrentFileFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/torrentsListFragment" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_addTorrentLinkFragment"
+            app:destination="@id/addTorrentLinkFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_filePickerFragment"
+            app:destination="@id/filePickerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_serverSettingsFragment"
+            app:destination="@id/serverSettingsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_torrentsListFragment_to_serverEditFragment"
+            app:destination="@id/serverEditFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/torrentPropertiesFragment"
+        android:name="org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment">
+        <argument
+            android:name="hash"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="org.equeim.tremotesf.SettingsFragment" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="org.equeim.tremotesf.AboutFragment" >
+        <argument
+            android:name="donate"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/connectionSettingsFragment"
+        android:name="org.equeim.tremotesf.connectionsettingsfragment.ConnectionSettingsFragment">
+        <action
+            android:id="@+id/action_connectionSettingsFragment_to_serverEditFragment"
+            app:destination="@id/serverEditFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTorrentFileFragment"
+        android:name="org.equeim.tremotesf.AddTorrentFileFragment">
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTorrentLinkFragment"
+        android:name="org.equeim.tremotesf.AddTorrentLinkFragment">
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/filePickerFragment"
+        android:name="org.equeim.tremotesf.FilePickerFragment">
+        <action
+            android:id="@+id/action_filePickerFragment_to_addTorrentFileFragment"
+            app:destination="@id/addTorrentFileFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/torrentsListFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_addTorrentFileFragment"
+        app:destination="@id/addTorrentFileFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popUpTo="@id/torrentsListFragment"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+    <action
+        android:id="@+id/action_global_addTorrentLinkFragment"
+        app:destination="@id/addTorrentLinkFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popUpTo="@id/torrentsListFragment"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    <fragment
+        android:id="@+id/serverSettingsFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.ServerSettingsFragment">
+        <action
+            android:id="@+id/action_serverSettingsFragment_to_downloadingFragment"
+            app:destination="@id/downloadingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_serverSettingsFragment_to_networkFragment"
+            app:destination="@id/networkFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_serverSettingsFragment_to_queueFragment"
+            app:destination="@id/queueFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_serverSettingsFragment_to_speedFragment"
+            app:destination="@id/speedFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_serverSettingsFragment_to_seedingFragment"
+            app:destination="@id/seedingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/downloadingFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.DownloadingFragment" />
+    <fragment
+        android:id="@+id/networkFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.NetworkFragment" />
+    <fragment
+        android:id="@+id/queueFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.QueueFragment" />
+    <fragment
+        android:id="@+id/seedingFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.SeedingFragment" />
+    <fragment
+        android:id="@+id/speedFragment"
+        android:name="org.equeim.tremotesf.serversettingsfragment.SpeedFragment" />
+    <fragment
+        android:id="@+id/serverEditFragment"
+        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment">
+        <action
+            android:id="@+id/action_serverEditFragment_to_certificatesFragment"
+            app:destination="@id/certificatesFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <argument
+            android:name="server"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/certificatesFragment"
+        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$CertificatesFragment" />
+</navigation>

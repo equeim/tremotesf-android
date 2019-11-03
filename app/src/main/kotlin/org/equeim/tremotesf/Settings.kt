@@ -29,7 +29,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.stopService
 import org.jetbrains.anko.intentFor
 
-import org.equeim.tremotesf.mainactivity.TorrentsAdapter
+import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 
 
 private const val TORRENTS_SORT_MODE = "torrentsSortMode"
@@ -78,16 +78,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 if (old) R.style.AppTheme_Dark_Old else R.style.AppTheme_Dark
             } else {
                 if (old) R.style.AppTheme_Light_Old else R.style.AppTheme_Light
-            }
-        }
-
-    val themeNoActionBar: Int
-        get() {
-            val old = oldColors
-            return if (darkTheme) {
-                if (old) R.style.AppTheme_Dark_Old_NoActionBar else R.style.AppTheme_Dark_NoActionBar
-            } else {
-                if (old) R.style.AppTheme_Light_Old_NoActionBar else R.style.AppTheme_Light_NoActionBar
             }
         }
 

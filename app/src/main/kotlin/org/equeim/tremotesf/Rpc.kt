@@ -24,15 +24,14 @@ import java.util.concurrent.TimeUnit
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 
 import androidx.concurrent.futures.CallbackToFutureAdapter
-
 import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
+import androidx.core.os.bundleOf
+import androidx.navigation.NavDeepLinkBuilder
 
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -46,7 +45,6 @@ import com.google.common.util.concurrent.ListenableFuture
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.warn
 
@@ -57,8 +55,7 @@ import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentsVector
-import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesActivity
-import org.equeim.tremotesf.torrentpropertiesactivity.TorrentPropertiesFragment
+import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
@@ -308,7 +305,7 @@ object Rpc : AnkoLogger {
             listener(error)
         }
         if (error == RpcError.ConnectionError) {
-            BaseActivity.showToast(errorMessage)
+            NavigationActivity.showToast(errorMessage)
         }
     }
 
@@ -442,19 +439,18 @@ object Rpc : AnkoLogger {
                                         name: String,
                                         notificationChannel: String,
                                         notificationTitle: String) {
-        val stackBuilder = TaskStackBuilder.create(context)
-        stackBuilder.addParentStack(TorrentPropertiesActivity::class.java)
-        stackBuilder.addNextIntent(context.intentFor<TorrentPropertiesActivity>(TorrentPropertiesFragment.HASH to hashString,
-                                                                                TorrentPropertiesFragment.NAME to name))
-
         notificationManager.notify(
                 torrentId,
                 NotificationCompat.Builder(context, notificationChannel)
                         .setSmallIcon(R.drawable.notification_icon)
                         .setContentTitle(notificationTitle)
                         .setContentText(name)
-                        .setContentIntent(stackBuilder.getPendingIntent(0,
-                                PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setContentIntent(NavDeepLinkBuilder(context)
+                                                  .setGraph(R.navigation.nav_main)
+                                                  .setDestination(R.id.torrentPropertiesFragment)
+                                                  .setArguments(bundleOf(TorrentPropertiesFragment.HASH to hashString,
+                                                                         TorrentPropertiesFragment.NAME to name))
+                                                  .createPendingIntent())
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .build())
@@ -513,7 +509,7 @@ object Rpc : AnkoLogger {
         override fun startWork(): ListenableFuture<Result> {
             info("Rpc.UpdateWorker.startWork()")
 
-            if (BaseActivity.activeActivity != null) {
+            if (NavigationActivity.activeActivity != null) {
                 warn("Rpc.UpdateWorker.startWork(), activity is not null, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }

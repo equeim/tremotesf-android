@@ -20,11 +20,25 @@
 
 package org.equeim.tremotesf.utils
 
+import android.app.Activity
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
 
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {
         getChildAt(i).isEnabled = enabled
     }
+}
+
+fun Activity.hideKeyboard() {
+    currentFocus?.let { focus ->
+        getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(focus.windowToken, 0)
+    }
+}
+
+fun Fragment.hideKeyboard() {
+    activity?.hideKeyboard()
 }

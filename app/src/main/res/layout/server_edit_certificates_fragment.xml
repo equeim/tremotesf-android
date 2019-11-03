@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,74 +20,62 @@
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical"
+            tools:ignore="UselessParent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/horizontal_edge_padding"
-                android:layout_marginRight="@dimen/horizontal_edge_padding"
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/vertical_edge_padding"
+                android:paddingLeft="@dimen/horizontal_edge_padding"
+                android:paddingRight="@dimen/horizontal_edge_padding"
                 android:paddingTop="@dimen/vertical_edge_padding">
 
                 <CheckBox
-                    android:id="@+id/download_queue_check_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:saveEnabled="false"
-                    android:text="@string/maximum_active_downloads"/>
-
-                <EditText
-                    android:id="@+id/download_queue_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/seed_queue_check_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:saveEnabled="false"
-                    android:text="@string/maximum_active_uploads"/>
-
-                <EditText
-                    android:id="@+id/seed_queue_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/idle_queue_check_box"
+                    android:id="@+id/self_signed_certificate_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
-                    android:text="@string/ignore_queue"/>
+                    android:text="@string/server_uses_self_signed_certificate"/>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/idle_queue_layout"
+                    android:id="@+id/self_signed_certificate_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginStart="24dp"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/min">
+                    android:hint="@string/certificate">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/idle_queue_edit"
+                        android:id="@+id/self_signed_certificate_edit"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false"/>
+                        android:layout_height="128dp"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textUri"
+                        android:scrollbars="vertical"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/client_certificate_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/use_client_certificate_authentication"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/client_certificate_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:hint="@string/certificate">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/client_certificate_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="128dp"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textUri"
+                        android:scrollbars="vertical"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>

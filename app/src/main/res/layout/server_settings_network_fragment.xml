@@ -1,128 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/horizontal_edge_padding"
-        android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/vertical_edge_padding"
-        android:paddingTop="@dimen/vertical_edge_padding">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/connection"
-            android:textAppearance="@style/HeaderTextAppearance"/>
-
-        <com.google.android.material.textfield.TextInputLayout
+        <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:hint="@string/peer_port">
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/peer_port_edit"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginLeft="@dimen/horizontal_edge_padding"
+                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/vertical_edge_padding"
+                android:paddingTop="@dimen/vertical_edge_padding">
 
-        <CheckBox
-            android:id="@+id/random_port_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/random_port"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/connection"
+                    android:textAppearance="@style/HeaderTextAppearance"/>
 
-        <CheckBox
-            android:id="@+id/port_forwarding_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/port_forwarding"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:hint="@string/peer_port">
 
-        <Spinner
-            android:id="@+id/encryption_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/peer_port_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/utp_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/enable_utp"/>
+                <CheckBox
+                    android:id="@+id/random_port_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/random_port"/>
 
-        <CheckBox
-            android:id="@+id/pex_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/enable_pex"/>
+                <CheckBox
+                    android:id="@+id/port_forwarding_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/port_forwarding"/>
 
-        <CheckBox
-            android:id="@+id/dht_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/enable_dht"/>
+                <Spinner
+                    android:id="@+id/encryption_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"/>
 
-        <CheckBox
-            android:id="@+id/lpd_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
-            android:text="@string/enable_lpd"/>
+                <CheckBox
+                    android:id="@+id/utp_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/enable_utp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/peer_limits"
-            android:textAppearance="@style/HeaderTextAppearance"/>
+                <CheckBox
+                    android:id="@+id/pex_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/enable_pex"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:hint="@string/maximum_peers_per_torrent">
+                <CheckBox
+                    android:id="@+id/dht_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/enable_dht"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/peers_per_torrent_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                <CheckBox
+                    android:id="@+id/lpd_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/enable_lpd"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:hint="@string/maximum_peers_globally">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                    android:text="@string/peer_limits"
+                    android:textAppearance="@style/HeaderTextAppearance"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/peers_globally_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-</ScrollView>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:hint="@string/maximum_peers_per_torrent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/peers_per_torrent_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:hint="@string/maximum_peers_globally">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/peers_globally_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</LinearLayout>
