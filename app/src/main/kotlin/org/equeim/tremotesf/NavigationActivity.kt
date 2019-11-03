@@ -65,15 +65,9 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
     override var actionMode: ActionMode? = null
 
     var drawerSetUp = false
-    /*lateinit var drawerLayout: DrawerLayout
-        private set
-    lateinit var sidePanel: NavigationView
-        private set*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
-        info("NavigationActivity.onCreate(), extras=${intent.extras?.keySet()?.toList()}")
-        info("NavigationActivity.onCreate(), ${intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK}")
 
         setTheme(Settings.theme)
 
@@ -85,8 +79,6 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         }
         Rpc.connectOnce()
 
-        (supportFragmentManager.primaryNavigationFragment as NavHostFragment).navController.setGraph(R.navigation.nav_main)
-
         val c = findNavController(R.id.nav_host)
         c.addOnDestinationChangedListener { _, destination, _ ->
             hideKeyboard()
@@ -96,8 +88,6 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
                 drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
             }
         }
-
-        info("${c.currentDestination}")
 
         handleAddTorrentIntent(intent)
     }
