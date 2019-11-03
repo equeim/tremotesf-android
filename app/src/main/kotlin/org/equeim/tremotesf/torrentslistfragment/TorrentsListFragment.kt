@@ -654,7 +654,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.donate) { _, _ ->
-                        findNavController().navigate(R.id.action_torrentsListFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
+                        findNavController().navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
                     }
                     .create()
         }

@@ -334,7 +334,15 @@
     </dialog>
     <dialog
         android:id="@+id/donateDialogFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsListFragment$DonateDialogFragment" />
+        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsListFragment$DonateDialogFragment" >
+        <action
+            android:id="@+id/action_donateDialogFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </dialog>
     <dialog
         android:id="@+id/serverStatsDialogFragment"
         android:name="org.equeim.tremotesf.torrentslistfragment.ServerStatsDialogFragment" />
