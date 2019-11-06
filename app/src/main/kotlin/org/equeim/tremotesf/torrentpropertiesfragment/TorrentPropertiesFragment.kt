@@ -201,12 +201,11 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun setupToolbarMenu() {
-        val toolbar = this.toolbar ?: return
-        val menu = toolbar.menu!!
-        this.menu = menu
-        startMenuItem = menu.findItem(R.id.start)
-        pauseMenuItem = menu.findItem(R.id.pause)
-        updateMenu()
+        toolbar?.menu?.let { menu ->
+            this.menu = menu
+            startMenuItem = menu.findItem(R.id.start)
+            pauseMenuItem = menu.findItem(R.id.pause)
+        }
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -275,17 +274,21 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     private fun updateMenu() {
         val menu = this.menu ?: return
-
-        for (i in 0 until menu.size()) {
-            menu.getItem(i).isVisible = (torrent != null)
-        }
-        torrent?.let { torrent ->
-            startMenuItem?.isVisible = when (torrent.status) {
+        if (torrent == null) {
+            toolbar?.hideOverflowMenu()
+            menu.setGroupVisible(0, false)
+        } else {
+            menu.setGroupVisible(0, true)
+            val paused = when (torrent?.status) {
                 Torrent.Status.Paused,
                 Torrent.Status.Errored -> true
                 else -> false
             }
-            pauseMenuItem?.isVisible = !(startMenuItem?.isVisible ?: true)
+            if (paused) {
+                pauseMenuItem
+            } else {
+                startMenuItem
+            }?.isVisible = false
         }
     }
 
