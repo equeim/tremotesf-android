@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/select_all"
-        android:icon="?attr/selectAllIcon"
+        android:icon="@drawable/ic_select_all_24dp"
         android:title="@string/select_all"/>
 </menu>

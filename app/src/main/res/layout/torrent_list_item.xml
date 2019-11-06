@@ -18,9 +18,9 @@
             android:id="@+id/name_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="?attr/torrentIcon"
+            android:drawableLeft="@drawable/torrent_icon"
             android:drawablePadding="8dp"
-            android:drawableStart="?attr/torrentIcon"
+            android:drawableStart="@drawable/torrent_icon"
             android:textAppearance="?attr/textAppearanceListItemSmall" />
 
         <TextView

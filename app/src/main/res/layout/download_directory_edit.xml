@@ -26,5 +26,5 @@
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="?attr/dropdownArrowIcon"/>
+        android:src="@drawable/ic_arrow_drop_down_24dp"/>
 </LinearLayout>

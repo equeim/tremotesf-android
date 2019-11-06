@@ -67,7 +67,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
                 android:layout_gravity="center_vertical"
-                android:src="?attr/sortDescendingIcon"/>
+                android:src="@drawable/sort_descending"/>
         </org.equeim.tremotesf.utils.ChildrenDisablingLinearLayout>
 
         <Spinner

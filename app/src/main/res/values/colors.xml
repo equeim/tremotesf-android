@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="list_item_selected_color_dark">#26ffffff</color>
-    <color name="list_item_selected_color_light">#26000000</color>
+    <color name="list_item_selected_color">#26000000</color>
 
-    <color name="status_bar_color_dark">#000000</color>
-    <color name="color_primary_dark">#ef5350</color>
-    <color name="color_on_primary_dark">#ffffff</color>
-    <color name="color_background_dark">#ff303030</color>
-    <color name="color_toolbar_dark">#212121</color>
+    <color name="status_bar_color">#757575</color>
+    <color name="navigation_bar_color">#000000</color>
 
-    <color name="color_primary_old_dark">#80cbc4</color>
+    <color name="color_primary">#b71c1c</color>
+    <color name="color_on_primary">#ffffff</color>
+    <color name="color_background">#ffffff</color>
+    <color name="color_toolbar">#f5f5f5</color>
 
-    <color name="status_bar_color_light">#757575</color>
-    <color name="color_primary_light">#b71c1c</color>
-    <color name="color_on_primary_light">#ffffff</color>
-    <color name="color_toolbar_light">#f5f5f5</color>
-
-    <color name="color_primary_old_light">#008577</color>
+    <color name="color_primary_old">#008577</color>
 </resources>

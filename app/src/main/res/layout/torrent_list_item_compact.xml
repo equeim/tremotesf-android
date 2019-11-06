@@ -19,9 +19,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:drawableLeft="?attr/torrentIcon"
+            android:drawableLeft="@drawable/torrent_icon"
             android:drawablePadding="8dp"
-            android:drawableStart="?attr/torrentIcon"
+            android:drawableStart="@drawable/torrent_icon"
             android:textAppearance="?attr/textAppearanceListItemSmall"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"/>

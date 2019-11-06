@@ -26,6 +26,7 @@ import android.view.KeyEvent
 import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -69,6 +70,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
 
+        AppCompatDelegate.setDefaultNightMode(if (Settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
         setTheme(Settings.theme)
 
         super.onCreate(savedInstanceState)

@@ -1,105 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme"/>
-
-    <style name="AppTheme.Dark" parent="@style/Theme.MaterialComponents.NoActionBar">
+    <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
-        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color_dark</item>
-        <item name="android:navigationBarColor" tools:targetApi="21">?android:statusBarColor</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/navigation_bar_color</item>
 
-        <item name="colorPrimary">@color/color_primary_dark</item>
+        <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">?colorPrimary</item>
-        <item name="colorOnPrimary">@color/color_on_primary_dark</item>
+        <item name="colorOnPrimary">@color/color_on_primary</item>
         <item name="colorSecondary">?colorPrimary</item>
         <item name="colorSecondaryVariant">?colorSecondary</item>
         <item name="colorOnSecondary">?colorOnPrimary</item>
-        <item name="android:colorBackground">@color/color_background_dark</item>
+        <item name="android:colorBackground">@color/color_background</item>
 
-        <item name="colorToolbar">@color/color_toolbar_dark</item>
+        <item name="colorToolbar">@color/color_toolbar</item>
 
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
-        <item name="selectedBackground">@drawable/selected_background_dark</item>
+        <item name="selectedBackground">@drawable/selected_background</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
-
-        <item name="selectAllIcon">@drawable/ic_select_all_white_24dp</item>
-        <item name="searchIcon">@drawable/ic_search_white_24dp</item>
-        <item name="addIcon">@drawable/ic_add_white_24dp</item>
-        <item name="doneIcon">@drawable/ic_done_white_24dp</item>
-        <item name="deleteIcon">@drawable/ic_delete_white_24dp</item>
-        <item name="directoryIcon">@drawable/ic_folder_white_24dp</item>
-        <item name="fileIcon">@drawable/ic_insert_drive_file_white_24dp</item>
-        <item name="fileListItemIcon">@drawable/file_list_item_icon_white</item>
-        <item name="downloadIcon">@drawable/ic_file_download_white_24dp</item>
-        <item name="priorityIcon">@drawable/ic_priority_high_white_24dp</item>
-        <item name="homeIcon">@drawable/ic_home_white_24dp</item>
-        <item name="startIcon">@drawable/ic_play_arrow_white_24dp</item>
-        <item name="pauseIcon">@drawable/ic_pause_white_24dp</item>
-        <item name="torrentIcon">@drawable/torrent_icon_white</item>
-        <item name="sortDescendingIcon">@drawable/sort_descending_white</item>
-        <item name="sortAscendingIcon">@drawable/sort_ascending_white</item>
-        <item name="findInPageIcon">@drawable/ic_find_in_page_white_24dp</item>
-        <item name="syncIcon">@drawable/ic_sync_white_24dp</item>
-        <item name="removeIcon">@drawable/ic_remove_white_24dp</item>
-        <item name="dropdownArrowIcon">@drawable/ic_arrow_drop_down_white_24dp</item>
 
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
         <item name="tabStyle">@style/TabLayout</item>
     </style>
 
-    <style name="AppTheme.Dark.Old">
-        <item name="colorPrimary">@color/color_primary_old_dark</item>
-    </style>
-
-    <style name="AppTheme.Light" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color_light</item>
-
-        <item name="colorPrimary">@color/color_primary_light</item>
-        <item name="colorPrimaryVariant">?colorPrimary</item>
-        <item name="colorOnPrimary">@color/color_on_primary_light</item>
-        <item name="colorSecondary">?colorPrimary</item>
-        <item name="colorSecondaryVariant">?colorSecondary</item>
-        <item name="colorOnSecondary">?colorOnPrimary</item>
-
-        <item name="colorToolbar">@color/color_toolbar_light</item>
-
-        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
-
-        <item name="selectedBackground">@drawable/selected_background_light</item>
-
-        <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
-
-        <item name="selectAllIcon">@drawable/ic_select_all_black_24dp</item>
-        <item name="searchIcon">@drawable/ic_search_black_24dp</item>
-        <item name="addIcon">@drawable/ic_add_black_24dp</item>
-        <item name="doneIcon">@drawable/ic_done_black_24dp</item>
-        <item name="deleteIcon">@drawable/ic_delete_black_24dp</item>
-        <item name="directoryIcon">@drawable/ic_folder_black_24dp</item>
-        <item name="fileIcon">@drawable/ic_insert_drive_file_black_24dp</item>
-        <item name="fileListItemIcon">@drawable/file_list_item_icon_black</item>
-        <item name="downloadIcon">@drawable/ic_file_download_black_24dp</item>
-        <item name="priorityIcon">@drawable/ic_priority_high_black_24dp</item>
-        <item name="homeIcon">@drawable/ic_home_black_24dp</item>
-        <item name="startIcon">@drawable/ic_play_arrow_black_24dp</item>
-        <item name="pauseIcon">@drawable/ic_pause_black_24dp</item>
-        <item name="torrentIcon">@drawable/torrent_icon_black</item>
-        <item name="sortDescendingIcon">@drawable/sort_descending_black</item>
-        <item name="sortAscendingIcon">@drawable/sort_ascending_black</item>
-        <item name="findInPageIcon">@drawable/ic_find_in_page_black_24dp</item>
-        <item name="syncIcon">@drawable/ic_sync_black_24dp</item>
-        <item name="removeIcon">@drawable/ic_remove_black_24dp</item>
-        <item name="dropdownArrowIcon">@drawable/ic_arrow_drop_down_black_24dp</item>
-
-        <item name="toolbarStyle">@style/Toolbar</item>
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-        <item name="tabStyle">@style/TabLayout</item>
-    </style>
-
-    <style name="AppTheme.Light.Old">
-        <item name="colorPrimary">@color/color_primary_old_light</item>
+    <style name="AppTheme.Old">
+        <item name="colorPrimary">@color/color_primary_old</item>
     </style>
 
     <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">

@@ -2,7 +2,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/done"
-        android:icon="?attr/doneIcon"
+        android:icon="@drawable/ic_done_24dp"
         android:title=""
         app:showAsAction="ifRoom"/>
 </menu>

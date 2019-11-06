@@ -2,6 +2,6 @@
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@android:color/transparent" />
     <item
-        android:drawable="@color/list_item_selected_color_light"
+        android:drawable="@color/list_item_selected_color"
         android:maxLevel="1" />
 </level-list>

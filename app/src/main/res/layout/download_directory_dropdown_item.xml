@@ -11,7 +11,7 @@
         android:layout_height="?attr/listPreferredItemHeightSmall"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
-        android:src="?attr/removeIcon" />
+        android:src="@drawable/ic_remove_24dp" />
 
     <TextView
         android:id="@android:id/text1"

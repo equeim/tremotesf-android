@@ -2,7 +2,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search"
-        android:icon="?attr/searchIcon"
+        android:icon="@drawable/ic_search_24dp"
         android:title="@android:string/search_go"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>

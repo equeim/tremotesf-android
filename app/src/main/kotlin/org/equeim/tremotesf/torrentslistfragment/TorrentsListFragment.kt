@@ -621,14 +621,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun getSortOrderButtonIcon(): Int {
-        val ta = requireContext().obtainStyledAttributes(intArrayOf(if (torrentsAdapter?.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
-            R.attr.sortAscendingIcon
+        return if (torrentsAdapter?.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
+            R.drawable.sort_ascending
         } else {
-            R.attr.sortDescendingIcon
-        }))
-        val resId = ta.getResourceId(0, 0)
-        ta.recycle()
-        return resId
+            R.drawable.sort_descending
+        }
     }
 
     private fun startFilePickerActivity() {

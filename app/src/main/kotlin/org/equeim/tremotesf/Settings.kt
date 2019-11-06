@@ -61,7 +61,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         preferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    private val darkTheme: Boolean
+    val darkTheme: Boolean
         get() {
             return preferences.getBoolean(darkThemeKey, true)
         }
@@ -73,12 +73,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     val theme: Int
         get() {
-            val old = oldColors
-            return if (darkTheme) {
-                if (old) R.style.AppTheme_Dark_Old else R.style.AppTheme_Dark
-            } else {
-                if (old) R.style.AppTheme_Light_Old else R.style.AppTheme_Light
-            }
+            return if (oldColors) R.style.AppTheme_Old else R.style.AppTheme
         }
 
     val torrentCompactView: Boolean
