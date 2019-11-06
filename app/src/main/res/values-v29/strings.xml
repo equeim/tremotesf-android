@@ -1,0 +1,3 @@
+<resources>
+    <item name="theme_auto" type="string">@string/theme_auto_q</item>
+</resources>

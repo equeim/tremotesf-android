@@ -70,7 +70,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
 
-        AppCompatDelegate.setDefaultNightMode(if (Settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
         setTheme(Settings.theme)
 
         super.onCreate(savedInstanceState)

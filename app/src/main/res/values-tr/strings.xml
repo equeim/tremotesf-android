@@ -365,9 +365,6 @@
     <string name="translators">Çevirmenler</string>
     <string name="license">Lisans</string>
 
-    <string name="prefs_dark_theme_title">Karanlık temayı kullan</string>
-    <string name="prefs_dark_theme_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlat</string>
-
     <string name="prefs_old_colors_title">Eski renkleri kullan</string>
     <string name="prefs_old_colors_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlatın</string>
 

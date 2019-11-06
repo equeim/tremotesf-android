@@ -365,9 +365,6 @@
     <string name="translators">Vertalers</string>
     <string name="license">Licentie</string>
 
-    <string name="prefs_dark_theme_title">Donker thema gebruiken</string>
-    <string name="prefs_dark_theme_summary">Herstart de app om de wijzigingen toe te passen</string>
-
     <string name="prefs_old_colors_title">Oude kleuren gebruiken</string>
     <string name="prefs_old_colors_summary">Herstart de app om de wijzigingen toe te passen</string>
 

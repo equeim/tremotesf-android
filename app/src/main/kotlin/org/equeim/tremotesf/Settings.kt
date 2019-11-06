@@ -21,7 +21,9 @@ package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.os.Build
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.core.content.ContextCompat
 
@@ -46,6 +48,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private val preferences = context.defaultSharedPreferences
 
     private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
+    private val themeKey = context.getString(R.string.prefs_theme_key)
     private val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
     private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
     private val torrentNameMultilineKey = context.getString(R.string.prefs_torrent_name_multiline_key)
@@ -57,13 +60,34 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     private val notifyOnAddedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_added_since_last_key)
     private val deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
 
+    private const val THEME_AUTO = "auto"
+    private const val THEME_DARK = "dark"
+    private const val THEME_LIGHT = "light"
+
     init {
+        if (!preferences.contains(themeKey) && preferences.contains(darkThemeKey)) {
+            preferences.edit {
+                putString(themeKey, if (preferences.getBoolean(darkThemeKey, false)) {
+                    THEME_DARK
+                } else {
+                    THEME_LIGHT
+                })
+            }
+        }
         preferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    val darkTheme: Boolean
+    val nightMode: Int
         get() {
-            return preferences.getBoolean(darkThemeKey, true)
+            return when (preferences.getString(themeKey, THEME_AUTO)) {
+                THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                }
+            }
         }
 
     private val oldColors: Boolean
@@ -112,7 +136,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             } catch (ignore: NumberFormatException) {
                 0
             }
-
         }
 
     val notifyOnFinishedSinceLastConnection: Boolean
@@ -192,6 +215,7 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
         when (key) {
+            themeKey -> AppCompatDelegate.setDefaultNightMode(nightMode)
             torrentCompactViewKey -> torrentCompactViewListener?.invoke()
             torrentNameMultilineKey -> torrentNameMultilineListener?.invoke()
             persistentNotificationKey -> {

@@ -2,8 +2,8 @@
 <resources>
     <color name="list_item_selected_color">#26ffffff</color>
 
-    <color name="status_bar_color">#000000</color>
-    <color name="navigation_bar_color">#000000</color>
+    <color name="status_bar_color">@color/status_bar_color_dark</color>
+    <color name="navigation_bar_color">@color/navigation_bar_color_dark</color>
 
     <color name="color_primary">#ef5350</color>
     <color name="color_on_primary">#ffffff</color>

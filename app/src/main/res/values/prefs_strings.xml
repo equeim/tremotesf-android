@@ -20,4 +20,11 @@
     <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>
     <string name="prefs_torrent_compact_view_key" translatable="false">torrentCompactView</string>
     <string name="prefs_torrent_name_multiline_key" translatable="false">torrentNameMultiline</string>
+
+    <string name="prefs_theme_key" translatable="false">theme</string>
+    <string-array name="prefs_theme_values" translatable="false">
+        <item>auto</item>
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
 </resources>

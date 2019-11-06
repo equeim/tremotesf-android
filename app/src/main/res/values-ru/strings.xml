@@ -387,9 +387,6 @@
     <string name="translators">Переводчики</string>
     <string name="license">Лицензия</string>
 
-    <string name="prefs_dark_theme_title">Использовать темную тему</string>
-    <string name="prefs_dark_theme_summary">Перезапустите приложение для применения изменений</string>
-
     <string name="prefs_old_colors_title">Использовать старые цвета</string>
     <string name="prefs_old_colors_summary">Перезапустите приложение для применения изменений</string>
 

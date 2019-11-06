@@ -391,8 +391,7 @@
     <string name="translators">Translators</string>
     <string name="license">License</string>
 
-    <string name="prefs_dark_theme_title">Use dark theme</string>
-    <string name="prefs_dark_theme_summary">Restart app to apply changes</string>
+    <string name="prefs_dark_theme_mode_title">Theme</string>
 
     <string name="prefs_old_colors_title">Use old colors</string>
     <string name="prefs_old_colors_summary">Restart app to apply changes</string>
@@ -445,4 +444,13 @@
     </string-array>
 
     <string name="connection_settings">Connection settings</string>
+
+    <string name="theme_auto">Set by Battery Saver</string>
+    <string name="theme_auto_q">System default</string>
+
+    <string-array name="prefs_theme_entries">
+        <item>@string/theme_auto</item>
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
 </resources>

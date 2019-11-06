@@ -365,8 +365,6 @@
     <string name="translators">Traduzioni</string>
     <string name="license">Licenza</string>
 
-    <string name="prefs_dark_theme_title">Usa tema scuro</string>
-    <string name="prefs_dark_theme_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
 
     <string name="prefs_old_colors_title">Usa vecchio tema</string>
     <string name="prefs_old_colors_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>

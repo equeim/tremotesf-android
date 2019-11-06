@@ -312,9 +312,6 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
-    <string name="prefs_dark_theme_title">使用暗色主题</string>
-    <string name="prefs_dark_theme_summary">重启应用以保存更改</string>
-
     <string name="prefs_old_colors_title">使用旧的配色</string>
     <string name="prefs_old_colors_summary">重启应用以保存更改</string>
 

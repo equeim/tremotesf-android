@@ -351,9 +351,6 @@
     <string name="translators">Tradutores</string>
     <string name="license">Licença</string>
 
-    <string name="prefs_dark_theme_title">Usar tema escuro</string>
-    <string name="prefs_dark_theme_summary">Reinicie o aplicativo para aplicar mudanças</string>
-
     <string name="prefs_persistent_notification_title">Mostrar notificação persistente</string>
 
     <string name="persistent_notification_channel_name">Notificação persistente</string>

@@ -30,6 +30,12 @@
         <item name="colorPrimary">@color/color_primary_old</item>
     </style>
 
+    <style name="AppTheme.Splash" parent="Theme.MaterialComponents">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color_dark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/navigation_bar_color_dark</item>
+    </style>
+
     <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">
         <item name="android:textColor">?android:attr/textColorHint</item>
     </style>
