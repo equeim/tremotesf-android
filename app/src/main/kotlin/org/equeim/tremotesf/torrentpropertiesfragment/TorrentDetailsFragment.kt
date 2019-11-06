@@ -33,7 +33,7 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.torrent_details_fragment.*
 
 
-class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
+class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), TorrentPropertiesFragment.PagerFragment {
     private var firstUpdate = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment) {
         update()
     }
 
-    fun update() {
+    override fun update() {
         view ?: return
 
         val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent ?: return

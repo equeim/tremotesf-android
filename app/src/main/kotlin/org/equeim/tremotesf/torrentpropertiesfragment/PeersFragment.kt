@@ -35,7 +35,7 @@ import org.equeim.tremotesf.setPeersEnabled
 import kotlinx.android.synthetic.main.peers_fragment.*
 
 
-class PeersFragment : Fragment(R.layout.peers_fragment) {
+class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragment.PagerFragment {
     private var peersAdapter: PeersAdapter? = null
 
     var torrent: TorrentData? = null
@@ -84,7 +84,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment) {
         super.onDestroyView()
     }
 
-    fun update() {
+    override fun update() {
         peersAdapter?.let { peersAdapter ->
             val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent
             this.torrent = torrent

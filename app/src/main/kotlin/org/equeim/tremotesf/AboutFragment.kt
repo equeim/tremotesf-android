@@ -27,13 +27,18 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
 
+import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+
+import com.google.android.material.tabs.TabLayoutMediator
 
 import org.sufficientlysecure.donations.DonationsFragment
+
+import org.equeim.tremotesf.utils.findFragment
 
 import kotlinx.android.synthetic.main.about_fragment.*
 import kotlinx.android.synthetic.main.about_fragment_license_tab_fragment.*
@@ -53,9 +58,11 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         super.onViewCreated(view, savedInstanceState)
         toolbar?.title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
-        pagerAdapter = PagerAdapter()
+        pagerAdapter = PagerAdapter(this)
         pager.adapter = pagerAdapter
-        tab_layout.setupWithViewPager(pager)
+        TabLayoutMediator(tab_layout, pager) { tab, position ->
+            tab.setText(PagerAdapter.getTitle(position))
+        }.attach()
 
         if (requireArguments().getBoolean(DONATE)) {
             pager.currentItem = 1
@@ -63,42 +70,43 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        pagerAdapter?.donateFragment?.onActivityResult(requestCode, resultCode, data)
+        findFragment<DonateTabFragment>()?.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private inner class PagerAdapter : FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        var donateFragment: DonateTabFragment? = null
+    private class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+        companion object {
+            private val tabs = Tab.values()
 
-        override fun getCount() = 5
-
-        override fun getItem(position: Int): Fragment {
-            return when (position) {
-                0 -> MainTabFragment()
-                1 -> DonateTabFragment.newInstance()
-                2 -> AuthorsTabFragment()
-                3 -> TranslatorsTabFragment()
-                4 -> LicenseTabFragment()
-                else -> Fragment()
+            @StringRes
+            fun getTitle(position: Int): Int {
+                return when (tabs[position]) {
+                    Tab.Main -> R.string.about
+                    Tab.Donate -> R.string.donate
+                    Tab.Authors -> R.string.authors
+                    Tab.Translators -> R.string.translators
+                    Tab.License -> R.string.license
+                }
             }
         }
 
-        override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val item = super.instantiateItem(container, position)
-            if (position == 1) {
-                donateFragment = item as DonateTabFragment
-            }
-            return item
+        private enum class Tab {
+            Main,
+            Donate,
+            Authors,
+            Translators,
+            License
         }
 
-        override fun getPageTitle(position: Int): CharSequence {
-            return when (position) {
-                0 -> getString(R.string.about)
-                1 -> getString(R.string.donate)
-                2 -> getString(R.string.authors)
-                3 -> getString(R.string.translators)
-                4 -> getString(R.string.license)
-                else -> ""
+        override fun getItemCount() = tabs.size
+
+        override fun createFragment(position: Int): Fragment {
+            return when (tabs[position]) {
+                Tab.Main -> MainTabFragment()
+                Tab.Donate -> DonateTabFragment.newInstance()
+                Tab.Authors -> AuthorsTabFragment()
+                Tab.Translators -> TranslatorsTabFragment()
+                Tab.License -> LicenseTabFragment()
             }
         }
     }

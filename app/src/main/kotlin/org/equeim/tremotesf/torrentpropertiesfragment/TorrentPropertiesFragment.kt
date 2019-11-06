@@ -19,26 +19,24 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 
 import androidx.activity.addCallback
+import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
-import androidx.viewpager.widget.ViewPager
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayoutMediator
 
 import org.jetbrains.anko.design.indefiniteSnackbar
 
@@ -47,15 +45,15 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.TorrentData
-import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
-
-import org.equeim.tremotesf.setFilesEnabled
-import org.equeim.tremotesf.setPeersEnabled
-
-import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 import org.equeim.tremotesf.NavigationActivity
 import org.equeim.tremotesf.NavigationFragment
+import org.equeim.tremotesf.setFilesEnabled
+import org.equeim.tremotesf.setPeersEnabled
+import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
+
+import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
 
 class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
@@ -122,19 +120,22 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         toolbar?.title = requireArguments().getString(NAME)
         setupToolbarMenu()
 
-        val pagerAdapter = PagerAdapter(childFragmentManager, requireContext())
+        val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
         pager.adapter = pagerAdapter
-        tab_layout.setupWithViewPager(pager)
+        TabLayoutMediator(tab_layout, pager) { tab, position ->
+            tab.setText(PagerAdapter.getTitle(position))
+        }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (pager.currentItem != PagerAdapter.TAB_FILES || pagerAdapter.filesFragment?.adapter?.navigateUp() != true) {
+            if (pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
+                    findFragment<TorrentFilesFragment>()?.adapter?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1
 
             override fun onPageSelected(position: Int) {
@@ -144,7 +145,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                         hideKeyboard()
                     }
                 }
-                if (position == PagerAdapter.TAB_TRACKERS) {
+                if (position == PagerAdapter.Tab.Trackers.ordinal) {
                     fab.show()
                 } else {
                     fab.hide()
@@ -264,11 +265,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         updateMenu()
 
-        pagerAdapter?.apply {
-            detailsFragment?.update()
-            filesFragment?.update()
-            trackersFragment?.update()
-            peersFragment?.update()
+        for (fragment in childFragmentManager.fragments) {
+            (fragment as? PagerFragment)?.update()
         }
     }
 
@@ -310,64 +308,46 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         }
     }
 
-    class PagerAdapter(fragmentManager: FragmentManager, private val context: Context) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            const val TAB_DETAILS = 0
-            const val TAB_FILES = 1
-            const val TAB_TRACKERS = 2
-            const val TAB_PEERS = 3
-            const val TAB_LIMITS = 4
-            const val TABS_COUNT = 5
-        }
+            private val tabs = Tab.values()
 
-        var detailsFragment: TorrentDetailsFragment? = null
-        var filesFragment: TorrentFilesFragment? = null
-        var trackersFragment: TrackersFragment? = null
-        var peersFragment: PeersFragment? = null
-
-        override fun getCount(): Int {
-            return TABS_COUNT
-        }
-
-        override fun getItem(position: Int): Fragment {
-            return when (position) {
-                TAB_DETAILS -> TorrentDetailsFragment()
-                TAB_FILES -> TorrentFilesFragment()
-                TAB_TRACKERS -> TrackersFragment()
-                TAB_PEERS -> PeersFragment()
-                TAB_LIMITS -> TorrentLimitsFragment()
-                else -> Fragment()
-            }
-        }
-
-        override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val fragment = super.instantiateItem(container, position) as Fragment
-            when (position) {
-                TAB_DETAILS -> {
-                    detailsFragment = fragment as TorrentDetailsFragment
-                }
-                TAB_FILES -> {
-                    filesFragment = fragment as TorrentFilesFragment
-                }
-                TAB_TRACKERS -> {
-                    trackersFragment = fragment as TrackersFragment
-                }
-                TAB_PEERS -> {
-                    peersFragment = fragment as PeersFragment
+            @StringRes
+            fun getTitle(position: Int): Int {
+                return when (tabs[position]) {
+                    Tab.Details -> R.string.details
+                    Tab.Files -> R.string.files
+                    Tab.Trackers -> R.string.trackers
+                    Tab.Peers -> R.string.peers
+                    Tab.Limits -> R.string.limits
                 }
             }
-            return fragment
         }
 
-        override fun getPageTitle(position: Int): CharSequence {
-            return when (position) {
-                TAB_DETAILS -> context.getString(R.string.details)
-                TAB_FILES -> context.getString(R.string.files)
-                TAB_TRACKERS -> context.getString(R.string.trackers)
-                TAB_PEERS -> context.getString(R.string.peers)
-                TAB_LIMITS -> context.getString(R.string.limits)
-                else -> ""
+        enum class Tab {
+            Details,
+            Files,
+            Trackers,
+            Peers,
+            Limits
+        }
+
+        override fun getItemCount(): Int {
+            return tabs.size
+        }
+
+        override fun createFragment(position: Int): Fragment {
+            return when (tabs[position]) {
+                Tab.Details -> TorrentDetailsFragment()
+                Tab.Files -> TorrentFilesFragment()
+                Tab.Trackers -> TrackersFragment()
+                Tab.Peers -> PeersFragment()
+                Tab.Limits -> TorrentLimitsFragment()
             }
         }
+    }
+
+    interface PagerFragment {
+        fun update()
     }
 }

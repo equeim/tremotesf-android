@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.torrent_properties_fragment.fab
 import kotlinx.android.synthetic.main.trackers_fragment.*
 
 
-class TrackersFragment : Fragment(R.layout.trackers_fragment) {
+class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentPropertiesFragment.PagerFragment {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
@@ -75,7 +75,7 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment) {
         trackersAdapter?.selector?.saveInstanceState(outState)
     }
 
-    fun update() {
+    override fun update() {
         trackersAdapter?.update()
     }
 }

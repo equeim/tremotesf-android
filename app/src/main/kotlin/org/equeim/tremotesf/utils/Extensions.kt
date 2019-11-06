@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
@@ -41,4 +42,12 @@ fun Activity.hideKeyboard() {
 
 fun Fragment.hideKeyboard() {
     activity?.hideKeyboard()
+}
+
+inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
+    return fragments.find { it is T } as T?
+}
+
+inline fun <reified T : Fragment> Fragment.findFragment(): T? {
+    return childFragmentManager.findFragment()
 }

@@ -54,7 +54,7 @@ private fun updateFile(file: BaseTorrentFilesAdapter.File,
     }
 }
 
-class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
+class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentPropertiesFragment.PagerFragment {
     private val torrentPropertiesFragment: TorrentPropertiesFragment?
         get() = parentFragment as TorrentPropertiesFragment?
 
@@ -143,7 +143,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment) {
         adapter?.saveInstanceState(outState)
     }
 
-    fun update() {
+    override fun update() {
         val torrentPropertiesFragment = this.torrentPropertiesFragment ?: return
 
         resetAfterCreate = false

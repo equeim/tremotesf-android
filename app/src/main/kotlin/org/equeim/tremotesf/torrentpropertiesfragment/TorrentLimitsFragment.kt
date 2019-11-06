@@ -200,7 +200,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
         update()
     }
 
-    fun update() {
+    private fun update() {
         view ?: return
 
         val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent?.torrent ?: return

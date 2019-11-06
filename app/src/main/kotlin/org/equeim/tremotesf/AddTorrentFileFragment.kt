@@ -32,39 +32,40 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayoutMediator
 
 import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.findFragment
+import org.equeim.tremotesf.utils.hideKeyboard
 
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_fragment.*
 import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
-import org.equeim.tremotesf.utils.hideKeyboard
 
 
 object AddTorrentFragmentArguments {
@@ -134,23 +135,25 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
         pager.adapter = pagerAdapter
-        tab_layout.setupWithViewPager(pager)
+        TabLayoutMediator(tab_layout, pager) { tab, position ->
+            tab.setText(PagerAdapter.getTitle(position))
+        }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (pager.currentItem != PagerAdapter.Fragments.Files.ordinal || pagerAdapter.filesFragment?.adapter?.navigateUp() != true) {
+            if (pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
+                    findFragment<FilesFragment>()?.adapter?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1
-            private val inputManager = requireContext().getSystemService<InputMethodManager>()!!
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
-                    pagerAdapter.filesFragment?.adapter?.selector?.actionMode?.finish()
-                    requireActivity().currentFocus?.let { inputManager.hideSoftInputFromWindow(it.windowToken, 0) }
+                    findFragment<FilesFragment>()?.adapter?.selector?.actionMode?.finish()
+                    hideKeyboard()
                 }
                 previousPage = position
             }
@@ -163,7 +166,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         torrentFileParser.statusListener = { status ->
             updateView()
             if (status == TorrentFileParser.Status.Loaded) {
-                pagerAdapter.filesFragment?.treeCreated()
+                findFragment<FilesFragment>()?.treeCreated()
             }
         }
     }
@@ -189,7 +192,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         if (menuItem.itemId != R.id.done) {
             return false
         }
-        val infoFragment = pagerAdapter?.infoFragment
+        val infoFragment = findFragment<InfoFragment>()
         if (infoFragment?.check() == true) {
             val filesData = torrentFileParser.getFilesData()
             Rpc.nativeInstance.addTorrentFile(torrentFileParser.fileData,
@@ -287,43 +290,30 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         }
     }
 
-    class PagerAdapter(private val mainFragment: AddTorrentFileFragment) : FragmentStatePagerAdapter(mainFragment.childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-        enum class Fragments {
+    class PagerAdapter(private val mainFragment: AddTorrentFileFragment) : FragmentStateAdapter(mainFragment) {
+        companion object {
+            private val tabs = Tab.values()
+
+            @StringRes
+            fun getTitle(position: Int): Int {
+                return when (tabs[position]) {
+                    Tab.Info -> R.string.information
+                    Tab.Files -> R.string.files
+                }
+            }
+        }
+
+        enum class Tab {
             Info,
             Files
         }
 
-        var infoFragment: InfoFragment? = null
-            private set
-        var filesFragment: FilesFragment? = null
-            private set
+        override fun getItemCount() = tabs.size
 
-        override fun getCount(): Int {
-            return Fragments.values().size
-        }
-
-        override fun getItem(position: Int): Fragment {
-            return when (position) {
-                Fragments.Info.ordinal -> InfoFragment()
-                Fragments.Files.ordinal -> FilesFragment()
-                else -> Fragment()
-            }
-        }
-
-        override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val fragment = super.instantiateItem(container, position)
-            when (position) {
-                Fragments.Info.ordinal -> infoFragment = fragment as InfoFragment
-                Fragments.Files.ordinal -> filesFragment = fragment as FilesFragment
-            }
-            return fragment
-        }
-
-        override fun getPageTitle(position: Int): CharSequence {
-            return when (position) {
-                Fragments.Info.ordinal -> mainFragment.getString(R.string.information)
-                Fragments.Files.ordinal -> mainFragment.getString(R.string.files)
-                else -> ""
+        override fun createFragment(position: Int): Fragment {
+            return when (tabs[position]) {
+                Tab.Info -> InfoFragment()
+                Tab.Files -> FilesFragment()
             }
         }
     }
