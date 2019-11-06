@@ -41,11 +41,11 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
 
         ratio_limit_check_box.isChecked = Rpc.serverSettings.isRatioLimited
         ratio_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            ratio_limit_edit.isEnabled = checked
+            ratio_limit_layout.isEnabled = checked
             Rpc.serverSettings.isRatioLimited = checked
         }
 
-        ratio_limit_edit.isEnabled = ratio_limit_check_box.isChecked
+        ratio_limit_layout.isEnabled = ratio_limit_check_box.isChecked
         ratio_limit_edit.filters = arrayOf(DoubleFilter(0.0..10000.0))
         ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.serverSettings.ratioLimit()))
         ratio_limit_edit.addTextChangedListener(object : TextWatcher {

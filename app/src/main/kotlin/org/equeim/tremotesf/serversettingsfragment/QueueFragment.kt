@@ -38,11 +38,11 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         download_queue_check_box.isChecked = Rpc.serverSettings.isDownloadQueueEnabled
         download_queue_check_box.setOnCheckedChangeListener { _, checked ->
-            download_queue_edit.isEnabled = checked
+            download_queue_layout.isEnabled = checked
             Rpc.serverSettings.isDownloadQueueEnabled = checked
         }
 
-        download_queue_edit.isEnabled = download_queue_check_box.isChecked
+        download_queue_layout.isEnabled = download_queue_check_box.isChecked
         download_queue_edit.filters = arrayOf(IntFilter(0..10000))
         download_queue_edit.setText(Rpc.serverSettings.downloadQueueSize().toString())
         download_queue_edit.addTextChangedListener(object : TextWatcher {
@@ -63,11 +63,11 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         seed_queue_check_box.isChecked = Rpc.serverSettings.isSeedQueueEnabled
         seed_queue_check_box.setOnCheckedChangeListener { _, checked ->
-            seed_queue_edit.isEnabled = checked
+            seed_queue_layout.isEnabled = checked
             Rpc.serverSettings.isSeedQueueEnabled = checked
         }
 
-        seed_queue_edit.isEnabled = seed_queue_check_box.isChecked
+        seed_queue_layout.isEnabled = seed_queue_check_box.isChecked
         seed_queue_edit.filters = arrayOf(IntFilter(0..10000))
         seed_queue_edit.setText(Rpc.serverSettings.seedQueueSize().toString())
         seed_queue_edit.addTextChangedListener(object : TextWatcher {

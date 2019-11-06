@@ -129,7 +129,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
                                         view: View?,
                                         position: Int,
                                         id: Long) {
-                ratio_limit_edit.isEnabled = (position == 2)
+                ratio_limit_layout.isEnabled = (position == 2)
                 if (!updating) {
                     torrent?.setRatioLimitMode(when (position) {
                         0 -> Torrent.RatioLimitMode.GlobalRatioLimit

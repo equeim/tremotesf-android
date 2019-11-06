@@ -64,11 +64,11 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
 
         incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.isIncompleteDirectoryEnabled
         incomplete_files_directory_check_box.setOnCheckedChangeListener { _, checked ->
-            incomplete_files_directory_edit.isEnabled = checked
+            incomplete_files_directory_layout.isEnabled = checked
             Rpc.serverSettings.isIncompleteDirectoryEnabled = checked
         }
 
-        incomplete_files_directory_edit.isEnabled = incomplete_files_directory_check_box.isChecked
+        incomplete_files_directory_layout.isEnabled = incomplete_files_directory_check_box.isChecked
         incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory())
 
         incomplete_files_directory_edit.addTextChangedListener(object : TextWatcher {
