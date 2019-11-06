@@ -105,7 +105,7 @@ dependencies {
     implementation "androidx.viewpager:viewpager:1.0.0"
     implementation 'androidx.work:work-runtime:2.2.0'
 
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-beta01'
 
     implementation 'org.jetbrains.anko:anko-commons:0.10.8'
     implementation 'org.jetbrains.anko:anko-design:0.10.8'

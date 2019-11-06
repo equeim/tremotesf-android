@@ -22,4 +22,6 @@
     <attr name="syncIcon" format="reference"/>
     <attr name="removeIcon" format="reference"/>
     <attr name="dropdownArrowIcon" format="reference"/>
+
+    <attr name="colorToolbar" format="color"/>
 </resources>

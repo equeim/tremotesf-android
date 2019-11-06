@@ -4,17 +4,22 @@
 
     <style name="AppTheme.Dark" parent="@style/Theme.MaterialComponents.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color_dark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">?android:statusBarColor</item>
 
-        <item name="colorPrimary">#212121</item>
-        <item name="colorPrimaryDark">#000000</item>
-        <item name="colorSecondary">#ef5350</item>
-        <item name="android:navigationBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/color_primary_dark</item>
+        <item name="colorPrimaryVariant">?colorPrimary</item>
+        <item name="colorOnPrimary">@color/color_on_primary_dark</item>
+        <item name="colorSecondary">?colorPrimary</item>
+        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
+        <item name="android:colorBackground">@color/color_background_dark</item>
+
+        <item name="colorToolbar">@color/color_toolbar_dark</item>
 
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
         <item name="selectedBackground">@drawable/selected_background_dark</item>
-
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
@@ -38,24 +43,32 @@
         <item name="syncIcon">@drawable/ic_sync_white_24dp</item>
         <item name="removeIcon">@drawable/ic_remove_white_24dp</item>
         <item name="dropdownArrowIcon">@drawable/ic_arrow_drop_down_white_24dp</item>
+
+        <item name="toolbarStyle">@style/Toolbar</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="tabStyle">@style/TabLayout</item>
     </style>
 
     <style name="AppTheme.Dark.Old">
-        <item name="colorSecondary">#80cbc4</item>
+        <item name="colorPrimary">@color/color_primary_old_dark</item>
     </style>
 
     <style name="AppTheme.Light" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/status_bar_color_light</item>
 
-        <item name="colorPrimary">#f5f5f5</item>
-        <item name="colorPrimaryDark">#ff757575</item>
-        <item name="colorSecondary">#b71c1c</item>
+        <item name="colorPrimary">@color/color_primary_light</item>
+        <item name="colorPrimaryVariant">?colorPrimary</item>
+        <item name="colorOnPrimary">@color/color_on_primary_light</item>
+        <item name="colorSecondary">?colorPrimary</item>
+        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
+
+        <item name="colorToolbar">@color/color_toolbar_light</item>
 
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
         <item name="selectedBackground">@drawable/selected_background_light</item>
-
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
@@ -79,10 +92,14 @@
         <item name="syncIcon">@drawable/ic_sync_black_24dp</item>
         <item name="removeIcon">@drawable/ic_remove_black_24dp</item>
         <item name="dropdownArrowIcon">@drawable/ic_arrow_drop_down_black_24dp</item>
+
+        <item name="toolbarStyle">@style/Toolbar</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="tabStyle">@style/TabLayout</item>
     </style>
 
     <style name="AppTheme.Light.Old">
-        <item name="colorSecondary">#008577</item>
+        <item name="colorPrimary">@color/color_primary_old_light</item>
     </style>
 
     <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">
@@ -91,5 +108,14 @@
 
     <style name="HeaderTextAppearance" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:elevation" tools:targetApi="21">@dimen/action_bar_elevation</item>
+        <item name="android:background">?colorToolbar</item>
+    </style>
+
+    <style name="TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?colorToolbar</item>
     </style>
 </resources>

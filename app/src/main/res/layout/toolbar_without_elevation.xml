@@ -4,6 +4,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary"
-    style="@style/Widget.AppCompat.Toolbar"
-    tools:ignore="Overdraw"/>
+    android:elevation="0dp"
+    tools:targetApi="lollipop"/>
