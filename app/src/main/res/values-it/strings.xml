@@ -390,7 +390,7 @@
     <string name="donate">Dona</string>
     <string name="donate_yandex">Yandex.Money</string>
     <string name="donate_message">Se ti piace questa applicazione, puoi supportare lo sviluppo mandando una donazione allo sviluppatore.</string>
-    <string name="donate_dialog_again">Questa fineastra non verrà più mostrata.</string>
+    <string name="donate_dialog_again">Questa finestra non verrà più mostrata.</string>
 
     <string name="free_space">Spazio libero: %s</string>
     <string name="free_space_error">Errore nel calcolo dello spazio libero</string>
@@ -404,7 +404,19 @@
 
     <string name="persistent_notification">Notifiche persistenti</string>
 
-    <string name="persistent_notification_warning">Abilitando le notifiche persistenti eviterà che l\'applicazione vada in sincronizzazione in background. Questo potrebbe causare un consumo di batteria eccessivo.</string>
+    <string name="persistent_notification_warning">Abilitando le notifiche persistenti si eviterà che l\'applicazione vada in sincronizzazione in background. Questo potrebbe comportare un uso eccessivo della batteria.</string>
 
     <string name="prefs_background_update_interval_title">Intervallo di aggiornamento in background</string>
-    </resources>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Disabilitato</item>
+        <item>15 minuti</item>
+        <item>30 minuti</item>
+        <item>1 ora</item>
+        <item>3 ore</item>
+        <item>6 ore</item>
+        <item>12 ore</item>
+        <item>24 ore</item>
+    </string-array>
+
+    <string name="connection_settings">Impostazioni di connessione</string>
+</resources>
