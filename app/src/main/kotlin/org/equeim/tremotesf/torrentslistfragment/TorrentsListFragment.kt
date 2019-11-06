@@ -44,6 +44,7 @@ import androidx.fragment.app.commit
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -282,16 +283,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
 
                 side_panel.setNavigationItemSelectedListener { menuItem ->
-                    val navController = findNavController(R.id.nav_host)
-                    try {
-                        when (menuItem.itemId) {
-                            R.id.settings -> navController.navigate(R.id.action_torrentsListFragment_to_settingsFragment)
-                            R.id.about -> navController.navigate(R.id.action_torrentsListFragment_to_aboutFragment)
-                            R.id.quit -> Utils.shutdownApp(requireContext())
-                            else -> return@setNavigationItemSelectedListener false
+                    return@setNavigationItemSelectedListener when (menuItem.itemId) {
+                        R.id.quit -> {
+                            Utils.shutdownApp(this)
+                            true
                         }
-                    } catch (ignore: IllegalArgumentException) {}
-                    return@setNavigationItemSelectedListener true
+                        else -> menuItem.onNavDestinationSelected(findNavController(R.id.nav_host))
+                    }
                 }
 
                 val serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
@@ -545,16 +543,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
-            R.id.add_torrent_link -> findNavController().navigate(R.id.action_torrentsListFragment_to_addTorrentLinkFragment)
-            R.id.server_settings -> findNavController().navigate(R.id.action_torrentsListFragment_to_serverSettingsFragment)
             R.id.alternative_speed_limits -> {
                 menuItem.isChecked = !menuItem.isChecked
                 Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
             }
-            R.id.server_stats -> findNavController().navigate(R.id.serverStatsDialogFragment)
-            else -> return false
+            else -> return menuItem.onNavDestinationSelected(findNavController())
         }
-
         return true
     }
 
@@ -602,10 +596,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val connected = Rpc.isConnected
         searchMenuItem?.isVisible = connected
         menu.findItem(R.id.add_torrent_file).isEnabled = connected
-        menu.findItem(R.id.add_torrent_link).isEnabled = connected
-        menu.findItem(R.id.server_settings).isEnabled = connected
+        menu.findItem(R.id.action_torrentsListFragment_to_addTorrentLinkFragment).isEnabled = connected
+        menu.findItem(R.id.action_torrentsListFragment_to_serverSettingsFragment).isEnabled = connected
         menu.findItem(R.id.alternative_speed_limits).isEnabled = connected
-        menu.findItem(R.id.server_stats).isEnabled = connected
+        menu.findItem(R.id.action_torrentsListFragment_to_serverStatsDialogFragment).isEnabled = connected
     }
 
     private fun updatePlaceholder() {
