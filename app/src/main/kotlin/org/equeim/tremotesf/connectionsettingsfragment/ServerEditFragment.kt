@@ -34,6 +34,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
+import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
@@ -42,7 +45,6 @@ import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.server_edit_certificates_fragment.*
 import kotlinx.android.synthetic.main.server_edit_fragment.*
-import org.equeim.tremotesf.NavigationFragment
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
@@ -205,7 +207,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
     class ServerOverwriteDialogFragment : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(requireContext())
+            return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.server_exists)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.overwrite) { _, _ ->

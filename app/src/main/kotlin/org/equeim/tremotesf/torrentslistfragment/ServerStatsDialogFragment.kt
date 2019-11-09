@@ -24,8 +24,8 @@ import java.text.DecimalFormat
 import android.app.Dialog
 import android.os.Bundle
 
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -43,7 +43,7 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = AlertDialog.Builder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.server_stats)
                 .setView(R.layout.server_stats_dialog)
                 .setPositiveButton(R.string.close, null).create()

@@ -30,6 +30,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import androidx.core.text.trimmedLength
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 import org.equeim.tremotesf.R
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
@@ -44,7 +46,7 @@ fun createTextFieldDialog(context: Context,
                           defaultText: String?,
                           onShow: (() -> Unit)?,
                           onAccepted: (() -> Unit)?): AlertDialog {
-    val builder = AlertDialog.Builder(context)
+    val builder = MaterialAlertDialogBuilder(context)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ -> onAccepted?.invoke() }
             .setView(layout ?: R.layout.text_field_dialog)

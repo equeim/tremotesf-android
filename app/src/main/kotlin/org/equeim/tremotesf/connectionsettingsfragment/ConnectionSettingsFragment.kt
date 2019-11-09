@@ -29,7 +29,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
@@ -41,6 +40,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
+import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Server
@@ -50,7 +52,6 @@ import org.equeim.tremotesf.utils.AlphanumericComparator
 
 import kotlinx.android.synthetic.main.connection_settings_fragment.*
 import kotlinx.android.synthetic.main.server_list_item.view.*
-import org.equeim.tremotesf.NavigationFragment
 
 
 class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
@@ -199,7 +200,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val selector = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter?.selector
             val selectedCount = selector?.selectedCount ?: 0
-            return AlertDialog.Builder(requireContext())
+            return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
                                                             selectedCount,
                                                             selectedCount))

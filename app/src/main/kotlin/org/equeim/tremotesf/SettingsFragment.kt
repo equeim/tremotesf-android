@@ -24,12 +24,13 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.annotation.Keep
 
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
 class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
@@ -78,7 +79,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
 
         class PersistentNotificationWarningFragment : DialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                return AlertDialog.Builder(requireContext())
+                return MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.persistent_notification_warning)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok) { _, _ ->

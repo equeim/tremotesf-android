@@ -34,13 +34,11 @@ import android.widget.AdapterView
 import android.widget.ImageButton
 import android.widget.Spinner
 
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.commit
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
@@ -48,7 +46,8 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.navigation_activity.*
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.design.longSnackbar
@@ -64,11 +63,11 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.torrentpropertiesfragment.TorrentFilesAdapter
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
+import kotlinx.android.synthetic.main.navigation_activity.*
 import kotlinx.android.synthetic.main.torrents_list_fragment.*
 import kotlinx.android.synthetic.main.side_panel_header.view.*
 
@@ -641,7 +640,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     class DonateDialogFragment : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(requireContext())
+            return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.donate) { _, _ ->

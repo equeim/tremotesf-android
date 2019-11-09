@@ -33,7 +33,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.DialogFragment
@@ -41,6 +40,8 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
@@ -284,7 +285,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val ids = requireArguments().getIntArray(IDS)!!
-            return AlertDialog.Builder(requireContext())
+            return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,
                                                             ids.size,
                                                             ids.size))

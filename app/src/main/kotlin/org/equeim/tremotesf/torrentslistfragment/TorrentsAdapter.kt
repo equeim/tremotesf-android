@@ -36,13 +36,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
@@ -554,7 +555,7 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val ids = requireArguments().getIntArray(TORRENT_IDS)!!
 
-            val dialog = AlertDialog.Builder(requireContext())
+            val dialog = MaterialAlertDialogBuilder(requireContext())
                     .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
                                 else resources.getQuantityString(R.plurals.remove_torrents_message,
                                                                  ids.size,
