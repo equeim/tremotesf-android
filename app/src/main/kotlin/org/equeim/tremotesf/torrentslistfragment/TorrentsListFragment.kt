@@ -75,8 +75,9 @@ import kotlinx.android.synthetic.main.side_panel_header.view.*
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
                                                 R.menu.main_activity_menu), AnkoLogger {
-    companion object {
-        private const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.TorrentsListFragment.searchQuery"
+    private companion object {
+        const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.TorrentsListFragment.searchQuery"
+        const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }
 
     private var menu: Menu? = null
@@ -105,6 +106,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private var connecting = false
     private var gotFirstUpdateAfterConnection = true
+
+    private var navigatedFrom = false
 
     private val rpcStatusListener = { status: Int ->
         if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
@@ -188,7 +191,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+        navigatedFrom = savedInstanceState?.getBoolean(NAVIGATED_FROM_KEY) ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -239,7 +242,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     }
                 }
                 torrentsAdapter.update()
-            } else {
+            } else if (!navigatedFrom) {
                 findNavController().navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         } else if (Rpc.isConnected) {
@@ -498,6 +501,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 outState.putString(SEARCH_QUERY_KEY, it.query.toString())
             }
         }
+        outState.putBoolean(NAVIGATED_FROM_KEY, navigatedFrom)
+    }
+
+    override fun onNavigatedFrom() {
+        navigatedFrom = true
     }
 
     private fun setupMenuItems() {
