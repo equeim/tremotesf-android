@@ -536,7 +536,7 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          requireArguments().getString(LOCATION),
                                          {
-                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(requireDialog().download_directory_dropdown, requireDialog().download_directory_edit)
+                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(requireDialog().download_directory_dropdown, requireDialog().download_directory_edit, savedInstanceState)
                                          },
                                          {
                                              Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
@@ -544,6 +544,10 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
                                                                                     requireDialog().move_files_check_box.isChecked)
                                              directoriesAdapter?.save()
                                          })
+        }
+
+        override fun onSaveInstanceState(outState: Bundle) {
+            directoriesAdapter?.saveInstanceState(outState)
         }
     }
 

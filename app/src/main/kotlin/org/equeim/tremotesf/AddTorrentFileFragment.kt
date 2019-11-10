@@ -349,7 +349,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
                 }
             })
 
-            directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit)
+            directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit, savedInstanceState)
 
             if (savedInstanceState == null) {
                 download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
@@ -375,6 +375,10 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
                     }
                 }
             }
+        }
+
+        override fun onSaveInstanceState(outState: Bundle) {
+            directoriesAdapter?.saveInstanceState(outState)
         }
 
         override fun onDestroyView() {

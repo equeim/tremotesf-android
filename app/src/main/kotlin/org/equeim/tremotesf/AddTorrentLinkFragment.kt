@@ -90,7 +90,7 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
             }
         })
 
-        directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit)
+        directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit, savedInstanceState)
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
@@ -116,6 +116,10 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        directoriesAdapter?.saveInstanceState(outState)
     }
 
     override fun onDestroyView() {

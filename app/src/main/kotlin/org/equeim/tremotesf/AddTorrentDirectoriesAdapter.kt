@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf
 
+import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -28,10 +29,30 @@ import androidx.appcompat.widget.ListPopupWindow
 
 import org.equeim.tremotesf.utils.AlphanumericComparator
 
-class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapter<String>(textEdit.context, R.layout.download_directory_dropdown_item, android.R.id.text1) {
+
+class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
+                                   savedInstanceState: Bundle?) : ArrayAdapter<String>(textEdit.context,
+                                                                                       R.layout.download_directory_dropdown_item,
+                                                                                       android.R.id.text1,
+                                                                                       retrieveItems(savedInstanceState)) {
     companion object {
-        fun setupPopup(dropDownButton: View, textEdit: EditText): AddTorrentDirectoriesAdapter {
-            val adapter = AddTorrentDirectoriesAdapter(textEdit)
+        private const val STATE_KEY = "org.equeim.tremotesf.AddTorrentDirectoriesAdapter.items"
+
+        private fun retrieveItems(savedInstanceState: Bundle?): ArrayList<String> {
+            savedInstanceState?.getStringArrayList(STATE_KEY)?.let { return it }
+
+            val comparator = AlphanumericComparator()
+            val items = Servers.currentServer?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
+            for (torrent in Rpc.torrents) {
+                items.add(torrent.downloadDirectory)
+            }
+            val downloadDirectory = Rpc.serverSettings.downloadDirectory()
+            items.add(downloadDirectory)
+            return ArrayList(items)
+        }
+
+        fun setupPopup(dropDownButton: View, textEdit: EditText, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
+            val adapter = AddTorrentDirectoriesAdapter(textEdit, savedInstanceState)
 
             val popup = ListPopupWindow(dropDownButton.context)
             popup.setAdapter(adapter)
@@ -54,17 +75,6 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapte
         }
     }
 
-    init {
-        val comparator = AlphanumericComparator()
-        val items = Servers.currentServer?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
-        for (torrent in Rpc.torrents) {
-            items.add(torrent.downloadDirectory)
-        }
-        val downloadDirectory = Rpc.serverSettings.downloadDirectory()
-        items.add(downloadDirectory)
-        addAll(items)
-    }
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getView(position, convertView, parent)
         if (view.tag == null) {
@@ -75,16 +85,26 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText) : ArrayAdapte
         return view
     }
 
-    fun save() {
-        val items = mutableListOf<String>()
+    private fun getItems(): ArrayList<String> {
+        val items = ArrayList<String>(count)
         for (i in 0 until count) {
             items.add(getItem(i)!!)
         }
-        if (!items.contains(textEdit.text.trim())) {
-            items.add(textEdit.text.toString())
+        return items
+    }
+
+    fun save() {
+        val items = getItems()
+        val trimmed = textEdit.text.trim().toString()
+        if (!items.contains(trimmed)) {
+            items.add(trimmed)
         }
         Servers.currentServer?.addTorrentDialogDirectories = items.toTypedArray()
         Servers.save()
+    }
+
+    fun saveInstanceState(outState: Bundle) {
+        outState.putStringArrayList(STATE_KEY, getItems())
     }
 
     private inner class ViewHolder(view: View) {
