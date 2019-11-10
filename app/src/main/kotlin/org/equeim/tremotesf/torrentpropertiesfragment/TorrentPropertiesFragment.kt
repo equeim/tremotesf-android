@@ -29,6 +29,7 @@ import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -64,9 +65,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         const val NAME = "name"
     }
 
-    private var firstStart = true
     lateinit var hash: String
     var torrent: TorrentData? = null
+    private var firstTorrentsUpdate = true
 
     private val rpcStatusListener: (Int) -> Unit = { status ->
         when (status) {
@@ -96,10 +97,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         } else {
             View.GONE
         }
-    }
-
-    private val torrentsUpdatedListener = {
-        updateTorrent(findTorrent(), true)
     }
 
     private var menu: Menu? = null
@@ -163,23 +160,10 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
             updatePlaceholderVisibility()
         }
 
+        firstTorrentsUpdate = true
+        Rpc.torrents.observe(viewLifecycleOwner) { updateTorrent(findTorrent()) }
+
         Rpc.addStatusListener(rpcStatusListener)
-
-        firstStart = true
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (!firstStart) {
-            torrentsUpdatedListener()
-        }
-        Rpc.addTorrentsUpdatedListener(torrentsUpdatedListener)
-        firstStart = false
-    }
-
-    override fun onStop() {
-        Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
-        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -233,11 +217,11 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun findTorrent(): TorrentData? {
-        return Rpc.torrents.find { it.hashString == hash }
+        return Rpc.torrents.value?.find { it.hashString == hash }
     }
 
-    private fun updateTorrent(newTorrent: TorrentData?, forceUpdateView: Boolean = false) {
-        var updateView = forceUpdateView || firstStart || lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    private fun updateTorrent(newTorrent: TorrentData?) {
+        var updateView = firstTorrentsUpdate || lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         if (newTorrent !== torrent) {
             torrent = newTorrent
             if (newTorrent == null) {

@@ -34,7 +34,7 @@ class TrackersSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(
 
     override fun getItem(position: Int): String {
         if (position == 0) {
-            return context.getString(R.string.torrents_all, Rpc.torrents.size)
+            return context.getString(R.string.torrents_all, Rpc.torrents.value?.size ?: 0)
         }
         val tracker = trackers[position - 1]
         val torrents = trackersMap[tracker]
@@ -47,9 +47,11 @@ class TrackersSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(
 
     fun update() {
         trackersMap.clear()
-        for (torrent in Rpc.torrents) {
-            for (tracker in torrent.trackers) {
-                trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
+        Rpc.torrents.value?.let {
+            for (torrent in it) {
+                for (tracker in torrent.trackers) {
+                    trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
+                }
             }
         }
         trackers.clear()

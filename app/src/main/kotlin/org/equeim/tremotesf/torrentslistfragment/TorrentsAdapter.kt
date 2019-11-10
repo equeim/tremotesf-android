@@ -126,8 +126,6 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
         Errored
     }
 
-    private val torrents = Rpc.torrents
-
     private var filteredTorrents = listOf<TorrentData>()
     private val displayedTorrents = mutableListOf<TorrentData>()
 
@@ -248,7 +246,7 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
     }
 
     private fun updateListContent() {
-        filteredTorrents = torrents.filter(filterPredicate)
+        filteredTorrents = Rpc.torrents.value?.filter(filterPredicate) ?: emptyList()
 
         if (displayedTorrents.isEmpty()) {
             displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
@@ -316,8 +314,8 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
                                                     DIRECTORY_FILTER to directoryFilter))
     }
 
-    fun restoreInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.getBundle(INSTANCE_STATE)?.let { state ->
+    fun restoreInstanceState(savedInstanceState: Bundle?) {
+        savedInstanceState?.getBundle(INSTANCE_STATE)?.let { state ->
             sortMode = SortMode.values()[state.getInt(SORT_MODE)]
             sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
             statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]

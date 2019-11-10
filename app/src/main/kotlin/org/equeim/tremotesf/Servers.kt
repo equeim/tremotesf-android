@@ -212,11 +212,13 @@ object Servers : AnkoLogger {
         val lastTorrents = currentServerField?.lastTorrents
         if (lastTorrents != null) {
             lastTorrents.torrents.clear()
-            for (torrent in Rpc.torrents) {
-                lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                                                         torrent.hashString,
-                                                         torrent.name,
-                                                         torrent.isFinished))
+            Rpc.torrents.value?.let {
+                for (torrent in it) {
+                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                                                             torrent.hashString,
+                                                             torrent.name,
+                                                             torrent.isFinished))
+                }
             }
             lastTorrents.saved = true
         }

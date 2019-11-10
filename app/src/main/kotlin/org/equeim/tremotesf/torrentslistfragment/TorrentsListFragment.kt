@@ -39,6 +39,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
@@ -99,7 +100,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     var torrentsAdapter: TorrentsAdapter? = null
         private set
 
-    private var firstOnStartCalled = false
+    private var firstTorrentsUpdate = true
 
     private var connecting = false
     private var gotFirstUpdateAfterConnection = true
@@ -159,19 +160,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         updatePlaceholder()
     }
 
-    private val torrentsUpdatedListener = {
-        gotFirstUpdateAfterConnection = true
-        statusSpinnerAdapter?.update()
-        trackersSpinnerAdapter?.update()
-        directoriesSpinnerAdapter?.update()
-        if (firstOnStartCalled) {
-            torrentsAdapter?.update()
-        }
-        updatePlaceholder()
-
-        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
-    }
-
     private val serverStatsUpdatedListener = {
         updateSubtitle()
     }
@@ -214,6 +202,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         updateTitle()
 
+        firstTorrentsUpdate = true
+        Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.addStatusListener(rpcStatusListener)
         Rpc.addErrorListener(rpcErrorListener)
         //Servers.addServersListener(serversListener)
@@ -242,8 +232,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 findNavController().navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         }
-
-        firstOnStartCalled = false
     }
 
     private fun setupDrawer() {
@@ -440,16 +428,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     override fun onStart() {
         super.onStart()
-        torrentsUpdatedListener()
         serverStatsUpdatedListener()
-        Rpc.addTorrentsUpdatedListener(torrentsUpdatedListener)
         Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
-        firstOnStartCalled = true
     }
 
     override fun onStop() {
         super.onStop()
-        Rpc.removeTorrentsUpdatedListener(torrentsUpdatedListener)
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
     }
 
@@ -552,6 +536,21 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         if (resultCode == Activity.RESULT_OK && data != null) {
             findNavController().navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragmentArguments.URI to data.data!!.toString()))
         }
+    }
+
+    private fun onTorrentsUpdated() {
+        gotFirstUpdateAfterConnection = true
+        statusSpinnerAdapter?.update()
+        trackersSpinnerAdapter?.update()
+        directoriesSpinnerAdapter?.update()
+        if (firstTorrentsUpdate) {
+            torrentsAdapter?.update()
+        }
+        updatePlaceholder()
+
+        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+
+        firstTorrentsUpdate = false
     }
 
     private fun updateTitle() {
