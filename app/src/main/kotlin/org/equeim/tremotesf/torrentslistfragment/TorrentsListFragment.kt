@@ -76,14 +76,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
                                                 R.menu.main_activity_menu), AnkoLogger {
     private companion object {
-        const val SEARCH_QUERY_KEY = "org.equeim.tremotesf.TorrentsListFragment.searchQuery"
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }
 
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
-    private var searchView: SearchView? = null
-    private var restoredSearchQuery: String? = null
 
     private var serversSpinner: Spinner? = null
     private var serversSpinnerAdapter: ServersSpinnerAdapter? = null
@@ -241,16 +238,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                         findNavController().navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                     }
                 }
-                torrentsAdapter.update()
             } else if (!navigatedFrom) {
                 findNavController().navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
-        } else if (Rpc.isConnected) {
-            restoredSearchQuery = savedInstanceState.getString(SEARCH_QUERY_KEY)
-            restoredSearchQuery?.let { torrentsAdapter.filterString = it }
-            torrentsAdapter.restoreInstanceState(savedInstanceState)
-            torrentsAdapter.update()
-            torrentsAdapter.selector.restoreInstanceState(savedInstanceState)
         }
 
         firstOnStartCalled = false
@@ -439,6 +429,15 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         directoriesSpinner?.onItemSelectedListener = null
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        torrentsAdapter?.apply {
+            restoreInstanceState(savedInstanceState)
+            update()
+            selector.restoreInstanceState(savedInstanceState)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         torrentsUpdatedListener()
@@ -466,8 +465,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         menu = null
         searchMenuItem = null
-        searchView = null
-        restoredSearchQuery = null
 
         serversSpinner = null
         serversSpinnerAdapter = null
@@ -496,11 +493,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             saveInstanceState(outState)
             selector.saveInstanceState(outState)
         }
-        searchView?.let {
-            if (!it.isIconified) {
-                outState.putString(SEARCH_QUERY_KEY, it.query.toString())
-            }
-        }
+
         outState.putBoolean(NAVIGATED_FROM_KEY, navigatedFrom)
     }
 
@@ -517,7 +510,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val searchMenuItem = menu.findItem(R.id.search)
         this.searchMenuItem = searchMenuItem
         val searchView = searchMenuItem.actionView as SearchView
-        this.searchView = searchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 torrentsAdapter?.filterString = newText.trim()
@@ -529,11 +521,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 return false
             }
         })
-
-        if (restoredSearchQuery != null) {
-            searchMenuItem.expandActionView()
-            searchView.setQuery(restoredSearchQuery, true)
-        }
 
         updateMenuItems()
 
