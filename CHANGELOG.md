@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Added support of Android 10 dark theme
+
+### Changed
+- Switching between dark/light themes now doesn't require app restart
+- Updated Material design style
+- Migrated to single activity architecture
+
+### Fixed
+- Fixed deleted items in download directory text field's menu coming back after rotating device
+- Fixed notifications crash on Android 4.1 and 4.2.0
+
 ## [1.10.1] - 2019-10-29
 ### Fixed
 - Fixed crash when adding new tracker
