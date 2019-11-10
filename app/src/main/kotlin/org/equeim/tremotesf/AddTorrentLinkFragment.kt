@@ -90,7 +90,8 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
             }
         })
 
-        directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(download_directory_dropdown, download_directory_edit, savedInstanceState)
+        directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
+        download_directory_edit.setAdapter(directoriesAdapter)
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 

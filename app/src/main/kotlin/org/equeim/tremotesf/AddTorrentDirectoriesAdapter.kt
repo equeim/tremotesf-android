@@ -19,13 +19,15 @@
 
 package org.equeim.tremotesf
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 
-import androidx.appcompat.widget.ListPopupWindow
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 
 import org.equeim.tremotesf.utils.AlphanumericComparator
 
@@ -49,29 +51,6 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
             val downloadDirectory = Rpc.serverSettings.downloadDirectory()
             items.add(downloadDirectory)
             return ArrayList(items)
-        }
-
-        fun setupPopup(dropDownButton: View, textEdit: EditText, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
-            val adapter = AddTorrentDirectoriesAdapter(textEdit, savedInstanceState)
-
-            val popup = ListPopupWindow(dropDownButton.context)
-            popup.setAdapter(adapter)
-            popup.anchorView = dropDownButton
-            popup.isModal = true
-            dropDownButton.setOnClickListener {
-                popup.show()
-            }
-            dropDownButton.setOnTouchListener(popup.createDragToOpenListener(dropDownButton))
-            popup.setOnItemClickListener { _, _, position, _ ->
-                textEdit.setText(adapter.getItem(position))
-                popup.dismiss()
-            }
-
-            dropDownButton.viewTreeObserver.addOnGlobalLayoutListener {
-                popup.setContentWidth((dropDownButton.parent as View).width)
-            }
-
-            return adapter
         }
     }
 
@@ -116,5 +95,18 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
                 }
             }
         }
+    }
+}
+
+class NonFilteringAutoCompleteTextView(context: Context,
+                                       attrs: AttributeSet?,
+                                       defStyleAttr: Int) : AppCompatAutoCompleteTextView(context, attrs, defStyleAttr) {
+    constructor(context: Context,
+                attrs: AttributeSet?) : this(context, attrs, R.attr.autoCompleteTextViewStyle)
+    constructor(context: Context) : this(context, null)
+
+    override fun performFiltering(text: CharSequence?, keyCode: Int) {
+        // Do nothing
+        onFilterComplete(adapter.count)
     }
 }

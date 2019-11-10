@@ -1,30 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/download_directory_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+    android:hint="@string/download_directory"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="@string/download_directory">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/download_directory_edit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textUri" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageButton
-        android:id="@+id/download_directory_dropdown"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_arrow_drop_down_24dp"/>
-</LinearLayout>
+    <org.equeim.tremotesf.NonFilteringAutoCompleteTextView
+        android:id="@+id/download_directory_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</com.google.android.material.textfield.TextInputLayout>

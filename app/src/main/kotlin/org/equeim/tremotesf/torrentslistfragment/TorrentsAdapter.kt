@@ -536,7 +536,10 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          requireArguments().getString(LOCATION),
                                          {
-                                             directoriesAdapter = AddTorrentDirectoriesAdapter.setupPopup(requireDialog().download_directory_dropdown, requireDialog().download_directory_edit, savedInstanceState)
+                                             requireDialog().download_directory_edit.let { edit ->
+                                                 directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
+                                                 edit.setAdapter(directoriesAdapter)
+                                             }
                                          },
                                          {
                                              Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
