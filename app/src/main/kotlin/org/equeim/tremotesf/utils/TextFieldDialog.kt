@@ -23,11 +23,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.getSystemService
 import androidx.core.text.trimmedLength
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -89,8 +87,7 @@ fun createTextFieldDialog(context: Context,
             }
         })
 
-        context.getSystemService<InputMethodManager>()?.showSoftInput(textField,
-                                                                      InputMethodManager.SHOW_IMPLICIT)
+        textField.showKeyboard()
 
         onShow?.invoke()
     }

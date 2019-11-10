@@ -21,9 +21,12 @@
 package org.equeim.tremotesf.utils
 
 import android.app.Activity
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+
 import androidx.core.content.getSystemService
+import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 
@@ -42,6 +45,18 @@ fun Activity.hideKeyboard() {
 
 fun Fragment.hideKeyboard() {
     activity?.hideKeyboard()
+}
+
+fun View.showKeyboard() {
+    context.getSystemService<InputMethodManager>()?.let { imm ->
+        if (requestFocus()) {
+            // If you call showSoftInput() right after requestFocus()
+            // it may sometimes fail. So add a 50ms delay
+            postDelayed(50) {
+                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+    }
 }
 
 inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
