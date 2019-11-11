@@ -80,7 +80,7 @@ repositories {
     jcenter()
 }
 
-def navigation_version = '2.2.0-rc01'
+def navigation_version = '2.2.0-rc02'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
@@ -94,10 +94,10 @@ dependencies {
     implementation "androidx.core:core-ktx:1.1.0"
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.0.0"
     implementation "androidx.drawerlayout:drawerlayout:1.0.0"
-    implementation "androidx.fragment:fragment:1.2.0-rc01"
-    implementation "androidx.fragment:fragment-ktx:1.2.0-rc01"
+    implementation "androidx.fragment:fragment:1.2.0-rc02"
+    implementation "androidx.fragment:fragment-ktx:1.2.0-rc02"
     implementation "androidx.gridlayout:gridlayout:1.0.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc02"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
     implementation "androidx.recyclerview:recyclerview:1.0.0"
@@ -106,7 +106,7 @@ dependencies {
 
     implementation 'androidx.work:work-runtime:2.2.0'
 
-    implementation 'com.google.android.material:material:1.1.0-beta01'
+    implementation 'com.google.android.material:material:1.1.0-beta02'
 
     implementation 'org.jetbrains.anko:anko-commons:0.10.8'
     implementation 'org.jetbrains.anko:anko-design:0.10.8'
