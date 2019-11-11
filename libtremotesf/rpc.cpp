@@ -651,7 +651,6 @@ namespace libtremotesf
         }
 
         mStatus = status;
-        emit statusChanged();
 
         switch (mStatus) {
         case Disconnected:
@@ -675,6 +674,8 @@ namespace libtremotesf
 
             mTorrents.clear();
 
+            emit statusChanged();
+
             if (wasConnected) {
                 mUpdateTimer->stop();
                 emit connectedChanged();
@@ -686,12 +687,14 @@ namespace libtremotesf
         case Connecting:
             qDebug() << "connecting";
             mUpdating = true;
+            emit statusChanged();
             break;
         case Connected:
         {
             qDebug() << "connected";
-            emit connectedChanged();
             emit torrentsUpdated();
+            emit statusChanged();
+            emit connectedChanged();
             break;
         }
         }
