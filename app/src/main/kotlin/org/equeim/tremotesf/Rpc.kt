@@ -178,7 +178,7 @@ object Rpc : AnkoLogger {
     val statusString: String
         get() {
             return when (status.value) {
-                RpcStatus.Disconnected -> when (error) {
+                RpcStatus.Disconnected -> when (error.value) {
                     RpcError.NoError -> context.getString(R.string.disconnected)
                     RpcError.TimedOut -> context.getString(R.string.timed_out)
                     RpcError.ConnectionError -> context.getString(R.string.connection_error)
@@ -194,12 +194,10 @@ object Rpc : AnkoLogger {
             }
         }
 
-    var error: Int = RpcError.NoError
-        private set
+    val error = MutableLiveData<Int>(RpcError.NoError)
     var errorMessage: String = ""
         private set
 
-    private val errorListeners = mutableListOf<(Int) -> Unit>()
     private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
 
     var torrentAddDuplicateListener: (() -> Unit)? = null
@@ -287,16 +285,10 @@ object Rpc : AnkoLogger {
         }
     }
 
-    fun addErrorListener(listener: (Int) -> Unit) = errorListeners.add(listener)
-    fun removeErrorListener(listener: (Int) -> Unit) = errorListeners.remove(listener)
-
     private fun onErrorChanged(newError: Int, newErrorMessage: String) {
-        error = newError
         errorMessage = newErrorMessage
-        for (listener in errorListeners) {
-            listener(error)
-        }
-        if (error == RpcError.ConnectionError) {
+        error.value = newError
+        if (newError == RpcError.ConnectionError) {
             NavigationActivity.showToast(errorMessage)
         }
     }

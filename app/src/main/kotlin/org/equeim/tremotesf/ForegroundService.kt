@@ -30,7 +30,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.observe
+import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
 
 import org.jetbrains.anko.AnkoLogger
@@ -51,7 +51,6 @@ class ForegroundService : LifecycleService(), AnkoLogger {
     private lateinit var notificationManager: NotificationManager
 
     private val serverStatsUpdatedListener = { updatePersistentNotification() }
-    private val rpcErrorListener: (Int) -> Unit = { updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -74,9 +73,9 @@ class ForegroundService : LifecycleService(), AnkoLogger {
 
             startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
 
-            Rpc.status.observe(this) { updatePersistentNotification() }
+            Rpc.status.observe(this, NotificationObserver())
+            Rpc.error.observe(this, NotificationObserver())
 
-            Rpc.addErrorListener(rpcErrorListener)
             Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
 
             Servers.addCurrentServerListener(currentServerListener)
@@ -98,7 +97,6 @@ class ForegroundService : LifecycleService(), AnkoLogger {
 
     override fun onDestroy() {
         info("ForegroundService.onDestroy()}")
-        Rpc.removeErrorListener(rpcErrorListener)
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
         // isPersistentNotificationActive() works only on API 23+, so
         // remove notification here explicitly to make sure that it is gone
@@ -115,13 +113,11 @@ class ForegroundService : LifecycleService(), AnkoLogger {
     }
 
     private fun updatePersistentNotification() {
-        if (started) {
-            // Sometimes updatePersistentNotification() is called after system has already removed notification
-            // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
-            // to avoid creating a new notification
-            if (isPersistentNotificationActive()) {
-                notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
-            }
+        // Sometimes updatePersistentNotification() is called after system has already removed notification
+        // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
+        // to avoid creating a new notification
+        if (isPersistentNotificationActive()) {
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
         }
     }
 
@@ -188,5 +184,16 @@ class ForegroundService : LifecycleService(), AnkoLogger {
         )
 
         return notificationBuilder.build()
+    }
+
+    private inner class NotificationObserver<T> : Observer<T> {
+        private var gotFirstValue = false
+        override fun onChanged(t: T) {
+            if (gotFirstValue) {
+                updatePersistentNotification()
+            } else {
+                gotFirstValue = true
+            }
+        }
     }
 }
