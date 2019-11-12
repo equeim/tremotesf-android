@@ -23,14 +23,14 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.observe
 import androidx.navigation.NavDeepLinkBuilder
 
 import org.jetbrains.anko.AnkoLogger
@@ -46,21 +46,18 @@ private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
 
-class ForegroundService : Service(), AnkoLogger {
+class ForegroundService : LifecycleService(), AnkoLogger {
     private var started = false
     private lateinit var notificationManager: NotificationManager
 
-    private val rpcStatusListener: (Int) -> Unit = { updatePersistentNotification() }
     private val serverStatsUpdatedListener = { updatePersistentNotification() }
     private val rpcErrorListener: (Int) -> Unit = { updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId")
+
+        super.onStartCommand(intent, flags, startId)
 
         if (intent?.action == ACTION_SHUTDOWN) {
             Utils.shutdownApp(this)
@@ -77,7 +74,8 @@ class ForegroundService : Service(), AnkoLogger {
 
             startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
 
-            Rpc.addStatusListener(rpcStatusListener)
+            Rpc.status.observe(this) { updatePersistentNotification() }
+
             Rpc.addErrorListener(rpcErrorListener)
             Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
 
@@ -100,10 +98,8 @@ class ForegroundService : Service(), AnkoLogger {
 
     override fun onDestroy() {
         info("ForegroundService.onDestroy()}")
-        Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
-
         // isPersistentNotificationActive() works only on API 23+, so
         // remove notification here explicitly to make sure that it is gone
         notificationManager.cancel(PERSISTENT_NOTIFICATION_ID)
@@ -119,11 +115,13 @@ class ForegroundService : Service(), AnkoLogger {
     }
 
     private fun updatePersistentNotification() {
-        // Sometimes updatePersistentNotification() is called after system has already removed notification
-        // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
-        // to avoid creating a new notification
-        if (isPersistentNotificationActive()) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+        if (started) {
+            // Sometimes updatePersistentNotification() is called after system has already removed notification
+            // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
+            // to avoid creating a new notification
+            if (isPersistentNotificationActive()) {
+                notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+            }
         }
     }
 
@@ -162,7 +160,7 @@ class ForegroundService : Service(), AnkoLogger {
             notificationBuilder.setContentText(Rpc.statusString)
         }
 
-        if (Rpc.status == RpcStatus.Disconnected) {
+        if (Rpc.status.value == RpcStatus.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),

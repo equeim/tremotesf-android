@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 
@@ -63,18 +64,16 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
                                              4 -> R.id.action_serverSettingsFragment_to_networkFragment
                                              else -> 0 })
         }
-        updateView()
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.status.observe(viewLifecycleOwner) { updateView() }
     }
 
     override fun onDestroyView() {
         snackbar = null
-        Rpc.removeStatusListener(rpcStatusListener)
         super.onDestroyView()
     }
 
     private fun updateView() {
-        when (Rpc.status) {
+        when (Rpc.status.value) {
             RpcStatus.Disconnected -> {
                 snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
@@ -99,7 +98,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
             list_view.visibility = View.GONE
         }
 
-        progress_bar.visibility = if (Rpc.status == RpcStatus.Connecting) {
+        progress_bar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE
@@ -111,12 +110,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            Rpc.addStatusListener(::onRpcStatusChanged)
-        }
-
-        override fun onDestroyView() {
-            Rpc.removeStatusListener(::onRpcStatusChanged)
-            super.onDestroyView()
+            Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         }
 
         private fun onRpcStatusChanged(status: Int) {

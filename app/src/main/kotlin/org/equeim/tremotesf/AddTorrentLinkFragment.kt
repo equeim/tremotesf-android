@@ -26,6 +26,7 @@ import android.text.Editable
 import android.text.TextWatcher
 
 import androidx.core.text.trimmedLength
+import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -51,20 +52,17 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
     private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
 
-    private var rpcStatusListener: (Int) -> Unit = {
-        updateView()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)
 
-        if (savedInstanceState == null) {
-            torrent_link_edit.setText(requireArguments().getString(AddTorrentFragmentArguments.URI))
-            priority_spinner.setSelection(1)
-        }
+        torrent_link_edit.setText(requireArguments().getString(AddTorrentFragmentArguments.URI))
+        priority_spinner.setSelection(1)
+
+        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+        start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
 
         download_directory_edit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -95,9 +93,7 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
-        updateView(savedInstanceState)
-
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.status.observe(viewLifecycleOwner) { updateView() }
 
         Rpc.gotDownloadDirFreeSpaceListener = { bytes ->
             val text = download_directory_edit.text?.trim()
@@ -127,7 +123,6 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
         doneMenuItem = null
         snackbar = null
         directoriesAdapter = null
-        Rpc.removeStatusListener(rpcStatusListener)
         Rpc.gotDownloadDirFreeSpaceListener = null
         Rpc.gotFreeSpaceForPathListener = null
         super.onDestroyView()
@@ -167,10 +162,10 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
         return false
     }
 
-    private fun updateView(savedInstanceState: Bundle? = null) {
+    private fun updateView() {
         doneMenuItem?.isVisible = Rpc.isConnected
 
-        when (Rpc.status) {
+        when (Rpc.status.value) {
             RpcStatus.Disconnected -> {
                 snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
                     snackbar = null
@@ -185,23 +180,21 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
                 snackbar = null
                 placeholder.text = getString(R.string.connecting)
             }
-            else -> {
-                if (savedInstanceState == null) {
-                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
-                    start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
-                }
-            }
         }
 
         if (Rpc.isConnected) {
-            scroll_view.visibility = View.VISIBLE
+            if (scroll_view.visibility != View.VISIBLE) {
+                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
+                scroll_view.visibility = View.VISIBLE
+            }
             placeholder_layout.visibility = View.GONE
         } else {
             placeholder_layout.visibility = View.VISIBLE
             scroll_view.visibility = View.GONE
         }
 
-        progress_bar.visibility = if (Rpc.status == RpcStatus.Connecting) {
+        progress_bar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
             View.VISIBLE
         } else {
             View.GONE

@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -86,10 +87,6 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
     private lateinit var uri: Uri
 
     private var noPermission = false
-
-    private val rpcStatusListener: (Int) -> Unit = {
-        updateView()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,9 +156,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
             }
         })
 
-        updateView()
-
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.status.observe(viewLifecycleOwner) { updateView() }
 
         torrentFileParser.statusListener = { status ->
             updateView()
@@ -176,7 +171,6 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         pagerAdapter = null
         backPressedCallback = null
         snackbar = null
-        Rpc.removeStatusListener(rpcStatusListener)
         torrentFileParser.statusListener = null
         super.onDestroyView()
     }
@@ -250,7 +244,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
             }
 
             progress_bar.visibility = if (torrentFileParser.status == TorrentFileParser.Status.Loading ||
-                    (Rpc.status == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
+                    (Rpc.status.value == RpcStatus.Connecting && torrentFileParser.status == TorrentFileParser.Status.Loaded)) {
                 View.VISIBLE
             } else {
                 View.GONE
@@ -272,7 +266,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
             placeholder.visibility = View.VISIBLE
 
             if (torrentFileParser.status == TorrentFileParser.Status.Loaded) {
-                when (Rpc.status) {
+                when (Rpc.status.value) {
                     RpcStatus.Disconnected -> {
                         snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
                             snackbar = null

@@ -29,6 +29,8 @@ import androidx.core.content.getSystemService
 import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
+import androidx.navigation.fragment.DialogFragmentNavigator
 
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
@@ -65,4 +67,10 @@ inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
 
 inline fun <reified T : Fragment> Fragment.findFragment(): T? {
     return childFragmentManager.findFragment()
+}
+
+fun NavController.popDialog() {
+    if (currentDestination is DialogFragmentNavigator.Destination) {
+        popBackStack()
+    }
 }

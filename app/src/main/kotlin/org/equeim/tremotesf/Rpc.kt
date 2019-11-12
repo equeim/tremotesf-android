@@ -170,15 +170,14 @@ object Rpc : AnkoLogger {
     val serverSettings: JniServerSettings = nativeInstance.serverSettings()
     val serverStats: ServerStats = nativeInstance.serverStats()
 
-    var status: Int = RpcStatus.Disconnected
-        private set
+    val status = MutableLiveData<Int>(RpcStatus.Disconnected)
 
     val isConnected: Boolean
-        get() = (status == RpcStatus.Connected)
+        get() = (status.value == RpcStatus.Connected)
 
     val statusString: String
         get() {
-            return when (status) {
+            return when (status.value) {
                 RpcStatus.Disconnected -> when (error) {
                     RpcError.NoError -> context.getString(R.string.disconnected)
                     RpcError.TimedOut -> context.getString(R.string.timed_out)
@@ -200,7 +199,6 @@ object Rpc : AnkoLogger {
     var errorMessage: String = ""
         private set
 
-    private val statusListeners = mutableListOf<(Int) -> Unit>()
     private val errorListeners = mutableListOf<(Int) -> Unit>()
     private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
 
@@ -281,15 +279,9 @@ object Rpc : AnkoLogger {
         connectedOnce = false
     }
 
-    fun addStatusListener(listener: (Int) -> Unit) = statusListeners.add(listener)
-    fun removeStatusListener(listener: (Int) -> Unit) = statusListeners.remove(listener)
-
     private fun onStatusChanged(newStatus: Int) {
-        status = newStatus
-        for (listener in statusListeners) {
-            listener(status)
-        }
-        when (status) {
+        status.value = newStatus
+        when (newStatus) {
             RpcStatus.Connected -> firstTorrentsAfterConnection = true
             RpcStatus.Disconnected -> handleWorkerCompleter()
         }
@@ -518,7 +510,7 @@ object Rpc : AnkoLogger {
 
             return CallbackToFutureAdapter.getFuture { completer ->
                 updateWorkerCompleter = completer
-                if (status == RpcStatus.Disconnected) {
+                if (status.value == RpcStatus.Disconnected) {
                     nativeInstance.connect()
                 } else {
                     nativeInstance.updateData()

@@ -28,9 +28,7 @@ import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.observe
-import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -53,6 +51,7 @@ import org.equeim.tremotesf.setPeersEnabled
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.popDialog
 
 import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
@@ -68,36 +67,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     lateinit var hash: String
     var torrent: TorrentData? = null
     private var firstTorrentsUpdate = true
-
-    private val rpcStatusListener: (Int) -> Unit = { status ->
-        when (status) {
-            RpcStatus.Disconnected -> {
-                updateTorrent(null)
-                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
-                    snackbar = null
-                    Rpc.nativeInstance.connect()
-                }
-                placeholder.text = Rpc.statusString
-            }
-            RpcStatus.Connecting -> {
-                snackbar?.dismiss()
-                snackbar = null
-                placeholder.text = getString(R.string.connecting)
-            }
-            RpcStatus.Connected -> {
-                updateTorrent(findTorrent())
-                if (torrent == null) {
-                    placeholder.text = getString(R.string.torrent_not_found)
-                }
-            }
-        }
-
-        progress_bar.visibility = if (status == RpcStatus.Connecting) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
 
     private var menu: Menu? = null
     private var startMenuItem: MenuItem? = null
@@ -155,15 +124,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
             findNavController().navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
-        rpcStatusListener(Rpc.status)
-        if (!Rpc.isConnected) {
-            updatePlaceholderVisibility()
-        }
-
         firstTorrentsUpdate = true
-        Rpc.torrents.observe(viewLifecycleOwner) { updateTorrent(findTorrent()) }
-
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.torrents.observe(viewLifecycleOwner, ::updateTorrent)
+        Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
     }
 
     override fun onDestroyView() {
@@ -172,7 +135,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         pauseMenuItem = null
         snackbar = null
 
-        Rpc.removeStatusListener(rpcStatusListener)
         pagerAdapter = null
 
         if (isRemoving) {
@@ -216,30 +178,47 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         return true
     }
 
-    private fun findTorrent(): TorrentData? {
-        return Rpc.torrents.value?.find { it.hashString == hash }
+    private fun onRpcStatusChanged(status: Int) {
+        when (status) {
+            RpcStatus.Disconnected -> {
+                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
+                    snackbar = null
+                    Rpc.nativeInstance.connect()
+                }
+                placeholder.text = Rpc.statusString
+            }
+            RpcStatus.Connecting -> {
+                snackbar?.dismiss()
+                snackbar = null
+                placeholder.text = getString(R.string.connecting)
+            }
+            RpcStatus.Connected -> {
+                if (torrent == null) {
+                    placeholder.text = getString(R.string.torrent_not_found)
+                }
+            }
+        }
+
+        progress_bar.visibility = if (status == RpcStatus.Connecting) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
-    private fun updateTorrent(newTorrent: TorrentData?) {
-        var updateView = firstTorrentsUpdate || lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+    private fun updateTorrent(torrents: List<TorrentData>) {
+        val newTorrent = torrents.find { it.hashString == hash }
         if (newTorrent !== torrent) {
             torrent = newTorrent
             if (newTorrent == null) {
-                updateView = true
                 if (Rpc.isConnected) {
                     placeholder.text = getString(R.string.torrent_removed)
                 }
-
-                val navController = findNavController()
-                if (navController.currentDestination is DialogFragmentNavigator.Destination) {
-                    navController.popBackStack()
-                }
+                findNavController().popDialog()
             }
             updatePlaceholderVisibility()
         }
-        if (updateView) {
-            updateView()
-        }
+        updateView()
     }
 
     private fun updateView() {
@@ -275,7 +254,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun updatePlaceholderVisibility() {
-        if (Rpc.isConnected && torrent != null) {
+        if (torrent != null) {
             (toolbar?.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or

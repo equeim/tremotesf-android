@@ -41,7 +41,6 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.observe
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -66,6 +65,7 @@ import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.popDialog
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.navigation_activity.*
@@ -106,52 +106,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private var gotFirstUpdateAfterConnection = true
 
     private var navigatedFrom = false
-
-    private val rpcStatusListener = { status: Int ->
-        if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
-            if (!Rpc.isConnected) {
-                torrentsAdapter?.selector?.actionMode?.finish()
-
-                val navController = findNavController()
-                if (navController.currentDestination is DialogFragmentNavigator.Destination) {
-                    navController.popBackStack()
-                }
-
-                searchMenuItem?.collapseActionView()
-            } else {
-                if (connecting) {
-                    gotFirstUpdateAfterConnection = false
-                }
-            }
-
-            connecting = false
-
-            torrentsAdapter?.update()
-
-            updateSubtitle()
-            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
-            statusSpinnerAdapter?.update()
-
-            trackersSpinnerAdapter?.update()
-            directoriesSpinnerAdapter?.update()
-
-            if (Rpc.isConnected) {
-                trackersSpinnerAdapter?.let {
-                    trackersSpinner?.setSelection(it.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
-                }
-                directoriesSpinnerAdapter?.let {
-                    directoriesSpinner?.setSelection(it.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
-                }
-            }
-
-            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
-        } else {
-            connecting = true
-        }
-
-        updateMenuItems()
-        updatePlaceholder()
-    }
 
     private val rpcErrorListener: (Int) -> Unit = {
         updateTitle()
@@ -204,7 +158,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         firstTorrentsUpdate = true
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
-        Rpc.addStatusListener(rpcStatusListener)
+        Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         Rpc.addErrorListener(rpcErrorListener)
         //Servers.addServersListener(serversListener)
         //Servers.addCurrentServerListener(currentServerListener)
@@ -438,7 +392,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     override fun onDestroyView() {
-        Rpc.removeStatusListener(rpcStatusListener)
         Rpc.removeErrorListener(rpcErrorListener)
         Rpc.torrentAddDuplicateListener = null
         Rpc.torrentAddErrorListener = null
@@ -514,7 +467,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.connect -> {
-                if (Rpc.status == RpcStatus.Disconnected) {
+                if (Rpc.status.value == RpcStatus.Disconnected) {
                     Rpc.nativeInstance.connect()
                 } else {
                     Rpc.nativeInstance.disconnect()
@@ -538,12 +491,48 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
+    private fun onRpcStatusChanged(status: Int) {
+        if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
+            if (!Rpc.isConnected) {
+                torrentsAdapter?.selector?.actionMode?.finish()
+                searchMenuItem?.collapseActionView()
+                findNavController().popDialog()
+            } else {
+                if (connecting) {
+                    gotFirstUpdateAfterConnection = false
+                }
+            }
+
+            connecting = false
+
+            updateSubtitle()
+            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
+            statusSpinnerAdapter?.update()
+
+            if (Rpc.isConnected) {
+                trackersSpinnerAdapter?.let {
+                    trackersSpinner?.setSelection(it.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+                }
+                directoriesSpinnerAdapter?.let {
+                    directoriesSpinner?.setSelection(it.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
+                }
+            }
+
+            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+        } else {
+            connecting = true
+        }
+
+        updateMenuItems()
+        updatePlaceholder()
+    }
+
     private fun onTorrentsUpdated() {
         gotFirstUpdateAfterConnection = true
         statusSpinnerAdapter?.update()
         trackersSpinnerAdapter?.update()
         directoriesSpinnerAdapter?.update()
-        if (firstTorrentsUpdate) {
+        if (!firstTorrentsUpdate) {
             torrentsAdapter?.update()
         }
         updatePlaceholder()
@@ -579,7 +568,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         val connectMenuItem = menu.findItem(R.id.connect)
         connectMenuItem.isEnabled = Servers.hasServers
-        connectMenuItem.title = when (Rpc.status) {
+        connectMenuItem.title = when (Rpc.status.value) {
             RpcStatus.Disconnected -> getString(R.string.connect)
             RpcStatus.Connecting,
             RpcStatus.Connected -> getString(R.string.disconnect)
@@ -596,17 +585,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun updatePlaceholder() {
-        placeholder.text = if (Rpc.status == RpcStatus.Connected) {
-            if (gotFirstUpdateAfterConnection && torrentsAdapter?.itemCount ?: 0 == 0) {
-                getString(R.string.no_torrents)
-            } else {
-                null
-            }
-        } else {
-            Rpc.statusString
+        placeholder.text = when {
+            torrentsAdapter?.itemCount ?: 0 != 0 -> null
+            Rpc.isConnected -> getString(R.string.no_torrents)
+            else -> Rpc.statusString
         }
 
-        progress_bar.visibility = if (Rpc.status == RpcStatus.Connecting) {
+        progress_bar.visibility = if (Rpc.status.value == RpcStatus.Connecting && torrentsAdapter?.itemCount ?: 0 == 0) {
             View.VISIBLE
         } else {
             View.GONE
