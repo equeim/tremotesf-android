@@ -44,7 +44,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
             savedInstanceState?.getStringArrayList(STATE_KEY)?.let { return it }
 
             val comparator = AlphanumericComparator()
-            val items = Servers.currentServer?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
+            val items = Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
             Rpc.torrents.value?.let {
                 for (torrent in it) {
                     items.add(torrent.downloadDirectory)
@@ -80,7 +80,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
         if (!items.contains(trimmed)) {
             items.add(trimmed)
         }
-        Servers.currentServer?.addTorrentDialogDirectories = items.toTypedArray()
+        Servers.currentServer.value?.addTorrentDialogDirectories = items.toTypedArray()
         Servers.save()
     }
 

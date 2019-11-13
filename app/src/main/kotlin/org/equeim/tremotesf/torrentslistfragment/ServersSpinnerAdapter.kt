@@ -55,10 +55,6 @@ class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAd
         servers.clear()
         servers.addAll(Servers.servers.sortedWith(comparator))
         notifyDataSetChanged()
-        serversSpinner.setSelection(servers.indexOf(Servers.currentServer))
-    }
-
-    fun updateCurrentServer() {
-        serversSpinner.setSelection(servers.indexOf(Servers.currentServer))
+        serversSpinner.setSelection(servers.indexOf(Servers.currentServer.value))
     }
 }

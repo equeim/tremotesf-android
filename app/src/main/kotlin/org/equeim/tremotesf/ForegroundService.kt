@@ -50,8 +50,6 @@ class ForegroundService : LifecycleService(), AnkoLogger {
     private var started = false
     private lateinit var notificationManager: NotificationManager
 
-    private val currentServerListener = { updatePersistentNotification() }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId")
 
@@ -75,8 +73,7 @@ class ForegroundService : LifecycleService(), AnkoLogger {
             Rpc.status.observe(this, NotificationObserver())
             Rpc.error.observe(this, NotificationObserver())
             Rpc.serverStats.observe(this, NotificationObserver())
-
-            Servers.addCurrentServerListener(currentServerListener)
+            Servers.currentServer.observe(this, NotificationObserver())
 
             Rpc.connectOnce()
 
@@ -129,7 +126,7 @@ class ForegroundService : LifecycleService(), AnkoLogger {
                 .setOngoing(true)
 
         if (Servers.hasServers) {
-            val currentServer = Servers.currentServer!!
+            val currentServer = Servers.currentServer.value!!
             notificationBuilder.setContentTitle(getString(R.string.current_server_string,
                                                           currentServer.name,
                                                           currentServer.address))

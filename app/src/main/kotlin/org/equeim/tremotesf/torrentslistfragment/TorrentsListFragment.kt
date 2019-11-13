@@ -105,16 +105,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private var navigatedFrom = false
 
-    /*private val serversListener = {
-        serversSpinnerAdapter?.update()
-        serversSpinner?.isEnabled = Servers.hasServers
-    }
-
-    private val currentServerListener: () -> Unit = {
-        updateTitle()
-        serversSpinnerAdapter?.updateCurrentServer()
-    }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navigatedFrom = savedInstanceState?.getBoolean(NAVIGATED_FROM_KEY) ?: false
@@ -148,8 +138,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         Rpc.error.observe(viewLifecycleOwner) { onRpcErrorChanged() }
         Rpc.serverStats.observe(viewLifecycleOwner, ::updateSubtitle)
-        //Servers.addServersListener(serversListener)
-        //Servers.addCurrentServerListener(currentServerListener)
+        Servers.currentServer.observe(viewLifecycleOwner, { updateTitle() })
 
         Rpc.torrentAddDuplicateListener = {
             view.longSnackbar(R.string.torrent_duplicate)
@@ -221,7 +210,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 view: View?,
                                                 position: Int,
                                                 id: Long) {
-                        Servers.currentServer = serversSpinnerAdapter.servers[position]
+                        serversSpinnerAdapter.servers[position].let {
+                            if (it != Servers.currentServer.value) {
+                                Servers.currentServer.value = it
+                            }
+                        }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
@@ -371,8 +364,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onDestroyView() {
         Rpc.torrentAddDuplicateListener = null
         Rpc.torrentAddErrorListener = null
-        //Servers.removeServersListener(serversListener)
-        //Servers.removeCurrentServerListener(currentServerListener)
         Settings.torrentCompactViewListener = null
         Settings.torrentNameMultilineListener = null
 
@@ -515,7 +506,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private fun updateTitle() {
         toolbar?.title = if (Servers.hasServers) {
-            val currentServer = Servers.currentServer!!
+            val currentServer = Servers.currentServer.value!!
             getString(R.string.current_server_string,
                       currentServer.name,
                       currentServer.address)

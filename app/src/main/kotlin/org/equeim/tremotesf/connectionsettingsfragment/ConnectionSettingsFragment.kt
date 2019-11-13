@@ -137,7 +137,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val server = servers[position]
             holder.item = server
-            holder.radioButton.isChecked = (server === Servers.currentServer)
+            holder.radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
             holder.textView.text = server.name
             holder.updateSelectedBackground()
         }
@@ -158,8 +158,8 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
             init {
                 radioButton.setOnClickListener {
-                    if (item !== Servers.currentServer) {
-                        Servers.currentServer = item
+                    if (item.name != Servers.currentServer.value?.name) {
+                        Servers.currentServer.value = item
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
                     }
                 }

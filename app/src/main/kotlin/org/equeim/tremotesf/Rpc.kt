@@ -226,12 +226,17 @@ object Rpc : AnkoLogger {
                             NotificationManager.IMPORTANCE_DEFAULT)))
         }
 
-        Servers.addCurrentServerListener {
+        var gotFirst = false
+        Servers.currentServer.observeForever { server ->
+            if (!gotFirst) {
+                gotFirst = true
+                return@observeForever
+            }
+
             if (isConnected) {
                 disconnectingAfterCurrentServerChanged = true
             }
 
-            val server = Servers.currentServer
             if (server != null) {
                 setServer(server)
                 nativeInstance.connect()
@@ -240,7 +245,7 @@ object Rpc : AnkoLogger {
             }
         }
 
-        Servers.currentServer?.let { setServer(it) }
+        Servers.currentServer.value?.let(::setServer)
     }
 
     private fun setServer(server: Server) {
@@ -326,7 +331,7 @@ object Rpc : AnkoLogger {
         }
 
         if (notifyOnFinished || notifyOnAdded) {
-            val server = Servers.currentServer
+            val server = Servers.currentServer.value
             if (server != null) {
                 val lastTorrents = server.lastTorrents
                 if (lastTorrents.saved) {

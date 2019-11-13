@@ -27,6 +27,7 @@ import kotlin.system.measureTimeMillis
 import android.annotation.SuppressLint
 import android.content.Context
 
+import androidx.lifecycle.MutableLiveData
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -121,10 +122,6 @@ object Servers : AnkoLogger {
 
     val servers = mutableListOf<Server>()
 
-    init {
-        load()
-    }
-
     private val serversListeners = mutableListOf<() -> Unit>()
     fun addServersListener(listener: () -> Unit) = serversListeners.add(listener)
     fun removeServersListener(listener: () -> Unit) = serversListeners.remove(listener)
@@ -134,24 +131,24 @@ object Servers : AnkoLogger {
             return servers.isNotEmpty()
         }
 
-    private val currentServerListeners = mutableListOf<() -> Unit>()
-    fun addCurrentServerListener(listener: () -> Unit) = currentServerListeners.add(listener)
-    fun removeCurrentServerListener(listener: () -> Unit) = currentServerListeners.remove(listener)
-
-    private var currentServerField: Server? = null
-    var currentServer: Server?
-        get() = currentServerField
-        set(value) {
-            if (value !== currentServerField) {
-                currentServerField = value
-                save()
-                for (listener in currentServerListeners) {
-                    listener()
-                }
-            }
-        }
+    private var saveOnCurrentChanged = false
+    val currentServer = MutableLiveData<Server>(null)
 
     @Volatile private var saveData: SaveData? = null
+
+    init {
+        load()
+        currentServer.observeForever {
+            if (saveOnCurrentChanged) save()
+        }
+        saveOnCurrentChanged = true
+    }
+
+    private fun setCurrentServer(server: Server?) {
+        saveOnCurrentChanged = false
+        currentServer.value = server
+        saveOnCurrentChanged = true
+    }
 
     private fun load() {
         try {
@@ -182,10 +179,10 @@ object Servers : AnkoLogger {
                 servers.add(server)
             }
 
-            currentServerField = servers.find { it.name == saveData.currentServerName }
+            currentServer.value = servers.find { it.name == saveData.currentServerName }
 
-            if (currentServerField == null && servers.isNotEmpty()) {
-                currentServerField = servers.first()
+            if (currentServer.value == null && servers.isNotEmpty()) {
+                currentServer.value = servers.first()
                 save()
             }
         } catch (error: FileNotFoundException) {
@@ -203,13 +200,13 @@ object Servers : AnkoLogger {
     }
 
     private fun reset() {
-        currentServerField = null
+        currentServer.value = null
         servers.clear()
     }
 
     fun save() {
         info("Servers.save()")
-        val lastTorrents = currentServerField?.lastTorrents
+        val lastTorrents = currentServer.value?.lastTorrents
         if (lastTorrents != null) {
             lastTorrents.torrents.clear()
             Rpc.torrents.value?.let {
@@ -223,7 +220,7 @@ object Servers : AnkoLogger {
             lastTorrents.saved = true
         }
 
-        saveData = SaveData(currentServerField?.name,
+        saveData = SaveData(currentServer.value?.name,
                             servers.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
 
         WorkManager.getInstance(context).enqueueUniqueWork(
@@ -234,69 +231,64 @@ object Servers : AnkoLogger {
     }
 
     fun addServer(newServer: Server) {
-        var currentChanged = false
+        var newCurrent: Server? = null
 
         val overwriteServer = servers.find { it.name == newServer.name }
         if (overwriteServer == null) {
             servers.add(newServer)
             if (servers.size == 1) {
-                currentServerField = newServer
-                currentChanged = true
+                newCurrent = newServer
             }
         } else {
             newServer.copyTo(overwriteServer)
-            if (overwriteServer == currentServerField) {
-                currentChanged = true
+            if (overwriteServer.name == currentServer.value?.name) {
+                newCurrent = overwriteServer
             }
         }
 
-        save()
+        if (newCurrent != null) {
+            setCurrentServer(newCurrent)
+        }
 
         for (listener in serversListeners) {
             listener()
         }
 
-        if (currentChanged) {
-            for (listener in currentServerListeners) {
-                listener()
-            }
-        }
+        save()
     }
 
     fun setServer(server: Server, newServer: Server) {
-        val currentChanged = (server == currentServerField) || (newServer.name == currentServerField?.name)
+        val currentChanged = when (currentServer.value?.name) {
+            // editing current
+            server.name,
+            // overwriting current with another
+            newServer.name -> true
+            // nope
+            else -> false
+        }
 
         if (newServer.name != server.name) {
-            val overwriteServer = servers.find { it.name == newServer.name }
-            if (overwriteServer != null) {
-                servers.remove(overwriteServer)
-                if (overwriteServer == currentServerField) {
-                    currentServerField = server
-                }
-            }
+            servers.removeAll { it.name == newServer.name }
         }
 
         newServer.copyTo(server)
-        save()
+
+        if (currentChanged) {
+            setCurrentServer(server)
+        }
+
         for (listener in serversListeners) {
             listener()
         }
-        if (currentChanged) {
-            for (listener in currentServerListeners) {
-                listener()
-            }
-        }
+
+        save()
     }
 
-    fun removeServers(servers: List<Server>) {
-        this.servers.removeAll(servers)
+    fun removeServers(toRemove: List<Server>) {
+        servers.removeAll(toRemove)
 
-        if (currentServerField in servers) {
-            currentServerField = this.servers.firstOrNull()
-
-            for (listener in currentServerListeners) {
-                listener()
-            }
+        if (currentServer.value in toRemove) {
+            setCurrentServer(servers.firstOrNull())
         }
 
         for (listener in serversListeners) {
