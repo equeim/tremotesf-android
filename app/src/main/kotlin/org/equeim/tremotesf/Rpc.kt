@@ -168,7 +168,7 @@ object Rpc : AnkoLogger {
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     val serverSettings: JniServerSettings = nativeInstance.serverSettings()
-    val serverStats: ServerStats = nativeInstance.serverStats()
+    val serverStats = MutableLiveData<ServerStats>(nativeInstance.serverStats())
 
     val status = MutableLiveData<Int>(RpcStatus.Disconnected)
 
@@ -197,8 +197,6 @@ object Rpc : AnkoLogger {
     val error = MutableLiveData<Int>(RpcError.NoError)
     var errorMessage: String = ""
         private set
-
-    private val serverStatsUpdatedListeners = mutableListOf<() -> Unit>()
 
     var torrentAddDuplicateListener: (() -> Unit)? = null
     var torrentAddErrorListener: (() -> Unit)? = null
@@ -356,13 +354,8 @@ object Rpc : AnkoLogger {
         }
     }
 
-    fun addServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.add(listener)
-    fun removeServerStatsUpdatedListener(listener: () -> Unit) = serverStatsUpdatedListeners.remove(listener)
-
     private fun onServerStatsUpdated() {
-        for (listener in serverStatsUpdatedListeners) {
-            listener()
-        }
+        serverStats.value = serverStats.value
     }
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {

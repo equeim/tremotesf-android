@@ -50,7 +50,6 @@ class ForegroundService : LifecycleService(), AnkoLogger {
     private var started = false
     private lateinit var notificationManager: NotificationManager
 
-    private val serverStatsUpdatedListener = { updatePersistentNotification() }
     private val currentServerListener = { updatePersistentNotification() }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -75,8 +74,7 @@ class ForegroundService : LifecycleService(), AnkoLogger {
 
             Rpc.status.observe(this, NotificationObserver())
             Rpc.error.observe(this, NotificationObserver())
-
-            Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
+            Rpc.serverStats.observe(this, NotificationObserver())
 
             Servers.addCurrentServerListener(currentServerListener)
 
@@ -97,7 +95,6 @@ class ForegroundService : LifecycleService(), AnkoLogger {
 
     override fun onDestroy() {
         info("ForegroundService.onDestroy()}")
-        Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
         // isPersistentNotificationActive() works only on API 23+, so
         // remove notification here explicitly to make sure that it is gone
         notificationManager.cancel(PERSISTENT_NOTIFICATION_ID)
@@ -147,11 +144,12 @@ class ForegroundService : LifecycleService(), AnkoLogger {
         }
 
         if (Rpc.isConnected) {
+            val stats = Rpc.serverStats.value!!
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.serverStats.downloadSpeed()),
+                                                                               stats.downloadSpeed()),
                                                          Utils.formatByteSpeed(this,
-                                                                               Rpc.serverStats.uploadSpeed())))
+                                                                               stats.uploadSpeed())))
         } else {
             notificationBuilder.setContentText(Rpc.statusString)
         }

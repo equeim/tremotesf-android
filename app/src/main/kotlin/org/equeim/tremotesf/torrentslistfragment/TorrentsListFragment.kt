@@ -53,6 +53,7 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.info
 
+import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
 import org.equeim.tremotesf.AddTorrentFragmentArguments
 import org.equeim.tremotesf.BuildConfig
@@ -104,10 +105,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private var navigatedFrom = false
 
-    private val serverStatsUpdatedListener = {
-        updateSubtitle()
-    }
-
     /*private val serversListener = {
         serversSpinnerAdapter?.update()
         serversSpinner?.isEnabled = Servers.hasServers
@@ -150,6 +147,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         Rpc.error.observe(viewLifecycleOwner) { onRpcErrorChanged() }
+        Rpc.serverStats.observe(viewLifecycleOwner, ::updateSubtitle)
         //Servers.addServersListener(serversListener)
         //Servers.addCurrentServerListener(currentServerListener)
 
@@ -370,17 +368,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        serverStatsUpdatedListener()
-        Rpc.addServerStatsUpdatedListener(serverStatsUpdatedListener)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Rpc.removeServerStatsUpdatedListener(serverStatsUpdatedListener)
-    }
-
     override fun onDestroyView() {
         Rpc.torrentAddDuplicateListener = null
         Rpc.torrentAddErrorListener = null
@@ -488,7 +475,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 findNavController().popDialog()
             }
 
-            updateSubtitle()
+            updateSubtitle(Rpc.serverStats.value!!)
             listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
             statusSpinnerAdapter?.update()
 
@@ -537,11 +524,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    private fun updateSubtitle() {
+    private fun updateSubtitle(serverStats: ServerStats) {
         toolbar?.subtitle = if (Rpc.isConnected) {
             getString(R.string.main_activity_subtitle,
-                      Utils.formatByteSpeed(requireContext(), Rpc.serverStats.downloadSpeed()),
-                      Utils.formatByteSpeed(requireContext(), Rpc.serverStats.uploadSpeed()))
+                      Utils.formatByteSpeed(requireContext(), serverStats.downloadSpeed()),
+                      Utils.formatByteSpeed(requireContext(), serverStats.uploadSpeed()))
         } else {
             null
         }
