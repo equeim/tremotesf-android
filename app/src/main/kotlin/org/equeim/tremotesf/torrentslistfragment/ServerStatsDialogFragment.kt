@@ -30,10 +30,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.server_stats_dialog.*
-import org.equeim.tremotesf.RpcStatus
 
 
 class ServerStatsDialogFragment : DialogFragment() {
@@ -41,12 +41,8 @@ class ServerStatsDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Rpc.status.observe(this) { status ->
-            if (status == RpcStatus.Connected) {
-                update()
-            }
-        }
-        Rpc.serverStats.observe(this) { update() }
+        BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
+                .observe(this) { update() }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -57,6 +53,7 @@ class ServerStatsDialogFragment : DialogFragment() {
     }
 
     private fun update() {
+        if (!Rpc.isConnected) return
         dialog?.apply {
             val sessionDownloadedTextView = session_downloaded_text_view ?: return
 

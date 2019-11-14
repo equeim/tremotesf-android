@@ -46,6 +46,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -65,6 +66,7 @@ import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
 import org.equeim.tremotesf.utils.setChildrenEnabled
@@ -131,14 +133,30 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             torrents_view.adapter = torrentsAdapter
         }
 
-        updateTitle()
-
         firstTorrentsUpdate = true
+
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
-        Rpc.error.observe(viewLifecycleOwner) { onRpcErrorChanged() }
-        Rpc.serverStats.observe(viewLifecycleOwner, ::updateSubtitle)
-        Servers.currentServer.observe(viewLifecycleOwner, { updateTitle() })
+        BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.error)
+                .observe(viewLifecycleOwner) { updatePlaceholder() }
+
+        torrentsAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                if (torrentsAdapter.itemCount == 0) {
+                    updatePlaceholder()
+                }
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                if (itemCount == torrentsAdapter.itemCount) {
+                    updatePlaceholder()
+                }
+            }
+        })
+
+        Servers.currentServer.observe(viewLifecycleOwner) { updateTitle() }
+        BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
+                .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value!!) }
 
         Rpc.torrentAddDuplicateListener = {
             view.longSnackbar(R.string.torrent_duplicate)
@@ -290,7 +308,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                         id: Long) {
                 torrentsAdapter?.apply {
                     statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
-                    updatePlaceholder()
                     if (Rpc.isConnected) {
                         Settings.torrentsStatusFilter = statusFilterMode
                     }
@@ -311,7 +328,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     } else {
                         trackersSpinnerAdapter?.trackers?.get(position - 1) ?: ""
                     }
-                    updatePlaceholder()
                     if (Rpc.isConnected) {
                         Settings.torrentsTrackerFilter = trackerFilter
                     }
@@ -332,7 +348,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     } else {
                         directoriesSpinnerAdapter?.directories?.get(position - 1) ?: ""
                     }
-                    updatePlaceholder()
                     if (Rpc.isConnected) {
                         Settings.torrentsDirectoryFilter = directoryFilter
                     }
@@ -417,7 +432,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 torrentsAdapter?.filterString = newText.trim()
-                updatePlaceholder()
                 return true
             }
 
@@ -425,10 +439,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 return false
             }
         })
-
-        updateMenuItems()
-
-        menu.findItem(R.id.alternative_speed_limits).isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -460,16 +470,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private fun onRpcStatusChanged(status: Int) {
         if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
-            if (!Rpc.isConnected) {
-                torrentsAdapter?.selector?.actionMode?.finish()
-                searchMenuItem?.collapseActionView()
-                findNavController().popDialog()
-            }
-
-            updateSubtitle(Rpc.serverStats.value!!)
-            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
-            statusSpinnerAdapter?.update()
-
             if (Rpc.isConnected) {
                 trackersSpinnerAdapter?.let {
                     trackersSpinner?.setSelection(it.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
@@ -477,17 +477,16 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 directoriesSpinnerAdapter?.let {
                     directoriesSpinner?.setSelection(it.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
                 }
+                menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+            } else {
+                torrentsAdapter?.selector?.actionMode?.finish()
+                searchMenuItem?.collapseActionView()
+                findNavController().popDialog()
             }
-
-            menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
         }
 
         updateMenuItems()
-        updatePlaceholder()
-    }
-
-    private fun onRpcErrorChanged() {
-        updatePlaceholder()
     }
 
     private fun onTorrentsUpdated() {
@@ -497,9 +496,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         if (!firstTorrentsUpdate) {
             torrentsAdapter?.update()
         }
-        updatePlaceholder()
 
-        menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+        menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
+                if (Rpc.isConnected) Rpc.serverSettings.isAlternativeSpeedLimitsEnabled else false
 
         firstTorrentsUpdate = false
     }
