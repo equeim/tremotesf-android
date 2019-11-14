@@ -22,10 +22,9 @@ package org.equeim.tremotesf
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.text.Editable
-import android.text.TextWatcher
 
 import androidx.core.text.trimmedLength
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 
@@ -64,29 +63,21 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
         download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
         start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
 
-        download_directory_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                val path = s.toString().trim()
-                when {
-                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                        Rpc.nativeInstance.getFreeSpaceForPath(path)
-                    }
-                    path == Rpc.serverSettings.downloadDirectory() -> {
-                        Rpc.nativeInstance.getDownloadDirFreeSpace()
-                    }
-                    else -> {
-                        free_space_text_view.visibility = View.GONE
-                        free_space_text_view.text = ""
-                    }
+        download_directory_edit.doAfterTextChanged {
+            val path = it?.toString()?.trim()
+            when {
+                Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                    Rpc.nativeInstance.getFreeSpaceForPath(path)
+                }
+                path == Rpc.serverSettings.downloadDirectory() -> {
+                    Rpc.nativeInstance.getDownloadDirFreeSpace()
+                }
+                else -> {
+                    free_space_text_view.visibility = View.GONE
+                    free_space_text_view.text = ""
                 }
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
+        }
 
         directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
         download_directory_edit.setAdapter(directoriesAdapter)

@@ -20,13 +20,12 @@
 package org.equeim.tremotesf.serversettingsfragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.IntFilter
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import kotlinx.android.synthetic.main.server_settings_queue_fragment.*
 
@@ -45,21 +44,9 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
         download_queue_layout.isEnabled = download_queue_check_box.isChecked
         download_queue_edit.filters = arrayOf(IntFilter(0..10000))
         download_queue_edit.setText(Rpc.serverSettings.downloadQueueSize().toString())
-        download_queue_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setDownloadQueueSize(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        download_queue_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setDownloadQueueSize(it.toString().toInt())
+        }
 
         seed_queue_check_box.isChecked = Rpc.serverSettings.isSeedQueueEnabled
         seed_queue_check_box.setOnCheckedChangeListener { _, checked ->
@@ -70,21 +57,9 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
         seed_queue_layout.isEnabled = seed_queue_check_box.isChecked
         seed_queue_edit.filters = arrayOf(IntFilter(0..10000))
         seed_queue_edit.setText(Rpc.serverSettings.seedQueueSize().toString())
-        seed_queue_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setSeedQueueSize(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        seed_queue_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setSeedQueueSize(it.toString().toInt())
+        }
 
         idle_queue_check_box.isChecked = Rpc.serverSettings.isIdleQueueLimited
         idle_queue_check_box.setOnCheckedChangeListener { _, checked ->
@@ -96,20 +71,8 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         idle_queue_edit.filters = arrayOf(IntFilter(0..10000))
         idle_queue_edit.setText(Rpc.serverSettings.idleQueueLimit().toString())
-        idle_queue_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setIdleQueueLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        idle_queue_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setIdleQueueLimit(it.toString().toInt())
+        }
     }
 }

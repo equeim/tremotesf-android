@@ -21,12 +21,15 @@
 package org.equeim.tremotesf.utils
 
 import android.app.Activity
+import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 
 import androidx.core.content.getSystemService
 import androidx.core.view.postDelayed
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
@@ -36,6 +39,12 @@ import androidx.navigation.fragment.DialogFragmentNavigator
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {
         getChildAt(i).isEnabled = enabled
+    }
+}
+
+inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Editable) -> Unit) = doAfterTextChanged {
+    if (!it.isNullOrEmpty()) {
+        action(it)
     }
 }
 

@@ -20,8 +20,6 @@
 package org.equeim.tremotesf.serversettingsfragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 
@@ -30,6 +28,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.IntFilter
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import kotlinx.android.synthetic.main.server_settings_network_fragment.*
 
@@ -41,21 +40,9 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
 
         peer_port_edit.filters = arrayOf(IntFilter(0..65535))
         peer_port_edit.setText(Rpc.serverSettings.peerPort().toString())
-        peer_port_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setPeerPort(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        peer_port_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setPeerPort(it.toString().toInt())
+        }
 
         random_port_check_box.isChecked = Rpc.serverSettings.isRandomPortEnabled
         random_port_check_box.setOnCheckedChangeListener { _, checked ->
@@ -113,38 +100,14 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
 
         peers_per_torrent_edit.filters = arrayOf(IntFilter(0..10000))
         peers_per_torrent_edit.setText(Rpc.serverSettings.maximumPeersPerTorrent().toString())
-        peers_per_torrent_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setMaximumPeersPerTorrent(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        peers_per_torrent_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setMaximumPeersPerTorrent(it.toString().toInt())
+        }
 
         peers_globally_edit.filters = arrayOf(IntFilter(0..10000))
         peers_globally_edit.setText(Rpc.serverSettings.maximumPeersGlobally().toString())
-        peers_globally_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setMaximumPeersGlobally(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        peers_globally_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setMaximumPeersGlobally(it.toString().toInt())
+        }
     }
 }

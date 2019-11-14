@@ -22,14 +22,13 @@ package org.equeim.tremotesf.serversettingsfragment
 import java.text.DecimalFormat
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import kotlinx.android.synthetic.main.server_settings_seeding_fragment.*
 
@@ -48,21 +47,9 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
         ratio_limit_layout.isEnabled = ratio_limit_check_box.isChecked
         ratio_limit_edit.filters = arrayOf(DoubleFilter(0.0..10000.0))
         ratio_limit_edit.setText(DecimalFormat("0.00").format(Rpc.serverSettings.ratioLimit()))
-        ratio_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setRatioLimit(DoubleFilter.parse(s.toString())!!)
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        ratio_limit_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setRatioLimit(DoubleFilter.parse(it.toString())!!)
+        }
 
         idle_seeding_check_box.isChecked = Rpc.serverSettings.isIdleSeedingLimited
         idle_seeding_check_box.setOnCheckedChangeListener { _, checked ->
@@ -74,20 +61,8 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
 
         idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
         idle_seeding_edit.setText(Rpc.serverSettings.idleSeedingLimit().toString())
-        idle_seeding_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setIdleSeedingLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        idle_seeding_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setIdleSeedingLimit(it.toString().toInt())
+        }
     }
 }

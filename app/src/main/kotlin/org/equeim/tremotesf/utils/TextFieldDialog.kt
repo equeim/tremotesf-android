@@ -21,12 +21,11 @@ package org.equeim.tremotesf.utils
 
 import android.content.Context
 import android.content.DialogInterface
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.EditText
 
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.trimmedLength
+import androidx.core.widget.doAfterTextChanged
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -69,23 +68,9 @@ fun createTextFieldDialog(context: Context,
         val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!
         okButton.isEnabled = defaultText?.trimmedLength() != 0
 
-        textField.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                okButton.isEnabled = s.trimmedLength() != 0
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?,
-                                       start: Int,
-                                       before: Int,
-                                       count: Int) {
-            }
-        })
+        textField.doAfterTextChanged {
+            okButton.isEnabled = it?.trimmedLength() != 0
+        }
 
         textField.showKeyboard()
 

@@ -20,12 +20,11 @@
 package org.equeim.tremotesf.serversettingsfragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import kotlinx.android.synthetic.main.server_settings_downloading_fragment.*
 
@@ -36,21 +35,9 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
         super.onViewCreated(view, savedInstanceState)
 
         download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
-        download_directory_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setDownloadDirectory(s.toString())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        download_directory_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setDownloadDirectory(it.toString())
+        }
 
         start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
         start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
@@ -70,21 +57,8 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
 
         incomplete_files_directory_layout.isEnabled = incomplete_files_directory_check_box.isChecked
         incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory())
-
-        incomplete_files_directory_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setIncompleteDirectory(s.toString())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        incomplete_files_directory_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setIncompleteDirectory(it.toString())
+        }
     }
 }

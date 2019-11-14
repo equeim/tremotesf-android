@@ -29,9 +29,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 
-import android.text.Editable
-import android.text.TextWatcher
-
 import android.util.AttributeSet
 
 import android.view.View
@@ -40,7 +37,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.TimePicker
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
@@ -50,6 +46,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.ArraySpinnerAdapter
 import org.equeim.tremotesf.utils.IntFilter
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
@@ -125,21 +122,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         download_speed_limit_edit.filters = limitsFilters
         download_speed_limit_edit.setText(Rpc.serverSettings.downloadSpeedLimit().toString())
-        download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setDownloadSpeedLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setDownloadSpeedLimit(it.toString().toInt())
+        }
 
         upload_speed_limit_check_box.isChecked = Rpc.serverSettings.isUploadSpeedLimited
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
@@ -151,21 +136,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         upload_speed_limit_edit.filters = limitsFilters
         upload_speed_limit_edit.setText(Rpc.serverSettings.uploadSpeedLimit().toString())
-        upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setUploadSpeedLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        upload_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setUploadSpeedLimit(it.toString().toInt())
+        }
 
         alternative_limits_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
         alternative_limits_check_box.setOnCheckedChangeListener { _, checked ->
@@ -179,39 +152,15 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         alternative_download_speed_limit_edit.filters = limitsFilters
         alternative_download_speed_limit_edit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit().toString())
-        alternative_download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setAlternativeDownloadSpeedLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        alternative_download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setAlternativeDownloadSpeedLimit(it.toString().toInt())
+        }
 
         alternative_upload_speed_limit_edit.filters = limitsFilters
         alternative_upload_speed_limit_edit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit().toString())
-        alternative_upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    Rpc.serverSettings.setAlternativeUploadSpeedLimit(s.toString().toInt())
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?,
-                                           start: Int,
-                                           count: Int,
-                                           after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        alternative_download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            Rpc.serverSettings.setAlternativeUploadSpeedLimit(it.toString().toInt())
+        }
 
         schedule_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsScheduled
         schedule_check_box.setOnCheckedChangeListener { _, checked ->

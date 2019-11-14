@@ -24,8 +24,6 @@ import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -41,6 +39,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.text.trimmedLength
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -319,29 +318,21 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
             priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                      R.string.priority)
 
-            download_directory_edit.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable) {
-                    val path = s.toString().trim()
-                    when {
-                        Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                            Rpc.nativeInstance.getFreeSpaceForPath(path)
-                        }
-                        path == Rpc.serverSettings.downloadDirectory() -> {
-                            Rpc.nativeInstance.getDownloadDirFreeSpace()
-                        }
-                        else -> {
-                            free_space_text_view.visibility = View.GONE
-                            free_space_text_view.text = ""
-                        }
+            download_directory_edit.doAfterTextChanged {
+                val path = it?.toString()?.trim()
+                when {
+                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                        Rpc.nativeInstance.getFreeSpaceForPath(path)
+                    }
+                    path == Rpc.serverSettings.downloadDirectory() -> {
+                        Rpc.nativeInstance.getDownloadDirFreeSpace()
+                    }
+                    else -> {
+                        free_space_text_view.visibility = View.GONE
+                        free_space_text_view.text = ""
                     }
                 }
-
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
-            })
+            }
 
             directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
             download_directory_edit.setAdapter(directoriesAdapter)

@@ -22,8 +22,6 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 import java.text.DecimalFormat
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 
@@ -34,6 +32,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
+import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import org.equeim.tremotesf.setDownloadSpeedLimited
 import org.equeim.tremotesf.setBandwidthPriority
@@ -70,16 +69,11 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
         }
 
         download_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
-        download_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(string: Editable) {
-                if (!updating && string.isNotEmpty()) {
-                    torrent?.setDownloadSpeedLimit(string.toString().toInt())
-                }
+        download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            if (!updating) {
+                torrent?.setDownloadSpeedLimit(it.toString().toInt())
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        }
 
         upload_speed_limit_layout.isEnabled = false
         upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
@@ -90,16 +84,11 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
         }
 
         upload_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
-        upload_speed_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(string: Editable) {
-                if (!updating && string.isNotEmpty()) {
-                    torrent?.setUploadSpeedLimit(string.toString().toInt())
-                }
+        upload_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            if (!updating) {
+                torrent?.setUploadSpeedLimit(it.toString().toInt())
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        }
 
         priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                  R.string.priority)
@@ -142,16 +131,11 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        ratio_limit_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(string: Editable) {
-                if (!updating && string.isNotEmpty()) {
-                    torrent?.setRatioLimit(DoubleFilter.parse(string.toString())!!)
-                }
+        ratio_limit_edit.doAfterTextChangedAndNotEmpty {
+            if (!updating) {
+                torrent?.setRatioLimit(DoubleFilter.parse(it.toString())!!)
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        }
 
         idle_seeding_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.idle_seeding_mode),
                                                                      R.string.idle_seeding)
@@ -174,28 +158,18 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
         idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_seeding_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(string: Editable) {
-                if (!updating && string.isNotEmpty()) {
-                    torrent?.setIdleSeedingLimit(string.toString().toInt())
-                }
+        idle_seeding_edit.doAfterTextChangedAndNotEmpty {
+            if (!updating) {
+                torrent?.setIdleSeedingLimit(it.toString().toInt())
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        }
 
         maximum_peers_edit.filters = arrayOf(IntFilter(0..10000))
-        maximum_peers_edit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(string: Editable) {
-                if (!updating && string.isNotEmpty()) {
-                    torrent?.setPeersLimit(string.toString().toInt())
-                }
+        maximum_peers_edit.doAfterTextChangedAndNotEmpty {
+            if (!updating) {
+                torrent?.setPeersLimit(it.toString().toInt())
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
+        }
 
         update()
     }
