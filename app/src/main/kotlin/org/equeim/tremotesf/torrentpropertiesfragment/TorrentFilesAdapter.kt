@@ -162,7 +162,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
 
                 val pathParts = mutableListOf<String>()
                 var item: Item? = file
-                while (item != null) {
+                while (item != null && item != rootDirectory) {
                     pathParts.add(0, item.name)
                     item = item.parentDirectory
                 }
