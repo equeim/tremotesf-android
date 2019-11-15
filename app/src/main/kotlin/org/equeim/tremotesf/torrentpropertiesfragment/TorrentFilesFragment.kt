@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -62,24 +63,9 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         private set(value) {
             if (value != field) {
                 field = value
-                if (value != null) {
-                    value.torrent.setFilesEnabled(true)
-                    Rpc.gotTorrentFilesListener = gotTorrentFilesListener
-                    Rpc.torrentFileRenamedListener = fileRenamedListener
-                }
+                value?.torrent?.setFilesEnabled(true)
             }
         }
-
-    private val gotTorrentFilesListener = { torrentId: Int ->
-        if (torrentId == torrent?.id) {
-            update()
-        }
-    }
-    private val fileRenamedListener = { torrentId: Int, filePath: String, newName: String ->
-        if (torrentId == torrent?.id) {
-            fileRenamed(filePath, newName)
-        }
-    }
 
     private var rootDirectory = BaseTorrentFilesAdapter.Directory()
     private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
@@ -115,18 +101,17 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
 
         updateProgressBar()
         updatePlaceholder()
-    }
 
-    override fun onStart() {
-        super.onStart()
-        Rpc.gotTorrentFilesListener = gotTorrentFilesListener
-        Rpc.torrentFileRenamedListener = fileRenamedListener
-    }
-
-    override fun onStop() {
-        Rpc.gotTorrentFilesListener = null
-        Rpc.torrentFileRenamedListener = null
-        super.onStop()
+        Rpc.gotTorrentFilesEvent.observe(viewLifecycleOwner) { torrentId ->
+            if (torrentId == torrent?.id) {
+                update()
+            }
+        }
+        Rpc.torrentFileRenamedEvent.observe(viewLifecycleOwner) { (torrentId, filePath, newName) ->
+            if (torrentId == torrent?.id) {
+                fileRenamed(filePath, newName)
+            }
+        }
     }
 
     override fun onDestroyView() {

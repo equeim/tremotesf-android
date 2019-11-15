@@ -343,7 +343,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
                 start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
             }
 
-            Rpc.gotDownloadDirFreeSpaceListener = { bytes ->
+            Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
                 val text = download_directory_edit.text?.trim()
                 if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
                     free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
@@ -351,7 +351,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
                 }
             }
 
-            Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
+            Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
                 val text = download_directory_edit.text?.trim()
                 if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     if (success) {
@@ -365,12 +365,6 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
 
         override fun onSaveInstanceState(outState: Bundle) {
             directoriesAdapter?.saveInstanceState(outState)
-        }
-
-        override fun onDestroyView() {
-            Rpc.gotDownloadDirFreeSpaceListener = null
-            Rpc.gotFreeSpaceForPathListener = null
-            super.onDestroyView()
         }
 
         fun check(): Boolean {

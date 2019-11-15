@@ -57,6 +57,8 @@ import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
+import org.equeim.tremotesf.utils.LiveEvent
+import org.equeim.tremotesf.utils.emit
 
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
@@ -198,16 +200,19 @@ object Rpc : AnkoLogger {
     var errorMessage: String = ""
         private set
 
-    var torrentAddDuplicateListener: (() -> Unit)? = null
-    var torrentAddErrorListener: (() -> Unit)? = null
+    val torrentAddDuplicateEvent = LiveEvent<Unit>()
+    val torrentAddErrorEvent = LiveEvent<Unit>()
 
-    var gotTorrentFilesListener: ((Int) -> Unit)? = null
-    var torrentFileRenamedListener: ((Int, String, String) -> Unit)? = null
+    val gotTorrentFilesEvent = LiveEvent<Int>()
 
-    var gotTorrentPeersListener: ((Int) -> Unit)? = null
+    data class TorrentFileRenamedData(val torrentId: Int, val filePath: String, val newName: String)
+    val torrentFileRenamedEvent = LiveEvent<TorrentFileRenamedData>()
 
-    var gotDownloadDirFreeSpaceListener: ((Long) -> Unit)? = null
-    var gotFreeSpaceForPathListener: ((String, Boolean, Long) -> Unit)? = null
+    val gotTorrentPeersEvent = LiveEvent<Int>()
+
+    val gotDownloadDirFreeSpaceEvent = LiveEvent<Long>()
+    data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
+    val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
 
     val torrents = MutableLiveData<List<TorrentData>>()
     private var firstTorrentsAfterConnection = false
@@ -376,33 +381,31 @@ object Rpc : AnkoLogger {
     }
 
     private fun onTorrentAddDuplicate() {
-        torrentAddDuplicateListener?.invoke()
+        torrentAddDuplicateEvent.emit()
     }
 
     private fun onTorrentAddError() {
-        torrentAddErrorListener?.invoke()
+        torrentAddErrorEvent.emit()
     }
 
     private fun onGotTorrentFiles(torrentId: Int) {
-        context.runOnUiThread {
-            gotTorrentFilesListener?.invoke(torrentId)
-        }
+        gotTorrentFilesEvent.emit(torrentId)
     }
 
     private fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-        torrentFileRenamedListener?.invoke(torrentId, filePath, newName)
+        torrentFileRenamedEvent.emit(TorrentFileRenamedData(torrentId, filePath, newName))
     }
 
     private fun onGotTorrentPeers(torrentId: Int) {
-        gotTorrentPeersListener?.invoke(torrentId)
+        gotTorrentPeersEvent.emit(torrentId)
     }
 
     private fun onGotDownloadDirFreeSpace(bytes: Long) {
-        gotDownloadDirFreeSpaceListener?.invoke(bytes)
+        gotDownloadDirFreeSpaceEvent.emit(bytes)
     }
 
     private fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-        gotFreeSpaceForPathListener?.invoke(path, success, bytes)
+        gotFreeSpaceForPathEvent.emit(GotFreeSpaceForPathData(path, success, bytes))
     }
 
     private fun onAboutToDisconnect() {

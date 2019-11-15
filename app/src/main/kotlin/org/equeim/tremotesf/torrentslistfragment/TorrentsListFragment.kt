@@ -158,12 +158,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
                 .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value!!) }
 
-        Rpc.torrentAddDuplicateListener = {
+        Rpc.torrentAddDuplicateEvent.observe(viewLifecycleOwner) {
             view.longSnackbar(R.string.torrent_duplicate)
         }
-        Rpc.torrentAddErrorListener = {
+        Rpc.torrentAddErrorEvent.observe(viewLifecycleOwner) {
             view.longSnackbar(R.string.torrent_add_error)
         }
+
 
         if (savedInstanceState == null) {
             if (Servers.hasServers) {
@@ -377,8 +378,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     override fun onDestroyView() {
-        Rpc.torrentAddDuplicateListener = null
-        Rpc.torrentAddErrorListener = null
         Settings.torrentCompactViewListener = null
         Settings.torrentNameMultilineListener = null
 

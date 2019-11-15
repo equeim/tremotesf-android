@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -42,18 +43,9 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         private set(value) {
             if (value != field) {
                 field = value
-                if (value != null) {
-                    value.torrent.setPeersEnabled(true)
-                    Rpc.gotTorrentPeersListener = gotTorrentPeersListener
-                }
+                value?.torrent?.setPeersEnabled(true)
             }
         }
-
-    private val gotTorrentPeersListener = { torrentId: Int ->
-        if (torrentId == torrent?.id) {
-            update()
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,16 +59,12 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         peers_view.itemAnimator = null
 
         update()
-    }
 
-    override fun onStart() {
-        super.onStart()
-        Rpc.gotTorrentPeersListener = gotTorrentPeersListener
-    }
-
-    override fun onStop() {
-        Rpc.gotTorrentPeersListener = null
-        super.onStop()
+        Rpc.gotTorrentPeersEvent.observe(viewLifecycleOwner) { torrentId ->
+            if (torrentId == torrent?.id) {
+                update()
+            }
+        }
     }
 
     override fun onDestroyView() {

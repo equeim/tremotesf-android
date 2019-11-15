@@ -86,7 +86,7 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
         Rpc.status.observe(viewLifecycleOwner) { updateView() }
 
-        Rpc.gotDownloadDirFreeSpaceListener = { bytes ->
+        Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
             val text = download_directory_edit.text?.trim()
             if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
                 free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
@@ -94,7 +94,7 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
             }
         }
 
-        Rpc.gotFreeSpaceForPathListener = { path, success, bytes ->
+        Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
             val text = download_directory_edit.text?.trim()
             if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                 if (success) {
@@ -114,8 +114,6 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
         doneMenuItem = null
         snackbar = null
         directoriesAdapter = null
-        Rpc.gotDownloadDirFreeSpaceListener = null
-        Rpc.gotFreeSpaceForPathListener = null
         super.onDestroyView()
     }
 

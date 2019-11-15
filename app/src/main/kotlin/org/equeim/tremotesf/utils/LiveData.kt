@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.utils
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
@@ -60,4 +61,64 @@ class BasicMediatorLiveData<T>(vararg sources: LiveData<*>, private val getMedia
             }
         }
     }
+}
+
+// LiveData that sets its value to null after calling all observers
+class LiveEvent<T> : LiveData<T>(null) {
+    private val eventObservers = mutableListOf<ObserverWrapper<T>>()
+
+    override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
+        if (!hasObservers()) {
+            value = null
+        }
+        val eventObserver = ObserverWrapper(observer)
+        eventObservers.add(eventObserver)
+        super.observe(owner, eventObserver)
+    }
+
+    override fun observeForever(observer: Observer<in T>) {
+        if (!hasObservers()) {
+            value = null
+        }
+        val eventObserver = ObserverWrapper(observer)
+        eventObservers.add(eventObserver)
+        super.observeForever(eventObserver)
+    }
+
+    override fun removeObserver(observer: Observer<in T>) {
+        eventObservers.removeAll { it.observer == observer }
+        super.removeObserver(observer)
+        if (!hasObservers()) {
+            value = null
+        }
+    }
+
+    fun emit(value: T) {
+        this.value = value
+    }
+
+    private fun resetValueIfAllCalled() {
+        if (eventObservers.last().called) {
+            value = null
+        }
+    }
+
+    private inner class ObserverWrapper<T>(val observer: Observer<in T>) : Observer<T> {
+        var called = false
+            private set
+
+        override fun onChanged(t: T) {
+            if (t != null) {
+                observer.onChanged(t)
+                called = true
+                resetValueIfAllCalled()
+            } else {
+                called = false
+            }
+        }
+    }
+}
+
+fun LiveEvent<Unit>.emit() {
+    emit(Unit)
 }
