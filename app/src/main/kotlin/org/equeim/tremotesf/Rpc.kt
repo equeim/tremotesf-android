@@ -215,7 +215,6 @@ object Rpc : AnkoLogger {
     val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
 
     val torrents = MutableLiveData<List<TorrentData>>()
-    private var firstTorrentsAfterConnection = false
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -288,7 +287,10 @@ object Rpc : AnkoLogger {
     private fun onStatusChanged(newStatus: Int) {
         status.value = newStatus
         when (newStatus) {
-            RpcStatus.Connected -> firstTorrentsAfterConnection = true
+            RpcStatus.Connected -> {
+                showNotificationsSinceLastConnection()
+                handleWorkerCompleter()
+            }
             RpcStatus.Disconnected -> handleWorkerCompleter()
         }
     }
@@ -317,11 +319,9 @@ object Rpc : AnkoLogger {
 
         torrents.value = newTorrents
 
-        if (firstTorrentsAfterConnection) {
-            showNotificationsSinceLastConnection()
-            firstTorrentsAfterConnection = false
+        if (isConnected) {
+            handleWorkerCompleter()
         }
-        handleWorkerCompleter()
     }
 
     private fun showNotificationsSinceLastConnection() {

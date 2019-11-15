@@ -66,7 +66,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     lateinit var hash: String
     var torrent: TorrentData? = null
-    private var firstTorrentsUpdate = true
 
     private var menu: Menu? = null
     private var startMenuItem: MenuItem? = null
@@ -124,7 +123,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
             findNavController().navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
-        firstTorrentsUpdate = true
         Rpc.torrents.observe(viewLifecycleOwner, ::updateTorrent)
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
     }

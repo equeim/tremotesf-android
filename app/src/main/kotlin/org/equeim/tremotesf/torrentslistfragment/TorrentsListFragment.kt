@@ -103,8 +103,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     var torrentsAdapter: TorrentsAdapter? = null
         private set
 
-    private var firstTorrentsUpdate = true
-
     private var navigatedFrom = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,8 +130,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Settings.torrentNameMultilineListener = {
             torrents_view.adapter = torrentsAdapter
         }
-
-        firstTorrentsUpdate = true
 
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
@@ -492,14 +488,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         statusSpinnerAdapter?.update()
         trackersSpinnerAdapter?.update()
         directoriesSpinnerAdapter?.update()
-        if (!firstTorrentsUpdate) {
-            torrentsAdapter?.update()
-        }
+        torrentsAdapter?.update()
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
                 if (Rpc.isConnected) Rpc.serverSettings.isAlternativeSpeedLimitsEnabled else false
-
-        firstTorrentsUpdate = false
     }
 
     private fun updateTitle() {
