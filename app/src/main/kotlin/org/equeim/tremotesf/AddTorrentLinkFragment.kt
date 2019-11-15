@@ -60,7 +60,6 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
         torrent_link_edit.setText(requireArguments().getString(AddTorrentFragmentArguments.URI))
         priority_spinner.setSelection(1)
 
-        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
         start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
 
         download_directory_edit.doAfterTextChanged {
@@ -77,6 +76,10 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
                     free_space_text_view.text = ""
                 }
             }
+        }
+
+        if (savedInstanceState == null) {
+            download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
         }
 
         directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
