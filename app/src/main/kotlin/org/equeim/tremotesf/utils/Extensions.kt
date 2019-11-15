@@ -24,7 +24,9 @@ import android.app.Activity
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 
 import androidx.core.content.getSystemService
@@ -34,6 +36,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.DialogFragmentNavigator
+
+import com.google.android.material.textfield.TextInputLayout
 
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
@@ -47,6 +51,18 @@ inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Edi
         action(it)
     }
 }
+
+val EditText.textInputLayout: TextInputLayout
+    get() {
+        var p: ViewParent? = parent
+        while (p != null) {
+            if (p is TextInputLayout) {
+                return p
+            }
+            p = p.parent
+        }
+        throw IllegalArgumentException("$this is not a child of TextInputLayout")
+    }
 
 fun Activity.hideKeyboard() {
     currentFocus?.let { focus ->

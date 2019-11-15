@@ -368,11 +368,15 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         }
 
         fun check(): Boolean {
-            if (download_directory_edit.text?.trimmedLength() ?: 0 == 0) {
-                download_directory_edit.error = getString(R.string.empty_field_error)
-                return false
+            val ret: Boolean
+            download_directory_layout.error = if (download_directory_edit.text.trimmedLength() == 0) {
+                ret = false
+                getString(R.string.empty_field_error)
+            } else {
+                ret = true
+                null
             }
-            return true
+            return ret
         }
     }
 

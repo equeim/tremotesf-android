@@ -34,6 +34,7 @@ import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.textInputLayout
 
 import kotlinx.android.synthetic.main.add_torrent_link_fragment.*
 import kotlinx.android.synthetic.main.download_directory_edit.*
@@ -122,15 +123,23 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         if (menuItem.itemId == R.id.done) {
-            if (torrent_link_edit.text?.trimmedLength() == 0) {
-                torrent_link_edit.error = getString(R.string.empty_field_error)
+            var error = false
+
+            torrent_link_edit.textInputLayout.error = if (torrent_link_edit.text?.trimmedLength() == 0) {
+                error = true
+                getString(R.string.empty_field_error)
+            } else {
+                null
             }
 
-            if (download_directory_edit.text?.trimmedLength() == 0) {
-                download_directory_edit.error = getString(R.string.empty_field_error)
+            download_directory_layout.error = if (download_directory_edit.text?.trimmedLength() == 0) {
+                error = true
+                getString(R.string.empty_field_error)
+            } else {
+                null
             }
 
-            if (torrent_link_edit.error != null || download_directory_edit.error != null) {
+            if (error) {
                 return false
             }
 

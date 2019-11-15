@@ -42,6 +42,7 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.setChildrenEnabled
+import org.equeim.tremotesf.utils.textInputLayout
 
 import kotlinx.android.synthetic.main.server_edit_certificates_fragment.*
 import kotlinx.android.synthetic.main.server_edit_fragment.*
@@ -145,12 +146,16 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
 
         val error = getString(R.string.empty_field_error)
-        val checkLength = fun(edit: EditText): Boolean {
-            if (edit.text.trimmedLength() == 0) {
-                edit.error = error
-                return false
+        val checkLength: (EditText) -> Boolean = { edit ->
+            val ret: Boolean
+            edit.textInputLayout.error = if (edit.text.trimmedLength() == 0) {
+                ret = false
+                error
+            } else {
+                ret = true
+                null
             }
-            return true
+            ret
         }
 
         val nameOk = checkLength(name_edit)
