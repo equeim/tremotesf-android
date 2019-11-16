@@ -261,7 +261,12 @@
     </fragment>
     <fragment
         android:id="@+id/certificatesFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$CertificatesFragment" />
+        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$CertificatesFragment">
+
+        <argument
+            android:name="server"
+            app:argType="string" />
+    </fragment>
     <dialog
         android:id="@+id/persistentNotificationWarningFragment"
         android:name="org.equeim.tremotesf.SettingsFragment$PreferenceFragment$PersistentNotificationWarningFragment" />

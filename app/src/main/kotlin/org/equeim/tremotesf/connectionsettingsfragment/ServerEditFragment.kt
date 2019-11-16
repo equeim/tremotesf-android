@@ -25,13 +25,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 
-import androidx.appcompat.app.AlertDialog
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.observe
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -58,31 +55,13 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
     private var server: Server? = null
     private lateinit var newServer: Server
 
-    private val certificatesModel: CertificatesModel by activityViewModels()
+    private lateinit var certificatesModel: CertificatesModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val serverName = requireArguments().getString(SERVER)
         server = Servers.servers.find { it.name == serverName }
         newServer = server?.copy() ?: Server()
-
-        certificatesModel.certificatesData.apply {
-            if (value == null) {
-                value = CertificatesModel.CertificatesData(newServer.selfSignedCertificateEnabled,
-                                                           newServer.selfSignedCertificate,
-                                                           newServer.clientCertificateEnabled,
-                                                           newServer.clientCertificate)
-            }
-            observe(this@ServerEditFragment) { data: CertificatesModel.CertificatesData? ->
-                if (data != null) {
-                    newServer.selfSignedCertificateEnabled = data.selfSignedCertificateEnabled
-                    newServer.selfSignedCertificate = data.selfSignedCertificateData
-                    newServer.clientCertificateEnabled = data.clientCertificateEnabled
-                    newServer.clientCertificate = data.clientCertificateData
-                }
-            }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -96,7 +75,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         certificates_item.isEnabled = false
         certificates_item.setChildrenEnabled(false)
         certificates_item.setOnClickListener {
-            findNavController().navigate(R.id.action_serverEditFragment_to_certificatesFragment)
+            findNavController().navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
         }
         https_check_box.setOnCheckedChangeListener { _, checked ->
             certificates_item.isEnabled = checked
@@ -129,15 +108,10 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
     }
 
-    private fun setupToolbar() {
-        toolbar?.apply {
-            setTitle(if (server == null) R.string.add_server else R.string.edit_server)
-            menu.findItem(R.id.done).setTitle(if (server == null) {
-                R.string.add
-            } else {
-                R.string.save
-            })
-        }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        certificatesModel = ViewModelProvider(findNavController().getBackStackEntry(R.id.serverEditFragment),
+                                              CertificatesModelFactory(newServer))[CertificatesModel::class.java]
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -184,6 +158,17 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         return true
     }
 
+    private fun setupToolbar() {
+        toolbar?.apply {
+            setTitle(if (server == null) R.string.add_server else R.string.edit_server)
+            menu.findItem(R.id.done).setTitle(if (server == null) {
+                R.string.add
+            } else {
+                R.string.save
+            })
+        }
+    }
+
     private fun save() {
         newServer.apply {
             name = name_edit.text.toString().trim()
@@ -196,6 +181,13 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             password = password_edit.text.toString().trim()
             updateInterval = update_interval_edit.text.toString().toInt()
             timeout = timeout_edit.text.toString().toInt()
+
+            certificatesModel.certificatesData.let { data ->
+                selfSignedCertificateEnabled = data.selfSignedCertificateEnabled
+                selfSignedCertificate = data.selfSignedCertificateData
+                clientCertificateEnabled = data.clientCertificateEnabled
+                clientCertificate = data.clientCertificateData
+            }
         }
 
         val server = this.server
@@ -204,8 +196,6 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         } else {
             Servers.setServer(server, newServer)
         }
-
-        certificatesModel.certificatesData.value = null
 
         findNavController().popBackStack(R.id.serverEditFragment, true)
     }
@@ -222,53 +212,67 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
     }
 
-    class CertificatesModel : ViewModel() {
-        data class CertificatesData(val selfSignedCertificateEnabled: Boolean,
-                                    val selfSignedCertificateData: String,
-                                    val clientCertificateEnabled: Boolean,
-                                    val clientCertificateData: String)
+    private class CertificatesModel(server: Server) : ViewModel() {
+        data class CertificatesData(var selfSignedCertificateEnabled: Boolean,
+                                    var selfSignedCertificateData: String,
+                                    var clientCertificateEnabled: Boolean,
+                                    var clientCertificateData: String)
 
-        val certificatesData = MutableLiveData<CertificatesData>()
+        val certificatesData = CertificatesData(server.selfSignedCertificateEnabled,
+                                                server.selfSignedCertificate,
+                                                server.clientCertificateEnabled,
+                                                server.clientCertificate)
+    }
+
+    private class CertificatesModelFactory(private val server: Server) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass == CertificatesModel::class.java) {
+                return CertificatesModel(server) as T
+            }
+            throw IllegalArgumentException()
+        }
     }
 
     class CertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
                                                     R.string.certificates) {
-        private val certificatesModel: CertificatesModel by activityViewModels()
+        private lateinit var certificatesModel: CertificatesModel
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-
-            self_signed_certificate_check_box.isChecked = false
-
-            self_signed_certificate_layout.isEnabled = false
             self_signed_certificate_check_box.setOnCheckedChangeListener { _, checked ->
                 self_signed_certificate_layout.isEnabled = checked
             }
-
-            client_certificate_check_box.isChecked = false
-
-            client_certificate_layout.isEnabled = false
+            self_signed_certificate_layout.isEnabled = false
             client_certificate_check_box.setOnCheckedChangeListener { _, checked ->
                 client_certificate_layout.isEnabled = checked
             }
+            client_certificate_layout.isEnabled = false
+        }
 
-            if (savedInstanceState == null) {
-                certificatesModel.certificatesData.value?.let { data ->
-                    self_signed_certificate_check_box.isChecked = data.selfSignedCertificateEnabled
-                    self_signed_certificate_edit.setText(data.selfSignedCertificateData)
-                    client_certificate_check_box.isChecked = data.clientCertificateEnabled
-                    client_certificate_edit.setText(data.clientCertificateData)
-                }
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+
+            val serverName = requireArguments().getString(SERVER)
+            val server = Servers.servers.find { it.name == serverName }
+            certificatesModel = ViewModelProvider(findNavController().getBackStackEntry(R.id.serverEditFragment),
+                                                  CertificatesModelFactory(server ?: Server()))[CertificatesModel::class.java]
+            certificatesModel.certificatesData.let { data ->
+                self_signed_certificate_check_box.isChecked = data.selfSignedCertificateEnabled
+                self_signed_certificate_edit.setText(data.selfSignedCertificateData)
+                client_certificate_check_box.isChecked = data.clientCertificateEnabled
+                client_certificate_edit.setText(data.clientCertificateData)
             }
         }
 
         override fun onNavigatedFrom() {
             if (view != null) {
-                certificatesModel.certificatesData.value =
-                        CertificatesModel.CertificatesData(self_signed_certificate_check_box.isChecked,
-                                                           self_signed_certificate_edit.text.toString(),
-                                                           client_certificate_check_box.isChecked,
-                                                           client_certificate_edit.text.toString())
+                certificatesModel.certificatesData.apply {
+                    selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
+                    selfSignedCertificateData = self_signed_certificate_edit.text.toString()
+                    clientCertificateEnabled = client_certificate_check_box.isChecked
+                    clientCertificateData = client_certificate_edit.text.toString()
+                }
             }
         }
     }
