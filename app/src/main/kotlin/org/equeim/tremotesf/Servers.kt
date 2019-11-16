@@ -45,6 +45,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonException
 
+import org.equeim.tremotesf.utils.NonNullMutableLiveData
+
 
 private const val FILE_NAME = "servers.json"
 private const val CURRENT = "current"
@@ -120,15 +122,11 @@ data class Server(var name: String = "",
 object Servers : AnkoLogger {
     private val context = Application.instance
 
-    val servers = mutableListOf<Server>()
-
-    private val serversListeners = mutableListOf<() -> Unit>()
-    fun addServersListener(listener: () -> Unit) = serversListeners.add(listener)
-    fun removeServersListener(listener: () -> Unit) = serversListeners.remove(listener)
+    val servers = NonNullMutableLiveData<List<Server>>(emptyList())
 
     val hasServers: Boolean
         get() {
-            return servers.isNotEmpty()
+            return servers.value.isNotEmpty()
         }
 
     private var saveOnCurrentChanged = false
@@ -152,6 +150,8 @@ object Servers : AnkoLogger {
 
     private fun load() {
         try {
+            val servers = mutableListOf<Server>()
+
             val fileData = context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
             val saveData = Json(JsonConfiguration.Stable).parse(SaveData.serializer(), fileData)
             for (server in saveData.servers) {
@@ -179,7 +179,8 @@ object Servers : AnkoLogger {
                 servers.add(server)
             }
 
-            currentServer.value = servers.find { it.name == saveData.currentServerName }
+            this.servers.value = servers
+            setCurrentServer(servers.find { it.name == saveData.currentServerName })
 
             if (currentServer.value == null && servers.isNotEmpty()) {
                 currentServer.value = servers.first()
@@ -201,7 +202,7 @@ object Servers : AnkoLogger {
 
     private fun reset() {
         currentServer.value = null
-        servers.clear()
+        servers.value = emptyList()
     }
 
     fun save() {
@@ -209,19 +210,17 @@ object Servers : AnkoLogger {
         val lastTorrents = currentServer.value?.lastTorrents
         if (lastTorrents != null) {
             lastTorrents.torrents.clear()
-            Rpc.torrents.value?.let {
-                for (torrent in it) {
-                    lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                                                             torrent.hashString,
-                                                             torrent.name,
-                                                             torrent.isFinished))
-                }
+            for (torrent in Rpc.torrents.value) {
+                lastTorrents.torrents.add(Server.Torrent(torrent.id,
+                                                         torrent.hashString,
+                                                         torrent.name,
+                                                         torrent.isFinished))
             }
             lastTorrents.saved = true
         }
 
         saveData = SaveData(currentServer.value?.name,
-                            servers.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
+                            servers.value.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
 
         WorkManager.getInstance(context).enqueueUniqueWork(
                 SaveWorker.UNIQUE_WORK_NAME,
@@ -232,6 +231,8 @@ object Servers : AnkoLogger {
 
     fun addServer(newServer: Server) {
         var newCurrent: Server? = null
+
+        val servers = this.servers.value.toMutableList()
 
         val overwriteServer = servers.find { it.name == newServer.name }
         if (overwriteServer == null) {
@@ -246,12 +247,10 @@ object Servers : AnkoLogger {
             }
         }
 
+        this.servers.value = servers
+
         if (newCurrent != null) {
             setCurrentServer(newCurrent)
-        }
-
-        for (listener in serversListeners) {
-            listener()
         }
 
         save()
@@ -267,32 +266,32 @@ object Servers : AnkoLogger {
             else -> false
         }
 
+        val servers = this.servers.value.toMutableList()
+
         if (newServer.name != server.name) {
+            // remove overwritten
             servers.removeAll { it.name == newServer.name }
         }
 
         newServer.copyTo(server)
 
+        this.servers.value = servers
+
         if (currentChanged) {
             setCurrentServer(server)
-        }
-
-        for (listener in serversListeners) {
-            listener()
         }
 
         save()
     }
 
     fun removeServers(toRemove: List<Server>) {
+        val servers = this.servers.value.toMutableList()
         servers.removeAll(toRemove)
+
+        this.servers.value = servers
 
         if (currentServer.value in toRemove) {
             setCurrentServer(servers.firstOrNull())
-        }
-
-        for (listener in serversListeners) {
-            listener()
         }
 
         save()

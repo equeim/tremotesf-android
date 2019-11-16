@@ -60,7 +60,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val serverName = requireArguments().getString(SERVER)
-        server = Servers.servers.find { it.name == serverName }
+        server = Servers.servers.value?.find { it.name == serverName }
         newServer = server?.copy() ?: Server()
     }
 
@@ -148,7 +148,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 updateIntervalOk &&
                 timeoutOk) {
             if (nameEditText != server?.name &&
-                    Servers.servers.find { it.name == nameEditText } != null) {
+                    Servers.servers.value?.find { it.name == nameEditText } != null) {
                 findNavController().navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
             } else {
                 save()
@@ -254,7 +254,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             super.onActivityCreated(savedInstanceState)
 
             val serverName = requireArguments().getString(SERVER)
-            val server = Servers.servers.find { it.name == serverName }
+            val server = Servers.servers.value?.find { it.name == serverName }
             certificatesModel = ViewModelProvider(findNavController().getBackStackEntry(R.id.serverEditFragment),
                                                   CertificatesModelFactory(server ?: Server()))[CertificatesModel::class.java]
             certificatesModel.certificatesData.let { data ->

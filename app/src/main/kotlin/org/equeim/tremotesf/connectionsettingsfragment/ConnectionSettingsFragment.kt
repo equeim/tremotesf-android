@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -57,7 +58,13 @@ import kotlinx.android.synthetic.main.server_list_item.view.*
 class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
                                                       R.string.connection_settings) {
     var adapter: ServersAdapter? = null
-    private val serversListener = { update() }
+
+    private var savedInstanceState: Bundle? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.savedInstanceState = savedInstanceState
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,23 +90,21 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
         })
 
-        update()
-        adapter.selector.restoreInstanceState(savedInstanceState)
-
-        Servers.addServersListener(serversListener)
-    }
-
-    override fun onDestroyView() {
-        Servers.removeServersListener(serversListener)
-        super.onDestroyView()
+        Servers.servers.observe(viewLifecycleOwner, ::update)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         adapter?.selector?.saveInstanceState(outState)
     }
 
-    fun update() {
-        adapter?.update()
+    fun update(servers: List<Server>) {
+        adapter?.apply {
+            update(servers)
+            if (savedInstanceState != null) {
+                selector.restoreInstanceState(savedInstanceState)
+                savedInstanceState = null
+            }
+        }
         placeholder.visibility = if (adapter?.itemCount == 0) {
             View.VISIBLE
         } else {
@@ -142,9 +147,9 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             holder.updateSelectedBackground()
         }
 
-        fun update() {
-            servers.clear()
-            servers.addAll(Servers.servers.sortedWith(comparator))
+        fun update(servers: List<Server>) {
+            this.servers.clear()
+            this.servers.addAll(servers.sortedWith(comparator))
             notifyDataSetChanged()
         }
 

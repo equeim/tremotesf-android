@@ -53,7 +53,7 @@ class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAd
 
     fun update() {
         servers.clear()
-        servers.addAll(Servers.servers.sortedWith(comparator))
+        servers.addAll(Servers.servers.value!!.sortedWith(comparator))
         notifyDataSetChanged()
         serversSpinner.setSelection(servers.indexOf(Servers.currentServer.value))
     }

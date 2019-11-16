@@ -125,8 +125,8 @@ class ForegroundService : LifecycleService(), AnkoLogger {
                 .setColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
                 .setOngoing(true)
 
-        if (Servers.hasServers) {
-            val currentServer = Servers.currentServer.value!!
+        val currentServer = Servers.currentServer.value
+        if (currentServer != null) {
             notificationBuilder.setContentTitle(getString(R.string.current_server_string,
                                                           currentServer.name,
                                                           currentServer.address))
