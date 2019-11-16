@@ -105,14 +105,10 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
             return preferences.getBoolean(torrentCompactViewKey, false)
         }
 
-    var torrentCompactViewListener: (() -> Unit)? = null
-
     val torrentNameMultiline: Boolean
         get() {
             return preferences.getBoolean(torrentNameMultilineKey, false)
         }
-
-    var torrentNameMultilineListener: (() -> Unit)? = null
 
     val showPersistentNotification: Boolean
         get() {
@@ -216,8 +212,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
     override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
         when (key) {
             themeKey -> AppCompatDelegate.setDefaultNightMode(nightMode)
-            torrentCompactViewKey -> torrentCompactViewListener?.invoke()
-            torrentNameMultilineKey -> torrentNameMultilineListener?.invoke()
             persistentNotificationKey -> {
                 if (showPersistentNotification) {
                     ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())

@@ -124,13 +124,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         torrents_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        Settings.torrentCompactViewListener = {
-            torrents_view.adapter = torrentsAdapter
-        }
-        Settings.torrentNameMultilineListener = {
-            torrents_view.adapter = torrentsAdapter
-        }
-
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.error)
@@ -374,9 +367,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     override fun onDestroyView() {
-        Settings.torrentCompactViewListener = null
-        Settings.torrentNameMultilineListener = null
-
         menu = null
         searchMenuItem = null
 
