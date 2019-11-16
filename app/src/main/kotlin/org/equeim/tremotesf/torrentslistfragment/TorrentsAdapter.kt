@@ -74,7 +74,7 @@ private const val STATUS_FILTER_MODE = "statusFilterMode"
 private const val TRACKER_FILTER = "trackerFilter"
 private const val DIRECTORY_FILTER = "directoryFilter"
 
-class TorrentsAdapter(private val activity: AppCompatActivity, private val fragment: TorrentsListFragment) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
+class TorrentsAdapter(activity: AppCompatActivity, private val fragment: TorrentsListFragment) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: TorrentData, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
@@ -166,6 +166,9 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
         }
     }
 
+    private val compactView = Settings.torrentCompactView
+    private val multilineName = Settings.torrentNameMultiline
+
     var sortMode = Settings.torrentsSortMode
         set(value) {
             if (value != field) {
@@ -227,15 +230,15 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
-        if (Settings.torrentCompactView) {
+        if (compactView) {
             return TorrentsViewHolderCompact(selector,
-                                             activity,
+                                             multilineName,
                                              LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item_compact,
                                                                                          parent,
                                                                                          false))
         }
         return TorrentsViewHolder(selector,
-                                  activity,
+                                  multilineName,
                                   LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item,
                                                                               parent,
                                                                              false))
@@ -325,8 +328,8 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
     }
 
     class TorrentsViewHolder(selector: Selector<TorrentData, Int>,
-                             activity: AppCompatActivity,
-                             itemView: View) : BaseTorrentsViewHolder(selector, activity, itemView) {
+                             multilineName: Boolean,
+                             itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
         private val sizeTextView = itemView.size_text_view!!
         private val etaTextView = itemView.eta_text_view!!
         private val progressBar = itemView.progress_bar!!
@@ -364,8 +367,8 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
     }
 
     class TorrentsViewHolderCompact(selector: Selector<TorrentData, Int>,
-                                    context: Context,
-                                    itemView: View) : BaseTorrentsViewHolder(selector, context, itemView) {
+                                    multilineName: Boolean,
+                                    itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
         private val progressTextView = itemView.progress_text_view!!
 
         override fun update(torrent: TorrentData) {
@@ -393,10 +396,11 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
     }
 
     open class BaseTorrentsViewHolder(selector: Selector<TorrentData, Int>,
-                             protected val context: Context,
-                             itemView: View) : Selector.ViewHolder<TorrentData>(selector,
-                                                                            itemView) {
+                                      multilineName: Boolean,
+                                      itemView: View) : Selector.ViewHolder<TorrentData>(selector, itemView) {
         override lateinit var item: TorrentData
+
+        protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
         private val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -408,7 +412,7 @@ class TorrentsAdapter(private val activity: AppCompatActivity, private val fragm
         protected val uploadSpeedTextView = itemView.findViewById<TextView>(R.id.upload_speed_text_view)!!
 
         init {
-            if (!Settings.torrentNameMultiline) {
+            if (!multilineName) {
                 nameTextView.ellipsize = TextUtils.TruncateAt.END
                 nameTextView.maxLines = 1
                 nameTextView.isSingleLine = true
