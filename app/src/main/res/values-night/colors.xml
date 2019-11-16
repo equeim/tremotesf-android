@@ -7,8 +7,7 @@
 
     <color name="color_primary">#ef5350</color>
     <color name="color_on_primary">#ffffff</color>
-    <color name="color_background">#ff303030</color>
-    <color name="color_toolbar">#212121</color>
+    <color name="color_background">#ff202020</color>
 
     <color name="color_primary_old">#80cbc4</color>
 </resources>
