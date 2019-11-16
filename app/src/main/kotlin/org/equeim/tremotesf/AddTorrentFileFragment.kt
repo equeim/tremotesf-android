@@ -75,6 +75,57 @@ object AddTorrentFragmentArguments {
 class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
                                                   R.menu.add_torrent_activity_menu) {
+    companion object {
+        fun setupDownloadDirectoryEdit(fragment: Fragment, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
+            fragment.apply {
+                download_directory_edit.doAfterTextChanged {
+                    val path = it?.trim()
+                    when {
+                        path.isNullOrEmpty() -> {
+                            download_directory_layout.helperText = null
+                        }
+                        Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                            Rpc.nativeInstance.getFreeSpaceForPath(path.toString())
+                        }
+                        Rpc.serverSettings.downloadDirectory()?.contentEquals(path) == true -> {
+                            Rpc.nativeInstance.getDownloadDirFreeSpace()
+                        }
+                        else -> {
+                            download_directory_layout.helperText = null
+                        }
+                    }
+                }
+
+                if (savedInstanceState == null) {
+                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+                }
+
+                val directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
+                download_directory_edit.setAdapter(directoriesAdapter)
+
+                Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
+                    val text = download_directory_edit.text?.trim()
+                    if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
+                        download_directory_layout.helperText = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
+                    }
+                }
+
+                Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
+                    val text = download_directory_edit.text?.trim()
+                    if (!text.isNullOrEmpty() && path.contentEquals(text)) {
+                        download_directory_layout.helperText = if (success) {
+                            getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
+                        } else {
+                            getString(R.string.free_space_error)
+                        }
+                    }
+                }
+
+                return directoriesAdapter
+            }
+        }
+    }
+
     private var doneMenuItem: MenuItem? = null
     private var pagerAdapter: PagerAdapter? = null
     private var backPressedCallback: OnBackPressedCallback? = null
@@ -318,48 +369,11 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
             priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
                                                                      R.string.priority)
 
-            download_directory_edit.doAfterTextChanged {
-                val path = it?.toString()?.trim()
-                when {
-                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                        Rpc.nativeInstance.getFreeSpaceForPath(path)
-                    }
-                    path == Rpc.serverSettings.downloadDirectory() -> {
-                        Rpc.nativeInstance.getDownloadDirFreeSpace()
-                    }
-                    else -> {
-                        free_space_text_view.visibility = View.GONE
-                        free_space_text_view.text = ""
-                    }
-                }
-            }
-
-            directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
-            download_directory_edit.setAdapter(directoriesAdapter)
+            directoriesAdapter = setupDownloadDirectoryEdit(this, savedInstanceState)
 
             if (savedInstanceState == null) {
-                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
                 priority_spinner.setSelection(1)
                 start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
-            }
-
-            Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
-                val text = download_directory_edit.text?.trim()
-                if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
-                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                    free_space_text_view.visibility = View.VISIBLE
-                }
-            }
-
-            Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
-                val text = download_directory_edit.text?.trim()
-                if (!text.isNullOrEmpty() && path.contentEquals(text)) {
-                    if (success) {
-                        free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                    } else {
-                        free_space_text_view.text = getString(R.string.free_space_error)
-                    }
-                }
             }
         }
 

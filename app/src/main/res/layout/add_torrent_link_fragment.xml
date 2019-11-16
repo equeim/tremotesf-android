@@ -74,12 +74,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
 
-                <TextView
-                    android:id="@+id/free_space_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
                 <Spinner
                     android:id="@+id/priority_spinner"
                     android:layout_width="match_parent"

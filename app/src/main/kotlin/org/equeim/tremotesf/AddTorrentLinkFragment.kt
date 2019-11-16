@@ -63,51 +63,11 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
         start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
 
-        download_directory_edit.doAfterTextChanged {
-            val path = it?.toString()?.trim()
-            when {
-                Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                    Rpc.nativeInstance.getFreeSpaceForPath(path)
-                }
-                path == Rpc.serverSettings.downloadDirectory() -> {
-                    Rpc.nativeInstance.getDownloadDirFreeSpace()
-                }
-                else -> {
-                    free_space_text_view.visibility = View.GONE
-                    free_space_text_view.text = ""
-                }
-            }
-        }
-
-        if (savedInstanceState == null) {
-            download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
-        }
-
-        directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
-        download_directory_edit.setAdapter(directoriesAdapter)
-
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
+        directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(this, savedInstanceState)
+
         Rpc.status.observe(viewLifecycleOwner) { updateView() }
-
-        Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
-            val text = download_directory_edit.text?.trim()
-            if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
-                free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                free_space_text_view.visibility = View.VISIBLE
-            }
-        }
-
-        Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
-            val text = download_directory_edit.text?.trim()
-            if (!text.isNullOrEmpty() && path.contentEquals(text)) {
-                if (success) {
-                    free_space_text_view.text = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                } else {
-                    free_space_text_view.text = getString(R.string.free_space_error)
-                }
-            }
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
