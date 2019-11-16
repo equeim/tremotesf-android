@@ -22,7 +22,6 @@ package org.equeim.tremotesf.utils
 
 import android.app.Activity
 import android.text.Editable
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.view.inputmethod.InputMethodManager
@@ -74,13 +73,16 @@ fun Fragment.hideKeyboard() {
     activity?.hideKeyboard()
 }
 
-fun View.showKeyboard() {
+fun EditText.showKeyboard() {
     context.getSystemService<InputMethodManager>()?.let { imm ->
         if (requestFocus()) {
             // If you call showSoftInput() right after requestFocus()
             // it may sometimes fail. So add a 50ms delay
             postDelayed(50) {
-                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+                // Check if we are still focused
+                if (isFocused) {
+                    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+                }
             }
         }
     }
