@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import java.text.DecimalFormat
-
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.view.View
@@ -28,6 +26,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.torrent_details_fragment.*
@@ -57,7 +56,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), Torr
                                                          torrent.totalDownloaded)
         uploaded_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
 
-        ratio_text_view.text = DecimalFormat("0.00").format(torrent.ratio)
+        ratio_text_view.text = DecimalFormats.ratio.format(torrent.ratio)
 
         download_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
         upload_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)

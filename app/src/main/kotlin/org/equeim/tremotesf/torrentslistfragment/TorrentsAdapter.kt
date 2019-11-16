@@ -56,6 +56,7 @@ import org.equeim.tremotesf.TorrentData
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentFilesAdapter
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
@@ -350,7 +351,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                 context.getString(R.string.completed_string,
                                    Utils.formatByteSize(context, torrent.completedSize),
                                    Utils.formatByteSize(context, torrent.sizeWhenDone),
-                                   DecimalFormat("0.#").format(torrent.percentDone * 100))
+                                   DecimalFormats.generic.format(torrent.percentDone * 100))
             }
             etaTextView.text = Utils.formatDuration(context, torrent.eta)
 
@@ -391,7 +392,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             }
 
             progressTextView.text = context.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
-                                                       DecimalFormat("0.#").format(torrent.percentDone * 100))
+                                                      DecimalFormats.generic.format(torrent.percentDone * 100))
         }
     }
 

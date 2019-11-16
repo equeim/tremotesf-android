@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf.utils
 
-import java.text.DecimalFormat
-
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Build
@@ -37,8 +35,6 @@ import org.equeim.tremotesf.Rpc
 
 
 object Utils : AnkoLogger {
-    private val decimalFormat by lazy { DecimalFormat("0.#") }
-
     fun shutdownApp(context: Context) {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
@@ -58,13 +54,13 @@ object Utils : AnkoLogger {
 
     fun formatByteSize(context: Context, bytes: Long): String {
         val (size, unit) = calculateSize(bytes)
-        val numberString = decimalFormat.format(size)
+        val numberString = DecimalFormats.generic.format(size)
         return context.resources.getStringArray(R.array.size_units)[unit].format(numberString)
     }
 
     fun formatByteSpeed(context: Context, bytes: Long): String {
         val (size, unit) = calculateSize(bytes)
-        val numberString = decimalFormat.format(size)
+        val numberString = DecimalFormats.generic.format(size)
         return context.resources.getStringArray(R.array.speed_units)[unit].format(numberString)
     }
 

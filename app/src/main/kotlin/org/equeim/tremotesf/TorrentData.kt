@@ -26,6 +26,7 @@ import android.content.Context
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
+import org.equeim.tremotesf.utils.DecimalFormats
 
 
 class TorrentData(val id: Int, val torrent: Torrent, private val context: Context) {
@@ -54,7 +55,7 @@ class TorrentData(val id: Int, val torrent: Torrent, private val context: Contex
                 Torrent.Status.QueuedForDownloading,
                 Torrent.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
                 Torrent.Status.Checking -> context.getString(R.string.torrent_checking,
-                        DecimalFormat("0.#").format(recheckProgress))
+                        DecimalFormats.generic.format(recheckProgress))
                 Torrent.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
                 Torrent.Status.Errored -> errorString
                 else -> ""

@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import java.text.DecimalFormat
-
 import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
@@ -29,8 +27,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -42,11 +40,11 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.TorrentData
-import org.equeim.tremotesf.utils.Utils
-import org.equeim.tremotesf.utils.createTextFieldDialog
-
 import org.equeim.tremotesf.setFilesPriority
 import org.equeim.tremotesf.setFilesWanted
+import org.equeim.tremotesf.utils.DecimalFormats
+import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
@@ -86,7 +84,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
                                                                                    item.completedSize),
                                                               Utils.formatByteSize(context,
                                                                                    item.size),
-                                                              DecimalFormat("0.#").format(item.progress * 100))
+                                                              DecimalFormats.generic.format(item.progress * 100))
         }
     }
 

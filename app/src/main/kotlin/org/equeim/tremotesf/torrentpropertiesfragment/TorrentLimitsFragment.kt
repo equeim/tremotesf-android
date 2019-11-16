@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import java.text.DecimalFormat
-
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -30,6 +28,7 @@ import androidx.fragment.app.Fragment
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
@@ -112,7 +111,8 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
 
         ratio_limit_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.ratio_limit_mode),
                                                                     R.string.ratio_limit)
-        ratio_limit_edit.filters = arrayOf(DoubleFilter(0.0..10000.0))
+        val doubleFilter = DoubleFilter(0.0..10000.0)
+        ratio_limit_edit.filters = arrayOf(doubleFilter)
         ratio_limit_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?,
                                         view: View?,
@@ -133,7 +133,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
         }
         ratio_limit_edit.doAfterTextChangedAndNotEmpty {
             if (!updating) {
-                torrent?.setRatioLimit(DoubleFilter.parse(it.toString())!!)
+                torrent?.setRatioLimit(doubleFilter.parse(it.toString())!!)
             }
         }
 
@@ -203,7 +203,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
                                              Torrent.RatioLimitMode.UnlimitedRatio -> 1
                                              else -> 0
                                          })
-        ratio_limit_edit.setText(DecimalFormat("0.00").format(torrent.ratioLimit()))
+        ratio_limit_edit.setText(DecimalFormats.ratio.format(torrent.ratioLimit()))
 
         idle_seeding_spinner.setSelection(when (torrent.idleSeedingLimitMode()) {
                                               Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit -> 0

@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import java.text.DecimalFormat
 import java.util.Comparator
 
 import android.view.View
@@ -31,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.peer_list_item.view.*
@@ -116,7 +116,7 @@ class PeersAdapter(private val fragment: PeersFragment) : RecyclerView.Adapter<P
         val context = fragment.requireContext()
         holder.downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
         holder.uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
-        holder.progressTextView.text = context.getString(R.string.progress_string, DecimalFormat("0.#").format(peer.progress * 100))
+        holder.progressTextView.text = context.getString(R.string.progress_string, DecimalFormats.generic.format(peer.progress * 100))
         holder.clientTextView.text = peer.client
     }
 

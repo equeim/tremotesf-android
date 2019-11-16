@@ -44,32 +44,30 @@ class IntFilter(private val range: IntRange) : InputFilter {
 }
 
 class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputFilter {
-    companion object {
-        private val parser = DecimalFormat()
-        private val position = ParsePosition(0)
-        private var fallbackParser: DecimalFormat? = null
+    private val parser = DecimalFormat()
+    private val position = ParsePosition(0)
+    private var fallbackParser: DecimalFormat? = null
 
-        init {
-            if (parser.decimalFormatSymbols.decimalSeparator != '.') {
-                val symbols = DecimalFormatSymbols()
-                symbols.decimalSeparator = '.'
-                fallbackParser = DecimalFormat(String(), symbols)
-            }
+    init {
+        if (parser.decimalFormatSymbols.decimalSeparator != '.') {
+            val symbols = DecimalFormatSymbols()
+            symbols.decimalSeparator = '.'
+            fallbackParser = DecimalFormat(String(), symbols)
         }
+    }
 
-        private fun fallbackParse(string: String): Number? {
-            position.index = 0
-            return fallbackParser?.parse(string, position)
-        }
+    private fun fallbackParse(string: String): Number? {
+        position.index = 0
+        return fallbackParser?.parse(string, position)
+    }
 
-        fun parse(string: String): Double? {
-            position.index = 0
-            val number = parser.parse(string, position) ?: fallbackParse(string)
-            if (number == null || position.index != string.length) {
-                return null
-            }
-            return number.toDouble()
+    fun parse(string: String): Double? {
+        position.index = 0
+        val number = parser.parse(string, position) ?: fallbackParse(string)
+        if (number == null || position.index != string.length) {
+            return null
         }
+        return number.toDouble()
     }
 
     override fun filter(source: CharSequence,

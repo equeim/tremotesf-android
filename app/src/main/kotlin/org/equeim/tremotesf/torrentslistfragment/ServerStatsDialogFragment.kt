@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf.torrentslistfragment
 
-import java.text.DecimalFormat
-
 import android.app.Dialog
 import android.os.Bundle
 
@@ -31,14 +29,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
+import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 
 import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 
 class ServerStatsDialogFragment : DialogFragment() {
-    private val ratioFormat = DecimalFormat("0.00")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
@@ -63,7 +60,7 @@ class ServerStatsDialogFragment : DialogFragment() {
                                                                   sessionStats.downloaded())
             session_uploaded_text_view.text = Utils.formatByteSize(requireContext(),
                                                                 sessionStats.uploaded())
-            session_ratio_text_view.text = ratioFormat.format(sessionStats.uploaded().toDouble() /
+            session_ratio_text_view.text = DecimalFormats.ratio.format(sessionStats.uploaded().toDouble() /
                                                                    sessionStats.downloaded().toDouble())
             session_duration_text_view.text = Utils.formatDuration(requireContext(), sessionStats.duration())
 
@@ -74,7 +71,7 @@ class ServerStatsDialogFragment : DialogFragment() {
                                                                     sessionCount)
             total_downloaded_text_view.text = Utils.formatByteSize(requireContext(), totalStats.downloaded())
             total_uploaded_text_view.text = Utils.formatByteSize(requireContext(), totalStats.uploaded())
-            total_ratio_text_view.text = ratioFormat.format(totalStats.uploaded().toDouble() /
+            total_ratio_text_view.text = DecimalFormats.ratio.format(totalStats.uploaded().toDouble() /
                                                                  totalStats.downloaded().toDouble())
             total_duration_text_view.text = Utils.formatDuration(requireContext(), totalStats.duration())
         }
