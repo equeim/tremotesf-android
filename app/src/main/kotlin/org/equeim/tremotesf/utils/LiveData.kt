@@ -22,8 +22,22 @@ package org.equeim.tremotesf.utils
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
+
+class NonNullMutableLiveData<T : Any>(value: T) : MutableLiveData<T>(value) {
+    override fun getValue() = checkNotNull(super.getValue())
+    //override fun setValue(value: T) = super.setValue(value)
+
+    inline fun observe(owner: LifecycleOwner, crossinline onChanged: (T) -> Unit) {
+        observe(owner, Observer<T> { onChanged(it) })
+    }
+
+    inline fun observeForever(crossinline onChanged: (t: T) -> Unit) {
+        observeForever(Observer<T> { onChanged(it) })
+    }
+}
 
 // MediatorLiveData that sets its value from getMediatorValue (or to null if getMediatorValue is null)
 // every time its sources change.

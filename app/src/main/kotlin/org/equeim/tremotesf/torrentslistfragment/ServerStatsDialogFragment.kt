@@ -54,7 +54,7 @@ class ServerStatsDialogFragment : DialogFragment() {
         dialog?.apply {
             val sessionDownloadedTextView = session_downloaded_text_view ?: return
 
-            val stats = Rpc.serverStats.value!!
+            val stats = Rpc.serverStats.value
             val sessionStats = stats.currentSession()
             sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),
                                                                   sessionStats.downloaded())

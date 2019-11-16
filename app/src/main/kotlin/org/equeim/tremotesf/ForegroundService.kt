@@ -141,7 +141,7 @@ class ForegroundService : LifecycleService(), AnkoLogger {
         }
 
         if (Rpc.isConnected) {
-            val stats = Rpc.serverStats.value!!
+            val stats = Rpc.serverStats.value
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
                                                                                stats.downloadSpeed()),

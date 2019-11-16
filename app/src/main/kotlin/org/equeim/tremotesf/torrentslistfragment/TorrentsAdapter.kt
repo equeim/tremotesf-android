@@ -250,7 +250,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
     }
 
     private fun updateListContent() {
-        filteredTorrents = Rpc.torrents.value?.filter(filterPredicate) ?: emptyList()
+        filteredTorrents = Rpc.torrents.value.filter(filterPredicate)
 
         if (displayedTorrents.isEmpty()) {
             displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))

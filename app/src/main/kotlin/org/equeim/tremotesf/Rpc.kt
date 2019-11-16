@@ -31,7 +31,6 @@ import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDeepLinkBuilder
 
 import androidx.work.Constraints
@@ -58,6 +57,7 @@ import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.LiveEvent
+import org.equeim.tremotesf.utils.NonNullMutableLiveData
 import org.equeim.tremotesf.utils.emit
 
 
@@ -170,9 +170,9 @@ object Rpc : AnkoLogger {
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     val serverSettings: JniServerSettings = nativeInstance.serverSettings()
-    val serverStats = MutableLiveData<ServerStats>(nativeInstance.serverStats())
+    val serverStats = NonNullMutableLiveData<ServerStats>(nativeInstance.serverStats())
 
-    val status = MutableLiveData<Int>(RpcStatus.Disconnected)
+    val status = NonNullMutableLiveData(RpcStatus.Disconnected)
 
     val isConnected: Boolean
         get() = (status.value == RpcStatus.Connected)
@@ -196,7 +196,7 @@ object Rpc : AnkoLogger {
             }
         }
 
-    val error = MutableLiveData<Int>(RpcError.NoError)
+    val error = NonNullMutableLiveData(RpcError.NoError)
     var errorMessage: String = ""
         private set
 
@@ -214,7 +214,7 @@ object Rpc : AnkoLogger {
     data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
     val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
 
-    val torrents = MutableLiveData<List<TorrentData>>()
+    val torrents = NonNullMutableLiveData<List<TorrentData>>(emptyList())
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -308,7 +308,7 @@ object Rpc : AnkoLogger {
         val newTorrents = mutableListOf<TorrentData>()
         for (torrent in newNativeTorrents) {
             val id = torrent.id()
-            val data = oldTorrents?.find { it.id == id }
+            val data = oldTorrents.find { it.id == id }
             if (data == null) {
                 newTorrents.add(TorrentData(id, torrent, context))
             } else {
@@ -340,22 +340,20 @@ object Rpc : AnkoLogger {
             if (server != null) {
                 val lastTorrents = server.lastTorrents
                 if (lastTorrents.saved) {
-                    torrents.value?.let {
-                        for (torrent in it) {
-                            val hashString: String = torrent.hashString
-                            val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
-                            if (oldTorrent == null) {
-                                if (notifyOnAdded) {
-                                    showAddedNotification(torrent.id,
-                                                          hashString,
-                                                          torrent.name)
-                                }
-                            } else {
-                                if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                                    showFinishedNotification(torrent.id,
-                                                             hashString,
-                                                             torrent.name)
-                                }
+                    for (torrent in torrents.value) {
+                        val hashString: String = torrent.hashString
+                        val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
+                        if (oldTorrent == null) {
+                            if (notifyOnAdded) {
+                                showAddedNotification(torrent.id,
+                                                      hashString,
+                                                      torrent.name)
+                            }
+                        } else {
+                            if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
+                                showFinishedNotification(torrent.id,
+                                                         hashString,
+                                                         torrent.name)
                             }
                         }
                     }

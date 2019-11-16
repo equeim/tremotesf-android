@@ -145,7 +145,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         Servers.currentServer.observe(viewLifecycleOwner) { updateTitle() }
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
-                .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value!!) }
+                .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value) }
 
         Rpc.torrentAddDuplicateEvent.observe(viewLifecycleOwner) {
             view.longSnackbar(R.string.torrent_duplicate)
@@ -514,7 +514,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             RpcStatus.Disconnected -> getString(R.string.connect)
             RpcStatus.Connecting,
             RpcStatus.Connected -> getString(R.string.disconnect)
-            else -> getString(R.string.connect)
+            else -> ""
         }
 
         val connected = Rpc.isConnected

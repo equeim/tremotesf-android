@@ -34,7 +34,7 @@ class DirectoriesSpinnerAdapter(private val context: Context) : BaseSpinnerAdapt
 
     override fun getItem(position: Int): String {
         if (position == 0) {
-            return context.getString(R.string.torrents_all, Rpc.torrents.value?.size ?: 0)
+            return context.getString(R.string.torrents_all, Rpc.torrents.value.size)
         }
         val directory = directories[position - 1]
         val torrents = directoriesMap[directory]
@@ -47,10 +47,8 @@ class DirectoriesSpinnerAdapter(private val context: Context) : BaseSpinnerAdapt
 
     fun update() {
         directoriesMap.clear()
-        Rpc.torrents.value?.let {
-            for (torrent in it) {
-                directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory) { 0 } + 1
-            }
+        for (torrent in Rpc.torrents.value) {
+            directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory) { 0 } + 1
         }
         directories.clear()
         directories.addAll(directoriesMap.keys.sortedWith(comparator))
