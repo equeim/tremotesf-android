@@ -28,14 +28,22 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 
+import androidx.lifecycle.ViewModel
+
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
-
 import org.benjamin.Bdecoder
 
+import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
-class TorrentFileParser : AnkoLogger {
-    enum class Status {
+
+class AddTorrentFileModel : ViewModel() {
+    companion object {
+        // 10 MiB
+        const val MAX_FILE_SIZE = 10 * 1024 * 1024
+    }
+
+    enum class ParserStatus {
         None,
         Loading,
         FileIsTooLarge,
@@ -44,19 +52,13 @@ class TorrentFileParser : AnkoLogger {
         Loaded
     }
 
-    class FilesData(val wantedFiles: List<Int>,
-                    val unwantedFiles: List<Int>,
-                    val lowPriorityFiles: List<Int>,
-                    val normalPriorityFiles: List<Int>,
-                    val highPriorityFiles: List<Int>)
+    data class FilePriorities(val wantedFiles: List<Int>,
+                              val unwantedFiles: List<Int>,
+                              val lowPriorityFiles: List<Int>,
+                              val normalPriorityFiles: List<Int>,
+                              val highPriorityFiles: List<Int>)
 
-    var status = Status.None
-        private set(value) {
-            field = value
-            statusListener?.invoke(value)
-        }
-
-    var statusListener: ((Status) -> Unit)? = null
+    val status = NonNullMutableLiveData(ParserStatus.None)
 
     lateinit var fileData: ByteArray
         private set
@@ -64,14 +66,17 @@ class TorrentFileParser : AnkoLogger {
     val rootDirectory = BaseTorrentFilesAdapter.Directory()
     val torrentName: String
         get() = rootDirectory.children.first().name
-    private val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
-    fun load(uri: Uri, context: Context) {
-        status = Status.Loading
-        TreeCreationTask(context.applicationContext, uri, this).execute()
+    private lateinit var files: List<BaseTorrentFilesAdapter.File>
+
+    fun load(uri: Uri) {
+        if (status.value == ParserStatus.None) {
+            status.value = ParserStatus.Loading
+            TreeCreationTask(Application.instance, uri, this).execute()
+        }
     }
 
-    fun getFilesData(): FilesData {
+    fun getFilePriorities(): FilePriorities {
         val wantedFiles = mutableListOf<Int>()
         val unwantedFiles = mutableListOf<Int>()
         val lowPriorityFiles = mutableListOf<Int>()
@@ -93,36 +98,36 @@ class TorrentFileParser : AnkoLogger {
             }.add(id)
         }
 
-        return FilesData(wantedFiles,
-                         unwantedFiles,
-                         lowPriorityFiles,
-                         normalPriorityFiles,
-                         highPriorityFiles)
+        return FilePriorities(wantedFiles,
+                              unwantedFiles,
+                              lowPriorityFiles,
+                              normalPriorityFiles,
+                              highPriorityFiles)
     }
 
     @SuppressLint("StaticFieldLeak")
     private class TreeCreationTask(private val context: Context,
                                    private val uri: Uri,
-                                   parser: TorrentFileParser) : AsyncTask<Any, Any, Status>(), AnkoLogger {
-        private val parser = WeakReference(parser)
+                                   model: AddTorrentFileModel) : AsyncTask<Any, Any, ParserStatus>(), AnkoLogger {
+        private val model = WeakReference(model)
         private lateinit var fileData: ByteArray
         private lateinit var rootDirectoryChild: BaseTorrentFilesAdapter.Item
         private lateinit var files: List<BaseTorrentFilesAdapter.File>
 
-        override fun doInBackground(vararg params: Any?): TorrentFileParser.Status {
+        override fun doInBackground(vararg params: Any?): ParserStatus {
             try {
                 val stream = context.contentResolver.openInputStream(uri)
                 if (stream == null) {
                     error("openInputStream() returned null")
-                    return TorrentFileParser.Status.ReadingError
+                    return ParserStatus.ReadingError
                 }
 
                 try {
                     val size = stream.available()
 
-                    if (size > 10 * 1024 * 1024) {
-                        error("torrent file is too large")
-                        return TorrentFileParser.Status.FileIsTooLarge
+                    if (size > MAX_FILE_SIZE) {
+                        error("Torrent file is too large")
+                        return ParserStatus.FileIsTooLarge
                     }
 
                     fileData = stream.readBytes()
@@ -130,42 +135,45 @@ class TorrentFileParser : AnkoLogger {
                     return try {
                         createTree(Bdecoder(Charsets.UTF_8,
                                             fileData.inputStream()).decodeDict())
-                        TorrentFileParser.Status.Loaded
+                        ParserStatus.Loaded
                     } catch (error: IllegalStateException) {
-                        error("error parsing torrent file", error)
-                        TorrentFileParser.Status.ParsingError
+                        error("Error parsing torrent file", error)
+                        ParserStatus.ParsingError
+                    } catch (error: ClassCastException) {
+                        error("Error parsing torrent file", error)
+                        ParserStatus.ParsingError
                     }
                 } catch (error: IOException) {
-                    error("error reading torrent file", error)
-                    return TorrentFileParser.Status.ReadingError
+                    error("Error reading torrent file", error)
+                    return ParserStatus.ReadingError
                 } catch (error: SecurityException) {
-                    error("error reading torrent file", error)
-                    return TorrentFileParser.Status.ReadingError
+                    error("Error reading torrent file", error)
+                    return ParserStatus.ReadingError
                 } finally {
                     stream.close()
                 }
             } catch (error: FileNotFoundException) {
-                error("file not found", error)
-                return TorrentFileParser.Status.ReadingError
+                error("File not found", error)
+                return ParserStatus.ReadingError
             }
         }
 
-        override fun onPostExecute(result: TorrentFileParser.Status) {
-            parser.get()?.let { parser ->
-                if (result == TorrentFileParser.Status.Loaded) {
-                    parser.fileData = fileData
-                    rootDirectoryChild.parentDirectory = parser.rootDirectory
-                    parser.rootDirectory.addChild(rootDirectoryChild)
-                    parser.files.addAll(files)
+        override fun onPostExecute(result: ParserStatus) {
+            model.get()?.let { model ->
+                if (result == ParserStatus.Loaded) {
+                    model.fileData = fileData
+                    rootDirectoryChild.parentDirectory = model.rootDirectory
+                    model.rootDirectory.addChild(rootDirectoryChild)
+                    model.files = files
                 }
-                parser.status = result
+                model.status.value = result
             }
         }
 
+        @Suppress("UNCHECKED_CAST")
         private fun createTree(torrentFileMap: Map<String, Any>) {
             val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
-            @Suppress("UNCHECKED_CAST")
             val infoMap = torrentFileMap["info"] as Map<String, Any>
 
             if (infoMap.contains("files")) {
@@ -173,12 +181,10 @@ class TorrentFileParser : AnkoLogger {
                                                                          null,
                                                                          infoMap["name"] as String)
 
-                @Suppress("UNCHECKED_CAST")
                 val filesMaps = infoMap["files"] as List<Map<String, Any>>
                 for ((fileIndex, fileMap) in filesMaps.withIndex()) {
                     var directory = torrentDirectory
 
-                    @Suppress("UNCHECKED_CAST")
                     val pathParts = fileMap["path"] as List<String>
                     for ((partIndex, part) in pathParts.withIndex()) {
                         if (partIndex == pathParts.lastIndex) {

@@ -113,7 +113,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         notifyItemRangeRemoved(0, count)
     }
 
-    fun fileRenamed(file: Item) {
+    fun fileRenamed(file: Item?) {
         val index = currentItems.indexOf(file)
         if (index != -1) {
             if (hasHeaderItem) {

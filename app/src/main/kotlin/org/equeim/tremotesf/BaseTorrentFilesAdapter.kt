@@ -41,11 +41,14 @@ import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
-abstract class BaseTorrentFilesAdapter(protected var rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
     }
+
+    var rootDirectory = rootDirectory
+        private set
 
     protected var currentDirectory = rootDirectory
 
