@@ -151,7 +151,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
                 findNavController(R.id.nav_host).navigate(action, arguments)
             } else {
                 findNavController(R.id.nav_host).navigate(action, arguments,
-                                                          NavOptions.Builder().setPopUpTo(R.id.navigation, true).build())
+                                                          NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
             }
         }
     }
