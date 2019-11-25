@@ -20,10 +20,12 @@
 package org.equeim.tremotesf
 
 import android.os.Bundle
+import android.view.View
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
+import androidx.navigation.fragment.findNavController
 
 import org.equeim.libtremotesf.Torrent
 
@@ -42,5 +44,20 @@ abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         priorityItems = resources.getStringArray(R.array.priority_items)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        toolbar?.setNavigationOnClickListener {
+            if (requireActivity().isTaskRoot) {
+                findNavController().navigateUp()
+            } else {
+                // For some reason it is needed to finish activity before navigateUp(),
+                // otherwise we won't switch to our task in some cases
+                requireActivity().finish()
+                findNavController().navigateUp()
+            }
+        }
     }
 }
