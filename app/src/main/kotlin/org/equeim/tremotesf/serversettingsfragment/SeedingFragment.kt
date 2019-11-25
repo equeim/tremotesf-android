@@ -53,15 +53,15 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
 
         idle_seeding_check_box.isChecked = Rpc.serverSettings.isIdleSeedingLimited
         idle_seeding_check_box.setOnCheckedChangeListener { _, checked ->
-            idle_seeding_layout.isEnabled = checked
+            idle_seeding_limit_layout.isEnabled = checked
             Rpc.serverSettings.isIdleSeedingLimited = checked
         }
 
-        idle_seeding_layout.isEnabled = idle_seeding_check_box.isChecked
+        idle_seeding_limit_layout.isEnabled = idle_seeding_check_box.isChecked
 
-        idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_seeding_edit.setText(Rpc.serverSettings.idleSeedingLimit().toString())
-        idle_seeding_edit.doAfterTextChangedAndNotEmpty {
+        idle_seeding_limit_edit.filters = arrayOf(IntFilter(0..10000))
+        idle_seeding_limit_edit.setText(Rpc.serverSettings.idleSeedingLimit().toString())
+        idle_seeding_limit_edit.doAfterTextChangedAndNotEmpty {
             Rpc.serverSettings.setIdleSeedingLimit(it.toString().toInt())
         }
     }

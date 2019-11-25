@@ -20,93 +20,84 @@
 package org.equeim.tremotesf
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.os.Bundle
+import android.text.InputType
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 
 import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.BaseDropdownAdapter
 
 
 class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
-                                   savedInstanceState: Bundle?) : ArrayAdapter<String>(textEdit.context,
-                                                                                       R.layout.download_directory_dropdown_item,
-                                                                                       android.R.id.text1,
-                                                                                       retrieveItems(savedInstanceState)) {
+                                   savedInstanceState: Bundle?) : BaseDropdownAdapter(R.layout.download_directory_dropdown_item,
+                                                                                      android.R.id.text1) {
     companion object {
         private const val STATE_KEY = "org.equeim.tremotesf.AddTorrentDirectoriesAdapter.items"
+    }
 
-        private fun retrieveItems(savedInstanceState: Bundle?): ArrayList<String> {
-            savedInstanceState?.getStringArrayList(STATE_KEY)?.let { return it }
+    private val items: ArrayList<String>
 
+    init {
+        val saved = savedInstanceState?.getStringArrayList(STATE_KEY)
+        items = if (saved != null) {
+            saved
+        } else {
             val comparator = AlphanumericComparator()
-            val items = Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
+            val sorted = Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
             for (torrent in Rpc.torrents.value) {
-                items.add(torrent.downloadDirectory)
+                sorted.add(torrent.downloadDirectory)
             }
             val downloadDirectory = Rpc.serverSettings.downloadDirectory()
-            items.add(downloadDirectory)
-            return ArrayList(items)
+            sorted.add(downloadDirectory)
+            ArrayList(sorted)
         }
     }
+
+    override fun getCount() = items.size
+    override fun getItem(position: Int) = items[position]
+
+    override fun createViewHolder(view: View) = ViewHolder(view)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getView(position, convertView, parent)
-        if (view.tag == null) {
-            view.tag = ViewHolder(view)
-        }
-        val holder = view.tag as ViewHolder
-        holder.position = position
+        (view.tag as ViewHolder).position = position
         return view
     }
 
-    private fun getItems(): ArrayList<String> {
-        val items = ArrayList<String>(count)
-        for (i in 0 until count) {
-            items.add(getItem(i)!!)
-        }
-        return items
+    fun remove(position: Int) {
+        items.removeAt(position)
+        notifyDataSetChanged()
     }
 
     fun save() {
-        val items = getItems()
+        val saved = ArrayList(items)
         val trimmed = textEdit.text.trim().toString()
-        if (!items.contains(trimmed)) {
-            items.add(trimmed)
+        if (!saved.contains(trimmed)) {
+            saved.add(trimmed)
         }
-        Servers.currentServer.value?.addTorrentDialogDirectories = items.toTypedArray()
+        Servers.currentServer.value?.addTorrentDialogDirectories = saved.toTypedArray()
         Servers.save()
     }
 
     fun saveInstanceState(outState: Bundle) {
-        outState.putStringArrayList(STATE_KEY, getItems())
+        outState.putStringArrayList(STATE_KEY, items)
     }
 
-    private inner class ViewHolder(view: View) {
+    protected inner class ViewHolder(view: View) : BaseViewHolder(view) {
         var position = -1
         init {
             view.findViewById<View>(R.id.remove_button).setOnClickListener {
                 if (count > 1) {
-                    remove(getItem(position))
+                    remove(position)
                 }
             }
         }
-    }
-}
-
-class NonFilteringAutoCompleteTextView(context: Context,
-                                       attrs: AttributeSet?,
-                                       defStyleAttr: Int) : AppCompatAutoCompleteTextView(context, attrs, defStyleAttr) {
-    constructor(context: Context,
-                attrs: AttributeSet?) : this(context, attrs, R.attr.autoCompleteTextViewStyle)
-    constructor(context: Context) : this(context, null)
-
-    override fun performFiltering(text: CharSequence?, keyCode: Int) {
-        // Do nothing
-        onFilterComplete(adapter.count)
     }
 }

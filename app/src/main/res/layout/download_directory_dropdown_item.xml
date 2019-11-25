@@ -11,16 +11,16 @@
         android:layout_height="?attr/listPreferredItemHeightSmall"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
+        android:layout_gravity="center_vertical"
         android:src="@drawable/ic_remove_24dp" />
 
     <TextView
         android:id="@android:id/text1"
-        style="?attr/spinnerDropDownItemStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:ellipsize="none" />
+        android:padding="16dp"
+        android:ellipsize="none"
+        android:textAppearance="?attr/textAppearanceSubtitle1"/>
 </LinearLayout>

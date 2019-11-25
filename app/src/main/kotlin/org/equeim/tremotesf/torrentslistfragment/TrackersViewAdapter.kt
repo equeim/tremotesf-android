@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 Kevin Richter <me@kevinrichter.nl>, Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2019 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -20,38 +20,55 @@
 package org.equeim.tremotesf.torrentslistfragment
 
 import android.content.Context
+import android.widget.AutoCompleteTextView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.AlphanumericComparator
-import org.equeim.tremotesf.utils.BaseSpinnerAdapter
+import org.equeim.tremotesf.utils.AutoCompleteTextViewDynamicAdapter
 
 
-class DirectoriesSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.directories) {
-    private val directoriesMap = mutableMapOf<String, Int>()
-    val directories = mutableListOf<String>()
+class TrackersViewAdapter(private val context: Context,
+                          textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+    private val trackersMap = mutableMapOf<String, Int>()
+    val trackers = mutableListOf<String>()
     private val comparator = AlphanumericComparator()
 
     override fun getItem(position: Int): String {
         if (position == 0) {
             return context.getString(R.string.torrents_all, Rpc.torrents.value.size)
         }
-        val directory = directories[position - 1]
-        val torrents = directoriesMap[directory]
-        return context.getString(R.string.directories_spinner_text, directory, torrents)
+        val tracker = trackers[position - 1]
+        val torrents = trackersMap[tracker]
+        return context.getString(R.string.trackers_spinner_text, tracker, torrents)
     }
 
     override fun getCount(): Int {
-        return directories.size + 1
+        return trackers.size + 1
+    }
+
+    override fun getCurrentItem(): CharSequence {
+        return getItem(trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+    }
+
+    fun getTrackerFilter(position: Int): String {
+        return if (position == 0) {
+            ""
+        } else {
+            trackers[position - 1]
+        }
     }
 
     fun update() {
-        directoriesMap.clear()
+        trackersMap.clear()
         for (torrent in Rpc.torrents.value) {
-            directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory) { 0 } + 1
+            for (tracker in torrent.trackers) {
+                trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
+            }
         }
-        directories.clear()
-        directories.addAll(directoriesMap.keys.sortedWith(comparator))
+        trackers.clear()
+        trackers.addAll(trackersMap.keys.sortedWith(comparator))
         notifyDataSetChanged()
     }
 }

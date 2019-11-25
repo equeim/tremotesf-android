@@ -146,7 +146,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
                 AddTorrentLinkFragment.SCHEME_MAGNET -> R.id.action_global_addTorrentLinkFragment
                 else -> return
             }
-            val arguments = bundleOf(AddTorrentFragmentArguments.URI to intent.data!!.toString())
+            val arguments = bundleOf(AddTorrentFragment.URI to intent.data!!.toString())
             if (isTaskRoot) {
                 findNavController(R.id.nav_host).navigate(action, arguments)
             } else {

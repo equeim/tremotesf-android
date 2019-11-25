@@ -20,13 +20,16 @@
 package org.equeim.tremotesf.torrentslistfragment
 
 import android.content.Context
+import android.widget.AutoCompleteTextView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.utils.BaseSpinnerAdapter
+import org.equeim.tremotesf.Settings
+import org.equeim.tremotesf.utils.AutoCompleteTextViewDynamicAdapter
 
 
-class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdapter(R.string.status) {
+class StatusFilterViewAdapter(private val context: Context,
+                              textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
     private var activeTorrents = 0
     private var downloadingTorrents = 0
     private var seedingTorrents = 0
@@ -49,6 +52,10 @@ class StatusFilterSpinnerAdapter(private val context: Context) : BaseSpinnerAdap
 
     override fun getCount(): Int {
         return 7
+    }
+
+    override fun getCurrentItem(): CharSequence {
+        return getItem(Settings.torrentsStatusFilter.ordinal)
     }
 
     fun update() {

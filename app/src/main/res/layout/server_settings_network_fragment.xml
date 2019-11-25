@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <include
@@ -66,12 +66,19 @@
                     android:saveEnabled="false"
                     android:text="@string/port_forwarding"/>
 
-                <Spinner
-                    android:id="@+id/encryption_spinner"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"/>
+                    android:hint="@string/encryption"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                    <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                        android:id="@+id/encryption_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:readOnly="true"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
                     android:id="@+id/utp_check_box"

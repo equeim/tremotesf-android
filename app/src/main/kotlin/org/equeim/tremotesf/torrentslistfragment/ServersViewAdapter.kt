@@ -21,40 +21,33 @@ package org.equeim.tremotesf.torrentslistfragment
 
 import java.util.Comparator
 
-import android.widget.Spinner
+import android.widget.AutoCompleteTextView
 
-import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.utils.AlphanumericComparator
-import org.equeim.tremotesf.utils.BaseSpinnerAdapter
+import org.equeim.tremotesf.utils.AutoCompleteTextViewDynamicAdapter
 
 
-class ServersSpinnerAdapter(private val serversSpinner: Spinner) : BaseSpinnerAdapter(R.string.server) {
-    val servers = mutableListOf<Server>()
+class ServersViewAdapter(textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+    lateinit var servers: List<Server>
+        private set
 
     private val comparator = object : Comparator<Server> {
         private val nameComparator = AlphanumericComparator()
         override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
     }
 
-    init {
-        serversSpinner.adapter = this
-        update()
-    }
+    override fun getItem(position: Int) = servers[position].name
 
-    override fun getItem(position: Int): String {
-        return servers[position].name
-    }
+    override fun getCount() = servers.size
 
-    override fun getCount(): Int {
-        return servers.size
+    override fun getCurrentItem(): CharSequence {
+        return Servers.currentServer.value?.name ?: ""
     }
 
     fun update() {
-        servers.clear()
-        servers.addAll(Servers.servers.value!!.sortedWith(comparator))
+        servers = Servers.servers.value.sortedWith(comparator)
         notifyDataSetChanged()
-        serversSpinner.setSelection(servers.indexOf(Servers.currentServer.value))
     }
 }

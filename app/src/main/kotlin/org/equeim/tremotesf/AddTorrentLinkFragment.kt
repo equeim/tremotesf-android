@@ -24,15 +24,12 @@ import android.view.MenuItem
 import android.view.View
 
 import androidx.core.text.trimmedLength
-import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.design.indefiniteSnackbar
 
 import org.equeim.libtremotesf.Torrent
-import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
-import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.textInputLayout
 
@@ -40,7 +37,7 @@ import kotlinx.android.synthetic.main.add_torrent_link_fragment.*
 import kotlinx.android.synthetic.main.download_directory_edit.*
 
 
-class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_fragment,
+class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_fragment,
                                                   R.string.add_torrent_link,
                                                   R.menu.add_torrent_activity_menu) {
     companion object {
@@ -55,11 +52,10 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
-                                                                 R.string.priority)
+        torrent_link_edit.setText(requireArguments().getString(URI))
 
-        torrent_link_edit.setText(requireArguments().getString(AddTorrentFragmentArguments.URI))
-        priority_spinner.setSelection(1)
+        priority_view.setText(R.string.normal_priority)
+        priority_view.setAdapter(ArrayDropdownAdapter(priorityItems))
 
         start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
 
@@ -105,12 +101,7 @@ class AddTorrentLinkFragment : NavigationFragment(R.layout.add_torrent_link_frag
 
             Rpc.nativeInstance.addTorrentLink(torrent_link_edit.text.toString(),
                                               download_directory_edit.text.toString(),
-                                              when (priority_spinner.selectedItemPosition) {
-                                                  0 -> Torrent.Priority.HighPriority
-                                                  1 -> Torrent.Priority.NormalPriority
-                                                  2 -> Torrent.Priority.LowPriority
-                                                  else -> Torrent.Priority.NormalPriority
-                                              },
+                                              priorityItemEnums[priorityItems.indexOf(priority_view.text.toString())],
                                               start_downloading_check_box.isChecked)
 
             directoriesAdapter?.save()

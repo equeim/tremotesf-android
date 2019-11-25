@@ -21,12 +21,11 @@ package org.equeim.tremotesf.serversettingsfragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 
 import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
@@ -35,6 +34,13 @@ import kotlinx.android.synthetic.main.server_settings_network_fragment.*
 
 class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_network_fragment,
                                                             R.string.server_settings_network) {
+    private companion object {
+        // Should match R.array.encryption_items
+        val encryptionItems = arrayOf(ServerSettings.EncryptionMode.AllowedEncryption,
+                                      ServerSettings.EncryptionMode.PreferredEncryption,
+                                      ServerSettings.EncryptionMode.RequiredEncryption)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,28 +60,11 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
             Rpc.serverSettings.isPortForwardingEnabled = checked
         }
 
-        encryption_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.encryption_items),
-                                                                   R.string.encryption)
-        encryption_spinner.setSelection(when (Rpc.serverSettings.encryptionMode()) {
-                                            ServerSettings.EncryptionMode.AllowedEncryption -> 0
-                                            ServerSettings.EncryptionMode.PreferredEncryption -> 1
-                                            ServerSettings.EncryptionMode.RequiredEncryption -> 2
-                                            else -> 0
-                                        })
-        encryption_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                Rpc.serverSettings.setEncryptionMode(when (position) {
-                    0 -> ServerSettings.EncryptionMode.AllowedEncryption
-                    1 -> ServerSettings.EncryptionMode.PreferredEncryption
-                    2 -> ServerSettings.EncryptionMode.RequiredEncryption
-                    else -> ServerSettings.EncryptionMode.AllowedEncryption
-                })
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        val encryptionItemValues = resources.getStringArray(R.array.encryption_items)
+        encryption_view.setAdapter(ArrayDropdownAdapter(encryptionItemValues))
+        encryption_view.setText(encryptionItemValues[encryptionItems.indexOf(Rpc.serverSettings.encryptionMode())])
+        encryption_view.setOnItemClickListener { _, _, position, _ ->
+            Rpc.serverSettings.setEncryptionMode(encryptionItems[position])
         }
 
         utp_check_box.isChecked = Rpc.serverSettings.isUtpEnabled

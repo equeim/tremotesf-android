@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:scrollbars="vertical">
@@ -10,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/horizontal_edge_padding"
         android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/vertical_edge_padding"
-        android:paddingTop="@dimen/vertical_edge_padding">
+        android:layout_marginTop="@dimen/vertical_edge_padding"
+        android:layout_marginBottom="@dimen/vertical_edge_padding"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -25,7 +27,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
             android:text="@string/honor_global_limits"/>
 
         <CheckBox
@@ -33,7 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
             android:text="@string/download_noun"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -48,8 +48,7 @@
                 android:id="@+id/download_speed_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
@@ -57,7 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"
             android:text="@string/upload_noun"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -72,19 +70,23 @@
                 android:id="@+id/upload_speed_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false">
-
-                <requestFocus/>
+                android:inputType="number">
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/priority_spinner"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"/>
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/priority">
+
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/priority_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -93,38 +95,52 @@
             android:text="@string/seeding"
             android:textAppearance="@style/HeaderTextAppearance"/>
 
-        <Spinner
-            android:id="@+id/ratio_limit_spinner"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"/>
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/ratio_limit">
+
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/ratio_limit_mode_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ratio_limit_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp">
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ratio_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:digits="0123456789,."
-                android:inputType="numberDecimal"
-                android:saveEnabled="false"/>
+                android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/idle_seeding_spinner"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:saveEnabled="false"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/idle_seeding">
+
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/idle_seeding_mode_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/idle_seeding_layout"
+            android:id="@+id/idle_seeding_limit_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
@@ -133,11 +149,10 @@
             android:hint="@string/min">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idle_seeding_edit"
+                android:id="@+id/idle_seeding_limit_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -157,8 +172,7 @@
                 android:id="@+id/maximum_peers_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:saveEnabled="false"/>
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

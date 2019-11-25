@@ -30,9 +30,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageButton
-import android.widget.Spinner
+import android.widget.AutoCompleteTextView
+import android.widget.Checkable
+import android.widget.ImageView
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -51,12 +51,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.childrenRecursiveSequence
 import org.jetbrains.anko.info
+import org.jetbrains.anko.design.longSnackbar
 
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
-import org.equeim.tremotesf.AddTorrentFragmentArguments
+import org.equeim.tremotesf.AddTorrentFragment
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.NavigationActivity
 import org.equeim.tremotesf.NavigationFragment
@@ -65,7 +66,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
@@ -86,19 +87,18 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
-    private var serversSpinner: Spinner? = null
-    private var serversSpinnerAdapter: ServersSpinnerAdapter? = null
+    private var serversViewAdapter: ServersViewAdapter? = null
 
     private var listSettingsLayout: ViewGroup? = null
-    private var sortSpinner: Spinner? = null
-    private var statusSpinner: Spinner? = null
-    private var statusSpinnerAdapter: StatusFilterSpinnerAdapter? = null
+    private var sortView: AutoCompleteTextView? = null
+    private var statusView: AutoCompleteTextView? = null
+    private var statusViewAdapter: StatusFilterViewAdapter? = null
 
-    private var trackersSpinner: Spinner? = null
-    private var trackersSpinnerAdapter: TrackersSpinnerAdapter? = null
+    private var trackersView: AutoCompleteTextView? = null
+    private var trackersViewAdapter: TrackersViewAdapter? = null
 
-    private var directoriesSpinner: Spinner? = null
-    private var directoriesSpinnerAdapter: DirectoriesSpinnerAdapter? = null
+    private var directoriesView: AutoCompleteTextView? = null
+    private var directoriesViewAdapter: DirectoriesViewAdapter? = null
 
     var torrentsAdapter: TorrentsAdapter? = null
         private set
@@ -177,25 +177,25 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val activity = requireActivity() as NavigationActivity
 
         val sidePanelHeader = activity.side_panel.getHeaderView(0)
-        val serversSpinner = sidePanelHeader.servers_spinner
-        serversSpinner.isEnabled = Servers.hasServers
-        this.serversSpinner = serversSpinner
+
+        val serversView = sidePanelHeader.servers_view
+        serversView.isEnabled = Servers.hasServers
 
         val listSettingsLayout = sidePanelHeader.list_settings_layout
         this.listSettingsLayout = listSettingsLayout
         listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
 
-        val sortSpinner = sidePanelHeader.sort_spinner
-        this.sortSpinner = sortSpinner
+        val sortView = sidePanelHeader.sort_view
+        this.sortView = sortView
 
-        val statusSpinner = sidePanelHeader.status_spinner
-        this.statusSpinner = statusSpinner
+        val statusView = sidePanelHeader.status_view
+        this.statusView = statusView
 
-        val trackersSpinner = sidePanelHeader.trackers_spinner
-        this.trackersSpinner = trackersSpinner
+        val trackersView = sidePanelHeader.trackers_view
+        this.trackersView = trackersView
 
-        val directoriesSpinner = sidePanelHeader.directories_spinner
-        this.directoriesSpinner = directoriesSpinner
+        val directoriesView = sidePanelHeader.directories_view
+        this.directoriesView = directoriesView
 
         activity.apply {
             if (!drawerSetUp) {
@@ -211,20 +211,14 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     }
                 }
 
-                val serversSpinnerAdapter = ServersSpinnerAdapter(serversSpinner)
-                serversSpinner.adapter = serversSpinnerAdapter
-                serversSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>,
-                                                view: View?,
-                                                position: Int,
-                                                id: Long) {
-                        serversSpinnerAdapter.servers[position].let {
-                            if (it != Servers.currentServer.value) {
-                                Servers.currentServer.value = it
-                            }
+                val serversViewAdapter = ServersViewAdapter(serversView)
+                serversView.setAdapter(serversViewAdapter)
+                serversView.setOnItemClickListener { _, _, position, _ ->
+                    serversViewAdapter.servers[position].let {
+                        if (it != Servers.currentServer.value) {
+                            Servers.currentServer.value = it
                         }
                     }
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
 
                 sidePanelHeader.connection_settings_item.setOnClickListener {
@@ -233,27 +227,34 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     } catch (ignore: IllegalArgumentException) {}
                 }
 
-                sortSpinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.sort_spinner_items),
-                                                                    R.string.sort)
-                sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
+                sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
 
-                sidePanelHeader.sort_order_button.setImageResource(getSortOrderButtonIcon())
+                statusView.setAdapter(StatusFilterViewAdapter(requireContext(), statusView))
 
-                statusSpinner.adapter = StatusFilterSpinnerAdapter(requireContext())
-                trackersSpinner.adapter = TrackersSpinnerAdapter(requireContext())
-                directoriesSpinner.adapter = DirectoriesSpinnerAdapter(requireContext())
+                trackersView.setAdapter(TrackersViewAdapter(requireContext(), trackersView))
+                directoriesView.setAdapter(DirectoriesViewAdapter(requireContext(), directoriesView))
 
                 drawerSetUp = true
             }
         }
 
-        serversSpinnerAdapter = serversSpinner.adapter as ServersSpinnerAdapter
-        serversSpinnerAdapter?.update()
-        sortSpinner.setSelection(Settings.torrentsSortMode.ordinal)
-        statusSpinner.setSelection(Settings.torrentsStatusFilter.ordinal)
-        statusSpinnerAdapter = statusSpinner.adapter as StatusFilterSpinnerAdapter
-        trackersSpinnerAdapter = trackersSpinner.adapter as TrackersSpinnerAdapter
-        directoriesSpinnerAdapter = directoriesSpinner.adapter as DirectoriesSpinnerAdapter
+        serversViewAdapter = serversView.adapter as ServersViewAdapter
+        serversViewAdapter?.update()
+
+        sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
+        sidePanelHeader.sort_view_layout.let { layout ->
+            val startIconDrawable = layout.startIconDrawable
+            for (child in layout.childrenRecursiveSequence()) {
+                if (child is ImageView && child.drawable === startIconDrawable) {
+                    (child as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
+                    break
+                }
+            }
+        }
+
+        statusViewAdapter = statusView.adapter as StatusFilterViewAdapter
+        trackersViewAdapter = trackersView.adapter as TrackersViewAdapter
+        directoriesViewAdapter = directoriesView.adapter as DirectoriesViewAdapter
 
         setupDrawerListeners()
     }
@@ -263,23 +264,18 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         val sidePanelHeader = activity.side_panel.getHeaderView(0)
 
-        sortSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                torrentsAdapter?.apply {
-                    sortMode = TorrentsAdapter.SortMode.values()[position]
-                    if (Rpc.isConnected) {
-                        Settings.torrentsSortMode = sortMode
-                    }
+        sortView?.setOnItemClickListener { _, _, position, _ ->
+            torrentsAdapter?.apply {
+                sortMode = TorrentsAdapter.SortMode.values()[position]
+                if (Rpc.isConnected) {
+                    Settings.torrentsSortMode = sortMode
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        sidePanelHeader.sort_order_button.setOnClickListener {
+        val sortViewLayout = sidePanelHeader.sort_view_layout
+
+        sortViewLayout.setStartIconOnClickListener {
             torrentsAdapter?.apply {
                 sortOrder = if (sortOrder == TorrentsAdapter.SortOrder.Ascending) {
                     TorrentsAdapter.SortOrder.Descending
@@ -288,73 +284,44 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 }
                 Settings.torrentsSortOrder = sortOrder
             }
-            (it as ImageButton).setImageResource(getSortOrderButtonIcon())
+            (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
         }
 
-        statusSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                torrentsAdapter?.apply {
-                    statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
-                    if (Rpc.isConnected) {
-                        Settings.torrentsStatusFilter = statusFilterMode
-                    }
+        statusView?.setOnItemClickListener { _, _, position, _ ->
+            torrentsAdapter?.apply {
+                statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
+                if (Rpc.isConnected) {
+                    Settings.torrentsStatusFilter = statusFilterMode
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        trackersSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                torrentsAdapter?.apply {
-                    trackerFilter = if (position == 0) {
-                        ""
-                    } else {
-                        trackersSpinnerAdapter?.trackers?.get(position - 1) ?: ""
-                    }
-                    if (Rpc.isConnected) {
-                        Settings.torrentsTrackerFilter = trackerFilter
-                    }
+        trackersView?.setOnItemClickListener { _, _, position, _ ->
+            torrentsAdapter?.apply {
+                trackerFilter = trackersViewAdapter?.getTrackerFilter(position) ?: ""
+                if (Rpc.isConnected) {
+                    Settings.torrentsTrackerFilter = trackerFilter
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        directoriesSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                torrentsAdapter?.apply {
-                    directoryFilter = if (position == 0) {
-                        ""
-                    } else {
-                        directoriesSpinnerAdapter?.directories?.get(position - 1) ?: ""
-                    }
-                    if (Rpc.isConnected) {
-                        Settings.torrentsDirectoryFilter = directoryFilter
-                    }
+        directoriesView?.setOnItemClickListener { _, _, position, _ ->
+            torrentsAdapter?.apply {
+                directoryFilter = directoriesViewAdapter?.getDirectoryFilter(position) ?: ""
+                if (Rpc.isConnected) {
+                    Settings.torrentsDirectoryFilter = directoryFilter
                 }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 
     private fun clearDrawerListeners() {
-        sortSpinner?.onItemSelectedListener = null
+        sortView?.onItemClickListener = null
         val sidePanelHeader = (requireActivity() as NavigationActivity).side_panel.getHeaderView(0)
-        sidePanelHeader.sort_order_button.setOnClickListener(null)
-        statusSpinner?.onItemSelectedListener = null
-        trackersSpinner?.onItemSelectedListener = null
-        directoriesSpinner?.onItemSelectedListener = null
+        sidePanelHeader.sort_view_layout.setStartIconOnClickListener(null)
+        statusView?.onItemClickListener = null
+        trackersView?.onItemClickListener = null
+        directoriesView?.onItemSelectedListener = null
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -370,19 +337,18 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         menu = null
         searchMenuItem = null
 
-        serversSpinner = null
-        serversSpinnerAdapter = null
+        serversViewAdapter = null
 
         listSettingsLayout = null
-        sortSpinner = null
-        statusSpinner = null
-        statusSpinnerAdapter = null
+        sortView = null
+        statusView = null
+        statusViewAdapter = null
 
-        trackersSpinner = null
-        trackersSpinnerAdapter = null
+        trackersView = null
+        trackersViewAdapter = null
 
-        directoriesSpinner = null
-        directoriesSpinnerAdapter = null
+        directoriesView = null
+        directoriesViewAdapter = null
 
         clearDrawerListeners()
 
@@ -449,19 +415,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onActivityResult(requestCode, resultCode, data)
         info("onActivityResult $resultCode $data")
         if (resultCode == Activity.RESULT_OK && data != null) {
-            findNavController().navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragmentArguments.URI to data.data!!.toString()))
+            findNavController().navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
         }
     }
 
     private fun onRpcStatusChanged(status: Int) {
         if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
             if (Rpc.isConnected) {
-                trackersSpinnerAdapter?.let {
-                    trackersSpinner?.setSelection(it.trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
-                }
-                directoriesSpinnerAdapter?.let {
-                    directoriesSpinner?.setSelection(it.directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
-                }
                 menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
             } else {
                 torrentsAdapter?.selector?.actionMode?.finish()
@@ -475,9 +435,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun onTorrentsUpdated() {
-        statusSpinnerAdapter?.update()
-        trackersSpinnerAdapter?.update()
-        directoriesSpinnerAdapter?.update()
+        statusViewAdapter?.update()
+        trackersViewAdapter?.update()
+        directoriesViewAdapter?.update()
         torrentsAdapter?.update()
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
@@ -537,14 +497,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             View.VISIBLE
         } else {
             View.GONE
-        }
-    }
-
-    private fun getSortOrderButtonIcon(): Int {
-        return if (torrentsAdapter?.sortOrder == TorrentsAdapter.SortOrder.Ascending) {
-            R.drawable.sort_ascending
-        } else {
-            R.drawable.sort_descending
         }
     }
 

@@ -32,7 +32,6 @@ import android.os.Bundle
 import android.util.AttributeSet
 
 import android.view.View
-import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.TimePicker
@@ -44,10 +43,9 @@ import androidx.navigation.findNavController
 import org.equeim.libtremotesf.ServerSettings
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.utils.ArraySpinnerAdapter
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
-import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
 import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
@@ -55,11 +53,6 @@ import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
 
 class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_speed_fragment,
                                                           R.string.server_settings_speed) {
-    companion object {
-        const val TAG = "org.equeim.tremotesf.ServerSettingsActivity.SpeedFragment"
-    }
-
-
     private val days = mutableListOf(ServerSettings.AlternativeSpeedLimitsDays.All,
                                      ServerSettings.AlternativeSpeedLimitsDays.Weekdays,
                                      ServerSettings.AlternativeSpeedLimitsDays.Weekends)
@@ -163,12 +156,17 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
         }
 
         schedule_check_box.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsScheduled
+        val setEnabled = { enabled: Boolean ->
+            begin_time_item.isEnabled = enabled
+            end_time_item.isEnabled = enabled
+            days_view_layout.isEnabled = enabled
+        }
         schedule_check_box.setOnCheckedChangeListener { _, checked ->
-            schedule_layout.setChildrenEnabled(checked)
+            setEnabled(checked)
             Rpc.serverSettings.isAlternativeSpeedLimitsScheduled = checked
         }
 
-        schedule_layout.setChildrenEnabled(schedule_check_box.isChecked)
+        setEnabled(schedule_check_box.isChecked)
 
         begin_time_item.beginTime = true
         begin_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime())
@@ -176,17 +174,10 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
         end_time_item.beginTime = false
         end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime())
 
-        days_spinner.adapter = ArraySpinnerAdapter(requireContext(), daysSpinnerItems.toTypedArray())
-        days_spinner.setSelection(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays()))
-        days_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                Rpc.serverSettings.setAlternativeSpeedLimitsDays(days[position])
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        days_view.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
+        days_view.setText(days_view.adapter.getItem(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays())).toString())
+        days_view.setOnItemClickListener { _, _, position, _ ->
+            Rpc.serverSettings.setAlternativeSpeedLimitsDays(days[position])
         }
     }
 }

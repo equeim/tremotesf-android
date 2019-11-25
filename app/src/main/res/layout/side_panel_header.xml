@@ -1,26 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="@dimen/vertical_edge_padding">
 
-    <Spinner
-        android:id="@+id/servers_spinner"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/servers_view_layout"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/horizontal_edge_padding"
         android:layout_marginRight="@dimen/horizontal_edge_padding"
-        android:saveEnabled="false"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"/>
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:hint="@string/server">
+
+        <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            android:id="@+id/servers_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:readOnly="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/connection_settings_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/listPreferredItemHeightSmall"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         android:paddingLeft="?attr/listPreferredItemPaddingLeft"
         android:paddingRight="?attr/listPreferredItemPaddingRight"
         android:paddingStart="?attr/listPreferredItemPaddingStart"
@@ -36,7 +44,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         android:background="?android:attr/listDivider"/>
 
     <LinearLayout
@@ -48,45 +56,66 @@
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
         android:orientation="vertical">
 
-        <org.equeim.tremotesf.utils.ChildrenDisablingLinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sort_view_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            app:startIconDrawable="@drawable/sort_icon"
+            app:startIconCheckable="true"
+            android:hint="@string/sort">
 
-            <Spinner
-                android:id="@+id/sort_spinner"
-                android:layout_width="0dp"
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/sort_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:saveEnabled="false"
-                android:layout_weight="1"/>
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageButton
-                android:id="@+id/sort_order_button"
-                android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/status_view_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/status">
+
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/status_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/sort_descending"/>
-        </org.equeim.tremotesf.utils.ChildrenDisablingLinearLayout>
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/status_spinner"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/trackers_view_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/trackers">
 
-        <Spinner
-            android:id="@+id/trackers_spinner"
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/trackers_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/directories_view_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="@string/directories">
 
-        <Spinner
-            android:id="@+id/directories_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
+            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+                android:id="@+id/directories_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <View

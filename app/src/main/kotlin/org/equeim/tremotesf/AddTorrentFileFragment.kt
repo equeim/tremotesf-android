@@ -56,8 +56,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.Torrent
-import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.findFragment
@@ -70,11 +69,7 @@ import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 
-object AddTorrentFragmentArguments {
-    const val URI = "uri"
-}
-
-class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_fragment,
+class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
                                                   R.menu.add_torrent_activity_menu) {
     companion object {
@@ -142,7 +137,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        uri = requireArguments().getString(AddTorrentFragmentArguments.URI)!!.toUri()
+        uri = requireArguments().getString(URI)!!.toUri()
         if (uri.scheme == ContentResolver.SCHEME_FILE &&
                 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
@@ -238,12 +233,7 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
                                               priorities.lowPriorityFiles.toIntArray(),
                                               priorities.normalPriorityFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),
-                                              when (infoFragment.priority_spinner.selectedItemPosition) {
-                                                  0 -> Torrent.Priority.HighPriority
-                                                  1 -> Torrent.Priority.NormalPriority
-                                                  2 -> Torrent.Priority.LowPriority
-                                                  else -> Torrent.Priority.NormalPriority
-                                              },
+                                              priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],
                                               infoFragment.start_downloading_check_box.isChecked)
             infoFragment.directoriesAdapter?.save()
             activity?.onBackPressed()
@@ -358,15 +348,12 @@ class AddTorrentFileFragment : NavigationFragment(R.layout.add_torrent_file_frag
         var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
-                                                                     R.string.priority)
+            priority_view.setText(R.string.normal_priority)
+            priority_view.setAdapter(ArrayDropdownAdapter((requireParentFragment() as AddTorrentFileFragment).priorityItems))
 
             directoriesAdapter = setupDownloadDirectoryEdit(this, savedInstanceState)
 
-            if (savedInstanceState == null) {
-                priority_spinner.setSelection(1)
-                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
-            }
+            start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

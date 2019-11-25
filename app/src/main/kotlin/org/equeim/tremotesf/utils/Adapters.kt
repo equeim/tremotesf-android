@@ -19,91 +19,75 @@
 
 package org.equeim.tremotesf.utils
 
-import android.content.Context
-import android.util.AttributeSet
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.BaseAdapter
-import android.widget.LinearLayout
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
+
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 
 import org.equeim.tremotesf.R
 
-import kotlinx.android.synthetic.main.spinner_item_with_header.view.*
 
-
-class ArraySpinnerAdapter(context: Context,
-                          items: Array<String>)
-    : ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items) {
-    init {
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    }
-}
-
-class ChildrenDisablingLinearLayout(context: Context, attrs: AttributeSet) : LinearLayout(context,
-                                                                                          attrs) {
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-        setChildrenEnabled(enabled)
-    }
-}
-
-abstract class BaseSpinnerAdapter(private val headerText: Int? = null) : BaseAdapter() {
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+abstract class BaseDropdownAdapter(@LayoutRes private val resource: Int = R.layout.dropdown_menu_popup_item,
+                                   @IdRes private val textViewResourceId: Int = 0) : BaseAdapter(), Filterable {
+    protected open fun createViewHolder(view: View): BaseViewHolder = BaseViewHolder(view)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View
+        val holder: BaseViewHolder
         if (convertView == null) {
-            val inflater = LayoutInflater.from(parent.context)
-            if (headerText == null) {
-                view = inflater.inflate(android.R.layout.simple_spinner_item, parent, false)
-            } else {
-                view = inflater.inflate(R.layout.spinner_item_with_header, parent, false)
-                view.tag = ViewHolder(view)
-            }
+            view = LayoutInflater.from(parent.context).inflate(resource,
+                                                               parent,
+                                                               false)
+            holder = createViewHolder(view)
+            view.tag = holder
         } else {
             view = convertView
+            holder = view.tag as BaseViewHolder
         }
-
-        if (headerText == null) {
-            (view as TextView).text = getItem(position) as String
-        } else {
-            val holder = view.tag as ViewHolder
-            holder.headerTextView.text = parent.context.getString(headerText)
-            holder.textView.text = getItem(position) as String
-        }
-
+        holder.textView.text = getItem(position) as CharSequence
         return view
     }
 
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = if (convertView == null) {
-            LayoutInflater.from(parent.context)
-                    .inflate(android.R.layout.simple_spinner_dropdown_item,
-                             parent,
-                             false) as TextView
-        } else {
-            convertView as TextView
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?) = FilterResults()
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {}
         }
-        view.text = getItem(position) as String
-        return view
     }
 
-    private class ViewHolder(view: View) {
-        val headerTextView = view.header_text_view!!
-        val textView = view.text1!!
-
+    protected open inner class BaseViewHolder(view: View) {
+        val textView = if (textViewResourceId == 0) {
+            view
+        } else {
+            view.findViewById(textViewResourceId)
+        } as TextView
     }
 }
 
-class ArraySpinnerAdapterWithHeader(private val items: Array<String>,
-                                    headerText: Int) : BaseSpinnerAdapter(headerText) {
-    override fun getCount() = items.size
-    override fun getItem(position: Int) = items[position]
+class ArrayDropdownAdapter(private val objects: List<String>) : BaseDropdownAdapter() {
+    constructor(objects: Array<String>) : this(objects.asList())
+
+    override fun getCount() = objects.size
+    override fun getItem(position: Int) = objects[position]
+}
+
+abstract class AutoCompleteTextViewDynamicAdapter(private val textView: AutoCompleteTextView) : BaseDropdownAdapter() {
+    protected abstract fun getCurrentItem(): CharSequence
+
+    override fun notifyDataSetChanged() {
+        if (textView.isPopupShowing) {
+            super.notifyDataSetChanged()
+        }
+        textView.setText(getCurrentItem())
+    }
 }

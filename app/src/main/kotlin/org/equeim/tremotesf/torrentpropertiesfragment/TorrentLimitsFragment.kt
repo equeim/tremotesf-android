@@ -21,13 +21,12 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 
 import androidx.fragment.app.Fragment
 
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.utils.ArraySpinnerAdapterWithHeader
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
@@ -49,172 +48,141 @@ import kotlinx.android.synthetic.main.torrent_limits_fragment.*
 
 
 class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
-    private var torrent: Torrent? = null
-    private var updating = false
+    private companion object {
+        const val MAX_SPEED_LIMIT = 4 * 1024 * 1024 // kilobytes per second
+        const val MAX_RATIO_LIMIT = 10000.0
+        const val MAX_IDLE_SEEDING_LIMIT = 10000 // minutes
+        const val MAX_PEERS = 10000
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        global_limits_check_box.setOnCheckedChangeListener { _, checked ->
-            if (!updating) {
-                torrent?.setHonorSessionLimits(checked)
-            }
-        }
+        // Should match R.array.priority_items
+        val priorityItems = arrayOf(Torrent.Priority.HighPriority,
+                                    Torrent.Priority.NormalPriority,
+                                    Torrent.Priority.LowPriority)
 
-        download_speed_limit_layout.isEnabled = false
-        download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            download_speed_limit_layout.isEnabled = checked
-            if (!updating) {
-                torrent?.setDownloadSpeedLimited(checked)
-            }
-        }
+        // Should match R.array.ratio_limit_mode
+        val ratioLimitModeItems = arrayOf(Torrent.RatioLimitMode.GlobalRatioLimit,
+                                          Torrent.RatioLimitMode.UnlimitedRatio,
+                                          Torrent.RatioLimitMode.SingleRatioLimit)
 
-        download_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
-        download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            if (!updating) {
-                torrent?.setDownloadSpeedLimit(it.toString().toInt())
-            }
-        }
-
-        upload_speed_limit_layout.isEnabled = false
-        upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            upload_speed_limit_layout.isEnabled = checked
-            if (!updating) {
-                torrent?.setUploadSpeedLimited(checked)
-            }
-        }
-
-        upload_speed_limit_edit.filters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
-        upload_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            if (!updating) {
-                torrent?.setUploadSpeedLimit(it.toString().toInt())
-            }
-        }
-
-        priority_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.priority_items),
-                                                                 R.string.priority)
-        priority_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                if (!updating) {
-                    torrent?.setBandwidthPriority(when (position) {
-                        0 -> Torrent.Priority.HighPriority
-                        1 -> Torrent.Priority.NormalPriority
-                        2 -> Torrent.Priority.LowPriority
-                        else -> Torrent.Priority.NormalPriority
-                    })
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        ratio_limit_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.ratio_limit_mode),
-                                                                    R.string.ratio_limit)
-        val doubleFilter = DoubleFilter(0.0..10000.0)
-        ratio_limit_edit.filters = arrayOf(doubleFilter)
-        ratio_limit_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                ratio_limit_layout.isEnabled = (position == 2)
-                if (!updating) {
-                    torrent?.setRatioLimitMode(when (position) {
-                        0 -> Torrent.RatioLimitMode.GlobalRatioLimit
-                        1 -> Torrent.RatioLimitMode.UnlimitedRatio
-                        2 -> Torrent.RatioLimitMode.SingleRatioLimit
-                        else -> Torrent.RatioLimitMode.GlobalRatioLimit
-                    })
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-        ratio_limit_edit.doAfterTextChangedAndNotEmpty {
-            if (!updating) {
-                torrent?.setRatioLimit(doubleFilter.parse(it.toString())!!)
-            }
-        }
-
-        idle_seeding_spinner.adapter = ArraySpinnerAdapterWithHeader(resources.getStringArray(R.array.idle_seeding_mode),
-                                                                     R.string.idle_seeding)
-        idle_seeding_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
-                                        view: View?,
-                                        position: Int,
-                                        id: Long) {
-                idle_seeding_layout.isEnabled = (position == 2)
-                if (!updating) {
-                    torrent?.setIdleSeedingLimitMode(when (position) {
-                        0 -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
-                        1 -> Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding
-                        2 -> Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit
-                        else -> Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit
-                    })
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-        idle_seeding_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_seeding_edit.doAfterTextChangedAndNotEmpty {
-            if (!updating) {
-                torrent?.setIdleSeedingLimit(it.toString().toInt())
-            }
-        }
-
-        maximum_peers_edit.filters = arrayOf(IntFilter(0..10000))
-        maximum_peers_edit.doAfterTextChangedAndNotEmpty {
-            if (!updating) {
-                torrent?.setPeersLimit(it.toString().toInt())
-            }
-        }
-
-        update()
+        // Should match R.array.idle_seeding_mode
+        val idleSeedingModeItems = arrayOf(Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
+                                           Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding,
+                                           Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)
     }
 
-    private fun update() {
-        view ?: return
+    private var torrent: Torrent? = null
 
+    private lateinit var priorityItemValues: Array<String>
+    private lateinit var ratioLimitModeItemValues: Array<String>
+    private lateinit var idleSeedingModeItemValues: Array<String>
+
+    private lateinit var doubleFilter: DoubleFilter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        priorityItemValues = resources.getStringArray(R.array.priority_items)
+        ratioLimitModeItemValues = resources.getStringArray(R.array.ratio_limit_mode)
+        idleSeedingModeItemValues = resources.getStringArray(R.array.idle_seeding_mode)
+        doubleFilter = DoubleFilter(0.0..MAX_RATIO_LIMIT)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        scroll_view.isEnabled = false
+
+        download_speed_limit_edit.filters = arrayOf(IntFilter(0 until MAX_SPEED_LIMIT))
+
+        upload_speed_limit_edit.filters = arrayOf(IntFilter(0 until MAX_SPEED_LIMIT))
+
+        priority_view.setAdapter(ArrayDropdownAdapter(priorityItemValues))
+
+        ratio_limit_mode_view.setAdapter(ArrayDropdownAdapter(ratioLimitModeItemValues))
+        ratio_limit_edit.filters = arrayOf(doubleFilter)
+
+        idle_seeding_mode_view.setAdapter(ArrayDropdownAdapter(idleSeedingModeItemValues))
+        idle_seeding_limit_edit.filters = arrayOf(IntFilter(0..MAX_IDLE_SEEDING_LIMIT))
+
+        maximum_peers_edit.filters = arrayOf(IntFilter(0..MAX_PEERS))
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        update(restored = priority_view.text.isNotEmpty())
+
+        global_limits_check_box.setOnCheckedChangeListener { _, checked ->
+            torrent?.setHonorSessionLimits(checked)
+        }
+
+        download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
+            download_speed_limit_layout.isEnabled = checked
+            torrent?.setDownloadSpeedLimited(checked)
+        }
+        download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            torrent?.setDownloadSpeedLimit(it.toString().toInt())
+        }
+
+        upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
+            upload_speed_limit_layout.isEnabled = checked
+            torrent?.setUploadSpeedLimited(checked)
+        }
+        upload_speed_limit_edit.doAfterTextChangedAndNotEmpty {
+            torrent?.setUploadSpeedLimit(it.toString().toInt())
+        }
+
+        priority_view.setOnItemClickListener { _, _, position, _ ->
+            torrent?.setBandwidthPriority(priorityItems[position])
+        }
+
+        ratio_limit_mode_view.setOnItemClickListener { _, _, position, _ ->
+            val mode = ratioLimitModeItems[position]
+            ratio_limit_layout.isEnabled = (mode == Torrent.RatioLimitMode.SingleRatioLimit)
+            torrent?.setRatioLimitMode(mode)
+        }
+        ratio_limit_edit.doAfterTextChangedAndNotEmpty {
+            torrent?.setRatioLimit(doubleFilter.parse(it.toString())!!)
+        }
+
+        idle_seeding_mode_view.setOnItemClickListener { _, _, position, _ ->
+            val mode = idleSeedingModeItems[position]
+            idle_seeding_limit_layout.isEnabled = (mode == Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+            torrent?.setIdleSeedingLimitMode(mode)
+        }
+        idle_seeding_limit_edit.doAfterTextChangedAndNotEmpty {
+            torrent?.setIdleSeedingLimit(it.toString().toInt())
+        }
+
+        maximum_peers_edit.doAfterTextChangedAndNotEmpty {
+            torrent?.setPeersLimit(it.toString().toInt())
+        }
+    }
+
+    private fun update(restored: Boolean = false) {
         val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent?.torrent ?: return
         this.torrent = torrent
 
-        updating = true
+        if (!restored) {
+            global_limits_check_box.isChecked = torrent.honorSessionLimits()
 
-        global_limits_check_box.isChecked = torrent.honorSessionLimits()
+            download_speed_limit_check_box.isChecked = torrent.isDownloadSpeedLimited
+            download_speed_limit_edit.setText(torrent.downloadSpeedLimit().toString())
 
-        download_speed_limit_check_box.isChecked = torrent.isDownloadSpeedLimited
-        download_speed_limit_edit.setText(torrent.downloadSpeedLimit().toString())
+            upload_speed_limit_check_box.isChecked = torrent.isUploadSpeedLimited
+            upload_speed_limit_edit.setText(torrent.uploadSpeedLimit().toString())
 
-        upload_speed_limit_check_box.isChecked = torrent.isUploadSpeedLimited
-        upload_speed_limit_edit.setText(torrent.uploadSpeedLimit().toString())
+            priority_view.setText(priorityItemValues[priorityItems.indexOf(torrent.bandwidthPriority())])
 
-        priority_spinner.setSelection(when (torrent.bandwidthPriority()) {
-                                          Torrent.Priority.LowPriority -> 2
-                                          Torrent.Priority.NormalPriority -> 1
-                                          Torrent.Priority.HighPriority -> 0
-                                          else -> 0
-                                      })
+            ratio_limit_mode_view.setText(ratioLimitModeItemValues[ratioLimitModeItems.indexOf(torrent.ratioLimitMode())])
+            ratio_limit_edit.setText(DecimalFormats.ratio.format(torrent.ratioLimit()))
 
-        ratio_limit_spinner.setSelection(when (torrent.ratioLimitMode()) {
-                                             Torrent.RatioLimitMode.GlobalRatioLimit -> 0
-                                             Torrent.RatioLimitMode.SingleRatioLimit -> 2
-                                             Torrent.RatioLimitMode.UnlimitedRatio -> 1
-                                             else -> 0
-                                         })
-        ratio_limit_edit.setText(DecimalFormats.ratio.format(torrent.ratioLimit()))
+            idle_seeding_mode_view.setText(idleSeedingModeItemValues[idleSeedingModeItems.indexOf(torrent.idleSeedingLimitMode())])
+            idle_seeding_limit_edit.setText(torrent.idleSeedingLimit().toString())
 
-        idle_seeding_spinner.setSelection(when (torrent.idleSeedingLimitMode()) {
-                                              Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit -> 0
-                                              Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit -> 2
-                                              Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding -> 1
-                                              else -> 0
-                                          })
-        idle_seeding_edit.setText(torrent.idleSeedingLimit().toString())
+            maximum_peers_edit.setText(torrent.peersLimit().toString())
+        }
 
-        maximum_peers_edit.setText(torrent.peersLimit().toString())
-
-        updating = false
+        download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked
+        upload_speed_limit_layout.isEnabled = upload_speed_limit_check_box.isChecked
+        ratio_limit_layout.isEnabled = (ratio_limit_mode_view.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(Torrent.RatioLimitMode.SingleRatioLimit)])
+        idle_seeding_limit_layout.isEnabled = (idle_seeding_mode_view.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)])
     }
 }
