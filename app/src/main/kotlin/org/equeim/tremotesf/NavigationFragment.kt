@@ -37,25 +37,26 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
+import androidx.navigation.NavGraph
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.error
 
 
 open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                               @StringRes private val titleRes: Int = 0,
                               @MenuRes private val toolbarMenuRes: Int = 0) : Fragment(contentLayoutId), AnkoLogger {
-
-    @IdRes var destinationId = 0
+    lateinit var navController: NavController
+        private set
+    @IdRes private var destinationId = 0
 
     private val destinationListener: NavController.OnDestinationChangedListener = object : NavController.OnDestinationChangedListener {
         override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
             if (destination.id != destinationId) {
                 onNavigatedFrom()
-                findNavController().removeOnDestinationChangedListener(this)
+                navController.removeOnDestinationChangedListener(this)
             }
         }
     }
@@ -65,6 +66,13 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // We can't do it in onCreate() because NavController may not exist yet at that point
+        // (e.g. after configuration change when all fragments are recreated)
+        if (!::navController.isInitialized) {
+            navController = (requireActivity() as NavigationActivity).navController
+            findNavDestination()
+        }
+
         toolbar = view.findViewById<Toolbar>(R.id.toolbar).apply {
             setupWithNavController(findNavController(), requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout))
             if (titleRes != 0) {
@@ -78,24 +86,38 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
         setPreLollipopContentShadow()
 
-        findNavDestination()
-        findNavController().addOnDestinationChangedListener(destinationListener)
+        navController.addOnDestinationChangedListener(destinationListener)
     }
 
     private fun findNavDestination() {
-        val name = javaClass.name
-        for (dest in findNavController().graph) {
-            if ((dest as? FragmentNavigator.Destination)?.className == name) {
-                destinationId = dest.id
-                return
+        val className = javaClass.name
+        if (!findDestinationInGraph(navController.graph, className)) {
+            throw RuntimeException("Didn't find NavDestination for $className")
+        }
+    }
+
+    private fun findDestinationInGraph(navGraph: NavGraph, className: String): Boolean {
+        for (destination in navGraph) {
+            when (destination) {
+                is FragmentNavigator.Destination -> {
+                    if (destination.className == className) {
+                        destinationId = destination.id
+                        return true
+                    }
+                }
+                is NavGraph -> {
+                    if (findDestinationInGraph(destination, className)) {
+                        return true
+                    }
+                }
             }
         }
-        error("Didn't find NavDestination for $name")
+        return false
     }
 
     override fun onDestroyView() {
         toolbar = null
-        findNavController().removeOnDestinationChangedListener(destinationListener)
+        navController.removeOnDestinationChangedListener(destinationListener)
         super.onDestroyView()
     }
 

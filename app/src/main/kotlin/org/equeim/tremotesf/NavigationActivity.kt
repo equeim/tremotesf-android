@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -65,6 +66,9 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
 
     override var actionMode: ActionMode? = null
 
+    lateinit var navController: NavController
+        private set
+
     var drawerSetUp = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,8 +85,9 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         }
         Rpc.connectOnce()
 
-        val c = findNavController(R.id.nav_host)
-        c.addOnDestinationChangedListener { _, destination, _ ->
+        navController = findNavController(R.id.nav_host)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             hideKeyboard()
             if (destination.id == R.id.torrentsListFragment) {
                 drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
