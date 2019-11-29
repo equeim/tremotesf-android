@@ -22,10 +22,10 @@ package org.equeim.tremotesf.torrentslistfragment
 import android.app.Dialog
 import android.os.Bundle
 
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.observe
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
@@ -35,7 +35,7 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.server_stats_dialog.*
 
 
-class ServerStatsDialogFragment : DialogFragment() {
+class ServerStatsDialogFragment : NavigationDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)

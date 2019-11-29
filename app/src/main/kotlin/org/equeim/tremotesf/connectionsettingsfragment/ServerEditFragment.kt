@@ -26,13 +26,12 @@ import android.view.View
 import android.widget.EditText
 
 import androidx.core.text.trimmedLength
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
@@ -200,7 +199,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         navController.popBackStack(R.id.serverEditFragment, true)
     }
 
-    class ServerOverwriteDialogFragment : DialogFragment() {
+    class ServerOverwriteDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(R.string.server_exists)

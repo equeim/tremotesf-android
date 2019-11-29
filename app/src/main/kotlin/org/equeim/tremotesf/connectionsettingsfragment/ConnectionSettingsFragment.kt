@@ -32,10 +32,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.observe
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
@@ -201,7 +199,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         }
     }
 
-    class RemoveServerDialogFragment : DialogFragment() {
+    class RemoveServerDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val selector = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter?.selector
             val selectedCount = selector?.selectedCount ?: 0

@@ -38,10 +38,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.observe
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -59,6 +57,7 @@ import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
 import org.equeim.tremotesf.AddTorrentFragment
 import org.equeim.tremotesf.BuildConfig
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -508,13 +507,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    class DonateDialogFragment : DialogFragment() {
+    class DonateDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.donate) { _, _ ->
-                        findNavController().navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
+                        navController.navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
                     }
                     .create()
         }

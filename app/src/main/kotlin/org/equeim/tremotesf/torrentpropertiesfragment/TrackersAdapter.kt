@@ -46,6 +46,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.IntSelector
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.utils.AlphanumericComparator
@@ -57,7 +58,6 @@ import org.equeim.tremotesf.removeTrackers
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
-import org.equeim.tremotesf.NavigationActivity
 
 
 class TrackersAdapterItem(rpcTracker: Tracker) {
@@ -228,7 +228,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
     }
 
-    class EditTrackerDialogFragment : DialogFragment() {
+    class EditTrackerDialogFragment : NavigationDialogFragment() {
         companion object {
             const val TRACKER_ID = "trackerId"
             const val ANNOUNCE = "announce"
@@ -278,7 +278,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
     }
 
-    class RemoveTrackerDialogFragment : DialogFragment() {
+    class RemoveTrackerDialogFragment : NavigationDialogFragment() {
         companion object {
             const val IDS = "ids"
         }
@@ -292,7 +292,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.torrent?.removeTrackers(ids)
-                        (requireActivity() as NavigationActivity).actionMode?.finish()
+                        requiredActivity.actionMode?.finish()
                     }
                     .create()
         }

@@ -31,11 +31,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
@@ -184,7 +184,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         }
     }
 
-    class TorrentRenameDialogFragment : DialogFragment() {
+    class TorrentRenameDialogFragment : NavigationDialogFragment() {
         companion object {
             const val TORRENT_ID = "torrentId"
             const val FILE_PATH = "filePath"
@@ -204,7 +204,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
                 val path = requireArguments().getString(FILE_PATH)
                 val newName = requireDialog().text_field.text.toString()
                 Rpc.nativeInstance.renameTorrentFile(requireArguments().getInt(TORRENT_ID), path, newName)
-                (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
+                activity?.actionMode?.finish()
             }
         }
     }

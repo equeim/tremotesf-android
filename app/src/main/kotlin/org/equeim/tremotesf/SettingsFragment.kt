@@ -77,7 +77,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                     ?.isEnabled = (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
         }
 
-        class PersistentNotificationWarningFragment : DialogFragment() {
+        class PersistentNotificationWarningFragment : NavigationDialogFragment() {
             override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
                 return MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.persistent_notification_warning)

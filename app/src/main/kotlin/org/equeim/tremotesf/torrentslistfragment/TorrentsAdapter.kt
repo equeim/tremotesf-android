@@ -39,7 +39,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
@@ -48,6 +47,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.IntSelector
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
@@ -522,7 +522,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    class SetLocationDialogFragment : DialogFragment() {
+    class SetLocationDialogFragment : NavigationDialogFragment() {
         companion object {
             const val TORRENT_IDS = "torrentIds"
             const val LOCATION = "location"
@@ -557,7 +557,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    class RemoveTorrentDialogFragment : DialogFragment() {
+    class RemoveTorrentDialogFragment : NavigationDialogFragment() {
         companion object {
             const val TORRENT_IDS = "torrentIds"
         }
@@ -575,7 +575,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                     .setPositiveButton(R.string.remove) { _, _ ->
                         Rpc.nativeInstance.removeTorrents(ids,
                                                     requireDialog().delete_files_check_box.isChecked)
-                        (activity as? Selector.ActionModeActivity)?.actionMode?.finish()
+                        activity?.actionMode?.finish()
                     }
                     .create()
 

@@ -37,10 +37,10 @@ import android.widget.TextView
 import android.widget.TimePicker
 
 import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 
 import org.equeim.libtremotesf.ServerSettings
+import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
@@ -227,7 +227,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         textView.text = format.format(calendar.time)
     }
 
-    class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+    class TimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnTimeSetListener {
         companion object {
             const val BEGIN_TIME = "beginTime"
             const val HOUR_OF_DAY = "hourOfDay"
