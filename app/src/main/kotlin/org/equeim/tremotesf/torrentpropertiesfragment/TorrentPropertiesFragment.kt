@@ -105,7 +105,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
-                    (requireActivity() as NavigationActivity).apply {
+                    requiredActivity.apply {
                         actionMode?.finish()
                         hideKeyboard()
                     }

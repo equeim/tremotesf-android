@@ -45,8 +45,14 @@ import org.jetbrains.anko.AnkoLogger
 open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                               @StringRes private val titleRes: Int = 0,
                               @MenuRes private val toolbarMenuRes: Int = 0) : Fragment(contentLayoutId), AnkoLogger {
+    val activity: NavigationActivity?
+        get() = super.getActivity() as NavigationActivity?
+    val requiredActivity: NavigationActivity
+        get() = super.requireActivity() as NavigationActivity
+
     lateinit var navController: NavController
         private set
+
     @IdRes private var destinationId = 0
 
     private val destinationListener: NavController.OnDestinationChangedListener = object : NavController.OnDestinationChangedListener {
@@ -63,15 +69,16 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val activity = requiredActivity
+
         // We can't do it in onCreate() because NavController may not exist yet at that point
         // (e.g. after configuration change when all fragments are recreated)
         if (!::navController.isInitialized) {
-            navController = (requireActivity() as NavigationActivity).navController
+            navController = activity.navController
             findNavDestination()
         }
 
         toolbar = view.findViewById<Toolbar>(R.id.toolbar).apply {
-            val activity = requireActivity() as NavigationActivity
             if (activity.isTopLevelDestination(destinationId)) {
                 navigationIcon = activity.drawerNavigationIcon
                 setNavigationContentDescription(R.string.nav_app_bar_open_drawer_description)

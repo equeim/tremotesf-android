@@ -59,7 +59,6 @@ import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
 import org.equeim.tremotesf.AddTorrentFragment
 import org.equeim.tremotesf.BuildConfig
-import org.equeim.tremotesf.NavigationActivity
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -174,7 +173,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun setupDrawer() {
-        val activity = requireActivity() as NavigationActivity
+        val activity = requiredActivity
 
         val sidePanelHeader = activity.side_panel.getHeaderView(0)
 
@@ -260,9 +259,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun setupDrawerListeners() {
-        val activity = requireActivity() as NavigationActivity
-
-        val sidePanelHeader = activity.side_panel.getHeaderView(0)
+        val sidePanelHeader = requiredActivity.side_panel.getHeaderView(0)
 
         sortView?.setOnItemClickListener { _, _, position, _ ->
             torrentsAdapter?.apply {
@@ -317,7 +314,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private fun clearDrawerListeners() {
         sortView?.onItemClickListener = null
-        val sidePanelHeader = (requireActivity() as NavigationActivity).side_panel.getHeaderView(0)
+        val sidePanelHeader = requiredActivity.side_panel.getHeaderView(0)
         sidePanelHeader.sort_view_layout.setStartIconOnClickListener(null)
         statusView?.onItemClickListener = null
         trackersView?.onItemClickListener = null
