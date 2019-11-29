@@ -157,6 +157,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         return false
     }
 
-    open fun onToolbarMenuItemClicked(menuItem: MenuItem) = false
-    open fun onNavigatedFrom() = Unit
+    protected open fun onToolbarMenuItemClicked(menuItem: MenuItem) = false
+    protected open fun onNavigatedFrom() = Unit
 }
