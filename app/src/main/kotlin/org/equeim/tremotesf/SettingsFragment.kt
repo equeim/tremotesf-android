@@ -22,9 +22,10 @@ package org.equeim.tremotesf
 import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.annotation.Keep
 
-import androidx.fragment.app.DialogFragment
+import androidx.annotation.Keep
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -32,20 +33,20 @@ import androidx.preference.PreferenceFragmentCompat
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.stopService
+
 
 class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                                             R.string.settings) {
     @Keep
     class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
-        private lateinit var persistentNotificationKey: String
-
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
 
             preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-            persistentNotificationKey = getString(R.string.prefs_persistent_notification_key)
-            findPreference<Preference>(persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
+            findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     findNavController().navigate(R.id.action_settingsFragment_to_persistentNotificationWarningFragment)
                     false
@@ -62,18 +63,28 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
 
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
             when (key) {
-                getString(R.string.prefs_notify_on_finished_key),
-                getString(R.string.prefs_notify_on_added_key),
-                persistentNotificationKey -> updateBackgroundUpdatePreference()
+                Settings.themeKey -> AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
+
+                Settings.notifyOnAddedKey,
+                Settings.notifyOnFinishedKey -> updateBackgroundUpdatePreference()
+
+                Settings.persistentNotificationKey -> {
+                    updateBackgroundUpdatePreference()
+                    if (Settings.showPersistentNotification) {
+                        ContextCompat.startForegroundService(requireContext(), requireContext().intentFor<ForegroundService>())
+                    } else {
+                        requireContext().stopService<ForegroundService>()
+                    }
+                }
             }
         }
 
         fun enablePersistentNotification() {
-            findPreference<CheckBoxPreference>(persistentNotificationKey)?.isChecked = true
+            findPreference<CheckBoxPreference>(Settings.persistentNotificationKey)?.isChecked = true
         }
 
         private fun updateBackgroundUpdatePreference() {
-            findPreference<Preference>(getString(R.string.prefs_background_update_interval_key))
+            findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
                     ?.isEnabled = (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
         }
 

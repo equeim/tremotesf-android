@@ -20,16 +20,12 @@
 package org.equeim.tremotesf
 
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.os.Build
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import androidx.core.content.ContextCompat
 
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.stopService
-import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 
@@ -42,20 +38,20 @@ private const val TORRENTS_DIRECTORY_FILTER = "torrentsFolderFilter"
 private const val DONATE_DIALOG_SHOWN = "donateDialogShown"
 
 @SuppressLint("StaticFieldLeak")
-object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
+object Settings {
     private val context = Application.instance
 
     private val preferences = context.defaultSharedPreferences
 
     private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
-    private val themeKey = context.getString(R.string.prefs_theme_key)
+    val themeKey = context.getString(R.string.prefs_theme_key)
     private val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
     private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
     private val torrentNameMultilineKey = context.getString(R.string.prefs_torrent_name_multiline_key)
-    private val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
-    private val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
-    private val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
-    private val backgroundUpdateIntervalKey = context.getString(R.string.prefs_background_update_interval_key)
+    val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
+    val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
+    val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
+    val backgroundUpdateIntervalKey = context.getString(R.string.prefs_background_update_interval_key)
     private val notifyOnFinishedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_finished_since_last_key)
     private val notifyOnAddedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_added_since_last_key)
     private val deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
@@ -74,7 +70,6 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
                 })
             }
         }
-        preferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     val nightMode: Int
@@ -208,17 +203,4 @@ object Settings : SharedPreferences.OnSharedPreferenceChangeListener {
         set(value) {
             preferences.edit { putBoolean(DONATE_DIALOG_SHOWN, value) }
         }
-
-    override fun onSharedPreferenceChanged(preferences: SharedPreferences, key: String) {
-        when (key) {
-            themeKey -> AppCompatDelegate.setDefaultNightMode(nightMode)
-            persistentNotificationKey -> {
-                if (showPersistentNotification) {
-                    ContextCompat.startForegroundService(context, context.intentFor<ForegroundService>())
-                } else {
-                    context.stopService<ForegroundService>()
-                }
-            }
-        }
-    }
 }
