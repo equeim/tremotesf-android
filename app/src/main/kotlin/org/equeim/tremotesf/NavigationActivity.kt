@@ -25,8 +25,10 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Toast
 
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -36,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
@@ -68,8 +71,15 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
 
     lateinit var navController: NavController
         private set
+    lateinit var appBarConfiguration: AppBarConfiguration
+        private set
 
     var drawerSetUp = false
+
+    lateinit var drawerNavigationIcon: DrawerArrowDrawable
+        private set
+    lateinit var upNavigationIcon: DrawerArrowDrawable
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
@@ -85,11 +95,15 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         }
         Rpc.connectOnce()
 
+        drawerNavigationIcon = DrawerArrowDrawable(this)
+        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
+
         navController = findNavController(R.id.nav_host)
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             hideKeyboard()
-            if (destination.id == R.id.torrentsListFragment) {
+            if (isTopLevelDestination(destination.id)) {
                 drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START)
             } else {
                 drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START)
@@ -186,5 +200,10 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
             }
         }
         return super.onKeyUp(keyCode, event)
+    }
+
+    // destinationId must not refer to NavGraph
+    fun isTopLevelDestination(@IdRes destinationId: Int): Boolean {
+        return appBarConfiguration.topLevelDestinations.contains(destinationId)
     }
 }

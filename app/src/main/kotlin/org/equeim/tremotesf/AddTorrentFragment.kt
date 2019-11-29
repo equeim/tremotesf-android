@@ -48,16 +48,14 @@ abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         toolbar?.setNavigationOnClickListener {
-            if (requireActivity().isTaskRoot) {
-                findNavController().navigateUp()
-            } else {
+            if (!requireActivity().isTaskRoot) {
+                // FIXME: https://issuetracker.google.com/issues/145231159
                 // For some reason it is needed to finish activity before navigateUp(),
                 // otherwise we won't switch to our task in some cases
                 requireActivity().finish()
-                findNavController().navigateUp()
             }
+            findNavController().navigateUp()
         }
     }
 }

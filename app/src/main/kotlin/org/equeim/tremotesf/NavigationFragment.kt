@@ -32,15 +32,12 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.navigateUp
 
 import org.jetbrains.anko.AnkoLogger
 
@@ -74,7 +71,17 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         }
 
         toolbar = view.findViewById<Toolbar>(R.id.toolbar).apply {
-            setupWithNavController(findNavController(), requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout))
+            val activity = requireActivity() as NavigationActivity
+            if (activity.isTopLevelDestination(destinationId)) {
+                navigationIcon = activity.drawerNavigationIcon
+                setNavigationContentDescription(R.string.nav_app_bar_open_drawer_description)
+            } else {
+                navigationIcon = activity.upNavigationIcon
+                setNavigationContentDescription(R.string.nav_app_bar_navigate_up_description)
+            }
+            setNavigationOnClickListener {
+                navController.navigateUp(activity.appBarConfiguration)
+            }
             if (titleRes != 0) {
                 setTitle(titleRes)
             }
