@@ -67,10 +67,6 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
             }
             createdActivities.clear()
         }
-
-        fun showToast(text: String) {
-            activeActivity?.let { Toast.makeText(it, text, Toast.LENGTH_LONG).show() }
-        }
     }
 
     override var actionMode: ActionMode? = null
@@ -98,6 +94,11 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         createdActivities.add(this)
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, intentFor<ForegroundService>())
+        }
+        Rpc.error.observe(this) { error ->
+            if (error == RpcError.ConnectionError) {
+                Toast.makeText(this, Rpc.errorMessage, Toast.LENGTH_LONG).show()
+            }
         }
         Rpc.connectOnce()
 

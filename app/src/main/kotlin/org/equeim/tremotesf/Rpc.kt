@@ -298,9 +298,6 @@ object Rpc : AnkoLogger {
     private fun onErrorChanged(newError: Int, newErrorMessage: String) {
         errorMessage = newErrorMessage
         error.value = newError
-        if (newError == RpcError.ConnectionError) {
-            NavigationActivity.showToast(errorMessage)
-        }
     }
 
     private fun onTorrentsUpdated(newNativeTorrents: List<Torrent>) {
