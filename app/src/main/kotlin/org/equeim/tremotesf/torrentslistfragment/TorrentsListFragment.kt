@@ -164,11 +164,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
                     if (installDays >= 2 && updateDays >= 1) {
                         Settings.donateDialogShown = true
-                        findNavController().navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
+                        navController.navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                     }
                 }
             } else if (!navigatedFrom) {
-                findNavController().navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
+                navController.navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         }
     }
@@ -406,7 +406,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 menuItem.isChecked = !menuItem.isChecked
                 Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
             }
-            else -> return menuItem.onNavDestinationSelected(findNavController())
+            else -> return menuItem.onNavDestinationSelected(navController)
         }
         return true
     }
@@ -415,7 +415,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onActivityResult(requestCode, resultCode, data)
         info("onActivityResult $resultCode $data")
         if (resultCode == Activity.RESULT_OK && data != null) {
-            findNavController().navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
+            navController.navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
         }
     }
 
@@ -426,7 +426,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             } else {
                 torrentsAdapter?.selector?.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
-                findNavController().popDialog()
+                navController.popDialog()
             }
             listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
         }
@@ -507,7 +507,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                            .setType("application/x-bittorrent"),
                                    0)
         } catch (error: ActivityNotFoundException) {
-            findNavController().navigate(R.id.action_torrentsListFragment_to_filePickerFragment)
+            navController.navigate(R.id.action_torrentsListFragment_to_filePickerFragment)
         }
     }
 

@@ -77,7 +77,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         fab.setOnClickListener {
-            findNavController().navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
+            navController.navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {

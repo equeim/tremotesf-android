@@ -56,7 +56,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         list_view.divider = null
         list_view.setSelector(android.R.color.transparent)
         list_view.setOnItemClickListener { _, _, position, _ ->
-            findNavController().navigate(when (position) {
+            navController.navigate(when (position) {
                                              0 -> R.id.action_serverSettingsFragment_to_downloadingFragment
                                              1 -> R.id.action_serverSettingsFragment_to_seedingFragment
                                              2 -> R.id.action_serverSettingsFragment_to_queueFragment
@@ -115,7 +115,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
 
         private fun onRpcStatusChanged(status: Int) {
             if (status == RpcStatus.Disconnected) {
-                findNavController().popBackStack()
+                navController.popBackStack()
             }
         }
     }

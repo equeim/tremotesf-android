@@ -219,9 +219,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                view.findNavController().navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
-                                                  bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
-                                                           EditTrackerDialogFragment.ANNOUNCE to item.announce))
+                torrentPropertiesFragment.navController.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
+                                                                 bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
+                                                                 EditTrackerDialogFragment.ANNOUNCE to item.announce))
             } else {
                 super.onClick(view)
             }
@@ -268,7 +268,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
 
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.findNavController()
+                torrentPropertiesFragment.navController
                         .navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
                                   bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedItems.map(TrackersAdapterItem::id).toIntArray()))
                 return true

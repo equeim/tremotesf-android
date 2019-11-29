@@ -92,7 +92,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 
     fun finish(fileUri: Uri) {
-        findNavController().navigate(R.id.action_filePickerFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to fileUri.toString()))
+        navController.navigate(R.id.action_filePickerFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to fileUri.toString()))
     }
 
     fun updatePlaceholder() {

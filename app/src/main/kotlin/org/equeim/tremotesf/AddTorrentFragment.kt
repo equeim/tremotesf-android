@@ -55,7 +55,7 @@ abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
                 // otherwise we won't switch to our task in some cases
                 requireActivity().finish()
             }
-            findNavController().navigateUp()
+            navController.navigateUp()
         }
     }
 }

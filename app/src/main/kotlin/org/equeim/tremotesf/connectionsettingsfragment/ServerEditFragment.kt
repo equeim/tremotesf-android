@@ -75,7 +75,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         certificates_item.isEnabled = false
         certificates_item.setChildrenEnabled(false)
         certificates_item.setOnClickListener {
-            findNavController().navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
+            navController.navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
         }
         https_check_box.setOnCheckedChangeListener { _, checked ->
             certificates_item.isEnabled = checked
@@ -110,7 +110,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        certificatesModel = ViewModelProvider(findNavController().getBackStackEntry(R.id.serverEditFragment),
+        certificatesModel = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
                                               CertificatesModelFactory(newServer))[CertificatesModel::class.java]
     }
 
@@ -149,7 +149,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 timeoutOk) {
             if (nameEditText != server?.name &&
                     Servers.servers.value?.find { it.name == nameEditText } != null) {
-                findNavController().navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
+                navController.navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
             } else {
                 save()
             }
@@ -197,7 +197,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             Servers.setServer(server, newServer)
         }
 
-        findNavController().popBackStack(R.id.serverEditFragment, true)
+        navController.popBackStack(R.id.serverEditFragment, true)
     }
 
     class ServerOverwriteDialogFragment : DialogFragment() {
@@ -255,7 +255,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
             val serverName = requireArguments().getString(SERVER)
             val server = Servers.servers.value?.find { it.name == serverName }
-            certificatesModel = ViewModelProvider(findNavController().getBackStackEntry(R.id.serverEditFragment),
+            certificatesModel = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
                                                   CertificatesModelFactory(server ?: Server()))[CertificatesModel::class.java]
             certificatesModel.certificatesData.let { data ->
                 self_signed_certificate_check_box.isChecked = data.selfSignedCertificateEnabled
