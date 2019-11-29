@@ -65,6 +65,8 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             when (key) {
                 Settings.themeKey -> AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
 
+                Settings.oldColorsKey -> NavigationActivity.recreateAllActivities()
+
                 Settings.notifyOnAddedKey,
                 Settings.notifyOnFinishedKey -> updateBackgroundUpdatePreference()
 

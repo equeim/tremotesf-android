@@ -55,6 +55,12 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         var activeActivity: NavigationActivity? = null
             private set
 
+        fun recreateAllActivities() {
+            for (activity in createdActivities) {
+                activity.recreate()
+            }
+        }
+
         fun finishAllActivities() {
             for (activity in createdActivities) {
                 activity.finish()
