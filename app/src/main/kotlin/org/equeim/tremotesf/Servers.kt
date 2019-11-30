@@ -130,6 +130,7 @@ object Servers : AnkoLogger {
         }
 
     private var saveOnCurrentChanged = false
+    // currentServer observers should not access servers or hasServers
     val currentServer = MutableLiveData<Server>(null)
 
     @Volatile private var saveData: SaveData? = null
@@ -179,8 +180,8 @@ object Servers : AnkoLogger {
                 servers.add(server)
             }
 
-            this.servers.value = servers
             setCurrentServer(servers.find { it.name == saveData.currentServerName })
+            this.servers.value = servers
 
             if (currentServer.value == null && servers.isNotEmpty()) {
                 currentServer.value = servers.first()
@@ -247,11 +248,11 @@ object Servers : AnkoLogger {
             }
         }
 
-        this.servers.value = servers
-
         if (newCurrent != null) {
             setCurrentServer(newCurrent)
         }
+
+        this.servers.value = servers
 
         save()
     }
@@ -275,11 +276,11 @@ object Servers : AnkoLogger {
 
         newServer.copyTo(server)
 
-        this.servers.value = servers
-
         if (currentChanged) {
             setCurrentServer(server)
         }
+
+        this.servers.value = servers
 
         save()
     }
@@ -288,11 +289,11 @@ object Servers : AnkoLogger {
         val servers = this.servers.value.toMutableList()
         servers.removeAll(toRemove)
 
-        this.servers.value = servers
-
         if (currentServer.value in toRemove) {
             setCurrentServer(servers.firstOrNull())
         }
+
+        this.servers.value = servers
 
         save()
     }
