@@ -31,6 +31,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Checkable
 
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
@@ -263,6 +264,15 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 return false
             }
         })
+
+        requiredActivity.onBackPressedDispatcher.addCallback(this) {
+            if (searchMenuItem.isActionViewExpanded) {
+                searchMenuItem.collapseActionView()
+            } else {
+                isEnabled = false
+                requiredActivity.onBackPressedDispatcher.onBackPressed()
+            }
+        }
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
