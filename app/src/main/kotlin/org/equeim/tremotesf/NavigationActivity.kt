@@ -248,7 +248,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
             serversViewAdapter.update()
         }
 
-        sidePanelHeader.connection_settings_item.setOnClickListener {
+        sidePanelHeader.connection_settings_button.setOnClickListener {
             try {
                 navController.navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
             } catch (ignore: IllegalArgumentException) {}
