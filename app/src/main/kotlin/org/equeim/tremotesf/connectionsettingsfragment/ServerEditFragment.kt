@@ -71,14 +71,12 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         https_check_box.isChecked = false
 
-        certificates_item.isEnabled = false
-        certificates_item.setChildrenEnabled(false)
-        certificates_item.setOnClickListener {
+        certificated_button.isEnabled = false
+        certificated_button.setOnClickListener {
             navController.navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
         }
         https_check_box.setOnCheckedChangeListener { _, checked ->
-            certificates_item.isEnabled = checked
-            certificates_item.setChildrenEnabled(checked)
+            certificated_button.isEnabled = checked
         }
 
         authentication_check_box.isChecked = false
