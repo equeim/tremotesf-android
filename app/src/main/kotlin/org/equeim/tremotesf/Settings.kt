@@ -45,7 +45,7 @@ object Settings {
 
     private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
     val themeKey = context.getString(R.string.prefs_theme_key)
-    private val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
+    val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
     private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
     private val torrentNameMultilineKey = context.getString(R.string.prefs_torrent_name_multiline_key)
     val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
