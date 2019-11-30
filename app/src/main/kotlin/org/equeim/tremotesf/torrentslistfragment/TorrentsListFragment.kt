@@ -29,17 +29,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
 import android.widget.Checkable
-import android.widget.ImageView
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
 import androidx.lifecycle.observe
-import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -47,11 +42,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.childrenRecursiveSequence
-import org.jetbrains.anko.info
-import org.jetbrains.anko.design.longSnackbar
 
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
@@ -62,17 +52,18 @@ import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
+import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
-import org.equeim.tremotesf.utils.setChildrenEnabled
 
-import kotlinx.android.synthetic.main.navigation_activity.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.info
+
 import kotlinx.android.synthetic.main.torrents_list_fragment.*
-import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
@@ -84,19 +75,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
-
-    private var serversViewAdapter: ServersViewAdapter? = null
-
-    private var listSettingsLayout: ViewGroup? = null
-    private var sortView: AutoCompleteTextView? = null
-    private var statusView: AutoCompleteTextView? = null
-    private var statusViewAdapter: StatusFilterViewAdapter? = null
-
-    private var trackersView: AutoCompleteTextView? = null
-    private var trackersViewAdapter: TrackersViewAdapter? = null
-
-    private var directoriesView: AutoCompleteTextView? = null
-    private var directoriesViewAdapter: DirectoriesViewAdapter? = null
 
     var torrentsAdapter: TorrentsAdapter? = null
         private set
@@ -115,7 +93,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val torrentsAdapter = TorrentsAdapter(requireActivity() as AppCompatActivity, this)
         this.torrentsAdapter = torrentsAdapter
 
-        setupDrawer()
+        setupDrawerListeners()
 
         torrents_view.adapter = torrentsAdapter
         torrents_view.layoutManager = LinearLayoutManager(requireContext())
@@ -141,7 +119,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             }
         })
 
-        Servers.currentServer.observe(viewLifecycleOwner) { updateTitle() }
+        Servers.currentServer.observe(viewLifecycleOwner, ::updateTitle)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
                 .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value) }
 
@@ -151,7 +129,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Rpc.torrentAddErrorEvent.observe(viewLifecycleOwner) {
             view.longSnackbar(R.string.torrent_add_error)
         }
-
 
         if (savedInstanceState == null) {
             if (Servers.hasServers) {
@@ -171,96 +148,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    private fun setupDrawer() {
+    private fun setupDrawerListeners() {
         val activity = requiredActivity
 
-        val sidePanelHeader = activity.side_panel.getHeaderView(0)
-
-        val serversView = sidePanelHeader.servers_view
-        serversView.isEnabled = Servers.hasServers
-
-        val listSettingsLayout = sidePanelHeader.list_settings_layout
-        this.listSettingsLayout = listSettingsLayout
-        listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
-
-        val sortView = sidePanelHeader.sort_view
-        this.sortView = sortView
-
-        val statusView = sidePanelHeader.status_view
-        this.statusView = statusView
-
-        val trackersView = sidePanelHeader.trackers_view
-        this.trackersView = trackersView
-
-        val directoriesView = sidePanelHeader.directories_view
-        this.directoriesView = directoriesView
-
-        activity.apply {
-            if (!drawerSetUp) {
-                drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
-
-                side_panel.setNavigationItemSelectedListener { menuItem ->
-                    return@setNavigationItemSelectedListener when (menuItem.itemId) {
-                        R.id.quit -> {
-                            Utils.shutdownApp(this)
-                            true
-                        }
-                        else -> menuItem.onNavDestinationSelected(findNavController(R.id.nav_host))
-                    }
-                }
-
-                val serversViewAdapter = ServersViewAdapter(serversView)
-                serversView.setAdapter(serversViewAdapter)
-                serversView.setOnItemClickListener { _, _, position, _ ->
-                    serversViewAdapter.servers[position].let {
-                        if (it != Servers.currentServer.value) {
-                            Servers.currentServer.value = it
-                        }
-                    }
-                }
-
-                sidePanelHeader.connection_settings_item.setOnClickListener {
-                    try {
-                        findNavController(R.id.nav_host).navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
-                    } catch (ignore: IllegalArgumentException) {}
-                }
-
-                sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
-
-                statusView.setAdapter(StatusFilterViewAdapter(requireContext(), statusView))
-
-                trackersView.setAdapter(TrackersViewAdapter(requireContext(), trackersView))
-                directoriesView.setAdapter(DirectoriesViewAdapter(requireContext(), directoriesView))
-
-                drawerSetUp = true
-            }
-        }
-
-        serversViewAdapter = serversView.adapter as ServersViewAdapter
-        serversViewAdapter?.update()
-
-        sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
-        sidePanelHeader.sort_view_layout.let { layout ->
-            val startIconDrawable = layout.startIconDrawable
-            for (child in layout.childrenRecursiveSequence()) {
-                if (child is ImageView && child.drawable === startIconDrawable) {
-                    (child as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
-                    break
-                }
-            }
-        }
-
-        statusViewAdapter = statusView.adapter as StatusFilterViewAdapter
-        trackersViewAdapter = trackersView.adapter as TrackersViewAdapter
-        directoriesViewAdapter = directoriesView.adapter as DirectoriesViewAdapter
-
-        setupDrawerListeners()
-    }
-
-    private fun setupDrawerListeners() {
-        val sidePanelHeader = requiredActivity.side_panel.getHeaderView(0)
-
-        sortView?.setOnItemClickListener { _, _, position, _ ->
+        activity.sortView.setOnItemClickListener { _, _, position, _ ->
             torrentsAdapter?.apply {
                 sortMode = TorrentsAdapter.SortMode.values()[position]
                 if (Rpc.isConnected) {
@@ -269,9 +160,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             }
         }
 
-        val sortViewLayout = sidePanelHeader.sort_view_layout
-
-        sortViewLayout.setStartIconOnClickListener {
+        activity.sortViewLayout.setStartIconOnClickListener {
             torrentsAdapter?.apply {
                 sortOrder = if (sortOrder == TorrentsAdapter.SortOrder.Ascending) {
                     TorrentsAdapter.SortOrder.Descending
@@ -283,7 +172,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
         }
 
-        statusView?.setOnItemClickListener { _, _, position, _ ->
+        activity.statusView.setOnItemClickListener { _, _, position, _ ->
             torrentsAdapter?.apply {
                 statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
                 if (Rpc.isConnected) {
@@ -292,18 +181,18 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             }
         }
 
-        trackersView?.setOnItemClickListener { _, _, position, _ ->
+        activity.trackersView.setOnItemClickListener { _, _, position, _ ->
             torrentsAdapter?.apply {
-                trackerFilter = trackersViewAdapter?.getTrackerFilter(position) ?: ""
+                trackerFilter = (activity.trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
                 if (Rpc.isConnected) {
                     Settings.torrentsTrackerFilter = trackerFilter
                 }
             }
         }
 
-        directoriesView?.setOnItemClickListener { _, _, position, _ ->
+        activity.directoriesView.setOnItemClickListener { _, _, position, _ ->
             torrentsAdapter?.apply {
-                directoryFilter = directoriesViewAdapter?.getDirectoryFilter(position) ?: ""
+                directoryFilter = (activity.directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
                 if (Rpc.isConnected) {
                     Settings.torrentsDirectoryFilter = directoryFilter
                 }
@@ -312,12 +201,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun clearDrawerListeners() {
-        sortView?.onItemClickListener = null
-        val sidePanelHeader = requiredActivity.side_panel.getHeaderView(0)
-        sidePanelHeader.sort_view_layout.setStartIconOnClickListener(null)
-        statusView?.onItemClickListener = null
-        trackersView?.onItemClickListener = null
-        directoriesView?.onItemSelectedListener = null
+        with (requiredActivity) {
+            sortView.onItemClickListener = null
+            sortViewLayout.setStartIconOnClickListener(null)
+            statusView.onItemClickListener = null
+            trackersView.onItemClickListener = null
+            directoriesView.onItemSelectedListener = null
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -332,19 +222,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onDestroyView() {
         menu = null
         searchMenuItem = null
-
-        serversViewAdapter = null
-
-        listSettingsLayout = null
-        sortView = null
-        statusView = null
-        statusViewAdapter = null
-
-        trackersView = null
-        trackersViewAdapter = null
-
-        directoriesView = null
-        directoriesViewAdapter = null
 
         clearDrawerListeners()
 
@@ -424,25 +301,25 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 searchMenuItem?.collapseActionView()
                 navController.popDialog()
             }
-            listSettingsLayout?.setChildrenEnabled(Rpc.isConnected)
         }
 
         updateMenuItems()
     }
 
     private fun onTorrentsUpdated() {
-        statusViewAdapter?.update()
-        trackersViewAdapter?.update()
-        directoriesViewAdapter?.update()
+        with (requiredActivity) {
+            (statusView.adapter as StatusFilterViewAdapter).update()
+            (trackersView.adapter as TrackersViewAdapter).update()
+            (directoriesView.adapter as DirectoriesViewAdapter).update()
+        }
         torrentsAdapter?.update()
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
                 if (Rpc.isConnected) Rpc.serverSettings.isAlternativeSpeedLimitsEnabled else false
     }
 
-    private fun updateTitle() {
-        toolbar?.title = if (Servers.hasServers) {
-            val currentServer = Servers.currentServer.value!!
+    private fun updateTitle(currentServer: Server?) {
+        toolbar?.title = if (currentServer != null) {
             getString(R.string.current_server_string,
                       currentServer.name,
                       currentServer.address)

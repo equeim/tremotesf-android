@@ -23,6 +23,9 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.widget.AutoCompleteTextView
+import android.widget.Checkable
+import android.widget.ImageView
 import android.widget.Toast
 
 import androidx.annotation.IdRes
@@ -39,14 +42,27 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.onNavDestinationSelected
+
+import com.google.android.material.textfield.TextInputLayout
 
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.childrenRecursiveSequence
 import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
+import org.equeim.tremotesf.torrentslistfragment.DirectoriesViewAdapter
+import org.equeim.tremotesf.torrentslistfragment.ServersViewAdapter
+import org.equeim.tremotesf.torrentslistfragment.StatusFilterViewAdapter
+import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.torrentslistfragment.TrackersViewAdapter
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.navigation_activity.*
+import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 
 class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Selector.ActionModeActivity, AnkoLogger {
@@ -76,11 +92,20 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
     lateinit var appBarConfiguration: AppBarConfiguration
         private set
 
-    var drawerSetUp = false
-
     lateinit var drawerNavigationIcon: DrawerArrowDrawable
         private set
     lateinit var upNavigationIcon: DrawerArrowDrawable
+        private set
+
+    lateinit var sortView: AutoCompleteTextView
+        private set
+    lateinit var sortViewLayout: TextInputLayout
+        private set
+    lateinit var statusView: AutoCompleteTextView
+        private set
+    lateinit var trackersView: AutoCompleteTextView
+        private set
+    lateinit var directoriesView: AutoCompleteTextView
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +132,8 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
 
         navController = findNavController(R.id.nav_host)
         appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
+
+        setupDrawer()
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             hideKeyboard()
@@ -164,24 +191,6 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         }
     }
 
-    private fun handleAddTorrentIntent(intent: Intent?) {
-        if (intent?.action == Intent.ACTION_VIEW) {
-            val action = when (intent.scheme) {
-                ContentResolver.SCHEME_FILE,
-                ContentResolver.SCHEME_CONTENT -> R.id.action_global_addTorrentFileFragment
-                AddTorrentLinkFragment.SCHEME_MAGNET -> R.id.action_global_addTorrentLinkFragment
-                else -> return
-            }
-            val arguments = bundleOf(AddTorrentFragment.URI to intent.data!!.toString())
-            if (isTaskRoot) {
-                findNavController(R.id.nav_host).navigate(action, arguments)
-            } else {
-                findNavController(R.id.nav_host).navigate(action, arguments,
-                                                          NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
-            }
-        }
-    }
-
     override fun onSupportActionModeStarted(mode: ActionMode) {
         super.onSupportActionModeStarted(mode)
         actionMode = mode
@@ -207,6 +216,93 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
             }
         }
         return super.onKeyUp(keyCode, event)
+    }
+
+    private fun setupDrawer() {
+        drawer_layout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
+
+        side_panel.setNavigationItemSelectedListener { menuItem ->
+            return@setNavigationItemSelectedListener when (menuItem.itemId) {
+                R.id.quit -> {
+                    Utils.shutdownApp(this)
+                    true
+                }
+                else -> menuItem.onNavDestinationSelected(navController)
+            }
+        }
+
+        val sidePanelHeader = side_panel.getHeaderView(0)
+
+        val serversView = sidePanelHeader.servers_view
+        val serversViewAdapter = ServersViewAdapter(serversView)
+        serversView.setAdapter(serversViewAdapter)
+        serversView.setOnItemClickListener { _, _, position, _ ->
+            serversViewAdapter.servers[position].let {
+                if (it != Servers.currentServer.value) {
+                    Servers.currentServer.value = it
+                }
+            }
+        }
+        Servers.servers.observe(this) { servers ->
+            serversView.isEnabled = servers.isNotEmpty()
+            serversViewAdapter.update()
+        }
+
+        sidePanelHeader.connection_settings_item.setOnClickListener {
+            try {
+                navController.navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
+            } catch (ignore: IllegalArgumentException) {}
+        }
+
+        val listSettingsLayout = sidePanelHeader.list_settings_layout
+        listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
+        Rpc.status.observe(this) { status ->
+            when (status) {
+                RpcStatus.Disconnected,
+                RpcStatus.Connected -> {
+                    listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
+                }
+            }
+        }
+
+        sortView = sidePanelHeader.sort_view
+        sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
+        sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
+        sortViewLayout = sidePanelHeader.sort_view_layout
+        val startIconDrawable = sortViewLayout.startIconDrawable
+        for (child in sortViewLayout.childrenRecursiveSequence()) {
+            if (child is ImageView && child.drawable === startIconDrawable) {
+                (child as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
+                break
+            }
+        }
+
+        statusView = sidePanelHeader.status_view
+        statusView.setAdapter(StatusFilterViewAdapter(this, statusView))
+
+        trackersView = sidePanelHeader.trackers_view
+        trackersView.setAdapter(TrackersViewAdapter(this, trackersView))
+
+        directoriesView = sidePanelHeader.directories_view
+        directoriesView.setAdapter(DirectoriesViewAdapter(this, directoriesView))
+    }
+
+    private fun handleAddTorrentIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val action = when (intent.scheme) {
+                ContentResolver.SCHEME_FILE,
+                ContentResolver.SCHEME_CONTENT -> R.id.action_global_addTorrentFileFragment
+                AddTorrentLinkFragment.SCHEME_MAGNET -> R.id.action_global_addTorrentLinkFragment
+                else -> return
+            }
+            val arguments = bundleOf(AddTorrentFragment.URI to intent.data!!.toString())
+            if (isTaskRoot) {
+                navController.navigate(action, arguments)
+            } else {
+                navController.navigate(action, arguments,
+                                       NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
+            }
+        }
     }
 
     // destinationId must not refer to NavGraph
