@@ -25,7 +25,6 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
-import androidx.navigation.fragment.findNavController
 
 import org.equeim.libtremotesf.Torrent
 

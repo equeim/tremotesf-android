@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.text.DecimalFormat
 import java.util.Date
 
 import android.content.Context

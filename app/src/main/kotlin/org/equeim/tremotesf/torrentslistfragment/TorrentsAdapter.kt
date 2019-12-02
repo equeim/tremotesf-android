@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentslistfragment
 
-import java.text.DecimalFormat
 import java.util.Comparator
 
 import android.app.Dialog

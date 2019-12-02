@@ -35,10 +35,7 @@ import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.fragment.app.DialogFragment
 import androidx.core.os.bundleOf
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -25,8 +25,7 @@ import android.widget.ArrayAdapter
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.observe
-import androidx.navigation.fragment.findNavController
+
 import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.design.indefiniteSnackbar
@@ -43,10 +42,6 @@ import kotlinx.android.synthetic.main.server_settings_fragment.*
 class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragment,
                                                   R.string.server_settings) {
     private var snackbar: Snackbar? = null
-
-    private val rpcStatusListener = { _: Int ->
-        updateView()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

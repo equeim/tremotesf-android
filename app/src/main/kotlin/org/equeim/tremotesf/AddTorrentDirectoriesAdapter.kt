@@ -19,17 +19,10 @@
 
 package org.equeim.tremotesf
 
-import android.content.Context
-import android.content.res.TypedArray
 import android.os.Bundle
-import android.text.InputType
-import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.BaseDropdownAdapter

@@ -28,8 +28,6 @@ import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 
@@ -44,7 +42,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.TorrentData
-import org.equeim.tremotesf.NavigationActivity
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.setFilesEnabled
 import org.equeim.tremotesf.setPeersEnabled

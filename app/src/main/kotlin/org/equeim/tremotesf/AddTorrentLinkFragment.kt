@@ -28,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.jetbrains.anko.design.indefiniteSnackbar
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.textInputLayout

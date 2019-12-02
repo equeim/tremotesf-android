@@ -38,7 +38,6 @@ import android.widget.TextView
 
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
