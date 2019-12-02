@@ -137,7 +137,7 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
     private fun setPreLollipopContentShadow() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            view?.findViewById<FrameLayout>(R.id.content_frame)?.let { contentFrame ->
+            requireView().findViewById<FrameLayout>(R.id.content_frame)?.let { contentFrame ->
                 val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
                 ta.getDrawable(0)?.let { windowContentOverlay ->
                     contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
