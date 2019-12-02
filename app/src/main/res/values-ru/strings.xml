@@ -270,8 +270,6 @@
     <string name="maximum_peers_per_torrent">Максимальное количество пиров на торрент</string>
     <string name="maximum_peers_globally">Общее максимальное количество пиров</string>
 
-    <string name="open_side_panel">Открыть боковую панель</string>
-    <string name="close_side_panel">Закрыть боковую панель</string>
     <string name="start_downloading_after_adding">Начать загрузку после добавления</string>
 
     <string name="torrent_link">Ссылка на торрент</string>
@@ -388,7 +386,6 @@
     <string name="license">Лицензия</string>
 
     <string name="prefs_old_colors_title">Использовать старые цвета</string>
-    <string name="prefs_old_colors_summary">Перезапустите приложение для применения изменений</string>
 
     <string name="prefs_torrent_compact_view_title">Компактное представление торрентов</string>
     <string name="prefs_torrent_name_multiline_title">Отображать названия торрентов на нескольких строках</string>

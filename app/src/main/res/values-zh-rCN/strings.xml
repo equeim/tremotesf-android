@@ -234,8 +234,6 @@
     <string name="maximum_peers_per_torrent">单个种子最大节点数</string>
     <string name="maximum_peers_globally">全局最大节点数</string>
 
-    <string name="open_side_panel">打开侧边面板</string>
-    <string name="close_side_panel">关闭侧边面板</string>
     <string name="start_downloading_after_adding">添加之后立即开始下载</string>
 
     <string name="torrent_link">磁力链</string>
@@ -313,7 +311,6 @@
     <string name="license">许可</string>
 
     <string name="prefs_old_colors_title">使用旧的配色</string>
-    <string name="prefs_old_colors_summary">重启应用以保存更改</string>
 
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
     <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>

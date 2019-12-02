@@ -258,8 +258,6 @@
     <string name="maximum_peers_per_torrent">Peer massimi per torrent</string>
     <string name="maximum_peers_globally">Peer massimi globalmente</string>
 
-    <string name="open_side_panel">Apri pannello laterale</string>
-    <string name="close_side_panel">Chiudi pannello laterale</string>
     <string name="start_downloading_after_adding">Comincia lo scaricamento dopo l\'aggiunta</string>
 
     <string name="torrent_link">Indirizzo torrent</string>
@@ -367,7 +365,6 @@
 
 
     <string name="prefs_old_colors_title">Usa vecchio tema</string>
-    <string name="prefs_old_colors_summary">Riavvia l\'applicazione per applicare i cambiamenti</string>
 
     <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
     <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>

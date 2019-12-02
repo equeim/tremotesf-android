@@ -258,8 +258,6 @@
     <string name="maximum_peers_per_torrent">Maximaal aantal peers per torrent</string>
     <string name="maximum_peers_globally">Algemeen maximaal aantal peers</string>
 
-    <string name="open_side_panel">Zijpaneel openen</string>
-    <string name="close_side_panel">Zijpaneel sluiten</string>
     <string name="start_downloading_after_adding">Downloaden starten na toevoegen</string>
 
     <string name="torrent_link">Torrentverwijzing</string>
@@ -366,7 +364,6 @@
     <string name="license">Licentie</string>
 
     <string name="prefs_old_colors_title">Oude kleuren gebruiken</string>
-    <string name="prefs_old_colors_summary">Herstart de app om de wijzigingen toe te passen</string>
 
     <string name="prefs_torrent_compact_view_title">Compacte weergave gebruiken voor torrents</string>
     <string name="prefs_torrent_name_multiline_title">Torrentnamen tonen op meerdere regels</string>

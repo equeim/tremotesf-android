@@ -258,8 +258,6 @@
     <string name="maximum_peers_per_torrent">Torrent başına azami eş</string>
     <string name="maximum_peers_globally">Genel azami eş</string>
 
-    <string name="open_side_panel">Yan paneli aç</string>
-    <string name="close_side_panel">Yan paneli kapat</string>
     <string name="start_downloading_after_adding">Ekledikten sonra indirmeye başla</string>
 
     <string name="torrent_link">Torrent bağlantısı</string>
@@ -366,7 +364,6 @@
     <string name="license">Lisans</string>
 
     <string name="prefs_old_colors_title">Eski renkleri kullan</string>
-    <string name="prefs_old_colors_summary">Değişiklikleri uygulamak için uygulamayı yeniden başlatın</string>
 
     <string name="prefs_torrent_compact_view_title">Torrentler için dar görünüm kullanın</string>
     <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda gösterme</string>
