@@ -21,6 +21,7 @@
 %include "qtime.i"
 
 #define Q_OBJECT
+#define Q_GADGET
 #define Q_ENUM(T)
 #define Q_PROPERTY(T)
 #define Q_INVOKABLE

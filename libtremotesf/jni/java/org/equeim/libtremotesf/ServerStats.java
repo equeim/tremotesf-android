@@ -45,13 +45,11 @@ public class ServerStats {
   }
 
   public SessionStats currentSession() {
-    long cPtr = libtremotesfJNI.ServerStats_currentSession(swigCPtr, this);
-    return (cPtr == 0) ? null : new SessionStats(cPtr, false);
+    return new SessionStats(libtremotesfJNI.ServerStats_currentSession(swigCPtr, this), true);
   }
 
   public SessionStats total() {
-    long cPtr = libtremotesfJNI.ServerStats_total(swigCPtr, this);
-    return (cPtr == 0) ? null : new SessionStats(cPtr, false);
+    return new SessionStats(libtremotesfJNI.ServerStats_total(swigCPtr, this), true);
   }
 
 }

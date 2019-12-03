@@ -4855,14 +4855,14 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStat
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1currentSession(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  libtremotesf::SessionStats *result = 0 ;
+  libtremotesf::SessionStats result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = (libtremotesf::SessionStats *)((libtremotesf::ServerStats const *)arg1)->currentSession();
-  *(libtremotesf::SessionStats **)&jresult = result; 
+  result = ((libtremotesf::ServerStats const *)arg1)->currentSession();
+  *(libtremotesf::SessionStats **)&jresult = new libtremotesf::SessionStats(std::move(result)); 
   return jresult;
 }
 
@@ -4870,14 +4870,14 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStat
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1total(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  libtremotesf::SessionStats *result = 0 ;
+  libtremotesf::SessionStats result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = (libtremotesf::SessionStats *)((libtremotesf::ServerStats const *)arg1)->total();
-  *(libtremotesf::SessionStats **)&jresult = result; 
+  result = ((libtremotesf::ServerStats const *)arg1)->total();
+  *(libtremotesf::SessionStats **)&jresult = new libtremotesf::SessionStats(std::move(result)); 
   return jresult;
 }
 
