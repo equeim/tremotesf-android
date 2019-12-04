@@ -54,7 +54,7 @@ class TorrentData(val id: Int, val torrent: Torrent, private val context: Contex
                 Torrent.Status.QueuedForDownloading,
                 Torrent.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
                 Torrent.Status.Checking -> context.getString(R.string.torrent_checking,
-                        DecimalFormats.generic.format(recheckProgress))
+                        DecimalFormats.generic.format(recheckProgress * 100))
                 Torrent.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
                 Torrent.Status.Errored -> errorString
                 else -> ""
