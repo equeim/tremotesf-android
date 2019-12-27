@@ -126,18 +126,15 @@ public class TrackersVector extends java.util.AbstractList<Tracker> implements j
   }
 
   private Tracker doRemove(int index) {
-    long cPtr = libtremotesfJNI.TrackersVector_doRemove(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new Tracker(cPtr, true);
+    return new Tracker(libtremotesfJNI.TrackersVector_doRemove(swigCPtr, this, index), true);
   }
 
   private Tracker doGet(int index) {
-    long cPtr = libtremotesfJNI.TrackersVector_doGet(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new Tracker(cPtr, true);
+    return new Tracker(libtremotesfJNI.TrackersVector_doGet(swigCPtr, this, index), false);
   }
 
   private Tracker doSet(int index, Tracker val) {
-    long cPtr = libtremotesfJNI.TrackersVector_doSet(swigCPtr, this, index, Tracker.getCPtr(val), val);
-    return (cPtr == 0) ? null : new Tracker(cPtr, true);
+    return new Tracker(libtremotesfJNI.TrackersVector_doSet(swigCPtr, this, index, Tracker.getCPtr(val), val), true);
   }
 
   private void doRemoveRange(int fromIndex, int toIndex) {

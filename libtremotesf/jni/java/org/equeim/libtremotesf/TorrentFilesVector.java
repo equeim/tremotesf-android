@@ -126,18 +126,15 @@ public class TorrentFilesVector extends java.util.AbstractList<TorrentFile> impl
   }
 
   private TorrentFile doRemove(int index) {
-    long cPtr = libtremotesfJNI.TorrentFilesVector_doRemove(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new TorrentFile(cPtr, true);
+    return new TorrentFile(libtremotesfJNI.TorrentFilesVector_doRemove(swigCPtr, this, index), true);
   }
 
   private TorrentFile doGet(int index) {
-    long cPtr = libtremotesfJNI.TorrentFilesVector_doGet(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new TorrentFile(cPtr, true);
+    return new TorrentFile(libtremotesfJNI.TorrentFilesVector_doGet(swigCPtr, this, index), false);
   }
 
   private TorrentFile doSet(int index, TorrentFile val) {
-    long cPtr = libtremotesfJNI.TorrentFilesVector_doSet(swigCPtr, this, index, TorrentFile.getCPtr(val), val);
-    return (cPtr == 0) ? null : new TorrentFile(cPtr, true);
+    return new TorrentFile(libtremotesfJNI.TorrentFilesVector_doSet(swigCPtr, this, index, TorrentFile.getCPtr(val), val), true);
   }
 
   private void doRemoveRange(int fromIndex, int toIndex) {

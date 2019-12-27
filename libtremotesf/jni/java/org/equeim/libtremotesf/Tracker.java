@@ -10,7 +10,7 @@ package org.equeim.libtremotesf;
 
 public class Tracker {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwn;
+  protected transient boolean swigCMemOwn;
 
   protected Tracker(long cPtr, boolean cMemoryOwn) {
     swigCMemOwn = cMemoryOwn;
@@ -19,10 +19,6 @@ public class Tracker {
 
   protected static long getCPtr(Tracker obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void swigSetCMemOwn(boolean own) {
-    swigCMemOwn = own;
   }
 
   @SuppressWarnings("deprecation")

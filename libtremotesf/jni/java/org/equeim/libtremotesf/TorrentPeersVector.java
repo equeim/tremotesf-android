@@ -126,18 +126,15 @@ public class TorrentPeersVector extends java.util.AbstractList<Peer> implements 
   }
 
   private Peer doRemove(int index) {
-    long cPtr = libtremotesfJNI.TorrentPeersVector_doRemove(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new Peer(cPtr, true);
+    return new Peer(libtremotesfJNI.TorrentPeersVector_doRemove(swigCPtr, this, index), true);
   }
 
   private Peer doGet(int index) {
-    long cPtr = libtremotesfJNI.TorrentPeersVector_doGet(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new Peer(cPtr, true);
+    return new Peer(libtremotesfJNI.TorrentPeersVector_doGet(swigCPtr, this, index), false);
   }
 
   private Peer doSet(int index, Peer val) {
-    long cPtr = libtremotesfJNI.TorrentPeersVector_doSet(swigCPtr, this, index, Peer.getCPtr(val), val);
-    return (cPtr == 0) ? null : new Peer(cPtr, true);
+    return new Peer(libtremotesfJNI.TorrentPeersVector_doSet(swigCPtr, this, index, Peer.getCPtr(val), val), true);
   }
 
   private void doRemoveRange(int fromIndex, int toIndex) {

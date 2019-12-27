@@ -10,7 +10,7 @@ package org.equeim.libtremotesf;
 
 public class TorrentFile {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwn;
+  protected transient boolean swigCMemOwn;
 
   protected TorrentFile(long cPtr, boolean cMemoryOwn) {
     swigCMemOwn = cMemoryOwn;
@@ -19,10 +19,6 @@ public class TorrentFile {
 
   protected static long getCPtr(TorrentFile obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  protected void swigSetCMemOwn(boolean own) {
-    swigCMemOwn = own;
   }
 
   @SuppressWarnings("deprecation")

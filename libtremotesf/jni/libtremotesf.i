@@ -81,19 +81,14 @@ namespace libtremotesf
 %shared_ptr(libtremotesf::Torrent)
 %template(TorrentsVector) std::vector<std::shared_ptr<libtremotesf::Torrent>>;
 
-%shared_ptr(libtremotesf::TorrentFile)
-%template(TorrentFilesVector) std::vector<std::shared_ptr<libtremotesf::TorrentFile>>;
-
-%shared_ptr(libtremotesf::Tracker)
-%template(TrackersVector) std::vector<std::shared_ptr<libtremotesf::Tracker>>;
-
-%shared_ptr(libtremotesf::Peer)
-%template(TorrentPeersVector) std::vector<std::shared_ptr<libtremotesf::Peer>>;
+%template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
+%template(TrackersVector) std::vector<libtremotesf::Tracker>;
+%template(TorrentPeersVector) std::vector<libtremotesf::Peer>;
 
 %template(StringsVector) std::vector<QString>;
 
-%include "../torrent.h"
 %include "../tracker.h"
+%include "../torrent.h"
 %include "../rpc.h"
 %include "../serversettings.h"
 %include "../serverstats.h"
