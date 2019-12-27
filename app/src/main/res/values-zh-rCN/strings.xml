@@ -310,6 +310,8 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
+    <string name="prefs_dark_theme_mode_title">主题</string>
+
     <string name="prefs_old_colors_title">使用旧的配色</string>
 
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
@@ -342,4 +344,29 @@
     <string name="notify_on_finished_since_last">通知自上次连接至服务器完成的种子</string>
     <string name="notify_on_added_since_last">通知自上次连接至服务器添加的种子</string>
 
-    </resources>
+    <string name="persistent_notification">持久通知</string>
+
+    <string name="persistent_notification_warning">启用持久通知将会阻止应用进入后台刷新模式并可能造成额外的电量消耗</string>
+
+    <string name="prefs_background_update_interval_title">后台刷新间隔</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>已停用</item>
+        <item>15 分钟</item>
+        <item>30 分钟</item>
+        <item> 1 小时</item>
+        <item>3 小时</item>
+        <item>6 小时</item>
+        <item>12 小时</item>
+        <item>24 小时</item>
+    </string-array>
+
+    <string name="connection_settings">连接设置</string>
+
+    <string name="theme_auto">根据电量节省设定</string>
+    <string name="theme_auto_q">跟随系统</string>
+
+    <string-array name="prefs_theme_entries">
+        <item>暗色主题</item>
+        <item>亮色主题</item>
+    </string-array>
+</resources>
