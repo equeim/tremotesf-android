@@ -366,6 +366,7 @@
     <string name="theme_auto_q">跟随系统</string>
 
     <string-array name="prefs_theme_entries">
+        <item>@string/theme_auto</item>
         <item>暗色主题</item>
         <item>亮色主题</item>
     </string-array>

@@ -147,10 +147,13 @@
     <string-array name="ratio_limit_mode">
         <item>Utiliser les paramètres globaux</item>
         <item>Propager peu importe le ratio</item>
+        <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string-array name="idle_seeding_mode">
         <item>Utiliser les paramètres globaux</item>
+        <item>Seed regardless of activity</item>
+        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">min</string>
