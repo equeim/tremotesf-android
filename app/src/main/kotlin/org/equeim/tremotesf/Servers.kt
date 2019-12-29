@@ -118,6 +118,10 @@ data class Server(var name: String = "",
                             var torrents: MutableList<Torrent> = mutableListOf())
 }
 
+@Serializable
+class SaveData(@SerialName(CURRENT) val currentServerName: String?,
+               @SerialName(SERVERS) val servers: List<Server>)
+
 @SuppressLint("StaticFieldLeak")
 object Servers : AnkoLogger {
     private val context = Application.instance
@@ -132,8 +136,6 @@ object Servers : AnkoLogger {
     private var saveOnCurrentChanged = false
     // currentServer observers should not access servers or hasServers
     val currentServer = MutableLiveData<Server>(null)
-
-    @Volatile private var saveData: SaveData? = null
 
     init {
         load()
@@ -220,8 +222,10 @@ object Servers : AnkoLogger {
             lastTorrents.saved = true
         }
 
-        saveData = SaveData(currentServer.value?.name,
-                            servers.value.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) })
+        SaveWorker.saveData = SaveData(
+                currentServer.value?.name,
+                servers.value.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) }
+        )
 
         WorkManager.getInstance(context).enqueueUniqueWork(
                 SaveWorker.UNIQUE_WORK_NAME,
@@ -297,43 +301,40 @@ object Servers : AnkoLogger {
 
         save()
     }
+}
 
-    class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
-        companion object {
-            const val UNIQUE_WORK_NAME = "ServersSaveWorker"
-        }
-
-        override fun doWork(): Result {
-            val data = saveData
-            saveData = null
-            info("SaveWorker.doWork(), saveData=$data")
-            val elapsed = measureTimeMillis {
-                if (data != null) {
-                    try {
-                        context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use { writer ->
-                            writer.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
-                        }
-                    } catch (error: FileNotFoundException) {
-                        error("Failed to open servers file", error)
-                    } catch (error: IOException) {
-                        error("Failed to save servers file", error)
-                    } catch (error: JsonException) {
-                        error("Failed to encode servers to JSON", error)
-                    } catch (error: SerializationException) {
-                        error("Failed to serialize servers", error)
-                    }
-                }
-            }
-            info("SaveWorker.doWork() return, elapsed time: $elapsed ms")
-            return Result.success()
-        }
-
-        override fun onStopped() {
-            saveData = null
-        }
+class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters), AnkoLogger {
+    companion object {
+        const val UNIQUE_WORK_NAME = "ServersSaveWorker"
+        @Volatile var saveData: SaveData? = null
     }
 
-    @Serializable
-    private class SaveData(@SerialName(CURRENT) val currentServerName: String?,
-                           @SerialName(SERVERS) val servers: List<Server>)
+    override fun doWork(): Result {
+        val data = saveData
+        saveData = null
+        info("SaveWorker.doWork(), saveData=$data")
+        val elapsed = measureTimeMillis {
+            if (data != null) {
+                try {
+                    Application.instance.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use { writer ->
+                        writer.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
+                    }
+                } catch (error: FileNotFoundException) {
+                    error("Failed to open servers file", error)
+                } catch (error: IOException) {
+                    error("Failed to save servers file", error)
+                } catch (error: JsonException) {
+                    error("Failed to encode servers to JSON", error)
+                } catch (error: SerializationException) {
+                    error("Failed to serialize servers", error)
+                }
+            }
+        }
+        info("SaveWorker.doWork() return, elapsed time: $elapsed ms")
+        return Result.success()
+    }
+
+    override fun onStopped() {
+        saveData = null
+    }
 }
