@@ -442,11 +442,13 @@
 
     <string name="connection_settings">Connection settings</string>
 
-    <string name="theme_auto">Set by Battery Saver</string>
+    <string name="theme_auto_pre_q">Set by Battery Saver</string>
     <string name="theme_auto_q">System default</string>
 
+    <string name="theme_auto" translatable="false">@string/theme_auto_pre_q</string>
+
     <string-array name="prefs_theme_entries">
-        <item>@string/theme_auto</item>
+        <item translatable="false">@string/theme_auto</item>
         <item>Dark</item>
         <item>Light</item>
     </string-array>

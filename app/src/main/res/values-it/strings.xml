@@ -416,11 +416,11 @@
 
     <string name="connection_settings">Impostazioni di connessione</string>
 
-    <string name="theme_auto">Impostato dal Salva Batteria</string>
+    <string name="theme_auto_pre_q">Impostato dal Salva Batteria</string>
     <string name="theme_auto_q">Predefinito di Sistema</string>
 
     <string-array name="prefs_theme_entries">
-        <item>@string/theme_auto</item>
+        <item translatable="false">@string/theme_auto</item>
         <item>Scuro</item>
         <item>Luminoso</item>
     </string-array>

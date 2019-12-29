@@ -362,11 +362,11 @@
 
     <string name="connection_settings">连接设置</string>
 
-    <string name="theme_auto">根据电量节省设定</string>
+    <string name="theme_auto_pre_q">根据电量节省设定</string>
     <string name="theme_auto_q">跟随系统</string>
 
     <string-array name="prefs_theme_entries">
-        <item>@string/theme_auto</item>
+        <item translatable="false">@string/theme_auto</item>
         <item>暗色主题</item>
         <item>亮色主题</item>
     </string-array>
