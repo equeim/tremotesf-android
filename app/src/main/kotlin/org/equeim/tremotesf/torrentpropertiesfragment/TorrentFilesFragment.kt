@@ -56,6 +56,9 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             if (value != field) {
                 field = value
                 value?.torrent?.setFilesEnabled(true)
+                model.update(value?.torrent)
+            } else if (value != null) {
+                model.update(value.torrent)
             }
         }
 
@@ -121,9 +124,9 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     }
 
     override fun update() {
-        val torrentPropertiesFragment = this.torrentPropertiesFragment ?: return
-        torrent = torrentPropertiesFragment.torrent
-        model.update(torrent?.torrent)
+        torrentPropertiesFragment?.let {
+            torrent = it.torrent
+        }
     }
 
     private fun updatePlaceholder() {
