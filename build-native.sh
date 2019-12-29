@@ -1,30 +1,14 @@
 #!/bin/bash
 
-function _build() {
-    "$top_dir/3rdparty/openssl/build.sh" || return 1
-    "$top_dir/3rdparty/qt/build.sh" || return 1
-    return 0
-}
+export TOP_DIR="$(realpath -- "$(dirname -- "$0")")"
 
-readonly top_dir=$(realpath $(dirname "$0"))
+export MAKEOPTS="$*"
 
-export MAKEOPTS="$@"
+export ANDROID_ABIS_32='armeabi-v7a x86'
+export ANDROID_API_32=16
 
-export ANDROID_API=16
+export ANDROID_ABIS_64='arm64-v8a x86_64'
+export ANDROID_API_64=21
 
-export ANDROID_ARCH=armeabi-v7a
-_build || exit 1
-
-export ANDROID_ARCH=x86
-_build || exit 1
-
-export ANDROID_API=21
-
-export ANDROID_ARCH=arm64-v8a
-_build || exit 1
-
-export ANDROID_ARCH=x86_64
-_build || exit 1
-
-readonly qt=$(realpath "$top_dir/3rdparty/qt/install-armeabi-v7a")
-cp "$qt/jar/QtAndroid.jar" "$top_dir/app/libs/" || exit 1
+"$TOP_DIR/3rdparty/openssl/build.sh" || exit 1
+"$TOP_DIR/3rdparty/qt/build.sh" || exit 1
