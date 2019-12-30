@@ -48,6 +48,8 @@ if [ ! -f dist/changes-5.14.0 ]; then
     patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
     patch_if_needed mips.patch false
     patch_if_needed ndk-r19.patch true
+else
+    patch_if_needed default-arch.patch true
 fi
 
     # LTO
