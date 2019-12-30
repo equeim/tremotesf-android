@@ -6,12 +6,14 @@
 
 ### Changed
 - Switching between dark/light themes now doesn't require app restart
-- Updated Material design style
+- Switching between old/new colors now doesn't require app restart
+- Updated Material design theme
 - Migrated to single activity architecture
 
 ### Fixed
 - Fixed deleted items in download directory text field's menu coming back after rotating device
 - Fixed notifications crash on Android 4.1 and 4.2.0
+- Fixed renaming torrent's files
 
 ## [1.10.1] - 2019-10-29
 ### Fixed
