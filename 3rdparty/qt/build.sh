@@ -1,6 +1,13 @@
 #!/bin/bash
 
 readonly QT_DIR="$(realpath -- "$(dirname -- "$0")")"
+readonly QT_SOURCE_DIR="$QT_DIR/qtbase"
+
+test -f "$QT_SOURCE_DIR/dist/changes-5.12.0"
+readonly HAS_5_12=$?
+
+test -f "$QT_SOURCE_DIR/dist/changes-5.14.0"
+readonly HAS_5_14=$?
 
 function patch_if_needed() {
     # if can't reverse, patch
@@ -31,26 +38,21 @@ function build() {
 
     echo "Building Qt for $abi API $api"
 
-    cd "$QT_DIR/qtbase" || return 1
-
-    if [ ! -f dist/changes-5.12.0 ]; then
-        echo 'Minimum Qt version is 5.12.0, aborting'
-        return 1
-    fi
+    cd "$QT_SOURCE_DIR" || return 1
 
     patch_if_needed qmakemake.patch false
     patch_if_needed java7.patch false
     patch_if_needed donottryondemand.patch true
     patch_if_needed o2.patch true
 
-if [ ! -f dist/changes-5.14.0 ]; then
-    # NDK r19 toolchain
-    patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
-    patch_if_needed mips.patch false
-    patch_if_needed ndk-r19.patch true
-else
-    patch_if_needed default-arch.patch true
-fi
+    if [ "$HAS_5_14" -eq 0 ]; then
+        patch_if_needed default-arch.patch true
+    else
+        # NDK r19 toolchain
+        patch_if_needed 067664531853a1e857c777c1cc56fc64b272e021.patch false
+        patch_if_needed mips.patch false
+        patch_if_needed ndk-r19.patch true
+    fi
 
     # LTO
     patch_if_needed thin-lto.patch true
@@ -66,7 +68,7 @@ fi
 
     local -r prefix="$QT_DIR/install-$abi"
 
-    local -r flags=(
+    local flags=(
         '-v'
         '-confirm-license'
         '-opensource'
@@ -119,6 +121,10 @@ fi
         "-I$openssl_incdir"
     )
 
+    if [ "$HAS_5_14" -eq 0 ]; then
+        flags+=('-linker' 'lld')
+    fi
+
     export OPENSSL_LIBS="-L$openssl_libdir -lssl -lcrypto"
     "$QT_DIR/qtbase/configure" "${flags[@]}" || return 1
 
@@ -127,11 +133,22 @@ fi
 
     local -r libs="$TOP_DIR/app/libs/$abi/"
     mkdir -p "$libs" || return 1
-    cp "$prefix/lib/libQt5Core.so" "$libs" || return 1
-    cp "$prefix/lib/libQt5Network.so" "$libs" || return 1
+
+    if [ "$HAS_5_14" -eq 0 ]; then
+        cp "$prefix/lib/libQt5Core_$abi.so" "$libs/libQt5Core.so" || return 1
+        cp "$prefix/lib/libQt5Network_$abi.so" "$libs/libQt5Network.so" || return 1
+    else
+        cp "$prefix/lib/libQt5Core.so" "$libs" || return 1
+        cp "$prefix/lib/libQt5Network.so" "$libs" || return 1
+    fi
 
     echo
 }
+
+if [ "$HAS_5_12" -ne 0 ]; then
+    echo 'Minimum Qt version is 5.12.0, aborting'
+    exit 1
+fi
 
 for abi in $ANDROID_ABIS_32; do
     build "$abi" "$ANDROID_API_32" || exit 1
