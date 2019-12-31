@@ -119,8 +119,8 @@ data class Server(var name: String = "",
 }
 
 @Serializable
-class SaveData(@SerialName(CURRENT) val currentServerName: String?,
-               @SerialName(SERVERS) val servers: List<Server>)
+data class SaveData(@SerialName(CURRENT) val currentServerName: String?,
+                    @SerialName(SERVERS) val servers: List<Server>)
 
 @SuppressLint("StaticFieldLeak")
 object Servers : AnkoLogger {
