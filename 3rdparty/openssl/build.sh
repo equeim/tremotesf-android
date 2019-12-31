@@ -23,7 +23,7 @@ function build() {
             cflags+=('-mstackrealign')
         ;;
         'arm64-v8a')
-            local -r target="android-arm64"
+            local -r target='android-arm64'
         ;;
         'x86_64')
             local -r target='android-x86_64'
