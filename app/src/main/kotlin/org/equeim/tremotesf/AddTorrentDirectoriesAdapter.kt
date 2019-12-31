@@ -75,7 +75,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
         if (!saved.contains(trimmed)) {
             saved.add(trimmed)
         }
-        Servers.currentServer.value?.addTorrentDialogDirectories = saved.toTypedArray()
+        Servers.currentServer.value?.addTorrentDialogDirectories = saved
         Servers.save()
     }
 

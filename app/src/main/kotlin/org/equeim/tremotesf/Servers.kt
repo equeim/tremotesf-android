@@ -79,7 +79,7 @@ data class Server(var name: String = "",
                 var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
                 var timeout: Int = DEFAULT_TIMEOUT,
                 var lastTorrents: LastTorrents = LastTorrents(),
-                var addTorrentDialogDirectories: Array<String> = arrayOf()) {
+                var addTorrentDialogDirectories: List<String> = emptyList()) {
     companion object {
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
