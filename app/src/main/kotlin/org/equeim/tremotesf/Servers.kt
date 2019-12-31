@@ -105,7 +105,7 @@ data class Server(var name: String = "",
         other.addTorrentDialogDirectories = addTorrentDialogDirectories
     }
 
-    override fun toString() = name
+    override fun toString() = "Server(name=$name)"
 
     @Serializable
     data class Torrent(val id: Int,
@@ -158,7 +158,7 @@ object Servers : AnkoLogger {
             val fileData = context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
             val saveData = Json(JsonConfiguration.Stable).parse(SaveData.serializer(), fileData)
             for (server in saveData.servers) {
-                info("Reading server \"${server}\"")
+                info("Reading server $server")
                 if (server.name.isBlank()) {
                     error("Server's name is empty, skip")
                     continue
