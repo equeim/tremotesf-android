@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.0.0] - 2020-01-01
 ### Added
 - Added support of Android 10 dark theme
 
