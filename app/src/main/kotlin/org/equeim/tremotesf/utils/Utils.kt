@@ -20,11 +20,10 @@
 package org.equeim.tremotesf.utils
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Build
 import android.widget.ProgressBar
-
-import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.ForegroundService
 import org.equeim.tremotesf.NavigationActivity
@@ -37,7 +36,7 @@ object Utils : Logger {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
         Rpc.disconnectOnShutdown()
-        context.stopService<ForegroundService>()
+        context.stopService(Intent(context, ForegroundService::class.java))
     }
 
     private fun calculateSize(bytes: Long): Pair<Double, Int> {

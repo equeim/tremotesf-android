@@ -34,8 +34,6 @@ import androidx.preference.PreferenceFragmentCompat
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-import org.jetbrains.anko.stopService
-
 
 class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                                             R.string.settings) {
@@ -75,7 +73,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                     if (Settings.showPersistentNotification) {
                         ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), ForegroundService::class.java))
                     } else {
-                        requireContext().stopService<ForegroundService>()
+                        requireContext().stopService(Intent(requireContext(), ForegroundService::class.java))
                     }
                 }
             }
