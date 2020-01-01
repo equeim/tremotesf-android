@@ -396,9 +396,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     class DonateDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(getString(R.string.donate_message) + "\n\n" + getString(R.string.donate_dialog_again))
+                    .setMessage(getString(R.string.donations_description) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.donate) { _, _ ->
+                    .setPositiveButton(R.string.donations_donate) { _, _ ->
                         navController.navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
                     }
                     .create()

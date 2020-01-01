@@ -198,14 +198,6 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         actionMode = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val navHostFragment = (nav_host as NavHostFragment)
-        if (navHostFragment.navController.currentDestination?.id == R.id.aboutFragment) {
-            (navHostFragment.childFragmentManager.primaryNavigationFragment as? AboutFragment)?.onActivityResult(requestCode, resultCode, data)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             if ((supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.primaryNavigationFragment as? NavigationFragment)?.showOverflowMenu() == true) {

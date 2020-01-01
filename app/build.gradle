@@ -33,6 +33,12 @@ android {
             java.srcDirs 'src/main/kotlin', '../libtremotesf/jni/java'
             jniLibs.srcDirs 'libs'
         }
+        google {
+            java.srcDirs 'src/google/kotlin'
+        }
+        fdroid {
+            java.srcDirs 'src/fdroid/kotlin'
+        }
     }
     externalNativeBuild {
         cmake {
@@ -110,5 +116,6 @@ dependencies {
 
     implementation 'io.github.raindev:benjamin:1.0.0'
     implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.0'
-    implementation 'org.sufficientlysecure:donations:2.6'
+
+    googleImplementation 'com.android.billingclient:billing:2.1.0'
 }

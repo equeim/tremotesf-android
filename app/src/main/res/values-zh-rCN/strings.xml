@@ -330,8 +330,8 @@
 
     <string name="alternative_speed_limits">备选速度限制</string>
 
-    <string name="donate">捐赠</string>
-    <string name="donate_message">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
+    <string name="donate_tab">捐赠</string>
+    <string name="donations_description">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
     <string name="donate_dialog_again">该对话框将不会再次出现。</string>
 
     <string name="free_space">可用空间： %s</string>
@@ -370,4 +370,6 @@
         <item>暗色主题</item>
         <item>亮色主题</item>
     </string-array>
+    <string name="donations_donate">捐赠</string>
+    <string name="donations_paypal_description">点击这个按钮之后选择你想要捐赠多少</string>
 </resources>

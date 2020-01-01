@@ -362,9 +362,9 @@
 
     <string name="alternative_speed_limits">Limites alternativos de velocidade</string>
 
-    <string name="donate">Doar</string>
-    <string name="donate_yandex">Yandex.Money</string>
-    <string name="donate_message">Se você gosta deste aplicativo, você pode apoiar o seu desenvolvimento, enviando uma doação para o desenvolvedor.</string>
+    <string name="donate_tab">Doar</string>
+    <string name="donations_yandex_title">Yandex.Money</string>
+    <string name="donations_description">Se você gosta deste aplicativo, você pode apoiar o seu desenvolvimento, enviando uma doação para o desenvolvedor.</string>
     <string name="donate_dialog_again">Este diálogo não será mostrado novamente.</string>
 
     <string name="free_space">Espaço livre: %s</string>
@@ -376,5 +376,7 @@
     <string name="notifications_on_connect">Notificações ao conectar-se ao servidor</string>
     <string name="notify_on_finished_since_last">Notificar sobre torrents finalizados desde a última conexão ao servidor</string>
     <string name="notify_on_added_since_last">Notificar sobre torrents adicionados desde a última conexão ao servidor</string>
+    <string name="donations_donate">Doar</string>
+    <string name="donations_paypal_description">Pode escolher quanto deseja doar depois de clicar no botão</string>
 
-    </resources>
+</resources>

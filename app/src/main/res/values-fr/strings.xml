@@ -320,7 +320,7 @@
 
     <string name="alternative_speed_limits">Limites de vitesse alternatives</string>
 
-    <string name="donate">Faire un don</string>
+    <string name="donate_tab">Faire un don</string>
     <string name="free_space">Espace libre : %s</string>
     <string name="persistent_notification">Notification persistante</string>
 
@@ -336,5 +336,8 @@
     </string-array>
 
     <string name="connection_settings">Paramètres de connexion</string>
+    <string name="donations_donate">Faire un don</string>
+    <string name="donations_google_description">Google facture des frais de 30 %</string>
+    <string name="donations_paypal_description">Vous pourrez choisir le montant du don après avoir cliqué sur le bouton</string>
 
-    </resources>
+</resources>
