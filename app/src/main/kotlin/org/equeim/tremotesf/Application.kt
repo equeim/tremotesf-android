@@ -6,11 +6,9 @@ import android.content.Intent
 import android.content.IntentFilter
 
 import org.equeim.tremotesf.utils.DecimalFormats
+import org.equeim.tremotesf.utils.Logger
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
-
-class Application : android.app.Application(), AnkoLogger {
+class Application : android.app.Application(), Logger {
     companion object {
         lateinit var instance: Application
     }

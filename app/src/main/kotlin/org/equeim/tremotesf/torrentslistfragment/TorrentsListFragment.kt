@@ -57,19 +57,18 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
 
-import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.info
 
 import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
-                                                R.menu.main_activity_menu), AnkoLogger {
+                                                R.menu.main_activity_menu), Logger {
     private companion object {
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }

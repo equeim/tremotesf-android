@@ -39,12 +39,10 @@ import androidx.navigation.NavGraph
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.ui.navigateUp
 
-import org.jetbrains.anko.AnkoLogger
-
 
 open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                               @StringRes private val titleRes: Int = 0,
-                              @MenuRes private val toolbarMenuRes: Int = 0) : Fragment(contentLayoutId), AnkoLogger {
+                              @MenuRes private val toolbarMenuRes: Int = 0) : Fragment(contentLayoutId) {
     val activity: NavigationActivity?
         get() = super.getActivity() as NavigationActivity?
     val requiredActivity: NavigationActivity

@@ -43,10 +43,7 @@ import androidx.work.WorkerParameters
 
 import com.google.common.util.concurrent.ListenableFuture
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.warn
 
 import org.qtproject.qt5.android.QtNative
 
@@ -57,6 +54,7 @@ import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.LiveEvent
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 import org.equeim.tremotesf.utils.emit
 
@@ -64,7 +62,7 @@ import org.equeim.tremotesf.utils.emit
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
 typealias RpcError = org.equeim.libtremotesf.Rpc.Error
 
-object Rpc : AnkoLogger {
+object Rpc : Logger {
     private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
     private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
 
@@ -78,7 +76,7 @@ object Rpc : AnkoLogger {
         System.loadLibrary("tremotesf")
     }
 
-    val nativeInstance: JniRpc = object : JniRpc(), AnkoLogger {
+    val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
             context.runOnUiThread {
                 Rpc.onStatusChanged(status)
@@ -478,7 +476,7 @@ object Rpc : AnkoLogger {
         }
     }
 
-    class UpdateWorker(context: Context, workerParameters: WorkerParameters) : ListenableWorker(context, workerParameters), AnkoLogger {
+    class UpdateWorker(context: Context, workerParameters: WorkerParameters) : ListenableWorker(context, workerParameters), Logger {
         companion object {
             const val UNIQUE_WORK_NAME = "RpcUpdateWorker"
         }

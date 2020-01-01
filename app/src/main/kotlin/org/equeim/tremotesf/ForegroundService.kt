@@ -33,10 +33,9 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
 
@@ -46,7 +45,7 @@ private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
 
-class ForegroundService : LifecycleService(), AnkoLogger {
+class ForegroundService : LifecycleService(), Logger {
     private var started = false
     private lateinit var notificationManager: NotificationManager
 

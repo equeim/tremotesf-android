@@ -34,10 +34,6 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.error
-import org.jetbrains.anko.info
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -45,6 +41,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonException
 
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
@@ -123,7 +120,7 @@ data class SaveData(@SerialName(CURRENT) val currentServerName: String?,
                     @SerialName(SERVERS) val servers: List<Server>)
 
 @SuppressLint("StaticFieldLeak")
-object Servers : AnkoLogger {
+object Servers : Logger {
     private val context = Application.instance
 
     val servers = NonNullMutableLiveData<List<Server>>(emptyList())
@@ -303,7 +300,7 @@ object Servers : AnkoLogger {
     }
 }
 
-class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters), AnkoLogger {
+class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters), Logger {
     companion object {
         const val UNIQUE_WORK_NAME = "ServersSaveWorker"
         @Volatile var saveData: SaveData? = null

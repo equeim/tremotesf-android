@@ -30,10 +30,9 @@ import android.os.AsyncTask
 
 import androidx.lifecycle.ViewModel
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.error
 import org.benjamin.Bdecoder
 
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
@@ -108,7 +107,7 @@ class AddTorrentFileModel : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private class TreeCreationTask(private val context: Context,
                                    private val uri: Uri,
-                                   model: AddTorrentFileModel) : AsyncTask<Any, Any, ParserStatus>(), AnkoLogger {
+                                   model: AddTorrentFileModel) : AsyncTask<Any, Any, ParserStatus>(), Logger {
         private val model = WeakReference(model)
         private lateinit var fileData: ByteArray
         private lateinit var rootDirectoryChild: BaseTorrentFilesAdapter.Item

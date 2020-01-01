@@ -46,9 +46,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 
 import com.google.android.material.textfield.TextInputLayout
 
-import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.childrenRecursiveSequence
-import org.jetbrains.anko.info
 import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.torrentslistfragment.DirectoriesViewAdapter
@@ -57,6 +55,7 @@ import org.equeim.tremotesf.torrentslistfragment.StatusFilterViewAdapter
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.torrentslistfragment.TrackersViewAdapter
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.setChildrenEnabled
@@ -65,7 +64,7 @@ import kotlinx.android.synthetic.main.navigation_activity.*
 import kotlinx.android.synthetic.main.side_panel_header.view.*
 
 
-class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Selector.ActionModeActivity, AnkoLogger {
+class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Selector.ActionModeActivity, Logger {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
         var activeActivity: NavigationActivity? = null

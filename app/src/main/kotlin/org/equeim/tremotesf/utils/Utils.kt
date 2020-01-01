@@ -24,8 +24,6 @@ import android.graphics.PorterDuff
 import android.os.Build
 import android.widget.ProgressBar
 
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.stopService
 
 import org.equeim.tremotesf.ForegroundService
@@ -34,7 +32,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 
 
-object Utils : AnkoLogger {
+object Utils : Logger {
     fun shutdownApp(context: Context) {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
