@@ -26,6 +26,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
@@ -42,8 +44,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 
 import com.google.common.util.concurrent.ListenableFuture
-
-import org.jetbrains.anko.runOnUiThread
 
 import org.qtproject.qt5.android.QtNative
 
@@ -68,6 +68,8 @@ object Rpc : Logger {
 
     private val context = Application.instance
 
+    private val handler = Handler(Looper.getMainLooper())
+
     init {
         System.loadLibrary("c++_shared")
         QtNative.setClassLoader(context.classLoader)
@@ -78,86 +80,86 @@ object Rpc : Logger {
 
     val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onStatusChanged(status)
             }
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onErrorChanged(error, errorMessage)
             }
         }
 
         override fun onTorrentsUpdated(torrents: TorrentsVector) {
             val list = torrents.toList()
-            context.runOnUiThread {
+            handler.post {
                 onTorrentsUpdated(list)
             }
         }
 
         override fun onServerStatsUpdated() {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onServerStatsUpdated()
             }
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onTorrentAdded(id, hashString, name)
             }
         }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onTorrentFinished(id, hashString, name)
             }
         }
 
         override fun onTorrentAddDuplicate() {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onTorrentAddDuplicate()
             }
         }
 
         override fun onTorrentAddError() {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onTorrentAddError()
             }
         }
 
         override fun onGotTorrentFiles(torrentId: Int) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onGotTorrentFiles(torrentId)
             }
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
             }
         }
 
         override fun onGotTorrentPeers(torrentId: Int) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onGotTorrentPeers(torrentId)
             }
         }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onGotDownloadDirFreeSpace(bytes)
             }
         }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onGotFreeSpaceForPath(path, success, bytes)
             }
         }
 
         override fun onAboutToDisconnect() {
-            context.runOnUiThread {
+            handler.post {
                 Rpc.onAboutToDisconnect()
             }
         }
