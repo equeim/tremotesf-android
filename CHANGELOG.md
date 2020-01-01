@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.1] - 2020-01-01
+### Fixed
+- Fixed VIBRATE permission
+
 ## [2.0.0] - 2020-01-01
 ### Added
 - Added support of Android 10 dark theme
