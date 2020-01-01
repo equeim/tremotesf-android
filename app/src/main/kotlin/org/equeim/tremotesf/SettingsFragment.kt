@@ -20,6 +20,7 @@
 package org.equeim.tremotesf
 
 import android.app.Dialog
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 
@@ -33,7 +34,6 @@ import androidx.preference.PreferenceFragmentCompat
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.stopService
 
 
@@ -73,7 +73,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                 Settings.persistentNotificationKey -> {
                     updateBackgroundUpdatePreference()
                     if (Settings.showPersistentNotification) {
-                        ContextCompat.startForegroundService(requireContext(), requireContext().intentFor<ForegroundService>())
+                        ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), ForegroundService::class.java))
                     } else {
                         requireContext().stopService<ForegroundService>()
                     }

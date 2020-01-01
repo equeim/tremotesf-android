@@ -47,7 +47,6 @@ import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.material.textfield.TextInputLayout
 
 import org.jetbrains.anko.childrenRecursiveSequence
-import org.jetbrains.anko.intentFor
 
 import org.equeim.tremotesf.torrentslistfragment.DirectoriesViewAdapter
 import org.equeim.tremotesf.torrentslistfragment.ServersViewAdapter
@@ -117,7 +116,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
 
         createdActivities.add(this)
         if (Settings.showPersistentNotification) {
-            ContextCompat.startForegroundService(this, intentFor<ForegroundService>())
+            ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }
         Rpc.error.observe(this) { error ->
             if (error == RpcError.ConnectionError) {

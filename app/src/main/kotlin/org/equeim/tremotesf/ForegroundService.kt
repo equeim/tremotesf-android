@@ -33,8 +33,6 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
 
-import org.jetbrains.anko.intentFor
-
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 
@@ -156,7 +154,7 @@ class ForegroundService : LifecycleService(), Logger {
                     getString(R.string.connect),
                     PendingIntent.getService(this,
                                              0,
-                                             intentFor<ForegroundService>().setAction(ACTION_CONNECT),
+                                             Intent(this, javaClass).setAction(ACTION_CONNECT),
                                              PendingIntent.FLAG_UPDATE_CURRENT))
         } else {
             notificationBuilder.addAction(
@@ -164,7 +162,7 @@ class ForegroundService : LifecycleService(), Logger {
                     getString(R.string.disconnect),
                     PendingIntent.getService(this,
                                              0,
-                                             intentFor<ForegroundService>().setAction(ACTION_DISCONNECT),
+                                             Intent(this, javaClass).setAction(ACTION_DISCONNECT),
                                              PendingIntent.FLAG_UPDATE_CURRENT))
         }
 
@@ -173,7 +171,7 @@ class ForegroundService : LifecycleService(), Logger {
                 getString(R.string.quit),
                 PendingIntent.getService(this,
                                          0,
-                                         intentFor<ForegroundService>().setAction(ACTION_SHUTDOWN),
+                                         Intent(this, javaClass).setAction(ACTION_SHUTDOWN),
                                          PendingIntent.FLAG_UPDATE_CURRENT)
         )
 
