@@ -35,8 +35,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 
-import org.jetbrains.anko.design.indefiniteSnackbar
-
 import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -49,6 +47,7 @@ import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.popDialog
+import org.equeim.tremotesf.utils.showSnackbar
 
 import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
@@ -176,7 +175,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     private fun onRpcStatusChanged(status: Int) {
         when (status) {
             RpcStatus.Disconnected -> {
-                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
+                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }

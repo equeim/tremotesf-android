@@ -28,13 +28,12 @@ import androidx.annotation.StringRes
 
 import com.google.android.material.snackbar.Snackbar
 
-import org.jetbrains.anko.design.indefiniteSnackbar
-
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.showSnackbar
 
 import kotlinx.android.synthetic.main.server_settings_fragment.*
 
@@ -70,7 +69,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
     private fun updateView() {
         when (Rpc.status.value) {
             RpcStatus.Disconnected -> {
-                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
+                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }

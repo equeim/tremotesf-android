@@ -22,12 +22,14 @@ package org.equeim.tremotesf.utils
 
 import android.app.Activity
 import android.text.Editable
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 
+import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
 import androidx.core.view.postDelayed
 import androidx.core.widget.doAfterTextChanged
@@ -36,8 +38,23 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.DialogFragmentNavigator
 
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
+
+fun View.showSnackbar(message: CharSequence, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null): Snackbar {
+    val snackbar = Snackbar.make(this, message, length)
+    if (actionText == 0) {
+        snackbar.setAction("", action)
+    } else {
+        snackbar.setAction(actionText, action)
+    }
+    snackbar.show()
+    return snackbar
+}
+
+fun View.showSnackbar(@StringRes message: Int, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null) =
+        showSnackbar(resources.getString(message), length, actionText, action)
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {

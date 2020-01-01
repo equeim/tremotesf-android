@@ -53,13 +53,12 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 
-import org.jetbrains.anko.design.indefiniteSnackbar
-
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.showSnackbar
 
 import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
 import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
@@ -231,9 +230,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     }
 
     private fun updateView(parserStatus: AddTorrentFileModel.ParserStatus) {
-        if (view == null) {
-            return
-        }
+        val view = this.view ?: return
 
         if (Rpc.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
             toolbar?.apply {
@@ -288,7 +285,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
                 when (Rpc.status.value) {
                     RpcStatus.Disconnected -> {
-                        snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
+                        snackbar = view.showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                             snackbar = null
                             Rpc.nativeInstance.connect()
                         }

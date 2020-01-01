@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
@@ -60,8 +61,7 @@ import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
-
-import org.jetbrains.anko.design.longSnackbar
+import org.equeim.tremotesf.utils.showSnackbar
 
 import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
@@ -124,10 +124,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                 .observe(viewLifecycleOwner) { updateSubtitle(Rpc.serverStats.value) }
 
         Rpc.torrentAddDuplicateEvent.observe(viewLifecycleOwner) {
-            view.longSnackbar(R.string.torrent_duplicate)
+            view.showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
         }
         Rpc.torrentAddErrorEvent.observe(viewLifecycleOwner) {
-            view.longSnackbar(R.string.torrent_add_error)
+            view.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }
 
         if (savedInstanceState == null) {

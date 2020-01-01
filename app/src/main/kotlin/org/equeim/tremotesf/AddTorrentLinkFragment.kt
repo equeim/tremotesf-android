@@ -26,10 +26,9 @@ import android.view.View
 import androidx.core.text.trimmedLength
 import com.google.android.material.snackbar.Snackbar
 
-import org.jetbrains.anko.design.indefiniteSnackbar
-
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.textInputLayout
 
 import kotlinx.android.synthetic.main.add_torrent_link_fragment.*
@@ -118,7 +117,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
         when (Rpc.status.value) {
             RpcStatus.Disconnected -> {
-                snackbar = view?.indefiniteSnackbar("", getString(R.string.connect)) {
+                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }
