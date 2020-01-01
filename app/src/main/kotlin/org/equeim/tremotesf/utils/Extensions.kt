@@ -31,6 +31,7 @@ import android.widget.TextView
 
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
+import androidx.core.view.children
 import androidx.core.view.postDelayed
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -60,6 +61,21 @@ fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {
         getChildAt(i).isEnabled = enabled
     }
+}
+
+fun ViewGroup.findChildRecursively(predicate: (View) -> Boolean): View? {
+    for (child in children) {
+        if (predicate(child)) {
+            return child
+        }
+        if (child is ViewGroup) {
+            val found = child.findChildRecursively(predicate)
+            if (found != null) {
+                return found
+            }
+        }
+    }
+    return null
 }
 
 inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Editable) -> Unit) = doAfterTextChanged {

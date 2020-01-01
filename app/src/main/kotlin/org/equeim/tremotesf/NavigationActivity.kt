@@ -46,8 +46,6 @@ import androidx.navigation.ui.onNavDestinationSelected
 
 import com.google.android.material.textfield.TextInputLayout
 
-import org.jetbrains.anko.childrenRecursiveSequence
-
 import org.equeim.tremotesf.torrentslistfragment.DirectoriesViewAdapter
 import org.equeim.tremotesf.torrentslistfragment.ServersViewAdapter
 import org.equeim.tremotesf.torrentslistfragment.StatusFilterViewAdapter
@@ -56,6 +54,7 @@ import org.equeim.tremotesf.torrentslistfragment.TrackersViewAdapter
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.findChildRecursively
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
@@ -268,11 +267,8 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
         sortViewLayout = sidePanelHeader.sort_view_layout
         val startIconDrawable = sortViewLayout.startIconDrawable
-        for (child in sortViewLayout.childrenRecursiveSequence()) {
-            if (child is ImageView && child.drawable === startIconDrawable) {
-                (child as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
-                break
-            }
+        sortViewLayout.findChildRecursively { it is ImageView && it.drawable === startIconDrawable }?.let {
+            (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
         }
 
         statusView = sidePanelHeader.status_view

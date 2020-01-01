@@ -24,8 +24,7 @@ import android.os.Build
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-
-import org.jetbrains.anko.defaultSharedPreferences
+import androidx.preference.PreferenceManager
 
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 
@@ -41,7 +40,7 @@ private const val DONATE_DIALOG_SHOWN = "donateDialogShown"
 object Settings {
     private val context = Application.instance
 
-    private val preferences = context.defaultSharedPreferences
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
     val themeKey = context.getString(R.string.prefs_theme_key)
