@@ -145,7 +145,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
             fun newInstance(): DonateTabFragment {
                 val fragment = DonateTabFragment()
-                fragment.arguments = bundleOf(ARG_DEBUG to true,
+                fragment.arguments = bundleOf(ARG_DEBUG to BuildConfig.DEBUG,
                                               ARG_GOOGLE_ENABLED to BuildConfig.DONATIONS_GOOGLE,
                                               ARG_GOOGLE_PUBKEY to GOOGLE_PUBKEY,
                                               ARG_GOOGLE_CATALOG to GOOGLE_CATALOG,
