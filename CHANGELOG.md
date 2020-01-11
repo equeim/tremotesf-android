@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.2] - 2020-01-11
+### Fixed
+- Fixed Google Play donations
+
 ## [2.0.1] - 2020-01-01
 ### Fixed
 - Fixed VIBRATE permission
