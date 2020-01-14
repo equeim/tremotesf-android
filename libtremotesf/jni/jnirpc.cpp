@@ -19,7 +19,7 @@ namespace libtremotesf
     namespace
     {
         template<typename T>
-        std::vector<T> toValues(const std::vector<T*>& items)
+        std::vector<T> toValues(const std::vector<const T*>& items)
         {
             std::vector<T> v;
             v.reserve(items.size());
@@ -244,7 +244,7 @@ namespace libtremotesf
         QObject::connect(this, &Rpc::torrentFilesUpdated, [=](int torrentId, const std::vector<const TorrentFile*>& changed) {
             onTorrentFilesUpdated(torrentId, toValues(changed));
         });
-        QObject::connect(this, &Rpc::torrentFilesUpdated, [=](int torrentId, const std::vector<const Peer*>& changed, const std::vector<const Peer*>& added, const std::vector<int>& removed) {
+        QObject::connect(this, &Rpc::torrentPeersUpdated, [=](int torrentId, const std::vector<const Peer*>& changed, const std::vector<const Peer*>& added, const std::vector<int>& removed) {
             onTorrentPeersUpdated(torrentId, toValues(changed), toValues(added), removed);
         });
 
