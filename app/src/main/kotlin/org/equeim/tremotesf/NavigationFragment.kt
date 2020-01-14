@@ -56,8 +56,8 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     private val destinationListener: NavController.OnDestinationChangedListener = object : NavController.OnDestinationChangedListener {
         override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
             if (destination.id != destinationId) {
+                onNavigatedFrom(destination)
                 onNavigatedFrom()
-                navController.removeOnDestinationChangedListener(this)
             }
         }
     }
@@ -156,5 +156,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     }
 
     protected open fun onToolbarMenuItemClicked(menuItem: MenuItem) = false
+    protected open fun onNavigatedFrom(newDestination: NavDestination) = Unit
     protected open fun onNavigatedFrom() = Unit
 }
