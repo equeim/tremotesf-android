@@ -12,10 +12,12 @@ find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5Network REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
+        peer.cpp
         rpc.cpp
         serversettings.cpp
         serverstats.cpp
         torrent.cpp
+        torrentfile.cpp
         tracker.cpp
         jni/jnirpc.cpp
         jni/libtremotesf_wrap.cxx)
