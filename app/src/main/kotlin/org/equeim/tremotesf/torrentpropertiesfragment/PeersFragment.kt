@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.TorrentData
+import org.equeim.tremotesf.TorrentWrapper
 
 import org.equeim.tremotesf.setPeersEnabled
 
@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.peers_fragment.*
 class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragment.PagerFragment {
     private var peersAdapter: PeersAdapter? = null
 
-    var torrent: TorrentData? = null
+    var torrent: TorrentWrapper? = null
         private set(value) {
             if (value != field) {
                 field = value

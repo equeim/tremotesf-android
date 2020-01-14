@@ -24,11 +24,12 @@ import java.util.Date
 import android.content.Context
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
 
 
-class TorrentData(val id: Int, val torrent: Torrent, private val context: Context) {
+class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Context) {
     val hashString: String = torrent.hashString()
 
     var name: String = torrent.name()
@@ -42,21 +43,21 @@ class TorrentData(val id: Int, val torrent: Torrent, private val context: Contex
     val statusString: String
         get() {
             return when (status) {
-                Torrent.Status.Paused -> context.getString(R.string.torrent_paused)
-                Torrent.Status.Downloading -> context.resources.getQuantityString(R.plurals.torrent_downloading,
+                TorrentData.Status.Paused -> context.getString(R.string.torrent_paused)
+                TorrentData.Status.Downloading -> context.resources.getQuantityString(R.plurals.torrent_downloading,
                         seeders,
                         seeders)
-                Torrent.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
-                Torrent.Status.Seeding -> context.resources.getQuantityString(R.plurals.torrent_seeding,
+                TorrentData.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
+                TorrentData.Status.Seeding -> context.resources.getQuantityString(R.plurals.torrent_seeding,
                         leechers,
                         leechers)
-                Torrent.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
-                Torrent.Status.QueuedForDownloading,
-                Torrent.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
-                Torrent.Status.Checking -> context.getString(R.string.torrent_checking,
+                TorrentData.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
+                TorrentData.Status.QueuedForDownloading,
+                TorrentData.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
+                TorrentData.Status.Checking -> context.getString(R.string.torrent_checking,
                         DecimalFormats.generic.format(recheckProgress * 100))
-                Torrent.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
-                Torrent.Status.Errored -> errorString
+                TorrentData.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
+                TorrentData.Status.Errored -> errorString
                 else -> ""
             }
         }
@@ -104,6 +105,30 @@ class TorrentData(val id: Int, val torrent: Torrent, private val context: Contex
 
     private val rpcTrackers = torrent.trackers()
     val trackers = mutableListOf<String>()
+
+    var filesLoaded = false
+    var filesEnabled = false
+        set(value) {
+            if (value != field) {
+                field = value
+                Rpc.nativeInstance.setTorrentFilesEnabled(torrent, value)
+                if (!value) {
+                    filesLoaded = false
+                }
+            }
+        }
+
+    var peersLoaded = false
+    var peersEnabled = false
+        set(value) {
+            if (value != field) {
+                field = value
+                Rpc.nativeInstance.setTorrentPeersEnabled(torrent, value)
+                if (!value) {
+                    peersLoaded = false
+                }
+            }
+        }
 
     init {
         for (tracker: Tracker in rpcTrackers) {

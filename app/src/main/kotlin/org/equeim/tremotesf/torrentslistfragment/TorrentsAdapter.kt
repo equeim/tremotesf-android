@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.NavigationDialogFragment
@@ -51,7 +52,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
-import org.equeim.tremotesf.TorrentData
+import org.equeim.tremotesf.TorrentWrapper
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentFilesAdapter
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.AlphanumericComparator
@@ -76,26 +77,26 @@ private const val DIRECTORY_FILTER = "directoryFilter"
 
 class TorrentsAdapter(activity: AppCompatActivity, private val fragment: TorrentsListFragment) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
     companion object {
-        fun statusFilterAcceptsTorrent(torrent: TorrentData, filterMode: StatusFilterMode): Boolean {
+        fun statusFilterAcceptsTorrent(torrent: TorrentWrapper, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
-                StatusFilterMode.Active -> (torrent.status == Torrent.Status.Downloading) ||
-                                           (torrent.status == Torrent.Status.Seeding)
+                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading) ||
+                                           (torrent.status == TorrentData.Status.Seeding)
                 StatusFilterMode.Downloading -> when (torrent.status) {
-                    Torrent.Status.Downloading,
-                    Torrent.Status.StalledDownloading,
-                    Torrent.Status.QueuedForDownloading -> true
+                    TorrentData.Status.Downloading,
+                    TorrentData.Status.StalledDownloading,
+                    TorrentData.Status.QueuedForDownloading -> true
                     else -> false
                 }
                 StatusFilterMode.Seeding -> when (torrent.status) {
-                    Torrent.Status.Seeding,
-                    Torrent.Status.StalledSeeding,
-                    Torrent.Status.QueuedForSeeding -> true
+                    TorrentData.Status.Seeding,
+                    TorrentData.Status.StalledSeeding,
+                    TorrentData.Status.QueuedForSeeding -> true
                     else -> false
                 }
-                StatusFilterMode.Paused -> (torrent.status == Torrent.Status.Paused)
-                StatusFilterMode.Checking -> (torrent.status == Torrent.Status.Checking) ||
-                                             (torrent.status == Torrent.Status.Checking)
-                StatusFilterMode.Errored -> (torrent.status == Torrent.Status.Errored)
+                StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
+                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking) ||
+                                             (torrent.status == TorrentData.Status.Checking)
+                StatusFilterMode.Errored -> (torrent.status == TorrentData.Status.Errored)
                 StatusFilterMode.All -> true
             }
         }
@@ -126,27 +127,27 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         Errored
     }
 
-    private var filteredTorrents = listOf<TorrentData>()
-    private val displayedTorrents = mutableListOf<TorrentData>()
+    private var filteredTorrents = listOf<TorrentWrapper>()
+    private val displayedTorrents = mutableListOf<TorrentWrapper>()
 
     val selector = IntSelector(activity,
                                ActionModeCallback(activity),
                                this,
                                displayedTorrents,
-                               TorrentData::id,
+                               TorrentWrapper::id,
                                R.plurals.torrents_selected)
 
-    private val filterPredicate = { torrent: TorrentData ->
+    private val filterPredicate = { torrent: TorrentWrapper ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
         (trackerFilter.isEmpty() || (torrent.trackers.find { it == trackerFilter } != null)) &&
         (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
         torrent.name.contains(filterString, true)
     }
 
-    private val comparator = object : Comparator<TorrentData> {
+    private val comparator = object : Comparator<TorrentWrapper> {
         private val nameComparator = AlphanumericComparator()
 
-        override fun compare(o1: TorrentData, o2: TorrentData): Int {
+        override fun compare(o1: TorrentWrapper, o2: TorrentWrapper): Int {
             var compared = when (sortMode) {
                 SortMode.Name -> nameComparator.compare(o1.name, o2.name)
                 SortMode.Status -> o1.status.compareTo(o2.status)
@@ -327,7 +328,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    class TorrentsViewHolder(selector: Selector<TorrentData, Int>,
+    class TorrentsViewHolder(selector: Selector<TorrentWrapper, Int>,
                              multilineName: Boolean,
                              itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
         private val sizeTextView = itemView.size_text_view!!
@@ -339,7 +340,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             Utils.setProgressBarColor(progressBar)
         }
 
-        override fun update(torrent: TorrentData) {
+        override fun update(torrent: TorrentWrapper) {
             super.update(torrent)
 
             sizeTextView.text = if (torrent.isFinished) {
@@ -366,12 +367,12 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    class TorrentsViewHolderCompact(selector: Selector<TorrentData, Int>,
+    class TorrentsViewHolderCompact(selector: Selector<TorrentWrapper, Int>,
                                     multilineName: Boolean,
                                     itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
         private val progressTextView = itemView.progress_text_view!!
 
-        override fun update(torrent: TorrentData) {
+        override fun update(torrent: TorrentWrapper) {
             super.update(torrent)
 
             downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
@@ -395,10 +396,10 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    open class BaseTorrentsViewHolder(selector: Selector<TorrentData, Int>,
+    open class BaseTorrentsViewHolder(selector: Selector<TorrentWrapper, Int>,
                                       multilineName: Boolean,
-                                      itemView: View) : Selector.ViewHolder<TorrentData>(selector, itemView) {
-        override lateinit var item: TorrentData
+                                      itemView: View) : Selector.ViewHolder<TorrentWrapper>(selector, itemView) {
+        override lateinit var item: TorrentWrapper
 
         protected val context: Context = itemView.context
 
@@ -419,21 +420,21 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             }
         }
 
-        open fun update(torrent: TorrentData) {
+        open fun update(torrent: TorrentWrapper) {
             item = torrent
 
             nameTextView.text = torrent.name
             statusIconDrawable.level = when (torrent.status) {
-                Torrent.Status.Paused -> 0
-                Torrent.Status.Downloading,
-                Torrent.Status.StalledDownloading,
-                Torrent.Status.QueuedForDownloading -> 1
-                Torrent.Status.Seeding,
-                Torrent.Status.StalledSeeding,
-                Torrent.Status.QueuedForSeeding -> 2
-                Torrent.Status.Checking,
-                Torrent.Status.QueuedForChecking -> 3
-                Torrent.Status.Errored -> 4
+                TorrentData.Status.Paused -> 0
+                TorrentData.Status.Downloading,
+                TorrentData.Status.StalledDownloading,
+                TorrentData.Status.QueuedForDownloading -> 1
+                TorrentData.Status.Seeding,
+                TorrentData.Status.StalledSeeding,
+                TorrentData.Status.QueuedForSeeding -> 2
+                TorrentData.Status.Checking,
+                TorrentData.Status.QueuedForChecking -> 3
+                TorrentData.Status.Errored -> 4
                 else -> 0
             }
 
@@ -451,7 +452,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         }
     }
 
-    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<TorrentData>() {
+    private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<TorrentWrapper>() {
         private var startItem: MenuItem? = null
         private var pauseItem: MenuItem? = null
         private var setLocationItem: MenuItem? = null
@@ -469,8 +470,8 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
 
             if (selector.selectedCount == 1) {
                 val startEnabled = when (selector.selectedItems.first().status) {
-                    Torrent.Status.Paused,
-                    Torrent.Status.Errored -> true
+                    TorrentData.Status.Paused,
+                    TorrentData.Status.Errored -> true
                     else -> false
                 }
                 startItem!!.isEnabled = startEnabled
@@ -489,13 +490,13 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             }
 
             when (item.itemId) {
-                R.id.start -> Rpc.nativeInstance.startTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.pause -> Rpc.nativeInstance.pauseTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.check -> Rpc.nativeInstance.checkTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
-                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(selector.selectedItems.map(TorrentData::id).toIntArray())
+                R.id.start -> Rpc.nativeInstance.startTorrents(selector.selectedItems.map(TorrentWrapper::id).toIntArray())
+                R.id.pause -> Rpc.nativeInstance.pauseTorrents(selector.selectedItems.map(TorrentWrapper::id).toIntArray())
+                R.id.check -> Rpc.nativeInstance.checkTorrents(selector.selectedItems.map(TorrentWrapper::id).toIntArray())
+                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(selector.selectedItems.map(TorrentWrapper::id).toIntArray())
                 R.id.set_location -> activity.findNavController(R.id.nav_host)
                         .navigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
-                                  bundleOf(SetLocationDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentData::id).toIntArray(),
+                                  bundleOf(SetLocationDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentWrapper::id).toIntArray(),
                                            SetLocationDialogFragment.LOCATION to selector.selectedItems.first().downloadDirectory))
                 R.id.rename -> {
                     val torrent = selector.selectedItems.first()
@@ -506,7 +507,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                 }
                 R.id.remove -> activity.findNavController(R.id.nav_host)
                         .navigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
-                                  bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentData::id).toIntArray()))
+                                  bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to selector.selectedItems.map(TorrentWrapper::id).toIntArray()))
                 else -> return false
             }
 

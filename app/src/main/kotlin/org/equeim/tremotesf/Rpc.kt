@@ -49,8 +49,13 @@ import org.qtproject.qt5.android.QtNative
 
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettings
+import org.equeim.libtremotesf.IntVector
+import org.equeim.libtremotesf.Peer
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentFile
+import org.equeim.libtremotesf.TorrentFilesVector
+import org.equeim.libtremotesf.TorrentPeersVector
 import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.LiveEvent
@@ -128,21 +133,25 @@ object Rpc : Logger {
             }
         }
 
-        override fun onGotTorrentFiles(torrentId: Int) {
+        override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
+            val list = files.toList()
             handler.post {
-                Rpc.onGotTorrentFiles(torrentId)
+                Rpc.onTorrentFilesUpdated(torrentId, list)
+            }
+        }
+
+        override fun onTorrentPeersUpdated(torrentId: Int, changed: TorrentPeersVector, added: TorrentPeersVector, removed: IntVector) {
+            val c = changed.toList()
+            val a = added.toList()
+            val r = removed.toList()
+            handler.post {
+                Rpc.onTorrentPeersUpdated(torrentId, c, a, r)
             }
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
             handler.post {
                 Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
-            }
-        }
-
-        override fun onGotTorrentPeers(torrentId: Int) {
-            handler.post {
-                Rpc.onGotTorrentPeers(torrentId)
             }
         }
 
@@ -203,18 +212,19 @@ object Rpc : Logger {
     val torrentAddDuplicateEvent = LiveEvent<Unit>()
     val torrentAddErrorEvent = LiveEvent<Unit>()
 
-    val gotTorrentFilesEvent = LiveEvent<Int>()
+    data class TorrentFilesUpdatedData(val torrentId: Int, val changedFiles: List<TorrentFile>)
+    val torrentFilesUpdatedEvent = LiveEvent<TorrentFilesUpdatedData>()
+    data class TorrentPeersUpdatedData(val torrentId: Int, val changed: List<Peer>, val added: List<Peer>, val removed: List<Int>)
+    val torrentPeersUpdatedEvent = LiveEvent<TorrentPeersUpdatedData>()
 
     data class TorrentFileRenamedData(val torrentId: Int, val filePath: String, val newName: String)
     val torrentFileRenamedEvent = LiveEvent<TorrentFileRenamedData>()
-
-    val gotTorrentPeersEvent = LiveEvent<Int>()
 
     val gotDownloadDirFreeSpaceEvent = LiveEvent<Long>()
     data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
     val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
 
-    val torrents = NonNullMutableLiveData<List<TorrentData>>(emptyList())
+    val torrents = NonNullMutableLiveData<List<TorrentWrapper>>(emptyList())
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -302,12 +312,12 @@ object Rpc : Logger {
 
     private fun onTorrentsUpdated(newNativeTorrents: List<Torrent>) {
         val oldTorrents = torrents.value
-        val newTorrents = mutableListOf<TorrentData>()
+        val newTorrents = mutableListOf<TorrentWrapper>()
         for (torrent in newNativeTorrents) {
             val id = torrent.id()
             val data = oldTorrents.find { it.id == id }
             if (data == null) {
-                newTorrents.add(TorrentData(id, torrent, context))
+                newTorrents.add(TorrentWrapper(id, torrent, context))
             } else {
                 newTorrents.add(data)
                 data.update()
@@ -383,16 +393,26 @@ object Rpc : Logger {
         torrentAddErrorEvent.emit()
     }
 
-    private fun onGotTorrentFiles(torrentId: Int) {
-        gotTorrentFilesEvent.emit(torrentId)
+    private fun onTorrentFilesUpdated(torrentId: Int, files: List<TorrentFile>) {
+        torrents.value.find { it.id == torrentId }?.let { torrent ->
+            if (torrent.filesEnabled) {
+                torrent.filesLoaded = true
+                torrentFilesUpdatedEvent.emit(TorrentFilesUpdatedData(torrentId, files))
+            }
+        }
+    }
+
+    private fun onTorrentPeersUpdated(torrentId: Int, changed: List<Peer>, added: List<Peer>, removed: List<Int>) {
+        torrents.value.find { it.id == torrentId }?.let { torrent ->
+            if (torrent.peersEnabled) {
+                torrent.peersLoaded = true
+                torrentPeersUpdatedEvent.emit(TorrentPeersUpdatedData(torrentId, changed, added, removed))
+            }
+        }
     }
 
     private fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
         torrentFileRenamedEvent.emit(TorrentFileRenamedData(torrentId, filePath, newName))
-    }
-
-    private fun onGotTorrentPeers(torrentId: Int) {
-        gotTorrentPeersEvent.emit(torrentId)
     }
 
     private fun onGotDownloadDirFreeSpace(bytes: Long) {
@@ -555,10 +575,6 @@ fun Torrent.setIdleSeedingLimit(limit: Int) {
     Rpc.nativeInstance.setTorrentIdleSeedingLimit(this, limit)
 }
 
-fun Torrent.setFilesEnabled(enabled: Boolean) {
-    Rpc.nativeInstance.setTorrentFilesEnabled(this, enabled)
-}
-
 fun Torrent.setFilesWanted(files: IntArray, wanted: Boolean) {
     Rpc.nativeInstance.setTorrentFilesWanted(this, files, wanted)
 }
@@ -577,8 +593,4 @@ fun Torrent.setTracker(trackerId: Int, announce: String) {
 
 fun Torrent.removeTrackers(ids: IntArray) {
     Rpc.nativeInstance.torrentRemoveTrackers(this, ids)
-}
-
-fun Torrent.setPeersEnabled(enabled: Boolean) {
-    Rpc.nativeInstance.setTorrentPeersEnabled(this, enabled)
 }

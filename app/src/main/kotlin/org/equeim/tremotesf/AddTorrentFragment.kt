@@ -27,6 +27,7 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
 
 abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
                                   @StringRes titleRes: Int,
@@ -36,9 +37,9 @@ abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
     }
 
     protected lateinit var priorityItems: Array<String>
-    protected val priorityItemEnums = arrayOf(Torrent.Priority.HighPriority,
-                                              Torrent.Priority.NormalPriority,
-                                              Torrent.Priority.LowPriority)
+    protected val priorityItemEnums = arrayOf(TorrentData.Priority.HighPriority,
+                                              TorrentData.Priority.NormalPriority,
+                                              TorrentData.Priority.LowPriority)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -35,14 +35,12 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 
-import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
-import org.equeim.tremotesf.TorrentData
+import org.equeim.tremotesf.TorrentWrapper
 import org.equeim.tremotesf.NavigationFragment
-import org.equeim.tremotesf.setFilesEnabled
-import org.equeim.tremotesf.setPeersEnabled
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
@@ -61,7 +59,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     lateinit var hash: String
-    var torrent: TorrentData? = null
+    var torrent: TorrentWrapper? = null
 
     private var menu: Menu? = null
     private var startMenuItem: MenuItem? = null
@@ -131,14 +129,16 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         pagerAdapter = null
 
-        if (isRemoving) {
-            torrent?.torrent?.apply {
-                setFilesEnabled(false)
-                setPeersEnabled(false)
+        super.onDestroyView()
+    }
+
+    override fun onNavigatedFrom(newDestination: NavDestination) {
+        if (newDestination !is FloatingWindow) {
+            torrent?.apply {
+                filesEnabled = false
+                peersEnabled = false
             }
         }
-
-        super.onDestroyView()
     }
 
     private fun setupToolbarMenu() {
@@ -200,7 +200,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         }
     }
 
-    private fun updateTorrent(torrents: List<TorrentData>) {
+    private fun updateTorrent(torrents: List<TorrentWrapper>) {
         val newTorrent = torrents.find { it.hashString == hash }
         if (newTorrent !== torrent) {
             torrent = newTorrent
@@ -235,8 +235,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         } else {
             menu.setGroupVisible(0, true)
             val paused = when (torrent?.status) {
-                Torrent.Status.Paused,
-                Torrent.Status.Errored -> true
+                TorrentData.Status.Paused,
+                TorrentData.Status.Errored -> true
                 else -> false
             }
             if (paused) {

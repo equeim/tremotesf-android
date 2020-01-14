@@ -25,6 +25,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.DecimalFormats
@@ -55,19 +56,19 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
         const val MAX_PEERS = 10000
 
         // Should match R.array.priority_items
-        val priorityItems = arrayOf(Torrent.Priority.HighPriority,
-                                    Torrent.Priority.NormalPriority,
-                                    Torrent.Priority.LowPriority)
+        val priorityItems = arrayOf(TorrentData.Priority.HighPriority,
+                                    TorrentData.Priority.NormalPriority,
+                                    TorrentData.Priority.LowPriority)
 
         // Should match R.array.ratio_limit_mode
-        val ratioLimitModeItems = arrayOf(Torrent.RatioLimitMode.GlobalRatioLimit,
-                                          Torrent.RatioLimitMode.UnlimitedRatio,
-                                          Torrent.RatioLimitMode.SingleRatioLimit)
+        val ratioLimitModeItems = arrayOf(TorrentData.RatioLimitMode.GlobalRatioLimit,
+                                          TorrentData.RatioLimitMode.UnlimitedRatio,
+                                          TorrentData.RatioLimitMode.SingleRatioLimit)
 
         // Should match R.array.idle_seeding_mode
-        val idleSeedingModeItems = arrayOf(Torrent.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
-                                           Torrent.IdleSeedingLimitMode.UnlimitedIdleSeeding,
-                                           Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+        val idleSeedingModeItems = arrayOf(TorrentData.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
+                                           TorrentData.IdleSeedingLimitMode.UnlimitedIdleSeeding,
+                                           TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
     }
 
     private var torrent: Torrent? = null
@@ -135,7 +136,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
 
         ratio_limit_mode_view.setOnItemClickListener { _, _, position, _ ->
             val mode = ratioLimitModeItems[position]
-            ratio_limit_layout.isEnabled = (mode == Torrent.RatioLimitMode.SingleRatioLimit)
+            ratio_limit_layout.isEnabled = (mode == TorrentData.RatioLimitMode.SingleRatioLimit)
             torrent?.setRatioLimitMode(mode)
         }
         ratio_limit_edit.doAfterTextChangedAndNotEmpty {
@@ -144,7 +145,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
 
         idle_seeding_mode_view.setOnItemClickListener { _, _, position, _ ->
             val mode = idleSeedingModeItems[position]
-            idle_seeding_limit_layout.isEnabled = (mode == Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+            idle_seeding_limit_layout.isEnabled = (mode == TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
             torrent?.setIdleSeedingLimitMode(mode)
         }
         idle_seeding_limit_edit.doAfterTextChangedAndNotEmpty {
@@ -182,7 +183,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
 
         download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked
         upload_speed_limit_layout.isEnabled = upload_speed_limit_check_box.isChecked
-        ratio_limit_layout.isEnabled = (ratio_limit_mode_view.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(Torrent.RatioLimitMode.SingleRatioLimit)])
-        idle_seeding_limit_layout.isEnabled = (idle_seeding_mode_view.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(Torrent.IdleSeedingLimitMode.SingleIdleSeedingLimit)])
+        ratio_limit_layout.isEnabled = (ratio_limit_mode_view.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(TorrentData.RatioLimitMode.SingleRatioLimit)])
+        idle_seeding_limit_layout.isEnabled = (idle_seeding_mode_view.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)])
     }
 }
