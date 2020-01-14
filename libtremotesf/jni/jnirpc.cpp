@@ -16,6 +16,20 @@ Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 
 namespace libtremotesf
 {
+    namespace
+    {
+        template<typename T>
+        std::vector<T> toValues(const std::vector<T*>& items)
+        {
+            std::vector<T> v;
+            v.reserve(items.size());
+            for (const T* item : items) {
+                v.push_back(*item);
+            }
+            return v;
+        }
+    }
+
     JniServerSettings::JniServerSettings(Rpc* rpc, QObject* parent)
         : ServerSettings(rpc, parent)
     {
@@ -224,8 +238,20 @@ namespace libtremotesf
         QObject::connect(this, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
         QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(status()); });
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(error(), errorMessage()); });
+
         QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(torrents()); });
-        QObject::connect(this->serverStats(), &ServerStats::updated, [=]() { onServerStatsUpdated(); });
+
+        QObject::connect(this, &Rpc::torrentFilesUpdated, [=](int torrentId, const std::vector<const TorrentFile*>& changed) {
+            onTorrentFilesUpdated(torrentId, toValues(changed));
+        });
+        QObject::connect(this, &Rpc::torrentFilesUpdated, [=](int torrentId, const std::vector<const Peer*>& changed, const std::vector<const Peer*>& added, const std::vector<int>& removed) {
+            onTorrentPeersUpdated(torrentId, toValues(changed), toValues(added), removed);
+        });
+
+        QObject::connect(this, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {
+            onTorrentFileRenamed(torrentId, filePath, newName);
+        });
+
         QObject::connect(this, &Rpc::torrentAdded, [=](const Torrent* torrent) {
             onTorrentAdded(torrent->id(), torrent->hashString(), torrent->name());
         });
@@ -234,15 +260,11 @@ namespace libtremotesf
         });
         QObject::connect(this, &Rpc::torrentAddDuplicate, [=]() { onTorrentAddDuplicate(); });
         QObject::connect(this, &Rpc::torrentAddError, [=]() { onTorrentAddError(); });
-        QObject::connect(this, &Rpc::gotTorrentFiles, [=](int torrentId) { onGotTorrentFiles(torrentId); });
-        QObject::connect(this, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {
-            onTorrentFileRenamed(torrentId, filePath, newName);
-        });
-
-        QObject::connect(this, &Rpc::gotTorrentPeers, [=](int torrentId) { onGotTorrentPeers(torrentId); });
 
         QObject::connect(this, &Rpc::gotDownloadDirFreeSpace, [=](long long bytes) { onGotDownloadDirFreeSpace(bytes); });
         QObject::connect(this, &Rpc::gotFreeSpaceForPath, [=](const QString& path, bool success, long long bytes) { onGotFreeSpaceForPath(path, success, bytes); });
+
+        QObject::connect(this->serverStats(), &ServerStats::updated, [=]() { onServerStatsUpdated(); });
 
         auto thread = new QThread();
         thread->start();

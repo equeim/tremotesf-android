@@ -138,6 +138,10 @@ namespace libtremotesf
         virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
 
         virtual void onTorrentsUpdated(std::vector<std::shared_ptr<Torrent>> torrents) = 0;
+
+        virtual void onTorrentFilesUpdated(int torrentId, std::vector<TorrentFile> changed) = 0;
+        virtual void onTorrentPeersUpdated(int torrentId, std::vector<Peer> changed, std::vector<Peer> added, std::vector<int> removed) = 0;
+
         virtual void onServerStatsUpdated() = 0;
 
         virtual void onTorrentAdded(int id, const QString& hashString, const QString& name) = 0;
@@ -146,10 +150,7 @@ namespace libtremotesf
         virtual void onTorrentAddDuplicate() = 0;
         virtual void onTorrentAddError() = 0;
 
-        virtual void onGotTorrentFiles(int torrentId) = 0;
         virtual void onTorrentFileRenamed(int torrentId, const QString& filePath, const QString& newName) = 0;
-
-        virtual void onGotTorrentPeers(int torrentId) = 0;
 
         virtual void onGotDownloadDirFreeSpace(long long bytes) = 0;
         virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes) = 0;
