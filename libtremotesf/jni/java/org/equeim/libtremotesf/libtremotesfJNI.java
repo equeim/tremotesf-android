@@ -84,6 +84,35 @@ public class libtremotesfJNI {
   public final static native String StringsVector_doSet(long jarg1, StringsVector jarg1_, int jarg2, String jarg3);
   public final static native void StringsVector_doRemoveRange(long jarg1, StringsVector jarg1_, int jarg2, int jarg3);
   public final static native void delete_StringsVector(long jarg1);
+  public final static native long new_IntVector__SWIG_0();
+  public final static native long new_IntVector__SWIG_1(long jarg1, IntVector jarg1_);
+  public final static native long IntVector_capacity(long jarg1, IntVector jarg1_);
+  public final static native void IntVector_reserve(long jarg1, IntVector jarg1_, long jarg2);
+  public final static native boolean IntVector_isEmpty(long jarg1, IntVector jarg1_);
+  public final static native void IntVector_clear(long jarg1, IntVector jarg1_);
+  public final static native long new_IntVector__SWIG_2(int jarg1, int jarg2);
+  public final static native int IntVector_doSize(long jarg1, IntVector jarg1_);
+  public final static native void IntVector_doAdd__SWIG_0(long jarg1, IntVector jarg1_, int jarg2);
+  public final static native void IntVector_doAdd__SWIG_1(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
+  public final static native int IntVector_doRemove(long jarg1, IntVector jarg1_, int jarg2);
+  public final static native int IntVector_doGet(long jarg1, IntVector jarg1_, int jarg2);
+  public final static native int IntVector_doSet(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
+  public final static native void IntVector_doRemoveRange(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
+  public final static native void delete_IntVector(long jarg1);
+  public final static native String Peer_address_get(long jarg1, Peer jarg1_);
+  public final static native String Peer_client_get(long jarg1, Peer jarg1_);
+  public final static native long Peer_downloadSpeed_get(long jarg1, Peer jarg1_);
+  public final static native long Peer_uploadSpeed_get(long jarg1, Peer jarg1_);
+  public final static native double Peer_progress_get(long jarg1, Peer jarg1_);
+  public final static native String Peer_flags_get(long jarg1, Peer jarg1_);
+  public final static native void delete_Peer(long jarg1);
+  public final static native int TorrentFile_id_get(long jarg1, TorrentFile jarg1_);
+  public final static native long TorrentFile_path_get(long jarg1, TorrentFile jarg1_);
+  public final static native long TorrentFile_size_get(long jarg1, TorrentFile jarg1_);
+  public final static native long TorrentFile_completedSize_get(long jarg1, TorrentFile jarg1_);
+  public final static native int TorrentFile_priority_get(long jarg1, TorrentFile jarg1_);
+  public final static native boolean TorrentFile_wanted_get(long jarg1, TorrentFile jarg1_);
+  public final static native void delete_TorrentFile(long jarg1);
   public final static native int Tracker_id(long jarg1, Tracker jarg1_);
   public final static native String Tracker_announce(long jarg1, Tracker jarg1_);
   public final static native String Tracker_site(long jarg1, Tracker jarg1_);
@@ -92,20 +121,53 @@ public class libtremotesfJNI {
   public final static native int Tracker_peers(long jarg1, Tracker jarg1_);
   public final static native int Tracker_nextUpdate(long jarg1, Tracker jarg1_);
   public final static native void delete_Tracker(long jarg1);
-  public final static native long TorrentFile_path_get(long jarg1, TorrentFile jarg1_);
-  public final static native long TorrentFile_size_get(long jarg1, TorrentFile jarg1_);
-  public final static native long TorrentFile_completedSize_get(long jarg1, TorrentFile jarg1_);
-  public final static native boolean TorrentFile_wanted_get(long jarg1, TorrentFile jarg1_);
-  public final static native int TorrentFile_priority_get(long jarg1, TorrentFile jarg1_);
-  public final static native boolean TorrentFile_changed_get(long jarg1, TorrentFile jarg1_);
-  public final static native void delete_TorrentFile(long jarg1);
-  public final static native String Peer_address_get(long jarg1, Peer jarg1_);
-  public final static native long Peer_downloadSpeed_get(long jarg1, Peer jarg1_);
-  public final static native long Peer_uploadSpeed_get(long jarg1, Peer jarg1_);
-  public final static native double Peer_progress_get(long jarg1, Peer jarg1_);
-  public final static native String Peer_flags_get(long jarg1, Peer jarg1_);
-  public final static native String Peer_client_get(long jarg1, Peer jarg1_);
-  public final static native void delete_Peer(long jarg1);
+  public final static native int TorrentData_id_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_hashString_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_name_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_errorString_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_status_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_queuePosition_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_totalSize_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_completedSize_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_leftUntilDone_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_sizeWhenDone_get(long jarg1, TorrentData jarg1_);
+  public final static native double TorrentData_percentDone_get(long jarg1, TorrentData jarg1_);
+  public final static native double TorrentData_recheckProgress_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_eta_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_downloadSpeed_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_uploadSpeed_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_downloadSpeedLimited_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_downloadSpeedLimit_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_uploadSpeedLimited_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_uploadSpeedLimit_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_totalDownloaded_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_totalUploaded_get(long jarg1, TorrentData jarg1_);
+  public final static native double TorrentData_ratio_get(long jarg1, TorrentData jarg1_);
+  public final static native double TorrentData_ratioLimit_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_ratioLimitMode_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_seeders_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_leechers_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_peersLimit_get(long jarg1, TorrentData jarg1_);
+  public final static native java.util.Date TorrentData_addedDate_get(long jarg1, TorrentData jarg1_);
+  public final static native java.util.Date TorrentData_activityDate_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_activityDateTime_get(long jarg1, TorrentData jarg1_);
+  public final static native java.util.Date TorrentData_doneDate_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_doneDateTime_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_idleSeedingLimitMode_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_idleSeedingLimit_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_downloadDirectory_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_comment_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_creator_get(long jarg1, TorrentData jarg1_);
+  public final static native java.util.Date TorrentData_creationDate_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_creationDateTime_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_bandwidthPriority_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_honorSessionLimits_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_singleFile_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_trackersAddedOrRemoved_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_changed_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_trackers_get(long jarg1, TorrentData jarg1_);
+  public final static native long new_TorrentData();
+  public final static native void delete_TorrentData(long jarg1);
   public final static native int Torrent_id(long jarg1, Torrent jarg1_);
   public final static native String Torrent_hashString(long jarg1, Torrent jarg1_);
   public final static native String Torrent_name(long jarg1, Torrent jarg1_);
@@ -143,14 +205,12 @@ public class libtremotesfJNI {
   public final static native String Torrent_creator(long jarg1, Torrent jarg1_);
   public final static native java.util.Date Torrent_creationDate(long jarg1, Torrent jarg1_);
   public final static native String Torrent_comment(long jarg1, Torrent jarg1_);
-  public final static native boolean Torrent_isFilesLoaded(long jarg1, Torrent jarg1_);
-  public final static native long Torrent_files(long jarg1, Torrent jarg1_);
-  public final static native boolean Torrent_isFilesChanged(long jarg1, Torrent jarg1_);
   public final static native long Torrent_trackers(long jarg1, Torrent jarg1_);
   public final static native boolean Torrent_isTrackersAddedOrRemoved(long jarg1, Torrent jarg1_);
-  public final static native boolean Torrent_isPeersLoaded(long jarg1, Torrent jarg1_);
-  public final static native long Torrent_peers(long jarg1, Torrent jarg1_);
   public final static native boolean Torrent_isChanged(long jarg1, Torrent jarg1_);
+  public final static native long Torrent_data(long jarg1, Torrent jarg1_);
+  public final static native long Torrent_files(long jarg1, Torrent jarg1_);
+  public final static native long Torrent_peers(long jarg1, Torrent jarg1_);
   public final static native void delete_Torrent(long jarg1);
   public final static native long Rpc_serverStats(long jarg1, Rpc jarg1_);
   public final static native boolean ServerSettings_canRenameFiles(long jarg1, ServerSettings jarg1_);
@@ -281,14 +341,14 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onStatusChanged(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onErrorChanged(long jarg1, JniRpc jarg1_, int jarg2, String jarg3);
   public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, TorrentsVector jarg2_);
+  public final static native void JniRpc_onTorrentFilesUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentFilesVector jarg3_);
+  public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentPeersVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, IntVector jarg5_);
   public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onTorrentAdded(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinished(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentAddDuplicate(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onTorrentAddError(long jarg1, JniRpc jarg1_);
-  public final static native void JniRpc_onGotTorrentFiles(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onTorrentFileRenamed(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
-  public final static native void JniRpc_onGotTorrentPeers(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onGotDownloadDirFreeSpace(long jarg1, JniRpc jarg1_, long jarg2);
   public final static native void JniRpc_onGotFreeSpaceForPath(long jarg1, JniRpc jarg1_, String jarg2, boolean jarg3, long jarg4);
   public final static native void delete_JniRpc(long jarg1);
@@ -309,6 +369,12 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long torrents) {
     jself.onTorrentsUpdated(new TorrentsVector(torrents, true));
   }
+  public static void SwigDirector_JniRpc_onTorrentFilesUpdated(JniRpc jself, int torrentId, long changed) {
+    jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, true));
+  }
+  public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long changed, long added, long removed) {
+    jself.onTorrentPeersUpdated(torrentId, new TorrentPeersVector(changed, true), new TorrentPeersVector(added, true), new IntVector(removed, true));
+  }
   public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself) {
     jself.onServerStatsUpdated();
   }
@@ -324,14 +390,8 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onTorrentAddError(JniRpc jself) {
     jself.onTorrentAddError();
   }
-  public static void SwigDirector_JniRpc_onGotTorrentFiles(JniRpc jself, int torrentId) {
-    jself.onGotTorrentFiles(torrentId);
-  }
   public static void SwigDirector_JniRpc_onTorrentFileRenamed(JniRpc jself, int torrentId, String filePath, String newName) {
     jself.onTorrentFileRenamed(torrentId, filePath, newName);
-  }
-  public static void SwigDirector_JniRpc_onGotTorrentPeers(JniRpc jself, int torrentId) {
-    jself.onGotTorrentPeers(torrentId);
   }
   public static void SwigDirector_JniRpc_onGotDownloadDirFreeSpace(JniRpc jself, long bytes) {
     jself.onGotDownloadDirFreeSpace(bytes);

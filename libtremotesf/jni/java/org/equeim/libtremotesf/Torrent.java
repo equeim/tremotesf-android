@@ -188,18 +188,6 @@ public class Torrent {
     return libtremotesfJNI.Torrent_comment(swigCPtr, this);
 }
 
-  public boolean isFilesLoaded() {
-    return libtremotesfJNI.Torrent_isFilesLoaded(swigCPtr, this);
-  }
-
-  public TorrentFilesVector files() {
-    return new TorrentFilesVector(libtremotesfJNI.Torrent_files(swigCPtr, this), false);
-  }
-
-  public boolean isFilesChanged() {
-    return libtremotesfJNI.Torrent_isFilesChanged(swigCPtr, this);
-  }
-
   public TrackersVector trackers() {
     return new TrackersVector(libtremotesfJNI.Torrent_trackers(swigCPtr, this), false);
   }
@@ -208,47 +196,20 @@ public class Torrent {
     return libtremotesfJNI.Torrent_isTrackersAddedOrRemoved(swigCPtr, this);
   }
 
-  public boolean isPeersLoaded() {
-    return libtremotesfJNI.Torrent_isPeersLoaded(swigCPtr, this);
-  }
-
-  public TorrentPeersVector peers() {
-    return new TorrentPeersVector(libtremotesfJNI.Torrent_peers(swigCPtr, this), false);
-  }
-
   public boolean isChanged() {
     return libtremotesfJNI.Torrent_isChanged(swigCPtr, this);
   }
 
-  public final static class Status {
-    public final static int Paused = 0;
-    public final static int Downloading = Paused + 1;
-    public final static int Seeding = Downloading + 1;
-    public final static int StalledDownloading = Seeding + 1;
-    public final static int StalledSeeding = StalledDownloading + 1;
-    public final static int QueuedForDownloading = StalledSeeding + 1;
-    public final static int QueuedForSeeding = QueuedForDownloading + 1;
-    public final static int Checking = QueuedForSeeding + 1;
-    public final static int QueuedForChecking = Checking + 1;
-    public final static int Errored = QueuedForChecking + 1;
+  public TorrentData data() {
+    return new TorrentData(libtremotesfJNI.Torrent_data(swigCPtr, this), false);
   }
 
-  public final static class RatioLimitMode {
-    public final static int GlobalRatioLimit = 0;
-    public final static int SingleRatioLimit = GlobalRatioLimit + 1;
-    public final static int UnlimitedRatio = SingleRatioLimit + 1;
+  public TorrentFilesVector files() {
+    return new TorrentFilesVector(libtremotesfJNI.Torrent_files(swigCPtr, this), false);
   }
 
-  public final static class Priority {
-    public final static int LowPriority = -1;
-    public final static int NormalPriority = LowPriority + 1;
-    public final static int HighPriority = NormalPriority + 1;
-  }
-
-  public final static class IdleSeedingLimitMode {
-    public final static int GlobalIdleSeedingLimit = 0;
-    public final static int SingleIdleSeedingLimit = GlobalIdleSeedingLimit + 1;
-    public final static int UnlimitedIdleSeeding = SingleIdleSeedingLimit + 1;
+  public TorrentPeersVector peers() {
+    return new TorrentPeersVector(libtremotesfJNI.Torrent_peers(swigCPtr, this), false);
   }
 
 }

@@ -1050,6 +1050,60 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange(std::vector< QString > *
           throw std::out_of_range("vector index out of range");
         }
       }
+SWIGINTERN std::vector< int > *new_std_vector_Sl_int_Sg___SWIG_2(jint count,int const &value){
+        if (count < 0)
+          throw std::out_of_range("vector count must be positive");
+        return new std::vector< int >(static_cast<std::vector< int >::size_type>(count), value);
+      }
+SWIGINTERN jint std_vector_Sl_int_Sg__doSize(std::vector< int > const *self){
+        return SWIG_VectorSize(self->size());
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doAdd__SWIG_0(std::vector< int > *self,std::vector< int >::value_type const &x){
+        self->push_back(x);
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doAdd__SWIG_1(std::vector< int > *self,jint index,std::vector< int >::value_type const &x){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= index && index <= size) {
+          self->insert(self->begin() + index, x);
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
+      }
+SWIGINTERN std::vector< int >::value_type std_vector_Sl_int_Sg__doRemove(std::vector< int > *self,jint index){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= index && index < size) {
+          int const old_value = (*self)[index];
+          self->erase(self->begin() + index);
+          return old_value;
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
+      }
+SWIGINTERN std::vector< int >::value_type const &std_vector_Sl_int_Sg__doGet(std::vector< int > *self,jint index){
+        jint size = static_cast<jint>(self->size());
+        if (index >= 0 && index < size)
+          return (*self)[index];
+        else
+          throw std::out_of_range("vector index out of range");
+      }
+SWIGINTERN std::vector< int >::value_type std_vector_Sl_int_Sg__doSet(std::vector< int > *self,jint index,std::vector< int >::value_type const &val){
+        jint size = static_cast<jint>(self->size());
+        if (index >= 0 && index < size) {
+          int const old_value = (*self)[index];
+          (*self)[index] = val;
+          return old_value;
+        }
+        else
+          throw std::out_of_range("vector index out of range");
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doRemoveRange(std::vector< int > *self,jint fromIndex,jint toIndex){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
+          self->erase(self->begin() + fromIndex, self->begin() + toIndex);
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
+      }
 
 
 /* ---------------------------------------------------
@@ -1164,18 +1218,80 @@ void SwigDirector_JniRpc::onTorrentsUpdated(std::vector< std::shared_ptr< libtre
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
+void SwigDirector_JniRpc::onTorrentFilesUpdated(int torrentId, std::vector< libtremotesf::TorrentFile > changed) {
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  jint jtorrentId  ;
+  jlong jchanged  ;
+  
+  if (!swig_override[4]) {
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentFilesUpdated.");
+    return;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jtorrentId = (jint) torrentId;
+    jchanged = 0;
+    *((std::vector< libtremotesf::TorrentFile > **)&jchanged) = new std::vector< libtremotesf::TorrentFile >(std::move(changed)); 
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[4], swigjobj, jtorrentId, jchanged);
+    jthrowable swigerror = jenv->ExceptionOccurred();
+    if (swigerror) {
+      Swig::DirectorException::raise(jenv, swigerror);
+    }
+    
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onTorrentFilesUpdated ");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
+void SwigDirector_JniRpc::onTorrentPeersUpdated(int torrentId, std::vector< libtremotesf::Peer > changed, std::vector< libtremotesf::Peer > added, std::vector< int > removed) {
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  jint jtorrentId  ;
+  jlong jchanged  ;
+  jlong jadded  ;
+  jlong jremoved  ;
+  
+  if (!swig_override[5]) {
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentPeersUpdated.");
+    return;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jtorrentId = (jint) torrentId;
+    jchanged = 0;
+    *((std::vector< libtremotesf::Peer > **)&jchanged) = new std::vector< libtremotesf::Peer >(std::move(changed)); 
+    jadded = 0;
+    *((std::vector< libtremotesf::Peer > **)&jadded) = new std::vector< libtremotesf::Peer >(std::move(added)); 
+    jremoved = 0;
+    *((std::vector< int > **)&jremoved) = new std::vector< int >(std::move(removed)); 
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[5], swigjobj, jtorrentId, jchanged, jadded, jremoved);
+    jthrowable swigerror = jenv->ExceptionOccurred();
+    if (swigerror) {
+      Swig::DirectorException::raise(jenv, swigerror);
+    }
+    
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onTorrentPeersUpdated ");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
 void SwigDirector_JniRpc::onServerStatsUpdated() {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   
-  if (!swig_override[4]) {
+  if (!swig_override[6]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onServerStatsUpdated.");
     return;
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[4], swigjobj);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[6], swigjobj);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1195,7 +1311,7 @@ void SwigDirector_JniRpc::onTorrentAdded(int id, QString const &hashString, QStr
   jstring jhashString = 0 ;
   jstring jname = 0 ;
   
-  if (!swig_override[5]) {
+  if (!swig_override[7]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentAdded.");
     return;
   }
@@ -1208,7 +1324,7 @@ void SwigDirector_JniRpc::onTorrentAdded(int id, QString const &hashString, QStr
     
     jname = jenv->NewString((&name)->utf16(), (&name)->size());
     
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[5], swigjobj, jid, jhashString, jname);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[7], swigjobj, jid, jhashString, jname);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1228,7 +1344,7 @@ void SwigDirector_JniRpc::onTorrentFinished(int id, QString const &hashString, Q
   jstring jhashString = 0 ;
   jstring jname = 0 ;
   
-  if (!swig_override[6]) {
+  if (!swig_override[8]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentFinished.");
     return;
   }
@@ -1241,7 +1357,7 @@ void SwigDirector_JniRpc::onTorrentFinished(int id, QString const &hashString, Q
     
     jname = jenv->NewString((&name)->utf16(), (&name)->size());
     
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[6], swigjobj, jid, jhashString, jname);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[8], swigjobj, jid, jhashString, jname);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1258,13 +1374,13 @@ void SwigDirector_JniRpc::onTorrentAddDuplicate() {
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   
-  if (!swig_override[7]) {
+  if (!swig_override[9]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentAddDuplicate.");
     return;
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[7], swigjobj);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[9], swigjobj);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1281,13 +1397,13 @@ void SwigDirector_JniRpc::onTorrentAddError() {
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   
-  if (!swig_override[8]) {
+  if (!swig_override[10]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentAddError.");
     return;
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[8], swigjobj);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[10], swigjobj);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1295,31 +1411,6 @@ void SwigDirector_JniRpc::onTorrentAddError() {
     
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onTorrentAddError ");
-  }
-  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
-}
-
-void SwigDirector_JniRpc::onGotTorrentFiles(int torrentId) {
-  JNIEnvWrapper swigjnienv(this) ;
-  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
-  jobject swigjobj = (jobject) NULL ;
-  jint jtorrentId  ;
-  
-  if (!swig_override[9]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onGotTorrentFiles.");
-    return;
-  }
-  swigjobj = swig_get_self(jenv);
-  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jtorrentId = (jint) torrentId;
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[9], swigjobj, jtorrentId);
-    jthrowable swigerror = jenv->ExceptionOccurred();
-    if (swigerror) {
-      Swig::DirectorException::raise(jenv, swigerror);
-    }
-    
-  } else {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onGotTorrentFiles ");
   }
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
@@ -1332,7 +1423,7 @@ void SwigDirector_JniRpc::onTorrentFileRenamed(int torrentId, QString const &fil
   jstring jfilePath = 0 ;
   jstring jnewName = 0 ;
   
-  if (!swig_override[10]) {
+  if (!swig_override[11]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentFileRenamed.");
     return;
   }
@@ -1345,7 +1436,7 @@ void SwigDirector_JniRpc::onTorrentFileRenamed(int torrentId, QString const &fil
     
     jnewName = jenv->NewString((&newName)->utf16(), (&newName)->size());
     
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[10], swigjobj, jtorrentId, jfilePath, jnewName);
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[11], swigjobj, jtorrentId, jfilePath, jnewName);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1353,31 +1444,6 @@ void SwigDirector_JniRpc::onTorrentFileRenamed(int torrentId, QString const &fil
     
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onTorrentFileRenamed ");
-  }
-  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
-}
-
-void SwigDirector_JniRpc::onGotTorrentPeers(int torrentId) {
-  JNIEnvWrapper swigjnienv(this) ;
-  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
-  jobject swigjobj = (jobject) NULL ;
-  jint jtorrentId  ;
-  
-  if (!swig_override[11]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onGotTorrentPeers.");
-    return;
-  }
-  swigjobj = swig_get_self(jenv);
-  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jtorrentId = (jint) torrentId;
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[11], swigjobj, jtorrentId);
-    jthrowable swigerror = jenv->ExceptionOccurred();
-    if (swigerror) {
-      Swig::DirectorException::raise(jenv, swigerror);
-    }
-    
-  } else {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in libtremotesf::JniRpc::onGotTorrentPeers ");
   }
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
@@ -1456,6 +1522,12 @@ void SwigDirector_JniRpc::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
       "onTorrentsUpdated", "(Lorg/equeim/libtremotesf/TorrentsVector;)V", NULL 
     },
     {
+      "onTorrentFilesUpdated", "(ILorg/equeim/libtremotesf/TorrentFilesVector;)V", NULL 
+    },
+    {
+      "onTorrentPeersUpdated", "(ILorg/equeim/libtremotesf/TorrentPeersVector;Lorg/equeim/libtremotesf/TorrentPeersVector;Lorg/equeim/libtremotesf/IntVector;)V", NULL 
+    },
+    {
       "onServerStatsUpdated", "()V", NULL 
     },
     {
@@ -1471,13 +1543,7 @@ void SwigDirector_JniRpc::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
       "onTorrentAddError", "()V", NULL 
     },
     {
-      "onGotTorrentFiles", "(I)V", NULL 
-    },
-    {
       "onTorrentFileRenamed", "(ILjava/lang/String;Ljava/lang/String;)V", NULL 
-    },
-    {
-      "onGotTorrentPeers", "(I)V", NULL 
     },
     {
       "onGotDownloadDirFreeSpace", "(J)V", NULL 
@@ -2945,6 +3011,482 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Str
 }
 
 
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (std::vector< int > *)new std::vector< int >();
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::vector< int > *arg1 = 0 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1;
+  if (!arg1) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & reference is null");
+    return 0;
+  } 
+  result = (std::vector< int > *)new std::vector< int >((std::vector< int > const &)*arg1);
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1capacity(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::size_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  result = ((std::vector< int > const *)arg1)->capacity();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1reserve(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::size_type arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = (std::vector< int >::size_type)jarg2; 
+  try {
+    (arg1)->reserve(arg2);
+  } catch(std::length_error &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1isEmpty(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  result = (bool)((std::vector< int > const *)arg1)->empty();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1clear(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  (arg1)->clear();
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
+  jlong jresult = 0 ;
+  jint arg1 ;
+  int *arg2 = 0 ;
+  int temp2 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = jarg1; 
+  temp2 = (int)jarg2; 
+  arg2 = &temp2; 
+  try {
+    result = (std::vector< int > *)new_std_vector_Sl_int_Sg___SWIG_2(arg1,(int const &)*arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doSize(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  try {
+    result = std_vector_Sl_int_Sg__doSize((std::vector< int > const *)arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doAdd_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::value_type *arg2 = 0 ;
+  std::vector< int >::value_type temp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  temp2 = (std::vector< int >::value_type)jarg2; 
+  arg2 = &temp2; 
+  std_vector_Sl_int_Sg__doAdd__SWIG_0(arg1,(int const &)*arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doAdd_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *arg3 = 0 ;
+  std::vector< int >::value_type temp3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  temp3 = (std::vector< int >::value_type)jarg3; 
+  arg3 = &temp3; 
+  try {
+    std_vector_Sl_int_Sg__doAdd__SWIG_1(arg1,arg2,(int const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doRemove(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  try {
+    result = (std::vector< int >::value_type)std_vector_Sl_int_Sg__doRemove(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doGet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  try {
+    result = (std::vector< int >::value_type *) &std_vector_Sl_int_Sg__doGet(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)*result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doSet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *arg3 = 0 ;
+  std::vector< int >::value_type temp3 ;
+  std::vector< int >::value_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  temp3 = (std::vector< int >::value_type)jarg3; 
+  arg3 = &temp3; 
+  try {
+    result = (std::vector< int >::value_type)std_vector_Sl_int_Sg__doSet(arg1,arg2,(int const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doRemoveRange(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  jint arg3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  arg3 = jarg3; 
+  try {
+    std_vector_Sl_int_Sg__doRemoveRange(arg1,arg2,arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1IntVector(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1address_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (QString *) & ((arg1)->address);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1client_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (QString *) & ((arg1)->client);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1downloadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (long long) ((arg1)->downloadSpeed);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1uploadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (long long) ((arg1)->uploadSpeed);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1progress_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jdouble jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  double result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (double) ((arg1)->progress);
+  jresult = (jdouble)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1flags_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  result = (QString *) & ((arg1)->flags);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Peer(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (int) ((arg1)->id);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1path_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  std::vector< QString > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (std::vector< QString > *)& ((arg1)->path);
+  *(std::vector< QString > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1size_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (long long) ((arg1)->size);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1completedSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (long long) ((arg1)->completedSize);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1priority_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  libtremotesf::TorrentFile::Priority result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (libtremotesf::TorrentFile::Priority) ((arg1)->priority);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1wanted_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  result = (bool) ((arg1)->wanted);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1TorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1id(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;
@@ -3066,178 +3608,544 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Tra
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1path_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
-  std::vector< QString > *result = 0 ;
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  result = (std::vector< QString > *)& ((arg1)->path);
-  *(std::vector< QString > **)&jresult = result; 
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->id);
+  jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1size_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1hashString_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->hashString);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1name_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->name);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1errorString_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->errorString);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1status_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  libtremotesf::TorrentData::Status result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (libtremotesf::TorrentData::Status) ((arg1)->status);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1queuePosition_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->queuePosition);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1totalSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   long long result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  result = (long long) ((arg1)->size);
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->totalSize);
   jresult = (jlong)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1completedSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1completedSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   long long result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (long long) ((arg1)->completedSize);
   jresult = (jlong)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1wanted_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  result = (bool) ((arg1)->wanted);
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1priority_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jint jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
-  libtremotesf::TorrentFile::Priority result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  result = (libtremotesf::TorrentFile::Priority) ((arg1)->priority);
-  jresult = (jint)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile_1changed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  result = (bool) ((arg1)->changed);
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1TorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  libtremotesf::TorrentFile *arg1 = (libtremotesf::TorrentFile *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(libtremotesf::TorrentFile **)&jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1address_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
-  QString *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
-  result = (QString *) & ((arg1)->address);
-  
-  jresult = jenv->NewString(result->utf16(), result->size());
-  
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1downloadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1leftUntilDone_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   long long result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->leftUntilDone);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1sizeWhenDone_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->sizeWhenDone);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1percentDone_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jdouble jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  double result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (double) ((arg1)->percentDone);
+  jresult = (jdouble)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1recheckProgress_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jdouble jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  double result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (double) ((arg1)->recheckProgress);
+  jresult = (jdouble)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1eta_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->eta);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1downloadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (long long) ((arg1)->downloadSpeed);
   jresult = (jlong)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1uploadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1uploadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   long long result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (long long) ((arg1)->uploadSpeed);
   jresult = (jlong)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1progress_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1downloadSpeedLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->downloadSpeedLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1downloadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->downloadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1uploadSpeedLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->uploadSpeedLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1uploadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->uploadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1totalDownloaded_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->totalDownloaded);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1totalUploaded_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->totalUploaded);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1ratio_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
-  result = (double) ((arg1)->progress);
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (double) ((arg1)->ratio);
   jresult = (jdouble)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1flags_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1ratioLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jdouble jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  double result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (double) ((arg1)->ratioLimit);
+  jresult = (jdouble)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1ratioLimitMode_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  libtremotesf::TorrentData::RatioLimitMode result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (libtremotesf::TorrentData::RatioLimitMode) ((arg1)->ratioLimitMode);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1seeders_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->seeders);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1leechers_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->leechers);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1peersLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->peersLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1addedDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jobject jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QDateTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QDateTime *) & ((arg1)->addedDate);
+  
+  const jclass clazz = jenv->FindClass("java/util/Date");
+  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
+  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1activityDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jobject jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QDateTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QDateTime *) & ((arg1)->activityDate);
+  
+  const jclass clazz = jenv->FindClass("java/util/Date");
+  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
+  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1activityDateTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->activityDateTime);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1doneDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jobject jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QDateTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QDateTime *) & ((arg1)->doneDate);
+  
+  const jclass clazz = jenv->FindClass("java/util/Date");
+  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
+  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1doneDateTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->doneDateTime);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1idleSeedingLimitMode_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  libtremotesf::TorrentData::IdleSeedingLimitMode result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (libtremotesf::TorrentData::IdleSeedingLimitMode) ((arg1)->idleSeedingLimitMode);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1idleSeedingLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->idleSeedingLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1downloadDirectory_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   QString *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
-  result = (QString *) & ((arg1)->flags);
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->downloadDirectory);
   
   jresult = jenv->NewString(result->utf16(), result->size());
   
@@ -3245,16 +4153,16 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1fl
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1client_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1comment_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   QString *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
-  result = (QString *) & ((arg1)->client);
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->comment);
   
   jresult = jenv->NewString(result->utf16(), result->size());
   
@@ -3262,12 +4170,165 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1cl
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Peer(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  libtremotesf::Peer *arg1 = (libtremotesf::Peer *) 0 ;
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1creator_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QString *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(libtremotesf::Peer **)&jarg1; 
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->creator);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1creationDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jobject jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QDateTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QDateTime *) & ((arg1)->creationDate);
+  
+  const jclass clazz = jenv->FindClass("java/util/Date");
+  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
+  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1creationDateTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (long long) ((arg1)->creationDateTime);
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1bandwidthPriority_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  libtremotesf::TorrentData::Priority result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (libtremotesf::TorrentData::Priority) ((arg1)->bandwidthPriority);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1honorSessionLimits_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->honorSessionLimits);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1singleFile_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->singleFile);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackersAddedOrRemoved_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->trackersAddedOrRemoved);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1changed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->changed);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackers_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  std::vector< libtremotesf::Tracker > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (std::vector< libtremotesf::Tracker > *)& ((arg1)->trackers);
+  *(std::vector< libtremotesf::Tracker > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1TorrentData(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::TorrentData *)new libtremotesf::TorrentData();
+  *(libtremotesf::TorrentData **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1TorrentData(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   delete arg1;
 }
 
@@ -3962,60 +5023,6 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isFilesLoaded(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
-  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  
-  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
-  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
-  result = (bool)((libtremotesf::Torrent const *)arg1)->isFilesLoaded();
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1files(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
-  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
-  std::vector< libtremotesf::TorrentFile > *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  
-  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
-  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
-  result = (std::vector< libtremotesf::TorrentFile > *) &((libtremotesf::Torrent const *)arg1)->files();
-  *(std::vector< libtremotesf::TorrentFile > **)&jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isFilesChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg1 = 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  
-  smartarg1 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg1;
-  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
-  result = (bool)(arg1)->isFilesChanged();
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1trackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
@@ -4052,7 +5059,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isPeersLoaded(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
   std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
@@ -4064,8 +5071,44 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
   
   smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
   arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
-  result = (bool)((libtremotesf::Torrent const *)arg1)->isPeersLoaded();
+  result = (bool)((libtremotesf::Torrent const *)arg1)->isChanged();
   jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1data(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
+  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
+  libtremotesf::TorrentData *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
+  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
+  result = (libtremotesf::TorrentData *) &((libtremotesf::Torrent const *)arg1)->data();
+  *(libtremotesf::TorrentData **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1files(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
+  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
+  std::vector< libtremotesf::TorrentFile > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
+  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
+  result = (std::vector< libtremotesf::TorrentFile > *) &((libtremotesf::Torrent const *)arg1)->files();
+  *(std::vector< libtremotesf::TorrentFile > **)&jresult = result; 
   return jresult;
 }
 
@@ -4084,24 +5127,6 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1p
   arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
   result = (std::vector< libtremotesf::Peer > *) &((libtremotesf::Torrent const *)arg1)->peers();
   *(std::vector< libtremotesf::Peer > **)&jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent_1isChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::Torrent *arg1 = (libtremotesf::Torrent *) 0 ;
-  std::shared_ptr< libtremotesf::Torrent const > *smartarg1 = 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  
-  smartarg1 = *(std::shared_ptr< const libtremotesf::Torrent > **)&jarg1;
-  arg1 = (libtremotesf::Torrent *)(smartarg1 ? smartarg1->get() : 0); 
-  result = (bool)((libtremotesf::Torrent const *)arg1)->isChanged();
-  jresult = (jboolean)result; 
   return jresult;
 }
 
@@ -6535,6 +7560,72 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
 }
 
 
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onTorrentFilesUpdated(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jlong jarg3, jobject jarg3_) {
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  int arg2 ;
+  std::vector< libtremotesf::TorrentFile > arg3 ;
+  std::vector< libtremotesf::TorrentFile > *argp3 ;
+  SwigDirector_JniRpc *darg = 0;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg3_;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  arg2 = (int)jarg2; 
+  argp3 = *(std::vector< libtremotesf::TorrentFile > **)&jarg3; 
+  if (!argp3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::vector< libtremotesf::TorrentFile >");
+    return ;
+  }
+  arg3 = *argp3; 
+  darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
+  (darg)->onTorrentFilesUpdated(arg2,arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onTorrentPeersUpdated(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jlong jarg3, jobject jarg3_, jlong jarg4, jobject jarg4_, jlong jarg5, jobject jarg5_) {
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  int arg2 ;
+  std::vector< libtremotesf::Peer > arg3 ;
+  std::vector< libtremotesf::Peer > arg4 ;
+  std::vector< int > arg5 ;
+  std::vector< libtremotesf::Peer > *argp3 ;
+  std::vector< libtremotesf::Peer > *argp4 ;
+  std::vector< int > *argp5 ;
+  SwigDirector_JniRpc *darg = 0;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg3_;
+  (void)jarg4_;
+  (void)jarg5_;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  arg2 = (int)jarg2; 
+  argp3 = *(std::vector< libtremotesf::Peer > **)&jarg3; 
+  if (!argp3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::vector< libtremotesf::Peer >");
+    return ;
+  }
+  arg3 = *argp3; 
+  argp4 = *(std::vector< libtremotesf::Peer > **)&jarg4; 
+  if (!argp4) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::vector< libtremotesf::Peer >");
+    return ;
+  }
+  arg4 = *argp4; 
+  argp5 = *(std::vector< int > **)&jarg5; 
+  if (!argp5) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::vector< int >");
+    return ;
+  }
+  arg5 = *argp5; 
+  darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
+  (darg)->onTorrentPeersUpdated(arg2,arg3,arg4,arg5);
+}
+
+
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onServerStatsUpdated(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   SwigDirector_JniRpc *darg = 0;
@@ -6656,21 +7747,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onGotTorrentFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  int arg2 ;
-  SwigDirector_JniRpc *darg = 0;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  arg2 = (int)jarg2; 
-  darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onGotTorrentFiles(arg2);
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onTorrentFileRenamed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   int arg2 ;
@@ -6709,21 +7785,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
   (darg)->onTorrentFileRenamed(arg2,(QString const &)*arg3,(QString const &)*arg4);
-}
-
-
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onGotTorrentPeers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  int arg2 ;
-  SwigDirector_JniRpc *darg = 0;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  arg2 = (int)jarg2; 
-  darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onGotTorrentPeers(arg2);
 }
 
 
@@ -6836,6 +7897,12 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_swig_1modul
       "SwigDirector_JniRpc_onTorrentsUpdated", "(Lorg/equeim/libtremotesf/JniRpc;J)V" 
     },
     {
+      "SwigDirector_JniRpc_onTorrentFilesUpdated", "(Lorg/equeim/libtremotesf/JniRpc;IJ)V" 
+    },
+    {
+      "SwigDirector_JniRpc_onTorrentPeersUpdated", "(Lorg/equeim/libtremotesf/JniRpc;IJJJ)V" 
+    },
+    {
       "SwigDirector_JniRpc_onServerStatsUpdated", "(Lorg/equeim/libtremotesf/JniRpc;)V" 
     },
     {
@@ -6851,13 +7918,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_swig_1modul
       "SwigDirector_JniRpc_onTorrentAddError", "(Lorg/equeim/libtremotesf/JniRpc;)V" 
     },
     {
-      "SwigDirector_JniRpc_onGotTorrentFiles", "(Lorg/equeim/libtremotesf/JniRpc;I)V" 
-    },
-    {
       "SwigDirector_JniRpc_onTorrentFileRenamed", "(Lorg/equeim/libtremotesf/JniRpc;ILjava/lang/String;Ljava/lang/String;)V" 
-    },
-    {
-      "SwigDirector_JniRpc_onGotTorrentPeers", "(Lorg/equeim/libtremotesf/JniRpc;I)V" 
     },
     {
       "SwigDirector_JniRpc_onGotDownloadDirFreeSpace", "(Lorg/equeim/libtremotesf/JniRpc;J)V" 

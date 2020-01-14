@@ -53,10 +53,13 @@ namespace libtremotesf
     %ignore Torrent::isSingleFile;
     %ignore Torrent::queuePosition;
 
+    %ignore TorrentData::update;
+
     %ignore TorrentFile::TorrentFile;
     %ignore TorrentFile::update;
     %ignore Peer::Peer;
     %ignore Peer::update;
+    %ignore Peer::addressKey;
 
     %ignore Tracker::Tracker;
     %ignore Tracker::update;
@@ -87,6 +90,10 @@ namespace libtremotesf
 
 %template(StringsVector) std::vector<QString>;
 
+%template(IntVector) std::vector<int>;
+
+%include "../peer.h"
+%include "../torrentfile.h"
 %include "../tracker.h"
 %include "../torrent.h"
 %include "../rpc.h"

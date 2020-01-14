@@ -20,14 +20,14 @@ public:
     virtual void onStatusChanged(libtremotesf::Rpc::Status status);
     virtual void onErrorChanged(libtremotesf::Rpc::Error error, QString const &errorMessage);
     virtual void onTorrentsUpdated(std::vector< std::shared_ptr< libtremotesf::Torrent > > torrents);
+    virtual void onTorrentFilesUpdated(int torrentId, std::vector< libtremotesf::TorrentFile > changed);
+    virtual void onTorrentPeersUpdated(int torrentId, std::vector< libtremotesf::Peer > changed, std::vector< libtremotesf::Peer > added, std::vector< int > removed);
     virtual void onServerStatsUpdated();
     virtual void onTorrentAdded(int id, QString const &hashString, QString const &name);
     virtual void onTorrentFinished(int id, QString const &hashString, QString const &name);
     virtual void onTorrentAddDuplicate();
     virtual void onTorrentAddError();
-    virtual void onGotTorrentFiles(int torrentId);
     virtual void onTorrentFileRenamed(int torrentId, QString const &filePath, QString const &newName);
-    virtual void onGotTorrentPeers(int torrentId);
     virtual void onGotDownloadDirFreeSpace(long long bytes);
     virtual void onGotFreeSpaceForPath(QString const &path, bool success, long long bytes);
 public:

@@ -36,6 +36,10 @@ public class TorrentFile {
     }
   }
 
+  public int getId() {
+    return libtremotesfJNI.TorrentFile_id_get(swigCPtr, this);
+  }
+
   public StringsVector getPath() {
     long cPtr = libtremotesfJNI.TorrentFile_path_get(swigCPtr, this);
     return (cPtr == 0) ? null : new StringsVector(cPtr, false);
@@ -49,16 +53,12 @@ public class TorrentFile {
     return libtremotesfJNI.TorrentFile_completedSize_get(swigCPtr, this);
   }
 
-  public boolean getWanted() {
-    return libtremotesfJNI.TorrentFile_wanted_get(swigCPtr, this);
-  }
-
   public int getPriority() {
     return libtremotesfJNI.TorrentFile_priority_get(swigCPtr, this);
   }
 
-  public boolean getChanged() {
-    return libtremotesfJNI.TorrentFile_changed_get(swigCPtr, this);
+  public boolean getWanted() {
+    return libtremotesfJNI.TorrentFile_wanted_get(swigCPtr, this);
   }
 
   public final static class Priority {

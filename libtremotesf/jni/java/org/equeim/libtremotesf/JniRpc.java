@@ -217,6 +217,14 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_onTorrentsUpdated(swigCPtr, this, TorrentsVector.getCPtr(torrents), torrents);
   }
 
+  protected void onTorrentFilesUpdated(int torrentId, TorrentFilesVector changed) {
+    libtremotesfJNI.JniRpc_onTorrentFilesUpdated(swigCPtr, this, torrentId, TorrentFilesVector.getCPtr(changed), changed);
+  }
+
+  protected void onTorrentPeersUpdated(int torrentId, TorrentPeersVector changed, TorrentPeersVector added, IntVector removed) {
+    libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added, IntVector.getCPtr(removed), removed);
+  }
+
   protected void onServerStatsUpdated() {
     libtremotesfJNI.JniRpc_onServerStatsUpdated(swigCPtr, this);
   }
@@ -237,16 +245,8 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_onTorrentAddError(swigCPtr, this);
   }
 
-  protected void onGotTorrentFiles(int torrentId) {
-    libtremotesfJNI.JniRpc_onGotTorrentFiles(swigCPtr, this, torrentId);
-  }
-
   protected void onTorrentFileRenamed(int torrentId, String filePath, String newName) {
     libtremotesfJNI.JniRpc_onTorrentFileRenamed(swigCPtr, this, torrentId, filePath, newName);
-  }
-
-  protected void onGotTorrentPeers(int torrentId) {
-    libtremotesfJNI.JniRpc_onGotTorrentPeers(swigCPtr, this, torrentId);
   }
 
   protected void onGotDownloadDirFreeSpace(long bytes) {

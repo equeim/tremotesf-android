@@ -40,6 +40,10 @@ public class Peer {
     return libtremotesfJNI.Peer_address_get(swigCPtr, this);
 }
 
+  public String getClient() {
+    return libtremotesfJNI.Peer_client_get(swigCPtr, this);
+}
+
   public long getDownloadSpeed() {
     return libtremotesfJNI.Peer_downloadSpeed_get(swigCPtr, this);
   }
@@ -54,10 +58,6 @@ public class Peer {
 
   public String getFlags() {
     return libtremotesfJNI.Peer_flags_get(swigCPtr, this);
-}
-
-  public String getClient() {
-    return libtremotesfJNI.Peer_client_get(swigCPtr, this);
 }
 
 }
