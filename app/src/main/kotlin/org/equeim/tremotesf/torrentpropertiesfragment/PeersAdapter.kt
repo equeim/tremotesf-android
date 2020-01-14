@@ -25,9 +25,11 @@ import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+
 import androidx.recyclerview.widget.RecyclerView
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.DecimalFormats
@@ -36,162 +38,56 @@ import org.equeim.tremotesf.utils.Utils
 import kotlinx.android.synthetic.main.peer_list_item.view.*
 
 
-private class Peer(rpcPeer: org.equeim.libtremotesf.Peer) {
-    val address: String = rpcPeer.address
-
-    var downloadSpeed = 0L
-        private set(value) {
-            if (value != field) {
-                field = value
-                changed = true
-            }
-        }
-
-    var uploadSpeed = 0L
-        private set(value) {
-            if (value != field) {
-                field = value
-                changed = true
-            }
-        }
-
-    var progress = 0.0
-        private set(value) {
-            if (value != field) {
-                field = value
-                changed = true
-            }
-        }
-
-    /*var flags = ""
-        private set(value) {
-            if (value != field) {
-                field = value
-                changed = true
-            }
-        }*/
-
-    var client = ""
-        private set(value) {
-            if (value != field) {
-                field = value
-                changed = true
-            }
-        }
-
-    var changed = false
-        private set
-
-    init {
-        update(rpcPeer)
-    }
-
-    fun update(rpcPeer: org.equeim.libtremotesf.Peer) {
-        downloadSpeed = rpcPeer.downloadSpeed
-        uploadSpeed = rpcPeer.uploadSpeed
-        progress = rpcPeer.progress
-        client = rpcPeer.client
-    }
-}
-
-class PeersAdapter(private val fragment: PeersFragment) : RecyclerView.Adapter<PeersAdapter.ViewHolder>() {
-    private var torrent: Torrent? = null
-    private val peers = mutableListOf<Peer>()
-
+class PeersAdapter : ListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
     private val comparator = object : Comparator<Peer> {
         private val stringComparator = AlphanumericComparator()
         override fun compare(o1: Peer, o2: Peer) = stringComparator.compare(o1.address, o2.address)
     }
 
-    override fun getItemCount() = peers.size
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(fragment.requireContext()).inflate(R.layout.peer_list_item, parent, false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.peer_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val peer = peers[position]
-
-        holder.addressTextView.text = peer.address
-        val context = fragment.requireContext()
-        holder.downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
-        holder.uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
-        holder.progressTextView.text = context.getString(R.string.progress_string, DecimalFormats.generic.format(peer.progress * 100))
-        holder.clientTextView.text = peer.client
+        holder.bind(getItem(position))
     }
 
-    fun update() {
-        val torrent = fragment.torrent?.torrent
-
-        if (torrent == null) {
-            if (this.torrent == null) {
-                return
-            }
-            this.torrent = null
-            val count = itemCount
-            peers.clear()
-            notifyItemRangeRemoved(0, count)
-            return
-        }
-
-        this.torrent = torrent
-
-        if (!torrent.isPeersLoaded) {
-            return
-        }
-
-        val rpcPeers = torrent.peers()
-        val newPeers = mutableListOf<Peer>()
-        for (rpcPeer: org.equeim.libtremotesf.Peer in rpcPeers) {
-            val address = rpcPeer.address
-            var peer = peers.find { it.address == address }
-            if (peer == null) {
-                peer = Peer(rpcPeer)
-            } else {
-                peer.update(rpcPeer)
-            }
-            newPeers.add(peer)
-        }
-
-        run {
-            var i = 0
-            while (i < peers.size) {
-                if (newPeers.contains(peers[i])) {
-                    i++
-                } else {
-                    peers.removeAt(i)
-                    notifyItemRemoved(i)
-                }
-            }
-        }
-
-        for ((i, peer) in newPeers.sortedWith(comparator).withIndex()) {
-            if (peers.getOrNull(i) === peer) {
-                if (peer.changed) {
-                    notifyItemChanged(i)
-                }
-            } else {
-                val index = peers.indexOf(peer)
-                if (index == -1) {
-                    peers.add(i, peer)
-                    notifyItemInserted(i)
-                } else {
-                    peers.removeAt(index)
-                    peers.add(i, peer)
-                    notifyItemMoved(index, i)
-                    if (peer.changed) {
-                        notifyItemChanged(i)
-                    }
-                }
-            }
-        }
+    fun update(peers: List<Peer>) {
+        submitList(peers.sortedWith(comparator))
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val addressTextView = itemView.address_text_view!!
-        val downloadSpeedTextView = itemView.download_speed_text_view!!
-        val uploadSpeedTextView = itemView.upload_speed_text_view!!
-        val progressTextView = itemView.progress_text_view!!
-        val clientTextView = itemView.client_text_view!!
+        private val context = itemView.context
+
+        private val addressTextView = itemView.address_text_view!!
+        private val downloadSpeedTextView = itemView.download_speed_text_view!!
+        private val uploadSpeedTextView = itemView.upload_speed_text_view!!
+        private val progressTextView = itemView.progress_text_view!!
+        private val clientTextView = itemView.client_text_view!!
+
+        private var peerAddress = ""
+
+        fun bind(peer: Peer) {
+            if (peer.address != peerAddress) {
+                peerAddress = peer.address
+                addressTextView.text = peerAddress
+                clientTextView.text = peer.client
+            }
+            downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
+            uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
+            progressTextView.text = context.getString(R.string.progress_string, DecimalFormats.generic.format(peer.progress * 100))
+        }
+    }
+
+    private class Callback : DiffUtil.ItemCallback<Peer>() {
+        override fun areItemsTheSame(oldItem: Peer, newItem: Peer): Boolean {
+            return oldItem.address == newItem.address
+        }
+
+        override fun areContentsTheSame(oldItem: Peer, newItem: Peer): Boolean {
+            return oldItem.downloadSpeed == newItem.downloadSpeed &&
+                    oldItem.uploadSpeed == newItem.uploadSpeed &&
+                    oldItem.progress == newItem.progress
+        }
     }
 }
