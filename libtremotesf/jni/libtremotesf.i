@@ -83,6 +83,7 @@ namespace libtremotesf
 
 %shared_ptr(libtremotesf::Torrent)
 %template(TorrentsVector) std::vector<std::shared_ptr<libtremotesf::Torrent>>;
+%template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
 
 %template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;

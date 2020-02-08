@@ -29,16 +29,16 @@ import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
 
 
-class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Context) {
-    val hashString: String = torrent.hashString()
+class TorrentWrapper(val id: Int, data: TorrentData, private val context: Context) {
+    val hashString: String = data.hashString
 
-    var name: String = torrent.name()
+    var name: String = data.name
         private set
 
-    var status = torrent.status()
+    var status = data.status
         private set
 
-    private var errorString: String = torrent.errorString()
+    private var errorString: String = data.errorString
 
     val statusString: String
         get() {
@@ -62,48 +62,48 @@ class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Con
             }
         }
 
-    var totalSize = torrent.totalSize()
+    var totalSize = data.totalSize
         private set
-    var completedSize = torrent.completedSize()
+    var completedSize = data.completedSize
         private set
-    var sizeWhenDone = torrent.sizeWhenDone()
+    var sizeWhenDone = data.sizeWhenDone
         private set
-    var percentDone = torrent.percentDone()
+    var percentDone = data.percentDone
         private set
-    var isFinished = torrent.isFinished
+    var isFinished = data.leftUntilDone == 0L
         private set
-    var recheckProgress = torrent.recheckProgress()
+    var recheckProgress = data.recheckProgress
         private set
-    var eta = torrent.eta()
-        private set
-
-    var downloadSpeed = torrent.downloadSpeed()
-        private set
-    var uploadSpeed = torrent.uploadSpeed()
+    var eta = data.eta
         private set
 
-    var totalDownloaded = torrent.totalDownloaded()
+    var downloadSpeed = data.downloadSpeed
         private set
-    var totalUploaded = torrent.totalUploaded()
-        private set
-    var ratio = torrent.ratio()
+    var uploadSpeed = data.uploadSpeed
         private set
 
-    var seeders = torrent.seeders()
+    var totalDownloaded = data.totalDownloaded
         private set
-    var leechers = torrent.leechers()
+    var totalUploaded = data.totalUploaded
+        private set
+    var ratio = data.ratio
         private set
 
-    var addedDate: Date = torrent.addedDate()
+    var seeders = data.seeders
+        private set
+    var leechers = data.leechers
         private set
 
-    var downloadDirectory: String = torrent.downloadDirectory()
+    var addedDate: Date = data.addedDate
+        private set
+
+    var downloadDirectory: String = data.downloadDirectory
         private set
 
     var isChanged = false
         private set
 
-    private val rpcTrackers = torrent.trackers()
+    private val rpcTrackers = data.trackers
     val trackers = mutableListOf<String>()
 
     var filesLoaded = false
@@ -111,7 +111,7 @@ class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Con
         set(value) {
             if (value != field) {
                 field = value
-                Rpc.nativeInstance.setTorrentFilesEnabled(torrent, value)
+                //Rpc.nativeInstance.setTorrentFilesEnabled(data, value)
                 if (!value) {
                     filesLoaded = false
                 }
@@ -123,7 +123,7 @@ class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Con
         set(value) {
             if (value != field) {
                 field = value
-                Rpc.nativeInstance.setTorrentPeersEnabled(torrent, value)
+                //Rpc.nativeInstance.setTorrentPeersEnabled(data, value)
                 if (!value) {
                     peersLoaded = false
                 }
@@ -136,33 +136,30 @@ class TorrentWrapper(val id: Int, val torrent: Torrent, private val context: Con
         }
     }
 
-    fun update() {
-        isChanged = torrent.isChanged
-        if (isChanged) {
-            name = torrent.name()
-            status = torrent.status()
-            errorString = torrent.errorString()
-            totalSize = torrent.totalSize()
-            completedSize = torrent.completedSize()
-            sizeWhenDone = torrent.sizeWhenDone()
-            percentDone = torrent.percentDone()
-            isFinished = torrent.isFinished
-            recheckProgress = torrent.recheckProgress()
-            eta = torrent.eta()
-            downloadSpeed = torrent.downloadSpeed()
-            uploadSpeed = torrent.uploadSpeed()
-            totalDownloaded = torrent.totalDownloaded()
-            totalUploaded = torrent.totalUploaded()
-            ratio = torrent.ratio()
-            seeders = torrent.seeders()
-            leechers = torrent.leechers()
-            downloadDirectory = torrent.downloadDirectory()
+    fun update(data: TorrentData) {
+        name = data.name
+        status = data.status
+        errorString = data.errorString
+        totalSize = data.totalSize
+        completedSize = data.completedSize
+        sizeWhenDone = data.sizeWhenDone
+        percentDone = data.percentDone
+        isFinished = data.leftUntilDone == 0L
+        recheckProgress = data.recheckProgress
+        eta = data.eta
+        downloadSpeed = data.downloadSpeed
+        uploadSpeed = data.uploadSpeed
+        totalDownloaded = data.totalDownloaded
+        totalUploaded = data.totalUploaded
+        ratio = data.ratio
+        seeders = data.seeders
+        leechers = data.leechers
+        downloadDirectory = data.downloadDirectory
 
-            if (torrent.isTrackersAddedOrRemoved) {
-                trackers.clear()
-                for (tracker: Tracker in rpcTrackers) {
-                    trackers.add(tracker.site())
-                }
+        if (data.trackersAddedOrRemoved) {
+            trackers.clear()
+            for (tracker: Tracker in rpcTrackers) {
+                trackers.add(tracker.site())
             }
         }
     }

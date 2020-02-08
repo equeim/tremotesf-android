@@ -239,7 +239,20 @@ namespace libtremotesf
         QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(status()); });
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(error(), errorMessage()); });
 
-        QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(torrents()); });
+        QObject::connect(this, &Rpc::torrentsUpdated, [=](const std::vector<int>& removed, const std::vector<int>& changedIndexes, int addedCount) {
+            const auto& t = this->torrents();
+            std::vector<TorrentData> changed;
+            changed.reserve(changedIndexes.size());
+            for (int index : changedIndexes) {
+                changed.push_back(t[static_cast<size_t>(index)]->data());
+            }
+            std::vector<TorrentData> added;
+            added.reserve(static_cast<size_t>(addedCount));
+            for (auto end = t.end(), i = end - addedCount; i != end; ++i) {
+                added.push_back(i->data());
+            }
+            onTorrentsUpdated(removed, changed, added);
+        });
 
         QObject::connect(this, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changed) {
             onTorrentFilesUpdated(torrent->id(), toValues(torrent->files(), changed));

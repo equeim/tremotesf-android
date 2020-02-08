@@ -24,6 +24,21 @@ public class libtremotesfJNI {
   public final static native long TorrentsVector_doSet(long jarg1, TorrentsVector jarg1_, int jarg2, long jarg3, Torrent jarg3_);
   public final static native void TorrentsVector_doRemoveRange(long jarg1, TorrentsVector jarg1_, int jarg2, int jarg3);
   public final static native void delete_TorrentsVector(long jarg1);
+  public final static native long new_TorrentDataVector__SWIG_0();
+  public final static native long new_TorrentDataVector__SWIG_1(long jarg1, TorrentDataVector jarg1_);
+  public final static native long TorrentDataVector_capacity(long jarg1, TorrentDataVector jarg1_);
+  public final static native void TorrentDataVector_reserve(long jarg1, TorrentDataVector jarg1_, long jarg2);
+  public final static native boolean TorrentDataVector_isEmpty(long jarg1, TorrentDataVector jarg1_);
+  public final static native void TorrentDataVector_clear(long jarg1, TorrentDataVector jarg1_);
+  public final static native long new_TorrentDataVector__SWIG_2(int jarg1, long jarg2, TorrentData jarg2_);
+  public final static native int TorrentDataVector_doSize(long jarg1, TorrentDataVector jarg1_);
+  public final static native void TorrentDataVector_doAdd__SWIG_0(long jarg1, TorrentDataVector jarg1_, long jarg2, TorrentData jarg2_);
+  public final static native void TorrentDataVector_doAdd__SWIG_1(long jarg1, TorrentDataVector jarg1_, int jarg2, long jarg3, TorrentData jarg3_);
+  public final static native long TorrentDataVector_doRemove(long jarg1, TorrentDataVector jarg1_, int jarg2);
+  public final static native long TorrentDataVector_doGet(long jarg1, TorrentDataVector jarg1_, int jarg2);
+  public final static native long TorrentDataVector_doSet(long jarg1, TorrentDataVector jarg1_, int jarg2, long jarg3, TorrentData jarg3_);
+  public final static native void TorrentDataVector_doRemoveRange(long jarg1, TorrentDataVector jarg1_, int jarg2, int jarg3);
+  public final static native void delete_TorrentDataVector(long jarg1);
   public final static native long new_TorrentFilesVector__SWIG_0();
   public final static native long new_TorrentFilesVector__SWIG_1(long jarg1, TorrentFilesVector jarg1_);
   public final static native long TorrentFilesVector_capacity(long jarg1, TorrentFilesVector jarg1_);
@@ -340,7 +355,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onAboutToDisconnect(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onStatusChanged(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onErrorChanged(long jarg1, JniRpc jarg1_, int jarg2, String jarg3);
-  public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, TorrentsVector jarg2_);
+  public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, IntVector jarg2_, long jarg3, TorrentDataVector jarg3_, long jarg4, TorrentDataVector jarg4_);
   public final static native void JniRpc_onTorrentFilesUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentFilesVector jarg3_);
   public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, IntVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, TorrentPeersVector jarg5_);
   public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_);
@@ -366,8 +381,8 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onErrorChanged(JniRpc jself, int error, String errorMessage) {
     jself.onErrorChanged(error, errorMessage);
   }
-  public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long torrents) {
-    jself.onTorrentsUpdated(new TorrentsVector(torrents, true));
+  public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long removed, long changed, long added) {
+    jself.onTorrentsUpdated(new IntVector(removed, true), new TorrentDataVector(changed, true), new TorrentDataVector(added, true));
   }
   public static void SwigDirector_JniRpc_onTorrentFilesUpdated(JniRpc jself, int torrentId, long changed) {
     jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, true));

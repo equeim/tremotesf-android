@@ -19,7 +19,7 @@ public:
     virtual void onAboutToDisconnect();
     virtual void onStatusChanged(libtremotesf::Rpc::Status status);
     virtual void onErrorChanged(libtremotesf::Rpc::Error error, QString const &errorMessage);
-    virtual void onTorrentsUpdated(std::vector< std::shared_ptr< libtremotesf::Torrent > > torrents);
+    virtual void onTorrentsUpdated(std::vector< int > removed, std::vector< libtremotesf::TorrentData > changed, std::vector< libtremotesf::TorrentData > added);
     virtual void onTorrentFilesUpdated(int torrentId, std::vector< libtremotesf::TorrentFile > changed);
     virtual void onTorrentPeersUpdated(int torrentId, std::vector< int > removed, std::vector< libtremotesf::Peer > changed, std::vector< libtremotesf::Peer > added);
     virtual void onServerStatsUpdated();

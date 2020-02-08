@@ -53,6 +53,8 @@ import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.Peer
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.Torrent
+import org.equeim.libtremotesf.TorrentData
+import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
@@ -96,10 +98,12 @@ object Rpc : Logger {
             }
         }
 
-        override fun onTorrentsUpdated(torrents: TorrentsVector) {
-            val list = torrents.toList()
+        override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
+            val r = removed.toList()
+            val c = changed.toList()
+            val a = added.toList()
             handler.post {
-                onTorrentsUpdated(list)
+                Rpc.onTorrentsUpdated(r, c, a)
             }
         }
 
@@ -310,18 +314,32 @@ object Rpc : Logger {
         error.value = newError
     }
 
-    private fun onTorrentsUpdated(newNativeTorrents: List<Torrent>) {
-        val oldTorrents = torrents.value
-        val newTorrents = mutableListOf<TorrentWrapper>()
-        for (torrent in newNativeTorrents) {
-            val id = torrent.id()
-            val data = oldTorrents.find { it.id == id }
-            if (data == null) {
-                newTorrents.add(TorrentWrapper(id, torrent, context))
-            } else {
-                newTorrents.add(data)
-                data.update()
+    private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
+        val newTorrents = torrents.value.toMutableList()
+
+        for (index in removed) {
+            newTorrents.removeAt(index)
+        }
+
+        if (changed.isNotEmpty()) {
+            val changedIter = changed.iterator()
+            var changedTorrentData = changedIter.next()
+            var changedId = changedTorrentData.id
+            for (torrent in newTorrents) {
+                if (torrent.id == changedId) {
+                    torrent.update(changedTorrentData)
+                    if (changedIter.hasNext()) {
+                        changedTorrentData = changedIter.next()
+                        changedId = changedTorrentData.id
+                    } else {
+                        break
+                    }
+                }
             }
+        }
+
+        for (torrentData in added) {
+            newTorrents.add(TorrentWrapper(torrentData.id, torrentData, context))
         }
 
         torrents.value = newTorrents
