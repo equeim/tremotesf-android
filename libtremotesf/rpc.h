@@ -37,11 +37,9 @@ class QTimer;
 
 namespace libtremotesf
 {
-    class Peer;
     class ServerSettings;
     class ServerStats;
     class Torrent;
-    class TorrentFile;
 
     struct Server
     {
@@ -232,10 +230,13 @@ namespace libtremotesf
         void statusChanged();
         void errorChanged();
 
-        void torrentsUpdated();
+        void torrentsUpdated(const std::vector<int>& removed, const std::vector<int>& changed, int added);
 
-        void torrentFilesUpdated(int torrentId, const std::vector<const libtremotesf::TorrentFile*>& changed);
-        void torrentPeersUpdated(int torrentId, const std::vector<const libtremotesf::Peer*>& changed, const std::vector<const libtremotesf::Peer*>& added, const std::vector<int>& removed);
+        void torrentFilesUpdated(const libtremotesf::Torrent* torrent, const std::vector<int>& changed);
+        void torrentPeersUpdated(const libtremotesf::Torrent* torrent,
+                                 const std::vector<int>& removed,
+                                 const std::vector<int>& changed,
+                                 int added);
 
         void torrentFileRenamed(int torrentId, const QString& filePath, const QString& newName);
 

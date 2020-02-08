@@ -140,7 +140,7 @@ namespace libtremotesf
         virtual void onTorrentsUpdated(std::vector<std::shared_ptr<Torrent>> torrents) = 0;
 
         virtual void onTorrentFilesUpdated(int torrentId, std::vector<TorrentFile> changed) = 0;
-        virtual void onTorrentPeersUpdated(int torrentId, std::vector<Peer> changed, std::vector<Peer> added, std::vector<int> removed) = 0;
+        virtual void onTorrentPeersUpdated(int torrentId, std::vector<int> removed, std::vector<Peer> changed, std::vector<Peer> added) = 0;
 
         virtual void onServerStatsUpdated() = 0;
 

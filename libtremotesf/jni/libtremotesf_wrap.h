@@ -21,7 +21,7 @@ public:
     virtual void onErrorChanged(libtremotesf::Rpc::Error error, QString const &errorMessage);
     virtual void onTorrentsUpdated(std::vector< std::shared_ptr< libtremotesf::Torrent > > torrents);
     virtual void onTorrentFilesUpdated(int torrentId, std::vector< libtremotesf::TorrentFile > changed);
-    virtual void onTorrentPeersUpdated(int torrentId, std::vector< libtremotesf::Peer > changed, std::vector< libtremotesf::Peer > added, std::vector< int > removed);
+    virtual void onTorrentPeersUpdated(int torrentId, std::vector< int > removed, std::vector< libtremotesf::Peer > changed, std::vector< libtremotesf::Peer > added);
     virtual void onServerStatsUpdated();
     virtual void onTorrentAdded(int id, QString const &hashString, QString const &name);
     virtual void onTorrentFinished(int id, QString const &hashString, QString const &name);

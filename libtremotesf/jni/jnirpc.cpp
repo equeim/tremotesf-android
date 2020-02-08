@@ -19,12 +19,12 @@ namespace libtremotesf
     namespace
     {
         template<typename T>
-        std::vector<T> toValues(const std::vector<const T*>& items)
+        std::vector<T> toValues(const std::vector<T>& items, const std::vector<int>& indexes)
         {
             std::vector<T> v;
-            v.reserve(items.size());
-            for (const T* item : items) {
-                v.push_back(*item);
+            v.reserve(indexes.size());
+            for (int index : indexes) {
+                v.push_back(items[static_cast<size_t>(index)]);
             }
             return v;
         }
@@ -241,11 +241,17 @@ namespace libtremotesf
 
         QObject::connect(this, &Rpc::torrentsUpdated, [=]() { onTorrentsUpdated(torrents()); });
 
-        QObject::connect(this, &Rpc::torrentFilesUpdated, [=](int torrentId, const std::vector<const TorrentFile*>& changed) {
-            onTorrentFilesUpdated(torrentId, toValues(changed));
+        QObject::connect(this, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changed) {
+            onTorrentFilesUpdated(torrent->id(), toValues(torrent->files(), changed));
         });
-        QObject::connect(this, &Rpc::torrentPeersUpdated, [=](int torrentId, const std::vector<const Peer*>& changed, const std::vector<const Peer*>& added, const std::vector<int>& removed) {
-            onTorrentPeersUpdated(torrentId, toValues(changed), toValues(added), removed);
+        QObject::connect(this, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<int>& removed, const std::vector<int>& changed, int addedCount) {
+            const auto& peers = torrent->peers();
+            std::vector<Peer> added;
+            added.reserve(static_cast<size_t>(addedCount));
+            for (auto end = peers.end(), i = end - addedCount; i != end; ++i) {
+                added.push_back(*i);
+            }
+            onTorrentPeersUpdated(torrent->id(), removed, toValues(peers, changed), std::move(added));
         });
 
         QObject::connect(this, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {

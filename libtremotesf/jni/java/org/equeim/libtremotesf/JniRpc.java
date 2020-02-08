@@ -221,8 +221,8 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_onTorrentFilesUpdated(swigCPtr, this, torrentId, TorrentFilesVector.getCPtr(changed), changed);
   }
 
-  protected void onTorrentPeersUpdated(int torrentId, TorrentPeersVector changed, TorrentPeersVector added, IntVector removed) {
-    libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added, IntVector.getCPtr(removed), removed);
+  protected void onTorrentPeersUpdated(int torrentId, IntVector removed, TorrentPeersVector changed, TorrentPeersVector added) {
+    libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, IntVector.getCPtr(removed), removed, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added);
   }
 
   protected void onServerStatsUpdated() {

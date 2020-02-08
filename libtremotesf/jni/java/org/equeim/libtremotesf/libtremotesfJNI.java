@@ -342,7 +342,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onErrorChanged(long jarg1, JniRpc jarg1_, int jarg2, String jarg3);
   public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, TorrentsVector jarg2_);
   public final static native void JniRpc_onTorrentFilesUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentFilesVector jarg3_);
-  public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentPeersVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, IntVector jarg5_);
+  public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, IntVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, TorrentPeersVector jarg5_);
   public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onTorrentAdded(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinished(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
@@ -372,8 +372,8 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onTorrentFilesUpdated(JniRpc jself, int torrentId, long changed) {
     jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, true));
   }
-  public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long changed, long added, long removed) {
-    jself.onTorrentPeersUpdated(torrentId, new TorrentPeersVector(changed, true), new TorrentPeersVector(added, true), new IntVector(removed, true));
+  public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long removed, long changed, long added) {
+    jself.onTorrentPeersUpdated(torrentId, new IntVector(removed, true), new TorrentPeersVector(changed, true), new TorrentPeersVector(added, true));
   }
   public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself) {
     jself.onServerStatsUpdated();
