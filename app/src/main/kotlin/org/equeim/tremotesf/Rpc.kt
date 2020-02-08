@@ -140,12 +140,12 @@ object Rpc : Logger {
             }
         }
 
-        override fun onTorrentPeersUpdated(torrentId: Int, changed: TorrentPeersVector, added: TorrentPeersVector, removed: IntVector) {
+        override fun onTorrentPeersUpdated(torrentId: Int, removed: IntVector, changed: TorrentPeersVector, added: TorrentPeersVector) {
+            val r = removed.toList()
             val c = changed.toList()
             val a = added.toList()
-            val r = removed.toList()
             handler.post {
-                Rpc.onTorrentPeersUpdated(torrentId, c, a, r)
+                Rpc.onTorrentPeersUpdated(torrentId, r, c, a)
             }
         }
 
@@ -214,7 +214,7 @@ object Rpc : Logger {
 
     data class TorrentFilesUpdatedData(val torrentId: Int, val changedFiles: List<TorrentFile>)
     val torrentFilesUpdatedEvent = LiveEvent<TorrentFilesUpdatedData>()
-    data class TorrentPeersUpdatedData(val torrentId: Int, val changed: List<Peer>, val added: List<Peer>, val removed: List<Int>)
+    data class TorrentPeersUpdatedData(val torrentId: Int, val removed: List<Int>, val changed: List<Peer>, val added: List<Peer>)
     val torrentPeersUpdatedEvent = LiveEvent<TorrentPeersUpdatedData>()
 
     data class TorrentFileRenamedData(val torrentId: Int, val filePath: String, val newName: String)
@@ -402,11 +402,11 @@ object Rpc : Logger {
         }
     }
 
-    private fun onTorrentPeersUpdated(torrentId: Int, changed: List<Peer>, added: List<Peer>, removed: List<Int>) {
+    private fun onTorrentPeersUpdated(torrentId: Int, removed: List<Int>, changed: List<Peer>, added: List<Peer>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.peersEnabled) {
                 torrent.peersLoaded = true
-                torrentPeersUpdatedEvent.emit(TorrentPeersUpdatedData(torrentId, changed, added, removed))
+                torrentPeersUpdatedEvent.emit(TorrentPeersUpdatedData(torrentId, removed, changed, added))
             }
         }
     }

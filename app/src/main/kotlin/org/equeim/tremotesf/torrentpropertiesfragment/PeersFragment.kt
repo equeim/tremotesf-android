@@ -150,7 +150,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         }
 
         private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
-            val (torrentId, changed, added, removed) = data
+            val (torrentId, removed, changed, added) = data
 
             if (torrentId != torrent?.id) return
 
@@ -173,7 +173,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
                             changedPeer = changedIter.next()
                             changedPeerAddress = changedPeer.address
                         } else {
-                            changedPeerAddress = ""
+                            break
                         }
                     }
                 }
