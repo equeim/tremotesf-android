@@ -111,24 +111,24 @@ namespace libtremotesf
         void getDownloadDirFreeSpace();
         void getFreeSpaceForPath(const QString& path);
 
-        void setTorrentDownloadSpeedLimited(Torrent* torrent, bool limited);
-        void setTorrentDownloadSpeedLimit(Torrent* torrent, int limit);
-        void setTorrentUploadSpeedLimited(Torrent* torrent, bool limited);
-        void setTorrentUploadSpeedLimit(Torrent* torrent, int limit);
-        void setTorrentRatioLimitMode(Torrent* torrent, Torrent::RatioLimitMode mode);
-        void setTorrentRatioLimit(Torrent* torrent, double limit);
-        void setTorrentPeersLimit(Torrent* torrent, int limit);
-        void setTorrentHonorSessionLimits(Torrent* torrent, bool honor);
-        void setTorrentBandwidthPriority(Torrent* torrent, Torrent::Priority priority);
-        void setTorrentIdleSeedingLimitMode(Torrent* torrent, Torrent::IdleSeedingLimitMode mode);
-        void setTorrentIdleSeedingLimit(Torrent* torrent, int limit);
-        void setTorrentFilesEnabled(Torrent* torrent, bool enabled);
-        void setTorrentFilesWanted(Torrent* torrent, const QVariantList& files, bool wanted);
-        void setTorrentFilesPriority(Torrent* torrent, const QVariantList& files, TorrentFile::Priority priority);
-        void torrentAddTracker(Torrent* torrent, const QString& announce);
-        void torrentSetTracker(Torrent* torrent, int trackerId, const QString& announce);
-        void torrentRemoveTrackers(Torrent* torrent, const QVariantList& ids);
-        void setTorrentPeersEnabled(Torrent* torrent, bool enabled);
+        void setTorrentDownloadSpeedLimited(TorrentData& data, bool limited);
+        void setTorrentDownloadSpeedLimit(TorrentData& data, int limit);
+        void setTorrentUploadSpeedLimited(TorrentData& data, bool limited);
+        void setTorrentUploadSpeedLimit(TorrentData& data, int limit);
+        void setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode);
+        void setTorrentRatioLimit(TorrentData& data, double limit);
+        void setTorrentPeersLimit(TorrentData& data, int limit);
+        void setTorrentHonorSessionLimits(TorrentData& data, bool honor);
+        void setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority);
+        void setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode);
+        void setTorrentIdleSeedingLimit(TorrentData& data, int limit);
+        void setTorrentFilesEnabled(TorrentData& data, bool enabled);
+        void setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted);
+        void setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority);
+        void torrentAddTracker(TorrentData& data, const QString& announce);
+        void torrentSetTracker(TorrentData& data, int trackerId, const QString& announce);
+        void torrentRemoveTrackers(TorrentData& data, const QVariantList& ids);
+        void setTorrentPeersEnabled(TorrentData& data, bool enabled);
 
         void updateData();
 

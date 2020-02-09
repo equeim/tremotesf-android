@@ -125,76 +125,76 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_getFreeSpaceForPath(swigCPtr, this, path);
   }
 
-  public void setTorrentDownloadSpeedLimited(Torrent torrent, boolean limited) {
-    libtremotesfJNI.JniRpc_setTorrentDownloadSpeedLimited(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limited);
+  public void setTorrentDownloadSpeedLimited(TorrentData data, boolean limited) {
+    libtremotesfJNI.JniRpc_setTorrentDownloadSpeedLimited(swigCPtr, this, TorrentData.getCPtr(data), data, limited);
   }
 
-  public void setTorrentDownloadSpeedLimit(Torrent torrent, int limit) {
-    libtremotesfJNI.JniRpc_setTorrentDownloadSpeedLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
+  public void setTorrentDownloadSpeedLimit(TorrentData data, int limit) {
+    libtremotesfJNI.JniRpc_setTorrentDownloadSpeedLimit(swigCPtr, this, TorrentData.getCPtr(data), data, limit);
   }
 
-  public void setTorrentUploadSpeedLimited(Torrent torrent, boolean limited) {
-    libtremotesfJNI.JniRpc_setTorrentUploadSpeedLimited(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limited);
+  public void setTorrentUploadSpeedLimited(TorrentData data, boolean limited) {
+    libtremotesfJNI.JniRpc_setTorrentUploadSpeedLimited(swigCPtr, this, TorrentData.getCPtr(data), data, limited);
   }
 
-  public void setTorrentUploadSpeedLimit(Torrent torrent, int limit) {
-    libtremotesfJNI.JniRpc_setTorrentUploadSpeedLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
+  public void setTorrentUploadSpeedLimit(TorrentData data, int limit) {
+    libtremotesfJNI.JniRpc_setTorrentUploadSpeedLimit(swigCPtr, this, TorrentData.getCPtr(data), data, limit);
   }
 
-  public void setTorrentRatioLimitMode(Torrent torrent, int mode) {
-    libtremotesfJNI.JniRpc_setTorrentRatioLimitMode(swigCPtr, this, Torrent.getCPtr(torrent), torrent, mode);
+  public void setTorrentRatioLimitMode(TorrentData data, int mode) {
+    libtremotesfJNI.JniRpc_setTorrentRatioLimitMode(swigCPtr, this, TorrentData.getCPtr(data), data, mode);
   }
 
-  public void setTorrentRatioLimit(Torrent torrent, double limit) {
-    libtremotesfJNI.JniRpc_setTorrentRatioLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
+  public void setTorrentRatioLimit(TorrentData data, double limit) {
+    libtremotesfJNI.JniRpc_setTorrentRatioLimit(swigCPtr, this, TorrentData.getCPtr(data), data, limit);
   }
 
-  public void setTorrentPeersLimit(Torrent torrent, int limit) {
-    libtremotesfJNI.JniRpc_setTorrentPeersLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
+  public void setTorrentPeersLimit(TorrentData data, int limit) {
+    libtremotesfJNI.JniRpc_setTorrentPeersLimit(swigCPtr, this, TorrentData.getCPtr(data), data, limit);
   }
 
-  public void setTorrentHonorSessionLimits(Torrent torrent, boolean honor) {
-    libtremotesfJNI.JniRpc_setTorrentHonorSessionLimits(swigCPtr, this, Torrent.getCPtr(torrent), torrent, honor);
+  public void setTorrentHonorSessionLimits(TorrentData data, boolean honor) {
+    libtremotesfJNI.JniRpc_setTorrentHonorSessionLimits(swigCPtr, this, TorrentData.getCPtr(data), data, honor);
   }
 
-  public void setTorrentBandwidthPriority(Torrent torrent, int priority) {
-    libtremotesfJNI.JniRpc_setTorrentBandwidthPriority(swigCPtr, this, Torrent.getCPtr(torrent), torrent, priority);
+  public void setTorrentBandwidthPriority(TorrentData data, int priority) {
+    libtremotesfJNI.JniRpc_setTorrentBandwidthPriority(swigCPtr, this, TorrentData.getCPtr(data), data, priority);
   }
 
-  public void setTorrentIdleSeedingLimitMode(Torrent torrent, int mode) {
-    libtremotesfJNI.JniRpc_setTorrentIdleSeedingLimitMode(swigCPtr, this, Torrent.getCPtr(torrent), torrent, mode);
+  public void setTorrentIdleSeedingLimitMode(TorrentData data, int mode) {
+    libtremotesfJNI.JniRpc_setTorrentIdleSeedingLimitMode(swigCPtr, this, TorrentData.getCPtr(data), data, mode);
   }
 
-  public void setTorrentIdleSeedingLimit(Torrent torrent, int limit) {
-    libtremotesfJNI.JniRpc_setTorrentIdleSeedingLimit(swigCPtr, this, Torrent.getCPtr(torrent), torrent, limit);
+  public void setTorrentIdleSeedingLimit(TorrentData data, int limit) {
+    libtremotesfJNI.JniRpc_setTorrentIdleSeedingLimit(swigCPtr, this, TorrentData.getCPtr(data), data, limit);
   }
 
-  public void setTorrentFilesEnabled(Torrent torrent, boolean enabled) {
-    libtremotesfJNI.JniRpc_setTorrentFilesEnabled(swigCPtr, this, Torrent.getCPtr(torrent), torrent, enabled);
+  public void setTorrentFilesEnabled(TorrentData data, boolean enabled) {
+    libtremotesfJNI.JniRpc_setTorrentFilesEnabled(swigCPtr, this, TorrentData.getCPtr(data), data, enabled);
   }
 
-  public void setTorrentFilesWanted(Torrent torrent, int[] files, boolean wanted) {
-    libtremotesfJNI.JniRpc_setTorrentFilesWanted(swigCPtr, this, Torrent.getCPtr(torrent), torrent, files, wanted);
+  public void setTorrentFilesWanted(TorrentData data, int[] files, boolean wanted) {
+    libtremotesfJNI.JniRpc_setTorrentFilesWanted(swigCPtr, this, TorrentData.getCPtr(data), data, files, wanted);
   }
 
-  public void setTorrentFilesPriority(Torrent torrent, int[] files, int priority) {
-    libtremotesfJNI.JniRpc_setTorrentFilesPriority(swigCPtr, this, Torrent.getCPtr(torrent), torrent, files, priority);
+  public void setTorrentFilesPriority(TorrentData data, int[] files, int priority) {
+    libtremotesfJNI.JniRpc_setTorrentFilesPriority(swigCPtr, this, TorrentData.getCPtr(data), data, files, priority);
   }
 
-  public void torrentAddTracker(Torrent torrent, String announce) {
-    libtremotesfJNI.JniRpc_torrentAddTracker(swigCPtr, this, Torrent.getCPtr(torrent), torrent, announce);
+  public void torrentAddTracker(TorrentData data, String announce) {
+    libtremotesfJNI.JniRpc_torrentAddTracker(swigCPtr, this, TorrentData.getCPtr(data), data, announce);
   }
 
-  public void torrentSetTracker(Torrent torrent, int trackerId, String announce) {
-    libtremotesfJNI.JniRpc_torrentSetTracker(swigCPtr, this, Torrent.getCPtr(torrent), torrent, trackerId, announce);
+  public void torrentSetTracker(TorrentData data, int trackerId, String announce) {
+    libtremotesfJNI.JniRpc_torrentSetTracker(swigCPtr, this, TorrentData.getCPtr(data), data, trackerId, announce);
   }
 
-  public void torrentRemoveTrackers(Torrent torrent, int[] ids) {
-    libtremotesfJNI.JniRpc_torrentRemoveTrackers(swigCPtr, this, Torrent.getCPtr(torrent), torrent, ids);
+  public void torrentRemoveTrackers(TorrentData data, int[] ids) {
+    libtremotesfJNI.JniRpc_torrentRemoveTrackers(swigCPtr, this, TorrentData.getCPtr(data), data, ids);
   }
 
-  public void setTorrentPeersEnabled(Torrent torrent, boolean enabled) {
-    libtremotesfJNI.JniRpc_setTorrentPeersEnabled(swigCPtr, this, Torrent.getCPtr(torrent), torrent, enabled);
+  public void setTorrentPeersEnabled(TorrentData data, boolean enabled) {
+    libtremotesfJNI.JniRpc_setTorrentPeersEnabled(swigCPtr, this, TorrentData.getCPtr(data), data, enabled);
   }
 
   public void updateData() {

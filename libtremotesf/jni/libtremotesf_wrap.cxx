@@ -7394,247 +7394,260 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1get
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentDownloadSpeedLimited(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   bool arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->setTorrentDownloadSpeedLimited(arg2,arg3);
+  (arg1)->setTorrentDownloadSpeedLimited(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentDownloadSpeedLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   int arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (int)jarg3; 
-  (arg1)->setTorrentDownloadSpeedLimit(arg2,arg3);
+  (arg1)->setTorrentDownloadSpeedLimit(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentUploadSpeedLimited(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   bool arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->setTorrentUploadSpeedLimited(arg2,arg3);
+  (arg1)->setTorrentUploadSpeedLimited(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentUploadSpeedLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   int arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (int)jarg3; 
-  (arg1)->setTorrentUploadSpeedLimit(arg2,arg3);
+  (arg1)->setTorrentUploadSpeedLimit(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentRatioLimitMode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   libtremotesf::Torrent::RatioLimitMode arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (libtremotesf::Torrent::RatioLimitMode)jarg3; 
-  (arg1)->setTorrentRatioLimitMode(arg2,arg3);
+  (arg1)->setTorrentRatioLimitMode(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentRatioLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jdouble jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   double arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (double)jarg3; 
-  (arg1)->setTorrentRatioLimit(arg2,arg3);
+  (arg1)->setTorrentRatioLimit(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentPeersLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   int arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (int)jarg3; 
-  (arg1)->setTorrentPeersLimit(arg2,arg3);
+  (arg1)->setTorrentPeersLimit(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentHonorSessionLimits(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   bool arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->setTorrentHonorSessionLimits(arg2,arg3);
+  (arg1)->setTorrentHonorSessionLimits(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentBandwidthPriority(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   libtremotesf::Torrent::Priority arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (libtremotesf::Torrent::Priority)jarg3; 
-  (arg1)->setTorrentBandwidthPriority(arg2,arg3);
+  (arg1)->setTorrentBandwidthPriority(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentIdleSeedingLimitMode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   libtremotesf::Torrent::IdleSeedingLimitMode arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (libtremotesf::Torrent::IdleSeedingLimitMode)jarg3; 
-  (arg1)->setTorrentIdleSeedingLimitMode(arg2,arg3);
+  (arg1)->setTorrentIdleSeedingLimitMode(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentIdleSeedingLimit(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   int arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (int)jarg3; 
-  (arg1)->setTorrentIdleSeedingLimit(arg2,arg3);
+  (arg1)->setTorrentIdleSeedingLimit(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesEnabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   bool arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->setTorrentFilesEnabled(arg2,arg3);
+  (arg1)->setTorrentFilesEnabled(*arg2,arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesWanted(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3, jboolean jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   QVariantList *arg3 = 0 ;
   bool arg4 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
@@ -7654,25 +7667,26 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
   
   arg4 = jarg4 ? true : false; 
-  (arg1)->setTorrentFilesWanted(arg2,(QVariantList const &)*arg3,arg4);
+  (arg1)->setTorrentFilesWanted(*arg2,(QVariantList const &)*arg3,arg4);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesPriority(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3, jint jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   QVariantList *arg3 = 0 ;
   libtremotesf::TorrentFile::Priority arg4 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
@@ -7692,24 +7706,25 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
   
   arg4 = (libtremotesf::TorrentFile::Priority)jarg4; 
-  (arg1)->setTorrentFilesPriority(arg2,(QVariantList const &)*arg3,arg4);
+  (arg1)->setTorrentFilesPriority(*arg2,(QVariantList const &)*arg3,arg4);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentAddTracker(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jstring jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   QString *arg3 = 0 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
@@ -7722,25 +7737,26 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1tor
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
-  (arg1)->torrentAddTracker(arg2,(QString const &)*arg3);
+  (arg1)->torrentAddTracker(*arg2,(QString const &)*arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentSetTracker(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jstring jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   int arg3 ;
   QString *arg4 = 0 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = (int)jarg3; 
   
   if(!jarg4) {
@@ -7754,24 +7770,25 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1tor
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
-  (arg1)->torrentSetTracker(arg2,arg3,(QString const &)*arg4);
+  (arg1)->torrentSetTracker(*arg2,arg3,(QString const &)*arg4);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentRemoveTrackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   QVariantList *arg3 = 0 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
@@ -7790,26 +7807,27 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1tor
   arg3 = &arg3_str;
   jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
   
-  (arg1)->torrentRemoveTrackers(arg2,(QVariantList const &)*arg3);
+  (arg1)->torrentRemoveTrackers(*arg2,(QVariantList const &)*arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentPeersEnabled(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::Torrent *arg2 = (libtremotesf::Torrent *) 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
   bool arg3 ;
-  std::shared_ptr< libtremotesf::Torrent > *smartarg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  smartarg2 = *(std::shared_ptr<  libtremotesf::Torrent > **)&jarg2;
-  arg2 = (libtremotesf::Torrent *)(smartarg2 ? smartarg2->get() : 0); 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
+    return ;
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->setTorrentPeersEnabled(arg2,arg3);
+  (arg1)->setTorrentPeersEnabled(*arg2,arg3);
 }
 
 

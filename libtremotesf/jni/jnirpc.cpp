@@ -28,6 +28,17 @@ namespace libtremotesf
             }
             return v;
         }
+
+        template<typename Functor>
+        void runOnTorrent(Rpc* rpc, const TorrentData& data, Functor function)
+        {
+            QMetaObject::invokeMethod(rpc, [rpc, id = data.id, function = std::move(function)] {
+                const auto torrent = rpc->torrentById(id);
+                if (torrent) {
+                    function(torrent.get());
+                }
+            });
+        }
     }
 
     JniServerSettings::JniServerSettings(Rpc* rpc, QObject* parent)
@@ -249,7 +260,7 @@ namespace libtremotesf
             std::vector<TorrentData> added;
             added.reserve(static_cast<size_t>(addedCount));
             for (auto end = t.end(), i = end - addedCount; i != end; ++i) {
-                added.push_back(i->data());
+                added.push_back((*i)->data());
             }
             onTorrentsUpdated(removed, changed, added);
         });
@@ -429,16 +440,6 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setTorrentsLocation", Q_ARG(QVariantList, ids), Q_ARG(QString, location), Q_ARG(bool, moveFiles));
     }
 
-    /*void JniRpc::getTorrentFiles(int id, bool scheduled)
-    {
-        QMetaObject::invokeMethod(this, "getTorrentFiles", Q_ARG(int, id), Q_ARG(bool, scheduled));
-    }
-
-    void JniRpc::getTorrentPeers(int id, bool scheduled)
-    {
-        QMetaObject::invokeMethod(this, "getTorrentPeers", Q_ARG(int, id), Q_ARG(bool, scheduled));
-    }*/
-
     void JniRpc::renameTorrentFile(int torrentId, const QString& filePath, const QString& newName)
     {
         QMetaObject::invokeMethod(this, "renameTorrentFile", Q_ARG(int, torrentId), Q_ARG(QString, filePath), Q_ARG(QString, newName));
@@ -454,94 +455,141 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "getFreeSpaceForPath", Q_ARG(QString, path));
     }
 
-    void JniRpc::setTorrentDownloadSpeedLimited(Torrent* torrent, bool limited)
+    void JniRpc::setTorrentDownloadSpeedLimited(TorrentData& data, bool limited)
     {
-        QMetaObject::invokeMethod(torrent, "setDownloadSpeedLimited", Q_ARG(bool, limited));
+        data.downloadSpeedLimited = limited;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setDownloadSpeedLimited(limited);
+        });
     }
 
-    void JniRpc::setTorrentDownloadSpeedLimit(Torrent* torrent, int limit)
+    void JniRpc::setTorrentDownloadSpeedLimit(TorrentData& data, int limit)
     {
-        QMetaObject::invokeMethod(torrent, "setDownloadSpeedLimit", Q_ARG(int, limit));
+        data.downloadSpeedLimit = limit;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setDownloadSpeedLimit(limit);
+        });
     }
 
-    void JniRpc::setTorrentUploadSpeedLimited(Torrent* torrent, bool limited)
+    void JniRpc::setTorrentUploadSpeedLimited(TorrentData& data, bool limited)
     {
-        QMetaObject::invokeMethod(torrent, "setUploadSpeedLimited", Q_ARG(bool, limited));
+        data.uploadSpeedLimited = limited;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setUploadSpeedLimited(limited);
+        });
     }
 
-    void JniRpc::setTorrentUploadSpeedLimit(Torrent* torrent, int limit)
+    void JniRpc::setTorrentUploadSpeedLimit(TorrentData& data, int limit)
     {
-        QMetaObject::invokeMethod(torrent, "setUploadSpeedLimit", Q_ARG(int, limit));
+        data.uploadSpeedLimit = limit;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setUploadSpeedLimit(limit);
+        });
     }
 
-    void JniRpc::setTorrentRatioLimitMode(Torrent* torrent, Torrent::RatioLimitMode mode)
+    void JniRpc::setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode)
     {
-        QMetaObject::invokeMethod(torrent, "setRatioLimitMode", Q_ARG(libtremotesf::Torrent::RatioLimitMode, mode));
+        data.ratioLimitMode = mode;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setRatioLimitMode(mode);
+        });
     }
 
-    void JniRpc::setTorrentRatioLimit(Torrent* torrent, double limit)
+    void JniRpc::setTorrentRatioLimit(TorrentData& data, double limit)
     {
-        QMetaObject::invokeMethod(torrent, "setRatioLimit", Q_ARG(double, limit));
+        data.ratioLimit = limit;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setRatioLimit(limit);
+        });
     }
 
-    void JniRpc::setTorrentPeersLimit(Torrent* torrent, int limit)
+    void JniRpc::setTorrentPeersLimit(TorrentData& data, int limit)
     {
-        QMetaObject::invokeMethod(torrent, "setPeersLimit", Q_ARG(int, limit));
+        data.peersLimit = limit;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setPeersLimit(limit);
+        });
     }
 
-    void JniRpc::setTorrentHonorSessionLimits(Torrent* torrent, bool honor)
+    void JniRpc::setTorrentHonorSessionLimits(TorrentData& data, bool honor)
     {
-        QMetaObject::invokeMethod(torrent, "setHonorSessionLimits", Q_ARG(bool, honor));
+        data.honorSessionLimits = honor;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setHonorSessionLimits(honor);
+        });
     }
 
-    void JniRpc::setTorrentBandwidthPriority(Torrent* torrent, Torrent::Priority priority)
+    void JniRpc::setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority)
     {
-        QMetaObject::invokeMethod(torrent, "setBandwidthPriority", Q_ARG(libtremotesf::Torrent::Priority, priority));
+        data.bandwidthPriority = priority;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setBandwidthPriority(priority);
+        });
     }
 
-    void JniRpc::setTorrentIdleSeedingLimitMode(Torrent* torrent, Torrent::IdleSeedingLimitMode mode)
+    void JniRpc::setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode)
     {
-        QMetaObject::invokeMethod(torrent, "setIdleSeedingLimitMode", Q_ARG(libtremotesf::Torrent::IdleSeedingLimitMode, mode));
+        data.idleSeedingLimitMode = mode;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setIdleSeedingLimitMode(mode);
+        });
     }
 
-    void JniRpc::setTorrentIdleSeedingLimit(Torrent* torrent, int limit)
+    void JniRpc::setTorrentIdleSeedingLimit(TorrentData& data, int limit)
     {
-        QMetaObject::invokeMethod(torrent, "setIdleSeedingLimit", Q_ARG(int, limit));
+        data.idleSeedingLimit = limit;
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setIdleSeedingLimit(limit);
+        });
     }
 
-    void JniRpc::setTorrentFilesEnabled(Torrent* torrent, bool enabled)
+    void JniRpc::setTorrentFilesEnabled(TorrentData& data, bool enabled)
     {
-        QMetaObject::invokeMethod(torrent, "setFilesEnabled", Q_ARG(bool, enabled));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setFilesEnabled(enabled);
+        });
     }
 
-    void JniRpc::setTorrentFilesWanted(Torrent* torrent, const QVariantList& files, bool wanted)
+    void JniRpc::setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted)
     {
-        QMetaObject::invokeMethod(torrent, "setFilesWanted", Q_ARG(QVariantList, files), Q_ARG(bool, wanted));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setFilesWanted(files, wanted);
+        });
     }
 
-    void JniRpc::setTorrentFilesPriority(Torrent* torrent, const QVariantList& files, TorrentFile::Priority priority)
+    void JniRpc::setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority)
     {
-        QMetaObject::invokeMethod(torrent, "setFilesPriority", Q_ARG(QVariantList, files), Q_ARG(libtremotesf::TorrentFile::Priority, priority));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setFilesPriority(files, priority);
+        });
     }
 
-    void JniRpc::torrentAddTracker(Torrent* torrent, const QString& announce)
+    void JniRpc::torrentAddTracker(TorrentData& data, const QString& announce)
     {
-        QMetaObject::invokeMethod(torrent, "addTracker", Q_ARG(QString, announce));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->addTracker(announce);
+        });
     }
 
-    void JniRpc::torrentSetTracker(Torrent* torrent, int trackerId, const QString& announce)
+    void JniRpc::torrentSetTracker(TorrentData& data, int trackerId, const QString& announce)
     {
-        QMetaObject::invokeMethod(torrent, "setTracker", Q_ARG(int, trackerId), Q_ARG(QString, announce));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setTracker(trackerId, announce);
+        });
     }
 
-    void JniRpc::torrentRemoveTrackers(Torrent* torrent, const QVariantList& ids)
+    void JniRpc::torrentRemoveTrackers(TorrentData& data, const QVariantList& ids)
     {
-        QMetaObject::invokeMethod(torrent, "removeTrackers", Q_ARG(QVariantList, ids));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->removeTrackers(ids);
+        });
     }
 
-    void JniRpc::setTorrentPeersEnabled(Torrent* torrent, bool enabled)
+    void JniRpc::setTorrentPeersEnabled(TorrentData& data, bool enabled)
     {
-        QMetaObject::invokeMethod(torrent, "setPeersEnabled", Q_ARG(bool, enabled));
+        runOnTorrent(this, data, [=](Torrent* torrent) {
+            torrent->setPeersEnabled(enabled);
+        });
     }
 
     void JniRpc::updateData()
