@@ -16,7 +16,7 @@ function build() {
     case "$abi" in
         'armeabi-v7a')
             local -r target='android-arm'
-            cflags+=('-march=armv7-a' '-mfpu=vfpv3-d16')
+            cflags+=('-march=armv7-a' '-mfpu=neon')
         ;;
         'x86')
             local -r target='android-x86'

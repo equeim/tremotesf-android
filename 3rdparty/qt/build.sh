@@ -32,12 +32,7 @@ function patch_if_needed() {
     fi
 }
 
-function build() {
-    local -r abi="$1"
-    local -r api="$2"
-
-    echo "Building Qt for $abi API $api"
-
+function apply_patches() {
     cd "$QT_SOURCE_DIR" || return 1
 
     patch_if_needed qmakemake.patch false
@@ -54,10 +49,21 @@ function build() {
         patch_if_needed ndk-r19.patch true
     fi
 
+    patch_if_needed fp16.patch false
+
     # LTO
     patch_if_needed thin-lto.patch true
     patch_if_needed ltcg-armv7.patch true
     patch_if_needed openssl-test-ltcg.patch true
+
+    echo
+}
+
+function build() {
+    local -r abi="$1"
+    local -r api="$2"
+
+    echo "Building Qt for $abi API $api"
 
     local -r build_dir="$QT_DIR/build-$abi"
     mkdir -p "$build_dir" || return 1
@@ -149,6 +155,8 @@ if [ "$HAS_5_12" -ne 0 ]; then
     echo 'Minimum Qt version is 5.12.0, aborting'
     exit 1
 fi
+
+apply_patches
 
 for abi in $ANDROID_ABIS_32; do
     build "$abi" "$ANDROID_API_32" || exit 1
