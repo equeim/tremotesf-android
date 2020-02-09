@@ -802,7 +802,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_TorrentData_Sg__doAdd__SWIG_1(std::ve
 SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_libtremotesf_TorrentData_Sg__doRemove(std::vector< libtremotesf::TorrentData > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          libtremotesf::TorrentData const old_value = (*self)[index];
+          libtremotesf::TorrentData const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
@@ -856,7 +856,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_TorrentFile_Sg__doAdd__SWIG_1(std::ve
 SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemove(std::vector< libtremotesf::TorrentFile > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          libtremotesf::TorrentFile const old_value = (*self)[index];
+          libtremotesf::TorrentFile const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
@@ -910,7 +910,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_Tracker_Sg__doAdd__SWIG_1(std::vector
 SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtremotesf_Tracker_Sg__doRemove(std::vector< libtremotesf::Tracker > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          libtremotesf::Tracker const old_value = (*self)[index];
+          libtremotesf::Tracker const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
@@ -964,7 +964,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_Peer_Sg__doAdd__SWIG_1(std::vector< l
 SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremotesf_Peer_Sg__doRemove(std::vector< libtremotesf::Peer > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          libtremotesf::Peer const old_value = (*self)[index];
+          libtremotesf::Peer const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
@@ -1018,7 +1018,7 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doAdd__SWIG_1(std::vector< QString > *
 SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doRemove(std::vector< QString > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          QString const old_value = (*self)[index];
+          QString const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
@@ -1072,7 +1072,7 @@ SWIGINTERN void std_vector_Sl_int_Sg__doAdd__SWIG_1(std::vector< int > *self,jin
 SWIGINTERN std::vector< int >::value_type std_vector_Sl_int_Sg__doRemove(std::vector< int > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
-          int const old_value = (*self)[index];
+          int const old_value = std::move((*self)[index]);
           self->erase(self->begin() + index);
           return old_value;
         } else {
