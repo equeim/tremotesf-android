@@ -28,7 +28,7 @@ import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
 
 
-class TorrentWrapper(var data: TorrentData, private val context: Context) {
+class Torrent(var data: TorrentData, private val context: Context) {
     val id = data.id
     val hashString: String = data.hashString
 

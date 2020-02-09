@@ -33,7 +33,7 @@ import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
 import kotlinx.android.synthetic.main.torrent_limits_fragment.*
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 
 
 class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
@@ -59,7 +59,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
                                            TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
     }
 
-    private var torrent: TorrentWrapper? = null
+    private var torrent: Torrent? = null
 
     private lateinit var priorityItemValues: Array<String>
     private lateinit var ratioLimitModeItemValues: Array<String>

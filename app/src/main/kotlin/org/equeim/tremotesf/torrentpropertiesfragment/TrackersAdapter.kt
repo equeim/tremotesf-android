@@ -50,7 +50,7 @@ import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 
 
 class TrackersAdapterItem(rpcTracker: Tracker) {
@@ -75,7 +75,7 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
 }
 
 class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
-    private var torrent: TorrentWrapper? = null
+    private var torrent: Torrent? = null
     private val trackers = mutableListOf<TrackersAdapterItem>()
     private val comparator = object : Comparator<TrackersAdapterItem> {
         private val stringComparator = AlphanumericComparator()

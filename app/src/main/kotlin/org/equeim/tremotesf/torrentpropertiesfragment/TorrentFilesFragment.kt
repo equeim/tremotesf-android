@@ -37,7 +37,7 @@ import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 import kotlinx.android.synthetic.main.torrent_files_fragment.*
@@ -48,7 +48,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         get() = parentFragment as TorrentPropertiesFragment?
 
     private var savedInstanceState: Bundle? = null
-    var torrent: TorrentWrapper? = null
+    var torrent: Torrent? = null
         private set
     private val model: TreeModel by viewModels()
 
@@ -147,7 +147,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             }
         }
 
-        var torrent: TorrentWrapper? = null
+        var torrent: Torrent? = null
             set(value) {
                 if (value != field) {
                     field = value

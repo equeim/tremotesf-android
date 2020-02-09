@@ -39,7 +39,7 @@ import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -54,7 +54,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         initSelector(fragment.requireActivity() as AppCompatActivity, ActionModeCallback())
     }
 
-    private val torrent: TorrentWrapper?
+    private val torrent: Torrent?
         get() {
             return fragment.torrent
         }

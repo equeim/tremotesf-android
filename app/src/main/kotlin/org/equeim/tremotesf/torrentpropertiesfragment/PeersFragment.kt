@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 import kotlinx.android.synthetic.main.peers_fragment.*
@@ -60,7 +60,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     private val model: Model by viewModels()
 
-    private var torrent: TorrentWrapper? = null
+    private var torrent: Torrent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,7 +127,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
     }
 
     class Model : ViewModel() {
-        var torrent: TorrentWrapper? = null
+        var torrent: Torrent? = null
             set(value) {
                 if (value != field) {
                     field = value

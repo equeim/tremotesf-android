@@ -39,7 +39,7 @@ import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
-import org.equeim.tremotesf.TorrentWrapper
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
@@ -59,7 +59,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     lateinit var hash: String
-    var torrent: TorrentWrapper? = null
+    var torrent: Torrent? = null
 
     private var menu: Menu? = null
     private var startMenuItem: MenuItem? = null
@@ -200,7 +200,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         }
     }
 
-    private fun updateTorrent(torrents: List<TorrentWrapper>) {
+    private fun updateTorrent(torrents: List<Torrent>) {
         val newTorrent = torrents.find { it.hashString == hash }
         if (newTorrent !== torrent) {
             torrent = newTorrent

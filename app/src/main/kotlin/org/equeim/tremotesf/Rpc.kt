@@ -226,7 +226,7 @@ object Rpc : Logger {
     data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
     val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
 
-    val torrents = NonNullMutableLiveData<List<TorrentWrapper>>(emptyList())
+    val torrents = NonNullMutableLiveData<List<Torrent>>(emptyList())
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -337,7 +337,7 @@ object Rpc : Logger {
         }
 
         for (torrentData in added) {
-            newTorrents.add(TorrentWrapper(torrentData, context))
+            newTorrents.add(Torrent(torrentData, context))
         }
 
         torrents.value = newTorrents
