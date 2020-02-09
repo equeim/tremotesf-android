@@ -60,8 +60,6 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     private lateinit var model: Model
 
-    private var torrent: Torrent? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         model = ViewModelProvider(requireParentFragment())[Model::class.java]
@@ -110,7 +108,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     private fun updatePlaceholder() {
         val peersAdapter = this.peersAdapter ?: return
-        val torrent = this.torrent
+        val torrent = model.torrent
         if (torrent == null) {
             progress_bar.visibility = View.GONE
         } else {
