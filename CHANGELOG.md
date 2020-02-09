@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Dropped support of armv7 devices without NEON instructions
+
 ## [2.0.2] - 2020-01-11
 ### Fixed
 - Fixed Google Play donations
