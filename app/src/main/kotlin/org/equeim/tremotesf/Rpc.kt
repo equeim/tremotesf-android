@@ -84,6 +84,15 @@ object Rpc : Logger {
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
+        private fun <T: Any> moveFromNativeVector(vector: MutableList<T>): List<T> {
+            val list = mutableListOf<T>()
+            for (i in (vector.size - 1) downTo 0) {
+                list.add(vector.removeAt(i))
+            }
+            list.reverse()
+            return list
+        }
+
         override fun onStatusChanged(status: Int) {
             handler.post {
                 Rpc.onStatusChanged(status)
@@ -98,8 +107,8 @@ object Rpc : Logger {
 
         override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
             val r = removed.toList()
-            val c = changed.toList()
-            val a = added.toList()
+            val c = moveFromNativeVector(changed)
+            val a = moveFromNativeVector(added)
             handler.post {
                 Rpc.onTorrentsUpdated(r, c, a)
             }
@@ -136,7 +145,7 @@ object Rpc : Logger {
         }
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
-            val list = files.toList()
+            val list = moveFromNativeVector(files)
             handler.post {
                 Rpc.onTorrentFilesUpdated(torrentId, list)
             }
@@ -144,8 +153,8 @@ object Rpc : Logger {
 
         override fun onTorrentPeersUpdated(torrentId: Int, removed: IntVector, changed: TorrentPeersVector, added: TorrentPeersVector) {
             val r = removed.toList()
-            val c = changed.toList()
-            val a = added.toList()
+            val c = moveFromNativeVector(changed)
+            val a = moveFromNativeVector(added)
             handler.post {
                 Rpc.onTorrentPeersUpdated(torrentId, r, c, a)
             }
