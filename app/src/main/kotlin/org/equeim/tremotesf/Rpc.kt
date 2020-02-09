@@ -339,8 +339,10 @@ object Rpc : Logger {
                         changedTorrentData = changedIter.next()
                         changedId = changedTorrentData.id
                     } else {
-                        torrent.changed = false
+                        changedId = -1
                     }
+                } else {
+                    torrent.changed = false
                 }
             }
         }
