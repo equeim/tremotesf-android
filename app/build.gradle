@@ -7,7 +7,7 @@ apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId 'org.equeim.tremotesf'
         minSdkVersion 16
@@ -86,7 +86,10 @@ repositories {
     jcenter()
 }
 
-def navigation_version = '2.2.0-rc04'
+def core_version = '1.2.0'
+def fragment_version = '1.2.1'
+def lifecycle_version = '2.2.0'
+def navigation_version = '2.2.1'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
@@ -96,23 +99,27 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.concurrent:concurrent-futures:1.0.0'
-    implementation 'androidx.core:core:1.1.0'
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation "androidx.core:core:$core_version"
+    implementation "androidx.core:core-ktx:$core_version"
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
-    implementation 'androidx.fragment:fragment:1.2.0-rc05'
-    implementation 'androidx.fragment:fragment-ktx:1.2.0-rc05'
+    implementation "androidx.fragment:fragment:$fragment_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc03'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    //implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
-    implementation 'androidx.work:work-runtime:2.2.0'
+    implementation 'androidx.work:work-runtime:2.3.1'
 
-    implementation 'com.google.android.material:material:1.1.0-rc01'
+    implementation 'com.google.android.material:material:1.1.0'
 
     implementation 'io.github.raindev:benjamin:1.0.0'
     implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.0'
