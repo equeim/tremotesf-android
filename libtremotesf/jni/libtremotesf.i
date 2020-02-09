@@ -12,7 +12,6 @@
 %javaconst(1);
 
 %include <std_vector.i>
-%include <std_shared_ptr.i>
 
 %include "qbytearray.i"
 %include "qstring.i"
@@ -34,25 +33,7 @@ namespace libtremotesf
     %ignore Server;
     %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem, notmatch$name="serverStats") "Rpc::.*$";
 
-    %rename($ignore, regextarget=1, fullname=1) "Torrent::set.*$";
-    %ignore Torrent::Torrent;
-    %ignore Torrent::idKey;
-    %ignore Torrent::isFilesEnabled;
-    %ignore Torrent::isFilesUpdated;
-    %ignore Torrent::renameFile;
-    %ignore Torrent::addTracker;
-    %ignore Torrent::setTracker;
-    %ignore Torrent::removeTrackers;
-    %ignore Torrent::isPeersEnabled;
-    %ignore Torrent::isPeersUpdated;
-    %ignore Torrent::isUpdated;
-    %ignore Torrent::update;
-    %ignore Torrent::updateFiles;
-    %ignore Torrent::updatePeers;
-    %ignore Torrent::doneDate;
-    %ignore Torrent::isSingleFile;
-    %ignore Torrent::queuePosition;
-
+    %ignore Torrent;
     %ignore TorrentData::update;
 
     %ignore TorrentFile::TorrentFile;
@@ -81,8 +62,6 @@ namespace libtremotesf
     %ignore JniServerSettings::JniServerSettings;
 }
 
-%shared_ptr(libtremotesf::Torrent)
-%template(TorrentsVector) std::vector<std::shared_ptr<libtremotesf::Torrent>>;
 %template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
 
 %template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;

@@ -23,7 +23,6 @@ import java.util.Date
 
 import android.content.Context
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats

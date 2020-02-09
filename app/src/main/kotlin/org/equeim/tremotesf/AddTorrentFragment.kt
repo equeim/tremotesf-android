@@ -26,7 +26,6 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentData
 
 abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,

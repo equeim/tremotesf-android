@@ -52,13 +52,11 @@ import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.Peer
 import org.equeim.libtremotesf.ServerStats
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
-import org.equeim.libtremotesf.TorrentsVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.LiveEvent
 import org.equeim.tremotesf.utils.Logger
