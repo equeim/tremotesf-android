@@ -26,8 +26,8 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,9 +48,11 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         get() = parentFragment as TorrentPropertiesFragment?
 
     private var savedInstanceState: Bundle? = null
+
+    private lateinit var model: TreeModel
+
     var torrent: Torrent? = null
         private set
-    private val model: TreeModel by viewModels()
 
     var adapter: TorrentFilesAdapter? = null
         private set
@@ -58,6 +60,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
+        model = ViewModelProvider(torrentPropertiesFragment!!)[TreeModel::class.java]
         update()
     }
 

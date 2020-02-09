@@ -23,8 +23,8 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,12 +58,13 @@ data class Peer(val address: String,
 class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragment.PagerFragment {
     private var peersAdapter: PeersAdapter? = null
 
-    private val model: Model by viewModels()
+    private lateinit var model: Model
 
     private var torrent: Torrent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        model = ViewModelProvider(requireParentFragment())[Model::class.java]
         update()
     }
 
