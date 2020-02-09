@@ -332,14 +332,14 @@ object Rpc : Logger {
                         changedTorrentData = changedIter.next()
                         changedId = changedTorrentData.id
                     } else {
-                        break
+                        torrent.changed = false
                     }
                 }
             }
         }
 
         for (torrentData in added) {
-            newTorrents.add(TorrentWrapper(torrentData.id, torrentData, context))
+            newTorrents.add(TorrentWrapper(torrentData, context))
         }
 
         torrents.value = newTorrents
@@ -545,70 +545,4 @@ object Rpc : Logger {
             }
         }
     }
-}
-
-// Torrent extension methods
-
-fun Torrent.setDownloadSpeedLimited(limited: Boolean) {
-    Rpc.nativeInstance.setTorrentDownloadSpeedLimited(this, limited)
-}
-
-fun Torrent.setDownloadSpeedLimit(limit: Int) {
-    Rpc.nativeInstance.setTorrentDownloadSpeedLimit(this, limit)
-}
-
-fun Torrent.setUploadSpeedLimited(limited: Boolean) {
-    Rpc.nativeInstance.setTorrentUploadSpeedLimited(this, limited)
-}
-
-fun Torrent.setUploadSpeedLimit(limit: Int) {
-    Rpc.nativeInstance.setTorrentUploadSpeedLimit(this, limit)
-}
-
-fun Torrent.setRatioLimitMode(mode: Int) {
-    Rpc.nativeInstance.setTorrentRatioLimitMode(this, mode)
-}
-
-fun Torrent.setRatioLimit(limit: Double) {
-    Rpc.nativeInstance.setTorrentRatioLimit(this, limit)
-}
-
-fun Torrent.setPeersLimit(limit: Int) {
-    Rpc.nativeInstance.setTorrentPeersLimit(this, limit)
-}
-
-fun Torrent.setHonorSessionLimits(honor: Boolean) {
-    Rpc.nativeInstance.setTorrentHonorSessionLimits(this, honor)
-}
-
-fun Torrent.setBandwidthPriority(priority: Int) {
-    Rpc.nativeInstance.setTorrentBandwidthPriority(this, priority)
-}
-
-fun Torrent.setIdleSeedingLimitMode(mode: Int) {
-    Rpc.nativeInstance.setTorrentIdleSeedingLimitMode(this, mode)
-}
-
-fun Torrent.setIdleSeedingLimit(limit: Int) {
-    Rpc.nativeInstance.setTorrentIdleSeedingLimit(this, limit)
-}
-
-fun Torrent.setFilesWanted(files: IntArray, wanted: Boolean) {
-    Rpc.nativeInstance.setTorrentFilesWanted(this, files, wanted)
-}
-
-fun Torrent.setFilesPriority(files: IntArray, priority: Int) {
-    Rpc.nativeInstance.setTorrentFilesPriority(this, files, priority)
-}
-
-fun Torrent.addTracker(announce: String) {
-    Rpc.nativeInstance.torrentAddTracker(this, announce)
-}
-
-fun Torrent.setTracker(trackerId: Int, announce: String) {
-    Rpc.nativeInstance.torrentSetTracker(this, trackerId, announce)
-}
-
-fun Torrent.removeTrackers(ids: IntArray) {
-    Rpc.nativeInstance.torrentRemoveTrackers(this, ids)
 }

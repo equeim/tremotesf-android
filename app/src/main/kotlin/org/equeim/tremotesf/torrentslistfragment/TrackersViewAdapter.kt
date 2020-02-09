@@ -63,7 +63,7 @@ class TrackersViewAdapter(private val context: Context,
     fun update() {
         trackersMap.clear()
         for (torrent in Rpc.torrents.value) {
-            for (tracker in torrent.trackers) {
+            for (tracker in torrent.trackerSites) {
                 trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
             }
         }

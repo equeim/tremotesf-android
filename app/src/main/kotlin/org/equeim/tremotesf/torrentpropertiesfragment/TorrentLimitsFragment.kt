@@ -24,7 +24,6 @@ import android.view.View
 
 import androidx.fragment.app.Fragment
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
@@ -33,19 +32,8 @@ import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 
-import org.equeim.tremotesf.setDownloadSpeedLimited
-import org.equeim.tremotesf.setBandwidthPriority
-import org.equeim.tremotesf.setDownloadSpeedLimit
-import org.equeim.tremotesf.setHonorSessionLimits
-import org.equeim.tremotesf.setIdleSeedingLimit
-import org.equeim.tremotesf.setIdleSeedingLimitMode
-import org.equeim.tremotesf.setPeersLimit
-import org.equeim.tremotesf.setRatioLimit
-import org.equeim.tremotesf.setRatioLimitMode
-import org.equeim.tremotesf.setUploadSpeedLimit
-import org.equeim.tremotesf.setUploadSpeedLimited
-
 import kotlinx.android.synthetic.main.torrent_limits_fragment.*
+import org.equeim.tremotesf.TorrentWrapper
 
 
 class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
@@ -71,7 +59,7 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
                                            TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
     }
 
-    private var torrent: Torrent? = null
+    private var torrent: TorrentWrapper? = null
 
     private lateinit var priorityItemValues: Array<String>
     private lateinit var ratioLimitModeItemValues: Array<String>
@@ -158,27 +146,29 @@ class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
     }
 
     private fun update(restored: Boolean = false) {
-        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent?.torrent ?: return
+        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent ?: return
         this.torrent = torrent
 
+        val data = torrent.data
+
         if (!restored) {
-            global_limits_check_box.isChecked = torrent.honorSessionLimits()
+            global_limits_check_box.isChecked = data.honorSessionLimits
 
-            download_speed_limit_check_box.isChecked = torrent.isDownloadSpeedLimited
-            download_speed_limit_edit.setText(torrent.downloadSpeedLimit().toString())
+            download_speed_limit_check_box.isChecked = data.downloadSpeedLimited
+            download_speed_limit_edit.setText(data.downloadSpeedLimit.toString())
 
-            upload_speed_limit_check_box.isChecked = torrent.isUploadSpeedLimited
-            upload_speed_limit_edit.setText(torrent.uploadSpeedLimit().toString())
+            upload_speed_limit_check_box.isChecked = data.uploadSpeedLimited
+            upload_speed_limit_edit.setText(data.uploadSpeedLimit.toString())
 
-            priority_view.setText(priorityItemValues[priorityItems.indexOf(torrent.bandwidthPriority())])
+            priority_view.setText(priorityItemValues[priorityItems.indexOf(data.bandwidthPriority)])
 
-            ratio_limit_mode_view.setText(ratioLimitModeItemValues[ratioLimitModeItems.indexOf(torrent.ratioLimitMode())])
-            ratio_limit_edit.setText(DecimalFormats.ratio.format(torrent.ratioLimit()))
+            ratio_limit_mode_view.setText(ratioLimitModeItemValues[ratioLimitModeItems.indexOf(data.ratioLimitMode)])
+            ratio_limit_edit.setText(DecimalFormats.ratio.format(data.ratioLimit))
 
-            idle_seeding_mode_view.setText(idleSeedingModeItemValues[idleSeedingModeItems.indexOf(torrent.idleSeedingLimitMode())])
-            idle_seeding_limit_edit.setText(torrent.idleSeedingLimit().toString())
+            idle_seeding_mode_view.setText(idleSeedingModeItemValues[idleSeedingModeItems.indexOf(data.idleSeedingLimitMode)])
+            idle_seeding_limit_edit.setText(data.idleSeedingLimit.toString())
 
-            maximum_peers_edit.setText(torrent.peersLimit().toString())
+            maximum_peers_edit.setText(data.peersLimit.toString())
         }
 
         download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked

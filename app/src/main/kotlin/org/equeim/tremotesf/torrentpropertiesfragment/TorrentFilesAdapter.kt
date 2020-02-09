@@ -40,8 +40,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.TorrentWrapper
-import org.equeim.tremotesf.setFilesPriority
-import org.equeim.tremotesf.setFilesWanted
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -89,11 +87,11 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     }
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        torrent?.torrent?.setFilesWanted(ids, wanted)
+        torrent?.setFilesWanted(ids, wanted)
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        torrent?.torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
+        torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
     }
 
     fun treeUpdated() {

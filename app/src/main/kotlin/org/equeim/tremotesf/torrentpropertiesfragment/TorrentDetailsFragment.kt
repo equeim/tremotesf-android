@@ -63,7 +63,7 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), Torr
         eta_text_view.text = Utils.formatDuration(requireContext(), torrent.eta)
         seeders_text_view.text = torrent.seeders.toString()
         leechers_text_view.text = torrent.leechers.toString()
-        last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.torrent.activityDate().time)
+        last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.data.activityDate.time)
 
         total_size_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
 
@@ -72,11 +72,11 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), Torr
             location_text_view.text = dir
         }
 
-        creator_text_view.text = torrent.torrent.creator()
-        creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.torrent.creationDate().time)
+        creator_text_view.text = torrent.data.creator
+        creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.data.creationDate.time)
         added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate.time)
 
-        val comment: String = torrent.torrent.comment()
+        val comment: String = torrent.data.comment
         if (!comment.contentEquals(comment_text_view.text)) {
             comment_text_view.text = comment
         }

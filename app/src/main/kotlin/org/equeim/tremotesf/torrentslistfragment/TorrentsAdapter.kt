@@ -43,7 +43,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.IntSelector
@@ -139,7 +138,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
 
     private val filterPredicate = { torrent: TorrentWrapper ->
         statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
-        (trackerFilter.isEmpty() || (torrent.trackers.find { it == trackerFilter } != null)) &&
+        (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
         (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
         torrent.name.contains(filterString, true)
     }
@@ -302,7 +301,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         updateListContent()
         if (!wasEmpty) {
             for ((i, torrent) in displayedTorrents.withIndex()) {
-                if (torrent.torrent.isChanged) {
+                if (torrent.changed) {
                     notifyItemChanged(i)
                 }
             }

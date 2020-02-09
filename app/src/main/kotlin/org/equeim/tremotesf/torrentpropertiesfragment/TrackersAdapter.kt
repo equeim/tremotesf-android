@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-import org.equeim.libtremotesf.Torrent
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.NavigationDialogFragment
@@ -49,12 +48,9 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
-import org.equeim.tremotesf.addTracker
-import org.equeim.tremotesf.setTracker
-import org.equeim.tremotesf.removeTrackers
-
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
+import org.equeim.tremotesf.TorrentWrapper
 
 
 class TrackersAdapterItem(rpcTracker: Tracker) {
@@ -79,7 +75,7 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
 }
 
 class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
-    private var torrent: Torrent? = null
+    private var torrent: TorrentWrapper? = null
     private val trackers = mutableListOf<TrackersAdapterItem>()
     private val comparator = object : Comparator<TrackersAdapterItem> {
         private val stringComparator = AlphanumericComparator()
@@ -147,7 +143,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     }
 
     fun update() {
-        val torrent = torrentPropertiesFragment.torrent?.torrent
+        val torrent = torrentPropertiesFragment.torrent
 
         if (torrent == null) {
             if (this.torrent == null) {
@@ -163,7 +159,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         this.torrent = torrent
 
-        val rpcTrackers = torrent.trackers()
+        val rpcTrackers = torrent.trackers
         val newTrackers = mutableListOf<TrackersAdapterItem>()
         for (rpcTracker: Tracker in rpcTrackers) {
             val id = rpcTracker.id()
@@ -242,7 +238,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          requireArguments().getString(ANNOUNCE),
                                          null) {
-                val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.torrent
+                val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
                 val textField = requireDialog().text_field!!
                 if (trackerId == -1) {
                     torrent?.addTracker(textField.text.toString())
@@ -288,7 +284,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                                                             ids.size))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.torrent?.removeTrackers(ids)
+                        (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(ids)
                         requiredActivity.actionMode?.finish()
                     }
                     .create()
