@@ -21,11 +21,6 @@ public class TorrentPeersVector extends java.util.AbstractList<Peer> implements 
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    delete();
-  }
-
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
@@ -126,15 +121,18 @@ public class TorrentPeersVector extends java.util.AbstractList<Peer> implements 
   }
 
   private Peer doRemove(int index) {
-    return new Peer(libtremotesfJNI.TorrentPeersVector_doRemove(swigCPtr, this, index), true);
+    long cPtr = libtremotesfJNI.TorrentPeersVector_doRemove(swigCPtr, this, index);
+    return (cPtr == 0) ? null : new Peer(cPtr, false);
   }
 
   private Peer doGet(int index) {
-    return new Peer(libtremotesfJNI.TorrentPeersVector_doGet(swigCPtr, this, index), false);
+    long cPtr = libtremotesfJNI.TorrentPeersVector_doGet(swigCPtr, this, index);
+    return (cPtr == 0) ? null : new Peer(cPtr, true);
   }
 
   private Peer doSet(int index, Peer val) {
-    return new Peer(libtremotesfJNI.TorrentPeersVector_doSet(swigCPtr, this, index, Peer.getCPtr(val), val), true);
+    long cPtr = libtremotesfJNI.TorrentPeersVector_doSet(swigCPtr, this, index, Peer.getCPtr(val), val);
+    return (cPtr == 0) ? null : new Peer(cPtr, false);
   }
 
   private void doRemoveRange(int fromIndex, int toIndex) {

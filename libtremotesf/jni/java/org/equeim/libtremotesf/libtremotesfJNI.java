@@ -24,21 +24,6 @@ public class libtremotesfJNI {
   public final static native long TorrentDataVector_doSet(long jarg1, TorrentDataVector jarg1_, int jarg2, long jarg3, TorrentData jarg3_);
   public final static native void TorrentDataVector_doRemoveRange(long jarg1, TorrentDataVector jarg1_, int jarg2, int jarg3);
   public final static native void delete_TorrentDataVector(long jarg1);
-  public final static native long new_TorrentFilesVector__SWIG_0();
-  public final static native long new_TorrentFilesVector__SWIG_1(long jarg1, TorrentFilesVector jarg1_);
-  public final static native long TorrentFilesVector_capacity(long jarg1, TorrentFilesVector jarg1_);
-  public final static native void TorrentFilesVector_reserve(long jarg1, TorrentFilesVector jarg1_, long jarg2);
-  public final static native boolean TorrentFilesVector_isEmpty(long jarg1, TorrentFilesVector jarg1_);
-  public final static native void TorrentFilesVector_clear(long jarg1, TorrentFilesVector jarg1_);
-  public final static native long new_TorrentFilesVector__SWIG_2(int jarg1, long jarg2, TorrentFile jarg2_);
-  public final static native int TorrentFilesVector_doSize(long jarg1, TorrentFilesVector jarg1_);
-  public final static native void TorrentFilesVector_doAdd__SWIG_0(long jarg1, TorrentFilesVector jarg1_, long jarg2, TorrentFile jarg2_);
-  public final static native void TorrentFilesVector_doAdd__SWIG_1(long jarg1, TorrentFilesVector jarg1_, int jarg2, long jarg3, TorrentFile jarg3_);
-  public final static native long TorrentFilesVector_doRemove(long jarg1, TorrentFilesVector jarg1_, int jarg2);
-  public final static native long TorrentFilesVector_doGet(long jarg1, TorrentFilesVector jarg1_, int jarg2);
-  public final static native long TorrentFilesVector_doSet(long jarg1, TorrentFilesVector jarg1_, int jarg2, long jarg3, TorrentFile jarg3_);
-  public final static native void TorrentFilesVector_doRemoveRange(long jarg1, TorrentFilesVector jarg1_, int jarg2, int jarg3);
-  public final static native void delete_TorrentFilesVector(long jarg1);
   public final static native long new_TrackersVector__SWIG_0();
   public final static native long new_TrackersVector__SWIG_1(long jarg1, TrackersVector jarg1_);
   public final static native long TrackersVector_capacity(long jarg1, TrackersVector jarg1_);
@@ -54,6 +39,21 @@ public class libtremotesfJNI {
   public final static native long TrackersVector_doSet(long jarg1, TrackersVector jarg1_, int jarg2, long jarg3, Tracker jarg3_);
   public final static native void TrackersVector_doRemoveRange(long jarg1, TrackersVector jarg1_, int jarg2, int jarg3);
   public final static native void delete_TrackersVector(long jarg1);
+  public final static native long new_TorrentFilesVector__SWIG_0();
+  public final static native long new_TorrentFilesVector__SWIG_1(long jarg1, TorrentFilesVector jarg1_);
+  public final static native long TorrentFilesVector_capacity(long jarg1, TorrentFilesVector jarg1_);
+  public final static native void TorrentFilesVector_reserve(long jarg1, TorrentFilesVector jarg1_, long jarg2);
+  public final static native boolean TorrentFilesVector_isEmpty(long jarg1, TorrentFilesVector jarg1_);
+  public final static native void TorrentFilesVector_clear(long jarg1, TorrentFilesVector jarg1_);
+  public final static native long new_TorrentFilesVector__SWIG_2(int jarg1, long jarg2, TorrentFile jarg2_);
+  public final static native int TorrentFilesVector_doSize(long jarg1, TorrentFilesVector jarg1_);
+  public final static native void TorrentFilesVector_doAdd__SWIG_0(long jarg1, TorrentFilesVector jarg1_, long jarg2, TorrentFile jarg2_);
+  public final static native void TorrentFilesVector_doAdd__SWIG_1(long jarg1, TorrentFilesVector jarg1_, int jarg2, long jarg3, TorrentFile jarg3_);
+  public final static native long TorrentFilesVector_doRemove(long jarg1, TorrentFilesVector jarg1_, int jarg2);
+  public final static native long TorrentFilesVector_doGet(long jarg1, TorrentFilesVector jarg1_, int jarg2);
+  public final static native long TorrentFilesVector_doSet(long jarg1, TorrentFilesVector jarg1_, int jarg2, long jarg3, TorrentFile jarg3_);
+  public final static native void TorrentFilesVector_doRemoveRange(long jarg1, TorrentFilesVector jarg1_, int jarg2, int jarg3);
+  public final static native void delete_TorrentFilesVector(long jarg1);
   public final static native long new_TorrentPeersVector__SWIG_0();
   public final static native long new_TorrentPeersVector__SWIG_1(long jarg1, TorrentPeersVector jarg1_);
   public final static native long TorrentPeersVector_capacity(long jarg1, TorrentPeersVector jarg1_);
@@ -323,13 +323,13 @@ public class libtremotesfJNI {
     jself.onErrorChanged(error, errorMessage);
   }
   public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long removed, long changed, long added) {
-    jself.onTorrentsUpdated(new IntVector(removed, true), new TorrentDataVector(changed, true), new TorrentDataVector(added, true));
+    jself.onTorrentsUpdated(new IntVector(removed, false), new TorrentDataVector(changed, false), new TorrentDataVector(added, false));
   }
   public static void SwigDirector_JniRpc_onTorrentFilesUpdated(JniRpc jself, int torrentId, long changed) {
-    jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, true));
+    jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, false));
   }
   public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long removed, long changed, long added) {
-    jself.onTorrentPeersUpdated(torrentId, new IntVector(removed, true), new TorrentPeersVector(changed, true), new TorrentPeersVector(added, true));
+    jself.onTorrentPeersUpdated(torrentId, new IntVector(removed, false), new TorrentPeersVector(changed, false), new TorrentPeersVector(added, false));
   }
   public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself) {
     jself.onServerStatsUpdated();

@@ -21,11 +21,6 @@ public class TorrentDataVector extends java.util.AbstractList<TorrentData> imple
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    delete();
-  }
-
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
@@ -126,15 +121,18 @@ public class TorrentDataVector extends java.util.AbstractList<TorrentData> imple
   }
 
   private TorrentData doRemove(int index) {
-    return new TorrentData(libtremotesfJNI.TorrentDataVector_doRemove(swigCPtr, this, index), true);
+    long cPtr = libtremotesfJNI.TorrentDataVector_doRemove(swigCPtr, this, index);
+    return (cPtr == 0) ? null : new TorrentData(cPtr, false);
   }
 
   private TorrentData doGet(int index) {
-    return new TorrentData(libtremotesfJNI.TorrentDataVector_doGet(swigCPtr, this, index), false);
+    long cPtr = libtremotesfJNI.TorrentDataVector_doGet(swigCPtr, this, index);
+    return (cPtr == 0) ? null : new TorrentData(cPtr, true);
   }
 
   private TorrentData doSet(int index, TorrentData val) {
-    return new TorrentData(libtremotesfJNI.TorrentDataVector_doSet(swigCPtr, this, index, TorrentData.getCPtr(val), val), true);
+    long cPtr = libtremotesfJNI.TorrentDataVector_doSet(swigCPtr, this, index, TorrentData.getCPtr(val), val);
+    return (cPtr == 0) ? null : new TorrentData(cPtr, false);
   }
 
   private void doRemoveRange(int fromIndex, int toIndex) {
