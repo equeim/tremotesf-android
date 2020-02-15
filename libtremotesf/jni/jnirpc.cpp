@@ -18,16 +18,36 @@ namespace libtremotesf
 {
     namespace
     {
-        template<typename T>
-        std::vector<T> toValues(const std::vector<T>& items, const std::vector<int>& indexes)
+        template<typename I, typename O, typename IndexIterator, typename Functor>
+        std::vector<O*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end, Functor&& transform)
         {
-            std::vector<T> v;
-            v.reserve(indexes.size());
-            for (int index : indexes) {
-                v.push_back(items[static_cast<size_t>(index)]);
+            std::vector<O*> v;
+            v.reserve(end - begin);
+            for (auto i = begin; i != end; ++i) {
+                v.push_back(new O(transform(items[static_cast<size_t>(*i)])));
             }
             return v;
         }
+
+        template<typename I, typename IndexIterator>
+        std::vector<I*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end)
+        {
+            return toNewPointers<I, I>(items, begin, end, [](const I& i) -> const I& { return i; });
+        }
+
+        template<typename IndexIterator>
+        std::vector<TorrentData*> toNewPointers(const std::vector<std::shared_ptr<Torrent>>& items, IndexIterator&& begin, IndexIterator&& end)
+        {
+            return toNewPointers<std::shared_ptr<Torrent>, TorrentData>(items, begin, end, [](const std::shared_ptr<Torrent>& i) { return i->data(); });
+        }
+
+        struct IndexIterator
+        {
+            size_t value;
+            operator size_t() { return value; }
+            size_t operator*() { return value; }
+            IndexIterator& operator++() { ++value; return *this; }
+        };
 
         template<typename Functor>
         void runOnTorrent(Rpc* rpc, const TorrentData& data, Functor function)
@@ -250,32 +270,22 @@ namespace libtremotesf
         QObject::connect(this, &Rpc::statusChanged, [=]() { onStatusChanged(status()); });
         QObject::connect(this, &Rpc::errorChanged, [=]() { onErrorChanged(error(), errorMessage()); });
 
-        QObject::connect(this, &Rpc::torrentsUpdated, [=](const std::vector<int>& removed, const std::vector<int>& changedIndexes, int addedCount) {
+        QObject::connect(this, &Rpc::torrentsUpdated, [=](const std::vector<int>& removed, const std::vector<int>& changed, int added) {
             const auto& t = this->torrents();
-            std::vector<TorrentData> changed;
-            changed.reserve(changedIndexes.size());
-            for (int index : changedIndexes) {
-                changed.push_back(t[static_cast<size_t>(index)]->data());
-            }
-            std::vector<TorrentData> added;
-            added.reserve(static_cast<size_t>(addedCount));
-            for (auto end = t.end(), i = end - addedCount; i != end; ++i) {
-                added.push_back((*i)->data());
-            }
-            onTorrentsUpdated(removed, changed, added);
+            onTorrentsUpdated(removed,
+                              toNewPointers(t, changed.begin(), changed.end()),
+                              toNewPointers(t, IndexIterator{t.size() - added}, IndexIterator{t.size()}));
         });
 
         QObject::connect(this, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changed) {
-            onTorrentFilesUpdated(torrent->id(), toValues(torrent->files(), changed));
+            onTorrentFilesUpdated(torrent->id(), toNewPointers(torrent->files(), changed.begin(), changed.end()));
         });
-        QObject::connect(this, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<int>& removed, const std::vector<int>& changed, int addedCount) {
-            const auto& peers = torrent->peers();
-            std::vector<Peer> added;
-            added.reserve(static_cast<size_t>(addedCount));
-            for (auto end = peers.end(), i = end - addedCount; i != end; ++i) {
-                added.push_back(*i);
-            }
-            onTorrentPeersUpdated(torrent->id(), removed, toValues(peers, changed), std::move(added));
+        QObject::connect(this, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<int>& removed, const std::vector<int>& changed, int added) {
+            const auto& p = torrent->peers();
+            onTorrentPeersUpdated(torrent->id(),
+                                  removed,
+                                  toNewPointers(p, changed.begin(), changed.end()),
+                                  toNewPointers(p, IndexIterator{p.size() - added}, IndexIterator{p.size()}));
         });
 
         QObject::connect(this, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {

@@ -62,11 +62,19 @@ namespace libtremotesf
     %ignore JniServerSettings::JniServerSettings;
 }
 
-%template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
+%typemap(javafinalize) std::vector<libtremotesf::TorrentData*> ""
+%newobject std::vector<libtremotesf::TorrentData*>::doGet;
+%template(TorrentDataVector) std::vector<libtremotesf::TorrentData*>;
 
-%template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;
-%template(TorrentPeersVector) std::vector<libtremotesf::Peer>;
+
+%typemap(javafinalize) std::vector<libtremotesf::TorrentFile*> ""
+%newobject std::vector<libtremotesf::TorrentFile*>::doGet;
+%template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile*>;
+
+%typemap(javafinalize) std::vector<libtremotesf::Peer*> ""
+%newobject std::vector<libtremotesf::Peer*>::doGet;
+%template(TorrentPeersVector) std::vector<libtremotesf::Peer*>;
 
 %template(StringsVector) std::vector<QString>;
 

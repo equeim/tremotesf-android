@@ -137,10 +137,10 @@ namespace libtremotesf
         virtual void onStatusChanged(Rpc::Status status) = 0;
         virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
 
-        virtual void onTorrentsUpdated(std::vector<int> removed, std::vector<TorrentData> changed, std::vector<TorrentData> added) = 0;
+        virtual void onTorrentsUpdated(const std::vector<int>& removed, const std::vector<TorrentData*>& changed, const std::vector<TorrentData*>& added) = 0;
 
-        virtual void onTorrentFilesUpdated(int torrentId, std::vector<TorrentFile> changed) = 0;
-        virtual void onTorrentPeersUpdated(int torrentId, std::vector<int> removed, std::vector<Peer> changed, std::vector<Peer> added) = 0;
+        virtual void onTorrentFilesUpdated(int torrentId, const std::vector<TorrentFile*>& changed) = 0;
+        virtual void onTorrentPeersUpdated(int torrentId, const std::vector<int>& removed, const std::vector<Peer*>& changed, const std::vector<Peer*>& added) = 0;
 
         virtual void onServerStatsUpdated() = 0;
 
