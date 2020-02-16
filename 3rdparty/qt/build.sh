@@ -107,7 +107,6 @@ function build() {
         '-no-feature-localserver'
         '-no-feature-mimetype'
         '-no-feature-networkdiskcache'
-        '-no-feature-networkproxy'
         '-no-feature-process'
         '-no-feature-processenvironment'
         '-no-feature-settings'
