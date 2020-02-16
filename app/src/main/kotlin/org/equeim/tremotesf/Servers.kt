@@ -112,25 +112,6 @@ data class Server(@SerialName("name")
         val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
     }
 
-    fun copyTo(other: Server) {
-        other.name = name
-        other.address = address
-        other.port = port
-        other.apiPath = apiPath
-        other.httpsEnabled = httpsEnabled
-        other.selfSignedCertificateEnabled = selfSignedCertificateEnabled
-        other.selfSignedCertificate = selfSignedCertificate
-        other.clientCertificateEnabled = clientCertificateEnabled
-        other.clientCertificate = clientCertificate
-        other.authentication = authentication
-        other.username = username
-        other.password = password
-        other.updateInterval = updateInterval
-        other.timeout = timeout
-        other.lastTorrents = lastTorrents
-        other.addTorrentDialogDirectories = addTorrentDialogDirectories
-    }
-
     override fun toString() = "Server(name=$name)"
 
     fun nativeProxyType(): Int {
@@ -273,25 +254,17 @@ object Servers : Logger {
     }
 
     fun addServer(newServer: Server) {
-        var newCurrent: Server? = null
-
         val servers = this.servers.value.toMutableList()
 
-        val overwriteServer = servers.find { it.name == newServer.name }
-        if (overwriteServer == null) {
+        val overwriteServerIndex = servers.indexOfFirst { it.name == newServer.name }
+        if (overwriteServerIndex == -1) {
             servers.add(newServer)
-            if (servers.size == 1) {
-                newCurrent = newServer
-            }
         } else {
-            newServer.copyTo(overwriteServer)
-            if (overwriteServer.name == currentServer.value?.name) {
-                newCurrent = overwriteServer
-            }
+            servers[overwriteServerIndex] = newServer
         }
 
-        if (newCurrent != null) {
-            setCurrentServer(newCurrent)
+        if (servers.size == 1 || newServer.name == currentServer.value?.name) {
+            setCurrentServer(newServer)
         }
 
         this.servers.value = servers
@@ -316,10 +289,10 @@ object Servers : Logger {
             servers.removeAll { it.name == newServer.name }
         }
 
-        newServer.copyTo(server)
+        servers[servers.indexOf(server)] = newServer
 
         if (currentChanged) {
-            setCurrentServer(server)
+            setCurrentServer(newServer)
         }
 
         this.servers.value = servers
