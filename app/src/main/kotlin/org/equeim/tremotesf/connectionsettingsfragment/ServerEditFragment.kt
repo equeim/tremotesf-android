@@ -36,11 +36,19 @@ import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
+import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.textInputLayout
 
 import kotlinx.android.synthetic.main.server_edit_certificates_fragment.*
 import kotlinx.android.synthetic.main.server_edit_fragment.*
+import kotlinx.android.synthetic.main.server_edit_fragment.address_edit
+import kotlinx.android.synthetic.main.server_edit_fragment.password_edit
+import kotlinx.android.synthetic.main.server_edit_fragment.password_edit_layout
+import kotlinx.android.synthetic.main.server_edit_fragment.port_edit
+import kotlinx.android.synthetic.main.server_edit_fragment.username_edit
+import kotlinx.android.synthetic.main.server_edit_fragment.username_edit_layout
+import kotlinx.android.synthetic.main.server_edit_proxy_fragment.*
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
@@ -56,6 +64,10 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         super.onViewCreated(view, savedInstanceState)
 
         port_edit.filters = arrayOf(IntFilter(Server.portRange))
+
+        proxy_settings_button.setOnClickListener {
+            navController.navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
+        }
 
         https_check_box.isChecked = false
 
@@ -248,6 +260,64 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                     clientCertificate = client_certificate_edit.text.toString()
                 }
             }
+        }
+    }
+
+    class ProxySettingsFragment : NavigationFragment(R.layout.server_edit_proxy_fragment,
+                                                     R.string.proxy_settings) {
+        private companion object {
+            // Should match R.array.proxy_type_items
+            val proxyTypeItems = arrayOf(org.equeim.libtremotesf.Server.ProxyType.Default,
+                                         org.equeim.libtremotesf.Server.ProxyType.Http,
+                                         org.equeim.libtremotesf.Server.ProxyType.Socks5)
+        }
+
+        private lateinit var model: Model
+        private lateinit var proxyTypeItemValues: Array<String>
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+
+            proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
+            proxy_type_view.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
+            proxy_type_view.setOnItemClickListener { _, _, position, _ ->
+                update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
+            }
+
+            port_edit.filters = arrayOf(IntFilter(Server.portRange))
+
+            model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
+                                      ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+            with(model.server) {
+                proxy_type_view.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
+                address_edit.setText(proxyHostname)
+                port_edit.setText(proxyPort.toString())
+                username_edit.setText(proxyUser)
+                password_edit.setText(proxyPassword)
+
+                if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                    update(false)
+                }
+            }
+        }
+
+        override fun onNavigatedFrom() {
+            if (view != null) {
+                model.server.apply {
+                    proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxy_type_view.text.toString())])
+                    proxyHostname = address_edit.text.toString()
+                    proxyPort = port_edit.text.toString().toInt()
+                    proxyUser = username_edit.text.toString()
+                    proxyPassword = password_edit.text.toString()
+                }
+            }
+        }
+
+        private fun update(enabled: Boolean) {
+            address_edit_layout.isEnabled = enabled
+            port_edit_layout.isEnabled = enabled
+            username_edit_layout.isEnabled = enabled
+            password_edit_layout.isEnabled = enabled
         }
     }
 }

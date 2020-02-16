@@ -461,4 +461,14 @@
     <string name="donations_yandex_title">Yandex.Money</string>
     <string name="donations_snackbar_ok">Thank you for your donation!</string>
     <string name="donations_snackbar_error">Error while processing donation</string>
+
+    <string name="proxy_settings">Proxy settings</string>
+    <string name="proxy_type">Proxy type</string>
+    <string name="hostname">Hostname</string>
+
+    <string-array name="proxy_type_items">
+        <item>Default</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
+    </string-array>
 </resources>

@@ -80,6 +80,16 @@
                         android:inputType="textUri"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <Button
+                    android:id="@+id/proxy_settings_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+                    android:paddingBottom="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/proxy_settings" />
+
                 <CheckBox
                     android:id="@+id/https_check_box"
                     android:layout_width="match_parent"
