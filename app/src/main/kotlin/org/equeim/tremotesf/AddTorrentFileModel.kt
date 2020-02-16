@@ -141,24 +141,22 @@ class AddTorrentFileModel : ViewModel(), Logger {
                 error("openInputStream() returned null")
                 return Pair(ParserStatus.ReadingError, null)
             }
-            try {
+            stream.use {
                 val size = stream.available()
                 if (size > MAX_FILE_SIZE) {
                     error("Torrent file is too large")
                     return Pair(ParserStatus.FileIsTooLarge, null)
                 }
                 return Pair(ParserStatus.Loading, stream.readBytes())
-            } catch (error: IOException) {
-                error("Error reading torrent file", error)
-                return Pair(ParserStatus.ReadingError, null)
-            } catch (error: SecurityException) {
-                error("Error reading torrent file", error)
-                return Pair(ParserStatus.ReadingError, null)
-            } finally {
-                stream.close()
             }
         } catch (error: FileNotFoundException) {
             error("File not found", error)
+            return Pair(ParserStatus.ReadingError, null)
+        } catch (error: IOException) {
+            error("Error reading torrent file", error)
+            return Pair(ParserStatus.ReadingError, null)
+        } catch (error: SecurityException) {
+            error("Error reading torrent file", error)
             return Pair(ParserStatus.ReadingError, null)
         }
     }
