@@ -46,8 +46,6 @@ import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
 private const val FILE_NAME = "servers.json"
-private const val CURRENT = "current"
-private const val SERVERS = "servers"
 
 private const val MINIMUM_PORT = 0
 private const val MAXIMUM_PORT = 65535
@@ -61,22 +59,53 @@ private const val MAXIMUM_TIMEOUT = 60
 private const val DEFAULT_TIMEOUT = 30
 
 @Serializable
-data class Server(var name: String = "",
-                var address: String = "",
-                var port: Int = DEFAULT_PORT,
-                var apiPath: String = DEFAULT_API_PATH,
-                var httpsEnabled: Boolean = false,
-                var selfSignedCertificateEnabled: Boolean = false,
-                var selfSignedCertificate: String = "",
-                var clientCertificateEnabled: Boolean = false,
-                var clientCertificate: String = "",
-                var authentication: Boolean = false,
-                var username: String = "",
-                var password: String = "",
-                var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
-                var timeout: Int = DEFAULT_TIMEOUT,
-                var lastTorrents: LastTorrents = LastTorrents(),
-                var addTorrentDialogDirectories: List<String> = emptyList()) {
+data class Server(@SerialName("name")
+                  var name: String = "",
+                  @SerialName("address")
+                  var address: String = "",
+                  @SerialName("port")
+                  var port: Int = DEFAULT_PORT,
+                  @SerialName("apiPath")
+                  var apiPath: String = DEFAULT_API_PATH,
+
+                  @SerialName("proxyType")
+                  var proxyType: String = "",
+                  @SerialName("proxyHostname")
+                  var proxyHostname: String = "",
+                  @SerialName("proxyPort")
+                  var proxyPort: Int = 0,
+                  @SerialName("proxyUser")
+                  var proxyUser: String = "",
+                  @SerialName("proxyPassword")
+                  var proxyPassword: String = "",
+
+                  @SerialName("httpsEnabled")
+                  var httpsEnabled: Boolean = false,
+                  @SerialName("selfSignedCertificateEnabled")
+                  var selfSignedCertificateEnabled: Boolean = false,
+                  @SerialName("selfSignedCertificate")
+                  var selfSignedCertificate: String = "",
+                  @SerialName("clientCertificateEnabled")
+                  var clientCertificateEnabled: Boolean = false,
+                  @SerialName("clientCertificate")
+                  var clientCertificate: String = "",
+
+                  @SerialName("authentication")
+                  var authentication: Boolean = false,
+                  @SerialName("username")
+                  var username: String = "",
+                  @SerialName("password")
+                  var password: String = "",
+
+                  @SerialName("updateInterval")
+                  var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
+                  @SerialName("timeout")
+                  var timeout: Int = DEFAULT_TIMEOUT,
+
+                  @SerialName("lastTorrents")
+                  var lastTorrents: LastTorrents = LastTorrents(),
+                  @SerialName("addTorrentDialogDirectories")
+                  var addTorrentDialogDirectories: List<String> = emptyList()) : Logger {
     companion object {
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
@@ -104,6 +133,18 @@ data class Server(var name: String = "",
 
     override fun toString() = "Server(name=$name)"
 
+    fun nativeProxyType(): Int {
+        return when (proxyType) {
+            "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
+            "Http" -> org.equeim.libtremotesf.Server.ProxyType.Http
+            "Socks5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
+            else -> {
+                warn("Unknown proxy type $proxyType")
+                org.equeim.libtremotesf.Server.ProxyType.Default
+            }
+        }
+    }
+
     @Serializable
     data class Torrent(val id: Int,
                        val hashString: String,
@@ -116,8 +157,8 @@ data class Server(var name: String = "",
 }
 
 @Serializable
-data class SaveData(@SerialName(CURRENT) val currentServerName: String?,
-                    @SerialName(SERVERS) val servers: List<Server>)
+data class SaveData(@SerialName("current") val currentServerName: String?,
+                    @SerialName("servers") val servers: List<Server>)
 
 @SuppressLint("StaticFieldLeak")
 object Servers : Logger {

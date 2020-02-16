@@ -265,23 +265,33 @@ object Rpc : Logger {
     }
 
     private fun setServer(server: Server) {
-        nativeInstance.setServer(
-                server.name,
-                server.address,
-                server.port,
-                server.apiPath,
-                server.httpsEnabled,
-                server.selfSignedCertificateEnabled,
-                server.selfSignedCertificate.toByteArray(),
-                server.clientCertificateEnabled,
-                server.clientCertificate.toByteArray(),
-                server.authentication,
-                server.username,
-                server.password,
-                server.updateInterval,
-                0,
-                server.timeout
-        )
+        val s = org.equeim.libtremotesf.Server()
+        with(server) {
+            s.name = name
+            s.address = address
+            s.port = port
+            s.apiPath = apiPath
+
+            s.proxyType = nativeProxyType()
+            s.proxyHostname = proxyHostname
+            s.proxyPort = proxyPort
+            s.proxyUser = proxyUser
+            s.proxyPassword = proxyPassword
+
+            s.https = httpsEnabled
+            s.selfSignedCertificateEnabled = selfSignedCertificateEnabled
+            s.selfSignedCertificate = selfSignedCertificate.toByteArray()
+            s.clientCertificateEnabled = clientCertificateEnabled
+            s.clientCertificate = clientCertificate.toByteArray()
+
+            s.authentication = authentication
+            s.username = username
+            s.password = password
+
+            s.updateInterval = updateInterval
+            s.timeout = timeout
+        }
+        nativeInstance.setServer(s)
     }
 
     fun connectOnce() {
