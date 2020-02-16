@@ -50,21 +50,10 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         const val SERVER = "server"
     }
 
-    private var server: Server? = null
-    private lateinit var newServer: Server
-
-    private lateinit var certificatesModel: CertificatesModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val serverName = requireArguments().getString(SERVER)
-        server = Servers.servers.value.find { it.name == serverName }
-        newServer = server?.copy() ?: Server()
-    }
+    private lateinit var model: Model
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar()
 
         port_edit.filters = arrayOf(IntFilter(Server.portRange))
 
@@ -89,25 +78,30 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
         timeout_edit.filters = arrayOf(IntFilter(Server.timeoutRange))
-
-        if (savedInstanceState == null) {
-            name_edit.setText(newServer.name)
-            address_edit.setText(newServer.address)
-            port_edit.setText(newServer.port.toString())
-            api_path_edit.setText(newServer.apiPath)
-            https_check_box.isChecked = newServer.httpsEnabled
-            authentication_check_box.isChecked = newServer.authentication
-            username_edit.setText(newServer.username)
-            password_edit.setText(newServer.password)
-            update_interval_edit.setText(newServer.updateInterval.toString())
-            timeout_edit.setText(newServer.timeout.toString())
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        certificatesModel = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
-                                              CertificatesModelFactory(newServer))[CertificatesModel::class.java]
+
+        model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
+                                  ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+
+        setupToolbar()
+
+        if (savedInstanceState == null) {
+            with (model.server) {
+                name_edit.setText(name)
+                address_edit.setText(address)
+                port_edit.setText(port.toString())
+                api_path_edit.setText(apiPath)
+                https_check_box.isChecked = httpsEnabled
+                authentication_check_box.isChecked = authentication
+                username_edit.setText(username)
+                password_edit.setText(password)
+                update_interval_edit.setText(updateInterval.toString())
+                timeout_edit.setText(timeout.toString())
+            }
+        }
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -143,7 +137,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 apiPathOk &&
                 updateIntervalOk &&
                 timeoutOk) {
-            if (nameEditText != server?.name &&
+            if (nameEditText != model.existingServer?.name &&
                     Servers.servers.value.find { it.name == nameEditText } != null) {
                 navController.navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
             } else {
@@ -156,8 +150,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
     private fun setupToolbar() {
         toolbar?.apply {
-            setTitle(if (server == null) R.string.add_server else R.string.edit_server)
-            menu.findItem(R.id.done).setTitle(if (server == null) {
+            setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
+            menu.findItem(R.id.done).setTitle(if (model.existingServer == null) {
                 R.string.add
             } else {
                 R.string.save
@@ -166,7 +160,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
     }
 
     private fun save() {
-        newServer.apply {
+        model.server.apply {
             name = name_edit.text.toString().trim()
             address = address_edit.text.toString().trim()
             port = port_edit.text.toString().toInt()
@@ -177,23 +171,32 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             password = password_edit.text.toString().trim()
             updateInterval = update_interval_edit.text.toString().toInt()
             timeout = timeout_edit.text.toString().toInt()
+        }
 
-            certificatesModel.certificatesData.let { data ->
-                selfSignedCertificateEnabled = data.selfSignedCertificateEnabled
-                selfSignedCertificate = data.selfSignedCertificateData
-                clientCertificateEnabled = data.clientCertificateEnabled
-                clientCertificate = data.clientCertificateData
+        model.existingServer.let { existing ->
+            if (existing == null) {
+                Servers.addServer(model.server)
+            } else {
+                Servers.setServer(existing, model.server)
             }
         }
 
-        val server = this.server
-        if (server == null) {
-            Servers.addServer(newServer)
-        } else {
-            Servers.setServer(server, newServer)
-        }
-
         navController.popBackStack(R.id.serverEditFragment, true)
+    }
+
+    private class Model(serverName: String?) : ViewModel() {
+        val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
+        val server = existingServer?.copy() ?: Server()
+    }
+
+    private class ModelFactory(private val serverName: String?) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass == Model::class.java) {
+                return Model(serverName) as T
+            }
+            throw IllegalArgumentException()
+        }
     }
 
     class ServerOverwriteDialogFragment : NavigationDialogFragment() {
@@ -208,31 +211,9 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
     }
 
-    private class CertificatesModel(server: Server) : ViewModel() {
-        data class CertificatesData(var selfSignedCertificateEnabled: Boolean,
-                                    var selfSignedCertificateData: String,
-                                    var clientCertificateEnabled: Boolean,
-                                    var clientCertificateData: String)
-
-        val certificatesData = CertificatesData(server.selfSignedCertificateEnabled,
-                                                server.selfSignedCertificate,
-                                                server.clientCertificateEnabled,
-                                                server.clientCertificate)
-    }
-
-    private class CertificatesModelFactory(private val server: Server) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass == CertificatesModel::class.java) {
-                return CertificatesModel(server) as T
-            }
-            throw IllegalArgumentException()
-        }
-    }
-
     class CertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
                                                     R.string.certificates) {
-        private lateinit var certificatesModel: CertificatesModel
+        private lateinit var model: Model
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
@@ -248,26 +229,23 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-
-            val serverName = requireArguments().getString(SERVER)
-            val server = Servers.servers.value.find { it.name == serverName }
-            certificatesModel = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
-                                                  CertificatesModelFactory(server ?: Server()))[CertificatesModel::class.java]
-            certificatesModel.certificatesData.let { data ->
-                self_signed_certificate_check_box.isChecked = data.selfSignedCertificateEnabled
-                self_signed_certificate_edit.setText(data.selfSignedCertificateData)
-                client_certificate_check_box.isChecked = data.clientCertificateEnabled
-                client_certificate_edit.setText(data.clientCertificateData)
+            model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
+                                      ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+            with(model.server) {
+                self_signed_certificate_check_box.isChecked = selfSignedCertificateEnabled
+                self_signed_certificate_edit.setText(selfSignedCertificate)
+                client_certificate_check_box.isChecked = clientCertificateEnabled
+                client_certificate_edit.setText(clientCertificate)
             }
         }
 
         override fun onNavigatedFrom() {
             if (view != null) {
-                certificatesModel.certificatesData.apply {
+                model.server.apply {
                     selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
-                    selfSignedCertificateData = self_signed_certificate_edit.text.toString()
+                    selfSignedCertificate = self_signed_certificate_edit.text.toString()
                     clientCertificateEnabled = client_certificate_check_box.isChecked
-                    clientCertificateData = client_certificate_edit.text.toString()
+                    clientCertificate = client_certificate_edit.text.toString()
                 }
             }
         }
