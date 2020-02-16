@@ -110,6 +110,15 @@ data class Server(@SerialName("name")
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
         val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
+
+        fun fromNativeProxyType(type: Int): String {
+            return when (type) {
+                org.equeim.libtremotesf.Server.ProxyType.Default -> "Default"
+                org.equeim.libtremotesf.Server.ProxyType.Http -> "HTTP"
+                org.equeim.libtremotesf.Server.ProxyType.Socks5 -> "SOCKS5"
+                else -> "Default"
+            }
+        }
     }
 
     override fun toString() = "Server(name=$name)"
@@ -117,8 +126,8 @@ data class Server(@SerialName("name")
     fun nativeProxyType(): Int {
         return when (proxyType) {
             "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
-            "Http" -> org.equeim.libtremotesf.Server.ProxyType.Http
-            "Socks5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
+            "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
+            "SOCKS5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
             else -> {
                 warn("Unknown proxy type $proxyType")
                 org.equeim.libtremotesf.Server.ProxyType.Default
