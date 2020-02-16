@@ -28,7 +28,10 @@ import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
 
 
-class Torrent(var data: TorrentData, private val context: Context) {
+class Torrent(data: TorrentData, private val context: Context) {
+    var data = data
+        private set
+
     val id = data.id
     val hashString: String = data.hashString
 
@@ -140,6 +143,7 @@ class Torrent(var data: TorrentData, private val context: Context) {
     }
 
     fun update(data: TorrentData) {
+        this.data.delete()
         this.data = data
 
         name = data.name
