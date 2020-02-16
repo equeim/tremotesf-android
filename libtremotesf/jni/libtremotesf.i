@@ -30,7 +30,7 @@
 
 namespace libtremotesf
 {
-    %ignore Server;
+    //%ignore Server;
     %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem, notmatch$name="serverStats") "Rpc::.*$";
 
     %ignore Torrent;
@@ -84,7 +84,11 @@ namespace libtremotesf
 %include "../torrentfile.h"
 %include "../tracker.h"
 %include "../torrent.h"
+
+%mutable;
 %include "../rpc.h"
+%immutable;
+
 %include "../serversettings.h"
 %include "../serverstats.h"
 

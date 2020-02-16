@@ -316,7 +316,7 @@ namespace libtremotesf
         return static_cast<JniServerSettings*>(Rpc::serverSettings());
     }
 
-    void JniRpc::setServer(const QString& name,
+    /*void JniRpc::setServer(const QString& name,
                            const QString& address,
                            int port,
                            const QString& apiPath,
@@ -348,6 +348,11 @@ namespace libtremotesf
                       backgroundUpdateInterval,
                       timeout};
         QMetaObject::invokeMethod(this, "setServer", Q_ARG(libtremotesf::Server, Server(std::move(server))));
+    }*/
+
+    void JniRpc::setServer(const Server& server)
+    {
+        QMetaObject::invokeMethod(this, "setServer", Q_ARG(libtremotesf::Server, server));
     }
 
     void JniRpc::resetServer()

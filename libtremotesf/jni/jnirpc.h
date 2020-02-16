@@ -58,7 +58,7 @@ namespace libtremotesf
 
         JniServerSettings* serverSettings() const;
 
-        void setServer(const QString& name,
+        /*void setServer(const QString& name,
                        const QString& address,
                        int port,
                        const QString& apiPath,
@@ -72,7 +72,8 @@ namespace libtremotesf
                        const QString& password,
                        int updateInterval,
                        int backgroundUpdateInterval,
-                       int timeout);
+                       int timeout);*/
+        void setServer(const Server& server);
         void resetServer();
 
         void connect();

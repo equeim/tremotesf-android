@@ -61,8 +61,8 @@ public class JniRpc extends Rpc {
     return (cPtr == 0) ? null : new JniServerSettings(cPtr, false);
   }
 
-  public void setServer(String name, String address, int port, String apiPath, boolean https, boolean selfSignedCertificateEnabled, byte[] selfSignedCertificate, boolean clientCertificateEnabled, byte[] clientCertificate, boolean authentication, String username, String password, int updateInterval, int backgroundUpdateInterval, int timeout) {
-    libtremotesfJNI.JniRpc_setServer(swigCPtr, this, name, address, port, apiPath, https, selfSignedCertificateEnabled, selfSignedCertificate, clientCertificateEnabled, clientCertificate, authentication, username, password, updateInterval, backgroundUpdateInterval, timeout);
+  public void setServer(Server server) {
+    libtremotesfJNI.JniRpc_setServer(swigCPtr, this, Server.getCPtr(server), server);
   }
 
   public void resetServer() {

@@ -4320,6 +4320,718 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Tor
 }
 
 
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1name_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->name = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1name_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->name);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1address_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->address = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1address_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->address);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1port_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->port = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1port_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->port);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1apiPath_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->apiPath = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1apiPath_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->apiPath);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyType_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  libtremotesf::Server::ProxyType arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (libtremotesf::Server::ProxyType)jarg2; 
+  if (arg1) (arg1)->proxyType = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyType_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  libtremotesf::Server::ProxyType result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (libtremotesf::Server::ProxyType) ((arg1)->proxyType);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyHostname_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->proxyHostname = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyHostname_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->proxyHostname);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyPort_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->proxyPort = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyPort_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->proxyPort);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyUser_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->proxyUser = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyUser_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->proxyUser);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyPassword_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->proxyPassword = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1proxyPassword_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->proxyPassword);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1https_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->https = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1https_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (bool) ((arg1)->https);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1selfSignedCertificateEnabled_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->selfSignedCertificateEnabled = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1selfSignedCertificateEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (bool) ((arg1)->selfSignedCertificateEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1selfSignedCertificate_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QByteArray *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QByteArray");
+    return ;
+  }
+  jbyte* arg2_pstr = jenv->GetByteArrayElements(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetArrayLength(jarg2);
+  QByteArray arg2_str(QByteArray::fromRawData(reinterpret_cast<const char*>(arg2_pstr), arg2_len));
+  arg2 = &arg2_str;
+  
+  if (arg1) (arg1)->selfSignedCertificate = *arg2;
+}
+
+
+SWIGEXPORT jbyteArray JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1selfSignedCertificate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jbyteArray jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QByteArray *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QByteArray *) & ((arg1)->selfSignedCertificate);
+  
+  jresult = jenv->NewByteArray(result->size());
+  jenv->SetByteArrayRegion(jresult, 0, result->size(), reinterpret_cast<const jbyte*>(result->constData()));
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1clientCertificateEnabled_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->clientCertificateEnabled = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1clientCertificateEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (bool) ((arg1)->clientCertificateEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1clientCertificate_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QByteArray *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QByteArray");
+    return ;
+  }
+  jbyte* arg2_pstr = jenv->GetByteArrayElements(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetArrayLength(jarg2);
+  QByteArray arg2_str(QByteArray::fromRawData(reinterpret_cast<const char*>(arg2_pstr), arg2_len));
+  arg2 = &arg2_str;
+  
+  if (arg1) (arg1)->clientCertificate = *arg2;
+}
+
+
+SWIGEXPORT jbyteArray JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1clientCertificate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jbyteArray jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QByteArray *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QByteArray *) & ((arg1)->clientCertificate);
+  
+  jresult = jenv->NewByteArray(result->size());
+  jenv->SetByteArrayRegion(jresult, 0, result->size(), reinterpret_cast<const jbyte*>(result->constData()));
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1authentication_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->authentication = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1authentication_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (bool) ((arg1)->authentication);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1username_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->username = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1username_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->username);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1password_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  if (arg1) (arg1)->password = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1password_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (QString *) & ((arg1)->password);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1updateInterval_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->updateInterval = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1updateInterval_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->updateInterval);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1backgroundUpdateInterval_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->backgroundUpdateInterval = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1backgroundUpdateInterval_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->backgroundUpdateInterval);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1timeout_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->timeout = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1timeout_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->timeout);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1Server(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::Server *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::Server *)new libtremotesf::Server();
+  *(libtremotesf::Server **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Server(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
@@ -5617,119 +6329,21 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1se
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jstring jarg3, jint jarg4, jstring jarg5, jboolean jarg6, jboolean jarg7, jbyteArray jarg8, jboolean jarg9, jbyteArray jarg10, jboolean jarg11, jstring jarg12, jstring jarg13, jint jarg14, jint jarg15, jint jarg16) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setServer(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QString *arg2 = 0 ;
-  QString *arg3 = 0 ;
-  int arg4 ;
-  QString *arg5 = 0 ;
-  bool arg6 ;
-  bool arg7 ;
-  QByteArray *arg8 = 0 ;
-  bool arg9 ;
-  QByteArray *arg10 = 0 ;
-  bool arg11 ;
-  QString *arg12 = 0 ;
-  QString *arg13 = 0 ;
-  int arg14 ;
-  int arg15 ;
-  int arg16 ;
+  libtremotesf::Server *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+  arg2 = *(libtremotesf::Server **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::Server const & reference is null");
     return ;
-  }
-  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
-  arg2 = &arg2_str;
-  jenv->ReleaseStringChars(jarg2, arg2_pstr);
-  
-  
-  if(!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
-    return ;
-  }
-  const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
-  if (!arg3_pstr) return ;
-  jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
-  arg3 = &arg3_str;
-  jenv->ReleaseStringChars(jarg3, arg3_pstr);
-  
-  arg4 = (int)jarg4; 
-  
-  if(!jarg5) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
-    return ;
-  }
-  const jchar* arg5_pstr = jenv->GetStringChars(jarg5, 0);
-  if (!arg5_pstr) return ;
-  jsize arg5_len = jenv->GetStringLength(jarg5);
-  QString arg5_str(QString::fromUtf16(arg5_pstr, arg5_len));
-  arg5 = &arg5_str;
-  jenv->ReleaseStringChars(jarg5, arg5_pstr);
-  
-  arg6 = jarg6 ? true : false; 
-  arg7 = jarg7 ? true : false; 
-  
-  if(!jarg8) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QByteArray");
-    return ;
-  }
-  jbyte* arg8_pstr = jenv->GetByteArrayElements(jarg8, 0);
-  if (!arg8_pstr) return ;
-  jsize arg8_len = jenv->GetArrayLength(jarg8);
-  QByteArray arg8_str(QByteArray::fromRawData(reinterpret_cast<const char*>(arg8_pstr), arg8_len));
-  arg8 = &arg8_str;
-  
-  arg9 = jarg9 ? true : false; 
-  
-  if(!jarg10) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QByteArray");
-    return ;
-  }
-  jbyte* arg10_pstr = jenv->GetByteArrayElements(jarg10, 0);
-  if (!arg10_pstr) return ;
-  jsize arg10_len = jenv->GetArrayLength(jarg10);
-  QByteArray arg10_str(QByteArray::fromRawData(reinterpret_cast<const char*>(arg10_pstr), arg10_len));
-  arg10 = &arg10_str;
-  
-  arg11 = jarg11 ? true : false; 
-  
-  if(!jarg12) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
-    return ;
-  }
-  const jchar* arg12_pstr = jenv->GetStringChars(jarg12, 0);
-  if (!arg12_pstr) return ;
-  jsize arg12_len = jenv->GetStringLength(jarg12);
-  QString arg12_str(QString::fromUtf16(arg12_pstr, arg12_len));
-  arg12 = &arg12_str;
-  jenv->ReleaseStringChars(jarg12, arg12_pstr);
-  
-  
-  if(!jarg13) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
-    return ;
-  }
-  const jchar* arg13_pstr = jenv->GetStringChars(jarg13, 0);
-  if (!arg13_pstr) return ;
-  jsize arg13_len = jenv->GetStringLength(jarg13);
-  QString arg13_str(QString::fromUtf16(arg13_pstr, arg13_len));
-  arg13 = &arg13_str;
-  jenv->ReleaseStringChars(jarg13, arg13_pstr);
-  
-  arg14 = (int)jarg14; 
-  arg15 = (int)jarg15; 
-  arg16 = (int)jarg16; 
-  (arg1)->setServer((QString const &)*arg2,(QString const &)*arg3,arg4,(QString const &)*arg5,arg6,arg7,(QByteArray const &)*arg8,arg9,(QByteArray const &)*arg10,arg11,(QString const &)*arg12,(QString const &)*arg13,arg14,arg15,arg16);
+  } 
+  (arg1)->setServer((libtremotesf::Server const &)*arg2);
 }
 
 

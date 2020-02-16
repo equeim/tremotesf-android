@@ -29,6 +29,7 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkInterface>
+#include <QNetworkProxy>
 #include <QNetworkReply>
 #include <QTimer>
 #include <QSslCertificate>
@@ -238,6 +239,26 @@ namespace libtremotesf
             mServerUrl.setScheme(QLatin1String("https"));
         } else {
             mServerUrl.setScheme(QLatin1String("http"));
+        }
+
+        switch (server.proxyType) {
+        case Server::ProxyType::Default:
+            mNetwork->setProxy(QNetworkProxy::applicationProxy());
+            break;
+        case Server::ProxyType::Http:
+            mNetwork->setProxy(QNetworkProxy(QNetworkProxy::HttpProxy,
+                                             server.proxyHostname,
+                                             static_cast<quint16>(server.proxyPort),
+                                             server.proxyUser,
+                                             server.proxyPassword));
+            break;
+        case Server::ProxyType::Socks5:
+            mNetwork->setProxy(QNetworkProxy(QNetworkProxy::Socks5Proxy,
+                                             server.proxyHostname,
+                                             static_cast<quint16>(server.proxyPort),
+                                             server.proxyUser,
+                                             server.proxyPassword));
+            break;
         }
 
         mSslConfiguration = QSslConfiguration::defaultConfiguration();
