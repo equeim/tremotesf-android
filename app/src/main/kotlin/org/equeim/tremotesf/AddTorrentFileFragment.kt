@@ -214,10 +214,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             val priorities = model.getFilePriorities()
             Rpc.nativeInstance.addTorrentFile(model.fileData,
                                               infoFragment.download_directory_edit.text.toString(),
-                                              priorities.wantedFiles.toIntArray(),
                                               priorities.unwantedFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),
-                                              priorities.normalPriorityFiles.toIntArray(),
                                               priorities.lowPriorityFiles.toIntArray(),
                                               StringMap().apply { putAll(model.renamedFiles) },
                                               priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],

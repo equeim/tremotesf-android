@@ -52,11 +52,10 @@ class AddTorrentFileModel : ViewModel(), Logger {
         Loaded
     }
 
-    data class FilePriorities(val wantedFiles: List<Int>,
-                              val unwantedFiles: List<Int>,
+    data class FilePriorities(val unwantedFiles: List<Int>,
                               val lowPriorityFiles: List<Int>,
-                              val normalPriorityFiles: List<Int>,
                               val highPriorityFiles: List<Int>)
+
 
     val status = NonNullMutableLiveData(ParserStatus.None)
 
@@ -81,31 +80,24 @@ class AddTorrentFileModel : ViewModel(), Logger {
     }
 
     fun getFilePriorities(): FilePriorities {
-        val wantedFiles = mutableListOf<Int>()
         val unwantedFiles = mutableListOf<Int>()
         val lowPriorityFiles = mutableListOf<Int>()
-        val normalPriorityFiles = mutableListOf<Int>()
         val highPriorityFiles = mutableListOf<Int>()
 
         for (file in files) {
             val id = file.id
-            if (file.wantedState == BaseTorrentFilesAdapter.Item.WantedState.Wanted) {
-                wantedFiles.add(id)
-            } else {
+            if (file.wantedState == BaseTorrentFilesAdapter.Item.WantedState.Unwanted) {
                 unwantedFiles.add(id)
             }
             when (file.priority) {
-                BaseTorrentFilesAdapter.Item.Priority.Low -> lowPriorityFiles
-                BaseTorrentFilesAdapter.Item.Priority.Normal -> normalPriorityFiles
-                BaseTorrentFilesAdapter.Item.Priority.High -> highPriorityFiles
-                BaseTorrentFilesAdapter.Item.Priority.Mixed -> normalPriorityFiles
-            }.add(id)
+                BaseTorrentFilesAdapter.Item.Priority.Low -> lowPriorityFiles.add(id)
+                BaseTorrentFilesAdapter.Item.Priority.High -> highPriorityFiles.add(id)
+                else -> {}
+            }
         }
 
-        return FilePriorities(wantedFiles,
-                              unwantedFiles,
+        return FilePriorities(unwantedFiles,
                               lowPriorityFiles,
-                              normalPriorityFiles,
                               highPriorityFiles)
     }
 
