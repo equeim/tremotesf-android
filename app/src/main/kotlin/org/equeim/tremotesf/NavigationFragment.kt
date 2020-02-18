@@ -51,7 +51,8 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     lateinit var navController: NavController
         private set
 
-    @IdRes private var destinationId = 0
+    @IdRes var destinationId = 0
+        private set
 
     private val destinationListener: NavController.OnDestinationChangedListener = object : NavController.OnDestinationChangedListener {
         override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {

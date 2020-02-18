@@ -341,6 +341,10 @@
         <argument
             android:name="torrentIds"
             app:argType="integer[]" />
+        <argument
+            android:name="popBackStack"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
     <dialog
         android:id="@+id/setLocationDialogFragment"

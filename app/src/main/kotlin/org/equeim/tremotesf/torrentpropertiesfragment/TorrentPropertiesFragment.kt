@@ -166,7 +166,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                                                           TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
                                                           TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 R.id.remove -> navController.navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
-                                                            bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id)))
+                                                            bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                                     TorrentsAdapter.RemoveTorrentDialogFragment.POP_BACK_STACK to true))
                 else -> return false
             }
         }

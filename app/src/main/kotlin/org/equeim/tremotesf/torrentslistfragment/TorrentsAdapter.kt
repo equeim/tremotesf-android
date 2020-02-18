@@ -38,6 +38,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
@@ -46,6 +48,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.IntSelector
+import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -559,6 +562,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
     class RemoveTorrentDialogFragment : NavigationDialogFragment() {
         companion object {
             const val TORRENT_IDS = "torrentIds"
+            const val POP_BACK_STACK = "popBackStack"
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -575,6 +579,18 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                         Rpc.nativeInstance.removeTorrents(ids,
                                                     requireDialog().delete_files_check_box.isChecked)
                         activity?.actionMode?.finish()
+                        if (requireArguments().getBoolean(POP_BACK_STACK)) {
+                            val id = (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
+                            val listener = object : NavController.OnDestinationChangedListener {
+                                override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+                                    if (destination.id == id) {
+                                        navController.popBackStack()
+                                        controller.removeOnDestinationChangedListener(this)
+                                    }
+                                }
+                            }
+                            navController.addOnDestinationChangedListener(listener)
+                        }
                     }
                     .create()
 
