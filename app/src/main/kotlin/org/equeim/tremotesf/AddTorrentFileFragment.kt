@@ -216,9 +216,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                                               infoFragment.download_directory_edit.text.toString(),
                                               priorities.wantedFiles.toIntArray(),
                                               priorities.unwantedFiles.toIntArray(),
-                                              priorities.lowPriorityFiles.toIntArray(),
-                                              priorities.normalPriorityFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),
+                                              priorities.normalPriorityFiles.toIntArray(),
+                                              priorities.lowPriorityFiles.toIntArray(),
                                               StringMap().apply { putAll(model.renamedFiles) },
                                               priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],
                                               infoFragment.start_downloading_check_box.isChecked)
