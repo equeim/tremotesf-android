@@ -1,8 +1,15 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Added support of renaming torrent's file when adding it
+- Added support of configuring per-server HTTP/SOCKS5 proxies
+
 ### Changed
 - Dropped support of armv7 devices without NEON instructions
+
+### Fixed
+- Fixed swapped high/low file priorities when adding torrent
 
 ## [2.0.2] - 2020-01-11
 ### Fixed
