@@ -34,8 +34,6 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.text.trimmedLength
@@ -53,6 +51,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 
+import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
@@ -69,7 +68,7 @@ import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
-                                                  R.menu.add_torrent_activity_menu) {
+                                                  R.menu.add_torrent_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
     companion object {
         fun setupDownloadDirectoryEdit(fragment: Fragment, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
             fragment.apply {
@@ -220,6 +219,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                                               priorities.lowPriorityFiles.toIntArray(),
                                               priorities.normalPriorityFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),
+                                              StringMap().apply { putAll(model.renamedFiles) },
                                               priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],
                                               infoFragment.start_downloading_check_box.isChecked)
             infoFragment.directoriesAdapter?.save()
@@ -227,6 +227,11 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             return true
         }
         return false
+    }
+
+    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
+        model.renamedFiles[filePath] = newName
+        findFragment<FilesFragment>()?.adapter?.fileRenamed(filePath, newName)
     }
 
     private fun updateView(parserStatus: AddTorrentFileModel.ParserStatus) {
@@ -377,7 +382,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             val model = mainFragment.model
 
-            val adapter = Adapter(requireActivity() as AppCompatActivity, model.rootDirectory)
+            val adapter = Adapter(requireActivity() as NavigationActivity, model.rootDirectory)
             this.adapter = adapter
 
             files_view.adapter = adapter
@@ -401,12 +406,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             adapter?.saveInstanceState(outState)
         }
 
-        class Adapter(private val activity: AppCompatActivity,
-                      rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
-            init {
-                initSelector(activity, ActionModeCallback())
-            }
-
+        class Adapter(private val activity: NavigationActivity,
+                      rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory, activity) {
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
@@ -427,18 +428,14 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 }
             }
 
+            override fun onNavigateToRenameDialog(args: Bundle) {
+                activity.navController.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment, args)
+            }
+
             private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                                      selector: Selector<Item, Int>,
                                      itemView: View) : BaseItemHolder(adapter, selector, itemView) {
                 val sizeTextView = itemView.size_text_view!!
-            }
-
-            private inner class ActionModeCallback : BaseActionModeCallback() {
-                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                    super.onCreateActionMode(mode, menu)
-                    mode.menuInflater.inflate(R.menu.select_all_menu, menu)
-                    return true
-                }
             }
         }
     }

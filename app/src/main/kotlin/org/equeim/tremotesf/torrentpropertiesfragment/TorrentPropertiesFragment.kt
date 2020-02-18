@@ -41,6 +41,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.NavigationFragment
+import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
@@ -52,7 +53,7 @@ import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
 class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
                                                      0,
-                                                     R.menu.torrent_properties_activity_menu) {
+                                                     R.menu.torrent_properties_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
     companion object {
         const val HASH = "hash"
         const val NAME = "name"
@@ -161,15 +162,19 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                                                                            TorrentsAdapter.SetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
                 R.id.rename ->
                     navController.navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
-                                                 bundleOf(TorrentFilesAdapter.TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                          TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_PATH to torrent.name,
-                                                          TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_NAME to torrent.name))
+                                                 bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                          TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
+                                                          TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 R.id.remove -> navController.navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
                                                             bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id)))
                 else -> return false
             }
         }
         return true
+    }
+
+    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
+        Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
     private fun onRpcStatusChanged(status: Int) {

@@ -19,41 +19,28 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import android.app.Dialog
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
-import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
-import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
-import org.equeim.tremotesf.utils.createTextFieldDialog
 
-import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
-                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory) {
-    init {
-        initSelector(fragment.requireActivity() as AppCompatActivity, ActionModeCallback())
-    }
-
+                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory, fragment.requireActivity() as AppCompatActivity) {
     private val torrent: Torrent?
         get() {
             return fragment.torrent
@@ -94,6 +81,10 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
     }
 
+    override fun onNavigateToRenameDialog(args: Bundle) {
+        fragment.findNavController().navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment, args)
+    }
+
     fun treeUpdated() {
         val add = if (hasHeaderItem) 1 else 0
         for ((i, item) in currentItems.withIndex()) {
@@ -111,99 +102,10 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         notifyItemRangeRemoved(0, count)
     }
 
-    fun fileRenamed(file: Item?) {
-        val index = currentItems.indexOf(file)
-        if (index != -1) {
-            if (hasHeaderItem) {
-                notifyItemChanged(index + 1)
-            } else {
-                notifyItemChanged(index)
-            }
-        }
-    }
-
     private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                              selector: Selector<Item, Int>,
                              itemView: View) : BaseItemHolder(adapter, selector, itemView) {
         val progressBar = itemView.progress_bar!!
         val progressTextView = itemView.progress_text_view!!
-    }
-
-    private inner class ActionModeCallback : BaseActionModeCallback() {
-        private var renameItem: MenuItem? = null
-
-        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            super.onCreateActionMode(mode, menu)
-            if (Rpc.serverSettings.canRenameFiles()) {
-                mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
-                renameItem = menu.findItem(R.id.rename)
-            }
-            mode.menuInflater.inflate(R.menu.select_all_menu, menu)
-            return true
-        }
-
-        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            super.onPrepareActionMode(mode, menu)
-            renameItem?.isEnabled = (selector.selectedCount == 1)
-            return true
-        }
-
-        override fun onActionItemClicked(mode: ActionMode, menuItem: MenuItem): Boolean {
-            if (super.onActionItemClicked(mode, menuItem)) {
-                return true
-            }
-
-            if (menuItem == renameItem) {
-                val file = selector.selectedItems.first()
-
-                val pathParts = mutableListOf<String>()
-                var item: Item? = file
-                while (item != null && item != rootDirectory) {
-                    pathParts.add(0, item.name)
-                    item = item.parentDirectory
-                }
-
-                torrent?.let { torrent ->
-                    fragment.findNavController().navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
-                                                          bundleOf(TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                                   TorrentRenameDialogFragment.FILE_PATH to pathParts.joinToString("/"),
-                                                                   TorrentRenameDialogFragment.FILE_NAME to file.name))
-                }
-
-                return true
-            }
-
-            return false
-        }
-
-        override fun onDestroyActionMode(mode: ActionMode) {
-            renameItem = null
-            super.onDestroyActionMode(mode)
-        }
-    }
-
-    class TorrentRenameDialogFragment : NavigationDialogFragment() {
-        companion object {
-            const val TORRENT_ID = "torrentId"
-            const val FILE_PATH = "filePath"
-            const val FILE_NAME = "fileName"
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val fileName = requireArguments().getString(FILE_NAME)
-            return createTextFieldDialog(requireContext(),
-                                         null,
-                                         null,
-                                         null,
-                                         getString(R.string.file_name),
-                                         InputType.TYPE_TEXT_VARIATION_URI,
-                                         fileName,
-                                         null) {
-                val path = requireArguments().getString(FILE_PATH)
-                val newName = requireDialog().text_field.text.toString()
-                Rpc.nativeInstance.renameTorrentFile(requireArguments().getInt(TORRENT_ID), path, newName)
-                activity?.actionMode?.finish()
-            }
-        }
     }
 }

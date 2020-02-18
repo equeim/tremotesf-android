@@ -95,7 +95,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
 
         Rpc.torrentFileRenamedEvent.observe(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == torrent?.id) {
-                adapter.fileRenamed(model.renameFile(filePath, newName))
+                adapter.fileRenamed(filePath, newName)
             }
         }
     }

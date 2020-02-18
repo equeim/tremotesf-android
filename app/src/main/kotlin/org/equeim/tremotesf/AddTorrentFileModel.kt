@@ -67,6 +67,8 @@ class AddTorrentFileModel : ViewModel(), Logger {
     val torrentName: String
         get() = rootDirectory.children.first().name
 
+    val renamedFiles = mutableMapOf<String, String>()
+
     private lateinit var files: List<BaseTorrentFilesAdapter.File>
 
     fun load(uri: Uri) {

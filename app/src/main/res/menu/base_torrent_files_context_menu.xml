@@ -34,4 +34,13 @@
             </group>
         </menu>
     </item>
+
+    <item
+        android:id="@+id/rename"
+        android:title="@string/rename"/>
+
+    <item
+        android:id="@+id/select_all"
+        android:icon="@drawable/ic_select_all_24dp"
+        android:title="@string/select_all"/>
 </menu>

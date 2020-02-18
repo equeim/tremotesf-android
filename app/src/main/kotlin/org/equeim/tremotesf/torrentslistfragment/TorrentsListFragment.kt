@@ -57,6 +57,7 @@ import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
+import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
@@ -68,7 +69,7 @@ import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
-                                                R.menu.main_activity_menu), Logger {
+                                                R.menu.main_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
     private companion object {
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }
@@ -242,6 +243,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     override fun onNavigatedFrom() {
         navigatedFrom = true
+    }
+
+    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
+        Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
     private fun setupMenuItems() {

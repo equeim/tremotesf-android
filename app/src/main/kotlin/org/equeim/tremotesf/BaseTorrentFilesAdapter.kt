@@ -30,6 +30,7 @@ import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.libtremotesf.TorrentFile
@@ -41,7 +42,8 @@ import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
-abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
+                                       activity: AppCompatActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -72,17 +74,12 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
         }
     }
 
-    lateinit var selector: Selector<Item, Int>
-
-    protected fun initSelector(activity: AppCompatActivity,
-                               actionModeCallback: BaseActionModeCallback) {
-        selector = IntSelector(activity,
-                               actionModeCallback,
+    val selector = IntSelector(activity,
+                               ActionModeCallback(),
                                this,
                                currentItems,
                                Item::row,
                                R.plurals.files_selected)
-    }
 
     override fun getItemCount(): Int {
         if (hasHeaderItem) {
@@ -244,6 +241,34 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
 
     }
 
+    protected abstract fun onNavigateToRenameDialog(args: Bundle)
+
+    fun fileRenamed(path: String, newName: String) {
+        val pathParts = path.split('/').filter(String::isNotEmpty)
+        var item: Item? = rootDirectory
+        for (part in pathParts) {
+            item = (item as Directory).children.find { it.name == part }
+            if (item == null) {
+                break
+            }
+        }
+        if (item == rootDirectory) {
+            item = null
+        }
+
+        if (item != null) {
+            item.name = newName
+            val index = currentItems.indexOf(item)
+            if (index != -1) {
+                if (hasHeaderItem) {
+                    notifyItemChanged(index + 1)
+                } else {
+                    notifyItemChanged(index)
+                }
+            }
+        }
+    }
+
     private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnClickListener {
@@ -282,13 +307,14 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
         }
     }
 
-    protected abstract inner class BaseActionModeCallback : Selector.ActionModeCallback<Item>() {
+    private inner class ActionModeCallback : Selector.ActionModeCallback<Item>() {
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
         private var normalPriorityItem: MenuItem? = null
         private var highPriorityItem: MenuItem? = null
         private var mixedPriorityItem: MenuItem? = null
+        protected var renameItem: MenuItem? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.base_torrent_files_context_menu, menu)
@@ -299,6 +325,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
             normalPriorityItem = menu.findItem(R.id.normal_priority)
             highPriorityItem = menu.findItem(R.id.high_priority)
             mixedPriorityItem = menu.findItem(R.id.mixed_priority)
+            renameItem = menu.findItem(R.id.rename)
 
             if (hasHeaderItem) {
                 notifyItemRangeChanged(1, currentItems.size)
@@ -328,11 +355,13 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
                     Item.Priority.Mixed -> mixedPriorityItem
                 }!!.isChecked = true
                 mixedPriorityItem!!.isVisible = (first.priority == Item.Priority.Mixed)
+                renameItem!!.isEnabled = true
             } else {
                 downloadItem!!.isEnabled = true
                 notDownloadItem!!.isEnabled = true
                 mixedPriorityItem!!.isVisible = true
                 mixedPriorityItem!!.isChecked = true
+                renameItem!!.isEnabled = false
             }
 
             return true
@@ -345,6 +374,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
             normalPriorityItem = null
             highPriorityItem = null
             mixedPriorityItem = null
+            renameItem = null
             super.onDestroyActionMode(mode)
         }
 
@@ -359,6 +389,19 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory) : RecyclerView.
                 R.id.high_priority -> setSelectedItemsPriority(Item.Priority.High)
                 R.id.normal_priority -> setSelectedItemsPriority(Item.Priority.Normal)
                 R.id.low_priority -> setSelectedItemsPriority(Item.Priority.Low)
+                R.id.rename -> {
+                    val file = selector.selectedItems.first()
+
+                    val pathParts = mutableListOf<String>()
+                    var i: Item? = file
+                    while (i != null && i != rootDirectory) {
+                        pathParts.add(0, i.name)
+                        i = i.parentDirectory
+                    }
+
+                    onNavigateToRenameDialog(bundleOf(TorrentFileRenameDialogFragment.FILE_PATH to pathParts.joinToString("/"),
+                                                      TorrentFileRenameDialogFragment.FILE_NAME to file.name))
+                }
                 else -> return false
             }
 

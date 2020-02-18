@@ -52,7 +52,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
-import org.equeim.tremotesf.torrentpropertiesfragment.TorrentFilesAdapter
+import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.DecimalFormats
@@ -500,9 +500,9 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                 R.id.rename -> {
                     val torrent = selector.selectedItems.first()
                     activity.findNavController(R.id.nav_host).navigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
-                                                                       bundleOf(TorrentFilesAdapter.TorrentRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                                                TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_PATH to torrent.name,
-                                                                                TorrentFilesAdapter.TorrentRenameDialogFragment.FILE_NAME to torrent.name))
+                                                                       bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                                                TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
+                                                                                TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 }
                 R.id.remove -> activity.findNavController(R.id.nav_host)
                         .navigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
