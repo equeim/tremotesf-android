@@ -131,6 +131,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
     private var noPermission = false
 
+    private var done = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -165,7 +167,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
+            if (done ||
+                    pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
                     findFragment<FilesFragment>()?.adapter?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -221,6 +224,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                                               priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],
                                               infoFragment.start_downloading_check_box.isChecked)
             infoFragment.directoriesAdapter?.save()
+            done = true
             activity?.onBackPressed()
             return true
         }
