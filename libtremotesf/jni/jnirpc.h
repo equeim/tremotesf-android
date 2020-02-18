@@ -1,9 +1,13 @@
 #ifndef LIBTREMOTESF_JNIRPC_H
 #define LIBTREMOTESF_JNIRPC_H
 
+#include <unordered_map>
+
 #include "rpc.h"
 #include "serversettings.h"
 #include "torrent.h"
+
+#include "stdutils.h"
 
 namespace libtremotesf
 {
@@ -88,6 +92,7 @@ namespace libtremotesf
                             const QVariantList& highPriorityFiles,
                             const QVariantList& normalPriorityFiles,
                             const QVariantList& lowPriorityFiles,
+                            const std::unordered_map<QString, QString>& renamedFiles,
                             int bandwidthPriority,
                             bool start);
 

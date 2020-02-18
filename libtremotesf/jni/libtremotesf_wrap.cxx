@@ -766,6 +766,10 @@ namespace Swig {
 #include <stdexcept>
 
 
+#include <unordered_map>
+#include <stdexcept>
+
+
 /* Check for overflow converting to Java int (always signed 32-bit) from (unsigned variable-bit) size_t */
 SWIGINTERN jint SWIG_JavaIntFromSize_t(size_t size) {
   static const jint JINT_MAX = 0x7FFFFFFF;
@@ -1049,6 +1053,44 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange(std::vector< QString > *
         } else {
           throw std::out_of_range("vector index out of range");
         }
+      }
+SWIGINTERN std::unordered_map< QString,QString >::iterator std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(std::unordered_map< QString,QString >::iterator *self){
+          std::unordered_map< QString, QString >::iterator copy = (*self);
+          return ++copy;
+        }
+SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot(std::unordered_map< QString,QString >::iterator const *self,std::unordered_map< QString,QString >::iterator other){
+          return (*self != other);
+        }
+SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey(std::unordered_map< QString,QString >::iterator const *self){
+          return (*self)->first;
+        }
+SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue(std::unordered_map< QString,QString >::iterator const *self){
+          return (*self)->second;
+        }
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(std::unordered_map< QString,QString >::iterator *self,QString const &newValue){
+          (*self)->second = newValue;
+        }
+
+  SWIGINTERN jint SWIG_MapSize(size_t size) {
+    jint sz = SWIG_JavaIntFromSize_t(size);
+    if (sz == -1) {
+      throw std::out_of_range("map size is too large to fit into a Java int");
+    }
+
+    return sz;
+  }
+
+SWIGINTERN jint std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl(std::unordered_map< QString,QString > const *self){
+        return SWIG_MapSize(self->size());
+      }
+SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(std::unordered_map< QString,QString > *self,QString const &key){
+        return (self->count(key) > 0);
+      }
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(std::unordered_map< QString,QString > *self,QString const &key,QString const &value){
+        (*self)[key] = value;
+      }
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(std::unordered_map< QString,QString > *self,std::unordered_map< QString,QString >::iterator const itr){
+        self->erase(itr);
       }
 SWIGINTERN std::vector< int > *new_std_vector_Sl_int_Sg___SWIG_2(jint count,int const &value){
         if (count < 0)
@@ -2994,6 +3036,343 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Str
   (void)jenv;
   (void)jcls;
   arg1 = *(std::vector< QString > **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1StringMap_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (std::unordered_map< QString,QString > *)new std::unordered_map< QString,QString >();
+  *(std::unordered_map< QString,QString > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1StringMap_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = 0 ;
+  std::unordered_map< QString,QString > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1;
+  if (!arg1) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::unordered_map< QString,QString > const & reference is null");
+    return 0;
+  } 
+  result = (std::unordered_map< QString,QString > *)new std::unordered_map< QString,QString >((std::unordered_map< QString,QString > const &)*arg1);
+  *(std::unordered_map< QString,QString > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getNextUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::unordered_map< QString,QString >::iterator result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(arg1);
+  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(std::move(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1isNot(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::unordered_map< QString,QString >::iterator arg2 ;
+  std::unordered_map< QString,QString >::iterator *argp2 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  argp2 = *(std::unordered_map< QString,QString >::iterator **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::unordered_map< QString,QString >::iterator");
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot((std::unordered_map< QString,QString >::iterator const *)arg1,arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getKey(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  QString result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey((std::unordered_map< QString,QString >::iterator const *)arg1);
+  
+  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getValue(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  QString result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue((std::unordered_map< QString,QString >::iterator const *)arg1);
+  
+  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1setValue(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  QString *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(arg1,(QString const &)*arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1StringMap_1Iterator(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1isEmpty(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  result = (bool)((std::unordered_map< QString,QString > const *)arg1)->empty();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1clear(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  (arg1)->clear();
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1find(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  QString *arg2 = 0 ;
+  std::unordered_map< QString,QString >::iterator result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return 0;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return 0;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  result = (arg1)->find((QString const &)*arg2);
+  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(std::move(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1begin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::unordered_map< QString,QString >::iterator result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  result = (arg1)->begin();
+  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(std::move(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1end(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::unordered_map< QString,QString >::iterator result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  result = (arg1)->end();
+  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(std::move(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1sizeImpl(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  jint result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  try {
+    result = std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl((std::unordered_map< QString,QString > const *)arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1containsImpl(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  jboolean jresult = 0 ;
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  QString *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return 0;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return 0;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(arg1,(QString const &)*arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1putUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jstring jarg3) {
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  QString *arg2 = 0 ;
+  QString *arg3 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetStringLength(jarg2);
+  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  arg2 = &arg2_str;
+  jenv->ReleaseStringChars(jarg2, arg2_pstr);
+  
+  
+  if(!jarg3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
+  if (!arg3_pstr) return ;
+  jsize arg3_len = jenv->GetStringLength(jarg3);
+  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  arg3 = &arg3_str;
+  jenv->ReleaseStringChars(jarg3, arg3_pstr);
+  
+  std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(arg1,(QString const &)*arg2,(QString const &)*arg3);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1removeUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::unordered_map< QString,QString >::iterator arg2 ;
+  std::unordered_map< QString,QString >::iterator const *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  argp2 = *(std::unordered_map< QString,QString >::iterator **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::unordered_map< QString,QString >::iterator const");
+    return ;
+  }
+  arg2 = *argp2; 
+  std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(arg1,arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1StringMap(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
   delete arg1;
 }
 
@@ -6393,7 +6772,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jintArray jarg7, jintArray jarg8, jint jarg9, jboolean jarg10) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jintArray jarg7, jintArray jarg8, jlong jarg9, jobject jarg9_, jint jarg10, jboolean jarg11) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   QByteArray *arg2 = 0 ;
   QString *arg3 = 0 ;
@@ -6402,12 +6781,14 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   QVariantList *arg6 = 0 ;
   QVariantList *arg7 = 0 ;
   QVariantList *arg8 = 0 ;
-  int arg9 ;
-  bool arg10 ;
+  std::unordered_map< QString,QString > *arg9 = 0 ;
+  int arg10 ;
+  bool arg11 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg9_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   
   if(!jarg2) {
@@ -6522,9 +6903,14 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   arg8 = &arg8_str;
   jenv->ReleaseIntArrayElements(jarg8, arg8_pstr, 0);
   
-  arg9 = (int)jarg9; 
-  arg10 = jarg10 ? true : false; 
-  (arg1)->addTorrentFile((QByteArray const &)*arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(QVariantList const &)*arg7,(QVariantList const &)*arg8,arg9,arg10);
+  arg9 = *(std::unordered_map< QString,QString > **)&jarg9;
+  if (!arg9) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::unordered_map< QString,QString > const & reference is null");
+    return ;
+  } 
+  arg10 = (int)jarg10; 
+  arg11 = jarg11 ? true : false; 
+  (arg1)->addTorrentFile((QByteArray const &)*arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(QVariantList const &)*arg7,(QVariantList const &)*arg8,(std::unordered_map< QString,QString > const &)*arg9,arg10,arg11);
 }
 
 

@@ -375,8 +375,12 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setUpdateDisabled", Q_ARG(bool, disabled));
     }
 
-    void JniRpc::addTorrentFile(const QByteArray& fileData, const QString& downloadDirectory, const QVariantList& wantedFiles, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& normalPriorityFiles, const QVariantList& lowPriorityFiles, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentFile(const QByteArray& fileData, const QString& downloadDirectory, const QVariantList& wantedFiles, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& normalPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, int bandwidthPriority, bool start)
     {
+        QVariantMap renamed;
+        for (const auto& i : renamedFiles) {
+            renamed.insert(i.first, i.second);
+        }
         QMetaObject::invokeMethod(this,
                                   "addTorrentFile",
                                   Q_ARG(QByteArray, fileData),
@@ -386,6 +390,7 @@ namespace libtremotesf
                                   Q_ARG(QVariantList, highPriorityFiles),
                                   Q_ARG(QVariantList, normalPriorityFiles),
                                   Q_ARG(QVariantList, lowPriorityFiles),
+                                  Q_ARG(QVariantMap, renamed),
                                   Q_ARG(int, bandwidthPriority),
                                   Q_ARG(bool, start));
     }

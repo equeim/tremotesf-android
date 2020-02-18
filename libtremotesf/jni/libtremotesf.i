@@ -12,6 +12,7 @@
 %javaconst(1);
 
 %include <std_vector.i>
+%include <std_unordered_map.i>
 
 %include "qbytearray.i"
 %include "qstring.i"
@@ -77,6 +78,7 @@ namespace libtremotesf
 %template(TorrentPeersVector) std::vector<libtremotesf::Peer*>;
 
 %template(StringsVector) std::vector<QString>;
+%template(StringMap) std::unordered_map<QString, QString>;
 
 %template(IntVector) std::vector<int>;
 

@@ -324,6 +324,7 @@ namespace libtremotesf
                              const QVariantList& highPriorityFiles,
                              const QVariantList& normalPriorityFiles,
                              const QVariantList& lowPriorityFiles,
+                             const QVariantMap& renamedFiles,
                              int bandwidthPriority,
                              bool start)
     {
@@ -345,9 +346,21 @@ namespace libtremotesf
                 if (isConnected()) {
                     postRequest(watcher->result(), [=](const QJsonObject& parseResult) {
                         if (isResultSuccessful(parseResult)) {
-                            if (getReplyArguments(parseResult).contains(torrentDuplicateKey)) {
+                            const auto arguments(getReplyArguments(parseResult));
+                            if (arguments.contains(torrentDuplicateKey)) {
                                 emit torrentAddDuplicate();
                             } else {
+                                if (!renamedFiles.isEmpty()) {
+                                    const QJsonObject torrentJson(arguments.value(QLatin1String("torrent-added")).toObject());
+                                    if (!torrentJson.isEmpty()) {
+                                        const int id = torrentJson.value(Torrent::idKey).toInt();
+                                        for (auto i = renamedFiles.begin(), end = renamedFiles.end();
+                                             i != end;
+                                             ++i) {
+                                            renameTorrentFile(id, i.key(), i.value().toString());
+                                        }
+                                    }
+                                }
                                 updateData();
                             }
                         } else {

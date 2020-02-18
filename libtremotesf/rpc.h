@@ -146,6 +146,7 @@ namespace libtremotesf
                                         const QVariantList& highPriorityFiles,
                                         const QVariantList& normalPriorityFiles,
                                         const QVariantList& lowPriorityFiles,
+                                        const QVariantMap& renamedFiles,
                                         int bandwidthPriority,
                                         bool start);
 
