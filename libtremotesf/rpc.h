@@ -141,10 +141,8 @@ namespace libtremotesf
 
         Q_INVOKABLE void addTorrentFile(const QByteArray& fileData,
                                         const QString& downloadDirectory,
-                                        const QVariantList& wantedFiles,
                                         const QVariantList& unwantedFiles,
                                         const QVariantList& highPriorityFiles,
-                                        const QVariantList& normalPriorityFiles,
                                         const QVariantList& lowPriorityFiles,
                                         const QVariantMap& renamedFiles,
                                         int bandwidthPriority,

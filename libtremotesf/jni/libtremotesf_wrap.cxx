@@ -6772,23 +6772,21 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jintArray jarg7, jintArray jarg8, jlong jarg9, jobject jarg9_, jint jarg10, jboolean jarg11) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jlong jarg7, jobject jarg7_, jint jarg8, jboolean jarg9) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   QByteArray *arg2 = 0 ;
   QString *arg3 = 0 ;
   QVariantList *arg4 = 0 ;
   QVariantList *arg5 = 0 ;
   QVariantList *arg6 = 0 ;
-  QVariantList *arg7 = 0 ;
-  QVariantList *arg8 = 0 ;
-  std::unordered_map< QString,QString > *arg9 = 0 ;
-  int arg10 ;
-  bool arg11 ;
+  std::unordered_map< QString,QString > *arg7 = 0 ;
+  int arg8 ;
+  bool arg9 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  (void)jarg9_;
+  (void)jarg7_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   
   if(!jarg2) {
@@ -6867,50 +6865,14 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   arg6 = &arg6_str;
   jenv->ReleaseIntArrayElements(jarg6, arg6_pstr, 0);
   
-  
-  if(!jarg7) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
-    return ;
-  }
-  jint* arg7_pstr = jenv->GetIntArrayElements(jarg7, 0);
-  if (!arg7_pstr) return ;
-  jsize arg7_len = jenv->GetArrayLength(jarg7);
-  QVariantList arg7_str;
-  if (arg7_len) {
-    arg7_str.reserve(arg7_len);
-    for (jsize i = 0; i < arg7_len; ++i) {
-      arg7_str.push_back(arg7_pstr[i]);
-    }
-  }
-  arg7 = &arg7_str;
-  jenv->ReleaseIntArrayElements(jarg7, arg7_pstr, 0);
-  
-  
-  if(!jarg8) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
-    return ;
-  }
-  jint* arg8_pstr = jenv->GetIntArrayElements(jarg8, 0);
-  if (!arg8_pstr) return ;
-  jsize arg8_len = jenv->GetArrayLength(jarg8);
-  QVariantList arg8_str;
-  if (arg8_len) {
-    arg8_str.reserve(arg8_len);
-    for (jsize i = 0; i < arg8_len; ++i) {
-      arg8_str.push_back(arg8_pstr[i]);
-    }
-  }
-  arg8 = &arg8_str;
-  jenv->ReleaseIntArrayElements(jarg8, arg8_pstr, 0);
-  
-  arg9 = *(std::unordered_map< QString,QString > **)&jarg9;
-  if (!arg9) {
+  arg7 = *(std::unordered_map< QString,QString > **)&jarg7;
+  if (!arg7) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::unordered_map< QString,QString > const & reference is null");
     return ;
   } 
-  arg10 = (int)jarg10; 
-  arg11 = jarg11 ? true : false; 
-  (arg1)->addTorrentFile((QByteArray const &)*arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(QVariantList const &)*arg7,(QVariantList const &)*arg8,(std::unordered_map< QString,QString > const &)*arg9,arg10,arg11);
+  arg8 = (int)jarg8; 
+  arg9 = jarg9 ? true : false; 
+  (arg1)->addTorrentFile((QByteArray const &)*arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(std::unordered_map< QString,QString > const &)*arg7,arg8,arg9);
 }
 
 

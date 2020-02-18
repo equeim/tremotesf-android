@@ -319,10 +319,8 @@ namespace libtremotesf
 
     void Rpc::addTorrentFile(const QByteArray& fileData,
                              const QString& downloadDirectory,
-                             const QVariantList& wantedFiles,
                              const QVariantList& unwantedFiles,
                              const QVariantList& highPriorityFiles,
-                             const QVariantList& normalPriorityFiles,
                              const QVariantList& lowPriorityFiles,
                              const QVariantMap& renamedFiles,
                              int bandwidthPriority,
@@ -333,10 +331,8 @@ namespace libtremotesf
                 return makeRequestData(QLatin1String("torrent-add"),
                                        {{QLatin1String("metainfo"), fileData.toBase64()},
                                         {QLatin1String("download-dir"), downloadDirectory},
-                                        {QLatin1String("files-wanted"), wantedFiles},
                                         {QLatin1String("files-unwanted"), unwantedFiles},
                                         {QLatin1String("priority-high"), highPriorityFiles},
-                                        {QLatin1String("priority-normal"), normalPriorityFiles},
                                         {QLatin1String("priority-low"), lowPriorityFiles},
                                         {QLatin1String("bandwidthPriority"), bandwidthPriority},
                                         {QLatin1String("paused"), !start}});

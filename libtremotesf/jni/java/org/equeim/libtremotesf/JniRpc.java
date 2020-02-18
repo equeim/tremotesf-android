@@ -81,8 +81,8 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_setUpdateDisabled(swigCPtr, this, disabled);
   }
 
-  public void addTorrentFile(byte[] fileData, String downloadDirectory, int[] wantedFiles, int[] unwantedFiles, int[] highPriorityFiles, int[] normalPriorityFiles, int[] lowPriorityFiles, StringMap renamedFiles, int bandwidthPriority, boolean start) {
-    libtremotesfJNI.JniRpc_addTorrentFile(swigCPtr, this, fileData, downloadDirectory, wantedFiles, unwantedFiles, highPriorityFiles, normalPriorityFiles, lowPriorityFiles, StringMap.getCPtr(renamedFiles), renamedFiles, bandwidthPriority, start);
+  public void addTorrentFile(byte[] fileData, String downloadDirectory, int[] unwantedFiles, int[] highPriorityFiles, int[] lowPriorityFiles, StringMap renamedFiles, int bandwidthPriority, boolean start) {
+    libtremotesfJNI.JniRpc_addTorrentFile(swigCPtr, this, fileData, downloadDirectory, unwantedFiles, highPriorityFiles, lowPriorityFiles, StringMap.getCPtr(renamedFiles), renamedFiles, bandwidthPriority, start);
   }
 
   public void addTorrentLink(String link, String downloadDirectory, int bandwidthPriority, boolean start) {
