@@ -80,9 +80,15 @@ namespace libtremotesf
     {
         return contains_impl(container, value, 0);
     }
+
     template<class C, class V>
-    inline typename C::size_type index_of(const C& container, const V& value) {
-        return static_cast<typename C::size_type>(std::find(container.cbegin(), container.cend(), value) - container.cbegin());
+    inline size_t index_of(const C& container, const V& value) {
+        return static_cast<size_t>(std::find(std::begin(container), std::end(container), value) - std::begin(container));
+    }
+
+    template<class C, class V>
+    inline int index_of_i(const C& container, const V& value) {
+        return static_cast<int>(std::find(std::begin(container), std::end(container), value) - std::begin(container));
     }
 
     template<class C, class V>
@@ -119,19 +125,16 @@ namespace libtremotesf
     }
 
     template<typename T>
-    struct VectorBatchRemover
+    class VectorBatchRemover
     {
-        std::vector<T>& items;
-        std::vector<int>& removedIndexes;
-        std::vector<int>& indexesToShift;
-
-        const typename std::vector<T>::iterator begin = items.begin();
-
-        int endIndex = -1;
-        int beginIndex = 0;
+    public:
+        explicit VectorBatchRemover(std::vector<T>& items, std::vector<int>* removedIndexes = nullptr, std::vector<int>* indexesToShift = nullptr)
+            : items(items), removedIndexes(removedIndexes), indexesToShift(indexesToShift) {}
 
         void remove(int index) {
-            removedIndexes.push_back(index);
+            if (removedIndexes) {
+                removedIndexes->push_back(index);
+            }
             if (endIndex == -1) {
                 reset(index);
             } else {
@@ -146,9 +149,9 @@ namespace libtremotesf
 
         void doRemove() {
             items.erase(begin + beginIndex, begin + endIndex + 1);
-            if (!indexesToShift.empty()) {
+            if (indexesToShift && !indexesToShift->empty()) {
                 const int shift = static_cast<int>(endIndex - beginIndex + 1);
-                for (int& index : indexesToShift) {
+                for (int& index : *indexesToShift) {
                     if (index < beginIndex) {
                         break;
                     }
@@ -157,10 +160,20 @@ namespace libtremotesf
             }
         }
 
+    private:
         void reset(int index) {
             endIndex = index;
             beginIndex = index;
         }
+
+        std::vector<T>& items;
+        std::vector<int> *const removedIndexes;
+        std::vector<int> *const indexesToShift;
+
+        const typename std::vector<T>::iterator begin = items.begin();
+
+        int endIndex = -1;
+        int beginIndex = 0;
     };
 }
 
@@ -168,8 +181,10 @@ namespace tremotesf
 {
     using libtremotesf::contains;
     using libtremotesf::index_of;
+    using libtremotesf::index_of_i;
     using libtremotesf::erase_one;
     using libtremotesf::setChanged;
+    using libtremotesf::VectorBatchRemover;
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)

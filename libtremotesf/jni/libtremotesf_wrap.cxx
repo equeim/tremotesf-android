@@ -3949,7 +3949,22 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1pe
 }
 
 
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1nextUpdate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1nextUpdateTime(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;
+  long long result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Tracker **)&jarg1; 
+  result = (long long)((libtremotesf::Tracker const *)arg1)->nextUpdateTime();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1nextUpdateEta(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;
   int result;
@@ -3958,7 +3973,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1ne
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::Tracker **)&jarg1; 
-  result = (int)((libtremotesf::Tracker const *)arg1)->nextUpdate();
+  result = (int)((libtremotesf::Tracker const *)arg1)->nextUpdateEta();
   jresult = (jint)result; 
   return jresult;
 }

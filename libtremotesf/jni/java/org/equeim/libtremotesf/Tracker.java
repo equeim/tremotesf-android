@@ -60,8 +60,12 @@ public class Tracker {
     return libtremotesfJNI.Tracker_peers(swigCPtr, this);
   }
 
-  public int nextUpdate() {
-    return libtremotesfJNI.Tracker_nextUpdate(swigCPtr, this);
+  public long nextUpdateTime() {
+    return libtremotesfJNI.Tracker_nextUpdateTime(swigCPtr, this);
+  }
+
+  public int nextUpdateEta() {
+    return libtremotesfJNI.Tracker_nextUpdateEta(swigCPtr, this);
   }
 
   public final static class Status {

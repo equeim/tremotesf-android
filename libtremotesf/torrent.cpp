@@ -76,7 +76,7 @@ namespace libtremotesf
         const auto honorSessionLimitsKey(QJsonKeyStringInit("honorsSessionLimits"));
         const auto bandwidthPriorityKey(QJsonKeyStringInit("bandwidthPriority"));
         const auto idleSeedingLimitModeKey(QJsonKeyStringInit("seedIdleMode"));
-        const auto idleSeedingLimitKey(QJsonKeyStringInit("seedRatioLimit"));
+        const auto idleSeedingLimitKey(QJsonKeyStringInit("seedIdleLimit"));
         const auto downloadDirectoryKey(QJsonKeyStringInit("downloadDir"));
         const auto prioritiesKey(QJsonKeyStringInit("priorities"));
         const auto creatorKey(QJsonKeyStringInit("creator"));
@@ -266,12 +266,17 @@ namespace libtremotesf
                 newTrackers.emplace_back(id, trackerMap);
                 trackersAddedOrRemoved = true;
             } else {
-                found->update(trackerMap);
+                if (found->update(trackerMap)) {
+                    changed = true;
+                }
                 newTrackers.push_back(std::move(*found));
             }
         }
         if (newTrackers.size() != trackers.size()) {
             trackersAddedOrRemoved = true;
+        }
+        if (trackersAddedOrRemoved) {
+            changed = true;
         }
         trackers = std::move(newTrackers);
     }
@@ -689,6 +694,9 @@ namespace libtremotesf
         mFilesUpdated = false;
         mPeersUpdated = false;
         emit updated();
+        if (mData.changed) {
+            emit changed();
+        }
     }
 
     void Torrent::updateFiles(const QJsonObject &torrentMap)
@@ -742,7 +750,7 @@ namespace libtremotesf
         {
             const auto newPeersBegin(newPeers.begin());
             const auto newPeersEnd(newPeers.end());
-            VectorBatchRemover<Peer> remover{mPeers, removed, changed};
+            VectorBatchRemover<Peer> remover(mPeers, &removed, &changed);
             for (int i = static_cast<int>(mPeers.size()) - 1; i >= 0; --i) {
                 Peer& peer = mPeers[static_cast<size_t>(i)];
                 const auto found(std::find_if(newPeersBegin, newPeersEnd, [&peer](const auto& p) {
