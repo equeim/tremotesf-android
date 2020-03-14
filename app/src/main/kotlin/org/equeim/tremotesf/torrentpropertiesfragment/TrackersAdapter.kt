@@ -58,9 +58,15 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
     val announce: String = rpcTracker.announce()
 
     var status = 0
+        private set
     lateinit var errorMessage: String
+        private set
     var peers = 0
-    var nextUpdate = 0
+        private set
+    var nextUpdateTime = 0L
+        private set
+    var nextUpdateEta = 0L
+        private set
 
     init {
         update(rpcTracker)
@@ -70,7 +76,17 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
         status = rpcTracker.status()
         errorMessage = rpcTracker.errorMessage()
         peers = rpcTracker.peers()
-        nextUpdate = rpcTracker.nextUpdate()
+        nextUpdateTime = rpcTracker.nextUpdateTime()
+        updateNextUpdateEta()
+    }
+
+    fun updateNextUpdateEta() {
+        val eta = nextUpdateTime - System.currentTimeMillis() / 1000
+        if (eta < 0) {
+            nextUpdateEta = -1
+        } else {
+            nextUpdateEta = eta
+        }
     }
 }
 
@@ -131,11 +147,11 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             holder.peersTextView.visibility = View.VISIBLE
         }
 
-        if (tracker.nextUpdate < 0) {
+        if (tracker.nextUpdateEta < 0) {
             holder.nextUpdateTextView.visibility = View.GONE
         } else {
             holder.nextUpdateTextView.text = context.getString(R.string.next_update,
-                                                                DateUtils.formatElapsedTime(tracker.nextUpdate.toLong()))
+                                                                DateUtils.formatElapsedTime(tracker.nextUpdateEta))
             holder.nextUpdateTextView.visibility = View.VISIBLE
         }
 
@@ -158,6 +174,12 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
 
         this.torrent = torrent
+
+        if (!torrent.changed && !(trackers.isEmpty() && torrent.trackerSites.isNotEmpty())) {
+            trackers.forEach(TrackersAdapterItem::updateNextUpdateEta)
+            notifyItemRangeChanged(0, trackers.size)
+            return
+        }
 
         val rpcTrackers = torrent.trackers
         val newTrackers = mutableListOf<TrackersAdapterItem>()
