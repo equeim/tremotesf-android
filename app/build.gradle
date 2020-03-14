@@ -47,32 +47,32 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '1.8'
     }
     lintOptions {
         checkReleaseBuilds false
     }
-    flavorDimensions("freedom")
+    flavorDimensions('freedom')
     productFlavors {
         google {
-            dimension "freedom"
-            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
+            dimension 'freedom'
+            buildConfigField 'boolean', 'DONATIONS_GOOGLE', 'true'
         }
         fdroid {
-            dimension "freedom"
-            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
+            dimension 'freedom'
+            buildConfigField 'boolean', 'DONATIONS_GOOGLE', 'false'
         }
     }
     splits {
         abi {
             enable true
             reset()
-            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+            include 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
             universalApk true
         }
     }
     applicationVariants.all { variant ->
-        def abiCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+        def abiCodes = ['armeabi-v7a': 1, 'x86': 2, 'arm64-v8a': 3, 'x86_64': 4]
         variant.outputs.each { output ->
             def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
             if (baseAbiVersionCode != null) {
