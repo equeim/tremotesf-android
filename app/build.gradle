@@ -86,7 +86,7 @@ android {
 }
 
 rootProject.ext.vers += [
-        kotlinxSerialization: '0.14.0',
+        kotlinxSerialization: '0.20.0',
 
         androidx: [
                 appcompat: '1.1.0',
