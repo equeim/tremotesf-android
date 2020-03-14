@@ -85,43 +85,62 @@ android {
     }
 }
 
-def core_version = '1.2.0'
-def fragment_version = '1.2.2'
-def lifecycle_version = '2.2.0'
-def navigation_version = '2.2.1'
+rootProject.ext.vers += [
+        kotlinxSerialization: '0.14.0',
+
+        androidx: [
+                appcompat: '1.1.0',
+                concurrentFutures: '1.0.0',
+                core: '1.2.0',
+                coordinatorlayout: '1.1.0',
+                drawerlayout: '1.0.0',
+                fragment: '1.2.2',
+                gridlayout: '1.0.0',
+                lifecycle: '2.2.0',
+                navigation: '2.2.1',
+                recyclerview: '1.1.0',
+                preference: '1.1.0',
+                viewpager2: '1.0.0',
+                work: '2.3.3',
+        ],
+
+        material: '1.1.0',
+        benjamin: '1.0.0',
+        recyclerviewFastscroll: '2.0.0',
+        billing: '2.1.0'
+]
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${vers.kotlin}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${vers.kotlinxSerialization}"
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.concurrent:concurrent-futures:1.0.0'
-    implementation "androidx.core:core:$core_version"
-    implementation "androidx.core:core-ktx:$core_version"
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-    implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
-    implementation "androidx.fragment:fragment:$fragment_version"
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
-    implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    //implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
-    implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation "androidx.appcompat:appcompat:${vers.androidx.appcompat}"
+    implementation "androidx.concurrent:concurrent-futures:${vers.androidx.concurrentFutures}"
+    implementation "androidx.core:core:${vers.androidx.core}"
+    implementation "androidx.core:core-ktx:${vers.androidx.core}"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:${vers.androidx.coordinatorlayout}"
+    implementation "androidx.drawerlayout:drawerlayout:${vers.androidx.drawerlayout}"
+    implementation "androidx.fragment:fragment:${vers.androidx.fragment}"
+    implementation "androidx.fragment:fragment-ktx:${vers.androidx.fragment}"
+    implementation "androidx.gridlayout:gridlayout:${vers.androidx.gridlayout}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${vers.androidx.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:${vers.androidx.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${vers.androidx.lifecycle}"
+    //implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate-ktx:${vers.androidx.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-service:${vers.androidx.lifecycle}"
+    implementation "androidx.navigation:navigation-fragment-ktx:${vers.androidx.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${vers.androidx.navigation}"
+    implementation "androidx.recyclerview:recyclerview:${vers.androidx.recyclerview}"
+    implementation "androidx.preference:preference:${vers.androidx.preference}"
+    implementation "androidx.viewpager2:viewpager2:${vers.androidx.viewpager2}"
+    implementation "androidx.work:work-runtime:${vers.androidx.work}"
 
-    implementation 'androidx.work:work-runtime:2.3.3'
+    implementation "com.google.android.material:material:${vers.material}"
 
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation "io.github.raindev:benjamin:${vers.benjamin}"
+    implementation "com.simplecityapps:recyclerview-fastscroll:${vers.recyclerviewFastscroll}"
 
-    implementation 'io.github.raindev:benjamin:1.0.0'
-    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.0'
-
-    googleImplementation 'com.android.billingclient:billing:2.1.0'
+    googleImplementation "com.android.billingclient:billing:${vers.billing}"
 }
