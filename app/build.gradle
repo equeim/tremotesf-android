@@ -83,10 +83,6 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-}
-
 def core_version = '1.2.0'
 def fragment_version = '1.2.2'
 def lifecycle_version = '2.2.0'
