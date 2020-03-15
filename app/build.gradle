@@ -7,6 +7,10 @@ plugins {
     id 'kotlinx-serialization'
 }
 
+def qtHasAbiSuffix() {
+    return file('libs/armeabi-v7a/libQt5Core_armeabi-v7a.so').exists()
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
@@ -20,9 +24,11 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_STL=c++_shared', '-DANDROID_ARM_NEON=true'
+                arguments '-DANDROID_STL=c++_shared', '-DANDROID_ARM_NEON=true', "-DQT_HAS_ABI_SUFFIX=${qtHasAbiSuffix()}"
             }
         }
+
+        buildConfigField 'boolean', 'QT_HAS_ABI_SUFFIX', "${qtHasAbiSuffix()}"
     }
     buildTypes {
         release {
@@ -111,7 +117,7 @@ rootProject.ext.vers += [
 ]
 
 dependencies {
-    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation files('libs/QtAndroid.jar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${vers.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${vers.kotlinxSerialization}"

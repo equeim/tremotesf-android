@@ -2,6 +2,8 @@
 
 readonly OPENSSL_DIR="$(realpath -- "$(dirname -- "$0")")"
 
+readonly ADD_ABI_SUFFIX="$1"
+
 function build() {
     local -r abi="$1"
     local -r api="$2"
@@ -33,13 +35,24 @@ function build() {
         ;;
     esac
 
+    if [ "$ADD_ABI_SUFFIX" = true ]; then
+        local -r prefix="$OPENSSL_DIR/install"
+    else
+        local -r prefix="$OPENSSL_DIR/install-$abi"
+    fi
+
     export ANDROID_NDK="$ANDROID_NDK_ROOT"
     export PATH="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
-    "$OPENSSL_DIR/openssl/Configure" "$target" no-shared no-ssl3 no-comp no-hw no-engine --prefix="$OPENSSL_DIR/install-$abi" "${cflags[@]}" || return 1
+    "$OPENSSL_DIR/openssl/Configure" "$target" no-shared no-ssl3 no-comp no-hw no-engine --prefix="$prefix" "${cflags[@]}" || return 1
 
     make build_libs $MAKEOPTS || return 1
     make install_dev $MAKEOPTS || return 1
-    
+
+    if [ "$ADD_ABI_SUFFIX" = true ]; then
+        mv "$prefix/lib/libcrypto.a" "$prefix/lib/libcrypto_$abi.a" || return 1
+        mv "$prefix/lib/libssl.a" "$prefix/lib/libssl_$abi.a" || return 1
+    fi
+
     echo
 }
 

@@ -1,8 +1,6 @@
 --- a/src/network/ssl/qsslsocket_openssl11.cpp	2018-09-18 21:56:40.444638484 +0300
 +++ b/src/network/ssl/qsslsocket_openssl11.cpp	2018-09-18 21:57:54.844788847 +0300
-@@ -135,18 +135,6 @@
-     }
- #elif defined(Q_OS_QNX)
+@@ -127,16 +127,4 @@
      s_loadRootCertsOnDemand = true;
 -#elif defined(Q_OS_UNIX) && !defined(Q_OS_DARWIN)
 -    // check whether we can enable on-demand root-cert loading (i.e. check whether the sym links are there)

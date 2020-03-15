@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project(tremotesf CXX)
 
-list(APPEND CMAKE_FIND_ROOT_PATH "${PROJECT_SOURCE_DIR}/../3rdparty/qt/install-${CMAKE_ANDROID_ARCH_ABI}")
+if (QT_HAS_ABI_SUFFIX)
+    list(APPEND CMAKE_FIND_ROOT_PATH "${PROJECT_SOURCE_DIR}/../3rdparty/qt/install-api${ANDROID_PLATFORM_LEVEL}")
+else()
+    list(APPEND CMAKE_FIND_ROOT_PATH "${PROJECT_SOURCE_DIR}/../3rdparty/qt/install-${CMAKE_ANDROID_ARCH_ABI}")
+endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)

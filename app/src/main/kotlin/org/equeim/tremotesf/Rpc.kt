@@ -78,9 +78,21 @@ object Rpc : Logger {
     init {
         System.loadLibrary("c++_shared")
         QtNative.setClassLoader(context.classLoader)
-        System.loadLibrary("Qt5Core")
-        System.loadLibrary("Qt5Network")
-        System.loadLibrary("tremotesf")
+        if (BuildConfig.QT_HAS_ABI_SUFFIX) {
+            val suffix = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                @Suppress("DEPRECATION")
+                Build.CPU_ABI
+            } else {
+                Build.SUPPORTED_ABIS.first()
+            }
+            System.loadLibrary("Qt5Core_$suffix")
+            System.loadLibrary("Qt5Network_$suffix")
+            System.loadLibrary("tremotesf_$suffix")
+        } else {
+            System.loadLibrary("Qt5Core")
+            System.loadLibrary("Qt5Network")
+            System.loadLibrary("tremotesf")
+        }
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {

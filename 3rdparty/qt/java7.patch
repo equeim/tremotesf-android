@@ -1,6 +1,25 @@
+From 8409844bd66f0186ed227a58db687f0d748ada22 Mon Sep 17 00:00:00 2001
+From: Christian Romberg <distjubo@gmail.com>
+Date: Wed, 9 Oct 2019 11:38:45 +0200
+Subject: [PATCH] Fix java mkspec for compatibility with JDK 12
+
+Starting with JDK 12, javac no longer supports source and target
+version 6. This commit changes the source and target version to 7.
+
+[ChangeLog][General]
+
+Fixes: QTBUG-79094
+Change-Id: Ife8966db01c68251de2fe85307de30c31e658172
+Reviewed-by: Eskil Abrahamsen Blomfeldt <eskil.abrahamsen-blomfeldt@qt.io>
+---
+ mkspecs/features/java.prf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mkspecs/features/java.prf b/mkspecs/features/java.prf
+index f1f5e4c10c7..1d52f05e528 100644
 --- a/mkspecs/features/java.prf
 +++ b/mkspecs/features/java.prf
-@@ -20,7 +20,7 @@
+@@ -20,7 +20,7 @@ CONFIG += plugin no_plugin_name_prefix
  javac.input = JAVASOURCES
  javac.output = $$CLASS_DIR
  javac.CONFIG += combine
@@ -8,4 +27,4 @@
 +javac.commands = javac -source 7 -target 7 -Xlint:unchecked -bootclasspath $$ANDROID_JAR_FILE -cp $$shell_quote($$system_path($$join(JAVACLASSPATH, $$DIRLIST_SEPARATOR))) -d $$shell_quote($$CLASS_DIR) ${QMAKE_FILE_IN}
  # Force rebuild every time, because we don't know the paths of the destination files
  # as they depend on the code.
- javac.depends = FORCE 
+ javac.depends = FORCE
