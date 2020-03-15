@@ -22,6 +22,7 @@ package org.equeim.tremotesf.utils
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.widget.ProgressBar
 
@@ -93,7 +94,7 @@ object Utils : Logger {
     fun setProgressBarColor(progressBar: ProgressBar) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             val ta = progressBar.context.obtainStyledAttributes(intArrayOf(R.attr.colorSecondary))
-            progressBar.progressDrawable.setColorFilter(ta.getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
+            progressBar.progressDrawable.colorFilter = PorterDuffColorFilter(ta.getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
             ta.recycle()
         }
     }
