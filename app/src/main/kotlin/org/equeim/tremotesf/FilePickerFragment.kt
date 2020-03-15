@@ -108,6 +108,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             private const val TYPE_ITEM = 1
         }
 
+        @Suppress("DEPRECATION")
         private var currentDirectory = Environment.getExternalStorageDirectory()
         val files = mutableListOf<File>()
 
@@ -183,6 +184,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         }
 
         fun navigateToHome() {
+            @Suppress("DEPRECATION")
             val homeDirectory = Environment.getExternalStorageDirectory()
             if (currentDirectory != homeDirectory) {
                 navigateTo(homeDirectory)
