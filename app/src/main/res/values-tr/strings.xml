@@ -363,6 +363,8 @@
     <string name="translators">Çevirmenler</string>
     <string name="license">Lisans</string>
 
+    <string name="prefs_dark_theme_mode_title">Tema</string>
+
     <string name="prefs_old_colors_title">Eski renkleri kullan</string>
 
     <string name="prefs_torrent_compact_view_title">Torrentler için dar görünüm kullanın</string>
@@ -382,8 +384,6 @@
     <string name="alternative_speed_limits">Muadil hız sınırları</string>
 
     <string name="donate_tab">Bağış</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
-    <string name="donations_description">Bu uygulamayı beğendiyseniz, geliştiriciye bir bağış göndererek gelişimini destekleyebilirsiniz.</string>
     <string name="donate_dialog_again">Bu iletişim kutusu tekrar gösterilmeyecek.</string>
 
     <string name="free_space">Boş alan: %s</string>
@@ -395,8 +395,42 @@
     <string name="notifications_on_connect">Sunucuya bağlanırken bildirimler</string>
     <string name="notify_on_finished_since_last">Sunucuya son bağlantıdan bu yana bitmiş torrentlerİ bildir</string>
     <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenmiş torrentlere bildirme</string>
-    <string name="donations_donate">Bağış</string>
-    <string name="donations_paypal_description">Butona bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
-    <string name="donations_google_description">Google ücretin %30\\\'unu talep ediyor</string>
 
+    <string name="persistent_notification">Kalıcı bildirim</string>
+
+    <string name="persistent_notification_warning">Kalıcı bildirimin etkinleştirilmesi, uygulamanın arka plan güncelleme moduna geçmesini engeller ve aşırı pil tüketimine neden olabilir</string>
+
+    <string name="prefs_background_update_interval_title">Arka plan güncelleme aralığı</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Devredışı</item>
+        <item>15 dakika</item>
+        <item>30 dakika</item>
+        <item>1 saat</item>
+        <item>3 saat</item>
+        <item>6 saat</item>
+        <item>12 saat</item>
+        <item>24 saat</item>
+    </string-array>
+
+    <string name="connection_settings">Bağlantı ayarları</string>
+
+    <string name="theme_auto_pre_q">Pil tasarrufu ile ayarla</string>
+    <string name="theme_auto_q">Sistem varsayılanı</string>
+
+    <string-array name="prefs_theme_entries">
+        <item translatable="false">@string/theme_auto</item>
+        <item>Karanlık</item>
+        <item>Aydınlık</item>
+    </string-array>
+
+    <string name="donations_description">Bu uygulamayı beğendiyseniz, geliştiriciye bir bağış göndererek gelişimini destekleyebilirsiniz.</string>
+    <string name="donations_donate">Bağış</string>
+    <string name="donations_amount">Bağış miktarı</string>
+    <string name="donations_google_title">Google Play Store</string>
+    <string name="donations_google_description">Google ücretin %30\\\'unu talep ediyor</string>
+    <string name="donations_paypal_title">PayPal</string>
+    <string name="donations_paypal_description">Butona bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
+    <string name="donations_yandex_title">Yandex.Money</string>
+    <string name="donations_snackbar_ok">Bağışınız için teşekkürler!</string>
+    <string name="donations_snackbar_error">Bağış işlenirken hata oluştu</string>
 </resources>
