@@ -4190,6 +4190,21 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
 }
 
 
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1metadataComplete_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (bool) ((arg1)->metadataComplete);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1downloadSpeed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
@@ -4657,21 +4672,6 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
   (void)jarg1_;
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (bool) ((arg1)->trackersAddedOrRemoved);
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1changed_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (bool) ((arg1)->changed);
   jresult = (jboolean)result; 
   return jresult;
 }
@@ -5441,6 +5441,621 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1serve
 }
 
 
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1rpcVersion_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->rpcVersion);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1minimumRpcVersion_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->minimumRpcVersion);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1downloadDirectory_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (QString *) & ((arg1)->downloadDirectory);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1startAddedTorrents_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->startAddedTorrents);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1trashTorrentFiles_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->trashTorrentFiles);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1renameIncompleteFiles_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->renameIncompleteFiles);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1incompleteDirectoryEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->incompleteDirectoryEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1incompleteDirectory_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (QString *) & ((arg1)->incompleteDirectory);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1ratioLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->ratioLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jdouble JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1ratioLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jdouble jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  double result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (double) ((arg1)->ratioLimit);
+  jresult = (jdouble)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1idleSeedingLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->idleSeedingLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1idleSeedingLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->idleSeedingLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1downloadQueueEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->downloadQueueEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1downloadQueueSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->downloadQueueSize);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1seedQueueEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->seedQueueEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1seedQueueSize_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->seedQueueSize);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1idleQueueLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->idleQueueLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1idleQueueLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->idleQueueLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1downloadSpeedLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->downloadSpeedLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1downloadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->downloadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1uploadSpeedLimited_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->uploadSpeedLimited);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1uploadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->uploadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeSpeedLimitsEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->alternativeSpeedLimitsEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeDownloadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->alternativeDownloadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeUploadSpeedLimit_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->alternativeUploadSpeedLimit);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeSpeedLimitsScheduled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->alternativeSpeedLimitsScheduled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeSpeedLimitsBeginTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  QTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (QTime *) & ((arg1)->alternativeSpeedLimitsBeginTime);
+  
+  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeSpeedLimitsEndTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  QTime *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (QTime *) & ((arg1)->alternativeSpeedLimitsEndTime);
+  
+  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1alternativeSpeedLimitsDays_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays) ((arg1)->alternativeSpeedLimitsDays);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1peerPort_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->peerPort);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1randomPortEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->randomPortEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1portForwardingEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->portForwardingEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1encryptionMode_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  libtremotesf::ServerSettingsData::EncryptionMode result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (libtremotesf::ServerSettingsData::EncryptionMode) ((arg1)->encryptionMode);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1utpEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->utpEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1pexEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->pexEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1dhtEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->dhtEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1lpdEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool) ((arg1)->lpdEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1maximumPeersPerTorrent_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->maximumPeersPerTorrent);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1maximumPeersGlobally_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (int) ((arg1)->maximumPeersGlobally);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1ServerSettingsData(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::ServerSettingsData *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::ServerSettingsData *)new libtremotesf::ServerSettingsData();
+  *(libtremotesf::ServerSettingsData **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1ServerSettingsData(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1canRenameFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
@@ -5857,13 +6472,13 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1alternativeSpeedLimitsDays(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  libtremotesf::ServerSettings::AlternativeSpeedLimitsDays result;
+  libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
-  result = (libtremotesf::ServerSettings::AlternativeSpeedLimitsDays)((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsDays();
+  result = (libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays)((libtremotesf::ServerSettings const *)arg1)->alternativeSpeedLimitsDays();
   jresult = (jint)result; 
   return jresult;
 }
@@ -5917,13 +6532,13 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerS
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1encryptionMode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
-  libtremotesf::ServerSettings::EncryptionMode result;
+  libtremotesf::ServerSettingsData::EncryptionMode result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
-  result = (libtremotesf::ServerSettings::EncryptionMode)((libtremotesf::ServerSettings const *)arg1)->encryptionMode();
+  result = (libtremotesf::ServerSettingsData::EncryptionMode)((libtremotesf::ServerSettings const *)arg1)->encryptionMode();
   jresult = (jint)result; 
   return jresult;
 }
@@ -6015,6 +6630,21 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
   arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
   result = (int)((libtremotesf::ServerSettings const *)arg1)->maximumPeersGlobally();
   jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettings_1data(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::ServerSettings *arg1 = (libtremotesf::ServerSettings *) 0 ;
+  libtremotesf::ServerSettingsData *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettings **)&jarg1; 
+  result = (libtremotesf::ServerSettingsData *) &((libtremotesf::ServerSettings const *)arg1)->data();
+  *(libtremotesf::ServerSettingsData **)&jresult = result; 
   return jresult;
 }
 
@@ -6545,13 +7175,13 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setAlternativeSpeedLimitsDays(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::JniServerSettings *arg1 = (libtremotesf::JniServerSettings *) 0 ;
-  libtremotesf::ServerSettings::AlternativeSpeedLimitsDays arg2 ;
+  libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::JniServerSettings **)&jarg1; 
-  arg2 = (libtremotesf::ServerSettings::AlternativeSpeedLimitsDays)jarg2; 
+  arg2 = (libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays)jarg2; 
   (arg1)->setAlternativeSpeedLimitsDays(arg2);
 }
 
@@ -6597,13 +7227,13 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSettings_1setEncryptionMode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::JniServerSettings *arg1 = (libtremotesf::JniServerSettings *) 0 ;
-  libtremotesf::ServerSettings::EncryptionMode arg2 ;
+  libtremotesf::ServerSettingsData::EncryptionMode arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::JniServerSettings **)&jarg1; 
-  arg2 = (libtremotesf::ServerSettings::EncryptionMode)jarg2; 
+  arg2 = (libtremotesf::ServerSettingsData::EncryptionMode)jarg2; 
   (arg1)->setEncryptionMode(arg2);
 }
 

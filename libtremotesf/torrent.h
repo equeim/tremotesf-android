@@ -78,7 +78,7 @@ namespace libtremotesf
         };
         Q_ENUM(IdleSeedingLimitMode)
 
-        void update(const QJsonObject& torrentMap, const Rpc* rpc);
+        bool update(const QJsonObject& torrentMap, const Rpc* rpc);
 
         int id = 0;
         QString hashString;
@@ -92,9 +92,12 @@ namespace libtremotesf
         long long completedSize = 0;
         long long leftUntilDone = 0;
         long long sizeWhenDone = 0;
+
         double percentDone = 0.0;
         double recheckProgress = 0.0;
         int eta = 0;
+
+        bool metadataComplete = false;
 
         long long downloadSpeed = 0;
         long long uploadSpeed = 0;
@@ -129,11 +132,10 @@ namespace libtremotesf
         long long creationDateTime = -1;
         Priority bandwidthPriority = NormalPriority;
         bool honorSessionLimits = false;
-        bool singleFile = false;
+
+        bool singleFile = true;
 
         bool trackersAddedOrRemoved = false;
-
-        bool changed;
 
         std::vector<Tracker> trackers;
     };
@@ -218,6 +220,8 @@ namespace libtremotesf
         double recheckProgress() const;
         int eta() const;
 
+        bool isMetadataComplete() const;
+
         long long downloadSpeed() const;
         long long uploadSpeed() const;
 
@@ -268,8 +272,6 @@ namespace libtremotesf
         Q_INVOKABLE void setTracker(int trackerId, const QString& announce);
         Q_INVOKABLE void removeTrackers(const QVariantList& ids);
 
-        bool isChanged() const;
-
         const TorrentData& data() const;
 
         bool isFilesEnabled() const;
@@ -286,9 +288,12 @@ namespace libtremotesf
 
         bool isUpdated() const;
 
-        void update(const QJsonObject& torrentMap);
+        bool update(const QJsonObject& torrentMap);
         void updateFiles(const QJsonObject& torrentMap);
         void updatePeers(const QJsonObject& torrentMap);
+
+        void startCheckingSingleFile();
+        void checkSingleFile(const QJsonObject& torrentMap);
     private:
         Rpc* mRpc;
 
@@ -301,6 +306,8 @@ namespace libtremotesf
         std::vector<Peer> mPeers;
         bool mPeersEnabled = false;
         bool mPeersUpdated = false;
+
+        bool mCheckingSingleFile = false;
 
     signals:
         void updated();

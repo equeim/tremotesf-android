@@ -42,11 +42,11 @@ namespace libtremotesf
         void setAlternativeSpeedLimitsScheduled(bool scheduled);
         void setAlternativeSpeedLimitsBeginTime(const QTime& time);
         void setAlternativeSpeedLimitsEndTime(const QTime& time);
-        void setAlternativeSpeedLimitsDays(AlternativeSpeedLimitsDays days);
+        void setAlternativeSpeedLimitsDays(ServerSettingsData::AlternativeSpeedLimitsDays days);
         void setPeerPort(int port);
         void setRandomPortEnabled(bool enabled);
         void setPortForwardingEnabled(bool enabled);
-        void setEncryptionMode(EncryptionMode mode);
+        void setEncryptionMode(ServerSettingsData::EncryptionMode mode);
         void setUtpEnabled(bool enabled);
         void setPexEnabled(bool enabled);
         void setDhtEnabled(bool enabled);

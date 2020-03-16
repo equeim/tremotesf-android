@@ -39,7 +39,7 @@ import android.widget.TimePicker
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 
-import org.equeim.libtremotesf.ServerSettings
+import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -53,9 +53,9 @@ import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
 
 class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_speed_fragment,
                                                           R.string.server_settings_speed) {
-    private val days = mutableListOf(ServerSettings.AlternativeSpeedLimitsDays.All,
-                                     ServerSettings.AlternativeSpeedLimitsDays.Weekdays,
-                                     ServerSettings.AlternativeSpeedLimitsDays.Weekends)
+    private val days = mutableListOf(ServerSettingsData.AlternativeSpeedLimitsDays.All,
+                                     ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
+                                     ServerSettingsData.AlternativeSpeedLimitsDays.Weekends)
     private val daysSpinnerItems = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,14 +77,14 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         val dayFromCalendarDay = { day: Int ->
             when (day) {
-                Calendar.SUNDAY -> ServerSettings.AlternativeSpeedLimitsDays.Sunday
-                Calendar.MONDAY -> ServerSettings.AlternativeSpeedLimitsDays.Monday
-                Calendar.TUESDAY -> ServerSettings.AlternativeSpeedLimitsDays.Tuesday
-                Calendar.WEDNESDAY -> ServerSettings.AlternativeSpeedLimitsDays.Wednesday
-                Calendar.THURSDAY -> ServerSettings.AlternativeSpeedLimitsDays.Thursday
-                Calendar.FRIDAY -> ServerSettings.AlternativeSpeedLimitsDays.Friday
-                Calendar.SATURDAY -> ServerSettings.AlternativeSpeedLimitsDays.Saturday
-                else -> ServerSettings.AlternativeSpeedLimitsDays.Monday
+                Calendar.SUNDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Sunday
+                Calendar.MONDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
+                Calendar.TUESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Tuesday
+                Calendar.WEDNESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Wednesday
+                Calendar.THURSDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Thursday
+                Calendar.FRIDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Friday
+                Calendar.SATURDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Saturday
+                else -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
             }
         }
 

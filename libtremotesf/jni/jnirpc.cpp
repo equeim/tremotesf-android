@@ -64,8 +64,8 @@ namespace libtremotesf
     JniServerSettings::JniServerSettings(Rpc* rpc, QObject* parent)
         : ServerSettings(rpc, parent)
     {
-        qRegisterMetaType<AlternativeSpeedLimitsDays>();
-        qRegisterMetaType<EncryptionMode>();
+        qRegisterMetaType<ServerSettingsData::AlternativeSpeedLimitsDays>();
+        qRegisterMetaType<ServerSettingsData::EncryptionMode>();
     }
 
     void JniServerSettings::setDownloadDirectory(const QString& directory)
@@ -198,9 +198,9 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setAlternativeSpeedLimitsEndTime", Q_ARG(QTime, time));
     }
 
-    void JniServerSettings::setAlternativeSpeedLimitsDays(AlternativeSpeedLimitsDays days)
+    void JniServerSettings::setAlternativeSpeedLimitsDays(ServerSettingsData::AlternativeSpeedLimitsDays days)
     {
-        QMetaObject::invokeMethod(this, "setAlternativeSpeedLimitsDays", Q_ARG(libtremotesf::ServerSettings::AlternativeSpeedLimitsDays, days));
+        QMetaObject::invokeMethod(this, "setAlternativeSpeedLimitsDays", Q_ARG(libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays, days));
     }
 
     void JniServerSettings::setPeerPort(int port)
@@ -218,9 +218,9 @@ namespace libtremotesf
         QMetaObject::invokeMethod(this, "setPortForwardingEnabled", Q_ARG(bool, enabled));
     }
 
-    void JniServerSettings::setEncryptionMode(EncryptionMode mode)
+    void JniServerSettings::setEncryptionMode(ServerSettingsData::EncryptionMode mode)
     {
-        QMetaObject::invokeMethod(this, "setEncryptionMode", Q_ARG(libtremotesf::ServerSettings::EncryptionMode, mode));
+        QMetaObject::invokeMethod(this, "setEncryptionMode", Q_ARG(libtremotesf::ServerSettingsData::EncryptionMode, mode));
     }
 
     void JniServerSettings::setUtpEnabled(bool enabled)

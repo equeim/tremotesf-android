@@ -88,6 +88,10 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_eta_get(swigCPtr, this);
   }
 
+  public boolean getMetadataComplete() {
+    return libtremotesfJNI.TorrentData_metadataComplete_get(swigCPtr, this);
+  }
+
   public long getDownloadSpeed() {
     return libtremotesfJNI.TorrentData_downloadSpeed_get(swigCPtr, this);
   }
@@ -206,10 +210,6 @@ public class TorrentData {
 
   public boolean getTrackersAddedOrRemoved() {
     return libtremotesfJNI.TorrentData_trackersAddedOrRemoved_get(swigCPtr, this);
-  }
-
-  public boolean getChanged() {
-    return libtremotesfJNI.TorrentData_changed_get(swigCPtr, this);
   }
 
   public TrackersVector getTrackers() {

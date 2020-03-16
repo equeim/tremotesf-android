@@ -22,7 +22,7 @@ package org.equeim.tremotesf.serversettingsfragment
 import android.os.Bundle
 import android.view.View
 
-import org.equeim.libtremotesf.ServerSettings
+import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
@@ -36,9 +36,9 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
                                                             R.string.server_settings_network) {
     private companion object {
         // Should match R.array.encryption_items
-        val encryptionItems = arrayOf(ServerSettings.EncryptionMode.AllowedEncryption,
-                                      ServerSettings.EncryptionMode.PreferredEncryption,
-                                      ServerSettings.EncryptionMode.RequiredEncryption)
+        val encryptionItems = arrayOf(ServerSettingsData.EncryptionMode.AllowedEncryption,
+                                      ServerSettingsData.EncryptionMode.PreferredEncryption,
+                                      ServerSettingsData.EncryptionMode.RequiredEncryption)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
