@@ -291,7 +291,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             R.id.add_torrent_file -> startFilePickerActivity()
             R.id.alternative_speed_limits -> {
                 menuItem.isChecked = !menuItem.isChecked
-                Rpc.serverSettings.isAlternativeSpeedLimitsEnabled = menuItem.isChecked
+                Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked
             }
             else -> return menuItem.onNavDestinationSelected(navController)
         }
@@ -309,7 +309,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private fun onRpcStatusChanged(status: Int) {
         if (status == RpcStatus.Disconnected || status == RpcStatus.Connected) {
             if (Rpc.isConnected) {
-                menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.isAlternativeSpeedLimitsEnabled
+                menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
                 torrentsAdapter?.selector?.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
@@ -329,7 +329,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         torrentsAdapter?.update()
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-                if (Rpc.isConnected) Rpc.serverSettings.isAlternativeSpeedLimitsEnabled else false
+                if (Rpc.isConnected) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false
     }
 
     private fun updateTitle(currentServer: Server?) {

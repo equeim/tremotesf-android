@@ -19,6 +19,7 @@ public:
     virtual void onAboutToDisconnect();
     virtual void onStatusChanged(libtremotesf::Rpc::Status status);
     virtual void onErrorChanged(libtremotesf::Rpc::Error error, QString const &errorMessage);
+    virtual void onServerSettingsChanged(libtremotesf::JniServerSettingsData data);
     virtual void onTorrentsUpdated(std::vector< int > const &removed, std::vector< libtremotesf::TorrentData * > const &changed, std::vector< libtremotesf::TorrentData * > const &added);
     virtual void onTorrentFilesUpdated(int torrentId, std::vector< libtremotesf::TorrentFile * > const &changed);
     virtual void onTorrentPeersUpdated(int torrentId, std::vector< int > const &removed, std::vector< libtremotesf::Peer * > const &changed, std::vector< libtremotesf::Peer * > const &added);
@@ -32,10 +33,10 @@ public:
     virtual void onGotFreeSpaceForPath(QString const &path, bool success, long long bytes);
 public:
     bool swig_overrides(int n) {
-      return (n < 14 ? swig_override[n] : false);
+      return (n < 15 ? swig_override[n] : false);
     }
 protected:
-    Swig::BoolArray<14> swig_override;
+    Swig::BoolArray<15> swig_override;
 };
 
 

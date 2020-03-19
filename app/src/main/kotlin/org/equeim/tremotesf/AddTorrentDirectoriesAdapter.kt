@@ -47,7 +47,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
             for (torrent in Rpc.torrents.value) {
                 sorted.add(torrent.downloadDirectory)
             }
-            val downloadDirectory = Rpc.serverSettings.downloadDirectory()
+            val downloadDirectory = Rpc.serverSettings.downloadDirectory
             sorted.add(downloadDirectory)
             ArrayList(sorted)
         }

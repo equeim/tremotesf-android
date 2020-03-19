@@ -56,9 +56,8 @@ public class JniRpc extends Rpc {
     libtremotesfJNI.JniRpc_director_connect(this, swigCPtr, true, true);
   }
 
-  public JniServerSettings serverSettings() {
-    long cPtr = libtremotesfJNI.JniRpc_serverSettings(swigCPtr, this);
-    return (cPtr == 0) ? null : new JniServerSettings(cPtr, false);
+  public JniServerSettingsData serverSettingsData() {
+    return new JniServerSettingsData(libtremotesfJNI.JniRpc_serverSettingsData(swigCPtr, this), true);
   }
 
   public void setServer(Server server) {
@@ -211,6 +210,10 @@ public class JniRpc extends Rpc {
 
   protected void onErrorChanged(int error, String errorMessage) {
     libtremotesfJNI.JniRpc_onErrorChanged(swigCPtr, this, error, errorMessage);
+  }
+
+  protected void onServerSettingsChanged(JniServerSettingsData data) {
+    libtremotesfJNI.JniRpc_onServerSettingsChanged(swigCPtr, this, JniServerSettingsData.getCPtr(data), data);
   }
 
   protected void onTorrentsUpdated(IntVector removed, TorrentDataVector changed, TorrentDataVector added) {

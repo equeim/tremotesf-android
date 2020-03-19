@@ -45,58 +45,58 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
         super.onViewCreated(view, savedInstanceState)
 
         peer_port_edit.filters = arrayOf(IntFilter(0..65535))
-        peer_port_edit.setText(Rpc.serverSettings.peerPort().toString())
+        peer_port_edit.setText(Rpc.serverSettings.peerPort.toString())
         peer_port_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.setPeerPort(it.toString().toInt())
+            Rpc.serverSettings.peerPort = it.toString().toInt()
         }
 
-        random_port_check_box.isChecked = Rpc.serverSettings.isRandomPortEnabled
+        random_port_check_box.isChecked = Rpc.serverSettings.randomPortEnabled
         random_port_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isRandomPortEnabled = checked
+            Rpc.serverSettings.randomPortEnabled = checked
         }
 
-        port_forwarding_check_box.isChecked = Rpc.serverSettings.isPortForwardingEnabled
+        port_forwarding_check_box.isChecked = Rpc.serverSettings.portForwardingEnabled
         port_forwarding_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isPortForwardingEnabled = checked
+            Rpc.serverSettings.portForwardingEnabled = checked
         }
 
         val encryptionItemValues = resources.getStringArray(R.array.encryption_items)
         encryption_view.setAdapter(ArrayDropdownAdapter(encryptionItemValues))
-        encryption_view.setText(encryptionItemValues[encryptionItems.indexOf(Rpc.serverSettings.encryptionMode())])
+        encryption_view.setText(encryptionItemValues[encryptionItems.indexOf(Rpc.serverSettings.encryptionMode)])
         encryption_view.setOnItemClickListener { _, _, position, _ ->
-            Rpc.serverSettings.setEncryptionMode(encryptionItems[position])
+            Rpc.serverSettings.encryptionMode = encryptionItems[position]
         }
 
-        utp_check_box.isChecked = Rpc.serverSettings.isUtpEnabled
+        utp_check_box.isChecked = Rpc.serverSettings.utpEnabled
         utp_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isUtpEnabled = checked
+            Rpc.serverSettings.utpEnabled = checked
         }
 
-        pex_check_box.isChecked = Rpc.serverSettings.isPexEnabled
+        pex_check_box.isChecked = Rpc.serverSettings.pexEnabled
         pex_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isPexEnabled = checked
+            Rpc.serverSettings.pexEnabled = checked
         }
 
-        dht_check_box.isChecked = Rpc.serverSettings.isDhtEnabled
+        dht_check_box.isChecked = Rpc.serverSettings.dhtEnabled
         dht_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isDhtEnabled = checked
+            Rpc.serverSettings.dhtEnabled = checked
         }
 
-        lpd_check_box.isChecked = Rpc.serverSettings.isLpdEnabled
+        lpd_check_box.isChecked = Rpc.serverSettings.lpdEnabled
         lpd_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.isLpdEnabled = checked
+            Rpc.serverSettings.lpdEnabled = checked
         }
 
         peers_per_torrent_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_per_torrent_edit.setText(Rpc.serverSettings.maximumPeersPerTorrent().toString())
+        peers_per_torrent_edit.setText(Rpc.serverSettings.maximumPeersPerTorrent.toString())
         peers_per_torrent_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.setMaximumPeersPerTorrent(it.toString().toInt())
+            Rpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
         }
 
         peers_globally_edit.filters = arrayOf(IntFilter(0..10000))
-        peers_globally_edit.setText(Rpc.serverSettings.maximumPeersGlobally().toString())
+        peers_globally_edit.setText(Rpc.serverSettings.maximumPeersGlobally.toString())
         peers_globally_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.setMaximumPeersGlobally(it.toString().toInt())
+            Rpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
         }
     }
 }

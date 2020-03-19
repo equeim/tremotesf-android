@@ -11,10 +11,10 @@
 
 namespace libtremotesf
 {
-    class JniServerSettings : public ServerSettings
+    struct JniServerSettingsData : ServerSettingsData
     {
     public:
-        explicit JniServerSettings(Rpc* rpc, QObject* parent = nullptr);
+        explicit JniServerSettingsData(ServerSettings* settings);
 
         void setDownloadDirectory(const QString& directory);
         void setStartAddedTorrents(bool start);
@@ -40,8 +40,8 @@ namespace libtremotesf
         void setAlternativeDownloadSpeedLimit(int limit);
         void setAlternativeUploadSpeedLimit(int limit);
         void setAlternativeSpeedLimitsScheduled(bool scheduled);
-        void setAlternativeSpeedLimitsBeginTime(const QTime& time);
-        void setAlternativeSpeedLimitsEndTime(const QTime& time);
+        void setAlternativeSpeedLimitsBeginTime(QTime time);
+        void setAlternativeSpeedLimitsEndTime(QTime time);
         void setAlternativeSpeedLimitsDays(ServerSettingsData::AlternativeSpeedLimitsDays days);
         void setPeerPort(int port);
         void setRandomPortEnabled(bool enabled);
@@ -53,6 +53,9 @@ namespace libtremotesf
         void setLpdEnabled(bool enabled);
         void setMaximumPeersPerTorrent(int peers);
         void setMaximumPeersGlobally(int peers);
+
+    private:
+        ServerSettings* mSettings;
     };
 
     class JniRpc : public Rpc
@@ -60,7 +63,7 @@ namespace libtremotesf
     public:
         JniRpc();
 
-        JniServerSettings* serverSettings() const;
+        JniServerSettingsData serverSettingsData() const;
 
         /*void setServer(const QString& name,
                        const QString& address,
@@ -140,6 +143,8 @@ namespace libtremotesf
         virtual void onAboutToDisconnect() = 0;
         virtual void onStatusChanged(Rpc::Status status) = 0;
         virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
+
+        virtual void onServerSettingsChanged(JniServerSettingsData data) = 0;
 
         virtual void onTorrentsUpdated(const std::vector<int>& removed, const std::vector<TorrentData*>& changed, const std::vector<TorrentData*>& added) = 0;
 

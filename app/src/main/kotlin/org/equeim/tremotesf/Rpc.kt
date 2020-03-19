@@ -47,9 +47,9 @@ import com.google.common.util.concurrent.ListenableFuture
 
 import org.qtproject.qt5.android.QtNative
 
-import org.equeim.libtremotesf.JniRpc
-import org.equeim.libtremotesf.JniServerSettings
 import org.equeim.libtremotesf.IntVector
+import org.equeim.libtremotesf.JniRpc
+import org.equeim.libtremotesf.JniServerSettingsData
 import org.equeim.libtremotesf.Peer
 import org.equeim.libtremotesf.ServerStats
 import org.equeim.libtremotesf.TorrentData
@@ -105,6 +105,12 @@ object Rpc : Logger {
         override fun onErrorChanged(error: Int, errorMessage: String) {
             handler.post {
                 Rpc.onErrorChanged(error, errorMessage)
+            }
+        }
+
+        override fun onServerSettingsChanged(data: JniServerSettingsData) {
+            handler.post {
+                Rpc.onServerSettingsChanged(data)
             }
         }
 
@@ -192,7 +198,7 @@ object Rpc : Logger {
 
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
-    val serverSettings: JniServerSettings = nativeInstance.serverSettings()
+    var serverSettings: JniServerSettingsData = nativeInstance.serverSettingsData()
     val serverStats = NonNullMutableLiveData<ServerStats>(nativeInstance.serverStats())
 
     val status = NonNullMutableLiveData(RpcStatus.Disconnected)
@@ -332,6 +338,11 @@ object Rpc : Logger {
     private fun onErrorChanged(newError: Int, newErrorMessage: String) {
         errorMessage = newErrorMessage
         error.value = newError
+    }
+
+    private fun onServerSettingsChanged(data: JniServerSettingsData) {
+        serverSettings.delete()
+        serverSettings = data
     }
 
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {

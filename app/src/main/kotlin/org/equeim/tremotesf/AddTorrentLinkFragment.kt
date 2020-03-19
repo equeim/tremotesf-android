@@ -55,7 +55,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         priority_view.setText(R.string.normal_priority)
         priority_view.setAdapter(ArrayDropdownAdapter(priorityItems))
 
-        start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
+        start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
@@ -134,8 +134,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
         if (Rpc.isConnected) {
             if (scroll_view.visibility != View.VISIBLE) {
-                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
-                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
+                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
+                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
                 scroll_view.visibility = View.VISIBLE
             }
             placeholder_layout.visibility = View.GONE

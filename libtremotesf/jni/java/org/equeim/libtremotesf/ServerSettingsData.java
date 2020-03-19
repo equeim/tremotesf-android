@@ -21,11 +21,6 @@ public class ServerSettingsData {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    delete();
-  }
-
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
@@ -34,6 +29,14 @@ public class ServerSettingsData {
       }
       swigCPtr = 0;
     }
+  }
+
+  public boolean canRenameFiles() {
+    return libtremotesfJNI.ServerSettingsData_canRenameFiles(swigCPtr, this);
+  }
+
+  public boolean canShowFreeSpaceForPath() {
+    return libtremotesfJNI.ServerSettingsData_canShowFreeSpaceForPath(swigCPtr, this);
   }
 
   public int getRpcVersion() {

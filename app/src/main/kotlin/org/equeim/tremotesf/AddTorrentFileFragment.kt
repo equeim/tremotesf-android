@@ -81,7 +81,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                         Rpc.serverSettings.canShowFreeSpaceForPath() -> {
                             Rpc.nativeInstance.getFreeSpaceForPath(path.toString())
                         }
-                        Rpc.serverSettings.downloadDirectory()?.contentEquals(path) == true -> {
+                        Rpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
                             Rpc.nativeInstance.getDownloadDirFreeSpace()
                         }
                         else -> {
@@ -91,7 +91,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 }
 
                 if (savedInstanceState == null) {
-                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
                 }
 
                 val directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
@@ -99,7 +99,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
                 Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
                     val text = download_directory_edit.text?.trim()
-                    if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory()?.contentEquals(text) == true) {
+                    if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory?.contentEquals(text) == true) {
                         download_directory_layout.helperText = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
                     }
                 }
@@ -345,7 +345,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             directoriesAdapter = setupDownloadDirectoryEdit(this, savedInstanceState)
 
-            start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
+            start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
         }
 
         override fun onSaveInstanceState(outState: Bundle) {

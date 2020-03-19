@@ -50,17 +50,12 @@ namespace libtremotesf
     %ignore ServerStats::update;
     %ignore SessionStats::SessionStats;
     %ignore SessionStats::update;
-    %ignore ServerSettings::ServerSettings;
-    %ignore ServerSettings::toKibiBytes;
-    %ignore ServerSettings::fromKibiBytes;
-    %ignore ServerSettings::save;
-    %ignore ServerSettings::update;
-    %ignore ServerSettings::minimumRpcVersion;
-    %ignore ServerSettings::rpcVersion;
-    %ignore ServerSettings::saveOnSet;
-    %ignore ServerSettings::trashTorrentFiles;
-    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem) "ServerSettings::set.*$";
-    %ignore JniServerSettings::JniServerSettings;
+
+    %ignore ServerSettings;
+    %ignore Rpc::serverSettings;
+    %ignore JniServerSettingsData::JniServerSettingsData;
+    %typemap(javafinalize) ServerSettingsData ""
+    %typemap(javafinalize) JniServerSettingsData ""
 }
 
 %typemap(javafinalize) std::vector<libtremotesf::TorrentData*> ""

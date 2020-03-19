@@ -34,31 +34,31 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory())
+        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
         download_directory_edit.doAfterTextChangedAndNotEmpty {
             Rpc.serverSettings.setDownloadDirectory(it.toString())
         }
 
-        start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents()
+        start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
         start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.setStartAddedTorrents(checked)
         }
 
-        rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles()
+        rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles
         rename_incomplete_files_check_box.setOnCheckedChangeListener { _, checked ->
             Rpc.serverSettings.setRenameIncompleteFiles(checked)
         }
 
-        incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.isIncompleteDirectoryEnabled
+        incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled
         incomplete_files_directory_check_box.setOnCheckedChangeListener { _, checked ->
             incomplete_files_directory_layout.isEnabled = checked
-            Rpc.serverSettings.isIncompleteDirectoryEnabled = checked
+            Rpc.serverSettings.incompleteDirectoryEnabled = checked
         }
 
         incomplete_files_directory_layout.isEnabled = incomplete_files_directory_check_box.isChecked
-        incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory())
+        incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory)
         incomplete_files_directory_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.setIncompleteDirectory(it.toString())
+            Rpc.serverSettings.incompleteDirectory = it.toString()
         }
     }
 }
