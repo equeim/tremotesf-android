@@ -62,7 +62,7 @@ fun createTextFieldDialog(context: Context,
         } else {
             dialog.findViewById<EditText>(textFieldId)!!
         }
-        textField.inputType = inputType
+        textField.inputType = textField.inputType or inputType
         textField.setText(defaultText)
 
         val okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE)!!

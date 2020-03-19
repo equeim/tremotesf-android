@@ -68,7 +68,6 @@
     </plurals>
 
     <string name="next_update">Prossimo aggiornamento dopo %s</string>
-    <string name="add_tracker">Aggiungi server traccia</string>
     <string name="edit_tracker">Modifica server traccia</string>
 
     <string name="tracker_announce_url">URL del server traccia</string>

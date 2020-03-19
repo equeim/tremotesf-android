@@ -23,6 +23,7 @@ import java.util.Date
 
 import android.content.Context
 
+import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
@@ -230,6 +231,14 @@ class Torrent(data: TorrentData, private val context: Context) {
 
     fun addTracker(announce: String) {
         Rpc.nativeInstance.torrentAddTracker(data, announce)
+    }
+
+    fun addTrackers(announceUrls: List<String>) {
+        val vector = StringsVector()
+        vector.reserve(announceUrls.size.toLong())
+        vector.addAll(announceUrls)
+        Rpc.nativeInstance.torrentAddTrackers(data, vector)
+        vector.delete()
     }
 
     fun setTracker(trackerId: Int, announce: String) {

@@ -70,10 +70,11 @@
     </plurals>
 
     <string name="next_update">Next update after %s</string>
-    <string name="add_tracker">Add tracker</string>
+    <string name="add_trackers">Add trackers</string>
     <string name="edit_tracker">Edit tracker</string>
 
-    <string name="tracker_announce_url">Tracker announce URL</string>
+    <string name="tracker_announce_url">Tracker announce URLs</string>
+    <string name="trackers_announce_urls">Trackers announce URLs</string>
 
     <string name="torrent_finished">Torrent finished</string>
     <string name="torrent_added">Torrent added</string>

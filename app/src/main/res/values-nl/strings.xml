@@ -68,7 +68,6 @@
     </plurals>
 
     <string name="next_update">Volgende update over %s</string>
-    <string name="add_tracker">Tracker toevoegen</string>
     <string name="edit_tracker">Tracker bewerken</string>
 
     <string name="tracker_announce_url">Tracker-aankondigings-URL</string>

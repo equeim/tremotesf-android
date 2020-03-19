@@ -251,21 +251,26 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val trackerId = requireArguments().getInt(TRACKER_ID)
+            val addingTrackers = (trackerId == -1)
 
             return createTextFieldDialog(requireContext(),
-                                         if (trackerId == -1) R.string.add_tracker else R.string.edit_tracker,
+                                         if (addingTrackers) R.string.add_trackers else R.string.edit_tracker,
+                                         if (addingTrackers) R.layout.add_trackers_dialog else null,
                                          null,
-                                         null,
-                                         getString(R.string.tracker_announce_url),
+                                         getString(if (addingTrackers) R.string.trackers_announce_urls else R.string.tracker_announce_url),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          requireArguments().getString(ANNOUNCE),
                                          null) {
                 val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
-                val textField = requireDialog().text_field!!
-                if (trackerId == -1) {
-                    torrent?.addTracker(textField.text.toString())
-                } else {
-                    torrent?.setTracker(trackerId, textField.text.toString())
+                if (torrent != null) {
+                    val textField = requireDialog().text_field!!
+                    textField.text?.let { text ->
+                        if (addingTrackers) {
+                            torrent.addTrackers(text.lines().filter(String::isNotEmpty))
+                        } else {
+                            torrent.setTracker(trackerId, text.toString())
+                        }
+                    }
                 }
             }
         }

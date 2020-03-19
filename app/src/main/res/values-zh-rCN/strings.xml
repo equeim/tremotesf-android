@@ -53,7 +53,6 @@
     </plurals>
 
     <string name="next_update">%s 后请求更多节点</string>
-    <string name="add_tracker">添加Tracker</string>
     <string name="edit_tracker">编辑Tracker</string>
 
     <string name="tracker_announce_url">Tracker宣告链接</string>
