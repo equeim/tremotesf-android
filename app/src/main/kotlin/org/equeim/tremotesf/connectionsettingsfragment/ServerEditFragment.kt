@@ -141,7 +141,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         val updateIntervalOk = checkLength(update_interval_edit)
         val timeoutOk = checkLength(timeout_edit)
 
-        val nameEditText = name_edit.text.toString()
+        val nameEditText = name_edit.text?.toString() ?: ""
 
         if (nameOk &&
                 addressOk &&
@@ -173,16 +173,16 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
     private fun save() {
         model.server.apply {
-            name = name_edit.text.toString().trim()
-            address = address_edit.text.toString().trim()
-            port = port_edit.text.toString().toInt()
-            apiPath = api_path_edit.text.toString().trim()
+            name = name_edit.text?.toString()?.trim() ?: ""
+            address = address_edit.text?.toString()?.trim() ?: ""
+            port = port_edit.text?.toString()?.toInt() ?: 0
+            apiPath = api_path_edit.text?.toString()?.trim() ?: ""
             httpsEnabled = https_check_box.isChecked
             authentication = authentication_check_box.isChecked
-            username = username_edit.text.toString().trim()
-            password = password_edit.text.toString().trim()
-            updateInterval = update_interval_edit.text.toString().toInt()
-            timeout = timeout_edit.text.toString().toInt()
+            username = username_edit.text?.toString()?.trim() ?: ""
+            password = password_edit.text?.toString()?.trim() ?: ""
+            updateInterval = update_interval_edit.text?.toString()?.toInt() ?: 0
+            timeout = timeout_edit.text?.toString()?.toInt() ?: 0
         }
 
         model.existingServer.let { existing ->
@@ -255,9 +255,9 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             if (view != null) {
                 model.server.apply {
                     selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
-                    selfSignedCertificate = self_signed_certificate_edit.text.toString()
+                    selfSignedCertificate = self_signed_certificate_edit.text?.toString() ?: ""
                     clientCertificateEnabled = client_certificate_check_box.isChecked
-                    clientCertificate = client_certificate_edit.text.toString()
+                    clientCertificate = client_certificate_edit.text?.toString() ?: ""
                 }
             }
         }
@@ -305,10 +305,10 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             if (view != null) {
                 model.server.apply {
                     proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxy_type_view.text.toString())])
-                    proxyHostname = address_edit.text.toString()
-                    proxyPort = port_edit.text.toString().toInt()
-                    proxyUser = username_edit.text.toString()
-                    proxyPassword = password_edit.text.toString()
+                    proxyHostname = address_edit.text?.toString() ?: ""
+                    proxyPort = port_edit.text?.toString()?.toInt() ?: 0
+                    proxyUser = username_edit.text?.toString() ?: ""
+                    proxyPassword = password_edit.text?.toString() ?: ""
                 }
             }
         }

@@ -97,7 +97,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
                 return false
             }
 
-            Rpc.nativeInstance.addTorrentLink(torrent_link_edit.text.toString(),
+            Rpc.nativeInstance.addTorrentLink(torrent_link_edit.text?.toString() ?: "",
                                               download_directory_edit.text.toString(),
                                               priorityItemEnums[priorityItems.indexOf(priority_view.text.toString())],
                                               start_downloading_check_box.isChecked)

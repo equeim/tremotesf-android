@@ -46,7 +46,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
                                      null) {
             val torrentId = requireArguments().getInt(TORRENT_ID)
             val path = requireArguments().getString(FILE_PATH)!!
-            val newName = requireDialog().text_field.text.toString()
+            val newName = requireDialog().text_field.text?.toString() ?: ""
             (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(torrentId, path, newName)
             activity?.actionMode?.finish()
         }
