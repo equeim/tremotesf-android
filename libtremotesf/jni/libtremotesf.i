@@ -47,12 +47,11 @@ namespace libtremotesf
     %ignore Tracker::update;
 
     %ignore ServerStats;
-    //%ignore SessionStats::SessionStats;
     %ignore SessionStats::update;
 
     %ignore ServerSettings;
-    %ignore Rpc::serverSettings;
     %ignore JniServerSettingsData::JniServerSettingsData;
+    %ignore Rpc::serverSettings;
     %typemap(javafinalize) ServerSettingsData ""
     %typemap(javafinalize) JniServerSettingsData ""
 }

@@ -597,6 +597,13 @@ namespace libtremotesf
         });
     }
 
+    void JniRpc::torrentAddTrackers(TorrentData& data, const std::vector<QString>& announceUrls)
+    {
+        runOnTorrent(&mRpc, data, [=](Torrent* torrent) {
+            torrent->addTrackers(announceUrls);
+        });
+    }
+
     void JniRpc::torrentSetTracker(TorrentData& data, int trackerId, const QString& announce)
     {
         runOnTorrent(&mRpc, data, [=](Torrent* torrent) {

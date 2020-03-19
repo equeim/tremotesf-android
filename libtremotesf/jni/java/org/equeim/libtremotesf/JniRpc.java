@@ -179,6 +179,10 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_torrentAddTracker(swigCPtr, this, TorrentData.getCPtr(data), data, announce);
   }
 
+  public void torrentAddTrackers(TorrentData data, StringsVector announceUrls) {
+    libtremotesfJNI.JniRpc_torrentAddTrackers(swigCPtr, this, TorrentData.getCPtr(data), data, StringsVector.getCPtr(announceUrls), announceUrls);
+  }
+
   public void torrentSetTracker(TorrentData data, int trackerId, String announce) {
     libtremotesfJNI.JniRpc_torrentSetTracker(swigCPtr, this, TorrentData.getCPtr(data), data, trackerId, announce);
   }

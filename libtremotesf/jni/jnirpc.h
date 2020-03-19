@@ -120,6 +120,7 @@ namespace libtremotesf
         void setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted);
         void setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority);
         void torrentAddTracker(TorrentData& data, const QString& announce);
+        void torrentAddTrackers(TorrentData& data, const std::vector<QString>& announceUrls);
         void torrentSetTracker(TorrentData& data, int trackerId, const QString& announce);
         void torrentRemoveTrackers(TorrentData& data, const QVariantList& ids);
         void setTorrentPeersEnabled(TorrentData& data, bool enabled);

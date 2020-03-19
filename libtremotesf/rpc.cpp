@@ -498,6 +498,7 @@ namespace libtremotesf
 
     void Rpc::setTorrentProperty(int id, const QString& property, const QVariant& value, bool updateIfSuccessful)
     {
+        qInfo() << "prop" << property << value;
         if (isConnected()) {
            QByteArray requestData(makeRequestData(QLatin1String("torrent-set"),
                                                   {{QLatin1String("ids"), QVariantList{id}},
@@ -508,9 +509,12 @@ namespace libtremotesf
                    if (isResultSuccessful(parseResult)) {
                        updateData();
                    }
+                   qInfo() << parseResult;
                });
            } else {
-               postRequest(QByteArray(std::move(requestData)));
+               postRequest(QByteArray(std::move(requestData)), [=](const QJsonObject& parseResult) {
+                   qInfo() << parseResult;
+               });
            }
         }
     }
