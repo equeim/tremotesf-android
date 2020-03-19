@@ -1352,10 +1352,14 @@ void SwigDirector_JniRpc::onTorrentPeersUpdated(int torrentId, std::vector< int 
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_JniRpc::onServerStatsUpdated() {
+void SwigDirector_JniRpc::onServerStatsUpdated(long long downloadSpeed, long long uploadSpeed, libtremotesf::SessionStats currentSession, libtremotesf::SessionStats total) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
+  jlong jdownloadSpeed  ;
+  jlong juploadSpeed  ;
+  jlong jcurrentSession  ;
+  jlong jtotal  ;
   
   if (!swig_override[7]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onServerStatsUpdated.");
@@ -1363,7 +1367,13 @@ void SwigDirector_JniRpc::onServerStatsUpdated() {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[7], swigjobj);
+    jdownloadSpeed = (jlong) downloadSpeed;
+    juploadSpeed = (jlong) uploadSpeed;
+    jcurrentSession = 0;
+    *((libtremotesf::SessionStats **)&jcurrentSession) = new libtremotesf::SessionStats(std::move(currentSession)); 
+    jtotal = 0;
+    *((libtremotesf::SessionStats **)&jtotal) = new libtremotesf::SessionStats(std::move(total)); 
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[7], swigjobj, jdownloadSpeed, juploadSpeed, jcurrentSession, jtotal);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1603,7 +1613,7 @@ void SwigDirector_JniRpc::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
       "onTorrentPeersUpdated", "(ILorg/equeim/libtremotesf/IntVector;Lorg/equeim/libtremotesf/TorrentPeersVector;Lorg/equeim/libtremotesf/TorrentPeersVector;)V", NULL 
     },
     {
-      "onServerStatsUpdated", "()V", NULL 
+      "onServerStatsUpdated", "(JJLorg/equeim/libtremotesf/SessionStats;Lorg/equeim/libtremotesf/SessionStats;)V", NULL 
     },
     {
       "onTorrentAdded", "(ILjava/lang/String;Ljava/lang/String;)V", NULL 
@@ -6165,82 +6175,24 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_SessionStat
 }
 
 
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1SessionStats(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::SessionStats *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::SessionStats *)new libtremotesf::SessionStats();
+  *(libtremotesf::SessionStats **)&jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1SessionStats(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   libtremotesf::SessionStats *arg1 = (libtremotesf::SessionStats *) 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = *(libtremotesf::SessionStats **)&jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1downloadSpeed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  long long result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = (long long)((libtremotesf::ServerStats const *)arg1)->downloadSpeed();
-  jresult = (jlong)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1uploadSpeed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  long long result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = (long long)((libtremotesf::ServerStats const *)arg1)->uploadSpeed();
-  jresult = (jlong)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1currentSession(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  libtremotesf::SessionStats result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = ((libtremotesf::ServerStats const *)arg1)->currentSession();
-  *(libtremotesf::SessionStats **)&jresult = new libtremotesf::SessionStats(std::move(result)); 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerStats_1total(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  libtremotesf::SessionStats result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::ServerStats **)&jarg1; 
-  result = ((libtremotesf::ServerStats const *)arg1)->total();
-  *(libtremotesf::SessionStats **)&jresult = new libtremotesf::SessionStats(std::move(result)); 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1ServerStats(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  libtremotesf::ServerStats *arg1 = (libtremotesf::ServerStats *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(libtremotesf::ServerStats **)&jarg1; 
   delete arg1;
 }
 
@@ -6803,21 +6755,6 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1se
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   result = ((libtremotesf::JniRpc const *)arg1)->serverSettingsData();
   *(libtremotesf::JniServerSettingsData **)&jresult = new libtremotesf::JniServerSettingsData(std::move(result)); 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::ServerStats *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  result = (libtremotesf::ServerStats *)((libtremotesf::JniRpc const *)arg1)->serverStats();
-  *(libtremotesf::ServerStats **)&jresult = result; 
   return jresult;
 }
 
@@ -7922,16 +7859,38 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onServerStatsUpdated(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onServerStatsUpdated(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jlong jarg3, jlong jarg4, jobject jarg4_, jlong jarg5, jobject jarg5_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  long long arg2 ;
+  long long arg3 ;
+  libtremotesf::SessionStats arg4 ;
+  libtremotesf::SessionStats arg5 ;
+  libtremotesf::SessionStats *argp4 ;
+  libtremotesf::SessionStats *argp5 ;
   SwigDirector_JniRpc *darg = 0;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg4_;
+  (void)jarg5_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  arg2 = (long long)jarg2; 
+  arg3 = (long long)jarg3; 
+  argp4 = *(libtremotesf::SessionStats **)&jarg4; 
+  if (!argp4) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null libtremotesf::SessionStats");
+    return ;
+  }
+  arg4 = *argp4; 
+  argp5 = *(libtremotesf::SessionStats **)&jarg5; 
+  if (!argp5) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null libtremotesf::SessionStats");
+    return ;
+  }
+  arg5 = *argp5; 
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onServerStatsUpdated();
+  (darg)->onServerStatsUpdated(arg2,arg3,arg4,arg5);
 }
 
 
@@ -8184,7 +8143,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_swig_1modul
       "SwigDirector_JniRpc_onTorrentPeersUpdated", "(Lorg/equeim/libtremotesf/JniRpc;IJJJ)V" 
     },
     {
-      "SwigDirector_JniRpc_onServerStatsUpdated", "(Lorg/equeim/libtremotesf/JniRpc;)V" 
+      "SwigDirector_JniRpc_onServerStatsUpdated", "(Lorg/equeim/libtremotesf/JniRpc;JJJJ)V" 
     },
     {
       "SwigDirector_JniRpc_onTorrentAdded", "(Lorg/equeim/libtremotesf/JniRpc;ILjava/lang/String;Ljava/lang/String;)V" 

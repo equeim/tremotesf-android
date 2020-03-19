@@ -343,7 +343,10 @@ namespace libtremotesf
         QObject::connect(&mRpc, &Rpc::gotDownloadDirFreeSpace, [=](long long bytes) { onGotDownloadDirFreeSpace(bytes); });
         QObject::connect(&mRpc, &Rpc::gotFreeSpaceForPath, [=](const QString& path, bool success, long long bytes) { onGotFreeSpaceForPath(path, success, bytes); });
 
-        QObject::connect(mRpc.serverStats(), &ServerStats::updated, [=]() { onServerStatsUpdated(); });
+        const auto stats = mRpc.serverStats();
+        QObject::connect(stats, &ServerStats::updated, [=] {
+            onServerStatsUpdated(stats->downloadSpeed(), stats->uploadSpeed(), stats->currentSession(), stats->total());
+        });
 
         auto thread = new QThread();
         thread->start();
@@ -353,11 +356,6 @@ namespace libtremotesf
     JniServerSettingsData JniRpc::serverSettingsData() const
     {
         return JniServerSettingsData(mRpc.serverSettings());
-    }
-
-    ServerStats* JniRpc::serverStats() const
-    {
-        return mRpc.serverStats();
     }
 
     void JniRpc::setServer(const Server& server)

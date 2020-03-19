@@ -55,7 +55,7 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
             val sessionDownloadedTextView = session_downloaded_text_view ?: return
 
             val stats = Rpc.serverStats.value
-            val sessionStats = stats.currentSession()
+            val sessionStats = stats.currentSession
             sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),
                                                                   sessionStats.downloaded())
             session_uploaded_text_view.text = Utils.formatByteSize(requireContext(),
@@ -64,7 +64,7 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
                                                                    sessionStats.downloaded().toDouble())
             session_duration_text_view.text = Utils.formatDuration(requireContext(), sessionStats.duration())
 
-            val totalStats = stats.total()
+            val totalStats = stats.total
             val sessionCount = totalStats.sessionCount()
             started_timed_text_view.text = resources.getQuantityString(R.plurals.started_times,
                                                                     sessionCount,

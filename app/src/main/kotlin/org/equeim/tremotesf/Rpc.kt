@@ -51,7 +51,7 @@ import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
 import org.equeim.libtremotesf.Peer
-import org.equeim.libtremotesf.ServerStats
+import org.equeim.libtremotesf.SessionStats
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
@@ -66,6 +66,11 @@ import org.equeim.tremotesf.utils.emit
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
 typealias RpcError = org.equeim.libtremotesf.Rpc.Error
+
+data class ServerStats(var downloadSpeed: Long,
+                       var uploadSpeed: Long,
+                       var currentSession: SessionStats,
+                       var total: SessionStats)
 
 object Rpc : Logger {
     private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
@@ -123,9 +128,9 @@ object Rpc : Logger {
             }
         }
 
-        override fun onServerStatsUpdated() {
+        override fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
             handler.post {
-                Rpc.onServerStatsUpdated()
+                Rpc.onServerStatsUpdated(downloadSpeed, uploadSpeed, currentSession, total)
             }
         }
 
@@ -199,7 +204,7 @@ object Rpc : Logger {
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     var serverSettings: JniServerSettingsData = nativeInstance.serverSettingsData()
-    val serverStats = NonNullMutableLiveData<ServerStats>(nativeInstance.serverStats())
+    val serverStats = NonNullMutableLiveData(ServerStats(0, 0, SessionStats(), SessionStats()))
 
     val status = NonNullMutableLiveData(RpcStatus.Disconnected)
 
@@ -420,8 +425,15 @@ object Rpc : Logger {
         }
     }
 
-    private fun onServerStatsUpdated() {
-        serverStats.value = serverStats.value
+    private fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
+        val stats = serverStats.value
+        stats.downloadSpeed = downloadSpeed
+        stats.uploadSpeed = uploadSpeed
+        stats.currentSession.delete()
+        stats.currentSession = currentSession
+        stats.total.delete()
+        stats.total = total
+        serverStats.value = stats
     }
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {

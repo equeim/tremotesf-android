@@ -5,6 +5,7 @@
 
 #include "rpc.h"
 #include "serversettings.h"
+#include "serverstats.h"
 #include "torrent.h"
 
 #include "stdutils.h"
@@ -65,7 +66,6 @@ namespace libtremotesf
         virtual ~JniRpc() = default;
 
         JniServerSettingsData serverSettingsData() const;
-        ServerStats* serverStats() const;
 
         void setServer(const Server& server);
         void resetServer();
@@ -138,7 +138,7 @@ namespace libtremotesf
         virtual void onTorrentFilesUpdated(int torrentId, const std::vector<TorrentFile*>& changed) = 0;
         virtual void onTorrentPeersUpdated(int torrentId, const std::vector<int>& removed, const std::vector<Peer*>& changed, const std::vector<Peer*>& added) = 0;
 
-        virtual void onServerStatsUpdated() = 0;
+        virtual void onServerStatsUpdated(long long downloadSpeed, long long uploadSpeed, SessionStats currentSession, SessionStats total) = 0;
 
         virtual void onTorrentAdded(int id, const QString& hashString, const QString& name) = 0;
         virtual void onTorrentFinished(int id, const QString& hashString, const QString& name) = 0;

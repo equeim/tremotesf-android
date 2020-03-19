@@ -46,9 +46,8 @@ namespace libtremotesf
     %ignore Tracker::Tracker;
     %ignore Tracker::update;
 
-    %ignore ServerStats::ServerStats;
-    %ignore ServerStats::update;
-    %ignore SessionStats::SessionStats;
+    %ignore ServerStats;
+    //%ignore SessionStats::SessionStats;
     %ignore SessionStats::update;
 
     %ignore ServerSettings;

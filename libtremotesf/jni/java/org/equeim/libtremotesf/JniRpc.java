@@ -55,11 +55,6 @@ public class JniRpc {
     return new JniServerSettingsData(libtremotesfJNI.JniRpc_serverSettingsData(swigCPtr, this), true);
   }
 
-  public ServerStats serverStats() {
-    long cPtr = libtremotesfJNI.JniRpc_serverStats(swigCPtr, this);
-    return (cPtr == 0) ? null : new ServerStats(cPtr, false);
-  }
-
   public void setServer(Server server) {
     libtremotesfJNI.JniRpc_setServer(swigCPtr, this, Server.getCPtr(server), server);
   }
@@ -228,8 +223,8 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, IntVector.getCPtr(removed), removed, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added);
   }
 
-  protected void onServerStatsUpdated() {
-    libtremotesfJNI.JniRpc_onServerStatsUpdated(swigCPtr, this);
+  protected void onServerStatsUpdated(long downloadSpeed, long uploadSpeed, SessionStats currentSession, SessionStats total) {
+    libtremotesfJNI.JniRpc_onServerStatsUpdated(swigCPtr, this, downloadSpeed, uploadSpeed, SessionStats.getCPtr(currentSession), currentSession, SessionStats.getCPtr(total), total);
   }
 
   protected void onTorrentAdded(int id, String hashString, String name) {

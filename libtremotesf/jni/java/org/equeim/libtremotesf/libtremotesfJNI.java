@@ -276,12 +276,8 @@ public class libtremotesfJNI {
   public final static native long SessionStats_uploaded(long jarg1, SessionStats jarg1_);
   public final static native int SessionStats_duration(long jarg1, SessionStats jarg1_);
   public final static native int SessionStats_sessionCount(long jarg1, SessionStats jarg1_);
+  public final static native long new_SessionStats();
   public final static native void delete_SessionStats(long jarg1);
-  public final static native long ServerStats_downloadSpeed(long jarg1, ServerStats jarg1_);
-  public final static native long ServerStats_uploadSpeed(long jarg1, ServerStats jarg1_);
-  public final static native long ServerStats_currentSession(long jarg1, ServerStats jarg1_);
-  public final static native long ServerStats_total(long jarg1, ServerStats jarg1_);
-  public final static native void delete_ServerStats(long jarg1);
   public final static native void JniServerSettingsData_setDownloadDirectory(long jarg1, JniServerSettingsData jarg1_, String jarg2);
   public final static native void JniServerSettingsData_setStartAddedTorrents(long jarg1, JniServerSettingsData jarg1_, boolean jarg2);
   public final static native void JniServerSettingsData_setTrashTorrentFiles(long jarg1, JniServerSettingsData jarg1_, boolean jarg2);
@@ -323,7 +319,6 @@ public class libtremotesfJNI {
   public final static native long new_JniRpc();
   public final static native void delete_JniRpc(long jarg1);
   public final static native long JniRpc_serverSettingsData(long jarg1, JniRpc jarg1_);
-  public final static native long JniRpc_serverStats(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setServer(long jarg1, JniRpc jarg1_, long jarg2, Server jarg2_);
   public final static native void JniRpc_resetServer(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_connect(long jarg1, JniRpc jarg1_);
@@ -366,7 +361,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, IntVector jarg2_, long jarg3, TorrentDataVector jarg3_, long jarg4, TorrentDataVector jarg4_);
   public final static native void JniRpc_onTorrentFilesUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentFilesVector jarg3_);
   public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, IntVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, TorrentPeersVector jarg5_);
-  public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_);
+  public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_, long jarg2, long jarg3, long jarg4, SessionStats jarg4_, long jarg5, SessionStats jarg5_);
   public final static native void JniRpc_onTorrentAdded(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinished(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentAddDuplicate(long jarg1, JniRpc jarg1_);
@@ -399,8 +394,8 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long removed, long changed, long added) {
     jself.onTorrentPeersUpdated(torrentId, new IntVector(removed, false), new TorrentPeersVector(changed, false), new TorrentPeersVector(added, false));
   }
-  public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself) {
-    jself.onServerStatsUpdated();
+  public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself, long downloadSpeed, long uploadSpeed, long currentSession, long total) {
+    jself.onServerStatsUpdated(downloadSpeed, uploadSpeed, new SessionStats(currentSession, true), new SessionStats(total, true));
   }
   public static void SwigDirector_JniRpc_onTorrentAdded(JniRpc jself, int id, String hashString, String name) {
     jself.onTorrentAdded(id, hashString, name);

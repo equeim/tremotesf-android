@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
-import org.equeim.libtremotesf.ServerStats
 import org.equeim.tremotesf.AboutFragment
 import org.equeim.tremotesf.AddTorrentFragment
 import org.equeim.tremotesf.BuildConfig
@@ -55,6 +54,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Server
+import org.equeim.tremotesf.ServerStats
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
@@ -345,8 +345,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private fun updateSubtitle(serverStats: ServerStats) {
         toolbar?.subtitle = if (Rpc.isConnected) {
             getString(R.string.main_activity_subtitle,
-                      Utils.formatByteSpeed(requireContext(), serverStats.downloadSpeed()),
-                      Utils.formatByteSpeed(requireContext(), serverStats.uploadSpeed()))
+                      Utils.formatByteSpeed(requireContext(), serverStats.downloadSpeed),
+                      Utils.formatByteSpeed(requireContext(), serverStats.uploadSpeed))
         } else {
             null
         }

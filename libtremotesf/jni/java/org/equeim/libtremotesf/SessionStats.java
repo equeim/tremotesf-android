@@ -52,4 +52,8 @@ public class SessionStats {
     return libtremotesfJNI.SessionStats_sessionCount(swigCPtr, this);
   }
 
+  public SessionStats() {
+    this(libtremotesfJNI.new_SessionStats(), true);
+  }
+
 }

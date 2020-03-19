@@ -141,9 +141,9 @@ class ForegroundService : LifecycleService(), Logger {
             val stats = Rpc.serverStats.value
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
-                                                                               stats.downloadSpeed()),
+                                                                               stats.downloadSpeed),
                                                          Utils.formatByteSpeed(this,
-                                                                               stats.uploadSpeed())))
+                                                                               stats.uploadSpeed)))
         } else {
             notificationBuilder.setContentText(Rpc.statusString)
         }
