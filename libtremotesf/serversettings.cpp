@@ -106,6 +106,16 @@ namespace libtremotesf
         const auto maximumPeersGloballyKey(QJsonKeyStringInit("peer-limit-global"));
     }
 
+    bool ServerSettingsData::canRenameFiles() const
+    {
+        return (rpcVersion >= 15);
+    }
+
+    bool ServerSettingsData::canShowFreeSpaceForPath() const
+    {
+        return (rpcVersion >= 15);
+    }
+
     ServerSettings::ServerSettings(Rpc* rpc, QObject* parent)
         : QObject(parent),
           mRpc(rpc),
@@ -126,12 +136,12 @@ namespace libtremotesf
 
     bool ServerSettings::canRenameFiles() const
     {
-        return (mData.rpcVersion >= 15);
+        return mData.canRenameFiles();
     }
 
     bool ServerSettings::canShowFreeSpaceForPath() const
     {
-        return (mData.rpcVersion >= 15);
+        return mData.canShowFreeSpaceForPath();
     }
 
     const QString& ServerSettings::downloadDirectory() const

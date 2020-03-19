@@ -55,6 +55,9 @@ namespace libtremotesf
         };
         Q_ENUM(EncryptionMode)
 
+        bool canRenameFiles() const;
+        bool canShowFreeSpaceForPath() const;
+
         int rpcVersion = 0;
         int minimumRpcVersion = 0;
 
