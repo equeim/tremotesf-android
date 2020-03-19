@@ -58,28 +58,15 @@ namespace libtremotesf
         ServerSettings* mSettings;
     };
 
-    class JniRpc : public Rpc
+    class JniRpc
     {
     public:
         JniRpc();
+        virtual ~JniRpc() = default;
 
         JniServerSettingsData serverSettingsData() const;
+        ServerStats* serverStats() const;
 
-        /*void setServer(const QString& name,
-                       const QString& address,
-                       int port,
-                       const QString& apiPath,
-                       bool https,
-                       bool selfSignedCertificateEnabled,
-                       const QByteArray& selfSignedCertificate,
-                       bool clientCertificateEnabled,
-                       const QByteArray& clientCertificate,
-                       bool authentication,
-                       const QString& username,
-                       const QString& password,
-                       int updateInterval,
-                       int backgroundUpdateInterval,
-                       int timeout);*/
         void setServer(const Server& server);
         void resetServer();
 
@@ -163,6 +150,9 @@ namespace libtremotesf
 
         virtual void onGotDownloadDirFreeSpace(long long bytes) = 0;
         virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes) = 0;
+
+    private:
+        Rpc mRpc;
     };
 }
 

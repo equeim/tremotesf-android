@@ -1157,6 +1157,11 @@ SWIGINTERN void std_vector_Sl_int_Sg__doRemoveRange(std::vector< int > *self,jin
 SwigDirector_JniRpc::SwigDirector_JniRpc(JNIEnv *jenv) : libtremotesf::JniRpc(), Swig::Director(jenv) {
 }
 
+SwigDirector_JniRpc::~SwigDirector_JniRpc() {
+  swig_disconnect_director_self("swigDirectorDisconnect");
+}
+
+
 void SwigDirector_JniRpc::onAboutToDisconnect() {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
@@ -5455,21 +5460,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Ser
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Rpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  libtremotesf::Rpc *arg1 = (libtremotesf::Rpc *) 0 ;
-  libtremotesf::ServerStats *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::Rpc **)&jarg1; 
-  result = (libtremotesf::ServerStats *)((libtremotesf::Rpc const *)arg1)->serverStats();
-  *(libtremotesf::ServerStats **)&jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1canRenameFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
@@ -6792,6 +6782,16 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1JniRp
 }
 
 
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1JniRpc(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1serverSettingsData(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
@@ -6803,6 +6803,21 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1se
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   result = ((libtremotesf::JniRpc const *)arg1)->serverSettingsData();
   *(libtremotesf::JniServerSettingsData **)&jresult = new libtremotesf::JniServerSettingsData(std::move(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1serverStats(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  libtremotesf::ServerStats *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  result = (libtremotesf::ServerStats *)((libtremotesf::JniRpc const *)arg1)->serverStats();
+  *(libtremotesf::ServerStats **)&jresult = result; 
   return jresult;
 }
 
@@ -8114,16 +8129,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onG
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1JniRpc(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  delete arg1;
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
   libtremotesf::JniRpc *obj = *((libtremotesf::JniRpc **)&objarg);
   (void)jcls;
@@ -8147,14 +8152,6 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerS
     (void)jenv;
     (void)jcls;
     *(libtremotesf::ServerSettingsData **)&baseptr = *(libtremotesf::JniServerSettingsData **)&jarg1;
-    return baseptr;
-}
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jlong baseptr = 0;
-    (void)jenv;
-    (void)jcls;
-    *(libtremotesf::Rpc **)&baseptr = *(libtremotesf::JniRpc **)&jarg1;
     return baseptr;
 }
 

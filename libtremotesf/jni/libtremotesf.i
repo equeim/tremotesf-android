@@ -31,8 +31,8 @@
 
 namespace libtremotesf
 {
-    //%ignore Server;
-    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem, notmatch$name="serverStats") "Rpc::.*$";
+    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem) "Rpc::.*$";
+    %typemap(javafinalize) JniRpc ""
 
     %ignore Torrent;
     %ignore TorrentData::update;

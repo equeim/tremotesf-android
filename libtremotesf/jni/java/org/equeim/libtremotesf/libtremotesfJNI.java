@@ -229,7 +229,6 @@ public class libtremotesfJNI {
   public final static native int Server_timeout_get(long jarg1, Server jarg1_);
   public final static native long new_Server();
   public final static native void delete_Server(long jarg1);
-  public final static native long Rpc_serverStats(long jarg1, Rpc jarg1_);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_canShowFreeSpaceForPath(long jarg1, ServerSettingsData jarg1_);
   public final static native int ServerSettingsData_rpcVersion_get(long jarg1, ServerSettingsData jarg1_);
@@ -322,7 +321,9 @@ public class libtremotesfJNI {
   public final static native void JniServerSettingsData_setMaximumPeersGlobally(long jarg1, JniServerSettingsData jarg1_, int jarg2);
   public final static native void delete_JniServerSettingsData(long jarg1);
   public final static native long new_JniRpc();
+  public final static native void delete_JniRpc(long jarg1);
   public final static native long JniRpc_serverSettingsData(long jarg1, JniRpc jarg1_);
+  public final static native long JniRpc_serverStats(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setServer(long jarg1, JniRpc jarg1_, long jarg2, Server jarg2_);
   public final static native void JniRpc_resetServer(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_connect(long jarg1, JniRpc jarg1_);
@@ -373,11 +374,9 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onTorrentFileRenamed(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onGotDownloadDirFreeSpace(long jarg1, JniRpc jarg1_, long jarg2);
   public final static native void JniRpc_onGotFreeSpaceForPath(long jarg1, JniRpc jarg1_, String jarg2, boolean jarg3, long jarg4);
-  public final static native void delete_JniRpc(long jarg1);
   public final static native void JniRpc_director_connect(JniRpc obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void JniRpc_change_ownership(JniRpc obj, long cptr, boolean take_or_release);
   public final static native long JniServerSettingsData_SWIGUpcast(long jarg1);
-  public final static native long JniRpc_SWIGUpcast(long jarg1);
 
   public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {
     jself.onAboutToDisconnect();

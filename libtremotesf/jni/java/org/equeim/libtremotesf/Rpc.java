@@ -31,11 +31,6 @@ public class Rpc {
     }
   }
 
-  public ServerStats serverStats() {
-    long cPtr = libtremotesfJNI.Rpc_serverStats(swigCPtr, this);
-    return (cPtr == 0) ? null : new ServerStats(cPtr, false);
-  }
-
   public final static class Status {
     public final static int Disconnected = 0;
     public final static int Connecting = Disconnected + 1;

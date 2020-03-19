@@ -16,6 +16,7 @@ class SwigDirector_JniRpc : public libtremotesf::JniRpc, public Swig::Director {
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
     SwigDirector_JniRpc(JNIEnv *jenv);
+    virtual ~SwigDirector_JniRpc();
     virtual void onAboutToDisconnect();
     virtual void onStatusChanged(libtremotesf::Rpc::Status status);
     virtual void onErrorChanged(libtremotesf::Rpc::Error error, QString const &errorMessage);

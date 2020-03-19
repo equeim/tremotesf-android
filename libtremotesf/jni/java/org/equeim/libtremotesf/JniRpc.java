@@ -8,21 +8,17 @@
 
 package org.equeim.libtremotesf;
 
-public class JniRpc extends Rpc {
+public class JniRpc {
   private transient long swigCPtr;
+  protected transient boolean swigCMemOwn;
 
   protected JniRpc(long cPtr, boolean cMemoryOwn) {
-    super(libtremotesfJNI.JniRpc_SWIGUpcast(cPtr), cMemoryOwn);
+    swigCMemOwn = cMemoryOwn;
     swigCPtr = cPtr;
   }
 
   protected static long getCPtr(JniRpc obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    delete();
   }
 
   public synchronized void delete() {
@@ -33,7 +29,6 @@ public class JniRpc extends Rpc {
       }
       swigCPtr = 0;
     }
-    super.delete();
   }
 
   protected void swigDirectorDisconnect() {
@@ -58,6 +53,11 @@ public class JniRpc extends Rpc {
 
   public JniServerSettingsData serverSettingsData() {
     return new JniServerSettingsData(libtremotesfJNI.JniRpc_serverSettingsData(swigCPtr, this), true);
+  }
+
+  public ServerStats serverStats() {
+    long cPtr = libtremotesfJNI.JniRpc_serverStats(swigCPtr, this);
+    return (cPtr == 0) ? null : new ServerStats(cPtr, false);
   }
 
   public void setServer(Server server) {
