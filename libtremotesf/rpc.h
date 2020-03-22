@@ -119,7 +119,7 @@ namespace libtremotesf
 
         const std::vector<std::shared_ptr<Torrent>>& torrents() const;
         Q_INVOKABLE libtremotesf::Torrent* torrentByHash(const QString& hash) const;
-        std::shared_ptr<Torrent> torrentById(int id) const;
+        Torrent* torrentById(int id) const;
 
         bool isConnected() const;
         Status status() const;
@@ -197,15 +197,13 @@ namespace libtremotesf
 
         void onAuthenticationRequired(QNetworkReply*, QAuthenticator* authenticator);
 
-        void postRequestImpl(const QByteArray& data,
-                             const std::function<void()>& callOnSuccess,
-                             const std::function<void(const QJsonObject&)>& callOnSuccessParse);
+        void postRequest(const QLatin1String& method,
+                         const QByteArray& data,
+                         const std::function<void(const QJsonObject&, bool)>& callOnSuccessParse = {});
 
-        void postRequest(const QByteArray& data,
-                         const std::function<void()>& callOnSuccess = nullptr);
-
-        void postRequest(const QByteArray& data,
-                         const std::function<void(const QJsonObject&)>& callOnSuccessParse);
+        void postRequest(const QLatin1String& method,
+                         const QVariantMap& arguments,
+                         const std::function<void(const QJsonObject&, bool)>& callOnSuccessParse = {});
 
         QNetworkAccessManager* mNetwork;
         std::unordered_set<QNetworkReply*> mNetworkRequests;

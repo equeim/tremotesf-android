@@ -55,7 +55,7 @@ namespace libtremotesf
             QMetaObject::invokeMethod(rpc, [rpc, id = data.id, function = std::move(function)] {
                 const auto torrent = rpc->torrentById(id);
                 if (torrent) {
-                    function(torrent.get());
+                    function(torrent);
                 }
             });
         }

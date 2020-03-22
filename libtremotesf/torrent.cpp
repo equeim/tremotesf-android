@@ -129,7 +129,7 @@ namespace libtremotesf
         setChanged(totalUploaded, static_cast<long long>(torrentMap.value(totalUploadedKey).toDouble()), changed);
         setChanged(ratio, torrentMap.value(ratioKey).toDouble(), changed);
 
-        setChanged(ratioLimitMode, [&]() {
+        setChanged(ratioLimitMode, [&] {
             switch (int mode = torrentMap.value(ratioLimitModeKey).toInt()) {
             case GlobalRatioLimit:
             case SingleRatioLimit:
@@ -182,7 +182,7 @@ namespace libtremotesf
 
         setChanged(peersLimit, torrentMap.value(peersLimitKey).toInt(), changed);
 
-        const long long newActivityDateTime = torrentMap.value(activityDateKey).toDouble() * 1000;
+        const auto newActivityDateTime = static_cast<long long>(torrentMap.value(activityDateKey).toDouble()) * 1000;
         if (newActivityDateTime > 0) {
             if (newActivityDateTime != activityDateTime) {
                 activityDateTime = newActivityDateTime;
@@ -196,7 +196,7 @@ namespace libtremotesf
                 changed = true;
             }
         }
-        const long long newDoneDateTime = torrentMap.value(doneDateKey).toDouble() * 1000;
+        const auto newDoneDateTime = static_cast<long long>(torrentMap.value(doneDateKey).toDouble()) * 1000;
         if (newDoneDateTime > 0) {
             if (newDoneDateTime != doneDateTime) {
                 doneDateTime = newDoneDateTime;
@@ -212,7 +212,7 @@ namespace libtremotesf
         }
 
         setChanged(honorSessionLimits, torrentMap.value(honorSessionLimitsKey).toBool(), changed);
-        setChanged(bandwidthPriority, [&]() {
+        setChanged(bandwidthPriority, [&] {
             switch (int priority = torrentMap.value(bandwidthPriorityKey).toInt()) {
             case LowPriority:
             case NormalPriority:
@@ -222,7 +222,7 @@ namespace libtremotesf
                 return NormalPriority;
             }
         }(), changed);
-        setChanged(idleSeedingLimitMode, [&]() {
+        setChanged(idleSeedingLimitMode, [&] {
             switch (int mode = torrentMap.value(idleSeedingLimitModeKey).toInt()) {
             case GlobalIdleSeedingLimit:
             case SingleIdleSeedingLimit:
@@ -236,7 +236,7 @@ namespace libtremotesf
         setChanged(downloadDirectory, torrentMap.value(downloadDirectoryKey).toString(), changed);
         setChanged(creator, torrentMap.value(creatorKey).toString(), changed);
 
-        const long long newCreationDateTime = torrentMap.value(creationDateKey).toDouble() * 1000;
+        const auto newCreationDateTime = static_cast<long long>(torrentMap.value(creationDateKey).toDouble()) * 1000;
         if (newCreationDateTime > 0) {
             if (newCreationDateTime != creationDateTime) {
                 creationDateTime = newCreationDateTime;
@@ -256,13 +256,13 @@ namespace libtremotesf
         trackersAddedOrRemoved = false;
         std::vector<Tracker> newTrackers;
         const QJsonArray trackerJsons(torrentMap.value(QJsonKeyStringInit("trackerStats")).toArray());
-        newTrackers.reserve(trackerJsons.size());
+        newTrackers.reserve(static_cast<size_t>(trackerJsons.size()));
         for (const QJsonValue& trackerJson : trackerJsons) {
             const QJsonObject trackerMap(trackerJson.toObject());
-            const int id = trackerMap.value(QJsonKeyStringInit("id")).toInt();
+            const int trackerId = trackerMap.value(QJsonKeyStringInit("id")).toInt();
 
             const auto found(std::find_if(trackers.begin(), trackers.end(), [&](const Tracker& tracker) {
-                return tracker.id() == id;
+                return tracker.id() == trackerId;
             }));
 
             if (found == trackers.end()) {
@@ -291,7 +291,9 @@ namespace libtremotesf
     {
         mData.id = id;
         mData.hashString = torrentMap.value(hashStringKey).toString();
-        mData.addedDate = QDateTime::fromMSecsSinceEpoch(torrentMap.value(addedDateKey).toDouble() * 1000);
+        const auto date = static_cast<long long>(torrentMap.value(addedDateKey).toDouble()) * 1000;
+        mData.addedDate = QDateTime::fromMSecsSinceEpoch(date);
+        mData.addedDateTime = date;
         update(torrentMap);
     }
 
@@ -589,17 +591,22 @@ namespace libtremotesf
 
     void Torrent::addTracker(const QString& announce)
     {
-        mRpc->setTorrentProperty(id(), addTrackerKey, QVariantList{announce}, true);
+        addTrackers(QStringList{announce});
     }
 
     void Torrent::addTrackers(const std::vector<QString>& announceUrls)
     {
-        QVariantList list;
+        QStringList list;
         list.reserve(static_cast<int>(announceUrls.size()));
         for (const QString& url : announceUrls) {
             list.push_back(url);
         }
-        mRpc->setTorrentProperty(id(), addTrackerKey, list, true);
+        addTrackers(list);
+    }
+
+    void Torrent::addTrackers(const QStringList& announceUrls)
+    {
+        mRpc->setTorrentProperty(id(), addTrackerKey, announceUrls, true);
     }
 
     void Torrent::setTracker(int trackerId, const QString& announce)
@@ -698,9 +705,6 @@ namespace libtremotesf
             updated = false;
         }
         if (mPeersEnabled && !mPeersUpdated) {
-            updated = false;
-        }
-        if (mCheckingSingleFile) {
             updated = false;
         }
         return updated;
@@ -808,14 +812,8 @@ namespace libtremotesf
         emit mRpc->torrentPeersUpdated(this, removed, changed, added);
     }
 
-    void Torrent::startCheckingSingleFile()
-    {
-        mCheckingSingleFile = true;
-    }
-
     void Torrent::checkSingleFile(const QJsonObject& torrentMap)
     {
         mData.singleFile = (torrentMap.value(prioritiesKey).toArray().size() == 1);
-        mCheckingSingleFile = false;
     }
 }
