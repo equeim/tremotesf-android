@@ -168,17 +168,14 @@ public class libtremotesfJNI {
   public final static native int TorrentData_seeders_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_leechers_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_peersLimit_get(long jarg1, TorrentData jarg1_);
-  public final static native java.util.Date TorrentData_addedDate_get(long jarg1, TorrentData jarg1_);
-  public final static native java.util.Date TorrentData_activityDate_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_addedDateTime_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_activityDateTime_get(long jarg1, TorrentData jarg1_);
-  public final static native java.util.Date TorrentData_doneDate_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_doneDateTime_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_idleSeedingLimitMode_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_idleSeedingLimit_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_downloadDirectory_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_comment_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_creator_get(long jarg1, TorrentData jarg1_);
-  public final static native java.util.Date TorrentData_creationDate_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_creationDateTime_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_bandwidthPriority_get(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_honorSessionLimits_get(long jarg1, TorrentData jarg1_);

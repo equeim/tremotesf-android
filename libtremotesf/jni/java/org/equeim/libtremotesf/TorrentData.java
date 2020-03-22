@@ -148,21 +148,13 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_peersLimit_get(swigCPtr, this);
   }
 
-  public java.util.Date getAddedDate() {
-    return libtremotesfJNI.TorrentData_addedDate_get(swigCPtr, this);
-}
-
-  public java.util.Date getActivityDate() {
-    return libtremotesfJNI.TorrentData_activityDate_get(swigCPtr, this);
-}
+  public long getAddedDateTime() {
+    return libtremotesfJNI.TorrentData_addedDateTime_get(swigCPtr, this);
+  }
 
   public long getActivityDateTime() {
     return libtremotesfJNI.TorrentData_activityDateTime_get(swigCPtr, this);
   }
-
-  public java.util.Date getDoneDate() {
-    return libtremotesfJNI.TorrentData_doneDate_get(swigCPtr, this);
-}
 
   public long getDoneDateTime() {
     return libtremotesfJNI.TorrentData_doneDateTime_get(swigCPtr, this);
@@ -186,10 +178,6 @@ public class TorrentData {
 
   public String getCreator() {
     return libtremotesfJNI.TorrentData_creator_get(swigCPtr, this);
-}
-
-  public java.util.Date getCreationDate() {
-    return libtremotesfJNI.TorrentData_creationDate_get(swigCPtr, this);
 }
 
   public long getCreationDateTime() {

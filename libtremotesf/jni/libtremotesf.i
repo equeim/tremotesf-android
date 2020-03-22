@@ -17,7 +17,6 @@
 %include "qbytearray.i"
 %include "qstring.i"
 %include "qvariantlist.i"
-%include "qdatetime.i"
 %include "qtime.i"
 
 #define Q_OBJECT
@@ -36,6 +35,10 @@ namespace libtremotesf
 
     %ignore Torrent;
     %ignore TorrentData::update;
+    %ignore TorrentData::addedDate;
+    %ignore TorrentData::activityDate;
+    %ignore TorrentData::doneDate;
+    %ignore TorrentData::creationDate;
 
     %ignore TorrentFile::TorrentFile;
     %ignore TorrentFile::update;

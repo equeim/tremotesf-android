@@ -157,7 +157,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                 SortMode.Eta -> o1.eta.compareTo(o2.eta)
                 SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
                 SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
-                SortMode.AddedDate -> o1.addedDate.compareTo(o2.addedDate)
+                SortMode.AddedDate -> o1.addedDateTime.compareTo(o2.addedDateTime)
             }
             if (sortMode != SortMode.Name && compared == 0) {
                 compared = nameComparator.compare(o1.name, o2.name)

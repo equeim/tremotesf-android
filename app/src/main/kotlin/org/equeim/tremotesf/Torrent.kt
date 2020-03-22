@@ -98,7 +98,7 @@ class Torrent(data: TorrentData, private val context: Context) {
     var leechers = data.leechers
         private set
 
-    var addedDate: Date = data.addedDate
+    var addedDateTime: Long = data.addedDateTime
         private set
 
     var downloadDirectory: String = data.downloadDirectory

@@ -4459,40 +4459,17 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
 }
 
 
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1addedDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1addedDateTime_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  QDateTime *result = 0 ;
+  long long result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (QDateTime *) & ((arg1)->addedDate);
-  
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
-  
-  return jresult;
-}
-
-
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1activityDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  QDateTime *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (QDateTime *) & ((arg1)->activityDate);
-  
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
-  
+  result = (long long) ((arg1)->addedDateTime);
+  jresult = (jlong)result; 
   return jresult;
 }
 
@@ -4508,25 +4485,6 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (long long) ((arg1)->activityDateTime);
   jresult = (jlong)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1doneDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  QDateTime *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (QDateTime *) & ((arg1)->doneDate);
-  
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
-  
   return jresult;
 }
 
@@ -4622,25 +4580,6 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   result = (QString *) & ((arg1)->creator);
   
   jresult = jenv->NewString(result->utf16(), result->size());
-  
-  return jresult;
-}
-
-
-SWIGEXPORT jobject JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1creationDate_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jobject jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  QDateTime *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (QDateTime *) & ((arg1)->creationDate);
-  
-  const jclass clazz = jenv->FindClass("java/util/Date");
-  const jmethodID id = jenv->GetMethodID(clazz, "<init>", "(J)V");
-  jresult = jenv->NewObject(clazz, id, result->toMSecsSinceEpoch());
   
   return jresult;
 }
