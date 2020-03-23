@@ -63,10 +63,10 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
         private set
     var peers = 0
         private set
-    var nextUpdateTime = 0L
-        private set
     var nextUpdateEta = 0L
         private set
+
+    private var nextUpdateTime = 0L
 
     init {
         update(rpcTracker)
@@ -82,11 +82,7 @@ class TrackersAdapterItem(rpcTracker: Tracker) {
 
     fun updateNextUpdateEta() {
         val eta = nextUpdateTime - System.currentTimeMillis() / 1000
-        if (eta < 0) {
-            nextUpdateEta = -1
-        } else {
-            nextUpdateEta = eta
-        }
+        nextUpdateEta = if (eta < 0) -1 else eta
     }
 }
 

@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.util.Date
-
 import android.content.Context
 
 import org.equeim.libtremotesf.StringsVector

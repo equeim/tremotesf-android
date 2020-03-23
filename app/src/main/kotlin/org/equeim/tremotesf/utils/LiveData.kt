@@ -31,11 +31,11 @@ class NonNullMutableLiveData<T : Any>(value: T) : MutableLiveData<T>(value) {
     //override fun setValue(value: T) = super.setValue(value)
 
     inline fun observe(owner: LifecycleOwner, crossinline onChanged: (T) -> Unit) {
-        observe(owner, Observer<T> { onChanged(it) })
+        observe(owner, Observer { onChanged(it) })
     }
 
     inline fun observeForever(crossinline onChanged: (t: T) -> Unit) {
-        observeForever(Observer<T> { onChanged(it) })
+        observeForever(Observer { onChanged(it) })
     }
 }
 

@@ -57,7 +57,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (BuildConfig.DONATIONS_GOOGLE) {
-            model.billing?.isSetUp?.observe(this, ::onBillingSetup)
+            model.billing?.isSetUp?.observe(viewLifecycleOwner, ::onBillingSetup)
         } else {
             paypal_donate_button.setOnClickListener { donatePayPal() }
             yandex_donate_button.setOnClickListener { donateYandex() }

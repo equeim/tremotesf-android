@@ -36,17 +36,17 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
 
         download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
         download_directory_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.setDownloadDirectory(it.toString())
+            Rpc.serverSettings.downloadDirectory = it.toString()
         }
 
         start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
         start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.setStartAddedTorrents(checked)
+            Rpc.serverSettings.startAddedTorrents = checked
         }
 
         rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles
         rename_incomplete_files_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.setRenameIncompleteFiles(checked)
+            Rpc.serverSettings.renameIncompleteFiles = checked
         }
 
         incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled

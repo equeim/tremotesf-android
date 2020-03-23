@@ -54,12 +54,10 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     @IdRes var destinationId = 0
         private set
 
-    private val destinationListener: NavController.OnDestinationChangedListener = object : NavController.OnDestinationChangedListener {
-        override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-            if (destination.id != destinationId) {
-                onNavigatedFrom(destination)
-                onNavigatedFrom()
-            }
+    private val destinationListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
+        if (destination.id != destinationId) {
+            onNavigatedFrom(destination)
+            onNavigatedFrom()
         }
     }
 

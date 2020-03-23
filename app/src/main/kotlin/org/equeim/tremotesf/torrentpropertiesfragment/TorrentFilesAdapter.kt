@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.DecimalFormats

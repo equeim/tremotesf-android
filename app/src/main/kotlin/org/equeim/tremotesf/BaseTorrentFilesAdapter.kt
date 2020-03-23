@@ -314,7 +314,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         private var normalPriorityItem: MenuItem? = null
         private var highPriorityItem: MenuItem? = null
         private var mixedPriorityItem: MenuItem? = null
-        protected var renameItem: MenuItem? = null
+        private var renameItem: MenuItem? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.base_torrent_files_context_menu, menu)

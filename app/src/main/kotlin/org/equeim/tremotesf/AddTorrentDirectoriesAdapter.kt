@@ -56,7 +56,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
     override fun getCount() = items.size
     override fun getItem(position: Int) = items[position]
 
-    override fun createViewHolder(view: View) = ViewHolder(view)
+    override fun createViewHolder(view: View): BaseViewHolder = ViewHolder(view)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = super.getView(position, convertView, parent)
@@ -83,7 +83,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
         outState.putStringArrayList(STATE_KEY, items)
     }
 
-    protected inner class ViewHolder(view: View) : BaseViewHolder(view) {
+    private inner class ViewHolder(view: View) : BaseViewHolder(view) {
         var position = -1
         init {
             view.findViewById<View>(R.id.remove_button).setOnClickListener {
