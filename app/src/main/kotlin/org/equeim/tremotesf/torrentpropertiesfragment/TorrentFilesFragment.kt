@@ -175,28 +175,6 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             Rpc.torrentFilesUpdatedEvent.observeForever(::onTorrentFilesUpdated)
         }
 
-        fun renameFile(path: String, newName: String): BaseTorrentFilesAdapter.Item? {
-            if (status.value != Status.Created) {
-                return null
-            }
-
-            val pathParts = path.split('/').filter(String::isNotEmpty)
-            var item: BaseTorrentFilesAdapter.Item? = rootDirectory
-            for (part in pathParts) {
-                item = (item as BaseTorrentFilesAdapter.Directory).children.find { it.name == part }
-                if (item == null) {
-                    break
-                }
-            }
-            if (item == rootDirectory) {
-                item = null
-            }
-
-            item?.name = newName
-
-            return item
-        }
-
         private fun createTree(rpcFiles: List<TorrentFile>) {
             if (status.value == Status.None && rpcFiles.isNotEmpty()) {
                 status.value = Status.Creating
