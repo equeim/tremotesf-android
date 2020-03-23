@@ -149,6 +149,10 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
             if (torrentId != torrent?.id) return
 
+            if (loaded && removed.isEmpty() && changed.isEmpty() && added.isEmpty()) {
+                return
+            }
+
             val peers = this.peers.value.toMutableList()
 
             for (index in removed) {
