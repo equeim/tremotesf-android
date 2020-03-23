@@ -431,7 +431,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
 
             override fun onNavigateToRenameDialog(args: Bundle) {
-                activity.navController.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment, args)
+                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment, args)
             }
 
             private class ItemHolder(adapter: BaseTorrentFilesAdapter,

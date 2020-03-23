@@ -46,12 +46,12 @@ import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
 import kotlinx.android.synthetic.main.text_field_dialog.*
 import kotlinx.android.synthetic.main.tracker_list_item.view.*
-import org.equeim.tremotesf.Torrent
 
 
 data class TrackersAdapterItem(val id: Int,
@@ -205,9 +205,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                torrentPropertiesFragment.navController.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
-                                                                 bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
-                                                                          EditTrackerDialogFragment.ANNOUNCE to item.announce))
+                torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
+                                                   bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
+                                                            EditTrackerDialogFragment.ANNOUNCE to item.announce))
             } else {
                 super.onClick(view)
             }
@@ -269,9 +269,8 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
 
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.navController
-                        .navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
-                                  bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedItems.map(TrackersAdapterItem::id).toIntArray()))
+                torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
+                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedItems.map(TrackersAdapterItem::id).toIntArray()))
                 return true
             }
 

@@ -21,6 +21,7 @@
 package org.equeim.tremotesf.utils
 
 import android.app.Activity
+import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
 import androidx.core.view.children
@@ -37,6 +39,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 
 import com.google.android.material.snackbar.Snackbar
@@ -127,6 +130,12 @@ inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
 
 inline fun <reified T : Fragment> Fragment.findFragment(): T? {
     return childFragmentManager.findFragment()
+}
+
+fun NavController.safeNavigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
+    try {
+        navigate(resId, args, navOptions)
+    } catch (ignore: IllegalArgumentException) {}
 }
 
 fun NavController.popDialog() {

@@ -46,6 +46,7 @@ import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.utils.safeNavigate
 
 import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
 import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
@@ -202,10 +203,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         ta.recycle()
 
         setOnClickListener {
-            findNavController().navigate(R.id.action_speedFragment_to_timePickerFragment,
-                                         bundleOf("beginTime" to beginTime,
-                                                  "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
-                                                  "minute" to calendar.get(Calendar.MINUTE)))
+            findNavController().safeNavigate(R.id.action_speedFragment_to_timePickerFragment,
+                                             bundleOf("beginTime" to beginTime,
+                                                      "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
+                                                      "minute" to calendar.get(Calendar.MINUTE)))
         }
     }
 

@@ -55,6 +55,7 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.findChildRecursively
 import org.equeim.tremotesf.utils.hideKeyboard
+import org.equeim.tremotesf.utils.safeNavigate
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 import kotlinx.android.synthetic.main.navigation_activity.*
@@ -237,9 +238,7 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
         }
 
         sidePanelHeader.connection_settings_button.setOnClickListener {
-            try {
-                navController.navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
-            } catch (ignore: IllegalArgumentException) {}
+            navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
         }
 
         val listSettingsLayout = sidePanelHeader.list_settings_layout
@@ -282,10 +281,10 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
             }
             val arguments = bundleOf(AddTorrentFragment.URI to intent.data!!.toString())
             if (isTaskRoot) {
-                navController.navigate(action, arguments)
+                navigate(action, arguments)
             } else {
-                navController.navigate(action, arguments,
-                                       NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
+                navigate(action, arguments,
+                         NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
             }
         }
     }
@@ -293,5 +292,9 @@ class NavigationActivity : AppCompatActivity(R.layout.navigation_activity), Sele
     // destinationId must not refer to NavGraph
     fun isTopLevelDestination(@IdRes destinationId: Int): Boolean {
         return appBarConfiguration.topLevelDestinations.contains(destinationId)
+    }
+
+    fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
+        navController.safeNavigate(resId, args, navOptions)
     }
 }

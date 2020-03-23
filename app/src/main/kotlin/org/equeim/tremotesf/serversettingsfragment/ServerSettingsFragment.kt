@@ -50,13 +50,14 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         list_view.divider = null
         list_view.setSelector(android.R.color.transparent)
         list_view.setOnItemClickListener { _, _, position, _ ->
-            navController.navigate(when (position) {
-                                             0 -> R.id.action_serverSettingsFragment_to_downloadingFragment
-                                             1 -> R.id.action_serverSettingsFragment_to_seedingFragment
-                                             2 -> R.id.action_serverSettingsFragment_to_queueFragment
-                                             3 -> R.id.action_serverSettingsFragment_to_speedFragment
-                                             4 -> R.id.action_serverSettingsFragment_to_networkFragment
-                                             else -> 0 })
+            navigate(when (position) {
+                         0 -> R.id.action_serverSettingsFragment_to_downloadingFragment
+                         1 -> R.id.action_serverSettingsFragment_to_seedingFragment
+                         2 -> R.id.action_serverSettingsFragment_to_queueFragment
+                         3 -> R.id.action_serverSettingsFragment_to_speedFragment
+                         4 -> R.id.action_serverSettingsFragment_to_networkFragment
+                         else -> 0
+                     })
         }
         Rpc.status.observe(viewLifecycleOwner) { updateView() }
     }

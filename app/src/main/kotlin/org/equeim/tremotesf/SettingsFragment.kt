@@ -34,6 +34,8 @@ import androidx.preference.PreferenceFragmentCompat
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.equeim.tremotesf.utils.safeNavigate
+
 
 class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                                             R.string.settings) {
@@ -46,7 +48,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
             findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
-                    findNavController().navigate(R.id.action_settingsFragment_to_persistentNotificationWarningFragment)
+                    findNavController().safeNavigate(R.id.action_settingsFragment_to_persistentNotificationWarningFragment)
                     false
                 } else {
                     true

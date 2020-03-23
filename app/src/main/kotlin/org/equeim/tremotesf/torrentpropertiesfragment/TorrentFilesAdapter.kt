@@ -34,6 +34,7 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.safeNavigate
 
 import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
@@ -81,7 +82,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     }
 
     override fun onNavigateToRenameDialog(args: Bundle) {
-        fragment.findNavController().navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment, args)
+        fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment, args)
     }
 
     fun treeUpdated() {

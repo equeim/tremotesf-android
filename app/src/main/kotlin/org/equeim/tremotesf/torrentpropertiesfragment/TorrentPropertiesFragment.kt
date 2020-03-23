@@ -117,7 +117,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         })
 
         fab.setOnClickListener {
-            navController.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
+            navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
         Rpc.torrents.observe(viewLifecycleOwner, ::updateTorrent)
@@ -159,17 +159,17 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> navController.navigate(R.id.action_torrentPropertiesFragment_to_setLocationDialogFragment,
-                                                                  bundleOf(TorrentsAdapter.SetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                                           TorrentsAdapter.SetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
+                R.id.set_location -> navigate(R.id.action_torrentPropertiesFragment_to_setLocationDialogFragment,
+                                              bundleOf(TorrentsAdapter.SetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                       TorrentsAdapter.SetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
                 R.id.rename ->
-                    navController.navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
-                                                 bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                          TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
-                                                          TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
-                R.id.remove -> navController.navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
-                                                            bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                                     TorrentsAdapter.RemoveTorrentDialogFragment.POP_BACK_STACK to true))
+                    navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+                             bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
+                                      TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
+                                      TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
+                R.id.remove -> navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
+                                        bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                 TorrentsAdapter.RemoveTorrentDialogFragment.POP_BACK_STACK to true))
                 else -> return false
             }
         }

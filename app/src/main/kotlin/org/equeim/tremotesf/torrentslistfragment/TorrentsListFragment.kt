@@ -140,11 +140,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
                     if (installDays >= 2 && updateDays >= 1) {
                         Settings.donateDialogShown = true
-                        navController.navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
+                        navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                     }
                 }
             } else if (!navigatedFrom) {
-                navController.navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
+                navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         }
     }
@@ -302,7 +302,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onActivityResult(requestCode, resultCode, data)
         info("onActivityResult $resultCode $data")
         if (resultCode == Activity.RESULT_OK && data != null) {
-            navController.navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
+            navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
         }
     }
 
@@ -394,7 +394,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                            .setType("application/x-bittorrent"),
                                    0)
         } catch (error: ActivityNotFoundException) {
-            navController.navigate(R.id.action_torrentsListFragment_to_filePickerFragment)
+            navigate(R.id.action_torrentsListFragment_to_filePickerFragment)
         }
     }
 
@@ -404,7 +404,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     .setMessage(getString(R.string.donations_description) + "\n\n" + getString(R.string.donate_dialog_again))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.donations_donate) { _, _ ->
-                        navController.navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
+                        navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
                     }
                     .create()
         }

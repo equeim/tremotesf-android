@@ -61,6 +61,7 @@ import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
+import org.equeim.tremotesf.utils.safeNavigate
 
 import kotlinx.android.synthetic.main.download_directory_edit.*
 import kotlinx.android.synthetic.main.remove_torrents_dialog.*
@@ -445,9 +446,9 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
-                view.findNavController().navigate(R.id.action_torrentsListFragment_to_torrentPropertiesFragment,
-                                                  bundleOf(TorrentPropertiesFragment.HASH to item.hashString,
-                                                           TorrentPropertiesFragment.NAME to item.name))
+                view.findNavController().safeNavigate(R.id.action_torrentsListFragment_to_torrentPropertiesFragment,
+                                                      bundleOf(TorrentPropertiesFragment.HASH to item.hashString,
+                                                               TorrentPropertiesFragment.NAME to item.name))
             } else {
                 super.onClick(view)
             }
@@ -497,19 +498,19 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                 R.id.check -> Rpc.nativeInstance.checkTorrents(selector.selectedItems.map(Torrent::id).toIntArray())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(selector.selectedItems.map(Torrent::id).toIntArray())
                 R.id.set_location -> activity.findNavController(R.id.nav_host)
-                        .navigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
-                                  bundleOf(SetLocationDialogFragment.TORRENT_IDS to selector.selectedItems.map(Torrent::id).toIntArray(),
-                                           SetLocationDialogFragment.LOCATION to selector.selectedItems.first().downloadDirectory))
+                        .safeNavigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
+                                      bundleOf(SetLocationDialogFragment.TORRENT_IDS to selector.selectedItems.map(Torrent::id).toIntArray(),
+                                               SetLocationDialogFragment.LOCATION to selector.selectedItems.first().downloadDirectory))
                 R.id.rename -> {
                     val torrent = selector.selectedItems.first()
-                    activity.findNavController(R.id.nav_host).navigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
-                                                                       bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                                                TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
-                                                                                TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
+                    activity.findNavController(R.id.nav_host).safeNavigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
+                                                                           bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
+                                                                                    TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
+                                                                                    TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 }
                 R.id.remove -> activity.findNavController(R.id.nav_host)
-                        .navigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
-                                  bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to selector.selectedItems.map(Torrent::id).toIntArray()))
+                        .safeNavigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
+                                      bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to selector.selectedItems.map(Torrent::id).toIntArray()))
                 else -> return false
             }
 

@@ -48,6 +48,7 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.StringSelector
 import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.safeNavigate
 
 import kotlinx.android.synthetic.main.connection_settings_fragment.*
 import kotlinx.android.synthetic.main.server_list_item.view.*
@@ -75,7 +76,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         fab.setOnClickListener {
-            navController.navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
+            navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
         }
 
         servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -170,8 +171,8 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
             override fun onClick(view: View) {
                 if (selector.actionMode == null) {
-                    itemView.findNavController().navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment,
-                                                          bundleOf(ServerEditFragment.SERVER to item.name))
+                    itemView.findNavController().safeNavigate(R.id.action_connectionSettingsFragment_to_serverEditFragment,
+                                                              bundleOf(ServerEditFragment.SERVER to item.name))
                 } else {
                     super.onClick(view)
                 }
@@ -190,7 +191,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 }
 
                 if (selector.hasSelection && item.itemId == R.id.remove) {
-                    activity.findNavController(R.id.nav_host).navigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
+                    activity.findNavController(R.id.nav_host).safeNavigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
                     return true
                 }
 

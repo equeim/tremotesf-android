@@ -66,14 +66,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         port_edit.filters = arrayOf(IntFilter(Server.portRange))
 
         proxy_settings_button.setOnClickListener {
-            navController.navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
+            navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
         }
 
         https_check_box.isChecked = false
 
         certificated_button.isEnabled = false
         certificated_button.setOnClickListener {
-            navController.navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
+            navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
         }
         https_check_box.setOnCheckedChangeListener { _, checked ->
             certificated_button.isEnabled = checked
@@ -151,7 +151,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 timeoutOk) {
             if (nameEditText != model.existingServer?.name &&
                     Servers.servers.value.find { it.name == nameEditText } != null) {
-                navController.navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
+                navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
             } else {
                 save()
             }
