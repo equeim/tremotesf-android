@@ -168,7 +168,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                 return
             }
             this.torrent = null
-            submitList(emptyList())
+            submitList(null)
             selector.actionMode?.finish()
             return
         }
@@ -192,7 +192,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             newTrackers.add(tracker)
         }
 
-        submitList(newTrackers.sortedWith(comparator))
+        submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator))
     }
 
     inner class ViewHolder(selector: Selector<TrackersAdapterItem, Int>,

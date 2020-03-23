@@ -53,7 +53,7 @@ class PeersAdapter : ListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
     }
 
     fun update(peers: List<Peer>) {
-        submitList(peers.sortedWith(comparator))
+        submitList(if (peers.isEmpty()) null else peers.sortedWith(comparator))
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
