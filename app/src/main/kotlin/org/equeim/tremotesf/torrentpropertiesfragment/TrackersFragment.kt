@@ -76,6 +76,14 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentProperties
     }
 
     override fun update() {
-        trackersAdapter?.update()
+        trackersAdapter?.let { adapter ->
+            adapter.update()
+            val torrent = torrentPropertiesFragment.torrent
+            placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
     }
 }

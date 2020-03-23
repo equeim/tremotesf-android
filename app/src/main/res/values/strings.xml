@@ -137,6 +137,8 @@
     <string name="loading">Loading\u2026</string>
     <string name="no_peers">No peers</string>
 
+    <string name="no_trackers">No trackers</string>
+
     <string name="error">Error</string>
 
     <string name="speed">Speed</string>
