@@ -20,7 +20,8 @@
 package org.equeim.tremotesf.donationsfragment
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
 
 interface IGoogleBillingHelperFactory {
-    fun createBillingWrapper(context: Context): IGoogleBillingHelper?
+    fun createBillingWrapper(context: Context, coroutineScope: CoroutineScope): IGoogleBillingHelper?
 }

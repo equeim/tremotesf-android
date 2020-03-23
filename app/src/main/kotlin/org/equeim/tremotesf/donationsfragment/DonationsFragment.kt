@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.observe
+import androidx.lifecycle.viewModelScope
 
 import com.google.android.material.snackbar.Snackbar
 
@@ -131,7 +132,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
     }
 
     class Model(application: Application) : AndroidViewModel(application) {
-        val billing: IGoogleBillingHelper? = GoogleBillingHelperFactory().createBillingWrapper(application)
+        val billing: IGoogleBillingHelper? = GoogleBillingHelperFactory().createBillingWrapper(application, viewModelScope)
 
         override fun onCleared() {
             billing?.endConnection()

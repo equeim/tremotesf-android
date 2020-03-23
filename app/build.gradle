@@ -159,4 +159,5 @@ dependencies {
     implementation "com.simplecityapps:recyclerview-fastscroll:${vers.recyclerviewFastscroll}"
 
     googleImplementation "com.android.billingclient:billing:${vers.billing}"
+    googleImplementation "com.android.billingclient:billing-ktx:${vers.billing}"
 }

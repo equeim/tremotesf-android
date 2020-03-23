@@ -8,12 +8,17 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
-import com.android.billingclient.api.ConsumeResponseListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
-import com.android.billingclient.api.SkuDetailsResponseListener
+import com.android.billingclient.api.consumePurchase
+import com.android.billingclient.api.querySkuDetails
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.utils.LiveEvent
@@ -21,12 +26,10 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
-class GoogleBillingHelper(context: Context) :
+class GoogleBillingHelper(context: Context, private val coroutineScope: CoroutineScope) :
         IGoogleBillingHelper,
         BillingClientStateListener,
-        SkuDetailsResponseListener,
         PurchasesUpdatedListener,
-        ConsumeResponseListener,
         Logger {
     companion object {
         private val skuIds = listOf("tremotesf.1",
@@ -66,6 +69,7 @@ class GoogleBillingHelper(context: Context) :
     }
 
     override fun launchBillingFlow(skuIndex: Int, activity: Activity): IGoogleBillingHelper.PurchaseError {
+        debug("launchBillingFlow")
         val skuDetails = this.skuDetails
         if (!billingClient.isReady || skuDetails == null) return IGoogleBillingHelper.PurchaseError.Error
 
@@ -87,10 +91,19 @@ class GoogleBillingHelper(context: Context) :
     override fun onBillingSetupFinished(result: BillingResult) {
         info("onBillingSetupFinished result=${resultToString(result)}")
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-            val params = SkuDetailsParams.newBuilder()
-            params.setSkusList(if (BuildConfig.DEBUG) debugSkuIds else skuIds)
-            params.setType(BillingClient.SkuType.INAPP)
-            billingClient.querySkuDetailsAsync(params.build(), this)
+            val consume = billingClient
+                    .queryPurchases(BillingClient.SkuType.INAPP)
+                    .purchasesList
+                    .filterNot(Purchase::isAcknowledged)
+            if (consume.isNotEmpty()) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    consumePurchases(consume, false)
+                }
+            }
+
+            coroutineScope.launch(Dispatchers.IO) {
+                querySkuDetails()
+            }
         }
     }
 
@@ -102,22 +115,25 @@ class GoogleBillingHelper(context: Context) :
         billingClient.startConnection(this)
     }
 
-    override fun onSkuDetailsResponse(result: BillingResult, skuDetails: MutableList<SkuDetails>?) {
+    private suspend fun querySkuDetails() {
+        debug("querySkuDetails")
+        val params = SkuDetailsParams.newBuilder()
+                .setSkusList(if (BuildConfig.DEBUG) debugSkuIds else skuIds)
+                .setType(BillingClient.SkuType.INAPP)
+                .build()
+        val (result, skuDetails) = billingClient.querySkuDetails(params)
+
         if (BuildConfig.DEBUG) {
-            debug("onSkuDetailsResponse result=${resultToString(result)} skuDetails=$skuDetails")
+            debug("querySkuDetails result=${resultToString(result)} skuDetails=$skuDetails")
         } else {
-            debug("onSkuDetailsResponse result=${resultToString(result)}")
+            debug("querySkuDetails result=${resultToString(result)}")
         }
         if (result.responseCode == BillingClient.BillingResponseCode.OK && skuDetails != null) {
             val sorted = skuDetails.sortedBy(SkuDetails::getPriceAmountMicros)
             this.skuDetails = sorted
             skus = sorted.map { IGoogleBillingHelper.SkuData(it.sku, it.price) }
-            isSetUp.value = true
-
-            for (purchase in billingClient.queryPurchases(BillingClient.SkuType.INAPP).purchasesList) {
-                if (!purchase.isAcknowledged) {
-                    consumePurchase(purchase)
-                }
+            withContext(Dispatchers.Main) {
+                isSetUp.value = true
             }
         }
     }
@@ -125,24 +141,31 @@ class GoogleBillingHelper(context: Context) :
     override fun onPurchasesUpdated(result: BillingResult, purchases: MutableList<Purchase>?) {
         debug("onPurchasesUpdated result=${resultToString(result)} purchases=$purchases")
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-            purchases?.forEach(::consumePurchase)
+            if (purchases?.isNotEmpty() == true) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    consumePurchases(purchases, true)
+                }
+            }
         } else {
             purchasesUpdatedEvent.emit(createPurchaseError(result))
         }
     }
 
-    override fun onConsumeResponse(result: BillingResult, purchaseToken: String) {
-        debug("onConsumeResponse result=${resultToString(result)} purchaseToken=$purchaseToken")
-        purchasesUpdatedEvent.emit(createPurchaseError(result))
-    }
-
-    private fun consumePurchase(purchase: Purchase) {
-        debug("consumePurchase purchase=$purchase")
-        val params = ConsumeParams.newBuilder()
-                .setDeveloperPayload(purchase.developerPayload)
-                .setPurchaseToken(purchase.purchaseToken)
-                .build()
-        billingClient.consumeAsync(params, this)
+    private suspend fun consumePurchases(purchases: List<Purchase>, emitError: Boolean) {
+        debug("consumePurchase purchases=$purchases")
+        for (purchase in purchases) {
+            val params = ConsumeParams.newBuilder()
+                    .setDeveloperPayload(purchase.developerPayload)
+                    .setPurchaseToken(purchase.purchaseToken)
+                    .build()
+            val (result, purchaseToken) = billingClient.consumePurchase(params)
+            debug("consumePurchases result=${resultToString(result)} purchaseToken=$purchaseToken")
+            if (emitError) {
+                withContext(Dispatchers.Main) {
+                    purchasesUpdatedEvent.emit(createPurchaseError(result))
+                }
+            }
+        }
     }
 
     override fun debug(msg: String, tr: Throwable?) {
