@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -250,7 +250,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
 
         private fun reset() {
             if (status.value != Status.None) {
-                viewModelScope.cancel()
+                viewModelScope.coroutineContext.cancelChildren()
                 rootDirectory.clearChildren()
                 files = emptyList()
                 status.value = Status.None
