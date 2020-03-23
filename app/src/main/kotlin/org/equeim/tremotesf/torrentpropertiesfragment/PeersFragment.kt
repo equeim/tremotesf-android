@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
@@ -78,16 +77,6 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
                 DividerItemDecoration.VERTICAL))
         peers_view.itemAnimator = null
 
-        peersAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                if (itemCount == 0) updatePlaceholder()
-            }
-
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (itemCount == peersAdapter.itemCount) updatePlaceholder()
-            }
-        })
-
         model.peers.observe(viewLifecycleOwner, ::updateAdapter)
     }
 
@@ -102,12 +91,18 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     private fun updateAdapter(peers: List<Peer>) {
         val peersAdapter = this.peersAdapter ?: return
+        val wasEmpty = (peersAdapter.itemCount == 0)
+        if (wasEmpty && peers.isEmpty()) {
+            updatePlaceholder(peersAdapter)
+            return
+        }
         peersAdapter.update(peers)
-        updatePlaceholder()
+        if (wasEmpty || peers.isEmpty()) {
+            updatePlaceholder(peersAdapter)
+        }
     }
 
-    private fun updatePlaceholder() {
-        val peersAdapter = this.peersAdapter ?: return
+    private fun updatePlaceholder(peersAdapter: PeersAdapter) {
         if (model.torrent == null) {
             progress_bar.visibility = View.GONE
         } else {
