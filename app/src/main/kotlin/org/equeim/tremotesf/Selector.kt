@@ -34,7 +34,7 @@ private const val BUNDLE_KEY = "org.equeim.tremotesf.Selector"
 abstract class Selector<ItemType, IdType>(private val activity: AppCompatActivity,
                                                       private val actionModeCallback: ActionModeCallback<ItemType>,
                                                       private val adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
-                                                      private val items: Collection<ItemType>,
+                                                      var items: Collection<ItemType>,
                                                       private val idFromItem: (ItemType) -> IdType,
                                                       private val titleStringId: Int) {
     var actionMode: ActionMode? = null

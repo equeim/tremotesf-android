@@ -36,7 +36,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -53,42 +54,47 @@ import kotlinx.android.synthetic.main.tracker_list_item.view.*
 import org.equeim.tremotesf.Torrent
 
 
-class TrackersAdapterItem(rpcTracker: Tracker) {
-    val id = rpcTracker.id()
-    val announce: String = rpcTracker.announce()
+data class TrackersAdapterItem(val id: Int,
+                               var announce: String,
+                               var status: Int,
+                               var errorMessage: String,
+                               var peers: Int,
+                               private var nextUpdateTime: Long) {
 
-    var status = 0
-        private set
-    lateinit var errorMessage: String
-        private set
-    var peers = 0
-        private set
     var nextUpdateEta = 0L
-        private set
 
-    private var nextUpdateTime = 0L
+    constructor(rpcTracker: Tracker) : this(rpcTracker.id(),
+                                            rpcTracker.announce(),
+                                            rpcTracker.status(),
+                                            rpcTracker.errorMessage(),
+                                            rpcTracker.peers(),
+                                            rpcTracker.nextUpdateTime())
 
     init {
-        update(rpcTracker)
-    }
-
-    fun update(rpcTracker: Tracker) {
-        status = rpcTracker.status()
-        errorMessage = rpcTracker.errorMessage()
-        peers = rpcTracker.peers()
-        nextUpdateTime = rpcTracker.nextUpdateTime()
         updateNextUpdateEta()
     }
 
+    fun updatedFrom(rpcTracker: Tracker): TrackersAdapterItem {
+        return copy(announce = rpcTracker.announce(),
+                    status = rpcTracker.status(),
+                    errorMessage = rpcTracker.errorMessage(),
+                    peers = rpcTracker.peers(),
+                    nextUpdateTime = rpcTracker.nextUpdateTime())
+    }
+
     fun updateNextUpdateEta() {
-        val eta = nextUpdateTime - System.currentTimeMillis() / 1000
-        nextUpdateEta = if (eta < 0) -1 else eta
+        if (nextUpdateTime > 0) {
+            val eta = nextUpdateTime - System.currentTimeMillis() / 1000
+            nextUpdateEta = if (eta < 0) -1 else eta
+        } else {
+            nextUpdateEta = -1
+        }
     }
 }
 
-class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : RecyclerView.Adapter<TrackersAdapter.ViewHolder>() {
+class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : ListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
-    private val trackers = mutableListOf<TrackersAdapterItem>()
+
     private val comparator = object : Comparator<TrackersAdapterItem> {
         private val stringComparator = AlphanumericComparator()
         override fun compare(o1: TrackersAdapterItem, o2: TrackersAdapterItem) = stringComparator.compare(o1.announce,
@@ -100,13 +106,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     val selector = IntSelector(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
                                ActionModeCallback(),
                                this,
-                               trackers,
+                               currentList,
                                TrackersAdapterItem::id,
                                R.plurals.trackers_selected)
-
-    override fun getItemCount(): Int {
-        return trackers.size
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(selector,
@@ -116,7 +118,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val tracker = trackers[position]
+        val tracker = currentList[position]
 
         holder.item = tracker
         holder.nameTextView.text = tracker.announce
@@ -138,8 +140,8 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             holder.peersTextView.visibility = View.GONE
         } else {
             holder.peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
-                                                                             tracker.peers,
-                                                                             tracker.peers)
+                                                                            tracker.peers,
+                                                                            tracker.peers)
             holder.peersTextView.visibility = View.VISIBLE
         }
 
@@ -147,11 +149,15 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             holder.nextUpdateTextView.visibility = View.GONE
         } else {
             holder.nextUpdateTextView.text = context.getString(R.string.next_update,
-                                                                DateUtils.formatElapsedTime(tracker.nextUpdateEta))
+                                                               DateUtils.formatElapsedTime(tracker.nextUpdateEta))
             holder.nextUpdateTextView.visibility = View.VISIBLE
         }
 
         holder.updateSelectedBackground()
+    }
+
+    override fun onCurrentListChanged(previousList: MutableList<TrackersAdapterItem>, currentList: MutableList<TrackersAdapterItem>) {
+        selector.items = currentList
     }
 
     fun update() {
@@ -162,14 +168,14 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                 return
             }
             this.torrent = null
-            val count = itemCount
-            trackers.clear()
-            notifyItemRangeRemoved(0, count)
+            submitList(emptyList())
             selector.actionMode?.finish()
             return
         }
 
         this.torrent = torrent
+
+        val trackers = currentList
 
         if (!torrent.changed && !(trackers.isEmpty() && torrent.trackerSites.isNotEmpty())) {
             trackers.forEach(TrackersAdapterItem::updateNextUpdateEta)
@@ -177,47 +183,16 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             return
         }
 
-        val rpcTrackers = torrent.trackers
         val newTrackers = mutableListOf<TrackersAdapterItem>()
+        val rpcTrackers = torrent.trackers
         for (rpcTracker: Tracker in rpcTrackers) {
             val id = rpcTracker.id()
             var tracker = trackers.find { it.id == id }
-            if (tracker == null) {
-                tracker = TrackersAdapterItem(rpcTracker)
-            } else {
-                tracker.update(rpcTracker)
-            }
+            tracker = tracker?.updatedFrom(rpcTracker) ?: TrackersAdapterItem(rpcTracker)
             newTrackers.add(tracker)
         }
 
-        run {
-            var i = 0
-            while (i < trackers.size) {
-                if (newTrackers.contains(trackers[i])) {
-                    i++
-                } else {
-                    trackers.removeAt(i)
-                    notifyItemRemoved(i)
-                }
-            }
-        }
-
-        for ((i, tracker) in newTrackers.sortedWith(comparator).withIndex()) {
-            if (trackers.getOrNull(i) === tracker) {
-                notifyItemChanged(i)
-            } else {
-                val index = trackers.indexOf(tracker)
-                if (index == -1) {
-                    trackers.add(i, tracker)
-                    notifyItemInserted(i)
-                } else {
-                    trackers.removeAt(index)
-                    trackers.add(i, tracker)
-                    notifyItemMoved(index, i)
-                    notifyItemChanged(i)
-                }
-            }
-        }
+        submitList(newTrackers.sortedWith(comparator))
     }
 
     inner class ViewHolder(selector: Selector<TrackersAdapterItem, Int>,
@@ -232,10 +207,20 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             if (selector.actionMode == null) {
                 torrentPropertiesFragment.navController.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
                                                                  bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
-                                                                 EditTrackerDialogFragment.ANNOUNCE to item.announce))
+                                                                          EditTrackerDialogFragment.ANNOUNCE to item.announce))
             } else {
                 super.onClick(view)
             }
+        }
+    }
+
+    private class Callback : DiffUtil.ItemCallback<TrackersAdapterItem>() {
+        override fun areItemsTheSame(oldItem: TrackersAdapterItem, newItem: TrackersAdapterItem): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: TrackersAdapterItem, newItem: TrackersAdapterItem): Boolean {
+            return oldItem == newItem
         }
     }
 
