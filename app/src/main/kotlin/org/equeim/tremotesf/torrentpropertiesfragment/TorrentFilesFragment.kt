@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
@@ -205,7 +206,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             }
         }
 
-        private fun doCreateTree(rpcFiles: List<TorrentFile>) {
+        private suspend fun doCreateTree(rpcFiles: List<TorrentFile>) {
             val rootDirectory = BaseTorrentFilesAdapter.Directory()
             val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
@@ -239,7 +240,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
                 }
             }
 
-            viewModelScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
                 if (status.value == Status.Creating) {
                     this@TreeModel.rootDirectory = rootDirectory
                     this@TreeModel.files = files

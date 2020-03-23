@@ -30,6 +30,7 @@ import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import org.benjamin.Bdecoder
 
@@ -101,15 +102,15 @@ class AddTorrentFileModel : ViewModel(), Logger {
                               highPriorityFiles)
     }
 
-    private fun doLoad(uri: Uri, context: Context) {
+    private suspend fun doLoad(uri: Uri, context: Context) {
         val (status, fileData) = readFile(uri, context)
         if (status != ParserStatus.Loading) {
-            viewModelScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
                 this@AddTorrentFileModel.status.value = status
             }
         } else {
             val parsed = parseFile(fileData!!)
-            viewModelScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
                 if (parsed == null) {
                     this@AddTorrentFileModel.status.value = ParserStatus.ParsingError
                 } else {
