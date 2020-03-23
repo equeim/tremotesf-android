@@ -121,15 +121,11 @@ class Torrent(data: TorrentData, private val context: Context) {
             }
         }
 
-    var peersLoaded = false
     var peersEnabled = false
         set(value) {
             if (value != field) {
                 field = value
                 Rpc.nativeInstance.setTorrentPeersEnabled(data, value)
-                if (!value) {
-                    peersLoaded = false
-                }
             }
         }
 

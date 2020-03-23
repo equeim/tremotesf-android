@@ -108,11 +108,10 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     private fun updatePlaceholder() {
         val peersAdapter = this.peersAdapter ?: return
-        val torrent = model.torrent
-        if (torrent == null) {
+        if (model.torrent == null) {
             progress_bar.visibility = View.GONE
         } else {
-            if (torrent.peersLoaded) {
+            if (model.loaded) {
                 progress_bar.visibility = View.GONE
                 placeholder.visibility = if (peersAdapter.itemCount == 0) {
                     View.VISIBLE
@@ -139,6 +138,8 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
             }
 
         val peers = NonNullMutableLiveData<List<Peer>>(emptyList())
+        var loaded = false
+            private set
 
         init {
             Rpc.torrentPeersUpdatedEvent.observeForever(::onTorrentPeersUpdated)
@@ -182,6 +183,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
                 peers.add(Peer(peer))
             }
 
+            loaded = true
             this.peers.value = peers
         }
 

@@ -468,7 +468,6 @@ object Rpc : Logger {
     private fun onTorrentPeersUpdated(torrentId: Int, removed: List<Int>, changed: List<Peer>, added: List<Peer>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.peersEnabled) {
-                torrent.peersLoaded = true
                 torrentPeersUpdatedEvent.emit(TorrentPeersUpdatedData(torrentId, removed, changed, added))
             }
         }
