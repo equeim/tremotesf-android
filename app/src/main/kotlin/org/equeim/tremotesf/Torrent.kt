@@ -109,15 +109,11 @@ class Torrent(data: TorrentData, private val context: Context) {
         private set
     val trackerSites = mutableListOf<String>()
 
-    var filesLoaded = false
     var filesEnabled = false
         set(value) {
             if (value != field) {
                 field = value
                 Rpc.nativeInstance.setTorrentFilesEnabled(data, value)
-                if (!value) {
-                    filesLoaded = false
-                }
             }
         }
 

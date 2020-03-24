@@ -78,20 +78,20 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         files_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         files_view.itemAnimator = null
 
-        model.status.observe(viewLifecycleOwner) { status ->
-            if (status == TreeModel.Status.Created) {
+        model.state.observe(viewLifecycleOwner) { state ->
+            if (state == TreeModel.State.TreeCreated) {
                 if (adapter.rootDirectory != model.rootDirectory || savedInstanceState != null) {
                     adapter.restoreInstanceState(this.savedInstanceState, model.rootDirectory)
                     this.savedInstanceState = null
                 } else {
                     adapter.treeUpdated()
                 }
-            } else if (status == TreeModel.Status.None) {
+            } else if (state == TreeModel.State.None) {
                 adapter.reset()
             }
 
-            updatePlaceholder()
-            updateProgressBar()
+            updatePlaceholder(state)
+            updateProgressBar(state)
         }
 
         Rpc.torrentFileRenamedEvent.observe(viewLifecycleOwner) { (torrentId, filePath, newName) ->
@@ -117,29 +117,28 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         }
     }
 
-    private fun updatePlaceholder() {
-        val torrent = this.torrent ?: return
-        placeholder?.visibility = if (torrent.filesLoaded && model.status.value != TreeModel.Status.Creating && adapter?.itemCount == 0) {
+    private fun updatePlaceholder(modelState: TreeModel.State) {
+        placeholder?.visibility = if (modelState == TreeModel.State.TreeCreated && model.files.isEmpty()) {
             View.VISIBLE
         } else {
             View.GONE
         }
     }
 
-    private fun updateProgressBar() {
-        val torrent = this.torrent ?: return
-        progress_bar?.visibility = if (!torrent.filesLoaded || model.status.value == TreeModel.Status.Creating) {
-            View.VISIBLE
-        } else {
-            View.GONE
+    private fun updateProgressBar(modelState: TreeModel.State) {
+        progress_bar?.visibility = when (modelState) {
+            TreeModel.State.Loading,
+            TreeModel.State.CreatingTree -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
     class TreeModel : ViewModel() {
-        enum class Status {
+        enum class State {
             None,
-            Creating,
-            Created
+            Loading,
+            CreatingTree,
+            TreeCreated
         }
 
         private companion object {
@@ -161,23 +160,26 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
                         reset()
                     } else {
                         value.filesEnabled = true
+                        state.value = State.Loading
                     }
                 }
             }
 
-        val status = NonNullMutableLiveData(Status.None)
         var rootDirectory = BaseTorrentFilesAdapter.Directory()
             private set
         var files: List<BaseTorrentFilesAdapter.File> = emptyList()
             private set
+        val state = NonNullMutableLiveData(State.None)
 
         init {
             Rpc.torrentFilesUpdatedEvent.observeForever(::onTorrentFilesUpdated)
         }
 
         private fun createTree(rpcFiles: List<TorrentFile>) {
-            if (status.value == Status.None && rpcFiles.isNotEmpty()) {
-                status.value = Status.Creating
+            if (rpcFiles.isEmpty()) {
+                state.value = State.TreeCreated
+            } else {
+                state.value = State.CreatingTree
                 viewModelScope.launch(Dispatchers.Default) {
                     doCreateTree(rpcFiles)
                 }
@@ -219,10 +221,10 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             }
 
             withContext(Dispatchers.Main) {
-                if (status.value == Status.Creating) {
+                if (state.value == State.CreatingTree) {
                     this@TreeModel.rootDirectory = rootDirectory
                     this@TreeModel.files = files
-                    this@TreeModel.status.value = Status.Created
+                    this@TreeModel.state.value = State.TreeCreated
                 }
             }
         }
@@ -245,24 +247,28 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
                         file.changed = false
                     }
                 }
+                state.value = state.value
             }
         }
 
         private fun reset() {
-            if (status.value != Status.None) {
-                viewModelScope.coroutineContext.cancelChildren()
+            if (state.value != State.None) {
+                if (state.value == State.CreatingTree) {
+                    viewModelScope.coroutineContext.cancelChildren()
+                }
                 rootDirectory.clearChildren()
                 files = emptyList()
-                status.value = Status.None
+                state.value = State.None
             }
         }
 
         private fun onTorrentFilesUpdated(data: Rpc.TorrentFilesUpdatedData) {
-            if (data.torrentId == torrent?.id) {
-                if (status.value == Status.Created) {
-                    updateTree(data.changedFiles)
-                } else {
-                    createTree(data.changedFiles)
+            val (torrentId, changedFiles) = data
+            if (torrentId == torrent?.id) {
+                when (state.value) {
+                    State.TreeCreated -> updateTree(changedFiles)
+                    State.Loading -> createTree(changedFiles)
+                    else -> {}
                 }
             }
         }

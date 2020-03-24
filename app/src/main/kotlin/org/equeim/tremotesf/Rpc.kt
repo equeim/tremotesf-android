@@ -459,7 +459,6 @@ object Rpc : Logger {
     private fun onTorrentFilesUpdated(torrentId: Int, files: List<TorrentFile>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.filesEnabled) {
-                torrent.filesLoaded = true
                 torrentFilesUpdatedEvent.emit(TorrentFilesUpdatedData(torrentId, files))
             }
         }
