@@ -137,9 +137,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     override fun onNavigatedFrom(newDestination: NavDestination) {
         if (newDestination !is FloatingWindow) {
-            torrent?.apply {
-                filesEnabled = false
-                peersEnabled = false
+            for (fragment in childFragmentManager.fragments) {
+                (fragment as? PagerFragment)?.onNavigatedFrom()
             }
         }
     }
@@ -314,5 +313,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     interface PagerFragment {
         fun update()
+        fun onNavigatedFrom() = Unit
     }
 }

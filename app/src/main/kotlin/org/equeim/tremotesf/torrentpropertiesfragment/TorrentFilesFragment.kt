@@ -117,6 +117,11 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         }
     }
 
+    override fun onNavigatedFrom() {
+        model.state.removeObservers(viewLifecycleOwner)
+        model.torrent = null
+    }
+
     private fun updatePlaceholder(modelState: TreeModel.State) {
         placeholder?.visibility = if (modelState == TreeModel.State.TreeCreated && model.files.isEmpty()) {
             View.VISIBLE
@@ -155,8 +160,10 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         var torrent: Torrent? = null
             set(value) {
                 if (value != field) {
+                    val oldValue = field
                     field = value
                     if (value == null) {
+                        oldValue?.filesEnabled = false
                         reset()
                     } else {
                         value.filesEnabled = true

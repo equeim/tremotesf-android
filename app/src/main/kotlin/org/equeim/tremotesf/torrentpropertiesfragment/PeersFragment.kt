@@ -89,6 +89,11 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         model.torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent
     }
 
+    override fun onNavigatedFrom() {
+        model.peers.removeObservers(viewLifecycleOwner)
+        model.torrent = null
+    }
+
     private fun updateAdapter(peers: List<Peer>) {
         val peersAdapter = this.peersAdapter ?: return
         val wasEmpty = (peersAdapter.itemCount == 0)
@@ -123,8 +128,10 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         var torrent: Torrent? = null
             set(value) {
                 if (value != field) {
+                    val oldValue = field
                     field = value
                     if (value == null) {
+                        oldValue?.peersEnabled = false
                         reset()
                     } else {
                         value.peersEnabled = true
