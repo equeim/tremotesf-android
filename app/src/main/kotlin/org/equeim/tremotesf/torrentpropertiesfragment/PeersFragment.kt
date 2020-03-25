@@ -61,8 +61,8 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProvider(requireParentFragment())[Model::class.java]
-        update()
+        val parent = requireParentFragment() as TorrentPropertiesFragment
+        model = ViewModelProvider(parent, ModelFactory(parent.torrent))[Model::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,7 +124,17 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         }
     }
 
-    class Model : ViewModel() {
+    private class ModelFactory(private val torrent: Torrent?) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass == Model::class.java) {
+                @Suppress("UNCHECKED_CAST")
+                return Model(torrent) as T
+            }
+            throw IllegalArgumentException()
+        }
+    }
+
+    private class Model(torrent: Torrent?) : ViewModel() {
         var torrent: Torrent? = null
             set(value) {
                 if (value != field) {
@@ -144,6 +154,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
             private set
 
         init {
+            this.torrent = torrent
             Rpc.torrentPeersUpdatedEvent.observeForever(::onTorrentPeersUpdated)
         }
 

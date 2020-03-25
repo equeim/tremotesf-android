@@ -47,8 +47,8 @@ import kotlinx.android.synthetic.main.torrent_files_fragment.*
 
 
 class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentPropertiesFragment.PagerFragment {
-    private val torrentPropertiesFragment: TorrentPropertiesFragment?
-        get() = parentFragment as TorrentPropertiesFragment?
+    private val torrentPropertiesFragment: TorrentPropertiesFragment
+        get() = requireParentFragment() as TorrentPropertiesFragment
 
     private var savedInstanceState: Bundle? = null
 
@@ -63,8 +63,9 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
-        model = ViewModelProvider(torrentPropertiesFragment!!)[TreeModel::class.java]
-        update()
+        model = ViewModelProvider(torrentPropertiesFragment,
+                                  TreeModelFactory(torrentPropertiesFragment.torrent))[TreeModel::class.java]
+        torrent = model.torrent
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -111,10 +112,8 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     }
 
     override fun update() {
-        torrentPropertiesFragment?.let {
-            torrent = it.torrent
-            model.torrent = it.torrent
-        }
+        torrent = torrentPropertiesFragment.torrent
+        model.torrent = torrent
     }
 
     override fun onNavigatedFrom() {
@@ -138,7 +137,17 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         }
     }
 
-    class TreeModel : ViewModel() {
+    private class TreeModelFactory(private val torrent: Torrent?) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass == TreeModel::class.java) {
+                @Suppress("UNCHECKED_CAST")
+                return TreeModel(torrent) as T
+            }
+            throw IllegalArgumentException()
+        }
+    }
+
+    private class TreeModel(torrent: Torrent?) : ViewModel() {
         enum class State {
             None,
             Loading,
@@ -176,6 +185,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         val state = NonNullMutableLiveData(State.None)
 
         init {
+            this.torrent = torrent
             Rpc.torrentFilesUpdatedEvent.observeForever(::onTorrentFilesUpdated)
         }
 
