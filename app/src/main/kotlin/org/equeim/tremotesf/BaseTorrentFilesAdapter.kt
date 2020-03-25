@@ -552,8 +552,8 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
     class File(row: Int,
                parentDirectory: Directory?,
                name: String,
+               override val size: Long,
                val id: Int) : Item(row, parentDirectory, name) {
-        override var size = 0L
         override var completedSize = 0L
         override var wantedState = WantedState.Unwanted
 

@@ -191,8 +191,8 @@ class AddTorrentFileModel : ViewModel(), Logger {
                         val file = BaseTorrentFilesAdapter.File(directory.children.size,
                                                                 directory,
                                                                 part,
+                                                                fileMap["length"] as Long,
                                                                 fileIndex)
-                        file.size = fileMap["length"] as Long
                         directory.addChild(file)
                         files.add(file)
                     } else {
@@ -214,8 +214,8 @@ class AddTorrentFileModel : ViewModel(), Logger {
             val file = BaseTorrentFilesAdapter.File(0,
                                                     null,
                                                     infoMap["name"] as String,
+                                                    infoMap["length"] as Long,
                                                     0)
-            file.size = infoMap["length"] as Long
             files.add(file)
             rootDirectoryChild = file
         }

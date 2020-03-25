@@ -147,9 +147,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         }
 
         private companion object {
-            fun updateFile(file: BaseTorrentFilesAdapter.File,
-                                   rpcFile: TorrentFile) {
-                file.size = rpcFile.size
+            fun updateFile(file: BaseTorrentFilesAdapter.File, rpcFile: TorrentFile) {
                 file.completedSize = rpcFile.completedSize
                 file.setWanted(rpcFile.wanted)
                 file.priority = BaseTorrentFilesAdapter.Item.Priority.fromTorrentFilePriority(rpcFile.priority)
@@ -207,6 +205,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
                         val file = BaseTorrentFilesAdapter.File(currentDirectory.children.size,
                                                                 currentDirectory,
                                                                 part,
+                                                                rpcFile.size,
                                                                 fileIndex)
                         updateFile(file, rpcFile)
                         currentDirectory.addChild(file)
