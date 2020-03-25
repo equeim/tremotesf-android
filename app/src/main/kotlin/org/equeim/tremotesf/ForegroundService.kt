@@ -29,6 +29,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
@@ -44,11 +45,15 @@ private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
 
 class ForegroundService : LifecycleService(), Logger {
-    private var started = false
     private lateinit var notificationManager: NotificationManager
 
+    override fun onCreate() {
+        super.onCreate()
+        notificationManager = getSystemService()!!
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId")
+        info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId, state=${lifecycle.currentState}")
 
         super.onStartCommand(intent, flags, startId)
 
@@ -57,8 +62,7 @@ class ForegroundService : LifecycleService(), Logger {
             return START_NOT_STICKY
         }
 
-        if (!started) {
-            notificationManager = getSystemService()!!
+        if (lifecycle.currentState != Lifecycle.State.STARTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
                         getString(R.string.persistent_notification_channel_name),
@@ -74,8 +78,6 @@ class ForegroundService : LifecycleService(), Logger {
 
             Rpc.connectOnce()
 
-            started = true
-
             info("Service started")
         }
 
@@ -88,7 +90,7 @@ class ForegroundService : LifecycleService(), Logger {
     }
 
     override fun onDestroy() {
-        info("ForegroundService.onDestroy()}")
+        info("ForegroundService.onDestroy()")
         // isPersistentNotificationActive() works only on API 23+, so
         // remove notification here explicitly to make sure that it is gone
         notificationManager.cancel(PERSISTENT_NOTIFICATION_ID)
