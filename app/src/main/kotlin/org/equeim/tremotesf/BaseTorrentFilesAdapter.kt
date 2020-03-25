@@ -554,28 +554,8 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                name: String,
                val id: Int) : Item(row, parentDirectory, name) {
         override var size = 0L
-            set(value) {
-                if (value != field) {
-                    field = value
-                    changed = true
-                }
-            }
-
         override var completedSize = 0L
-            set(value) {
-                if (value != field) {
-                    field = value
-                    changed = true
-                }
-            }
-
         override var wantedState = WantedState.Unwanted
-            private set(value) {
-                if (value != field) {
-                    field = value
-                    changed = true
-                }
-            }
 
         override fun setWanted(wanted: Boolean, ids: MutableList<Int>?) {
             wantedState = if (wanted) {
@@ -587,12 +567,6 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
 
         override var priority = Priority.Normal
-            set(value) {
-                if (value != field) {
-                    field = value
-                    changed = true
-                }
-            }
 
         override fun setPriority(priority: Priority, ids: MutableList<Int>?) {
             this.priority = priority

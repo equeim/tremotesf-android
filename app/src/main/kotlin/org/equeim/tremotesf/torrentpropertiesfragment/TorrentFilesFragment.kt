@@ -149,7 +149,6 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         private companion object {
             fun updateFile(file: BaseTorrentFilesAdapter.File,
                                    rpcFile: TorrentFile) {
-                file.changed = true
                 file.size = rpcFile.size
                 file.completedSize = rpcFile.completedSize
                 file.setWanted(rpcFile.wanted)
@@ -238,23 +237,17 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
 
         private fun updateTree(changedFiles: List<TorrentFile>) {
             if (changedFiles.isNotEmpty()) {
-                val changedFilesIter = changedFiles.iterator()
-                var changedFile = changedFilesIter.next()
-                var changedFileIndex = changedFile.id
-                for (file in files) {
-                    if (file.id == changedFileIndex) {
-                        updateFile(file, changedFile)
-                        if (changedFilesIter.hasNext()) {
-                            changedFile = changedFilesIter.next()
-                            changedFileIndex = changedFile.id
-                        } else {
-                            changedFileIndex = -1
-                        }
-                    } else {
-                        file.changed = false
-                    }
+                val changed = ArrayList<BaseTorrentFilesAdapter.File>(changedFiles.size)
+                for (rpcFile in changedFiles) {
+                    val file = files[rpcFile.id]
+                    updateFile(file, rpcFile)
+                    file.changed = true
+                    changed.add(file)
                 }
                 state.value = state.value
+                for (file in changed) {
+                    file.changed = false
+                }
             }
         }
 
