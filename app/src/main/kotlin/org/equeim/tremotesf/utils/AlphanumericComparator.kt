@@ -20,7 +20,6 @@
 
 package org.equeim.tremotesf.utils
 
-import java.lang.NumberFormatException
 import java.text.Collator
 
 import kotlin.math.sign
