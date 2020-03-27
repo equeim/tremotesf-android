@@ -47,6 +47,8 @@ private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
 class ForegroundService : LifecycleService(), Logger {
     private lateinit var notificationManager: NotificationManager
 
+    private var stopUpdatingNotification = false
+
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService()!!
@@ -58,6 +60,7 @@ class ForegroundService : LifecycleService(), Logger {
         super.onStartCommand(intent, flags, startId)
 
         if (intent?.action == ACTION_SHUTDOWN) {
+            stopUpdatingNotification = true
             Utils.shutdownApp(this)
             return START_NOT_STICKY
         }
@@ -90,26 +93,13 @@ class ForegroundService : LifecycleService(), Logger {
     }
 
     override fun onDestroy() {
-        info("ForegroundService.onDestroy()")
-        // isPersistentNotificationActive() works only on API 23+, so
-        // remove notification here explicitly to make sure that it is gone
-        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID)
-
+        info("ForegroundService.onDestroy() ${lifecycle.currentState}")
+        stopForeground(true)
         super.onDestroy()
     }
 
-    private fun isPersistentNotificationActive(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return notificationManager.activeNotifications.any { it.id == PERSISTENT_NOTIFICATION_ID }
-        }
-        return true
-    }
-
     private fun updatePersistentNotification() {
-        // Sometimes updatePersistentNotification() is called after system has already removed notification
-        // but ForegroundService.onDestroy() hasn't been called yet. Check isPersistentNotificationActive()
-        // to avoid creating a new notification
-        if (isPersistentNotificationActive()) {
+        if (!stopUpdatingNotification) {
             notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
         }
     }
@@ -122,7 +112,6 @@ class ForegroundService : LifecycleService(), Logger {
                                           .setDestination(R.id.torrentsListFragment)
                                           .createPendingIntent())
                 .setColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
-                .setOngoing(true)
 
         val currentServer = Servers.currentServer.value
         if (currentServer != null) {
