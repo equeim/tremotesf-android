@@ -467,7 +467,6 @@
 
     <string name="proxy_settings">Proxy settings</string>
     <string name="proxy_type">Proxy type</string>
-    <string name="hostname">Hostname</string>
 
     <string-array name="proxy_type_items">
         <item>Default</item>
