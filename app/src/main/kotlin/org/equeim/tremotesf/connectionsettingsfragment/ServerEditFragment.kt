@@ -90,10 +90,6 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
         timeout_edit.filters = arrayOf(IntFilter(Server.timeoutRange))
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
                                   ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
@@ -237,10 +233,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 client_certificate_layout.isEnabled = checked
             }
             client_certificate_layout.isEnabled = false
-        }
 
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            super.onActivityCreated(savedInstanceState)
             model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
                                       ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
             with(model.server) {
@@ -275,8 +268,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         private lateinit var model: Model
         private lateinit var proxyTypeItemValues: Array<String>
 
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            super.onActivityCreated(savedInstanceState)
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
             proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
             proxy_type_view.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
