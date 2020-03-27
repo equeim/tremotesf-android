@@ -68,9 +68,11 @@
     </plurals>
 
     <string name="next_update">Nächste Aktualisierung nach %s</string>
+    <string name="add_trackers">Tracker hinzufügen</string>
     <string name="edit_tracker">Tracker editieren</string>
 
-    <string name="tracker_announce_url">Tracker Ankündigungs-URL</string>
+    <string name="tracker_announce_url">Tracker-Ankündigungs-URLs</string>
+    <string name="trackers_announce_urls">Ankündigungs-URLs der Tracker</string>
 
     <string name="torrent_finished">Torrent fertiggestellt</string>
     <string name="torrent_added">Torrent hinzugefügt</string>
@@ -132,6 +134,8 @@
 
     <string name="loading">Lade\u2026</string>
     <string name="no_peers">Keine Teilnehmer</string>
+
+    <string name="no_trackers">Keine Tracker</string>
 
     <string name="error">Fehler</string>
 
@@ -426,10 +430,20 @@
     <string name="donations_donate">Spenden</string>
     <string name="donations_amount">Höhe der Spende</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google behält eine Gebühr von 30% ein</string>
     <string name="donations_paypal_title">Paypal</string>
     <string name="donations_paypal_description">Sie können nach dem Klick auf den Button auswählen wie viel Sie spenden möchten</string>
     <string name="donations_yandex_title">Yandex.Money</string>
     <string name="donations_snackbar_ok">Vielen Dank für Ihre Spende!</string>
     <string name="donations_snackbar_error">Fehler bei der Bearbeitung der Spende</string>
+
+    <string name="proxy_settings">Proxy-Einstellungen</string>
+    <string name="proxy_type">Proxy-Typ</string>
+    <string name="hostname">Hostname</string>
+
+    <string-array name="proxy_type_items">
+        <item>Standard</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
+    </string-array>
+    <string name="donations_google_description">Google behält eine Gebühr von 30% ein</string>
 </resources>

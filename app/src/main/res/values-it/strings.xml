@@ -70,8 +70,6 @@
     <string name="next_update">Prossimo aggiornamento dopo %s</string>
     <string name="edit_tracker">Modifica server traccia</string>
 
-    <string name="tracker_announce_url">URL del server traccia</string>
-
     <string name="torrent_finished">Torrent completati</string>
     <string name="torrent_added">Torrent aggiunto</string>
 
@@ -432,4 +430,5 @@
     <string name="donations_yandex_title">Yandex.Money</string>
     <string name="donations_snackbar_ok">Grazie per la tua donazione!</string>
     <string name="donations_snackbar_error">Errore nel processare la donazione</string>
-</resources>
+
+    </resources>

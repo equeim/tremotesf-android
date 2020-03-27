@@ -70,8 +70,6 @@
     <string name="next_update">Sonraki güncelleme %s</string>
     <string name="edit_tracker">İzleyici düzenle</string>
 
-    <string name="tracker_announce_url">İzleyici URL\'yi duyur</string>
-
     <string name="torrent_finished">Torrent bitti</string>
     <string name="torrent_added">Torrent eklendi</string>
 
@@ -432,4 +430,5 @@
     <string name="donations_yandex_title">Yandex.Money</string>
     <string name="donations_snackbar_ok">Bağışınız için teşekkürler!</string>
     <string name="donations_snackbar_error">Bağış işlenirken hata oluştu</string>
-</resources>
+
+    </resources>

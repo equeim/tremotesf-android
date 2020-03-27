@@ -70,8 +70,6 @@
     <string name="next_update">Prochaine mise à jour après %s</string>
     <string name="edit_tracker">Éditer traqueur</string>
 
-    <string name="tracker_announce_url">URL d’annonce du traqueur</string>
-
     <string name="torrent_finished">Torrent terminé</string>
     <string name="torrent_added">Torrent ajouté</string>
 
@@ -187,11 +185,16 @@
     <string name="authentication">Authentification</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="password">Mot de passe</string>
+    <string name="empty_field_error">Ce champ ne peut pas être vide</string>
+
+    <string name="server_exists">Un serveur avec ce nom existe déjà</string>
     <string name="overwrite">Écraser</string>
 
     <string name="add_torrent">Ajouter torrent</string>
     <string name="add_torrent_file">Ajouter fichier torrent</string>
     <string name="file_is_too_large">Le fichier est trop volumineux</string>
+    <string name="download_directory">Dossier de téléchargement</string>
+
     <string name="server_settings_seeding">Propagation</string>
     <string name="server_settings_queue">File d\'attente</string>
     <string name="server_settings_speed">Vitesse</string>
@@ -200,7 +203,7 @@
     <string name="start_added_torrents">Démarrer les torrents ajoutés</string>
     <string name="stop_seeding_at_ratio">Propager jusqu’à un ratio de</string>
     <string name="maximum_active_downloads">Nombre maximum de téléchargements actifs</string>
-    <string name="maximum_active_uploads">Nombre maximum de téléversements actifs</string>
+    <string name="maximum_active_uploads">Nombre maximum d\'envois actifs</string>
     <string name="alternative_limits">Limites alternatives</string>
     <string name="enable">Activer</string>
     <string name="download_kbps">Réception, kB/s</string>
@@ -208,6 +211,10 @@
     <string name="from">De</string>
     <string name="to">‭À</string>
     <string name="every_day">Chaque jour</string>
+    <string name="weekdays">Jours de la semaine</string>
+    <string name="weekends">Week-ends</string>
+    <string name="connection">Connection</string>
+    <string name="random_port">Port aléatoire au démarrage de Transmission</string>
     <string name="port_forwarding">Activer le réacheminement de port</string>
     <string name="encryption">Chiffrement</string>
     <string-array name="encryption_items">
@@ -258,7 +265,17 @@
     <string name="check_local_data">Vérification donnée locale</string>
     <string name="reannounce">Nouvelle annonce</string>
     <string name="torrent_duplicate">Ce torrent est déjà présent</string>
+    <string name="torrent_add_error">Erreur d\'ajout du torrent</string>
+
+    <!-- e.g. "100 MiB, uploaded 200 MiB" -->
+    <string name="uploaded_string">%1$s, envoyé %2$s</string>
+
     <string name="torrent_paused">En pause</string>
+    <plurals name="torrent_downloading">
+        <item quantity="one">Téléchargé depuis %d pair</item>
+        <item quantity="other">Téléchargé depuis %d pairs</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">Téléchargement</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Propagation à %d pair</item>
         <item quantity="other">Propagation à %d pairs</item>
@@ -305,6 +322,8 @@
     <string name="translators">Traducteurs</string>
     <string name="license">Licence</string>
 
+    <string name="prefs_dark_theme_mode_title">Thème</string>
+
     <string name="prefs_old_colors_title">Utiliser les anciennes couleurs</string>
 
     <string name="prefs_torrent_compact_view_title">Utiliser la vue compact pour les torrents</string>
@@ -335,8 +354,21 @@
     </string-array>
 
     <string name="connection_settings">Paramètres de connexion</string>
-    <string name="donations_donate">Faire un don</string>
-    <string name="donations_google_description">Google facture des frais de 30 %</string>
-    <string name="donations_paypal_description">Vous pourrez choisir le montant du don après avoir cliqué sur le bouton</string>
 
-</resources>
+    <string-array name="prefs_theme_entries">
+        <item translatable="false">@string/theme_auto</item>
+        <item>Sombre</item>
+        <item>Clair</item>
+    </string-array>
+
+    <string name="donations_donate">Faire un don</string>
+    <string name="donations_amount">Montant du don</string>
+    <string name="donations_google_title">Google Play Store</string>
+    <string name="donations_google_description">Google facture des frais de 30 %</string>
+    <string name="donations_paypal_title">PayPal</string>
+    <string name="donations_paypal_description">Vous pourrez choisir le montant du don après avoir cliqué sur le bouton</string>
+    <string name="donations_yandex_title">Yandex.Money</string>
+    <string name="donations_snackbar_ok">Merci pour votre don !</string>
+    <string name="donations_snackbar_error">Erreur lors du traitement du don</string>
+
+    </resources>

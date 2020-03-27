@@ -79,7 +79,7 @@
     <string name="add_trackers">Добавить трекеры</string>
     <string name="edit_tracker">Редактировать трекер</string>
 
-    <string name="tracker_announce_url">Адрес объявлений трекера</string>
+    <string name="tracker_announce_url">Адреса объявлений трекера</string>
     <string name="trackers_announce_urls">Адреса объявлений трекеров</string>
 
     <string name="torrent_finished">Торрент завершен</string>
@@ -142,6 +142,8 @@
 
     <string name="loading">Загрузка…</string>
     <string name="no_peers">Нет пиров</string>
+
+    <string name="no_trackers">Нет трекеров</string>
 
     <string name="error">Ошибка</string>
 
@@ -407,8 +409,6 @@
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 
     <string name="donate_tab">Пожертвовать</string>
-    <string name="donations_yandex_title">Яндекс.Деньги</string>
-    <string name="donations_description">Если вам понравилось это приложение, вы можете поддержать его разработку, отправив пожертвование разработчику.</string>
     <string name="donate_dialog_again">Этот диалог не будет показан еще раз.</string>
 
     <string name="free_space">Свободное место: %s</string>
@@ -447,12 +447,25 @@
         <item>Темная</item>
         <item>Светлая</item>
     </string-array>
+
+    <string name="donations_description">Если вам понравилось это приложение, вы можете поддержать его разработку, отправив пожертвование разработчику.</string>
     <string name="donations_donate">Пожертвовать</string>
-    <string name="donations_google_description">Google взимает 30% комиссии с каждого пожертвования</string>
-    <string name="donations_paypal_description">После нажатия на кнопку вы можете выбрать сколько хотите пожертвовать</string>
-    <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_snackbar_error">Ошибка при обработке пожертвования</string>
-    <string name="donations_snackbar_ok">Спасибо за ваше пожертвование!</string>
     <string name="donations_amount">Размер пожертвования</string>
+    <string name="donations_google_title">Google Play Store</string>
+    <string name="donations_google_description">Google взимает 30% комиссии с каждого пожертвования</string>
+    <string name="donations_paypal_title">PayPal</string>
+    <string name="donations_paypal_description">После нажатия на кнопку вы можете выбрать сколько хотите пожертвовать</string>
+    <string name="donations_yandex_title">Яндекс.Деньги</string>
+    <string name="donations_snackbar_ok">Спасибо за ваше пожертвование!</string>
+    <string name="donations_snackbar_error">Ошибка при обработке пожертвования</string>
+
+    <string name="proxy_settings">Настройки прокси</string>
+    <string name="proxy_type">Тип прокси</string>
+    <string name="hostname">Имя хоста</string>
+
+    <string-array name="proxy_type_items">
+        <item>По умолчанию</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
+    </string-array>
 </resources>

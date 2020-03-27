@@ -55,8 +55,6 @@
     <string name="next_update">%s 后请求更多节点</string>
     <string name="edit_tracker">编辑Tracker</string>
 
-    <string name="tracker_announce_url">Tracker宣告链接</string>
-
     <string name="torrent_finished">下载已完成</string>
     <string name="torrent_added">种子已添加</string>
 
@@ -375,4 +373,5 @@
     <string name="donations_paypal_description">点击这个按钮之后选择你想要捐赠多少</string>
     <string name="donations_snackbar_ok">感谢您的捐赠！</string>
     <string name="donations_snackbar_error">处理您的捐赠时出错</string>
-</resources>
+
+    </resources>
