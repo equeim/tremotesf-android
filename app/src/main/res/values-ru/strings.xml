@@ -461,7 +461,6 @@
 
     <string name="proxy_settings">Настройки прокси</string>
     <string name="proxy_type">Тип прокси</string>
-    <string name="hostname">Имя хоста</string>
 
     <string-array name="proxy_type_items">
         <item>По умолчанию</item>
