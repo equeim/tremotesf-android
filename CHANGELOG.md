@@ -2,14 +2,18 @@
 
 ## [Unreleased]
 ### Added
-- Added support of renaming torrent's file when adding it
+- Added support of renaming torrent's files when adding it
 - Added support of configuring per-server HTTP/SOCKS5 proxies
+- Added ability to add multiple trackers at a time
+- Added support of Qt 5.14
 
 ### Changed
-- Dropped support of armv7 devices without NEON instructions
+- Dropped support of ARMv7 devices without NEON instructions
 
 ### Fixed
 - Fixed swapped high/low file priorities when adding torrent
+- Fixed confirm button navigating to parent directory when adding torrent
+- Fixed some crashes
 
 ## [2.0.2] - 2020-01-11
 ### Fixed
