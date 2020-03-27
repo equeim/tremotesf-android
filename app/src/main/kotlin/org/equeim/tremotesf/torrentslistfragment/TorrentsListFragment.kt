@@ -108,13 +108,15 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         torrentsAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                if (torrentsAdapter.itemCount == 0) {
+                // Adapter is now empty
+                if (itemCount > 0 && torrentsAdapter.itemCount == 0) {
                     updatePlaceholder()
                 }
             }
 
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (itemCount == torrentsAdapter.itemCount) {
+                // Adapter was empty
+                if (itemCount > 0 && itemCount == torrentsAdapter.itemCount) {
                     updatePlaceholder()
                 }
             }
