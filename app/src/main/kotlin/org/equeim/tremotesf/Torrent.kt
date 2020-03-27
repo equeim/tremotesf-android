@@ -219,10 +219,6 @@ class Torrent(data: TorrentData, private val context: Context) {
         Rpc.nativeInstance.setTorrentFilesPriority(data, files, priority)
     }
 
-    fun addTracker(announce: String) {
-        Rpc.nativeInstance.torrentAddTracker(data, announce)
-    }
-
     fun addTrackers(announceUrls: List<String>) {
         val vector = StringsVector()
         vector.reserve(announceUrls.size.toLong())
