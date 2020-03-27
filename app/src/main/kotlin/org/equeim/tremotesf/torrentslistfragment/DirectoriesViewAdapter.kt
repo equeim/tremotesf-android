@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 Kevin Richter <me@kevinrichter.nl>, Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2020 Kevin Richter <me@kevinrichter.nl>, Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
