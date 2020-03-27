@@ -269,8 +269,6 @@ namespace libtremotesf
 
         const std::vector<Tracker>& trackers() const;
         bool isTrackersAddedOrRemoved() const;
-        Q_INVOKABLE void addTracker(const QString& announce);
-        Q_INVOKABLE void addTrackers(const std::vector<QString>& announceUrls);
         Q_INVOKABLE void addTrackers(const QStringList& announceUrls);
         Q_INVOKABLE void setTracker(int trackerId, const QString& announce);
         Q_INVOKABLE void removeTrackers(const QVariantList& ids);

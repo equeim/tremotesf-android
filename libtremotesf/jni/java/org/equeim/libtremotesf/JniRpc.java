@@ -175,10 +175,6 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_setTorrentFilesPriority(swigCPtr, this, TorrentData.getCPtr(data), data, files, priority);
   }
 
-  public void torrentAddTracker(TorrentData data, String announce) {
-    libtremotesfJNI.JniRpc_torrentAddTracker(swigCPtr, this, TorrentData.getCPtr(data), data, announce);
-  }
-
   public void torrentAddTrackers(TorrentData data, StringsVector announceUrls) {
     libtremotesfJNI.JniRpc_torrentAddTrackers(swigCPtr, this, TorrentData.getCPtr(data), data, StringsVector.getCPtr(announceUrls), announceUrls);
   }

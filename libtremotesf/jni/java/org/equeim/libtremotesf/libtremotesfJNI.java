@@ -346,7 +346,6 @@ public class libtremotesfJNI {
   public final static native void JniRpc_setTorrentFilesEnabled(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, boolean jarg3);
   public final static native void JniRpc_setTorrentFilesWanted(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, int[] jarg3, boolean jarg4);
   public final static native void JniRpc_setTorrentFilesPriority(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, int[] jarg3, int jarg4);
-  public final static native void JniRpc_torrentAddTracker(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, String jarg3);
   public final static native void JniRpc_torrentAddTrackers(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, long jarg3, StringsVector jarg3_);
   public final static native void JniRpc_torrentSetTracker(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, int jarg3, String jarg4);
   public final static native void JniRpc_torrentRemoveTrackers(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, int[] jarg3);

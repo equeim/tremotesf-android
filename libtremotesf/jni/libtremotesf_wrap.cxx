@@ -7496,37 +7496,6 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentAddTracker(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jstring jarg3) {
-  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  libtremotesf::TorrentData *arg2 = 0 ;
-  QString *arg3 = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  (void)jarg2_;
-  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  arg2 = *(libtremotesf::TorrentData **)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & reference is null");
-    return ;
-  } 
-  
-  if(!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
-    return ;
-  }
-  const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
-  if (!arg3_pstr) return ;
-  jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
-  arg3 = &arg3_str;
-  jenv->ReleaseStringChars(jarg3, arg3_pstr);
-  
-  (arg1)->torrentAddTracker(*arg2,(QString const &)*arg3);
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentAddTrackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::TorrentData *arg2 = 0 ;
