@@ -24,8 +24,11 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.core.os.bundleOf
 
 import androidx.core.text.trimmedLength
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -91,13 +94,12 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
         timeout_edit.filters = arrayOf(IntFilter(Server.timeoutRange))
 
-        model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
-                                  ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+        model = Model.from(this)
 
         setupToolbar()
 
         if (savedInstanceState == null) {
-            with (model.server) {
+            with(model.server) {
                 name_edit.setText(name)
                 address_edit.setText(address)
                 port_edit.setText(port.toString())
@@ -192,19 +194,25 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         navController.popBackStack(R.id.serverEditFragment, true)
     }
 
-    private class Model(serverName: String?) : ViewModel() {
-        val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
-        val server = existingServer?.copy() ?: Server()
-    }
+    class Model(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+        companion object {
+            private const val SERVER_NAME = "serverName"
+            private const val SERVER = "server"
 
-    private class ModelFactory(private val serverName: String?) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass == Model::class.java) {
-                return Model(serverName) as T
+            fun from(fragment: NavigationFragment): Model {
+                with(fragment) {
+                    val entry = navController.getBackStackEntry(R.id.serverEditFragment)
+                    val serverName = requireArguments().getString(SERVER)
+                    val factory = SavedStateViewModelFactory(requireActivity().application,
+                                                             entry, bundleOf(SERVER_NAME to serverName))
+                    return ViewModelProvider(entry, factory)[Model::class.java]
+                }
             }
-            throw IllegalArgumentException()
         }
+
+        private val serverName: String? = savedStateHandle[SERVER_NAME]
+        val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
+        val server: Server = savedStateHandle[SERVER] ?: (existingServer?.copy() ?: Server()).also { savedStateHandle[SERVER] = it }
     }
 
     class ServerOverwriteDialogFragment : NavigationDialogFragment() {
@@ -234,8 +242,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             }
             client_certificate_layout.isEnabled = false
 
-            model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
-                                      ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+            model = Model.from(this)
             with(model.server) {
                 self_signed_certificate_check_box.isChecked = selfSignedCertificateEnabled
                 self_signed_certificate_edit.setText(selfSignedCertificate)
@@ -279,8 +286,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
             port_edit.filters = arrayOf(IntFilter(Server.portRange))
 
-            model = ViewModelProvider(navController.getBackStackEntry(R.id.serverEditFragment),
-                                      ModelFactory(requireArguments().getString(SERVER)))[Model::class.java]
+            model = Model.from(this)
             with(model.server) {
                 proxy_type_view.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
                 address_edit.setText(proxyHostname)
