@@ -18,7 +18,11 @@ ext {
     } else if (file("libs/$abi/${lib}.so").exists()) {
         qtHasAbiSuffix = false
     } else {
-        throw new Exception("No Qt binaries in $projectDir/libs")
+        // Do not abort if we are cleaning
+        def tasks = gradle.startParameter.taskNames
+        if (!tasks.isEmpty() && tasks.first() != 'clean') {
+            throw new GradleException("No Qt binaries in $projectDir/libs")
+        }
     }
 }
 
