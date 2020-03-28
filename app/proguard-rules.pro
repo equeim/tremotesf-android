@@ -18,8 +18,7 @@
 
 -dontobfuscate
 -keep class org.qtproject.qt5.android.QtNative { *; }
--keep class org.equeim.libtremotesf.** { *; }
--dontwarn com.simplecityapps.recyclerview_fastscroll.views.FastScrollPopup
+-keep class org.equeim.libtremotesf.libtremotesfJNI { *; }
 
 # kotlinx.serialization
 -keepattributes *Annotation*, InnerClasses
