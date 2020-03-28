@@ -26,6 +26,7 @@ import kotlin.system.measureTimeMillis
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Parcelable
 
 import androidx.lifecycle.MutableLiveData
 import androidx.work.ExistingWorkPolicy
@@ -34,6 +35,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
+import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -59,6 +61,7 @@ private const val MAXIMUM_TIMEOUT = 60
 private const val DEFAULT_TIMEOUT = 30
 
 @Serializable
+@Parcelize
 data class Server(@SerialName("name")
                   var name: String = "",
                   @SerialName("address")
@@ -105,7 +108,7 @@ data class Server(@SerialName("name")
                   @SerialName("lastTorrents")
                   var lastTorrents: LastTorrents = LastTorrents(),
                   @SerialName("addTorrentDialogDirectories")
-                  var addTorrentDialogDirectories: List<String> = emptyList()) : Logger {
+                  var addTorrentDialogDirectories: List<String> = emptyList()) : Parcelable, Logger {
     companion object {
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
@@ -136,14 +139,16 @@ data class Server(@SerialName("name")
     }
 
     @Serializable
+    @Parcelize
     data class Torrent(val id: Int,
                        val hashString: String,
                        val name: String,
-                       val finished: Boolean)
+                       val finished: Boolean) : Parcelable
 
     @Serializable
+    @Parcelize
     data class LastTorrents(var saved: Boolean = false,
-                            var torrents: MutableList<Torrent> = mutableListOf())
+                            var torrents: MutableList<Torrent> = mutableListOf()) : Parcelable
 }
 
 @Serializable
