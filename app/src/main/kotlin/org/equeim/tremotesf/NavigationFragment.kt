@@ -57,7 +57,7 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     @IdRes var destinationId = 0
         private set
 
-    private val destinationListener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
+    private val destinationListener = NavController.OnDestinationChangedListener { _, destination, _ ->
         if (destination.id != destinationId) {
             onNavigatedFrom(destination)
             onNavigatedFrom()
