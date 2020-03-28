@@ -24,8 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="@dimen/vertical_edge_padding"
-                android:layout_marginTop="@dimen/vertical_edge_padding"
+                android:paddingBottom="@dimen/vertical_edge_padding"
+                android:paddingTop="@dimen/vertical_edge_padding"
                 android:paddingLeft="@dimen/horizontal_edge_padding"
                 android:paddingRight="@dimen/horizontal_edge_padding">
 
