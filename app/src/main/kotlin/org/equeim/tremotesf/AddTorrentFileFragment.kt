@@ -68,7 +68,7 @@ import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
 
 class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
-                                                  R.menu.add_torrent_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
+                                                  R.menu.add_torrent_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
     companion object {
         fun setupDownloadDirectoryEdit(fragment: Fragment, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
             fragment.apply {
@@ -202,7 +202,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_torrent_activity_menu, menu)
+        inflater.inflate(R.menu.add_torrent_fragment_menu, menu)
         doneMenuItem = menu.findItem(R.id.done).apply {
             isVisible = (model.status.value == AddTorrentFileModel.ParserStatus.Loaded && Rpc.isConnected)
         }

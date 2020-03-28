@@ -55,7 +55,7 @@ import kotlinx.android.synthetic.main.torrent_properties_fragment.*
 
 class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
                                                      0,
-                                                     R.menu.torrent_properties_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
+                                                     R.menu.torrent_properties_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
     companion object {
         const val HASH = "hash"
         const val NAME = "name"

@@ -49,7 +49,7 @@ import kotlinx.android.synthetic.main.file_picker_fragment.*
 
 class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
                                               R.string.select_file,
-                                              R.menu.file_picker_activity_menu) {
+                                              R.menu.file_picker_fragment_menu) {
     private var adapter: FilePickerAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

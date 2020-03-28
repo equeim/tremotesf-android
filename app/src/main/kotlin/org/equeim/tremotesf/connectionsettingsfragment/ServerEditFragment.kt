@@ -56,7 +56,7 @@ import kotlinx.android.synthetic.main.server_edit_proxy_fragment.*
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                                               0,
-                                              R.menu.server_edit_activity_menu) {
+                                              R.menu.server_edit_fragment_menu) {
     companion object {
         const val SERVER = "server"
     }

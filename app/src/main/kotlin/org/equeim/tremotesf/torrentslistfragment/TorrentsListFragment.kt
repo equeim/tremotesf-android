@@ -69,7 +69,7 @@ import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
-                                                R.menu.main_activity_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
+                                                R.menu.torrents_list_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
     private companion object {
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }

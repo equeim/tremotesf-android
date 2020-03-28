@@ -317,7 +317,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         private var renameItem: MenuItem? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            mode.menuInflater.inflate(R.menu.base_torrent_files_context_menu, menu)
+            mode.menuInflater.inflate(R.menu.torrent_files_context_menu, menu)
 
             downloadItem = menu.findItem(R.id.download)
             notDownloadItem = menu.findItem(R.id.not_download)

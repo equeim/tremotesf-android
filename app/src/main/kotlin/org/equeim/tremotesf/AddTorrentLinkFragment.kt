@@ -37,7 +37,7 @@ import kotlinx.android.synthetic.main.download_directory_edit.*
 
 class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_fragment,
                                                   R.string.add_torrent_link,
-                                                  R.menu.add_torrent_activity_menu) {
+                                                  R.menu.add_torrent_fragment_menu) {
     companion object {
         const val SCHEME_MAGNET = "magnet"
     }
