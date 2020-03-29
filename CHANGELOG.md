@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.1.0] - 2020-03-29
 ### Added
 - Added support of renaming torrent's files when adding it
 - Added support of configuring per-server HTTP/SOCKS5 proxies
