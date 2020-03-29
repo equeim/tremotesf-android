@@ -20,13 +20,11 @@
 package org.equeim.tremotesf
 
 import android.app.Dialog
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference

@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.utils
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
