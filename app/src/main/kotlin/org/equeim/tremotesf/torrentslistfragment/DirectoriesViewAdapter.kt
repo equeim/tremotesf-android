@@ -64,7 +64,11 @@ class DirectoriesViewAdapter(private val context: Context,
     fun update() {
         directoriesMap.clear()
         for (torrent in Rpc.torrents.value) {
-            directoriesMap[torrent.downloadDirectory] = directoriesMap.getOrElse(torrent.downloadDirectory) { 0 } + 1
+            var directory = torrent.downloadDirectory
+            if (directory.endsWith('/')) {
+                directory = directory.dropLast(1)
+            }
+            directoriesMap[directory] = directoriesMap.getOrElse(directory) { 0 } + 1
         }
         directories = directoriesMap.keys.sortedWith(comparator)
         notifyDataSetChanged()

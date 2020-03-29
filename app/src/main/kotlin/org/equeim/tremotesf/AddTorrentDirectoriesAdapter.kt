@@ -33,6 +33,10 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
                                                                                       android.R.id.text1) {
     companion object {
         private const val STATE_KEY = "org.equeim.tremotesf.AddTorrentDirectoriesAdapter.items"
+
+        private fun dropTrailingSeparator(path: String): String {
+            return if (path.endsWith('/')) path.dropLast(1) else path
+        }
     }
 
     private val items: ArrayList<String>
@@ -45,10 +49,9 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
             val comparator = AlphanumericComparator()
             val sorted = Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
             for (torrent in Rpc.torrents.value) {
-                sorted.add(torrent.downloadDirectory)
+                sorted.add(dropTrailingSeparator(torrent.downloadDirectory))
             }
-            val downloadDirectory = Rpc.serverSettings.downloadDirectory
-            sorted.add(downloadDirectory)
+            sorted.add(dropTrailingSeparator(Rpc.serverSettings.downloadDirectory))
             ArrayList(sorted)
         }
     }
