@@ -36,7 +36,9 @@ object Utils : Logger {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
         Rpc.disconnectOnShutdown()
-        ForegroundService.stop(context)
+        if (stopService) {
+            ForegroundService.stop(context)
+        }
     }
 
     private fun calculateSize(bytes: Long): Pair<Double, Int> {
