@@ -23,10 +23,12 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
@@ -42,37 +44,79 @@ private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
 private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
 private const val ACTION_CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
 private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
-private const val ACTION_SHUTDOWN = "org.equeim.tremotesf.ACTION_SHUTDOWN"
+private const val ACTION_SHUTDOWN_APP = "org.equeim.tremotesf.ACTION_SHUTDOWN_APP"
+
 
 class ForegroundService : LifecycleService(), Logger {
+    companion object : Logger {
+        private var startRequestInProgress = false
+        private var stopRequested = false
+
+        fun start(context: Context) {
+            info("start()")
+            ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
+            startRequestInProgress = true
+        }
+
+        fun stop(context: Context) {
+            info("stop()")
+            if (startRequestInProgress) {
+                warn("onStartCommand() haven't been called yet, set stopRequested=true")
+                stopRequested = true
+            } else {
+                context.stopService(Intent(context, ForegroundService::class.java))
+            }
+        }
+    }
+
     private lateinit var notificationManager: NotificationManager
 
     private var stopUpdatingNotification = false
 
     override fun onCreate() {
         super.onCreate()
+
+        info("onCreate() stopRequested=$stopRequested")
+
         notificationManager = getSystemService()!!
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID) == null) {
+                notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
+                                                                                  getString(R.string.persistent_notification_channel_name),
+                                                                                  NotificationManager.IMPORTANCE_LOW))
+            }
+        }
+
+        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        info("ForegroundService.onStartCommand() intent=$intent, flags=$flags, startId=$startId, state=${lifecycle.currentState}")
+        info("onStartCommand() intent=$intent, flags=$flags, startId=$startId, state=${lifecycle.currentState}, stopRequested=$stopRequested")
 
         super.onStartCommand(intent, flags, startId)
 
-        if (intent?.action == ACTION_SHUTDOWN) {
-            stopUpdatingNotification = true
-            Utils.shutdownApp(this)
+        startRequestInProgress = false
+
+        if (stopRequested) {
+            warn("ForegroundService.stop() was called before onStartCommand(), stop now")
+            stopRequested = false
+            stopSelfAndNotification()
             return START_NOT_STICKY
         }
 
-        if (lifecycle.currentState != Lifecycle.State.STARTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
-                        getString(R.string.persistent_notification_channel_name),
-                        NotificationManager.IMPORTANCE_LOW))
-            }
+        if (intent?.action == ACTION_SHUTDOWN_APP) {
+            stopSelfAndNotification()
+            Utils.shutdownApp(this, false)
+            return START_NOT_STICKY
+        }
 
-            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+        if (lifecycle.currentState == Lifecycle.State.CREATED) {
+            if (intent?.action != null) {
+                warn("onStartCommand() is called for the first time, but intent action is not null, stop now")
+                stopSelfAndNotification()
+                return START_NOT_STICKY
+            }
 
             Rpc.status.observe(this, NotificationObserver())
             Rpc.error.observe(this, NotificationObserver())
@@ -93,9 +137,14 @@ class ForegroundService : LifecycleService(), Logger {
     }
 
     override fun onDestroy() {
-        info("ForegroundService.onDestroy() ${lifecycle.currentState}")
+        info("onDestroy() ${lifecycle.currentState}")
         stopForeground(true)
         super.onDestroy()
+    }
+
+    private fun stopSelfAndNotification() {
+        stopUpdatingNotification = true
+        stopSelf()
     }
 
     private fun updatePersistentNotification() {
@@ -143,30 +192,37 @@ class ForegroundService : LifecycleService(), Logger {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),
-                    PendingIntent.getService(this,
-                                             0,
-                                             Intent(this, javaClass).setAction(ACTION_CONNECT),
-                                             PendingIntent.FLAG_UPDATE_CURRENT))
+                    getPendingIntent(ACTION_CONNECT))
         } else {
             notificationBuilder.addAction(
                     R.drawable.notification_disconnect,
                     getString(R.string.disconnect),
-                    PendingIntent.getService(this,
-                                             0,
-                                             Intent(this, javaClass).setAction(ACTION_DISCONNECT),
-                                             PendingIntent.FLAG_UPDATE_CURRENT))
+                    getPendingIntent(ACTION_DISCONNECT))
         }
 
         notificationBuilder.addAction(
                 R.drawable.notification_quit,
                 getString(R.string.quit),
-                PendingIntent.getService(this,
-                                         0,
-                                         Intent(this, javaClass).setAction(ACTION_SHUTDOWN),
-                                         PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(ACTION_SHUTDOWN_APP)
         )
 
         return notificationBuilder.build()
+    }
+
+    private fun getPendingIntent(action: String): PendingIntent? {
+        val intent = Intent(this, ForegroundService::class.java).setAction(action)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PendingIntent.getForegroundService(this,
+                                               0,
+                                               intent,
+                                               PendingIntent.FLAG_UPDATE_CURRENT)
+        } else {
+            PendingIntent.getService(this,
+                                     0,
+                                     intent,
+                                     PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
     }
 
     private inner class NotificationObserver<T> : Observer<T> {

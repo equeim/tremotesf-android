@@ -33,11 +33,11 @@ import org.equeim.tremotesf.Rpc
 
 
 object Utils : Logger {
-    fun shutdownApp(context: Context) {
+    fun shutdownApp(context: Context, stopService: Boolean = true) {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
         Rpc.disconnectOnShutdown()
-        context.stopService(Intent(context, ForegroundService::class.java))
+        ForegroundService.stop(context)
     }
 
     private fun calculateSize(bytes: Long): Pair<Double, Int> {

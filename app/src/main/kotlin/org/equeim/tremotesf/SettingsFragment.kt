@@ -73,9 +73,9 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
                 Settings.persistentNotificationKey -> {
                     updateBackgroundUpdatePreference()
                     if (Settings.showPersistentNotification) {
-                        ContextCompat.startForegroundService(requireContext(), Intent(requireContext(), ForegroundService::class.java))
+                        ForegroundService.start(requireContext())
                     } else {
-                        requireContext().stopService(Intent(requireContext(), ForegroundService::class.java))
+                        ForegroundService.stop(requireContext())
                     }
                 }
             }
