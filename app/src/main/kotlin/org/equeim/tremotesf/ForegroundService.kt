@@ -160,7 +160,6 @@ class ForegroundService : LifecycleService(), Logger {
                                           .setGraph(R.navigation.nav_main)
                                           .setDestination(R.id.torrentsListFragment)
                                           .createPendingIntent())
-                .setColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
 
         val currentServer = Servers.currentServer.value
         if (currentServer != null) {
