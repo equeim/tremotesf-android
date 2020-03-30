@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -153,9 +154,11 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         var loaded = false
             private set
 
+        private val peersUpdatedObserver = Observer(::onTorrentPeersUpdated)
+
         init {
             this.torrent = torrent
-            Rpc.torrentPeersUpdatedEvent.observeForever(::onTorrentPeersUpdated)
+            Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
         }
 
         private fun reset() {
@@ -201,11 +204,12 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
             }
 
             loaded = true
+
             this.peers.value = peers
         }
 
         override fun onCleared() {
-            Rpc.torrentPeersUpdatedEvent.removeObserver(::onTorrentPeersUpdated)
+            Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
         }
     }
 }
