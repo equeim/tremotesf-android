@@ -79,7 +79,7 @@ class BasicMediatorLiveData<T>(vararg sources: LiveData<*>, private val getMedia
 
 // LiveData that sets its value to null after calling all observers
 class LiveEvent<T> : LiveData<T>(null) {
-    private val eventObservers = mutableListOf<ObserverWrapper<T>>()
+    private val eventObservers = mutableListOf<ObserverWrapper>()
 
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
         if (!hasObservers()) {
@@ -100,10 +100,13 @@ class LiveEvent<T> : LiveData<T>(null) {
     }
 
     override fun removeObserver(observer: Observer<in T>) {
-        eventObservers.removeAll { it.observer == observer }
-        super.removeObserver(observer)
-        if (!hasObservers()) {
-            value = null
+        val index = eventObservers.indexOfFirst { it == observer || it.observer == observer }
+        if (index != -1) {
+            val eventObserver = eventObservers.removeAt(index)
+            super.removeObserver(eventObserver)
+            if (!hasObservers()) {
+                value = null
+            }
         }
     }
 
@@ -111,23 +114,17 @@ class LiveEvent<T> : LiveData<T>(null) {
         this.value = value
     }
 
-    private fun resetValueIfAllCalled() {
-        if (eventObservers.last().called) {
+    private fun resetValueIfLast(observer: ObserverWrapper) {
+        if (observer == eventObservers.last()) {
             value = null
         }
     }
 
-    private inner class ObserverWrapper<T>(val observer: Observer<in T>) : Observer<T> {
-        var called = false
-            private set
-
+    private inner class ObserverWrapper(val observer: Observer<in T>) : Observer<T> {
         override fun onChanged(t: T) {
             if (t != null) {
                 observer.onChanged(t)
-                called = true
-                resetValueIfAllCalled()
-            } else {
-                called = false
+                resetValueIfLast(this)
             }
         }
     }
