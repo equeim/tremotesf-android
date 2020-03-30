@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
@@ -171,9 +172,11 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
                     if (value == null) {
                         oldValue?.filesEnabled = false
                         reset()
+                        Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
                     } else {
                         value.filesEnabled = true
                         state.value = State.Loading
+                        Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
                     }
                 }
             }
@@ -184,9 +187,10 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             private set
         val state = NonNullMutableLiveData(State.None)
 
+        private val filesUpdatedObserver = Observer(::onTorrentFilesUpdated)
+
         init {
             this.torrent = torrent
-            Rpc.torrentFilesUpdatedEvent.observeForever(::onTorrentFilesUpdated)
         }
 
         private fun createTree(rpcFiles: List<TorrentFile>) {
@@ -283,7 +287,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         }
 
         override fun onCleared() {
-            Rpc.torrentFilesUpdatedEvent.removeObserver(::onTorrentFilesUpdated)
+            torrent = null
         }
     }
 }
