@@ -279,7 +279,14 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             val (torrentId, changedFiles) = data
             if (torrentId == torrent?.id) {
                 when (state.value) {
-                    State.TreeCreated -> updateTree(changedFiles)
+                    State.TreeCreated -> {
+                        if (files.isEmpty() && changedFiles.isNotEmpty()) {
+                            // Torrent's metadata was downloaded
+                            createTree(changedFiles)
+                        } else {
+                            updateTree(changedFiles)
+                        }
+                    }
                     State.Loading -> createTree(changedFiles)
                     else -> {}
                 }
