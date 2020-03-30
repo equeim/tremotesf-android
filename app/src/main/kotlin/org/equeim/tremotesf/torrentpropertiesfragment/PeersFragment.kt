@@ -144,8 +144,10 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
                     if (value == null) {
                         oldValue?.peersEnabled = false
                         reset()
+                        Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
                     } else {
                         value.peersEnabled = true
+                        Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
                     }
                 }
             }
@@ -158,7 +160,6 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
 
         init {
             this.torrent = torrent
-            Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
         }
 
         private fun reset() {
@@ -209,7 +210,7 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         }
 
         override fun onCleared() {
-            Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
+            torrent = null
         }
     }
 }
