@@ -73,7 +73,7 @@
     <string name="add_trackers">Add trackers</string>
     <string name="edit_tracker">Edit tracker</string>
 
-    <string name="tracker_announce_url">Tracker announce URLs</string>
+    <string name="tracker_announce_url">Tracker announce URL</string>
     <string name="trackers_announce_urls">Trackers announce URLs</string>
 
     <string name="torrent_finished">Torrent finished</string>
