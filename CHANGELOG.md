@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] - 2020-04-01
+### Fixed
+- Fixed crash when torrent metadata is downloaded while torrent's files tab is active
+- Fixed memory leak in torrent's files and peers tabs
+
 ## [2.1.0] - 2020-03-29
 ### Added
 - Added support of renaming torrent's files when adding it
