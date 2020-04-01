@@ -71,7 +71,6 @@
     <string name="add_trackers">Tracker hinzufügen</string>
     <string name="edit_tracker">Tracker editieren</string>
 
-    <string name="tracker_announce_url">Tracker-Ankündigungs-URLs</string>
     <string name="trackers_announce_urls">Ankündigungs-URLs der Tracker</string>
 
     <string name="torrent_finished">Torrent fertiggestellt</string>

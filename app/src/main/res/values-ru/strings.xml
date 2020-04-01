@@ -79,7 +79,7 @@
     <string name="add_trackers">Добавить трекеры</string>
     <string name="edit_tracker">Редактировать трекер</string>
 
-    <string name="tracker_announce_url">Адреса объявлений трекера</string>
+    <string name="tracker_announce_url">Адрес объявлений трекера</string>
     <string name="trackers_announce_urls">Адреса объявлений трекеров</string>
 
     <string name="torrent_finished">Торрент завершен</string>
