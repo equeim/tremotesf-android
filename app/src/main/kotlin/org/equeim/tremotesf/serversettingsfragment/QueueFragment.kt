@@ -24,55 +24,58 @@ import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.databinding.ServerSettingsQueueFragmentBinding
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
-
-import kotlinx.android.synthetic.main.server_settings_queue_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_queue_fragment,
                                                           R.string.server_settings_queue) {
+    private val binding by viewBinding(ServerSettingsQueueFragmentBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            downloadQueueCheckBox.isChecked = Rpc.serverSettings.downloadQueueEnabled
+            downloadQueueCheckBox.setOnCheckedChangeListener { _, checked ->
+                downloadQueueLayout.isEnabled = checked
+                Rpc.serverSettings.downloadQueueEnabled = checked
+            }
 
-        download_queue_check_box.isChecked = Rpc.serverSettings.downloadQueueEnabled
-        download_queue_check_box.setOnCheckedChangeListener { _, checked ->
-            download_queue_layout.isEnabled = checked
-            Rpc.serverSettings.downloadQueueEnabled = checked
-        }
+            downloadQueueLayout.isEnabled = downloadQueueCheckBox.isChecked
+            downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
+            downloadQueueEdit.setText(Rpc.serverSettings.downloadQueueSize.toString())
+            downloadQueueEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.downloadQueueSize = it.toString().toInt()
+            }
 
-        download_queue_layout.isEnabled = download_queue_check_box.isChecked
-        download_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        download_queue_edit.setText(Rpc.serverSettings.downloadQueueSize.toString())
-        download_queue_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.downloadQueueSize = it.toString().toInt()
-        }
+            seedQueueCheckBox.isChecked = Rpc.serverSettings.seedQueueEnabled
+            seedQueueCheckBox.setOnCheckedChangeListener { _, checked ->
+                seedQueueLayout.isEnabled = checked
+                Rpc.serverSettings.seedQueueEnabled = checked
+            }
 
-        seed_queue_check_box.isChecked = Rpc.serverSettings.seedQueueEnabled
-        seed_queue_check_box.setOnCheckedChangeListener { _, checked ->
-            seed_queue_layout.isEnabled = checked
-            Rpc.serverSettings.seedQueueEnabled = checked
-        }
+            seedQueueLayout.isEnabled = seedQueueCheckBox.isChecked
+            seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
+            seedQueueEdit.setText(Rpc.serverSettings.seedQueueSize.toString())
+            seedQueueEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.seedQueueSize = it.toString().toInt()
+            }
 
-        seed_queue_layout.isEnabled = seed_queue_check_box.isChecked
-        seed_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        seed_queue_edit.setText(Rpc.serverSettings.seedQueueSize.toString())
-        seed_queue_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.seedQueueSize = it.toString().toInt()
-        }
+            idleQueueCheckBox.isChecked = Rpc.serverSettings.idleQueueLimited
+            idleQueueCheckBox.setOnCheckedChangeListener { _, checked ->
+                idleQueueLayout.isEnabled = checked
+                Rpc.serverSettings.idleQueueLimited = checked
+            }
 
-        idle_queue_check_box.isChecked = Rpc.serverSettings.idleQueueLimited
-        idle_queue_check_box.setOnCheckedChangeListener { _, checked ->
-            idle_queue_layout.isEnabled = checked
-            Rpc.serverSettings.idleQueueLimited = checked
-        }
+            idleQueueLayout.isEnabled = idleQueueCheckBox.isChecked
 
-        idle_queue_layout.isEnabled = idle_queue_check_box.isChecked
-
-        idle_queue_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_queue_edit.setText(Rpc.serverSettings.idleQueueLimit.toString())
-        idle_queue_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.idleQueueLimit = it.toString().toInt()
+            idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
+            idleQueueEdit.setText(Rpc.serverSettings.idleQueueLimit.toString())
+            idleQueueEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.idleQueueLimit = it.toString().toInt()
+            }
         }
     }
 }

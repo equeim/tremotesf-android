@@ -30,10 +30,10 @@ import android.content.Context
 import android.os.Bundle
 
 import android.util.AttributeSet
+import android.view.LayoutInflater
 
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
 import android.widget.TimePicker
 
 import androidx.core.os.bundleOf
@@ -43,17 +43,19 @@ import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
+import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.utils.safeNavigate
-
-import kotlinx.android.synthetic.main.server_settings_speed_fragment.*
-import kotlinx.android.synthetic.main.server_settings_time_picker_item.view.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_speed_fragment,
                                                           R.string.server_settings_speed) {
+    val binding by viewBinding(ServerSettingsSpeedFragmentBinding::bind)
+
     private val days = mutableListOf(ServerSettingsData.AlternativeSpeedLimitsDays.All,
                                      ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
                                      ServerSettingsData.AlternativeSpeedLimitsDays.Weekends)
@@ -106,79 +108,81 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
-        download_speed_limit_check_box.isChecked = Rpc.serverSettings.downloadSpeedLimited
-        download_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            download_speed_limit_layout.isEnabled = checked
-            Rpc.serverSettings.downloadSpeedLimited = checked
-        }
+        with (binding) {
+            downloadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.downloadSpeedLimited
+            downloadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
+                downloadSpeedLimitLayout.isEnabled = checked
+                Rpc.serverSettings.downloadSpeedLimited = checked
+            }
 
-        download_speed_limit_layout.isEnabled = download_speed_limit_check_box.isChecked
+            downloadSpeedLimitLayout.isEnabled = downloadSpeedLimitCheckBox.isChecked
 
-        download_speed_limit_edit.filters = limitsFilters
-        download_speed_limit_edit.setText(Rpc.serverSettings.downloadSpeedLimit.toString())
-        download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.downloadSpeedLimit = it.toString().toInt()
-        }
+            downloadSpeedLimitEdit.filters = limitsFilters
+            downloadSpeedLimitEdit.setText(Rpc.serverSettings.downloadSpeedLimit.toString())
+            downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.downloadSpeedLimit = it.toString().toInt()
+            }
 
-        upload_speed_limit_check_box.isChecked = Rpc.serverSettings.uploadSpeedLimited
-        upload_speed_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            upload_speed_limit_layout.isEnabled = checked
-            Rpc.serverSettings.uploadSpeedLimited = checked
-        }
+            uploadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.uploadSpeedLimited
+            uploadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
+                uploadSpeedLimitLayout.isEnabled = checked
+                Rpc.serverSettings.uploadSpeedLimited = checked
+            }
 
-        upload_speed_limit_layout.isEnabled = upload_speed_limit_check_box.isChecked
+            uploadSpeedLimitLayout.isEnabled = uploadSpeedLimitCheckBox.isChecked
 
-        upload_speed_limit_edit.filters = limitsFilters
-        upload_speed_limit_edit.setText(Rpc.serverSettings.uploadSpeedLimit.toString())
-        upload_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.uploadSpeedLimit = it.toString().toInt()
-        }
+            uploadSpeedLimitEdit.filters = limitsFilters
+            uploadSpeedLimitEdit.setText(Rpc.serverSettings.uploadSpeedLimit.toString())
+            uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.uploadSpeedLimit = it.toString().toInt()
+            }
 
-        alternative_limits_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
-        alternative_limits_check_box.setOnCheckedChangeListener { _, checked ->
-            alternative_download_speed_limit_layout.isEnabled = checked
-            alternative_upload_speed_limit_layout.isEnabled = checked
-            Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
-        }
+            alternativeLimitsCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+            alternativeLimitsCheckBox.setOnCheckedChangeListener { _, checked ->
+                alternativeDownloadSpeedLimitLayout.isEnabled = checked
+                alternativeUploadSpeedLimitLayout.isEnabled = checked
+                Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
+            }
 
-        alternative_download_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
-        alternative_upload_speed_limit_layout.isEnabled = alternative_limits_check_box.isChecked
+            alternativeDownloadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
+            alternativeUploadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
 
-        alternative_download_speed_limit_edit.filters = limitsFilters
-        alternative_download_speed_limit_edit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit.toString())
-        alternative_download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.alternativeDownloadSpeedLimit = it.toString().toInt()
-        }
+            alternativeDownloadSpeedLimitEdit.filters = limitsFilters
+            alternativeDownloadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit.toString())
+            alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.alternativeDownloadSpeedLimit = it.toString().toInt()
+            }
 
-        alternative_upload_speed_limit_edit.filters = limitsFilters
-        alternative_upload_speed_limit_edit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit.toString())
-        alternative_download_speed_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
-        }
+            alternativeUploadSpeedLimitEdit.filters = limitsFilters
+            alternativeUploadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit.toString())
+            alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
+            }
 
-        schedule_check_box.isChecked = Rpc.serverSettings.alternativeSpeedLimitsScheduled
-        val setEnabled = { enabled: Boolean ->
-            begin_time_item.isEnabled = enabled
-            end_time_item.isEnabled = enabled
-            days_view_layout.isEnabled = enabled
-        }
-        schedule_check_box.setOnCheckedChangeListener { _, checked ->
-            setEnabled(checked)
-            Rpc.serverSettings.alternativeSpeedLimitsScheduled = checked
-        }
+            scheduleCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsScheduled
+            val setEnabled = { enabled: Boolean ->
+                beginTimeItem.isEnabled = enabled
+                endTimeItem.isEnabled = enabled
+                daysViewLayout.isEnabled = enabled
+            }
+            scheduleCheckBox.setOnCheckedChangeListener { _, checked ->
+                setEnabled(checked)
+                Rpc.serverSettings.alternativeSpeedLimitsScheduled = checked
+            }
 
-        setEnabled(schedule_check_box.isChecked)
+            setEnabled(scheduleCheckBox.isChecked)
 
-        begin_time_item.beginTime = true
-        begin_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime)
+            beginTimeItem.beginTime = true
+            beginTimeItem.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime)
 
-        end_time_item.beginTime = false
-        end_time_item.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
+            endTimeItem.beginTime = false
+            endTimeItem.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
 
-        days_view.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
-        days_view.setText(days_view.adapter.getItem(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays)).toString())
-        days_view.setOnItemClickListener { _, _, position, _ ->
-            Rpc.serverSettings.alternativeSpeedLimitsDays = days[position]
+            daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
+            daysView.setText(daysView.adapter.getItem(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays)).toString())
+            daysView.setOnItemClickListener { _, _, position, _ ->
+                Rpc.serverSettings.alternativeSpeedLimitsDays = days[position]
+            }
         }
     }
 }
@@ -186,20 +190,16 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
     var beginTime = false
     private val calendar: Calendar = Calendar.getInstance()
-    private val titleTextView: View
-    private val textView: TextView
     private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
 
-    init {
-        inflate(context, R.layout.server_settings_time_picker_item, this)
-        titleTextView = title_text_view
-        textView = text_view
+    private val binding = ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this, true)
 
+    init {
         val ta = context.theme.obtainStyledAttributes(attrs,
                                                       intArrayOf(android.R.attr.title),
                                                       0,
                                                       0)
-        title_text_view.text = ta.getText(0)
+        binding.titleTextView.text = ta.getText(0)
         ta.recycle()
 
         setOnClickListener {
@@ -212,20 +212,22 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        titleTextView.isEnabled = enabled
-        textView.isEnabled = enabled
+        with (binding) {
+            titleTextView.isEnabled = enabled
+            textView.isEnabled = enabled
+        }
     }
 
     fun setTime(hourOfDay: Int, minute: Int) {
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
         calendar.set(Calendar.MINUTE, minute)
-        textView.text = format.format(calendar.time)
+        binding.textView.text = format.format(calendar.time)
     }
 
     fun setTime(minutesFromStartOfDay: Int) {
         calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
         calendar.set(Calendar.MINUTE, minutesFromStartOfDay.rem(60))
-        textView.text = format.format(calendar.time)
+        binding.textView.text = format.format(calendar.time)
     }
 
     class TimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnTimeSetListener {
@@ -247,10 +249,10 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
             if (speedFragment != null) {
                 if (requireArguments().getBoolean(BEGIN_TIME)) {
-                    speedFragment.begin_time_item.setTime(hourOfDay, minute)
+                    speedFragment.binding.beginTimeItem.setTime(hourOfDay, minute)
                     Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
                 } else {
-                    speedFragment.end_time_item.setTime(hourOfDay, minute)
+                    speedFragment.binding.endTimeItem.setTime(hourOfDay, minute)
                     Rpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
                 }
             }

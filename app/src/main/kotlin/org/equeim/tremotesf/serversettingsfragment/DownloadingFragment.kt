@@ -24,41 +24,44 @@ import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
-
-import kotlinx.android.synthetic.main.server_settings_downloading_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_downloading_fragment,
                                                                 R.string.server_settings_downloading) {
+    private val binding by viewBinding(ServerSettingsDownloadingFragmentBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with (binding) {
+            downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
+            downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.downloadDirectory = it.toString()
+            }
 
-        download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
-        download_directory_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.downloadDirectory = it.toString()
-        }
+            startTorrentsCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+            startTorrentsCheckBox.setOnCheckedChangeListener { _, checked ->
+                Rpc.serverSettings.startAddedTorrents = checked
+            }
 
-        start_torrents_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
-        start_torrents_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.startAddedTorrents = checked
-        }
+            renameIncompleteFilesCheckBox.isChecked = Rpc.serverSettings.renameIncompleteFiles
+            renameIncompleteFilesCheckBox.setOnCheckedChangeListener { _, checked ->
+                Rpc.serverSettings.renameIncompleteFiles = checked
+            }
 
-        rename_incomplete_files_check_box.isChecked = Rpc.serverSettings.renameIncompleteFiles
-        rename_incomplete_files_check_box.setOnCheckedChangeListener { _, checked ->
-            Rpc.serverSettings.renameIncompleteFiles = checked
-        }
+            incompleteFilesDirectoryCheckBox.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled
+            incompleteFilesDirectoryCheckBox.setOnCheckedChangeListener { _, checked ->
+                incompleteFilesDirectoryLayout.isEnabled = checked
+                Rpc.serverSettings.incompleteDirectoryEnabled = checked
+            }
 
-        incomplete_files_directory_check_box.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled
-        incomplete_files_directory_check_box.setOnCheckedChangeListener { _, checked ->
-            incomplete_files_directory_layout.isEnabled = checked
-            Rpc.serverSettings.incompleteDirectoryEnabled = checked
-        }
-
-        incomplete_files_directory_layout.isEnabled = incomplete_files_directory_check_box.isChecked
-        incomplete_files_directory_edit.setText(Rpc.serverSettings.incompleteDirectory)
-        incomplete_files_directory_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.incompleteDirectory = it.toString()
+            incompleteFilesDirectoryLayout.isEnabled = incompleteFilesDirectoryCheckBox.isChecked
+            incompleteFilesDirectoryEdit.setText(Rpc.serverSettings.incompleteDirectory)
+            incompleteFilesDirectoryEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.incompleteDirectory = it.toString()
+            }
         }
     }
 }

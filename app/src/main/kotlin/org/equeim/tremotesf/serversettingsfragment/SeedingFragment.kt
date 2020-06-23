@@ -24,45 +24,47 @@ import android.view.View
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.databinding.ServerSettingsSeedingFragmentBinding
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.DoubleFilter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
-
-import kotlinx.android.synthetic.main.server_settings_seeding_fragment.*
-
+import org.equeim.tremotesf.utils.viewBinding
 
 class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_seeding_fragment,
                                                             R.string.server_settings_seeding) {
+    private val binding by viewBinding(ServerSettingsSeedingFragmentBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            ratioLimitCheckBox.isChecked = Rpc.serverSettings.ratioLimited
+            ratioLimitCheckBox.setOnCheckedChangeListener { _, checked ->
+                ratioLimitLayout.isEnabled = checked
+                Rpc.serverSettings.ratioLimited = checked
+            }
 
-        ratio_limit_check_box.isChecked = Rpc.serverSettings.ratioLimited
-        ratio_limit_check_box.setOnCheckedChangeListener { _, checked ->
-            ratio_limit_layout.isEnabled = checked
-            Rpc.serverSettings.ratioLimited = checked
-        }
+            ratioLimitLayout.isEnabled = ratioLimitCheckBox.isChecked
+            val doubleFilter = DoubleFilter(0.0..10000.0)
+            ratioLimitEdit.filters = arrayOf(doubleFilter)
+            ratioLimitEdit.setText(DecimalFormats.ratio.format(Rpc.serverSettings.ratioLimit))
+            ratioLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.ratioLimit = doubleFilter.parse(it.toString())!!
+            }
 
-        ratio_limit_layout.isEnabled = ratio_limit_check_box.isChecked
-        val doubleFilter = DoubleFilter(0.0..10000.0)
-        ratio_limit_edit.filters = arrayOf(doubleFilter)
-        ratio_limit_edit.setText(DecimalFormats.ratio.format(Rpc.serverSettings.ratioLimit))
-        ratio_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.ratioLimit = doubleFilter.parse(it.toString())!!
-        }
+            idleSeedingCheckBox.isChecked = Rpc.serverSettings.idleSeedingLimited
+            idleSeedingCheckBox.setOnCheckedChangeListener { _, checked ->
+                idleSeedingLimitLayout.isEnabled = checked
+                Rpc.serverSettings.idleSeedingLimited = checked
+            }
 
-        idle_seeding_check_box.isChecked = Rpc.serverSettings.idleSeedingLimited
-        idle_seeding_check_box.setOnCheckedChangeListener { _, checked ->
-            idle_seeding_limit_layout.isEnabled = checked
-            Rpc.serverSettings.idleSeedingLimited = checked
-        }
+            idleSeedingLimitLayout.isEnabled = idleSeedingCheckBox.isChecked
 
-        idle_seeding_limit_layout.isEnabled = idle_seeding_check_box.isChecked
-
-        idle_seeding_limit_edit.filters = arrayOf(IntFilter(0..10000))
-        idle_seeding_limit_edit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
-        idle_seeding_limit_edit.doAfterTextChangedAndNotEmpty {
-            Rpc.serverSettings.idleSeedingLimit = it.toString().toInt()
+            idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..10000))
+            idleSeedingLimitEdit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
+            idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
+                Rpc.serverSettings.idleSeedingLimit = it.toString().toInt()
+            }
         }
     }
 }

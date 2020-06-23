@@ -57,6 +57,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
     sourceSets {
         main {
             java.srcDirs 'src/main/kotlin', '../libtremotesf/jni/java'
@@ -68,14 +71,18 @@ android {
             java.srcDirs 'src/fdroid/kotlin'
         }
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     externalNativeBuild {
         cmake {
             path '../libtremotesf/CMakeLists.txt'
             version '3.10.2'
         }
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
     }
     lintOptions {
         checkReleaseBuilds false
@@ -153,6 +160,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${vers.androidx.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:${vers.androidx.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-service:${vers.androidx.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${vers.androidx.lifecycle}"
     implementation "androidx.navigation:navigation-fragment-ktx:${vers.androidx.navigation}"
     implementation "androidx.navigation:navigation-ui-ktx:${vers.androidx.navigation}"
     implementation "androidx.recyclerview:recyclerview:${vers.androidx.recyclerview}"
