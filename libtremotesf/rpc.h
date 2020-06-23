@@ -189,7 +189,7 @@ namespace libtremotesf
 
         void getServerSettings();
         void getTorrents();
-        void checkTorrentSingleFile(int torrentId);
+        void checkTorrentsSingleFile(const QVariantList& torrentIds);
         void getServerStats();
 
         void checkIfTorrentsUpdated();
