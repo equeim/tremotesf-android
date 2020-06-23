@@ -9,6 +9,9 @@ readonly HAS_5_12=$?
 test -f "$QT_SOURCE_DIR/dist/changes-5.14.0"
 readonly HAS_5_14=$?
 
+test -f "$QT_SOURCE_DIR/dist/changes-5.15.0"
+readonly HAS_5_15=$?
+
 readonly COMMON_FLAGS=(
     '-v'
     '-confirm-license'
@@ -85,12 +88,29 @@ function apply_patches() {
 
     patch_if_needed qmakemake.patch false
     patch_if_needed java7.patch true
-    patch_if_needed donottryondemand.patch true
     patch_if_needed o2.patch true
 
+    if [ "$HAS_5_15" -eq 0 ]; then
+        # Qt 5.15
+
+        patch_if_needed donottryondemand_qt5.15.patch true
+        patch_if_needed qsslcertificate.patch true
+    else
+        # Qt 5.14 and older
+
+        patch_if_needed donottryondemand.patch true
+
+        # NEON fix
+        patch_if_needed fp16.patch false
+    fi
+
     if [ "$HAS_5_14" -eq 0 ]; then
+        # Qt 5.14 and newer
+        # Needed to build Qt for 32-bit architectures separately
         patch_if_needed default-arch.patch true
     else
+        # Qt 5.13 and older
+
         # NDK r19 toolchain
         patch_if_needed libc++.patch false
         patch_if_needed mips.patch false
@@ -99,9 +119,6 @@ function apply_patches() {
         # LTO
         patch_if_needed thin-lto.patch true
     fi
-
-    # NEON fix
-    patch_if_needed fp16.patch false
 
     # LTO
     patch_if_needed ltcg-armv7.patch true
@@ -193,6 +210,11 @@ function build_512() {
 
     echo
 }
+
+if [ ! -d "$QT_SOURCE_DIR" ] ; then
+    echo "Qt source directory $QT_SOURCE_DIR does not exist"
+    exit 1
+fi
 
 if [ "$HAS_5_12" -ne 0 ]; then
     echo 'Minimum Qt version is 5.12.0, aborting'
