@@ -125,7 +125,7 @@ rootProject.ext.vers += [
         material: '1.1.0',
         benjamin: '1.0.0',
         recyclerviewFastscroll: '2.0.0',
-        billing: '2.1.0'
+        billing: '3.0.0'
 ]
 
 dependencies {

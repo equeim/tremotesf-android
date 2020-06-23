@@ -94,8 +94,8 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
             val consume = billingClient
                     .queryPurchases(BillingClient.SkuType.INAPP)
                     .purchasesList
-                    .filterNot(Purchase::isAcknowledged)
-            if (consume.isNotEmpty()) {
+                    ?.filterNot(Purchase::isAcknowledged)
+            if (consume?.isNotEmpty() == true) {
                 coroutineScope.launch(Dispatchers.IO) {
                     consumePurchases(consume, false)
                 }
@@ -155,7 +155,6 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
         debug("consumePurchase purchases=$purchases")
         for (purchase in purchases) {
             val params = ConsumeParams.newBuilder()
-                    .setDeveloperPayload(purchase.developerPayload)
                     .setPurchaseToken(purchase.purchaseToken)
                     .build()
             val (result, purchaseToken) = billingClient.consumePurchase(params)
