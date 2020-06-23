@@ -219,7 +219,6 @@ apply_patches
 if [ "$HAS_5_14" -eq 0 ]; then
     build_514 "$ANDROID_ABIS_32" "$ANDROID_API_32"
     build_514 "$ANDROID_ABIS_64" "$ANDROID_API_64"
-    cp "$QT_DIR/install-api$ANDROID_API_32/jar/QtAndroid.jar" "$TOP_DIR/app/libs/" || exit 1
 else
     for abi in $ANDROID_ABIS_32; do
         build_512 "$abi" "$ANDROID_API_32" || exit 1
@@ -228,6 +227,4 @@ else
     for abi in $ANDROID_ABIS_64; do
         build_512 "$abi" "$ANDROID_API_64" || exit 1
     done
-
-    cp "$QT_DIR/install-$(get_first $ANDROID_ABIS_32)/jar/QtAndroid.jar" "$TOP_DIR/app/libs/" || exit 1
 fi

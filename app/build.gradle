@@ -10,17 +10,23 @@ plugins {
 def abis = ['armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64']
 def abiVersionCodes = ['armeabi-v7a': 1, 'x86': 2, 'arm64-v8a': 3, 'x86_64': 4]
 
-ext {
-    if (file("$rootDir/3rdparty/qt/install-api16").isDirectory()) {
-        qtHasAbiSuffix = true
-    } else {
-        qtHasAbiSuffix = false
-        if (!file("$rootDir/3rdparty/qt/install-${abis.first()}").isDirectory()) {
-            // Do not abort if we are cleaning
-            def tasks = gradle.startParameter.taskNames
-            if (!tasks.isEmpty() && tasks.first() != 'clean') {
-                throw new GradleException("Qt is not installed in $rootDir/3rdparty/qt")
-            }
+def qtInstallDirNew = "$rootDir/3rdparty/qt/install-api16"
+def qtInstallDirOld = "$rootDir/3rdparty/qt/install-${abis.first()}"
+def qtInstallDir = null
+
+def qtHasAbiSuffix = false
+
+if (file(qtInstallDirNew).isDirectory()) {
+    qtHasAbiSuffix = true
+    qtInstallDir = qtInstallDirNew
+} else {
+    qtHasAbiSuffix = false
+    qtInstallDir = qtInstallDirOld
+    if (!file(qtInstallDirOld).isDirectory()) {
+        // Do not abort if we are cleaning
+        def tasks = gradle.startParameter.taskNames
+        if (!tasks.isEmpty() && tasks.first() != 'clean') {
+            throw new GradleException("Qt is not installed in $rootDir/3rdparty/qt")
         }
     }
 }
@@ -129,7 +135,7 @@ rootProject.ext.vers += [
 ]
 
 dependencies {
-    implementation files('libs/QtAndroid.jar')
+    implementation files("$qtInstallDir/jar/QtAndroid.jar")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${vers.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${vers.kotlinxSerialization}"
