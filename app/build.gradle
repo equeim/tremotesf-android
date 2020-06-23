@@ -11,17 +11,15 @@ def abis = ['armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64']
 def abiVersionCodes = ['armeabi-v7a': 1, 'x86': 2, 'arm64-v8a': 3, 'x86_64': 4]
 
 ext {
-    def abi = abis.first()
-    def lib = 'libQt5Core'
-    if (file("libs/$abi/${lib}_${abi}.so").exists()) {
+    if (file("$rootDir/3rdparty/qt/install-api16").isDirectory()) {
         qtHasAbiSuffix = true
     } else {
         qtHasAbiSuffix = false
-        if (!file("libs/$abi/${lib}.so").exists()) {
+        if (!file("$rootDir/3rdparty/qt/install-${abis.first()}").isDirectory()) {
             // Do not abort if we are cleaning
             def tasks = gradle.startParameter.taskNames
             if (!tasks.isEmpty() && tasks.first() != 'clean') {
-                throw new GradleException("No Qt binaries in $projectDir/libs")
+                throw new GradleException("Qt is not installed in $rootDir/3rdparty/qt")
             }
         }
     }
@@ -56,7 +54,6 @@ android {
     sourceSets {
         main {
             java.srcDirs 'src/main/kotlin', '../libtremotesf/jni/java'
-            jniLibs.srcDirs 'libs'
         }
         google {
             java.srcDirs 'src/google/kotlin'

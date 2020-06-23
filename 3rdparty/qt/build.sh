@@ -162,13 +162,6 @@ function build_514() {
     make $MAKEOPTS || return 1
     make install $MAKEOPTS || return 1
 
-    for abi in $abis; do
-        local libs="$TOP_DIR/app/libs/$abi"
-        mkdir -p "$libs" || return 1
-        cp "$prefix/lib/libQt5Core_$abi.so" "$libs" || return 1
-        cp "$prefix/lib/libQt5Network_$abi.so" "$libs" || return 1
-    done
-
     echo
 }
 
@@ -201,12 +194,6 @@ function build_512() {
 
     make $MAKEOPTS || return 1
     make install $MAKEOPTS || return 1
-
-    local -r libs="$TOP_DIR/app/libs/$abi"
-    mkdir -p "$libs" || return 1
-
-    cp "$prefix/lib/libQt5Core.so" "$libs" || return 1
-    cp "$prefix/lib/libQt5Network.so" "$libs" || return 1
 
     echo
 }
