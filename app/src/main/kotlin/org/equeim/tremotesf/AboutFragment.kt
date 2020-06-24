@@ -29,12 +29,11 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 import com.google.android.material.tabs.TabLayoutMediator
+import org.equeim.tremotesf.databinding.AboutFragmentBaseTabFragmentBinding
+import org.equeim.tremotesf.databinding.AboutFragmentBinding
+import org.equeim.tremotesf.databinding.AboutFragmentLicenseTabFragmentBinding
 
 import org.equeim.tremotesf.donationsfragment.DonationsFragment
-
-import kotlinx.android.synthetic.main.about_fragment.*
-import kotlinx.android.synthetic.main.about_fragment_license_tab_fragment.*
-import kotlinx.android.synthetic.main.about_fragment_base_tab_fragment.*
 
 
 class AboutFragment : NavigationFragment(R.layout.about_fragment) {
@@ -49,13 +48,16 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         toolbar?.title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
         pagerAdapter = PagerAdapter(this)
-        pager.adapter = pagerAdapter
-        TabLayoutMediator(tab_layout, pager) { tab, position ->
-            tab.setText(PagerAdapter.getTitle(position))
-        }.attach()
 
-        if (requireArguments().getBoolean(DONATE)) {
-            pager.currentItem = 1
+        with(AboutFragmentBinding.bind(view)) {
+            pager.adapter = pagerAdapter
+            TabLayoutMediator(tabLayout, pager) { tab, position ->
+                tab.setText(PagerAdapter.getTitle(position))
+            }.attach()
+
+            if (requireArguments().getBoolean(DONATE)) {
+                pager.currentItem = 1
+            }
         }
     }
 
@@ -99,46 +101,51 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     class MainTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val inputStream = resources.openRawResource(R.raw.about)
-            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(inputStream.reader().readText(), 0)
-            } else {
-                @Suppress("DEPRECATION")
-                Html.fromHtml(inputStream.reader().readText())
+            resources.openRawResource(R.raw.about).use { inputStream ->
+                with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
+                    textView.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        Html.fromHtml(inputStream.reader().readText(), 0)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        Html.fromHtml(inputStream.reader().readText())
+                    }
+                }
             }
-            inputStream.close()
         }
     }
 
     class AuthorsTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val inputStream = resources.openRawResource(R.raw.authors)
-            text_view.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(inputStream.reader().readText(), 0)
-            } else {
-                @Suppress("DEPRECATION")
-                Html.fromHtml(inputStream.reader().readText())
+
+            resources.openRawResource(R.raw.authors).use { inputStream ->
+                with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
+                    textView.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        Html.fromHtml(inputStream.reader().readText(), 0)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        Html.fromHtml(inputStream.reader().readText())
+                    }
+                }
             }
-            inputStream.close()
         }
     }
 
     class TranslatorsTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val inputStream = resources.openRawResource(R.raw.translators)
-            text_view.text = inputStream.reader().readText()
-            inputStream.close()
+            resources.openRawResource(R.raw.translators).use {
+                AboutFragmentBaseTabFragmentBinding.bind(view).textView.text = it.reader().readText()
+            }
         }
     }
 
     class LicenseTabFragment : Fragment(R.layout.about_fragment_license_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val inputStream = resources.openRawResource(R.raw.license)
-            web_view.loadData(inputStream.reader().readText(), "text/html", null)
-            inputStream.close()
+            resources.openRawResource(R.raw.license).use {
+                AboutFragmentLicenseTabFragmentBinding.bind(view).webView.loadData(it.reader().readText(), "text/html", null)
+            }
         }
     }
 }
