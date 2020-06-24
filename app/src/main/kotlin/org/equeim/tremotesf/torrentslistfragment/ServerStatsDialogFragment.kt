@@ -21,6 +21,7 @@ package org.equeim.tremotesf.torrentslistfragment
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 
 import androidx.lifecycle.observe
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,14 +29,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 
-import kotlinx.android.synthetic.main.server_stats_dialog.*
-
 
 class ServerStatsDialogFragment : NavigationDialogFragment() {
+    private var binding: ServerStatsDialogBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
@@ -43,37 +45,47 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.server_stats)
-                .setView(R.layout.server_stats_dialog)
+        val builder = MaterialAlertDialogBuilder(requireContext())
+
+        val binding = ServerStatsDialogBinding.inflate(LayoutInflater.from(builder.context))
+        this.binding = binding
+
+        return builder.setTitle(R.string.server_stats)
+                .setView(binding.root)
                 .setPositiveButton(R.string.close, null).create()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     private fun update() {
         if (!Rpc.isConnected) return
-        dialog?.apply {
-            val sessionDownloadedTextView = session_downloaded_text_view ?: return
+
+        binding?.apply {
+            val sessionDownloadedTextView = sessionDownloadedTextView ?: return
 
             val stats = Rpc.serverStats.value
             val sessionStats = stats.currentSession
             sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),
                                                                   sessionStats.downloaded())
-            session_uploaded_text_view.text = Utils.formatByteSize(requireContext(),
-                                                                sessionStats.uploaded())
-            session_ratio_text_view.text = DecimalFormats.ratio.format(sessionStats.uploaded().toDouble() /
-                                                                   sessionStats.downloaded().toDouble())
-            session_duration_text_view.text = Utils.formatDuration(requireContext(), sessionStats.duration())
+            sessionUploadedTextView.text = Utils.formatByteSize(requireContext(),
+                                                                   sessionStats.uploaded())
+            sessionRatioTextView.text = DecimalFormats.ratio.format(sessionStats.uploaded().toDouble() /
+                                                                               sessionStats.downloaded().toDouble())
+            sessionDurationTextView.text = Utils.formatDuration(requireContext(), sessionStats.duration())
 
             val totalStats = stats.total
             val sessionCount = totalStats.sessionCount()
-            started_timed_text_view.text = resources.getQuantityString(R.plurals.started_times,
-                                                                    sessionCount,
-                                                                    sessionCount)
-            total_downloaded_text_view.text = Utils.formatByteSize(requireContext(), totalStats.downloaded())
-            total_uploaded_text_view.text = Utils.formatByteSize(requireContext(), totalStats.uploaded())
-            total_ratio_text_view.text = DecimalFormats.ratio.format(totalStats.uploaded().toDouble() /
-                                                                 totalStats.downloaded().toDouble())
-            total_duration_text_view.text = Utils.formatDuration(requireContext(), totalStats.duration())
+            startedTimedTextView.text = resources.getQuantityString(R.plurals.started_times,
+                                                                       sessionCount,
+                                                                       sessionCount)
+            totalDownloadedTextView.text = Utils.formatByteSize(requireContext(), totalStats.downloaded())
+            totalUploadedTextView.text = Utils.formatByteSize(requireContext(), totalStats.uploaded())
+            totalRatioTextView.text = DecimalFormats.ratio.format(totalStats.uploaded().toDouble() /
+                                                                             totalStats.downloaded().toDouble())
+            totalDurationTextView.text = Utils.formatDuration(requireContext(), totalStats.duration())
         }
     }
 }
