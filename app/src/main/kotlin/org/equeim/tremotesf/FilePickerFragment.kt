@@ -42,14 +42,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
-
-import kotlinx.android.synthetic.main.file_picker_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
                                               R.string.select_file,
                                               R.menu.file_picker_fragment_menu) {
+    private val binding by viewBinding(FilePickerFragmentBinding::bind)
     private var adapter: FilePickerAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,13 +59,15 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         val adapter = FilePickerAdapter(this)
         this.adapter = adapter
 
-        files_view.adapter = adapter
-        files_view.layoutManager = LinearLayoutManager(requireContext())
-        files_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        files_view.itemAnimator = null
+        binding.filesView.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            itemAnimator = null
+        }
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            files_view.visibility = View.GONE
+            binding.filesView.visibility = View.GONE
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
             adapter.init()
@@ -82,11 +85,13 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<out String>,
                                             grantResults: IntArray) {
-        if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-            files_view.visibility = View.VISIBLE
-            adapter?.init()
-        } else {
-            placeholder.text = getString(R.string.storage_permission_error)
+        with(binding) {
+            if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
+                filesView.visibility = View.VISIBLE
+                adapter?.init()
+            } else {
+                placeholder.text = getString(R.string.storage_permission_error)
+            }
         }
     }
 
@@ -95,7 +100,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 
     fun updatePlaceholder() {
-        placeholder.text = if (adapter?.files?.isEmpty() == true) {
+        binding.placeholder.text = if (adapter?.files?.isEmpty() == true) {
             getString(R.string.no_files)
         } else {
             null
