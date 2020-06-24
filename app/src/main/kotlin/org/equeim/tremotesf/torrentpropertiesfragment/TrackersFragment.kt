@@ -29,15 +29,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
-
-import kotlinx.android.synthetic.main.torrent_properties_fragment.fab
-import kotlinx.android.synthetic.main.trackers_fragment.*
+import org.equeim.tremotesf.databinding.TrackersFragmentBinding
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentPropertiesFragment.PagerFragment {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
+    private val binding by viewBinding(TrackersFragmentBinding::bind)
     private var trackersAdapter: TrackersAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,21 +46,25 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentProperties
         val trackersAdapter = TrackersAdapter(torrentPropertiesFragment)
         this.trackersAdapter = trackersAdapter
 
-        trackers_view.adapter = trackersAdapter
-        trackers_view.layoutManager = LinearLayoutManager(activity)
-        trackers_view.addItemDecoration(DividerItemDecoration(activity,
-                DividerItemDecoration.VERTICAL))
-        (trackers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        binding.trackersView.apply {
+            adapter = trackersAdapter
+            layoutManager = LinearLayoutManager(activity)
+            addItemDecoration(DividerItemDecoration(activity,
+                                                                  DividerItemDecoration.VERTICAL))
+            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        trackers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    torrentPropertiesFragment.fab.hide()
-                } else if (dy < 0) {
-                    torrentPropertiesFragment.fab.show()
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    torrentPropertiesFragment.binding.fab.apply {
+                        if (dy > 0) {
+                            hide()
+                        } else if (dy < 0) {
+                            show()
+                        }
+                    }
                 }
-            }
-        })
+            })
+        }
 
         update()
         trackersAdapter.selector.restoreInstanceState(savedInstanceState)
@@ -79,7 +83,7 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentProperties
         trackersAdapter?.let { adapter ->
             adapter.update()
             val torrent = torrentPropertiesFragment.torrent
-            placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
+            binding.placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
                 View.VISIBLE
             } else {
                 View.GONE

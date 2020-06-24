@@ -44,13 +44,13 @@ import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.popDialog
 import org.equeim.tremotesf.utils.showSnackbar
-
-import kotlinx.android.synthetic.main.torrent_properties_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
@@ -63,6 +63,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     lateinit var hash: String
     var torrent: Torrent? = null
+
+    val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)
 
     private var menu: Menu? = null
     private var startMenuItem: MenuItem? = null
@@ -84,20 +86,20 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
-        pager.adapter = pagerAdapter
-        TabLayoutMediator(tab_layout, pager) { tab, position ->
+        binding.pager.adapter = pagerAdapter
+        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
+            if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
                     findFragment<TorrentFilesFragment>()?.adapter?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1
 
             override fun onPageSelected(position: Int) {
@@ -108,15 +110,15 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                     }
                 }
                 if (position == PagerAdapter.Tab.Trackers.ordinal) {
-                    fab.show()
+                    binding.fab.show()
                 } else {
-                    fab.hide()
+                    binding.fab.hide()
                 }
                 previousPage = position
             }
         })
 
-        fab.setOnClickListener {
+        binding.fab.setOnClickListener {
             navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
@@ -180,30 +182,32 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun onRpcStatusChanged(status: Int) {
-        when (status) {
-            RpcStatus.Disconnected -> {
-                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+        with(binding) {
+            when (status) {
+                RpcStatus.Disconnected -> {
+                    snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                        snackbar = null
+                        Rpc.nativeInstance.connect()
+                    }
+                    placeholder.text = Rpc.statusString
+                }
+                RpcStatus.Connecting -> {
+                    snackbar?.dismiss()
                     snackbar = null
-                    Rpc.nativeInstance.connect()
+                    placeholder.text = getString(R.string.connecting)
                 }
-                placeholder.text = Rpc.statusString
-            }
-            RpcStatus.Connecting -> {
-                snackbar?.dismiss()
-                snackbar = null
-                placeholder.text = getString(R.string.connecting)
-            }
-            RpcStatus.Connected -> {
-                if (torrent == null) {
-                    placeholder.text = getString(R.string.torrent_not_found)
+                RpcStatus.Connected -> {
+                    if (torrent == null) {
+                        placeholder.text = getString(R.string.torrent_not_found)
+                    }
                 }
             }
-        }
 
-        progress_bar.visibility = if (status == RpcStatus.Connecting) {
-            View.VISIBLE
-        } else {
-            View.GONE
+            progressBar.visibility = if (status == RpcStatus.Connecting) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
     }
 
@@ -213,7 +217,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
             torrent = newTorrent
             if (newTorrent == null) {
                 if (Rpc.isConnected) {
-                    placeholder.text = getString(R.string.torrent_removed)
+                    binding.placeholder.text = getString(R.string.torrent_removed)
                 }
                 navController.popDialog()
             }
@@ -255,20 +259,22 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun updatePlaceholderVisibility() {
-        if (torrent != null) {
-            (toolbar?.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                            AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
-                            AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-            tab_layout.visibility = View.VISIBLE
-            pager.visibility = View.VISIBLE
-            placeholder_layout.visibility = View.GONE
-        } else {
-            (toolbar?.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags = 0
-            tab_layout.visibility = View.GONE
-            pager.visibility = View.GONE
-            pager.currentItem = 0
-            placeholder_layout.visibility = View.VISIBLE
+        with(binding) {
+            if (torrent != null) {
+                (toolbar.root.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
+                                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                tabLayout.visibility = View.VISIBLE
+                pager.visibility = View.VISIBLE
+                placeholderLayout.visibility = View.GONE
+            } else {
+                (toolbar.root.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags = 0
+                tabLayout.visibility = View.GONE
+                pager.visibility = View.GONE
+                pager.currentItem = 0
+                placeholderLayout.visibility = View.VISIBLE
+            }
         }
     }
 

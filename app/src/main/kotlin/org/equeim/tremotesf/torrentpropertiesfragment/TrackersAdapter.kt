@@ -32,6 +32,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
+import android.widget.TextView
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
@@ -47,11 +48,9 @@ import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
-
-import kotlinx.android.synthetic.main.text_field_dialog.*
-import kotlinx.android.synthetic.main.tracker_list_item.view.*
 
 
 data class TrackersAdapterItem(val id: Int,
@@ -112,45 +111,48 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(selector,
-                          LayoutInflater.from(parent.context).inflate(R.layout.tracker_list_item,
-                                                                      parent,
-                                                                      false))
+                          TrackerListItemBinding.inflate(LayoutInflater.from(parent.context),
+                                                         parent,
+                                                         false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val tracker = currentList[position]
 
         holder.item = tracker
-        holder.nameTextView.text = tracker.announce
-        holder.statusTextView.text = when (tracker.status) {
-            Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
-            Tracker.Status.Active -> context.getString(R.string.tracker_active)
-            Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
-            Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
-            else -> {
-                if (tracker.errorMessage.isEmpty()) {
-                    context.getString(R.string.error)
-                } else {
-                    context.getString(R.string.tracker_error, tracker.errorMessage)
+
+        with(holder.binding) {
+            nameTextView.text = tracker.announce
+            statusTextView.text = when (tracker.status) {
+                Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
+                Tracker.Status.Active -> context.getString(R.string.tracker_active)
+                Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
+                Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
+                else -> {
+                    if (tracker.errorMessage.isEmpty()) {
+                        context.getString(R.string.error)
+                    } else {
+                        context.getString(R.string.tracker_error, tracker.errorMessage)
+                    }
                 }
             }
-        }
 
-        if (tracker.status == Tracker.Status.Error) {
-            holder.peersTextView.visibility = View.GONE
-        } else {
-            holder.peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
-                                                                            tracker.peers,
-                                                                            tracker.peers)
-            holder.peersTextView.visibility = View.VISIBLE
-        }
+            if (tracker.status == Tracker.Status.Error) {
+                peersTextView.visibility = View.GONE
+            } else {
+                peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
+                                                                                tracker.peers,
+                                                                                tracker.peers)
+                peersTextView.visibility = View.VISIBLE
+            }
 
-        if (tracker.nextUpdateEta < 0) {
-            holder.nextUpdateTextView.visibility = View.GONE
-        } else {
-            holder.nextUpdateTextView.text = context.getString(R.string.next_update,
-                                                               DateUtils.formatElapsedTime(tracker.nextUpdateEta))
-            holder.nextUpdateTextView.visibility = View.VISIBLE
+            if (tracker.nextUpdateEta < 0) {
+                nextUpdateTextView.visibility = View.GONE
+            } else {
+                nextUpdateTextView.text = context.getString(R.string.next_update,
+                                                                   DateUtils.formatElapsedTime(tracker.nextUpdateEta))
+                nextUpdateTextView.visibility = View.VISIBLE
+            }
         }
 
         holder.updateSelectedBackground()
@@ -196,12 +198,8 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     }
 
     inner class ViewHolder(selector: Selector<TrackersAdapterItem, Int>,
-                           itemView: View) : Selector.ViewHolder<TrackersAdapterItem>(selector, itemView) {
+                           val binding: TrackerListItemBinding) : Selector.ViewHolder<TrackersAdapterItem>(selector, binding.root) {
         override lateinit var item: TrackersAdapterItem
-        val nameTextView = itemView.name_text_view!!
-        val statusTextView = itemView.status_text_view!!
-        val peersTextView = itemView.peers_text_view!!
-        val nextUpdateTextView = itemView.next_update_text_view!!
 
         override fun onClick(view: View) {
             if (selector.actionMode == null) {
@@ -244,7 +242,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                                          null) {
                 val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
                 if (torrent != null) {
-                    val textField = requireDialog().text_field!!
+                    val textField = requireDialog().findViewById<TextView>(R.id.text_field)
                     textField.text?.let { text ->
                         if (addingTrackers) {
                             torrent.addTrackers(text.lines().filter(String::isNotEmpty))
