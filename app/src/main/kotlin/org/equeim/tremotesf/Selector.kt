@@ -194,8 +194,7 @@ abstract class Selector<ItemType, IdType>(private val activity: AppCompatActivit
         }
 
         fun updateSelectedBackground() {
-            selectedBackground
-            selectedBackground.background.level = if (selector.isSelected(item)) 1 else 0
+            selectedBackground.isActivated = selector.isSelected(item)
         }
     }
 

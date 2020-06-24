@@ -16,7 +16,7 @@
 
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
-        <item name="selectedBackground">@drawable/selected_background</item>
+        <item name="selectedBackground">@color/selected_background</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
