@@ -21,7 +21,6 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 
 import java.util.Comparator
 
-import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 
@@ -31,11 +30,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.PeerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
-
-import kotlinx.android.synthetic.main.peer_list_item.view.*
 
 
 class PeersAdapter : ListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
@@ -45,37 +43,33 @@ class PeersAdapter : ListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.peer_list_item, parent, false))
+        return ViewHolder(PeerListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.update(getItem(position))
     }
 
     fun update(peers: List<Peer>) {
         submitList(if (peers.isEmpty()) null else peers.sortedWith(comparator))
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(private val binding: PeerListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         private val context = itemView.context
-
-        private val addressTextView = itemView.address_text_view!!
-        private val downloadSpeedTextView = itemView.download_speed_text_view!!
-        private val uploadSpeedTextView = itemView.upload_speed_text_view!!
-        private val progressTextView = itemView.progress_text_view!!
-        private val clientTextView = itemView.client_text_view!!
 
         private var peerAddress = ""
 
-        fun bind(peer: Peer) {
-            if (peer.address != peerAddress) {
-                peerAddress = peer.address
-                addressTextView.text = peerAddress
-                clientTextView.text = peer.client
+        fun update(peer: Peer) {
+            with(binding) {
+                if (peer.address != peerAddress) {
+                    peerAddress = peer.address
+                    addressTextView.text = peerAddress
+                    clientTextView.text = peer.client
+                }
+                downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
+                uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
+                progressTextView.text = context.getString(R.string.progress_string, DecimalFormats.generic.format(peer.progress * 100))
             }
-            downloadSpeedTextView.text = context.getString(R.string.download_speed_string, Utils.formatByteSpeed(context, peer.downloadSpeed))
-            uploadSpeedTextView.text = context.getString(R.string.upload_speed_string, Utils.formatByteSpeed(context, peer.uploadSpeed))
-            progressTextView.text = context.getString(R.string.progress_string, DecimalFormats.generic.format(peer.progress * 100))
         }
     }
 

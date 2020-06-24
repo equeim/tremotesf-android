@@ -32,9 +32,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
-
-import kotlinx.android.synthetic.main.peers_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 data class Peer(val address: String,
@@ -56,6 +56,7 @@ data class Peer(val address: String,
 }
 
 class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragment.PagerFragment {
+    private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 
     private lateinit var model: Model
@@ -72,11 +73,13 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
         val peersAdapter = PeersAdapter()
         this.peersAdapter = peersAdapter
 
-        peers_view.adapter = peersAdapter
-        peers_view.layoutManager = LinearLayoutManager(activity)
-        peers_view.addItemDecoration(DividerItemDecoration(activity,
-                DividerItemDecoration.VERTICAL))
-        peers_view.itemAnimator = null
+        binding.peersView.apply {
+            adapter = peersAdapter
+            layoutManager = LinearLayoutManager(activity)
+            addItemDecoration(DividerItemDecoration(activity,
+                                                               DividerItemDecoration.VERTICAL))
+            itemAnimator = null
+        }
 
         model.peers.observe(viewLifecycleOwner, ::updateAdapter)
     }
@@ -109,18 +112,20 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
     }
 
     private fun updatePlaceholder(peersAdapter: PeersAdapter) {
-        if (model.torrent == null) {
-            progress_bar.visibility = View.GONE
-        } else {
-            if (model.loaded) {
-                progress_bar.visibility = View.GONE
-                placeholder.visibility = if (peersAdapter.itemCount == 0) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
+        with(binding) {
+            if (model.torrent == null) {
+                progressBar.visibility = View.GONE
             } else {
-                progress_bar.visibility = View.VISIBLE
+                if (model.loaded) {
+                    progressBar.visibility = View.GONE
+                    placeholder.visibility = if (peersAdapter.itemCount == 0) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                } else {
+                    progressBar.visibility = View.VISIBLE
+                }
             }
         }
     }
