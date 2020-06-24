@@ -26,18 +26,20 @@ import android.view.View
 import androidx.fragment.app.Fragment
 
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
-
-import kotlinx.android.synthetic.main.torrent_details_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), TorrentPropertiesFragment.PagerFragment {
     private var firstUpdate = true
 
+    private val binding by viewBinding(TorrentDetailsFragmentBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        hash_text_view.text = (requireParentFragment() as TorrentPropertiesFragment).hash
+        binding.hashTextView.text = (requireParentFragment() as TorrentPropertiesFragment).hash
         firstUpdate = true
         update()
     }
@@ -51,34 +53,36 @@ class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), Torr
 
         firstUpdate = false
 
-        completed_text_view.text = Utils.formatByteSize(requireContext(), torrent.completedSize)
-        downloaded_text_view.text = Utils.formatByteSize(requireContext(),
-                                                         torrent.totalDownloaded)
-        uploaded_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
+        with(binding) {
+            completedTextView.text = Utils.formatByteSize(requireContext(), torrent.completedSize)
+            downloadedTextView.text = Utils.formatByteSize(requireContext(),
+                                                             torrent.totalDownloaded)
+            uploadedTextView.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
 
-        ratio_text_view.text = DecimalFormats.ratio.format(torrent.ratio)
+            ratioTextView.text = DecimalFormats.ratio.format(torrent.ratio)
 
-        download_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
-        upload_speed_text_view.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
-        eta_text_view.text = Utils.formatDuration(requireContext(), torrent.eta)
-        seeders_text_view.text = torrent.seeders.toString()
-        leechers_text_view.text = torrent.leechers.toString()
-        last_activity_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
+            downloadSpeedTextView.text = Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
+            uploadSpeedTextView.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
+            etaTextView.text = Utils.formatDuration(requireContext(), torrent.eta)
+            seedersTextView.text = torrent.seeders.toString()
+            leechersTextView.text = torrent.leechers.toString()
+            lastActivityTextView.text = DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
 
-        total_size_text_view.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
+            totalSizeTextView.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
 
-        val dir = torrent.downloadDirectory
-        if (!dir.contentEquals(location_text_view.text)) {
-            location_text_view.text = dir
-        }
+            val dir = torrent.downloadDirectory
+            if (!dir.contentEquals(locationTextView.text)) {
+                locationTextView.text = dir
+            }
 
-        creator_text_view.text = torrent.data.creator
-        creation_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.data.creationDateTime)
-        added_date_text_view.text = DateUtils.getRelativeTimeSpanString(torrent.addedDateTime)
+            creatorTextView.text = torrent.data.creator
+            creationDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.data.creationDateTime)
+            addedDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.addedDateTime)
 
-        val comment: String = torrent.data.comment
-        if (!comment.contentEquals(comment_text_view.text)) {
-            comment_text_view.text = comment
+            val comment: String = torrent.data.comment
+            if (!comment.contentEquals(commentTextView.text)) {
+                commentTextView.text = comment
+            }
         }
     }
 }
