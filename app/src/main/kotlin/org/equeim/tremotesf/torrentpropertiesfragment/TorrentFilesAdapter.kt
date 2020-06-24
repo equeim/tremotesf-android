@@ -22,7 +22,6 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.View
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
@@ -32,11 +31,10 @@ import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.safeNavigate
-
-import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
@@ -48,11 +46,11 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_file_list_item,
-                                                                   parent,
-                                                                   false)
-            Utils.setProgressBarColor(view.progress_bar)
-            return ItemHolder(this, selector, view)
+            val binding = TorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
+                                                             parent,
+                                                             false)
+            Utils.setProgressBarColor(binding.progressBar)
+            return ItemHolder(this, selector, binding)
         }
         return super.onCreateViewHolder(parent, viewType)
     }
@@ -60,16 +58,17 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         if (holder.itemViewType == TYPE_ITEM) {
-            holder as ItemHolder
-            val item = holder.item
-            holder.progressBar.progress = (item.progress * 100).toInt()
-            val context = fragment.requireContext()
-            holder.progressTextView.text = context.getString(R.string.completed_string,
-                                                              Utils.formatByteSize(context,
-                                                                                   item.completedSize),
-                                                              Utils.formatByteSize(context,
-                                                                                   item.size),
-                                                              DecimalFormats.generic.format(item.progress * 100))
+            val item = (holder as ItemHolder).item
+            with(holder.binding) {
+                progressBar.progress = (item.progress * 100).toInt()
+                val context = fragment.requireContext()
+                progressTextView.text = context.getString(R.string.completed_string,
+                                                          Utils.formatByteSize(context,
+                                                                               item.completedSize),
+                                                          Utils.formatByteSize(context,
+                                                                               item.size),
+                                                          DecimalFormats.generic.format(item.progress * 100))
+            }
         }
     }
 
@@ -115,8 +114,5 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
 
     private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                              selector: Selector<Item, Int>,
-                             itemView: View) : BaseItemHolder(adapter, selector, itemView) {
-        val progressBar = itemView.progress_bar!!
-        val progressTextView = itemView.progress_text_view!!
-    }
+                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root)
 }

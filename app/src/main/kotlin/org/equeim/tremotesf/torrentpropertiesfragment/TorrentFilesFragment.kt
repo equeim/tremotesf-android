@@ -42,9 +42,9 @@ import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
-
-import kotlinx.android.synthetic.main.torrent_files_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentPropertiesFragment.PagerFragment {
@@ -58,6 +58,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     var torrent: Torrent? = null
         private set
 
+    private val binding by viewBinding(TorrentFilesFragmentBinding::bind)
     var adapter: TorrentFilesAdapter? = null
         private set
 
@@ -75,10 +76,12 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
         val adapter = TorrentFilesAdapter(this, model.rootDirectory)
         this.adapter = adapter
 
-        files_view.adapter = adapter
-        files_view.layoutManager = LinearLayoutManager(requireContext())
-        files_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        files_view.itemAnimator = null
+        binding.filesView.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            itemAnimator = null
+        }
 
         model.state.observe(viewLifecycleOwner) { state ->
             if (state == TreeModel.State.TreeCreated) {
@@ -123,7 +126,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     }
 
     private fun updatePlaceholder(modelState: TreeModel.State) {
-        placeholder?.visibility = if (modelState == TreeModel.State.TreeCreated && model.files.isEmpty()) {
+        binding.placeholder.visibility = if (modelState == TreeModel.State.TreeCreated && model.files.isEmpty()) {
             View.VISIBLE
         } else {
             View.GONE
@@ -131,7 +134,7 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
     }
 
     private fun updateProgressBar(modelState: TreeModel.State) {
-        progress_bar?.visibility = when (modelState) {
+        binding.progressBar.visibility = when (modelState) {
             TreeModel.State.Loading,
             TreeModel.State.CreatingTree -> View.VISIBLE
             else -> View.GONE
