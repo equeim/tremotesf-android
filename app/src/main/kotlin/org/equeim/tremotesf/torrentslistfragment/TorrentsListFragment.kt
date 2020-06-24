@@ -155,59 +155,59 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun setupDrawerListeners() {
-        val activity = requiredActivity
-
-        activity.sortView.setOnItemClickListener { _, _, position, _ ->
-            torrentsAdapter?.apply {
-                sortMode = TorrentsAdapter.SortMode.values()[position]
-                if (Rpc.isConnected) {
-                    Settings.torrentsSortMode = sortMode
+        with(requiredActivity.sidePanelBinding) {
+            sortView.setOnItemClickListener { _, _, position, _ ->
+                torrentsAdapter?.apply {
+                    sortMode = TorrentsAdapter.SortMode.values()[position]
+                    if (Rpc.isConnected) {
+                        Settings.torrentsSortMode = sortMode
+                    }
                 }
             }
-        }
 
-        activity.sortViewLayout.setStartIconOnClickListener {
-            torrentsAdapter?.apply {
-                sortOrder = if (sortOrder == TorrentsAdapter.SortOrder.Ascending) {
-                    TorrentsAdapter.SortOrder.Descending
-                } else {
-                    TorrentsAdapter.SortOrder.Ascending
+            sortViewLayout.setStartIconOnClickListener {
+                torrentsAdapter?.apply {
+                    sortOrder = if (sortOrder == TorrentsAdapter.SortOrder.Ascending) {
+                        TorrentsAdapter.SortOrder.Descending
+                    } else {
+                        TorrentsAdapter.SortOrder.Ascending
+                    }
+                    Settings.torrentsSortOrder = sortOrder
                 }
-                Settings.torrentsSortOrder = sortOrder
+                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
             }
-            (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
-        }
 
-        activity.statusView.setOnItemClickListener { _, _, position, _ ->
-            torrentsAdapter?.apply {
-                statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
-                if (Rpc.isConnected) {
-                    Settings.torrentsStatusFilter = statusFilterMode
-                }
-            }
-        }
-
-        activity.trackersView.setOnItemClickListener { _, _, position, _ ->
-            torrentsAdapter?.apply {
-                trackerFilter = (activity.trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
-                if (Rpc.isConnected) {
-                    Settings.torrentsTrackerFilter = trackerFilter
+            statusView.setOnItemClickListener { _, _, position, _ ->
+                torrentsAdapter?.apply {
+                    statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
+                    if (Rpc.isConnected) {
+                        Settings.torrentsStatusFilter = statusFilterMode
+                    }
                 }
             }
-        }
 
-        activity.directoriesView.setOnItemClickListener { _, _, position, _ ->
-            torrentsAdapter?.apply {
-                directoryFilter = (activity.directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
-                if (Rpc.isConnected) {
-                    Settings.torrentsDirectoryFilter = directoryFilter
+            trackersView.setOnItemClickListener { _, _, position, _ ->
+                torrentsAdapter?.apply {
+                    trackerFilter = (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
+                    if (Rpc.isConnected) {
+                        Settings.torrentsTrackerFilter = trackerFilter
+                    }
+                }
+            }
+
+            directoriesView.setOnItemClickListener { _, _, position, _ ->
+                torrentsAdapter?.apply {
+                    directoryFilter = (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
+                    if (Rpc.isConnected) {
+                        Settings.torrentsDirectoryFilter = directoryFilter
+                    }
                 }
             }
         }
     }
 
     private fun clearDrawerListeners() {
-        with (requiredActivity) {
+        with (requiredActivity.sidePanelBinding) {
             sortView.onItemClickListener = null
             sortViewLayout.setStartIconOnClickListener(null)
             statusView.onItemClickListener = null
@@ -326,7 +326,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun onTorrentsUpdated() {
-        with (requiredActivity) {
+        with (requiredActivity.sidePanelBinding) {
             (statusView.adapter as StatusFilterViewAdapter).update()
             (trackersView.adapter as TrackersViewAdapter).update()
             (directoriesView.adapter as DirectoriesViewAdapter).update()
