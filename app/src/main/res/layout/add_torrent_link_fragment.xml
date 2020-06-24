@@ -71,6 +71,7 @@
 
                 <include
                     layout="@layout/download_directory_edit"
+                    android:id="@+id/download_directory_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>

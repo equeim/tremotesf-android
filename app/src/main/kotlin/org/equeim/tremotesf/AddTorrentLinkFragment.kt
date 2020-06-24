@@ -25,14 +25,13 @@ import android.view.View
 
 import androidx.core.text.trimmedLength
 import com.google.android.material.snackbar.Snackbar
+import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.textInputLayout
-
-import kotlinx.android.synthetic.main.add_torrent_link_fragment.*
-import kotlinx.android.synthetic.main.download_directory_edit.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_fragment,
@@ -42,6 +41,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         const val SCHEME_MAGNET = "magnet"
     }
 
+    private val binding by viewBinding(AddTorrentLinkFragmentBinding::bind)
+
     private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
@@ -50,12 +51,14 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        torrent_link_edit.setText(requireArguments().getString(URI))
+        with(binding) {
+            torrentLinkEdit.setText(requireArguments().getString(URI))
 
-        priority_view.setText(R.string.normal_priority)
-        priority_view.setAdapter(ArrayDropdownAdapter(priorityItems))
+            priorityView.setText(R.string.normal_priority)
+            priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
 
-        start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
+            startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+        }
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
@@ -77,35 +80,39 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         if (menuItem.itemId == R.id.done) {
-            var error = false
+            with(binding) {
+                var error = false
 
-            torrent_link_edit.textInputLayout.error = if (torrent_link_edit.text?.trimmedLength() == 0) {
-                error = true
-                getString(R.string.empty_field_error)
-            } else {
-                null
+                torrentLinkEdit.textInputLayout.error = if (torrentLinkEdit.text?.trimmedLength() == 0) {
+                    error = true
+                    getString(R.string.empty_field_error)
+                } else {
+                    null
+                }
+
+                val downloadDirectoryEdit = downloadDirectoryLayout.downloadDirectoryEdit
+                val downloadDirectoryLayout = downloadDirectoryLayout.downloadDirectoryLayout
+
+                downloadDirectoryLayout.error = if (downloadDirectoryEdit.text?.trimmedLength() == 0) {
+                    error = true
+                    getString(R.string.empty_field_error)
+                } else {
+                    null
+                }
+
+                if (error) {
+                    return false
+                }
+
+                Rpc.nativeInstance.addTorrentLink(torrentLinkEdit.text?.toString() ?: "",
+                                                  downloadDirectoryEdit.text.toString(),
+                                                  priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
+                                                  startDownloadingCheckBox.isChecked)
+
+                directoriesAdapter?.save()
+
+                activity?.onBackPressed()
             }
-
-            download_directory_layout.error = if (download_directory_edit.text?.trimmedLength() == 0) {
-                error = true
-                getString(R.string.empty_field_error)
-            } else {
-                null
-            }
-
-            if (error) {
-                return false
-            }
-
-            Rpc.nativeInstance.addTorrentLink(torrent_link_edit.text?.toString() ?: "",
-                                              download_directory_edit.text.toString(),
-                                              priorityItemEnums[priorityItems.indexOf(priority_view.text.toString())],
-                                              start_downloading_check_box.isChecked)
-
-            directoriesAdapter?.save()
-
-            activity?.onBackPressed()
-
             return true
         }
 
@@ -115,39 +122,41 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
     private fun updateView() {
         doneMenuItem?.isVisible = Rpc.isConnected
 
-        when (Rpc.status.value) {
-            RpcStatus.Disconnected -> {
-                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
-                    snackbar = null
-                    Rpc.nativeInstance.connect()
+        with(binding) {
+            when (Rpc.status.value) {
+                RpcStatus.Disconnected -> {
+                    snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                        snackbar = null
+                        Rpc.nativeInstance.connect()
+                    }
+                    placeholder.text = Rpc.statusString
+
+                    hideKeyboard()
                 }
-                placeholder.text = Rpc.statusString
-
-                hideKeyboard()
+                RpcStatus.Connecting -> {
+                    snackbar?.dismiss()
+                    snackbar = null
+                    placeholder.text = getString(R.string.connecting)
+                }
             }
-            RpcStatus.Connecting -> {
-                snackbar?.dismiss()
-                snackbar = null
-                placeholder.text = getString(R.string.connecting)
-            }
-        }
 
-        if (Rpc.isConnected) {
-            if (scroll_view.visibility != View.VISIBLE) {
-                download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
-                start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
-                scroll_view.visibility = View.VISIBLE
+            if (Rpc.isConnected) {
+                if (scrollView.visibility != View.VISIBLE) {
+                    downloadDirectoryLayout.downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
+                    startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+                    scrollView.visibility = View.VISIBLE
+                }
+                placeholderLayout.visibility = View.GONE
+            } else {
+                placeholderLayout.visibility = View.VISIBLE
+                scrollView.visibility = View.GONE
             }
-            placeholder_layout.visibility = View.GONE
-        } else {
-            placeholder_layout.visibility = View.VISIBLE
-            scroll_view.visibility = View.GONE
-        }
 
-        progress_bar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
-            View.VISIBLE
-        } else {
-            View.GONE
+            progressBar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
     }
 }
