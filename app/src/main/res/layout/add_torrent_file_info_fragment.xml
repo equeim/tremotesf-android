@@ -16,7 +16,7 @@
         android:paddingBottom="@dimen/vertical_edge_padding"
         android:paddingTop="@dimen/vertical_edge_padding">
 
-        <include layout="@layout/download_directory_edit"/>
+        <include layout="@layout/download_directory_edit" android:id="@+id/download_directory_layout"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

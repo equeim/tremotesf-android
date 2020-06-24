@@ -62,7 +62,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
 
-        directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(this, savedInstanceState)
+        directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(binding.downloadDirectoryLayout, this, savedInstanceState)
 
         Rpc.status.observe(viewLifecycleOwner) { updateView() }
     }

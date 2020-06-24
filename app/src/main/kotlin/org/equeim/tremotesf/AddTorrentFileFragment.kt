@@ -52,73 +52,77 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 
 import org.equeim.libtremotesf.StringMap
+import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
+import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
+import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
+import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
+import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.showSnackbar
-
-import kotlinx.android.synthetic.main.add_torrent_file_files_fragment.*
-import kotlinx.android.synthetic.main.add_torrent_file_info_fragment.*
-import kotlinx.android.synthetic.main.add_torrent_file_fragment.*
-import kotlinx.android.synthetic.main.download_directory_edit.*
-import kotlinx.android.synthetic.main.local_torrent_file_list_item.view.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
                                                   R.menu.add_torrent_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
     companion object {
-        fun setupDownloadDirectoryEdit(fragment: Fragment, savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
-            fragment.apply {
-                download_directory_edit.doAfterTextChanged {
-                    val path = it?.trim()
-                    when {
-                        path.isNullOrEmpty() -> {
-                            download_directory_layout.helperText = null
-                        }
-                        Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                            Rpc.nativeInstance.getFreeSpaceForPath(path.toString())
-                        }
-                        Rpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
-                            Rpc.nativeInstance.getDownloadDirFreeSpace()
-                        }
-                        else -> {
-                            download_directory_layout.helperText = null
-                        }
+        fun setupDownloadDirectoryEdit(binding: DownloadDirectoryEditBinding,
+                                       fragment: Fragment,
+                                       savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
+            val downloadDirectoryEdit = binding.downloadDirectoryEdit
+            val downloadDirectoryLayout = binding.downloadDirectoryLayout
+            downloadDirectoryEdit.doAfterTextChanged {
+                val path = it?.trim()
+                when {
+                    path.isNullOrEmpty() -> {
+                        downloadDirectoryLayout.helperText = null
+                    }
+                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
+                        Rpc.nativeInstance.getFreeSpaceForPath(path.toString())
+                    }
+                    Rpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
+                        Rpc.nativeInstance.getDownloadDirFreeSpace()
+                    }
+                    else -> {
+                        downloadDirectoryLayout.helperText = null
                     }
                 }
-
-                if (savedInstanceState == null) {
-                    download_directory_edit.setText(Rpc.serverSettings.downloadDirectory)
-                }
-
-                val directoriesAdapter = AddTorrentDirectoriesAdapter(download_directory_edit, savedInstanceState)
-                download_directory_edit.setAdapter(directoriesAdapter)
-
-                Rpc.gotDownloadDirFreeSpaceEvent.observe(viewLifecycleOwner) { bytes ->
-                    val text = download_directory_edit.text?.trim()
-                    if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory?.contentEquals(text) == true) {
-                        download_directory_layout.helperText = getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                    }
-                }
-
-                Rpc.gotFreeSpaceForPathEvent.observe(viewLifecycleOwner) { (path, success, bytes) ->
-                    val text = download_directory_edit.text?.trim()
-                    if (!text.isNullOrEmpty() && path.contentEquals(text)) {
-                        download_directory_layout.helperText = if (success) {
-                            getString(R.string.free_space, Utils.formatByteSize(requireContext(), bytes))
-                        } else {
-                            getString(R.string.free_space_error)
-                        }
-                    }
-                }
-
-                return directoriesAdapter
             }
+
+            if (savedInstanceState == null) {
+                downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
+            }
+
+            val directoriesAdapter = AddTorrentDirectoriesAdapter(downloadDirectoryEdit, savedInstanceState)
+            downloadDirectoryEdit.setAdapter(directoriesAdapter)
+
+            Rpc.gotDownloadDirFreeSpaceEvent.observe(fragment.viewLifecycleOwner) { bytes ->
+                val text = downloadDirectoryEdit.text?.trim()
+                if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory?.contentEquals(text) == true) {
+                    downloadDirectoryLayout.helperText = fragment.getString(R.string.free_space, Utils.formatByteSize(fragment.requireContext(), bytes))
+                }
+            }
+
+            Rpc.gotFreeSpaceForPathEvent.observe(fragment.viewLifecycleOwner) { (path, success, bytes) ->
+                val text = downloadDirectoryEdit.text?.trim()
+                if (!text.isNullOrEmpty() && path.contentEquals(text)) {
+                    downloadDirectoryLayout.helperText = if (success) {
+                        fragment.getString(R.string.free_space, Utils.formatByteSize(fragment.requireContext(), bytes))
+                    } else {
+                        fragment.getString(R.string.free_space_error)
+                    }
+                }
+            }
+
+            return directoriesAdapter
         }
     }
+
+    private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
     private var doneMenuItem: MenuItem? = null
     private var pagerAdapter: PagerAdapter? = null
@@ -161,21 +165,21 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
         val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
-        pager.adapter = pagerAdapter
-        TabLayoutMediator(tab_layout, pager) { tab, position ->
+        binding.pager.adapter = pagerAdapter
+        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (done ||
-                    pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
+                    binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
                     findFragment<FilesFragment>()?.adapter?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1
 
             override fun onPageSelected(position: Int) {
@@ -216,13 +220,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         if (infoFragment?.check() == true) {
             val priorities = model.getFilePriorities()
             Rpc.nativeInstance.addTorrentFile(model.fileData,
-                                              infoFragment.download_directory_edit.text.toString(),
+                                              infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                                               priorities.unwantedFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),
                                               priorities.lowPriorityFiles.toIntArray(),
                                               StringMap().apply { putAll(model.renamedFiles) },
-                                              priorityItemEnums[priorityItems.indexOf(infoFragment.priority_view.text.toString())],
-                                              infoFragment.start_downloading_check_box.isChecked)
+                                              priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())],
+                                              infoFragment.binding.startDownloadingCheckBox.isChecked)
             infoFragment.directoriesAdapter?.save()
             done = true
             activity?.onBackPressed()
@@ -239,69 +243,71 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     private fun updateView(parserStatus: AddTorrentFileModel.ParserStatus) {
         val view = this.view ?: return
 
-        if (Rpc.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-            toolbar?.apply {
-                (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
-                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                subtitle = model.torrentName
-            }
-            doneMenuItem?.isVisible = true
-
-            tab_layout.visibility = View.VISIBLE
-            pager.visibility = View.VISIBLE
-
-            placeholder_layout.visibility = View.GONE
-        } else {
-            placeholder.text = if (noPermission) {
-                getString(R.string.storage_permission_error)
-            } else {
-                when (parserStatus) {
-                    AddTorrentFileModel.ParserStatus.Loading -> getString(R.string.loading)
-                    AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
-                    AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
-                    AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
-                    AddTorrentFileModel.ParserStatus.Loaded -> Rpc.statusString
-                    else -> null
+        with(binding) {
+            if (Rpc.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
+                this@AddTorrentFileFragment.toolbar?.apply {
+                    (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                                    AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
+                                    AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                    subtitle = model.torrentName
                 }
-            }
+                doneMenuItem?.isVisible = true
 
-            progress_bar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
-                    (Rpc.status.value == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
-                View.VISIBLE
+                tabLayout.visibility = View.VISIBLE
+                pager.visibility = View.VISIBLE
+
+                placeholderLayout.visibility = View.GONE
             } else {
-                View.GONE
-            }
+                placeholder.text = if (noPermission) {
+                    getString(R.string.storage_permission_error)
+                } else {
+                    when (parserStatus) {
+                        AddTorrentFileModel.ParserStatus.Loading -> getString(R.string.loading)
+                        AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
+                        AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
+                        AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
+                        AddTorrentFileModel.ParserStatus.Loaded -> Rpc.statusString
+                        else -> null
+                    }
+                }
 
-            placeholder_layout.visibility = View.VISIBLE
+                progressBar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
+                        (Rpc.status.value == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
 
-            toolbar?.apply {
-                (layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
-                subtitle = null
-            }
-            doneMenuItem?.isVisible = false
+                placeholderLayout.visibility = View.VISIBLE
 
-            hideKeyboard()
+                this@AddTorrentFileFragment.toolbar?.apply {
+                    (layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
+                    subtitle = null
+                }
+                doneMenuItem?.isVisible = false
 
-            tab_layout.visibility = View.GONE
-            pager.visibility = View.GONE
-            pager.currentItem = 0
-            placeholder.visibility = View.VISIBLE
+                hideKeyboard()
 
-            if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                when (Rpc.status.value) {
-                    RpcStatus.Disconnected -> {
-                        snackbar = view.showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
-                            snackbar = null
-                            Rpc.nativeInstance.connect()
+                tabLayout.visibility = View.GONE
+                pager.visibility = View.GONE
+                pager.currentItem = 0
+                placeholder.visibility = View.VISIBLE
+
+                if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
+                    when (Rpc.status.value) {
+                        RpcStatus.Disconnected -> {
+                            snackbar = view.showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                                snackbar = null
+                                Rpc.nativeInstance.connect()
+                            }
                         }
-                    }
-                    RpcStatus.Connecting -> {
-                        snackbar?.dismiss()
-                        snackbar = null
-                    }
-                    else -> {
+                        RpcStatus.Connecting -> {
+                            snackbar?.dismiss()
+                            snackbar = null
+                        }
+                        else -> {
+                        }
                     }
                 }
             }
@@ -337,15 +343,18 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     }
 
     class InfoFragment : Fragment(R.layout.add_torrent_file_info_fragment) {
+        val binding by viewBinding(AddTorrentFileInfoFragmentBinding::bind)
         var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            priority_view.setText(R.string.normal_priority)
-            priority_view.setAdapter(ArrayDropdownAdapter((requireParentFragment() as AddTorrentFileFragment).priorityItems))
+            with(binding) {
+                priorityView.setText(R.string.normal_priority)
+                priorityView.setAdapter(ArrayDropdownAdapter((requireParentFragment() as AddTorrentFileFragment).priorityItems))
 
-            directoriesAdapter = setupDownloadDirectoryEdit(this, savedInstanceState)
+                directoriesAdapter = setupDownloadDirectoryEdit(downloadDirectoryLayout, this@InfoFragment, savedInstanceState)
 
-            start_downloading_check_box.isChecked = Rpc.serverSettings.startAddedTorrents
+                startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+            }
         }
 
         override fun onSaveInstanceState(outState: Bundle) {
@@ -354,12 +363,14 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
         fun check(): Boolean {
             val ret: Boolean
-            download_directory_layout.error = if (download_directory_edit.text.trimmedLength() == 0) {
-                ret = false
-                getString(R.string.empty_field_error)
-            } else {
-                ret = true
-                null
+            with(binding.downloadDirectoryLayout) {
+                downloadDirectoryLayout.error = if (downloadDirectoryEdit.text.trimmedLength() == 0) {
+                    ret = false
+                    getString(R.string.empty_field_error)
+                } else {
+                    ret = true
+                    null
+                }
             }
             return ret
         }
@@ -387,11 +398,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             val adapter = Adapter(requireActivity() as NavigationActivity, model.rootDirectory)
             this.adapter = adapter
 
-            files_view.adapter = adapter
-            files_view.layoutManager = LinearLayoutManager(activity)
-            files_view.addItemDecoration(DividerItemDecoration(activity,
-                    DividerItemDecoration.VERTICAL))
-            files_view.itemAnimator = null
+            AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
+                this.adapter = adapter
+                layoutManager = LinearLayoutManager(activity)
+                addItemDecoration(DividerItemDecoration(activity,
+                                                        DividerItemDecoration.VERTICAL))
+                itemAnimator = null
+            }
 
             model.status.observe(viewLifecycleOwner) {
                 adapter.restoreInstanceState(this.savedInstanceState)
@@ -415,9 +428,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 if (viewType == TYPE_ITEM) {
                     return ItemHolder(this,
                                       selector,
-                                      LayoutInflater.from(parent.context).inflate(R.layout.local_torrent_file_list_item,
-                                                                                  parent,
-                                                                                  false))
+                                      LocalTorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
+                                                                              parent,
+                                                                              false))
                 }
                 return super.onCreateViewHolder(parent, viewType)
             }
@@ -425,7 +438,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
                 super.onBindViewHolder(holder, position)
                 if (holder.itemViewType == TYPE_ITEM) {
-                    (holder as ItemHolder).sizeTextView.text =
+                    (holder as ItemHolder).binding.sizeTextView.text =
                             Utils.formatByteSize(activity, holder.item.size)
                 }
             }
@@ -436,9 +449,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             private class ItemHolder(adapter: BaseTorrentFilesAdapter,
                                      selector: Selector<Item, Int>,
-                                     itemView: View) : BaseItemHolder(adapter, selector, itemView) {
-                val sizeTextView = itemView.size_text_view!!
-            }
+                                     val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root)
         }
     }
 }
