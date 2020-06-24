@@ -56,19 +56,16 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
+import org.equeim.tremotesf.databinding.SetLocationDialogBinding
+import org.equeim.tremotesf.databinding.TorrentListItemBinding
+import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.createTextFieldDialog
 import org.equeim.tremotesf.utils.safeNavigate
-
-import kotlinx.android.synthetic.main.download_directory_edit.*
-import kotlinx.android.synthetic.main.remove_torrents_dialog.*
-import kotlinx.android.synthetic.main.set_location_dialog.*
-import kotlinx.android.synthetic.main.torrent_list_item.view.*
-import kotlinx.android.synthetic.main.torrent_list_item_compact.view.*
-import kotlinx.android.synthetic.main.torrents_list_fragment.*
 
 
 private const val INSTANCE_STATE = "org.equeim.tremotesf.mainactivity.TorrentsAdapter"
@@ -198,7 +195,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             if (value != field) {
                 field = value
                 updateListContent()
-                fragment.torrents_view.scrollToPosition(0)
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -207,7 +204,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             if (value != field) {
                 field = value
                 updateListContent()
-                fragment.torrents_view.scrollToPosition(0)
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -216,7 +213,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             if (value != field) {
                 field = value
                 updateListContent()
-                fragment.torrents_view.scrollToPosition(0)
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -225,7 +222,7 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
             if (value != field) {
                 field = value
                 updateListContent()
-                fragment.torrents_view.scrollToPosition(0)
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -237,15 +234,15 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         if (compactView) {
             return TorrentsViewHolderCompact(selector,
                                              multilineName,
-                                             LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item_compact,
-                                                                                         parent,
-                                                                                         false))
+                                             TorrentListItemCompactBinding.inflate(LayoutInflater.from(parent.context),
+                                                                                   parent,
+                                                                                   false))
         }
         return TorrentsViewHolder(selector,
                                   multilineName,
-                                  LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item,
-                                                                              parent,
-                                                                             false))
+                                  TorrentListItemBinding.inflate(LayoutInflater.from(parent.context),
+                                                                 parent,
+                                                                 false))
     }
 
     override fun onBindViewHolder(holder: BaseTorrentsViewHolder, position: Int) {
@@ -333,48 +330,43 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
 
     class TorrentsViewHolder(selector: Selector<Torrent, Int>,
                              multilineName: Boolean,
-                             itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
-        private val sizeTextView = itemView.size_text_view!!
-        private val etaTextView = itemView.eta_text_view!!
-        private val progressBar = itemView.progress_bar!!
-        private val statusTextView = itemView.status_text_view!!
-
+                             private val binding: TorrentListItemBinding) : BaseTorrentsViewHolder(selector, multilineName, binding.root) {
         init {
-            Utils.setProgressBarColor(progressBar)
+            Utils.setProgressBarColor(binding.progressBar)
         }
 
         override fun update(torrent: Torrent) {
             super.update(torrent)
 
-            sizeTextView.text = if (torrent.isFinished) {
-                context.getString(R.string.uploaded_string,
-                                   Utils.formatByteSize(context, torrent.sizeWhenDone),
-                                   Utils.formatByteSize(context, torrent.totalUploaded))
-            } else {
-                context.getString(R.string.completed_string,
-                                   Utils.formatByteSize(context, torrent.completedSize),
-                                   Utils.formatByteSize(context, torrent.sizeWhenDone),
-                                   DecimalFormats.generic.format(torrent.percentDone * 100))
+            with(binding) {
+                sizeTextView.text = if (torrent.isFinished) {
+                    context.getString(R.string.uploaded_string,
+                                      Utils.formatByteSize(context, torrent.sizeWhenDone),
+                                      Utils.formatByteSize(context, torrent.totalUploaded))
+                } else {
+                    context.getString(R.string.completed_string,
+                                      Utils.formatByteSize(context, torrent.completedSize),
+                                      Utils.formatByteSize(context, torrent.sizeWhenDone),
+                                      DecimalFormats.generic.format(torrent.percentDone * 100))
+                }
+                etaTextView.text = Utils.formatDuration(context, torrent.eta)
+
+                progressBar.progress = (torrent.percentDone * 100).toInt()
+                downloadSpeedTextView.text = context.getString(R.string.download_speed_string,
+                                                               Utils.formatByteSpeed(context,
+                                                                                     torrent.downloadSpeed))
+                uploadSpeedTextView.text = context.getString(R.string.upload_speed_string,
+                                                             Utils.formatByteSpeed(context,
+                                                                                   torrent.uploadSpeed))
+
+                statusTextView.text = torrent.statusString
             }
-            etaTextView.text = Utils.formatDuration(context, torrent.eta)
-
-            progressBar.progress = (torrent.percentDone * 100).toInt()
-            downloadSpeedTextView.text = context.getString(R.string.download_speed_string,
-                                                            Utils.formatByteSpeed(context,
-                                                                                  torrent.downloadSpeed))
-            uploadSpeedTextView.text = context.getString(R.string.upload_speed_string,
-                                                          Utils.formatByteSpeed(context,
-                                                                                torrent.uploadSpeed))
-
-            statusTextView.text = torrent.statusString
         }
     }
 
     class TorrentsViewHolderCompact(selector: Selector<Torrent, Int>,
                                     multilineName: Boolean,
-                                    itemView: View) : BaseTorrentsViewHolder(selector, multilineName, itemView) {
-        private val progressTextView = itemView.progress_text_view!!
-
+                                    private val binding: TorrentListItemCompactBinding) : BaseTorrentsViewHolder(selector, multilineName, binding.root) {
         override fun update(torrent: Torrent) {
             super.update(torrent)
 
@@ -394,8 +386,8 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                                                          torrent.uploadSpeed))
             }
 
-            progressTextView.text = context.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
-                                                      DecimalFormats.generic.format(torrent.percentDone * 100))
+            binding.progressTextView.text = context.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
+                                                              DecimalFormats.generic.format(torrent.percentDone * 100))
         }
     }
 
@@ -536,21 +528,22 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return createTextFieldDialog(requireContext(),
                                          null,
-                                         R.layout.set_location_dialog,
+                                         SetLocationDialogBinding::inflate,
                                          R.id.download_directory_edit,
+                                         R.id.download_directory_layout,
                                          getString(R.string.location),
                                          InputType.TYPE_TEXT_VARIATION_URI,
                                          requireArguments().getString(LOCATION),
                                          {
-                                             requireDialog().download_directory_edit.let { edit ->
+                                             it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
                                                  directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
                                                  edit.setAdapter(directoriesAdapter)
                                              }
                                          },
                                          {
                                              Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
-                                                                                    requireDialog().download_directory_edit.text.toString(),
-                                                                                    requireDialog().move_files_check_box.isChecked)
+                                                                                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+                                                                                    it.moveFilesCheckBox.isChecked)
                                              directoriesAdapter?.save()
                                          })
         }
@@ -569,16 +562,20 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val ids = requireArguments().getIntArray(TORRENT_IDS)!!
 
-            val dialog = MaterialAlertDialogBuilder(requireContext())
+            val builder = MaterialAlertDialogBuilder(requireContext());
+            val binding = RemoveTorrentsDialogBinding.inflate(LayoutInflater.from(builder.context))
+
+            binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles
+
+            return builder
                     .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
                                 else resources.getQuantityString(R.plurals.remove_torrents_message,
                                                                  ids.size,
                                                                  ids.size))
-                    .setView(R.layout.remove_torrents_dialog)
+                    .setView(binding.root)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        Rpc.nativeInstance.removeTorrents(ids,
-                                                    requireDialog().delete_files_check_box.isChecked)
+                        Rpc.nativeInstance.removeTorrents(ids, binding.deleteFilesCheckBox.isChecked)
                         activity?.actionMode?.finish()
                         if (requireArguments().getBoolean(POP_BACK_STACK)) {
                             val id = (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
@@ -594,12 +591,6 @@ class TorrentsAdapter(activity: AppCompatActivity, private val fragment: Torrent
                         }
                     }
                     .create()
-
-            dialog.setOnShowListener {
-                dialog.delete_files_check_box.isChecked = Settings.deleteFiles
-            }
-
-            return dialog
         }
     }
 }

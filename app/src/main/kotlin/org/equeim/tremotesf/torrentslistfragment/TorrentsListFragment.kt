@@ -58,13 +58,13 @@ import org.equeim.tremotesf.ServerStats
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.popDialog
 import org.equeim.tremotesf.utils.showSnackbar
-
-import kotlinx.android.synthetic.main.torrents_list_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
@@ -77,6 +77,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
+    val binding by viewBinding(TorrentsListFragmentBinding::bind)
     var torrentsAdapter: TorrentsAdapter? = null
         private set
 
@@ -96,10 +97,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         setupDrawerListeners()
 
-        torrents_view.adapter = torrentsAdapter
-        torrents_view.layoutManager = LinearLayoutManager(requireContext())
-        torrents_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        (torrents_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        binding.torrentsView.apply {
+            adapter = torrentsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        }
 
         Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
@@ -376,13 +379,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun updatePlaceholder() {
-        placeholder.text = when {
+        binding.placeholder.text = when {
             torrentsAdapter?.itemCount ?: 0 != 0 -> null
             Rpc.isConnected -> getString(R.string.no_torrents)
             else -> Rpc.statusString
         }
 
-        progress_bar.visibility = if (Rpc.status.value == RpcStatus.Connecting && torrentsAdapter?.itemCount ?: 0 == 0) {
+        binding.progressBar.visibility = if (Rpc.status.value == RpcStatus.Connecting && torrentsAdapter?.itemCount ?: 0 == 0) {
             View.VISIBLE
         } else {
             View.GONE

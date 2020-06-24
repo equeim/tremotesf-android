@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/dialog_horizontal_padding"
     android:paddingTop="@dimen/vertical_edge_padding">
 
-    <include layout="@layout/download_directory_edit"/>
+    <include layout="@layout/download_directory_edit" android:id="@+id/download_directory_layout"/>
 
     <CheckBox
         android:id="@+id/move_files_check_box"

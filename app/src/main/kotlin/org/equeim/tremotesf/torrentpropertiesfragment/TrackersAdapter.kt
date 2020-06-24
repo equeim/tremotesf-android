@@ -39,6 +39,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.viewbinding.ViewBinding
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -48,6 +49,7 @@ import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.createTextFieldDialog
@@ -232,17 +234,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             val trackerId = requireArguments().getInt(TRACKER_ID)
             val addingTrackers = (trackerId == -1)
 
-            return createTextFieldDialog(requireContext(),
-                                         if (addingTrackers) R.string.add_trackers else R.string.edit_tracker,
-                                         if (addingTrackers) R.layout.add_trackers_dialog else null,
-                                         null,
-                                         getString(if (addingTrackers) R.string.trackers_announce_urls else R.string.tracker_announce_url),
-                                         InputType.TYPE_TEXT_VARIATION_URI,
-                                         requireArguments().getString(ANNOUNCE),
-                                         null) {
+            val onAccepted = { textField: TextView ->
                 val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
                 if (torrent != null) {
-                    val textField = requireDialog().findViewById<TextView>(R.id.text_field)
                     textField.text?.let { text ->
                         if (addingTrackers) {
                             torrent.addTrackers(text.lines().filter(String::isNotEmpty))
@@ -251,6 +245,28 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                         }
                     }
                 }
+            }
+
+            if (addingTrackers) {
+                return createTextFieldDialog(requireContext(),
+                                             R.string.add_trackers,
+                                             AddTrackersDialogBinding::inflate,
+                                             R.id.text_field,
+                                             R.id.text_field_layout,
+                                             getString(R.string.trackers_announce_urls),
+                                             InputType.TYPE_TEXT_VARIATION_URI,
+                                             requireArguments().getString(ANNOUNCE),
+                                             null) {
+                    onAccepted(it.textField)
+                }
+            }
+            return createTextFieldDialog(requireContext(),
+                                         R.string.edit_tracker,
+                                         getString(R.string.tracker_announce_url),
+                                         InputType.TYPE_TEXT_VARIATION_URI,
+                                         requireArguments().getString(ANNOUNCE),
+                                         null) {
+                onAccepted(it.textField)
             }
         }
     }

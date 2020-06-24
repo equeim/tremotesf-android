@@ -25,8 +25,6 @@ import android.text.InputType
 
 import org.equeim.tremotesf.utils.createTextFieldDialog
 
-import kotlinx.android.synthetic.main.text_field_dialog.*
-
 class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
     companion object {
         const val TORRENT_ID = "torrentId"
@@ -38,15 +36,13 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
         val fileName = requireArguments().getString(FILE_NAME)
         return createTextFieldDialog(requireContext(),
                                      null,
-                                     null,
-                                     null,
                                      getString(R.string.file_name),
                                      InputType.TYPE_TEXT_VARIATION_URI,
                                      fileName,
                                      null) {
             val torrentId = requireArguments().getInt(TORRENT_ID)
             val path = requireArguments().getString(FILE_PATH)!!
-            val newName = requireDialog().text_field.text?.toString() ?: ""
+            val newName = it.textField.text?.toString() ?: ""
             (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(torrentId, path, newName)
             activity?.actionMode?.finish()
         }
