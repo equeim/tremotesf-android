@@ -27,6 +27,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
@@ -36,8 +38,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.TristateCheckbox
-
-import kotlinx.android.synthetic.main.torrent_file_list_item.view.*
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
@@ -99,24 +99,8 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder.itemViewType == TYPE_ITEM) {
-            holder as BaseItemHolder
-
             val item = currentItems[if (hasHeaderItem) position - 1 else position]
-
-            holder.item = item
-
-            holder.iconView.setImageLevel(if (item is Directory) 0 else 1)
-
-            holder.nameTextView.text = item.name
-
-            holder.checkBox.state = when (item.wantedState) {
-                Item.WantedState.Wanted -> TristateCheckbox.State.Checked
-                Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
-                Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
-            }
-            holder.checkBox.isEnabled = (selector.actionMode == null)
-
-            holder.updateSelectedBackground()
+            (holder as BaseItemHolder).update(item)
         }
     }
 
@@ -286,9 +270,9 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             itemView) {
         override lateinit var item: Item
 
-        val iconView = itemView.icon_view!!
-        val nameTextView = itemView.name_text_view!!
-        val checkBox = itemView.check_box!!
+        private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
+        private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
+        private val checkBox: TristateCheckbox = itemView.findViewById(R.id.check_box)
 
         init {
             checkBox.setOnClickListener {
@@ -304,6 +288,23 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             } else {
                 super.onClick(view)
             }
+        }
+
+        fun update(item: Item) {
+            this.item = item
+
+            iconView.setImageLevel(if (item is Directory) 0 else 1)
+
+            nameTextView.text = item.name
+
+            checkBox.state = when (item.wantedState) {
+                Item.WantedState.Wanted -> TristateCheckbox.State.Checked
+                Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
+                Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
+            }
+            checkBox.isEnabled = (selector.actionMode == null)
+
+            updateSelectedBackground()
         }
     }
 
