@@ -37,11 +37,11 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
+import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
-
-import kotlinx.android.synthetic.main.donations_fragment_fdroid.*
-import kotlinx.android.synthetic.main.donations_fragment_google.*
 import org.equeim.tremotesf.utils.showSnackbar
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
@@ -55,34 +55,41 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
 
     private val model: Model by viewModels()
 
+    private val bindingFdroid by viewBinding(DonationsFragmentFdroidBinding::bind)
+    private val bindingGoogle by viewBinding(DonationsFragmentGoogleBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (BuildConfig.DONATIONS_GOOGLE) {
             model.billing?.isSetUp?.observe(viewLifecycleOwner, ::onBillingSetup)
         } else {
-            paypal_donate_button.setOnClickListener { donatePayPal() }
-            yandex_donate_button.setOnClickListener { donateYandex() }
+            with(bindingFdroid) {
+                paypalDonateButton.setOnClickListener { donatePayPal() }
+                yandexDonateButton.setOnClickListener { donateYandex() }
+            }
         }
     }
 
     private fun onBillingSetup(isSetUp: Boolean) {
         val billing = model.billing ?: return
-        if (isSetUp) {
-            val items = if (BuildConfig.DEBUG) {
-                billing.skus.map { "${it.sku}: ${it.price}" }
-            } else {
-                billing.skus.map(IGoogleBillingHelper.SkuData::price)
+        with(bindingGoogle) {
+            if (isSetUp) {
+                val items = if (BuildConfig.DEBUG) {
+                    billing.skus.map { "${it.sku}: ${it.price}" }
+                } else {
+                    billing.skus.map(IGoogleBillingHelper.SkuData::price)
+                }
+                skusView.setAdapter(ArrayDropdownAdapter(items))
+                if (items.isNotEmpty()) {
+                    skusView.setText(items.first())
+                }
+                donateButton.setOnClickListener {
+                    donateGoogle(items.indexOf(skusView.text.toString()))
+                }
+                billing.purchasesUpdatedEvent.observe(viewLifecycleOwner, ::onBillingPurchasesUpdated)
             }
-            skus_view.setAdapter(ArrayDropdownAdapter(items))
-            if (items.isNotEmpty()) {
-                skus_view.setText(items.first())
-            }
-            donate_button.setOnClickListener {
-                donateGoogle(items.indexOf(skus_view.text.toString()))
-            }
-            billing.purchasesUpdatedEvent.observe(viewLifecycleOwner, ::onBillingPurchasesUpdated)
+            skusViewLayout.isEnabled = isSetUp
+            donateButton.isEnabled = isSetUp
         }
-        skus_view_layout.isEnabled = isSetUp
-        donate_button.isEnabled = isSetUp
     }
 
     private fun donateGoogle(skuIndex: Int) {
