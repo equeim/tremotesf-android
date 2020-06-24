@@ -47,15 +47,17 @@ import org.equeim.tremotesf.Selector
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.StringSelector
+import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
+import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
+import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.safeNavigate
-
-import kotlinx.android.synthetic.main.connection_settings_fragment.*
-import kotlinx.android.synthetic.main.server_list_item.view.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
                                                       R.string.connection_settings) {
+    private val binding by viewBinding(ConnectionSettingsFragmentBinding::bind)
     var adapter: ServersAdapter? = null
 
     private var savedInstanceState: Bundle? = null
@@ -70,24 +72,27 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
         val adapter = ServersAdapter(requireActivity() as AppCompatActivity)
         this.adapter = adapter
-        servers_view.adapter = adapter
-        servers_view.layoutManager = LinearLayoutManager(requireContext())
-        servers_view.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        (servers_view.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        fab.setOnClickListener {
-            navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
-        }
+        with (binding) {
+            serversView.adapter = adapter
+            serversView.layoutManager = LinearLayoutManager(requireContext())
+            serversView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-        servers_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    fab.hide()
-                } else if (dy < 0) {
-                    fab.show()
-                }
+            fab.setOnClickListener {
+                navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
             }
-        })
+
+            serversView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy > 0) {
+                        fab.hide()
+                    } else if (dy < 0) {
+                        fab.show()
+                    }
+                }
+            })
+        }
 
         Servers.servers.observe(viewLifecycleOwner, ::update)
     }
@@ -104,7 +109,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 savedInstanceState = null
             }
         }
-        placeholder.visibility = if (adapter?.itemCount == 0) {
+        binding.placeholder.visibility = if (adapter?.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE
@@ -133,16 +138,18 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(this,
                               selector,
-                              LayoutInflater.from(parent.context).inflate(R.layout.server_list_item,
-                                                                          parent,
-                                                                          false))
+                              ServerListItemBinding.inflate(LayoutInflater.from(parent.context),
+                                                            parent,
+                                                            false))
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val server = servers[position]
             holder.item = server
-            holder.radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
-            holder.textView.text = server.name
+            with(holder.binding) {
+                radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
+                textView.text = server.name
+            }
             holder.updateSelectedBackground()
         }
 
@@ -154,14 +161,11 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
         class ViewHolder(adapter: ServersAdapter,
                          selector: Selector<Server, String>,
-                         itemView: View) : Selector.ViewHolder<Server>(selector, itemView) {
+                         val binding: ServerListItemBinding) : Selector.ViewHolder<Server>(selector, binding.root) {
             override lateinit var item: Server
 
-            val radioButton = itemView.radio_button!!
-            val textView = itemView.text_view!!
-
             init {
-                radioButton.setOnClickListener {
+                binding.radioButton.setOnClickListener {
                     if (item.name != Servers.currentServer.value?.name) {
                         Servers.currentServer.value = item
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)

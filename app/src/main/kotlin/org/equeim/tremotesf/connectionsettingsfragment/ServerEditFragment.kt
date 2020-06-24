@@ -39,19 +39,13 @@ import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
+import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
+import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
+import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.IntFilter
 import org.equeim.tremotesf.utils.textInputLayout
-
-import kotlinx.android.synthetic.main.server_edit_certificates_fragment.*
-import kotlinx.android.synthetic.main.server_edit_fragment.*
-import kotlinx.android.synthetic.main.server_edit_fragment.address_edit
-import kotlinx.android.synthetic.main.server_edit_fragment.password_edit
-import kotlinx.android.synthetic.main.server_edit_fragment.password_edit_layout
-import kotlinx.android.synthetic.main.server_edit_fragment.port_edit
-import kotlinx.android.synthetic.main.server_edit_fragment.username_edit
-import kotlinx.android.synthetic.main.server_edit_fragment.username_edit_layout
-import kotlinx.android.synthetic.main.server_edit_proxy_fragment.*
+import org.equeim.tremotesf.utils.viewBinding
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
@@ -63,53 +57,58 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
     private lateinit var model: Model
 
+    private val binding by viewBinding(ServerEditFragmentBinding::bind)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        port_edit.filters = arrayOf(IntFilter(Server.portRange))
+        with(binding) {
+            portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
-        proxy_settings_button.setOnClickListener {
-            navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
+            proxySettingsButton.setOnClickListener {
+                navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
+            }
+
+            httpsCheckBox.isChecked = false
+
+            certificatedButton.isEnabled = false
+            certificatedButton.setOnClickListener {
+                navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
+            }
+            httpsCheckBox.setOnCheckedChangeListener { _, checked ->
+                certificatedButton.isEnabled = checked
+            }
+
+            authenticationCheckBox.isChecked = false
+
+            usernameEditLayout.isEnabled = false
+            passwordEditLayout.isEnabled = false
+            authenticationCheckBox.setOnCheckedChangeListener { _, checked ->
+                usernameEditLayout.isEnabled = checked
+                passwordEditLayout.isEnabled = checked
+            }
+
+            updateIntervalEdit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
+            timeoutEdit.filters = arrayOf(IntFilter(Server.timeoutRange))
         }
-
-        https_check_box.isChecked = false
-
-        certificated_button.isEnabled = false
-        certificated_button.setOnClickListener {
-            navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
-        }
-        https_check_box.setOnCheckedChangeListener { _, checked ->
-            certificated_button.isEnabled = checked
-        }
-
-        authentication_check_box.isChecked = false
-
-        username_edit_layout.isEnabled = false
-        password_edit_layout.isEnabled = false
-        authentication_check_box.setOnCheckedChangeListener { _, checked ->
-            username_edit_layout.isEnabled = checked
-            password_edit_layout.isEnabled = checked
-        }
-
-        update_interval_edit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
-        timeout_edit.filters = arrayOf(IntFilter(Server.timeoutRange))
 
         model = Model.from(this)
 
         setupToolbar()
 
         if (savedInstanceState == null) {
-            with(model.server) {
-                name_edit.setText(name)
-                address_edit.setText(address)
-                port_edit.setText(port.toString())
-                api_path_edit.setText(apiPath)
-                https_check_box.isChecked = httpsEnabled
-                authentication_check_box.isChecked = authentication
-                username_edit.setText(username)
-                password_edit.setText(password)
-                update_interval_edit.setText(updateInterval.toString())
-                timeout_edit.setText(timeout.toString())
+            with(binding) {
+                val server = model.server
+                nameEdit.setText(server.name)
+                addressEdit.setText(server.address)
+                portEdit.setText(server.port.toString())
+                apiPathEdit.setText(server.apiPath)
+                httpsCheckBox.isChecked = server.httpsEnabled
+                authenticationCheckBox.isChecked = server.authentication
+                usernameEdit.setText(server.username)
+                passwordEdit.setText(server.password)
+                updateIntervalEdit.setText(server.updateInterval.toString())
+                timeoutEdit.setText(server.timeout.toString())
             }
         }
     }
@@ -132,26 +131,28 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             ret
         }
 
-        val nameOk = checkLength(name_edit)
-        val addressOk = checkLength(address_edit)
-        val portOk = checkLength(port_edit)
-        val apiPathOk = checkLength(api_path_edit)
-        val updateIntervalOk = checkLength(update_interval_edit)
-        val timeoutOk = checkLength(timeout_edit)
+        with(binding) {
+            val nameOk = checkLength(nameEdit)
+            val addressOk = checkLength(addressEdit)
+            val portOk = checkLength(portEdit)
+            val apiPathOk = checkLength(apiPathEdit)
+            val updateIntervalOk = checkLength(updateIntervalEdit)
+            val timeoutOk = checkLength(timeoutEdit)
 
-        val nameEditText = name_edit.text?.toString() ?: ""
+            val nameEditText = nameEdit.text?.toString() ?: ""
 
-        if (nameOk &&
-                addressOk &&
-                portOk &&
-                apiPathOk &&
-                updateIntervalOk &&
-                timeoutOk) {
-            if (nameEditText != model.existingServer?.name &&
-                    Servers.servers.value.find { it.name == nameEditText } != null) {
-                navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
-            } else {
-                save()
+            if (nameOk &&
+                    addressOk &&
+                    portOk &&
+                    apiPathOk &&
+                    updateIntervalOk &&
+                    timeoutOk) {
+                if (nameEditText != model.existingServer?.name &&
+                        Servers.servers.value.find { it.name == nameEditText } != null) {
+                    navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
+                } else {
+                    save()
+                }
             }
         }
 
@@ -170,17 +171,19 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
     }
 
     private fun save() {
-        model.server.apply {
-            name = name_edit.text?.toString()?.trim() ?: ""
-            address = address_edit.text?.toString()?.trim() ?: ""
-            port = port_edit.text?.toString()?.toInt() ?: 0
-            apiPath = api_path_edit.text?.toString()?.trim() ?: ""
-            httpsEnabled = https_check_box.isChecked
-            authentication = authentication_check_box.isChecked
-            username = username_edit.text?.toString()?.trim() ?: ""
-            password = password_edit.text?.toString()?.trim() ?: ""
-            updateInterval = update_interval_edit.text?.toString()?.toInt() ?: 0
-            timeout = timeout_edit.text?.toString()?.toInt() ?: 0
+        with(binding) {
+            model.server.apply {
+                name = nameEdit.text?.toString()?.trim() ?: ""
+                address = addressEdit.text?.toString()?.trim() ?: ""
+                port = portEdit.text?.toString()?.toInt() ?: 0
+                apiPath = apiPathEdit.text?.toString()?.trim() ?: ""
+                httpsEnabled = httpsCheckBox.isChecked
+                authentication = authenticationCheckBox.isChecked
+                username = usernameEdit.text?.toString()?.trim() ?: ""
+                password = passwordEdit.text?.toString()?.trim() ?: ""
+                updateInterval = updateIntervalEdit.text?.toString()?.toInt() ?: 0
+                timeout = timeoutEdit.text?.toString()?.toInt() ?: 0
+            }
         }
 
         model.existingServer.let { existing ->
@@ -231,33 +234,41 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                                                     R.string.certificates) {
         private lateinit var model: Model
 
+        private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
+
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            self_signed_certificate_check_box.setOnCheckedChangeListener { _, checked ->
-                self_signed_certificate_layout.isEnabled = checked
-            }
-            self_signed_certificate_layout.isEnabled = false
-            client_certificate_check_box.setOnCheckedChangeListener { _, checked ->
-                client_certificate_layout.isEnabled = checked
-            }
-            client_certificate_layout.isEnabled = false
 
             model = Model.from(this)
-            with(model.server) {
-                self_signed_certificate_check_box.isChecked = selfSignedCertificateEnabled
-                self_signed_certificate_edit.setText(selfSignedCertificate)
-                client_certificate_check_box.isChecked = clientCertificateEnabled
-                client_certificate_edit.setText(clientCertificate)
+
+            with(binding) {
+                selfSignedCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
+                    selfSignedCertificateLayout.isEnabled = checked
+                }
+                selfSignedCertificateLayout.isEnabled = false
+                clientCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
+                    clientCertificateLayout.isEnabled = checked
+                }
+                clientCertificateLayout.isEnabled = false
+
+                with(model.server) {
+                    selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
+                    selfSignedCertificateEdit.setText(selfSignedCertificate)
+                    clientCertificateCheckBox.isChecked = clientCertificateEnabled
+                    clientCertificateEdit.setText(clientCertificate)
+                }
             }
         }
 
         override fun onNavigatedFrom() {
             if (view != null) {
-                model.server.apply {
-                    selfSignedCertificateEnabled = self_signed_certificate_check_box.isChecked
-                    selfSignedCertificate = self_signed_certificate_edit.text?.toString() ?: ""
-                    clientCertificateEnabled = client_certificate_check_box.isChecked
-                    clientCertificate = client_certificate_edit.text?.toString() ?: ""
+                with(binding) {
+                    model.server.apply {
+                        selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked
+                        selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: ""
+                        clientCertificateEnabled = clientCertificateCheckBox.isChecked
+                        clientCertificate = clientCertificateEdit.text?.toString() ?: ""
+                    }
                 }
             }
         }
@@ -275,48 +286,60 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         private lateinit var model: Model
         private lateinit var proxyTypeItemValues: Array<String>
 
+        private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
+        }
+
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-
-            proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
-            proxy_type_view.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
-            proxy_type_view.setOnItemClickListener { _, _, position, _ ->
-                update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
-            }
-
-            port_edit.filters = arrayOf(IntFilter(Server.portRange))
-
             model = Model.from(this)
-            with(model.server) {
-                proxy_type_view.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
-                address_edit.setText(proxyHostname)
-                port_edit.setText(proxyPort.toString())
-                username_edit.setText(proxyUser)
-                password_edit.setText(proxyPassword)
 
-                if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
-                    update(false)
+            with(binding) {
+                proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
+                proxyTypeView.setOnItemClickListener { _, _, position, _ ->
+                    update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
+                }
+
+                portEdit.filters = arrayOf(IntFilter(Server.portRange))
+
+                with(model.server) {
+                    proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
+                    addressEdit.setText(proxyHostname)
+                    portEdit.setText(proxyPort.toString())
+                    usernameEdit.setText(proxyUser)
+                    passwordEdit.setText(proxyPassword)
+
+                    if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                        update(false)
+                    }
                 }
             }
         }
 
         override fun onNavigatedFrom() {
             if (view != null) {
-                model.server.apply {
-                    proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxy_type_view.text.toString())])
-                    proxyHostname = address_edit.text?.toString() ?: ""
-                    proxyPort = port_edit.text?.toString()?.toInt() ?: 0
-                    proxyUser = username_edit.text?.toString() ?: ""
-                    proxyPassword = password_edit.text?.toString() ?: ""
+                with(binding) {
+                    model.server.apply {
+                        proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())])
+                        proxyHostname = addressEdit.text?.toString() ?: ""
+                        proxyPort = portEdit.text?.toString()?.toInt() ?: 0
+                        proxyUser = usernameEdit.text?.toString() ?: ""
+                        proxyPassword = passwordEdit.text?.toString() ?: ""
+                    }
                 }
             }
         }
 
         private fun update(enabled: Boolean) {
-            address_edit_layout.isEnabled = enabled
-            port_edit_layout.isEnabled = enabled
-            username_edit_layout.isEnabled = enabled
-            password_edit_layout.isEnabled = enabled
+            with(binding) {
+                addressEditLayout.isEnabled = enabled
+                portEditLayout.isEnabled = enabled
+                usernameEditLayout.isEnabled = enabled
+                passwordEditLayout.isEnabled = enabled
+            }
         }
     }
 }
