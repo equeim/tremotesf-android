@@ -3,12 +3,11 @@
 
 #include <unordered_map>
 
-#include "rpc.h"
-#include "serversettings.h"
-#include "serverstats.h"
-#include "torrent.h"
-
-#include "stdutils.h"
+#include "../libtremotesf/rpc.h"
+#include "../libtremotesf/serversettings.h"
+#include "../libtremotesf/serverstats.h"
+#include "../libtremotesf/stdutils.h"
+#include "../libtremotesf/torrent.h"
 
 namespace libtremotesf
 {

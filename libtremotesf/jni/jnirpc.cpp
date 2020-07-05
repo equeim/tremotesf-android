@@ -8,9 +8,6 @@
 
 #include <jni.h>
 
-#include "rpc.h"
-#include "serverstats.h"
-
 Q_DECLARE_METATYPE(libtremotesf::Server)
 Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 

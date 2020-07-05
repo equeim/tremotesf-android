@@ -1,10 +1,10 @@
 %module(directors="1") libtremotesf
 %{
-#include "../rpc.h"
-#include "../torrent.h"
-#include "../tracker.h"
-#include "../serverstats.h"
-#include "../serversettings.h"
+#include "../libtremotesf/rpc.h"
+#include "../libtremotesf/torrent.h"
+#include "../libtremotesf/tracker.h"
+#include "../libtremotesf/serverstats.h"
+#include "../libtremotesf/serversettings.h"
 #include "jnirpc.h"
 %}
 
@@ -78,17 +78,17 @@ namespace libtremotesf
 
 %template(IntVector) std::vector<int>;
 
-%include "../peer.h"
-%include "../torrentfile.h"
-%include "../tracker.h"
-%include "../torrent.h"
+%include "../libtremotesf/peer.h"
+%include "../libtremotesf/torrentfile.h"
+%include "../libtremotesf/tracker.h"
+%include "../libtremotesf/torrent.h"
 
 %mutable;
-%include "../rpc.h"
+%include "../libtremotesf/rpc.h"
 %immutable;
 
-%include "../serversettings.h"
-%include "../serverstats.h"
+%include "../libtremotesf/serversettings.h"
+%include "../libtremotesf/serverstats.h"
 
 %feature("director") libtremotesf::JniRpc;
 %include "jnirpc.h"
