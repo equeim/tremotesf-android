@@ -32,7 +32,6 @@ import android.view.View
 import android.widget.Checkable
 
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.lifecycle.observe
@@ -92,7 +91,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onViewCreated(view, savedInstanceState)
         setupMenuItems()
 
-        val torrentsAdapter = TorrentsAdapter(requireActivity() as AppCompatActivity, this)
+        val torrentsAdapter = TorrentsAdapter(this)
         this.torrentsAdapter = torrentsAdapter
 
         setupDrawerListeners()
@@ -221,7 +220,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         torrentsAdapter?.apply {
             restoreInstanceState(savedInstanceState)
             update()
-            selector.restoreInstanceState(savedInstanceState)
         }
     }
 
@@ -238,11 +236,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        torrentsAdapter?.apply {
-            saveInstanceState(outState)
-            selector.saveInstanceState(outState)
-        }
-
+        torrentsAdapter?.saveInstanceState(outState)
         outState.putBoolean(NAVIGATED_FROM_KEY, navigatedFrom)
     }
 
@@ -316,7 +310,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             if (Rpc.isConnected) {
                 menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
-                torrentsAdapter?.selector?.actionMode?.finish()
+                requiredActivity.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
                 navController.popDialog()
             }

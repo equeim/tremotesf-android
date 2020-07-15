@@ -43,7 +43,7 @@ import org.equeim.tremotesf.utils.TristateCheckbox
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
 abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
-                                       activity: AppCompatActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                       private val activity: AppCompatActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -74,12 +74,17 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
     }
 
-    val selector = IntSelector(activity,
-                               ActionModeCallback(),
-                               this,
-                               currentItems,
-                               Item::row,
-                               R.plurals.files_selected)
+    lateinit var selector: IntSelector
+        private set
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        selector = IntSelector(activity,
+                               ::ActionModeCallback,
+                               R.plurals.files_selected,
+                               this) {
+            if (it == 0 && hasHeaderItem) -1 else getItem(it).row
+        }
+    }
 
     override fun getItemCount(): Int {
         if (hasHeaderItem) {
@@ -99,9 +104,12 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder.itemViewType == TYPE_ITEM) {
-            val item = currentItems[if (hasHeaderItem) position - 1 else position]
-            (holder as BaseItemHolder).update(item)
+            (holder as BaseItemHolder).update()
         }
+    }
+
+    fun getItem(position: Int): Item {
+        return currentItems[if (hasHeaderItem) position - 1 else position]
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -129,20 +137,24 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         val hadHeaderItem = hasHeaderItem
 
         currentDirectory = directory
-        val count = currentItems.size
+        val oldCount = currentItems.size
         currentItems.clear()
         if (hadHeaderItem) {
             if (hasHeaderItem) {
-                notifyItemRangeRemoved(1, count)
+                notifyItemRangeRemoved(1, oldCount)
             } else {
-                notifyItemRangeRemoved(0, count + 1)
+                notifyItemRangeRemoved(0, oldCount + 1)
             }
         } else {
-            notifyItemRangeRemoved(0, count)
+            notifyItemRangeRemoved(0, oldCount)
         }
         currentItems.addAll(directory.children.sortedWith(comparator))
         if (hasHeaderItem) {
-            notifyItemRangeInserted(1, currentItems.size)
+            if (hadHeaderItem) {
+                notifyItemRangeInserted(1, currentItems.size)
+            } else {
+                notifyItemRangeInserted(0, currentItems.size + 1)
+            }
         } else {
             notifyItemRangeInserted(0, currentItems.size)
         }
@@ -202,7 +214,8 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
         val ids = mutableListOf<Int>()
-        for (item in selector.selectedItems) {
+        for (position in selector.getSelectedPositionsUnsorted()) {
+            val item = getItem(position)
             item.setWanted(wanted, ids)
             notifyItemChanged(getItemPosition(item))
         }
@@ -211,7 +224,8 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     private fun setSelectedItemsPriority(priority: Item.Priority) {
         val ids = mutableListOf<Int>()
-        for (item in selector.selectedItems) {
+        for (position in selector.getSelectedPositionsUnsorted()) {
+            val item = getItem(position)
             item.setPriority(priority, ids)
         }
         onSetFilesPriority(ids.toIntArray(), priority)
@@ -264,11 +278,10 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
     }
 
     protected abstract class BaseItemHolder(private val adapter: BaseTorrentFilesAdapter,
-                                            selector: Selector<Item, Int>,
-                                            itemView: View) : Selector.ViewHolder<Item>(
+                                            selector: Selector<Int>,
+                                            itemView: View) : Selector.ViewHolder<Int>(
             selector,
             itemView) {
-        override lateinit var item: Item
 
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
         private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
@@ -277,21 +290,19 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         init {
             checkBox.setOnClickListener {
                 val ids = mutableListOf<Int>()
-                item.setWanted(checkBox.isChecked, ids)
+                adapter.getItem(adapterPosition).setWanted(checkBox.isChecked, ids)
                 adapter.onSetFilesWanted(ids.toIntArray(), checkBox.isChecked)
             }
         }
 
         override fun onClick(view: View) {
-            if (selector.actionMode == null) {
-                adapter.navigateDown(item)
-            } else {
-                super.onClick(view)
-            }
+            adapter.navigateDown(adapter.getItem(adapterPosition))
         }
 
-        fun update(item: Item) {
-            this.item = item
+        override fun update() {
+            super.update()
+
+            val item = adapter.getItem(adapterPosition)
 
             iconView.setImageLevel(if (item is Directory) 0 else 1)
 
@@ -303,12 +314,10 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
             }
             checkBox.isEnabled = (selector.actionMode == null)
-
-            updateSelectedBackground()
         }
     }
 
-    private inner class ActionModeCallback : Selector.ActionModeCallback<Item>() {
+    private inner class ActionModeCallback(selector: Selector<Int>) : Selector.ActionModeCallback<Int>(selector) {
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
@@ -345,7 +354,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             super.onPrepareActionMode(mode, menu)
 
             if (selector.selectedCount == 1) {
-                val first = selector.selectedItems.first()
+                val first = getItem(selector.getFirstSelectedPosition())
                 val wanted = (first.wantedState == Item.WantedState.Wanted)
                 downloadItem!!.isEnabled = !wanted
                 notDownloadItem!!.isEnabled = wanted
@@ -391,7 +400,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 R.id.normal_priority -> setSelectedItemsPriority(Item.Priority.Normal)
                 R.id.low_priority -> setSelectedItemsPriority(Item.Priority.Low)
                 R.id.rename -> {
-                    val file = selector.selectedItems.first()
+                    val file = getItem(selector.getFirstSelectedPosition())
 
                     val pathParts = mutableListOf<String>()
                     var i: Item? = file

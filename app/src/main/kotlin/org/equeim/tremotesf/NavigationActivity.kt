@@ -59,7 +59,7 @@ import org.equeim.tremotesf.utils.safeNavigate
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
 
-class NavigationActivity : AppCompatActivity(), Selector.ActionModeActivity, Logger {
+class NavigationActivity : AppCompatActivity(), Logger {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
         var activeActivity: NavigationActivity? = null
@@ -81,7 +81,8 @@ class NavigationActivity : AppCompatActivity(), Selector.ActionModeActivity, Log
 
     private lateinit var binding: NavigationActivityBinding
 
-    override var actionMode: ActionMode? = null
+    var actionMode: ActionMode? = null
+        private set
 
     lateinit var navController: NavController
         private set

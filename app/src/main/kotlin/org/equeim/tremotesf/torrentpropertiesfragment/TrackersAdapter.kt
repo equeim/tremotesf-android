@@ -39,7 +39,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.viewbinding.ViewBinding
+import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -105,11 +105,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     private val context = torrentPropertiesFragment.requireContext()
 
     val selector = IntSelector(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
-                               ActionModeCallback(),
-                               this,
-                               currentList,
-                               TrackersAdapterItem::id,
-                               R.plurals.trackers_selected)
+                               ::ActionModeCallback,
+                               R.plurals.trackers_selected,
+                               this) { getItem(it).id }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(selector,
@@ -118,51 +116,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                                                          false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val tracker = currentList[position]
-
-        holder.item = tracker
-
-        with(holder.binding) {
-            nameTextView.text = tracker.announce
-            statusTextView.text = when (tracker.status) {
-                Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
-                Tracker.Status.Active -> context.getString(R.string.tracker_active)
-                Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
-                Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
-                else -> {
-                    if (tracker.errorMessage.isEmpty()) {
-                        context.getString(R.string.error)
-                    } else {
-                        context.getString(R.string.tracker_error, tracker.errorMessage)
-                    }
-                }
-            }
-
-            if (tracker.status == Tracker.Status.Error) {
-                peersTextView.visibility = View.GONE
-            } else {
-                peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
-                                                                                tracker.peers,
-                                                                                tracker.peers)
-                peersTextView.visibility = View.VISIBLE
-            }
-
-            if (tracker.nextUpdateEta < 0) {
-                nextUpdateTextView.visibility = View.GONE
-            } else {
-                nextUpdateTextView.text = context.getString(R.string.next_update,
-                                                                   DateUtils.formatElapsedTime(tracker.nextUpdateEta))
-                nextUpdateTextView.visibility = View.VISIBLE
-            }
-        }
-
-        holder.updateSelectedBackground()
-    }
-
-    override fun onCurrentListChanged(previousList: MutableList<TrackersAdapterItem>, currentList: MutableList<TrackersAdapterItem>) {
-        selector.items = currentList
-    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
     fun update() {
         val torrent = torrentPropertiesFragment.torrent
@@ -199,17 +153,50 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator))
     }
 
-    inner class ViewHolder(selector: Selector<TrackersAdapterItem, Int>,
-                           val binding: TrackerListItemBinding) : Selector.ViewHolder<TrackersAdapterItem>(selector, binding.root) {
-        override lateinit var item: TrackersAdapterItem
-
+    inner class ViewHolder(selector: Selector<Int>,
+                           val binding: TrackerListItemBinding) : Selector.ViewHolder<Int>(selector, binding.root) {
         override fun onClick(view: View) {
-            if (selector.actionMode == null) {
-                torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
-                                                   bundleOf(EditTrackerDialogFragment.TRACKER_ID to item.id,
-                                                            EditTrackerDialogFragment.ANNOUNCE to item.announce))
-            } else {
-                super.onClick(view)
+            val tracker = getItem(adapterPosition)
+            torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
+                                               bundleOf(EditTrackerDialogFragment.TRACKER_ID to tracker.id,
+                                                        EditTrackerDialogFragment.ANNOUNCE to tracker.announce))
+        }
+
+        override fun update() {
+            super.update()
+            val tracker = getItem(adapterPosition)
+            with(binding) {
+                nameTextView.text = tracker.announce
+                statusTextView.text = when (tracker.status) {
+                    Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
+                    Tracker.Status.Active -> context.getString(R.string.tracker_active)
+                    Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
+                    Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
+                    else -> {
+                        if (tracker.errorMessage.isEmpty()) {
+                            context.getString(R.string.error)
+                        } else {
+                            context.getString(R.string.tracker_error, tracker.errorMessage)
+                        }
+                    }
+                }
+
+                if (tracker.status == Tracker.Status.Error) {
+                    peersTextView.visibility = View.GONE
+                } else {
+                    peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
+                                                                             tracker.peers,
+                                                                             tracker.peers)
+                    peersTextView.visibility = View.VISIBLE
+                }
+
+                if (tracker.nextUpdateEta < 0) {
+                    nextUpdateTextView.visibility = View.GONE
+                } else {
+                    nextUpdateTextView.text = context.getString(R.string.next_update,
+                                                                DateUtils.formatElapsedTime(tracker.nextUpdateEta))
+                    nextUpdateTextView.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -271,7 +258,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
     }
 
-    private inner class ActionModeCallback : Selector.ActionModeCallback<TrackersAdapterItem>() {
+    private inner class ActionModeCallback(selector: Selector<Int>) : Selector.ActionModeCallback<Int>(selector) {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.trackers_context_menu, menu)
             return true
@@ -284,7 +271,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
             if (item.itemId == R.id.remove) {
                 torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
-                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedItems.map(TrackersAdapterItem::id).toIntArray()))
+                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedKeys.toIntArray()))
                 return true
             }
 

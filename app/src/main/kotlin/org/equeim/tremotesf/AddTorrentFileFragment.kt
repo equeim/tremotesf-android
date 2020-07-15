@@ -435,21 +435,20 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 return super.onCreateViewHolder(parent, viewType)
             }
 
-            override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-                super.onBindViewHolder(holder, position)
-                if (holder.itemViewType == TYPE_ITEM) {
-                    (holder as ItemHolder).binding.sizeTextView.text =
-                            Utils.formatByteSize(activity, holder.item.size)
-                }
-            }
-
             override fun onNavigateToRenameDialog(args: Bundle) {
                 activity.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment, args)
             }
 
-            private class ItemHolder(adapter: BaseTorrentFilesAdapter,
-                                     selector: Selector<Item, Int>,
-                                     val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root)
+            private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
+                                     selector: Selector<Int>,
+                                     val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root) {
+                override fun update() {
+                    super.update()
+                    val context = binding.sizeTextView.context
+                    binding.sizeTextView.text =
+                            Utils.formatByteSize(context, adapter.getItem(adapterPosition).size)
+                }
+            }
         }
     }
 }

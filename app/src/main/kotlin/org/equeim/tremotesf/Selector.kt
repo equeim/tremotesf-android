@@ -20,193 +20,217 @@
 package org.equeim.tremotesf
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
+import androidx.annotation.CallSuper
+import androidx.annotation.PluralsRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.RecyclerView
 
+import java.util.Collections
+
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.Selector"
 
-abstract class Selector<ItemType, IdType>(private val activity: AppCompatActivity,
-                                                      private val actionModeCallback: ActionModeCallback<ItemType>,
-                                                      private val adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
-                                                      var items: Collection<ItemType>,
-                                                      private val idFromItem: (ItemType) -> IdType,
-                                                      private val titleStringId: Int) {
+typealias SelectorActionModeCallbackFactory<K> = (Selector<K>) -> Selector.ActionModeCallback<K>
+typealias AdapterSelectionKeyGetter<K> = RecyclerView.Adapter<*>.(Int) -> K
+
+abstract class Selector<K: Any>(private val activity: AppCompatActivity,
+                                private val actionModeCallbackFactory: SelectorActionModeCallbackFactory<K>,
+                                private val adapter: RecyclerView.Adapter<*>,
+                                private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
+                                @PluralsRes private val titleStringId: Int) {
+    @Suppress("LeakingThis")
+    private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
+
+    private val handler = Handler()
+    private val updateActionModeCallback = Runnable(::updateActionMode)
+
     var actionMode: ActionMode? = null
-    val selectedItems = mutableListOf<ItemType>()
-    protected val selectedIds = mutableListOf<IdType>()
+
+    private val _selectedKeys = mutableSetOf<K>()
+    val selectedKeys: Set<K>
+        get() = _selectedKeys
 
     var hasHeaderItem = false
 
     val selectedCount: Int
-        get() {
-            return selectedItems.size
-        }
+        get() = selectedKeys.size
 
     val hasSelection: Boolean
-        get() {
-            return selectedItems.isNotEmpty()
-        }
+        get() = selectedKeys.isNotEmpty()
 
-    init {
-        actionModeCallback.selector = this
+    fun getSelectedPositionsUnsorted(): List<Int> {
+        return selectedKeys.map(selectionKeysProvider::getPositionForKey)
     }
 
-    fun isSelected(item: ItemType): Boolean {
-        return selectedItems.contains(item)
+    fun getFirstSelectedPosition(): Int {
+        return getSelectedPositionsUnsorted().min() ?: -1
     }
 
-    fun toggleSelection(item: ItemType, position: Int) {
-        val index = selectedItems.indexOf(item)
-        if (index == -1) {
-            selectedItems.add(item)
-            selectedIds.add(idFromItem(item))
-        } else {
-            selectedItems.removeAt(index)
-            selectedIds.removeAt(index)
-
-            if (selectedItems.isEmpty()) {
-                actionMode?.finish()
-            }
-        }
-        adapter.notifyItemChanged(position)
-        updateActionMode()
+    fun isSelected(key: K): Boolean {
+        return selectedKeys.contains(key)
     }
 
-    fun selectAll() {
-        if (selectedCount == items.size) {
+    fun toggleSelection(key: K, position: Int) {
+        if (hasHeaderItem && position == 0) {
             return
         }
 
-        selectedItems.clear()
-        selectedIds.clear()
-
-        for (item in items) {
-            selectedItems.add(item)
-            selectedIds.add(idFromItem(item))
+        _selectedKeys.apply {
+            if (contains(key)) {
+                remove(key)
+            } else {
+                add(key)
+            }
         }
 
-        if (hasHeaderItem) {
-            adapter.notifyItemRangeChanged(1, items.size)
+        adapter.notifyItemChanged(position)
+
+        if (hasSelection) {
+            updateActionMode()
         } else {
-            adapter.notifyItemRangeChanged(0, items.size)
+            actionMode?.finish()
+        }
+    }
+
+    fun selectAll() {
+        val allKeysSize = if (hasHeaderItem) {
+            selectionKeysProvider.allKeys.size - 1
+        } else {
+            selectionKeysProvider.allKeys.size
+        }
+        if (selectedCount == allKeysSize) {
+            return
+        }
+
+        val keys = if (hasHeaderItem) {
+            selectionKeysProvider.allKeys.drop(1)
+        } else {
+            selectionKeysProvider.allKeys
+        }
+        _selectedKeys.clear()
+        _selectedKeys.addAll(keys)
+
+        if (hasHeaderItem) {
+            adapter.notifyItemRangeChanged(1, selectedKeys.size)
+        } else {
+            adapter.notifyItemRangeChanged(0, selectedKeys.size)
         }
 
         updateActionMode()
     }
 
     fun clearSelection() {
-        if (selectedItems.isEmpty()) {
+        actionMode = null
+
+        if (selectedKeys.isEmpty()) {
             return
         }
 
-        selectedItems.clear()
-        selectedIds.clear()
+        _selectedKeys.clear()
 
         if (hasHeaderItem) {
-            adapter.notifyItemRangeChanged(1, items.size)
+            adapter.notifyItemRangeChanged(1, adapter.itemCount - 1)
         } else {
-            adapter.notifyItemRangeChanged(0, items.size)
+            adapter.notifyItemRangeChanged(0, adapter.itemCount)
         }
-    }
-
-    fun clearRemovedItems() {
-        var i = 0
-        while (i < selectedItems.size) {
-            if (items.contains(selectedItems[i])) {
-                i++
-            } else {
-                selectedItems.removeAt(i)
-                selectedIds.removeAt(i)
-            }
-        }
-        updateActionMode()
     }
 
     fun startActionMode() {
-        actionMode = activity.startSupportActionMode(actionModeCallback)
+        actionMode = activity.startSupportActionMode(actionModeCallbackFactory(this))
         updateActionMode()
     }
 
     private fun updateActionMode() {
-        actionMode?.let { actionMode ->
-            actionMode.title = activity.resources.getQuantityString(titleStringId,
-                                                                    selectedCount,
-                                                                    selectedCount)
-            actionMode.invalidate()
+        actionMode?.apply {
+            title = activity.resources.getQuantityString(titleStringId,
+                                                         selectedCount,
+                                                         selectedCount)
+            invalidate()
+        }
+    }
+
+    private fun removeSelectionInProgress(key: K) {
+        _selectedKeys.remove(key)
+    }
+
+    private fun finishRemovingSelection() {
+        if (hasSelection) {
+            if (!handler.hasCallbacks(updateActionModeCallback)) {
+                handler.post(updateActionModeCallback)
+            }
+        } else {
+            actionMode?.finish()
         }
     }
 
     fun saveInstanceState(outState: Bundle) {
         if (actionMode != null) {
-            putIdsToBundle(outState)
+            putKeysToBundle(outState)
         }
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY)) {
-            @Suppress("UNCHECKED_CAST")
-            val ids = getIdsFromBundle(savedInstanceState)
-            for (item in items) {
-                val id = idFromItem(item)
-                if (ids.contains(id)) {
-                    selectedItems.add(item)
-                    selectedIds.add(id)
-                }
+            val restored = getKeysFromBundle(savedInstanceState)
+            _selectedKeys.addAll(selectionKeysProvider.allKeys.filter(restored::contains))
+            if (hasSelection) {
+                startActionMode()
             }
-            startActionMode()
         }
     }
 
-    abstract fun putIdsToBundle(bundle: Bundle)
-    abstract fun getIdsFromBundle(bundle: Bundle): List<IdType>
+    abstract fun putKeysToBundle(bundle: Bundle)
+    abstract fun getKeysFromBundle(bundle: Bundle): Set<K>
 
-    abstract class ViewHolder<T>(protected val selector: Selector<T, *>,
-                                       itemView: View) : RecyclerView.ViewHolder(itemView),
-                                                         View.OnClickListener,
-                                                         View.OnLongClickListener {
-        abstract var item: T
+    @Suppress("LeakingThis")
+    abstract class ViewHolder<K : Any>(protected val selector: Selector<K>,
+                                       itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         private val selectedBackground: View = itemView.findViewById(R.id.selected_background_view)
 
         init {
-            itemView.setOnClickListener(this)
+            itemView.setOnClickListener {
+                if (selector.hasSelection && !(selector.hasHeaderItem && adapterPosition == 0)) {
+                    selector.toggleSelection(getSelectionKey(), adapterPosition)
+                } else {
+                    onClick(it)
+                }
+            }
             itemView.setOnLongClickListener(this)
         }
 
-        override fun onClick(view: View) {
-            if (selector.actionMode != null) {
-                selector.toggleSelection(item, adapterPosition)
-            }
+        @CallSuper
+        open fun update() {
+            selectedBackground.isActivated = selector.isSelected(getSelectionKey())
         }
 
-        override fun onLongClick(view: View): Boolean {
-            if (selector.actionMode != null) {
+        final override fun onLongClick(view: View): Boolean {
+            if (selector.hasSelection || (selector.hasHeaderItem && adapterPosition == 0)) {
                 return false
             }
-            selector.toggleSelection(item, adapterPosition)
+            selector.toggleSelection(getSelectionKey(), adapterPosition)
             selector.startActionMode()
             return true
         }
 
-        fun updateSelectedBackground() {
-            selectedBackground.isActivated = selector.isSelected(item)
+        private fun getSelectionKey(): K {
+            return selector.selectionKeysProvider.getKeyForPosition(adapterPosition)
         }
     }
 
-    abstract class ActionModeCallback<T> : ActionMode.Callback {
-        lateinit var selector: Selector<T, *>
+    abstract class ActionModeCallback<K : Any>(protected val selector: Selector<K>) : ActionMode.Callback {
+        protected val activity = selector.activity
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             return false
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            selector.actionMode = null
             selector.clearSelection()
         }
 
@@ -219,37 +243,119 @@ abstract class Selector<ItemType, IdType>(private val activity: AppCompatActivit
         }
     }
 
-    interface ActionModeActivity {
-        val actionMode: ActionMode?
+    private class SelectionKeysProvider<K: Any>(private val selector: Selector<K>,
+                                                private val adapter: RecyclerView.Adapter<*>,
+                                                private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>) {
+        private val positionToKey = ArrayList<K>()
+        private val keyToPosition = mutableMapOf<K, Int>()
+
+        val allKeys: List<K>
+            get() = positionToKey
+
+        init {
+            val observer = object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    if (itemCount > 0) {
+                        positionToKey.ensureCapacity(positionToKey.size + itemCount)
+                        for (position in positionStart until (positionStart + itemCount)) {
+                            val key = adapter.getSelectionKeyForPosition(position)
+                            positionToKey.add(position, key)
+                            keyToPosition[key] = position
+                        }
+                    }
+                }
+
+                override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                    if (itemCount > 0) {
+                        for (position in (positionStart + itemCount - 1) downTo positionStart) {
+                            val key = positionToKey[position]
+                            positionToKey.removeAt(position)
+                            keyToPosition.remove(key)
+
+                            selector.removeSelectionInProgress(key)
+                        }
+                        selector.finishRemovingSelection()
+                    }
+                }
+
+                override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+                    if (itemCount > 0) {
+                        val changedPositions = positionToKey.moveItems(fromPosition, toPosition, itemCount)
+                        for (position in changedPositions) {
+                            val key = positionToKey[position]
+                            keyToPosition[key] = position
+                        }
+                    }
+                }
+
+                override fun onChanged() {
+                    positionToKey.clear()
+                    keyToPosition.clear()
+                    onItemRangeInserted(0, adapter.itemCount)
+                }
+            }
+            observer.onChanged()
+            adapter.registerAdapterDataObserver(observer)
+        }
+
+        fun getKeyForPosition(position: Int): K {
+            return positionToKey[position]
+        }
+
+        fun getPositionForKey(key: K): Int {
+            return requireNotNull(keyToPosition[key])
+        }
+
+        /**
+         * Moves block of items inside list
+         * @param fromPosition position of first item in block
+         * @param toPosition new position of first item in block
+         * @param itemCount count of items in block
+         * @return range of positions which items were changed
+         */
+        private fun MutableList<*>.moveItems(fromPosition: Int, toPosition: Int, itemCount: Int): IntRange {
+            val changedFrom: Int
+            val changedTo: Int
+            val distance: Int
+            if (toPosition >= fromPosition) {
+                changedFrom = fromPosition
+                changedTo = toPosition + itemCount
+                distance = -itemCount
+            } else {
+                changedFrom = toPosition
+                changedTo = fromPosition + itemCount
+                distance = itemCount
+            }
+            Collections.rotate(subList(changedFrom, changedTo), distance)
+            return changedFrom until changedTo
+        }
     }
 }
 
-class IntSelector<ItemType>(activity: AppCompatActivity,
-                            actionModeCallback: ActionModeCallback<ItemType>,
-                            adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
-                            items: Collection<ItemType>,
-                            idFromItem: (ItemType) -> Int,
-                            titleStringId: Int) : Selector<ItemType, Int>(activity, actionModeCallback, adapter, items, idFromItem, titleStringId) {
-    override fun getIdsFromBundle(bundle: Bundle): List<Int> {
-        return bundle.getIntArray(BUNDLE_KEY)?.toList() ?: emptyList()
+class IntSelector(activity: AppCompatActivity,
+                  actionModeCallbackFactory: SelectorActionModeCallbackFactory<Int>,
+                  @PluralsRes titleStringId: Int,
+                  adapter: RecyclerView.Adapter<*>,
+                  getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>) : Selector<Int>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+    override fun getKeysFromBundle(bundle: Bundle): Set<Int> {
+        return bundle.getIntArray(BUNDLE_KEY)?.toSet() ?: emptySet()
     }
 
-    override fun putIdsToBundle(bundle: Bundle) {
-        bundle.putIntArray(BUNDLE_KEY, selectedIds.toIntArray())
+    override fun putKeysToBundle(bundle: Bundle) {
+        bundle.putIntArray(BUNDLE_KEY, selectedKeys.toIntArray())
     }
 }
 
-class StringSelector<ItemType>(activity: AppCompatActivity,
-                               actionModeCallback: ActionModeCallback<ItemType>,
-                               adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>,
-                               items: Collection<ItemType>,
-                               idFromItem: (ItemType) -> String,
-                               titleStringId: Int) : Selector<ItemType, String>(activity, actionModeCallback, adapter, items, idFromItem, titleStringId) {
-    override fun getIdsFromBundle(bundle: Bundle): List<String> {
-        return bundle.getStringArray(BUNDLE_KEY)?.toList() ?: emptyList()
+class StringSelector(activity: AppCompatActivity,
+                     actionModeCallbackFactory: SelectorActionModeCallbackFactory<String>,
+                     @PluralsRes titleStringId: Int,
+                     adapter: RecyclerView.Adapter<*>,
+                     getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>) : Selector<String>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+    override fun getKeysFromBundle(bundle: Bundle): Set<String> {
+        return bundle.getStringArray(BUNDLE_KEY)?.toSet() ?: emptySet()
     }
 
-    override fun putIdsToBundle(bundle: Bundle) {
-        bundle.putStringArray(BUNDLE_KEY, selectedIds.toTypedArray())
+    override fun putKeysToBundle(bundle: Bundle) {
+        bundle.putStringArray(BUNDLE_KEY, selectedKeys.toTypedArray())
     }
 }

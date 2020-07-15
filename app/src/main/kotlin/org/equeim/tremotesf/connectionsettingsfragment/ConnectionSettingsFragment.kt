@@ -48,7 +48,6 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.StringSelector
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
-import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.safeNavigate
@@ -117,7 +116,9 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
     }
 
     class ServersAdapter(activity: AppCompatActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
-        private val servers = mutableListOf<Server>()
+        private val _servers = mutableListOf<Server>()
+        val servers: List<Server>
+            get() = _servers
 
         private val comparator = object : Comparator<Server> {
             private val nameComparator = AlphanumericComparator()
@@ -125,11 +126,9 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         }
 
         val selector = StringSelector(activity,
-                                      ActionModeCallback(activity),
-                                      this,
-                                      servers,
-                                      Server::name,
-                                      R.plurals.servers_selected)
+                                      ::ActionModeCallback,
+                                      R.plurals.servers_selected,
+                                      this) { servers[it].name }
 
         override fun getItemCount(): Int {
             return servers.size
@@ -143,47 +142,44 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                                                             false))
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val server = servers[position]
-            holder.item = server
-            with(holder.binding) {
-                radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
-                textView.text = server.name
-            }
-            holder.updateSelectedBackground()
-        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
         fun update(servers: List<Server>) {
-            this.servers.clear()
-            this.servers.addAll(servers.sortedWith(comparator))
+            _servers.clear()
+            _servers.addAll(servers.sortedWith(comparator))
             notifyDataSetChanged()
         }
 
-        class ViewHolder(adapter: ServersAdapter,
-                         selector: Selector<Server, String>,
-                         val binding: ServerListItemBinding) : Selector.ViewHolder<Server>(selector, binding.root) {
-            override lateinit var item: Server
+        class ViewHolder(private val adapter: ServersAdapter,
+                         selector: Selector<String>,
+                         val binding: ServerListItemBinding) : Selector.ViewHolder<String>(selector, binding.root) {
 
             init {
                 binding.radioButton.setOnClickListener {
-                    if (item.name != Servers.currentServer.value?.name) {
-                        Servers.currentServer.value = item
+                    val server = adapter.servers[adapterPosition]
+                    if (server.name != Servers.currentServer.value?.name) {
+                        Servers.currentServer.value = server
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
                     }
                 }
             }
 
-            override fun onClick(view: View) {
-                if (selector.actionMode == null) {
-                    itemView.findNavController().safeNavigate(R.id.action_connectionSettingsFragment_to_serverEditFragment,
-                                                              bundleOf(ServerEditFragment.SERVER to item.name))
-                } else {
-                    super.onClick(view)
+            override fun update() {
+                super.update()
+                val server = adapter.servers[adapterPosition]
+                with(binding) {
+                    radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
+                    textView.text = server.name
                 }
+            }
+
+            override fun onClick(view: View) {
+                itemView.findNavController().safeNavigate(R.id.action_connectionSettingsFragment_to_serverEditFragment,
+                                                          bundleOf(ServerEditFragment.SERVER to adapter.servers[adapterPosition].name))
             }
         }
 
-        private class ActionModeCallback(private val activity: AppCompatActivity) : Selector.ActionModeCallback<Server>() {
+        private class ActionModeCallback(selector: Selector<String>) : Selector.ActionModeCallback<String>(selector) {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                 mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
                 return true
@@ -206,7 +202,8 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
     class RemoveServerDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val selector = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter?.selector
+            val adapter = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
+            val selector = adapter?.selector
             val selectedCount = selector?.selectedCount ?: 0
             return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
@@ -215,7 +212,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
                         selector?.apply {
-                            Servers.removeServers(selectedItems)
+                            Servers.removeServers(adapter.servers.slice(selector.getSelectedPositionsUnsorted()))
                             actionMode?.finish()
                         }
                     }

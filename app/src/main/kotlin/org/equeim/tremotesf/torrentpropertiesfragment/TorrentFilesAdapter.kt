@@ -55,23 +55,6 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         return super.onCreateViewHolder(parent, viewType)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        if (holder.itemViewType == TYPE_ITEM) {
-            val item = (holder as ItemHolder).item
-            with(holder.binding) {
-                progressBar.progress = (item.progress * 100).toInt()
-                val context = fragment.requireContext()
-                progressTextView.text = context.getString(R.string.completed_string,
-                                                          Utils.formatByteSize(context,
-                                                                               item.completedSize),
-                                                          Utils.formatByteSize(context,
-                                                                               item.size),
-                                                          DecimalFormats.generic.format(item.progress * 100))
-            }
-        }
-    }
-
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
         torrent?.setFilesWanted(ids, wanted)
     }
@@ -112,7 +95,22 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         notifyItemRangeRemoved(0, count)
     }
 
-    private class ItemHolder(adapter: BaseTorrentFilesAdapter,
-                             selector: Selector<Item, Int>,
-                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root)
+    private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
+                             selector: Selector<Int>,
+                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root) {
+        override fun update() {
+            super.update()
+            val item = adapter.getItem(adapterPosition)
+            with(binding) {
+                progressBar.progress = (item.progress * 100).toInt()
+                val context = progressBar.context
+                progressTextView.text = context.getString(R.string.completed_string,
+                                                          Utils.formatByteSize(context,
+                                                                               item.completedSize),
+                                                          Utils.formatByteSize(context,
+                                                                               item.size),
+                                                          DecimalFormats.generic.format(item.progress * 100))
+            }
+        }
+    }
 }
