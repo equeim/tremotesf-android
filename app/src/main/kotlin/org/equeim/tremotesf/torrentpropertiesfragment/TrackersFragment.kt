@@ -67,7 +67,7 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentProperties
         }
 
         update()
-        trackersAdapter.selector.restoreInstanceState(savedInstanceState)
+        trackersAdapter.selectionTracker.restoreInstanceState(savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -76,7 +76,7 @@ class TrackersFragment : Fragment(R.layout.trackers_fragment), TorrentProperties
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        trackersAdapter?.selector?.saveInstanceState(outState)
+        trackersAdapter?.selectionTracker?.saveInstanceState(outState)
     }
 
     override fun update() {

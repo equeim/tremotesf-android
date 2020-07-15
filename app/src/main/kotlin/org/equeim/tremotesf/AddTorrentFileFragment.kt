@@ -184,7 +184,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
-                    findFragment<FilesFragment>()?.adapter?.selector?.actionMode?.finish()
+                    findFragment<FilesFragment>()?.adapter?.selectionTracker?.actionMode?.finish()
                     hideKeyboard()
                 }
                 previousPage = position
@@ -427,7 +427,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                                             viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
                     return ItemHolder(this,
-                                      selector,
+                                      selectionTracker,
                                       LocalTorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
                                                                               parent,
                                                                               false))
@@ -440,8 +440,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
 
             private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
-                                     selector: Selector<Int>,
-                                     val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root) {
+                                     selectionTracker: SelectionTracker<Int>,
+                                     val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
                 override fun update() {
                     super.update()
                     val context = binding.sizeTextView.context

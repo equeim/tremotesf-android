@@ -74,14 +74,14 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
     }
 
-    lateinit var selector: IntSelector
+    lateinit var selectionTracker: SelectionTracker<Int>
         private set
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        selector = IntSelector(activity,
-                               ::ActionModeCallback,
-                               R.plurals.files_selected,
-                               this) {
+        selectionTracker = createSelectionTrackerInt(activity,
+                                                     ::ActionModeCallback,
+                                                     R.plurals.files_selected,
+                                                     this) {
             if (it == 0 && hasHeaderItem) -1 else getItem(it).row
         }
     }
@@ -158,7 +158,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         } else {
             notifyItemRangeInserted(0, currentItems.size)
         }
-        selector.hasHeaderItem = hasHeaderItem
+        selectionTracker.hasHeaderItem = hasHeaderItem
     }
 
     fun saveInstanceState(outState: Bundle) {
@@ -169,7 +169,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             directory = directory.parentDirectory
         }
         outState.putIntArray(BUNDLE_KEY, path.toIntArray())
-        selector.saveInstanceState(outState)
+        selectionTracker.saveInstanceState(outState)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?, newRootDirectory: Directory? = null) {
@@ -201,7 +201,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             notifyItemRangeInserted(0, currentItems.size)
         }
 
-        selector.restoreInstanceState(savedInstanceState)
+        selectionTracker.restoreInstanceState(savedInstanceState)
     }
 
     private fun getItemPosition(item: Item): Int {
@@ -214,7 +214,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
         val ids = mutableListOf<Int>()
-        for (position in selector.getSelectedPositionsUnsorted()) {
+        for (position in selectionTracker.getSelectedPositionsUnsorted()) {
             val item = getItem(position)
             item.setWanted(wanted, ids)
             notifyItemChanged(getItemPosition(item))
@@ -224,7 +224,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
     private fun setSelectedItemsPriority(priority: Item.Priority) {
         val ids = mutableListOf<Int>()
-        for (position in selector.getSelectedPositionsUnsorted()) {
+        for (position in selectionTracker.getSelectedPositionsUnsorted()) {
             val item = getItem(position)
             item.setPriority(priority, ids)
         }
@@ -270,7 +270,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
     private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnClickListener {
-                if (selector.actionMode == null) {
+                if (selectionTracker.actionMode == null) {
                     navigateUp()
                 }
             }
@@ -278,9 +278,9 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
     }
 
     protected abstract class BaseItemHolder(private val adapter: BaseTorrentFilesAdapter,
-                                            selector: Selector<Int>,
-                                            itemView: View) : Selector.ViewHolder<Int>(
-            selector,
+                                            selectionTracker: SelectionTracker<Int>,
+                                            itemView: View) : SelectionTracker.ViewHolder<Int>(
+            selectionTracker,
             itemView) {
 
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
@@ -313,11 +313,11 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
                 Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
             }
-            checkBox.isEnabled = (selector.actionMode == null)
+            checkBox.isEnabled = (selectionTracker.actionMode == null)
         }
     }
 
-    private inner class ActionModeCallback(selector: Selector<Int>) : Selector.ActionModeCallback<Int>(selector) {
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
@@ -347,14 +347,14 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            if (!selector.hasSelection) {
+            if (!selectionTracker.hasSelection) {
                 return super.onPrepareActionMode(mode, menu)
             }
 
             super.onPrepareActionMode(mode, menu)
 
-            if (selector.selectedCount == 1) {
-                val first = getItem(selector.getFirstSelectedPosition())
+            if (selectionTracker.selectedCount == 1) {
+                val first = getItem(selectionTracker.getFirstSelectedPosition())
                 val wanted = (first.wantedState == Item.WantedState.Wanted)
                 downloadItem!!.isEnabled = !wanted
                 notDownloadItem!!.isEnabled = wanted
@@ -400,7 +400,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 R.id.normal_priority -> setSelectedItemsPriority(Item.Priority.Normal)
                 R.id.low_priority -> setSelectedItemsPriority(Item.Priority.Low)
                 R.id.rename -> {
-                    val file = getItem(selector.getFirstSelectedPosition())
+                    val file = getItem(selectionTracker.getFirstSelectedPosition())
 
                     val pathParts = mutableListOf<String>()
                     var i: Item? = file
@@ -415,7 +415,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 else -> return false
             }
 
-            selector.actionMode?.invalidate()
+            selectionTracker.actionMode?.invalidate()
 
             return true
         }

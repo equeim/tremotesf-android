@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.SelectionTracker
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.utils.DecimalFormats
@@ -50,7 +50,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
                                                              parent,
                                                              false)
             Utils.setProgressBarColor(binding.progressBar)
-            return ItemHolder(this, selector, binding)
+            return ItemHolder(this, selectionTracker, binding)
         }
         return super.onCreateViewHolder(parent, viewType)
     }
@@ -85,7 +85,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         if (firstIndex != -1) {
             notifyItemRangeChanged(firstIndex + add, currentItems.size - firstIndex)
         }
-        selector.actionMode?.invalidate()
+        selectionTracker.actionMode?.invalidate()
     }
 
     fun reset() {
@@ -96,8 +96,8 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     }
 
     private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
-                             selector: Selector<Int>,
-                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selector, binding.root) {
+                             selectionTracker: SelectionTracker<Int>,
+                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()
             val item = adapter.getItem(adapterPosition)

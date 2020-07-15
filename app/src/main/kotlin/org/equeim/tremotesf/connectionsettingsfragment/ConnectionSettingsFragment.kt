@@ -43,10 +43,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.SelectionTracker
 import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.Servers
-import org.equeim.tremotesf.StringSelector
+import org.equeim.tremotesf.createSelectionTrackerString
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
@@ -97,14 +97,14 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        adapter?.selector?.saveInstanceState(outState)
+        adapter?.selectionTracker?.saveInstanceState(outState)
     }
 
     fun update(servers: List<Server>) {
         adapter?.apply {
             update(servers)
             if (savedInstanceState != null) {
-                selector.restoreInstanceState(savedInstanceState)
+                selectionTracker.restoreInstanceState(savedInstanceState)
                 savedInstanceState = null
             }
         }
@@ -125,10 +125,10 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
         }
 
-        val selector = StringSelector(activity,
-                                      ::ActionModeCallback,
-                                      R.plurals.servers_selected,
-                                      this) { servers[it].name }
+        val selectionTracker = createSelectionTrackerString(activity,
+                                                            ::ActionModeCallback,
+                                                            R.plurals.servers_selected,
+                                                            this) { servers[it].name }
 
         override fun getItemCount(): Int {
             return servers.size
@@ -136,7 +136,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(this,
-                              selector,
+                              selectionTracker,
                               ServerListItemBinding.inflate(LayoutInflater.from(parent.context),
                                                             parent,
                                                             false))
@@ -151,8 +151,8 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         }
 
         class ViewHolder(private val adapter: ServersAdapter,
-                         selector: Selector<String>,
-                         val binding: ServerListItemBinding) : Selector.ViewHolder<String>(selector, binding.root) {
+                         selectionTracker: SelectionTracker<String>,
+                         val binding: ServerListItemBinding) : SelectionTracker.ViewHolder<String>(selectionTracker, binding.root) {
 
             init {
                 binding.radioButton.setOnClickListener {
@@ -179,7 +179,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
         }
 
-        private class ActionModeCallback(selector: Selector<String>) : Selector.ActionModeCallback<String>(selector) {
+        private class ActionModeCallback(selectionTracker: SelectionTracker<String>) : SelectionTracker.ActionModeCallback<String>(selectionTracker) {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                 mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
                 return true
@@ -190,7 +190,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                     return true
                 }
 
-                if (selector.hasSelection && item.itemId == R.id.remove) {
+                if (selectionTracker.hasSelection && item.itemId == R.id.remove) {
                     activity.findNavController(R.id.nav_host).safeNavigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
                     return true
                 }
@@ -203,16 +203,16 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
     class RemoveServerDialogFragment : NavigationDialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val adapter = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
-            val selector = adapter?.selector
-            val selectedCount = selector?.selectedCount ?: 0
+            val selectionTracker = adapter?.selectionTracker
+            val selectedCount = selectionTracker?.selectedCount ?: 0
             return MaterialAlertDialogBuilder(requireContext())
                     .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
                                                             selectedCount,
                                                             selectedCount))
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.remove) { _, _ ->
-                        selector?.apply {
-                            Servers.removeServers(adapter.servers.slice(selector.getSelectedPositionsUnsorted()))
+                        selectionTracker?.apply {
+                            Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
                             actionMode?.finish()
                         }
                     }

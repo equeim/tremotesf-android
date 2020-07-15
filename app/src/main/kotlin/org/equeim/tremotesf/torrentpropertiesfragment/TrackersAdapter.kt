@@ -39,16 +39,15 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.Tracker
-import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.SelectionTracker
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.createSelectionTrackerInt
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
@@ -104,13 +103,13 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
     private val context = torrentPropertiesFragment.requireContext()
 
-    val selector = IntSelector(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
-                               ::ActionModeCallback,
-                               R.plurals.trackers_selected,
-                               this) { getItem(it).id }
+    val selectionTracker = createSelectionTrackerInt(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
+                                                     ::ActionModeCallback,
+                                                     R.plurals.trackers_selected,
+                                                     this) { getItem(it).id }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(selector,
+        return ViewHolder(selectionTracker,
                           TrackerListItemBinding.inflate(LayoutInflater.from(parent.context),
                                                          parent,
                                                          false))
@@ -127,7 +126,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
             this.torrent = null
             submitList(null)
-            selector.actionMode?.finish()
+            selectionTracker.actionMode?.finish()
             return
         }
 
@@ -153,8 +152,8 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator))
     }
 
-    inner class ViewHolder(selector: Selector<Int>,
-                           val binding: TrackerListItemBinding) : Selector.ViewHolder<Int>(selector, binding.root) {
+    inner class ViewHolder(selectionTracker: SelectionTracker<Int>,
+                           val binding: TrackerListItemBinding) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
             val tracker = getItem(adapterPosition)
             torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
@@ -258,7 +257,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
     }
 
-    private inner class ActionModeCallback(selector: Selector<Int>) : Selector.ActionModeCallback<Int>(selector) {
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.trackers_context_menu, menu)
             return true
@@ -271,7 +270,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
             if (item.itemId == R.id.remove) {
                 torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
-                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selector.selectedKeys.toIntArray()))
+                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selectionTracker.selectedKeys.toIntArray()))
                 return true
             }
 

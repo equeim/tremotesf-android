@@ -34,16 +34,16 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
 
 
-private const val BUNDLE_KEY = "org.equeim.tremotesf.Selector"
+private const val BUNDLE_KEY = "org.equeim.tremotesf.SelectionTracker"
 
-typealias SelectorActionModeCallbackFactory<K> = (Selector<K>) -> Selector.ActionModeCallback<K>
+typealias SelectionActionModeCallbackFactory<K> = (SelectionTracker<K>) -> SelectionTracker.ActionModeCallback<K>
 typealias AdapterSelectionKeyGetter<K> = RecyclerView.Adapter<*>.(Int) -> K
 
-abstract class Selector<K: Any>(private val activity: AppCompatActivity,
-                                private val actionModeCallbackFactory: SelectorActionModeCallbackFactory<K>,
-                                private val adapter: RecyclerView.Adapter<*>,
-                                private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
-                                @PluralsRes private val titleStringId: Int) {
+abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
+                                        private val actionModeCallbackFactory: SelectionActionModeCallbackFactory<K>,
+                                        private val adapter: RecyclerView.Adapter<*>,
+                                        getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
+                                        @PluralsRes private val titleStringId: Int) {
     @Suppress("LeakingThis")
     private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
 
@@ -189,14 +189,14 @@ abstract class Selector<K: Any>(private val activity: AppCompatActivity,
     abstract fun getKeysFromBundle(bundle: Bundle): Set<K>
 
     @Suppress("LeakingThis")
-    abstract class ViewHolder<K : Any>(protected val selector: Selector<K>,
+    abstract class ViewHolder<K : Any>(protected val selectionTracker: SelectionTracker<K>,
                                        itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         private val selectedBackground: View = itemView.findViewById(R.id.selected_background_view)
 
         init {
             itemView.setOnClickListener {
-                if (selector.hasSelection && !(selector.hasHeaderItem && adapterPosition == 0)) {
-                    selector.toggleSelection(getSelectionKey(), adapterPosition)
+                if (selectionTracker.hasSelection && !(selectionTracker.hasHeaderItem && adapterPosition == 0)) {
+                    selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
                 } else {
                     onClick(it)
                 }
@@ -206,44 +206,44 @@ abstract class Selector<K: Any>(private val activity: AppCompatActivity,
 
         @CallSuper
         open fun update() {
-            selectedBackground.isActivated = selector.isSelected(getSelectionKey())
+            selectedBackground.isActivated = selectionTracker.isSelected(getSelectionKey())
         }
 
         final override fun onLongClick(view: View): Boolean {
-            if (selector.hasSelection || (selector.hasHeaderItem && adapterPosition == 0)) {
+            if (selectionTracker.hasSelection || (selectionTracker.hasHeaderItem && adapterPosition == 0)) {
                 return false
             }
-            selector.toggleSelection(getSelectionKey(), adapterPosition)
-            selector.startActionMode()
+            selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
+            selectionTracker.startActionMode()
             return true
         }
 
         private fun getSelectionKey(): K {
-            return selector.selectionKeysProvider.getKeyForPosition(adapterPosition)
+            return selectionTracker.selectionKeysProvider.getKeyForPosition(adapterPosition)
         }
     }
 
-    abstract class ActionModeCallback<K : Any>(protected val selector: Selector<K>) : ActionMode.Callback {
-        protected val activity = selector.activity
+    abstract class ActionModeCallback<K : Any>(protected val selectionTracker: SelectionTracker<K>) : ActionMode.Callback {
+        protected val activity = selectionTracker.activity
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             return false
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            selector.clearSelection()
+            selectionTracker.clearSelection()
         }
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
             if (item.itemId == R.id.select_all) {
-                selector.selectAll()
+                selectionTracker.selectAll()
                 return true
             }
             return false
         }
     }
 
-    private class SelectionKeysProvider<K: Any>(private val selector: Selector<K>,
+    private class SelectionKeysProvider<K: Any>(private val selectionTracker: SelectionTracker<K>,
                                                 private val adapter: RecyclerView.Adapter<*>,
                                                 private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>) {
         private val positionToKey = ArrayList<K>()
@@ -272,9 +272,9 @@ abstract class Selector<K: Any>(private val activity: AppCompatActivity,
                             positionToKey.removeAt(position)
                             keyToPosition.remove(key)
 
-                            selector.removeSelectionInProgress(key)
+                            selectionTracker.removeSelectionInProgress(key)
                         }
-                        selector.finishRemovingSelection()
+                        selectionTracker.finishRemovingSelection()
                     }
                 }
 
@@ -332,30 +332,34 @@ abstract class Selector<K: Any>(private val activity: AppCompatActivity,
     }
 }
 
-class IntSelector(activity: AppCompatActivity,
-                  actionModeCallbackFactory: SelectorActionModeCallbackFactory<Int>,
-                  @PluralsRes titleStringId: Int,
-                  adapter: RecyclerView.Adapter<*>,
-                  getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>) : Selector<Int>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
-    override fun getKeysFromBundle(bundle: Bundle): Set<Int> {
-        return bundle.getIntArray(BUNDLE_KEY)?.toSet() ?: emptySet()
-    }
+fun createSelectionTrackerInt(activity: AppCompatActivity,
+                              actionModeCallbackFactory: SelectionActionModeCallbackFactory<Int>,
+                              @PluralsRes titleStringId: Int,
+                              adapter: RecyclerView.Adapter<*>,
+                              getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>): SelectionTracker<Int> {
+    return object : SelectionTracker<Int>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+        override fun getKeysFromBundle(bundle: Bundle): Set<Int> {
+            return bundle.getIntArray(BUNDLE_KEY)?.toSet() ?: emptySet()
+        }
 
-    override fun putKeysToBundle(bundle: Bundle) {
-        bundle.putIntArray(BUNDLE_KEY, selectedKeys.toIntArray())
+        override fun putKeysToBundle(bundle: Bundle) {
+            bundle.putIntArray(BUNDLE_KEY, selectedKeys.toIntArray())
+        }
     }
-}
+ }
 
-class StringSelector(activity: AppCompatActivity,
-                     actionModeCallbackFactory: SelectorActionModeCallbackFactory<String>,
-                     @PluralsRes titleStringId: Int,
-                     adapter: RecyclerView.Adapter<*>,
-                     getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>) : Selector<String>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
-    override fun getKeysFromBundle(bundle: Bundle): Set<String> {
-        return bundle.getStringArray(BUNDLE_KEY)?.toSet() ?: emptySet()
-    }
+fun createSelectionTrackerString(activity: AppCompatActivity,
+                                 actionModeCallbackFactory: SelectionActionModeCallbackFactory<String>,
+                                 @PluralsRes titleStringId: Int,
+                                 adapter: RecyclerView.Adapter<*>,
+                                 getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>) : SelectionTracker<String> {
+    return object : SelectionTracker<String>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+        override fun getKeysFromBundle(bundle: Bundle): Set<String> {
+            return bundle.getStringArray(BUNDLE_KEY)?.toSet() ?: emptySet()
+        }
 
-    override fun putKeysToBundle(bundle: Bundle) {
-        bundle.putStringArray(BUNDLE_KEY, selectedKeys.toTypedArray())
+        override fun putKeysToBundle(bundle: Bundle) {
+            bundle.putStringArray(BUNDLE_KEY, selectedKeys.toTypedArray())
+        }
     }
 }

@@ -46,15 +46,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.AddTorrentDirectoriesAdapter
-import org.equeim.tremotesf.IntSelector
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
-import org.equeim.tremotesf.Selector
+import org.equeim.tremotesf.SelectionTracker
 import org.equeim.tremotesf.Settings
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.createSelectionTrackerInt
 import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
@@ -129,10 +129,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
     private var filteredTorrents = listOf<Torrent>()
     private val displayedTorrents = mutableListOf<Torrent>()
 
-    private val selector = IntSelector(fragment.requiredActivity,
-                                       ::ActionModeCallback,
-                                       R.plurals.torrents_selected,
-                                       this) {
+    private val selectionTracker = createSelectionTrackerInt(fragment.requiredActivity,
+                                                             ::ActionModeCallback,
+                                                             R.plurals.torrents_selected,
+                                                             this) {
         displayedTorrents[it].id
     }
 
@@ -309,7 +309,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
                                                     STATUS_FILTER_MODE to statusFilterMode.ordinal,
                                                     TRACKER_FILTER to trackerFilter,
                                                     DIRECTORY_FILTER to directoryFilter))
-        selector.saveInstanceState(outState)
+        selectionTracker.saveInstanceState(outState)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
@@ -320,7 +320,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
             trackerFilter = state.getString(TRACKER_FILTER, "")
             directoryFilter = state.getString(DIRECTORY_FILTER, "")
         }
-        selector.restoreInstanceState(savedInstanceState)
+        selectionTracker.restoreInstanceState(savedInstanceState)
     }
 
     inner class TorrentsViewHolder(multilineName: Boolean,
@@ -385,7 +385,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
     }
 
     open inner class BaseTorrentsViewHolder(multilineName: Boolean,
-                                            itemView: View) : Selector.ViewHolder<Int>(selector, itemView) {
+                                            itemView: View) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
         lateinit var torrent: Torrent
 
         protected val context: Context = itemView.context
@@ -435,7 +435,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         }
     }
 
-    private inner class ActionModeCallback(selector: Selector<Int>) : Selector.ActionModeCallback<Int>(selector) {
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         private var startItem: MenuItem? = null
         private var pauseItem: MenuItem? = null
         private var setLocationItem: MenuItem? = null
@@ -451,7 +451,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             super.onPrepareActionMode(mode, menu)
 
-            if (selector.selectedCount == 1) {
+            if (selectionTracker.selectedCount == 1) {
                 val startEnabled = when (getFirstSelectedTorrent().status) {
                     TorrentData.Status.Paused,
                     TorrentData.Status.Errored -> true
@@ -473,7 +473,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
             }
 
             val getTorrentIds = {
-                selector.selectedKeys.toIntArray()
+                selectionTracker.selectedKeys.toIntArray()
             }
 
             when (item.itemId) {
@@ -511,7 +511,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         }
 
         private fun getFirstSelectedTorrent(): Torrent {
-            return displayedTorrents[selector.getFirstSelectedPosition()]
+            return displayedTorrents[selectionTracker.getFirstSelectedPosition()]
         }
     }
 
