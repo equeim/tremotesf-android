@@ -1,6 +1,6 @@
 buildscript {
     ext.vers = [
-            androidGradlePlugin: '4.0.0',
+            androidGradlePlugin: '4.0.1',
             kotlin: '1.3.72',
     ]
 
