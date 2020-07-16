@@ -21,6 +21,7 @@ package org.equeim.tremotesf.torrentslistfragment
 
 import java.util.Comparator
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -40,7 +41,8 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -74,7 +76,7 @@ private const val STATUS_FILTER_MODE = "statusFilterMode"
 private const val TRACKER_FILTER = "trackerFilter"
 private const val DIRECTORY_FILTER = "directoryFilter"
 
-class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView.Adapter<TorrentsAdapter.BaseTorrentsViewHolder>() {
+class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
@@ -126,14 +128,11 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         Errored
     }
 
-    private var filteredTorrents = listOf<Torrent>()
-    private val displayedTorrents = mutableListOf<Torrent>()
-
     private val selectionTracker = createSelectionTrackerInt(fragment.requiredActivity,
                                                              ::ActionModeCallback,
                                                              R.plurals.torrents_selected,
                                                              this) {
-        displayedTorrents[it].id
+        getItem(it).id
     }
 
     private val filterPredicate = { torrent: Torrent ->
@@ -173,9 +172,11 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                displayedTorrents.clear()
-                displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
-                notifyDataSetChanged()
+                currentList.let {
+                    submitList(null)
+                    submitList(it.sortedWith(comparator))
+                }
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -183,9 +184,11 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                displayedTorrents.clear()
-                displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
-                notifyDataSetChanged()
+                currentList.let {
+                    submitList(null)
+                    submitList(it.sortedWith(comparator))
+                }
+                fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
 
@@ -193,7 +196,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                updateListContent()
+                update()
                 fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
@@ -202,7 +205,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                updateListContent()
+                update()
                 fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
@@ -211,7 +214,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                updateListContent()
+                update()
                 fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
@@ -220,14 +223,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         set(value) {
             if (value != field) {
                 field = value
-                updateListContent()
+                update()
                 fragment.binding.torrentsView.scrollToPosition(0)
             }
         }
-
-    override fun getItemCount(): Int {
-        return displayedTorrents.size
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {
@@ -246,61 +245,12 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         holder.update()
     }
 
-    private fun updateListContent() {
-        filteredTorrents = Rpc.torrents.value.filter(filterPredicate)
-
-        if (displayedTorrents.isEmpty()) {
-            displayedTorrents.addAll(filteredTorrents.sortedWith(comparator))
-            notifyItemRangeInserted(0, displayedTorrents.size)
-            return
-        }
-
-        if (filteredTorrents.isEmpty()) {
-            if (displayedTorrents.isNotEmpty()) {
-                val size = displayedTorrents.size
-                displayedTorrents.clear()
-                notifyItemRangeRemoved(0, size)
-            }
-            return
-        }
-
-        run {
-            var i = 0
-            while (i < displayedTorrents.size) {
-                if (filteredTorrents.contains(displayedTorrents[i])) {
-                    i++
-                } else {
-                    displayedTorrents.removeAt(i)
-                    notifyItemRemoved(i)
-                }
-            }
-        }
-
-        for ((i, torrent) in filteredTorrents.sortedWith(comparator).withIndex()) {
-            if (displayedTorrents.getOrNull(i) !== torrent) {
-                val index = displayedTorrents.indexOf(torrent)
-                if (index == -1) {
-                    displayedTorrents.add(i, torrent)
-                    notifyItemInserted(i)
-                } else {
-                    displayedTorrents.removeAt(index)
-                    displayedTorrents.add(i, torrent)
-                    notifyItemMoved(index, i)
-                }
-            }
-        }
+    override fun submitList(list: List<Torrent>?) {
+        super.submitList(if (list?.isEmpty() == true) null else list)
     }
 
-    fun update() {
-        val wasEmpty = displayedTorrents.isEmpty()
-        updateListContent()
-        if (!wasEmpty) {
-            for ((i, torrent) in displayedTorrents.withIndex()) {
-                if (torrent.changed) {
-                    notifyItemChanged(i)
-                }
-            }
-        }
+    fun update(torrents: List<Torrent> = Rpc.torrents.value) {
+        submitList(torrents.filter(filterPredicate).sortedWith(comparator))
     }
 
     fun saveInstanceState(outState: Bundle) {
@@ -410,7 +360,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         override fun update() {
             super.update()
 
-            torrent = displayedTorrents[adapterPosition]
+            torrent = getItem(adapterPosition)
 
             nameTextView.text = torrent.name
             statusIconDrawable.level = when (torrent.status) {
@@ -511,7 +461,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
         }
 
         private fun getFirstSelectedTorrent(): Torrent {
-            return displayedTorrents[selectionTracker.getFirstSelectedPosition()]
+            return getItem(selectionTracker.getFirstSelectedPosition())
         }
     }
 
@@ -589,6 +539,17 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : RecyclerView
                         }
                     }
                     .create()
+        }
+    }
+
+    private class Callback : DiffUtil.ItemCallback<Torrent>() {
+        override fun areItemsTheSame(oldItem: Torrent, newItem: Torrent): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(oldItem: Torrent, newItem: Torrent): Boolean {
+            return oldItem === newItem
         }
     }
 }

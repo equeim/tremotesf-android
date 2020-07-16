@@ -27,7 +27,7 @@ import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.utils.DecimalFormats
 
 
-class Torrent(data: TorrentData, private val context: Context) {
+class Torrent(data: TorrentData, private val context: Context, prevTorrent: Torrent? = null) {
     var data = data
         private set
 
@@ -102,14 +102,11 @@ class Torrent(data: TorrentData, private val context: Context) {
     var downloadDirectory: String = data.downloadDirectory
         private set
 
-    var isChanged = false
-        private set
-
     var trackers: List<Tracker> = data.trackers
         private set
-    val trackerSites = mutableListOf<String>()
+    val trackerSites: List<String>
 
-    var filesEnabled = false
+    var filesEnabled: Boolean = prevTorrent?.filesEnabled ?: false
         set(value) {
             if (value != field) {
                 field = value
@@ -117,7 +114,7 @@ class Torrent(data: TorrentData, private val context: Context) {
             }
         }
 
-    var peersEnabled = false
+    var peersEnabled: Boolean = prevTorrent?.peersEnabled ?: false
         set(value) {
             if (value != field) {
                 field = value
@@ -125,46 +122,14 @@ class Torrent(data: TorrentData, private val context: Context) {
             }
         }
 
-    var changed = false
+    var isChanged = true
 
     init {
-        for (tracker: Tracker in trackers) {
-            trackerSites.add(tracker.site())
+        trackerSites = if (prevTorrent != null && !data.trackersAddedOrRemoved) {
+            prevTorrent.trackerSites
+        } else {
+            trackers.map(Tracker::site)
         }
-    }
-
-    fun update(data: TorrentData) {
-        this.data.delete()
-        this.data = data
-
-        name = data.name
-        status = data.status
-        errorString = data.errorString
-        totalSize = data.totalSize
-        completedSize = data.completedSize
-        sizeWhenDone = data.sizeWhenDone
-        percentDone = data.percentDone
-        isFinished = data.leftUntilDone == 0L
-        recheckProgress = data.recheckProgress
-        eta = data.eta
-        downloadSpeed = data.downloadSpeed
-        uploadSpeed = data.uploadSpeed
-        totalDownloaded = data.totalDownloaded
-        totalUploaded = data.totalUploaded
-        ratio = data.ratio
-        seeders = data.seeders
-        leechers = data.leechers
-        downloadDirectory = data.downloadDirectory
-
-        trackers = data.trackers
-        if (data.trackersAddedOrRemoved) {
-            trackerSites.clear()
-            for (tracker in trackers) {
-                trackerSites.add(tracker.site())
-            }
-        }
-
-        changed = true
     }
 
     fun setDownloadSpeedLimited(limited: Boolean) {

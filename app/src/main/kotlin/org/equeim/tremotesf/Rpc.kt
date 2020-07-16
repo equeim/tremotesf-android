@@ -354,16 +354,19 @@ object Rpc : Logger {
         val newTorrents = torrents.value.toMutableList()
 
         for (index in removed) {
-            newTorrents.removeAt(index)
+            newTorrents.removeAt(index).data.delete()
         }
 
         if (changed.isNotEmpty()) {
             val changedIter = changed.iterator()
             var changedTorrentData = changedIter.next()
             var changedId = changedTorrentData.id
-            for (torrent in newTorrents) {
+            val torrentsIter = newTorrents.listIterator()
+            while (torrentsIter.hasNext()) {
+                val torrent = torrentsIter.next()
                 if (torrent.id == changedId) {
-                    torrent.update(changedTorrentData)
+                    torrentsIter.set(Torrent(changedTorrentData, context, torrent))
+                    torrent.data.delete()
                     if (changedIter.hasNext()) {
                         changedTorrentData = changedIter.next()
                         changedId = changedTorrentData.id
@@ -371,7 +374,7 @@ object Rpc : Logger {
                         changedId = -1
                     }
                 } else {
-                    torrent.changed = false
+                    torrent.isChanged = false
                 }
             }
         }

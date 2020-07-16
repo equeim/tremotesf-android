@@ -56,6 +56,7 @@ import org.equeim.tremotesf.Server
 import org.equeim.tremotesf.ServerStats
 import org.equeim.tremotesf.Servers
 import org.equeim.tremotesf.Settings
+import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.utils.BasicMediatorLiveData
@@ -103,7 +104,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        Rpc.torrents.observe(viewLifecycleOwner) { onTorrentsUpdated() }
+        Rpc.torrents.observe(viewLifecycleOwner, ::onTorrentsUpdated)
         Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
         BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.error)
                 .observe(viewLifecycleOwner) { updatePlaceholder() }
@@ -319,13 +320,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         updateMenuItems()
     }
 
-    private fun onTorrentsUpdated() {
+    private fun onTorrentsUpdated(torrents: List<Torrent>) {
         with (requiredActivity.sidePanelBinding) {
             (statusView.adapter as StatusFilterViewAdapter).update()
             (trackersView.adapter as TrackersViewAdapter).update()
             (directoriesView.adapter as DirectoriesViewAdapter).update()
         }
-        torrentsAdapter?.update()
+        torrentsAdapter?.update(torrents)
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
                 if (Rpc.isConnected) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false

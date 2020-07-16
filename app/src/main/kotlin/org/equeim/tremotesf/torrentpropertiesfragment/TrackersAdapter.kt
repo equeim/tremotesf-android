@@ -134,7 +134,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
         val trackers = currentList
 
-        if (!torrent.changed && !(trackers.isEmpty() && torrent.trackerSites.isNotEmpty())) {
+        if (!torrent.isChanged && !(trackers.isEmpty() && torrent.trackerSites.isNotEmpty())) {
             trackers.forEach(TrackersAdapterItem::updateNextUpdateEta)
             notifyItemRangeChanged(0, trackers.size)
             return
