@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/horizontal_edge_padding"
         android:paddingRight="@dimen/horizontal_edge_padding"
-        android:background="?attr/selectedBackground">
+        android:background="@drawable/selected_background">
 
         <TextView
             android:id="@+id/name_text_view"

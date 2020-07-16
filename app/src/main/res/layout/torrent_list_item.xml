@@ -8,7 +8,7 @@
         android:id="@+id/selected_background_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectedBackground"
+        android:background="@drawable/selected_background"
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/horizontal_edge_padding"
         android:paddingRight="@dimen/horizontal_edge_padding"

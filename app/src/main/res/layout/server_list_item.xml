@@ -9,7 +9,7 @@
         android:id="@+id/selected_background_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/selectedBackground"
+        android:background="@drawable/selected_background"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/horizontal_edge_padding"
         android:paddingRight="@dimen/horizontal_edge_padding">
