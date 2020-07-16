@@ -21,6 +21,8 @@ package org.equeim.tremotesf.torrentslistfragment
 
 import java.util.Comparator
 
+import kotlin.properties.Delegates
+
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
@@ -168,65 +170,41 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
     private val compactView = Settings.torrentCompactView
     private val multilineName = Settings.torrentNameMultiline
 
-    var sortMode = Settings.torrentsSortMode
-        set(value) {
-            if (value != field) {
-                field = value
-                currentList.let {
-                    submitList(null)
-                    submitList(it.sortedWith(comparator))
-                }
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
+    var sortMode: SortMode by Delegates.observable(Settings.torrentsSortMode) { _, _, _ ->
+        currentList.let {
+            submitList(null)
+            submitList(it.sortedWith(comparator))
         }
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
-    var sortOrder = Settings.torrentsSortOrder
-        set(value) {
-            if (value != field) {
-                field = value
-                currentList.let {
-                    submitList(null)
-                    submitList(it.sortedWith(comparator))
-                }
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
+    var sortOrder: SortOrder by Delegates.observable(Settings.torrentsSortOrder) { _, _, _ ->
+        currentList.let {
+            submitList(null)
+            submitList(it.sortedWith(comparator))
         }
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
-    var statusFilterMode = Settings.torrentsStatusFilter
-        set(value) {
-            if (value != field) {
-                field = value
-                update()
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
-        }
+    var statusFilterMode: StatusFilterMode by Delegates.observable(Settings.torrentsStatusFilter) { _, _, _ ->
+        update()
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
-    var trackerFilter = ""
-        set(value) {
-            if (value != field) {
-                field = value
-                update()
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
-        }
+    var trackerFilter: String by Delegates.observable("") { _, _, _ ->
+        update()
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
-    var directoryFilter = ""
-        set(value) {
-            if (value != field) {
-                field = value
-                update()
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
-        }
+    var directoryFilter: String by Delegates.observable("") { _, _, _ ->
+        update()
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
-    var filterString = ""
-        set(value) {
-            if (value != field) {
-                field = value
-                update()
-                fragment.binding.torrentsView.scrollToPosition(0)
-            }
-        }
+    var filterString: String by Delegates.observable("") { _, _, _ ->
+        update()
+        fragment.binding.torrentsView.scrollToPosition(0)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {

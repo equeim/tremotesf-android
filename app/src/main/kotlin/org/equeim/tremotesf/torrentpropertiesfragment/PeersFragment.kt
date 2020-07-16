@@ -19,6 +19,8 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
+import kotlin.properties.Delegates
+
 import android.os.Bundle
 import android.view.View
 
@@ -141,21 +143,16 @@ class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragme
     }
 
     private class Model(torrent: Torrent?) : ViewModel() {
-        var torrent: Torrent? = null
-            set(value) {
-                if (value != field) {
-                    val oldValue = field
-                    field = value
-                    if (value == null) {
-                        oldValue?.peersEnabled = false
-                        reset()
-                        Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
-                    } else {
-                        value.peersEnabled = true
-                        Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
-                    }
-                }
+        var torrent by Delegates.observable<Torrent?>(null) { _, oldTorrent, torrent ->
+            if (torrent == null) {
+                oldTorrent?.peersEnabled = false
+                reset()
+                Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
+            } else {
+                torrent.peersEnabled = true
+                Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
             }
+        }
 
         val peers = NonNullMutableLiveData<List<Peer>>(emptyList())
         var loaded = false

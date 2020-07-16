@@ -19,6 +19,8 @@
 
 package org.equeim.tremotesf
 
+import kotlin.properties.Delegates
+
 import android.content.Context
 
 import org.equeim.libtremotesf.StringsVector
@@ -106,21 +108,13 @@ class Torrent(data: TorrentData, private val context: Context, prevTorrent: Torr
         private set
     val trackerSites: List<String>
 
-    var filesEnabled: Boolean = prevTorrent?.filesEnabled ?: false
-        set(value) {
-            if (value != field) {
-                field = value
-                Rpc.nativeInstance.setTorrentFilesEnabled(data, value)
-            }
-        }
+    var filesEnabled: Boolean by Delegates.observable(prevTorrent?.filesEnabled ?: false) { _, _, filesEnabled ->
+        Rpc.nativeInstance.setTorrentFilesEnabled(data, filesEnabled)
+    }
 
-    var peersEnabled: Boolean = prevTorrent?.peersEnabled ?: false
-        set(value) {
-            if (value != field) {
-                field = value
-                Rpc.nativeInstance.setTorrentPeersEnabled(data, value)
-            }
-        }
+    var peersEnabled: Boolean by Delegates.observable(prevTorrent?.peersEnabled ?: false) { _, _, peersEnabled ->
+        Rpc.nativeInstance.setTorrentFilesEnabled(data, peersEnabled)
+    }
 
     var isChanged = true
 

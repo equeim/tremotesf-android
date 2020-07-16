@@ -19,6 +19,13 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
+import kotlin.properties.Delegates
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 import android.os.Bundle
 import android.view.View
 
@@ -30,11 +37,6 @@ import androidx.lifecycle.observe
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
@@ -167,22 +169,17 @@ class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentP
             }
         }
 
-        var torrent: Torrent? = null
-            set(value) {
-                if (value != field) {
-                    val oldValue = field
-                    field = value
-                    if (value == null) {
-                        oldValue?.filesEnabled = false
-                        reset()
-                        Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
-                    } else {
-                        value.filesEnabled = true
-                        state.value = State.Loading
-                        Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
-                    }
-                }
+        var torrent by Delegates.observable<Torrent?>(null) { _, oldTorrent, torrent ->
+            if (torrent == null) {
+                oldTorrent?.filesEnabled = false
+                reset()
+                Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
+            } else {
+                torrent.filesEnabled = true
+                state.value = State.Loading
+                Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
             }
+        }
 
         var rootDirectory = BaseTorrentFilesAdapter.Directory()
             private set

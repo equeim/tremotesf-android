@@ -19,6 +19,8 @@
 
 package org.equeim.tremotesf.utils
 
+import kotlin.properties.Delegates
+
 import android.content.Context
 import android.util.AttributeSet
 
@@ -44,16 +46,12 @@ class TristateCheckbox(context: Context,
         }
     }
 
-    var state = State.Unchecked
-        set(value) {
-            if (value != field) {
-                field = value
-                isChecked = (value != State.Unchecked)
-                CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (value == State.Indeterminate) {
-                    127
-                } else {
-                    255
-                }
-            }
+    var state by Delegates.observable(State.Unchecked) { _, _, state ->
+        isChecked = (state != State.Unchecked)
+        CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (state == State.Indeterminate) {
+            127
+        } else {
+            255
         }
+    }
 }
