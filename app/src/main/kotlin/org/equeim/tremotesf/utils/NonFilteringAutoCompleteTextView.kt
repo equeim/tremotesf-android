@@ -24,13 +24,13 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 import org.equeim.tremotesf.R
 
 class NonFilteringAutoCompleteTextView(context: Context,
                                        attrs: AttributeSet?,
-                                       defStyleAttr: Int) : AppCompatAutoCompleteTextView(context, attrs, defStyleAttr) {
+                                       defStyleAttr: Int) : MaterialAutoCompleteTextView(context, attrs, defStyleAttr) {
     constructor(context: Context,
                 attrs: AttributeSet?) : this(context, attrs, R.attr.autoCompleteTextViewStyle)
     constructor(context: Context) : this(context, null)
