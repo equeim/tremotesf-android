@@ -144,13 +144,15 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
     private class Model(torrent: Torrent?) : ViewModel() {
         var torrent by Delegates.observable<Torrent?>(null) { _, oldTorrent, torrent ->
-            if (torrent == null) {
-                oldTorrent?.peersEnabled = false
-                reset()
-                Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
-            } else {
-                torrent.peersEnabled = true
-                Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
+            if (torrent != oldTorrent) {
+                if (torrent == null) {
+                    oldTorrent?.peersEnabled = false
+                    reset()
+                    Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
+                } else {
+                    torrent.peersEnabled = true
+                    Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
+                }
             }
         }
 

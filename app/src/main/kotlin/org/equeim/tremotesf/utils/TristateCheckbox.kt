@@ -46,12 +46,14 @@ class TristateCheckbox(context: Context,
         }
     }
 
-    var state by Delegates.observable(State.Unchecked) { _, _, state ->
-        isChecked = (state != State.Unchecked)
-        CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (state == State.Indeterminate) {
-            127
-        } else {
-            255
+    var state by Delegates.observable(State.Unchecked) { _, oldState, state ->
+        if (state != oldState) {
+            isChecked = (state != State.Unchecked)
+            CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (state == State.Indeterminate) {
+                127
+            } else {
+                255
+            }
         }
     }
 }

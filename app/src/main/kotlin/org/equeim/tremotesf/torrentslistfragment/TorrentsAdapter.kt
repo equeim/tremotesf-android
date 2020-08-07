@@ -170,41 +170,32 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
     private val compactView = Settings.torrentCompactView
     private val multilineName = Settings.torrentNameMultiline
 
-    var sortMode: SortMode by Delegates.observable(Settings.torrentsSortMode) { _, _, _ ->
-        currentList.let {
-            submitList(null)
-            submitList(it.sortedWith(comparator))
-        }
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
+    private fun <T> resortDelegate(initialValue: T) =
+            Delegates.observable(initialValue) { _, oldValue, newValue ->
+                if (newValue != oldValue) {
+                    currentList.let { list ->
+                        submitList(null)
+                        submitList(list.sortedWith(comparator))
+                    }
+                    fragment.binding.torrentsView.scrollToPosition(0)
+                }
+            }
 
-    var sortOrder: SortOrder by Delegates.observable(Settings.torrentsSortOrder) { _, _, _ ->
-        currentList.let {
-            submitList(null)
-            submitList(it.sortedWith(comparator))
-        }
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
+    private fun <T> updateDelegate(initialValue: T) =
+            Delegates.observable(initialValue) { _, oldValue, newValue ->
+                if (newValue != oldValue) {
+                    update()
+                    fragment.binding.torrentsView.scrollToPosition(0)
+                }
+            }
 
-    var statusFilterMode: StatusFilterMode by Delegates.observable(Settings.torrentsStatusFilter) { _, _, _ ->
-        update()
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
+    var sortMode: SortMode by resortDelegate(Settings.torrentsSortMode)
+    var sortOrder: SortOrder by resortDelegate(Settings.torrentsSortOrder)
 
-    var trackerFilter: String by Delegates.observable("") { _, _, _ ->
-        update()
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
-
-    var directoryFilter: String by Delegates.observable("") { _, _, _ ->
-        update()
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
-
-    var filterString: String by Delegates.observable("") { _, _, _ ->
-        update()
-        fragment.binding.torrentsView.scrollToPosition(0)
-    }
+    var statusFilterMode: StatusFilterMode by updateDelegate(Settings.torrentsStatusFilter)
+    var trackerFilter: String by updateDelegate("")
+    var directoryFilter: String by updateDelegate("")
+    var filterString: String by updateDelegate("")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {

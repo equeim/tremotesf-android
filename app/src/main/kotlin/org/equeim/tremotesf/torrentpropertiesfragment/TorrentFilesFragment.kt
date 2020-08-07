@@ -170,14 +170,16 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
         }
 
         var torrent by Delegates.observable<Torrent?>(null) { _, oldTorrent, torrent ->
-            if (torrent == null) {
-                oldTorrent?.filesEnabled = false
-                reset()
-                Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
-            } else {
-                torrent.filesEnabled = true
-                state.value = State.Loading
-                Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
+            if (torrent != oldTorrent) {
+                if (torrent == null) {
+                    oldTorrent?.filesEnabled = false
+                    reset()
+                    Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
+                } else {
+                    torrent.filesEnabled = true
+                    state.value = State.Loading
+                    Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
+                }
             }
         }
 
