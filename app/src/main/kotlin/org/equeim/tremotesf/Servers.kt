@@ -179,9 +179,10 @@ object Servers : Logger {
     }
 
     private fun setCurrentServer(server: Server?) {
+        val save = saveOnCurrentChanged
         saveOnCurrentChanged = false
         currentServer.value = server
-        saveOnCurrentChanged = true
+        saveOnCurrentChanged = save
     }
 
     private fun load() {

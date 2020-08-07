@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -326,6 +327,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
             addNavigationBarPadding()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                requireView().requestApplyInsets()
+            }
         }
     }
 }
