@@ -82,7 +82,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                                                      ::ActionModeCallback,
                                                      R.plurals.files_selected,
                                                      this) {
-            if (it == 0 && hasHeaderItem) -1 else getItem(it).row
+            if (it == 0 && hasHeaderItem) SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT else getItem(it).row
         }
     }
 
@@ -158,7 +158,6 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         } else {
             notifyItemRangeInserted(0, currentItems.size)
         }
-        selectionTracker.hasHeaderItem = hasHeaderItem
     }
 
     fun saveInstanceState(outState: Bundle) {

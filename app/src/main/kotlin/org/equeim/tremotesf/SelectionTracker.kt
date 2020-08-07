@@ -44,6 +44,11 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
                                         private val adapter: RecyclerView.Adapter<*>,
                                         getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
                                         @PluralsRes private val titleStringId: Int) {
+    companion object {
+        const val SELECTION_KEY_UNSELECTABLE_INT = -1
+        const val SELECTION_KEY_UNSELECTABLE_STRING = ""
+    }
+
     @Suppress("LeakingThis")
     private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
 
@@ -55,8 +60,6 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     private val _selectedKeys = mutableSetOf<K>()
     val selectedKeys: Set<K>
         get() = _selectedKeys
-
-    var hasHeaderItem = false
 
     val selectedCount: Int
         get() = selectedKeys.size
@@ -77,7 +80,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     }
 
     fun toggleSelection(key: K, position: Int) {
-        if (hasHeaderItem && position == 0) {
+        if (key == unselectableKey) {
             return
         }
 
@@ -99,28 +102,15 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     }
 
     fun selectAll() {
-        val allKeysSize = if (hasHeaderItem) {
-            selectionKeysProvider.allKeys.size - 1
-        } else {
-            selectionKeysProvider.allKeys.size
-        }
-        if (selectedCount == allKeysSize) {
+        val keys = selectionKeysProvider.allKeys.filter { it != unselectableKey }
+        if (selectedCount == keys.size) {
             return
         }
 
-        val keys = if (hasHeaderItem) {
-            selectionKeysProvider.allKeys.drop(1)
-        } else {
-            selectionKeysProvider.allKeys
-        }
         _selectedKeys.clear()
         _selectedKeys.addAll(keys)
 
-        if (hasHeaderItem) {
-            adapter.notifyItemRangeChanged(1, selectedKeys.size)
-        } else {
-            adapter.notifyItemRangeChanged(0, selectedKeys.size)
-        }
+        adapter.notifyItemRangeChanged(0, selectedKeys.size)
 
         updateActionMode()
     }
@@ -134,11 +124,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
 
         _selectedKeys.clear()
 
-        if (hasHeaderItem) {
-            adapter.notifyItemRangeChanged(1, adapter.itemCount - 1)
-        } else {
-            adapter.notifyItemRangeChanged(0, adapter.itemCount)
-        }
+        adapter.notifyItemRangeChanged(0, adapter.itemCount)
     }
 
     fun startActionMode() {
@@ -187,6 +173,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
 
     abstract fun putKeysToBundle(bundle: Bundle)
     abstract fun getKeysFromBundle(bundle: Bundle): Set<K>
+    abstract val unselectableKey: K
 
     @Suppress("LeakingThis")
     abstract class ViewHolder<K : Any>(protected val selectionTracker: SelectionTracker<K>,
@@ -195,7 +182,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
 
         init {
             itemView.setOnClickListener {
-                if (selectionTracker.hasSelection && !(selectionTracker.hasHeaderItem && adapterPosition == 0)) {
+                if (selectionTracker.hasSelection && getSelectionKey() != selectionTracker.unselectableKey) {
                     selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
                 } else {
                     onClick(it)
@@ -210,7 +197,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
         }
 
         final override fun onLongClick(view: View): Boolean {
-            if (selectionTracker.hasSelection || (selectionTracker.hasHeaderItem && adapterPosition == 0)) {
+            if (selectionTracker.hasSelection || getSelectionKey() == selectionTracker.unselectableKey) {
                 return false
             }
             selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
@@ -338,6 +325,8 @@ fun createSelectionTrackerInt(activity: AppCompatActivity,
                               adapter: RecyclerView.Adapter<*>,
                               getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>): SelectionTracker<Int> {
     return object : SelectionTracker<Int>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+        override val unselectableKey = SELECTION_KEY_UNSELECTABLE_INT
+
         override fun getKeysFromBundle(bundle: Bundle): Set<Int> {
             return bundle.getIntArray(BUNDLE_KEY)?.toSet() ?: emptySet()
         }
@@ -346,7 +335,7 @@ fun createSelectionTrackerInt(activity: AppCompatActivity,
             bundle.putIntArray(BUNDLE_KEY, selectedKeys.toIntArray())
         }
     }
- }
+}
 
 fun createSelectionTrackerString(activity: AppCompatActivity,
                                  actionModeCallbackFactory: SelectionActionModeCallbackFactory<String>,
@@ -354,6 +343,8 @@ fun createSelectionTrackerString(activity: AppCompatActivity,
                                  adapter: RecyclerView.Adapter<*>,
                                  getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>) : SelectionTracker<String> {
     return object : SelectionTracker<String>(activity, actionModeCallbackFactory, adapter, getSelectionKeyForPosition, titleStringId) {
+        override val unselectableKey = SELECTION_KEY_UNSELECTABLE_STRING
+
         override fun getKeysFromBundle(bundle: Bundle): Set<String> {
             return bundle.getStringArray(BUNDLE_KEY)?.toSet() ?: emptySet()
         }
