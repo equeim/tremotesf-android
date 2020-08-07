@@ -22,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+    <com.l4digital.fastscroll.FastScrollRecyclerView
         android:id="@+id/files_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:fastScrollThumbColor="?attr/colorControlActivated"
-        app:fastScrollThumbInactiveColor="?attr/colorControlNormal"/>
+        app:handleColor="?attr/colorControlNormal"
+        app:bubbleColor="?attr/colorControlActivated" />
 </FrameLayout>

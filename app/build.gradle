@@ -137,7 +137,7 @@ rootProject.ext.vers += [
 
         material: '1.2.0',
         benjamin: '1.0.0',
-        recyclerviewFastscroll: '2.0.1',
+        fastscroll: '2.0.1',
         billing: '3.0.0'
 ]
 
@@ -171,7 +171,7 @@ dependencies {
     implementation "com.google.android.material:material:${vers.material}"
 
     implementation "io.github.raindev:benjamin:${vers.benjamin}"
-    implementation "com.simplecityapps:recyclerview-fastscroll:${vers.recyclerviewFastscroll}"
+    implementation "com.l4digital.fastscroll:fastscroll:${vers.fastscroll}"
 
     googleImplementation "com.android.billingclient:billing:${vers.billing}"
     googleImplementation "com.android.billingclient:billing-ktx:${vers.billing}"
