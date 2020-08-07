@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/vertical_edge_padding">
+    android:paddingTop="@dimen/linear_layout_vertical_spacing">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/servers_view_layout"

@@ -36,7 +36,7 @@ import org.equeim.tremotesf.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.utils.viewBinding
 
 
-class TorrentLimitsFragment : Fragment(R.layout.torrent_limits_fragment) {
+class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_limits_fragment) {
     private companion object {
         const val MAX_SPEED_LIMIT = 4 * 1024 * 1024 // kilobytes per second
         const val MAX_RATIO_LIMIT = 10000.0

@@ -25,6 +25,7 @@ import android.view.MenuItem
 import android.view.View
 
 import androidx.activity.addCallback
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -44,6 +45,7 @@ import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.addNavigationBarPadding
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
@@ -261,7 +263,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     private fun updatePlaceholderVisibility() {
         with(binding) {
             if (torrent != null) {
-                (toolbar.root.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
+                (toolbar.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
@@ -269,7 +271,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 pager.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
             } else {
-                (toolbar.root.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags = 0
+                (toolbar.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags = 0
                 tabLayout.visibility = View.GONE
                 pager.visibility = View.GONE
                 pager.currentItem = 0
@@ -317,8 +319,13 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         }
     }
 
-    interface PagerFragment {
-        fun update()
-        fun onNavigatedFrom() = Unit
+    abstract class PagerFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
+        open fun update() = Unit
+        open fun onNavigatedFrom() = Unit
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            addNavigationBarPadding()
+        }
     }
 }

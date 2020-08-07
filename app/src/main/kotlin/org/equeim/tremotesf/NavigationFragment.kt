@@ -24,7 +24,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ScrollView
 
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
@@ -32,6 +35,12 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -39,7 +48,14 @@ import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.ui.navigateUp
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.shape.MaterialShapeDrawable
+
+import org.equeim.tremotesf.utils.findChildRecursively
 import org.equeim.tremotesf.utils.safeNavigate
 
 
@@ -69,17 +85,25 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = requiredActivity
-
         // We can't do it in onCreate() because NavController may not exist yet at that point
         // (e.g. after configuration change when all fragments are recreated)
         if (!::navController.isInitialized) {
-            navController = activity.navController
+            navController = requiredActivity.navController
             findNavDestination()
         }
 
-        toolbar = view.findViewById<Toolbar>(R.id.toolbar).apply {
-            if (activity.isTopLevelDestination(destinationId)) {
+        setupToolbar()
+        createStatusBarPlaceholder()
+
+        setPreLollipopContentShadow()
+
+        navController.addOnDestinationChangedListener(destinationListener)
+    }
+
+    private fun setupToolbar() {
+        val activity = requiredActivity
+        toolbar = requireView().findViewById<Toolbar>(R.id.toolbar).apply {
+            if (requiredActivity.isTopLevelDestination(destinationId)) {
                 navigationIcon = activity.drawerNavigationIcon
                 setNavigationContentDescription(R.string.nav_app_bar_open_drawer_description)
             } else {
@@ -97,10 +121,48 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                 setOnMenuItemClickListener(::onToolbarMenuItemClicked)
             }
         }
+    }
 
-        setPreLollipopContentShadow()
+    private fun createStatusBarPlaceholder() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val toolbar = checkNotNull(toolbar)
+            var container = toolbar.parent as View
+            if (container is AppBarLayout) {
+                container = (container.parent as CoordinatorLayout).parent as LinearLayout
+                val placeholder = View(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+                    background = (toolbar.parent as View).background
+                    setOnApplyWindowInsetsListener { _, insets ->
+                        updateLayoutParams {
+                            height = insets.systemWindowInsetTop
+                        }
+                        insets
+                    }
+                }
+                container.addView(placeholder, 0)
+            } else {
+                container.apply {
+                    background = MaterialShapeDrawable.createWithElevationOverlay(requireContext(), ViewCompat.getElevation(this))
+                    setOnApplyWindowInsetsListener { _, insets ->
+                        updatePadding(top = insets.systemWindowInsetTop)
+                        insets
+                    }
+                }
+            }
+        }
+    }
 
-        navController.addOnDestinationChangedListener(destinationListener)
+    private fun findStatusBarPlaceholderContainer(toolbar: Toolbar): LinearLayout {
+        val placeholder = toolbar.parent
+        if (placeholder is AppBarLayout) {
+            return (placeholder.parent as CoordinatorLayout).parent as LinearLayout
+        }
+        return placeholder as LinearLayout
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        addNavigationBarPadding()
     }
 
     private fun findNavDestination() {
@@ -164,4 +226,57 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     protected open fun onToolbarMenuItemClicked(menuItem: MenuItem) = false
     protected open fun onNavigatedFrom(newDestination: NavDestination) = Unit
     protected open fun onNavigatedFrom() = Unit
+}
+
+fun Fragment.addNavigationBarPadding() {
+    val rootView = requireView()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && rootView is ViewGroup) {
+        // Find scroll view
+        val isScrollView = { v: View ->
+            v.id != View.NO_ID && when(v) {
+                is ScrollView, is NestedScrollView -> true
+                is RecyclerView -> {
+                    (v.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
+                }
+                else -> false
+            }
+        }
+        val scrollView = if (isScrollView(rootView)) {
+            rootView
+        } else {
+            rootView.findChildRecursively(isScrollView) as ViewGroup?
+        }
+
+        // Set padding for scroll view is system gestures are enabled, or reset it to zero
+        scrollView?.apply {
+            setOnApplyWindowInsetsListener { _, insets ->
+                if (insets.isSystemGesturesEnabled) {
+                    updatePadding(bottom = insets.systemWindowInsetBottom)
+                    clipToPadding = false
+                } else {
+                    updatePadding(bottom = 0)
+                }
+                insets
+            }
+        }
+
+        // Set margin for FAB if system gestures are enabled, or reset it to its initial margin
+        rootView.findChildRecursively { it is FloatingActionButton }?.apply {
+            val initialMargin = marginBottom
+            setOnApplyWindowInsetsListener { _, insets ->
+                if (insets.isSystemGesturesEnabled) {
+                    if (marginBottom != (initialMargin + insets.systemWindowInsetBottom)) {
+                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            bottomMargin = initialMargin + insets.systemWindowInsetBottom
+                        }
+                    }
+                } else if (marginBottom != initialMargin) {
+                    updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = initialMargin
+                    }
+                }
+                insets
+            }
+        }
+    }
 }

@@ -57,7 +57,7 @@ data class Peer(val address: String,
     }
 }
 
-class PeersFragment : Fragment(R.layout.peers_fragment), TorrentPropertiesFragment.PagerFragment {
+class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment) {
     private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 

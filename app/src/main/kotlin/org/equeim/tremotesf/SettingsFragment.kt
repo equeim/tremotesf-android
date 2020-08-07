@@ -54,6 +54,11 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             }
         }
 
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            addNavigationBarPadding()
+        }
+
         override fun onDestroy() {
             preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
             super.onDestroy()

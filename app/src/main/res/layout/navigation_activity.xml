@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:navGraph="@navigation/nav_main"
-        app:defaultNavHost="true"/>
+        app:defaultNavHost="true" />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/side_panel"
@@ -20,5 +20,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/side_panel_header"
-        app:menu="@menu/side_panel_menu"/>
+        app:menu="@menu/side_panel_menu"
+        app:insetForeground="@android:color/transparent" />
 </androidx.drawerlayout.widget.DrawerLayout>

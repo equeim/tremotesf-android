@@ -32,7 +32,7 @@ import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.viewBinding
 
 
-class TorrentDetailsFragment : Fragment(R.layout.torrent_details_fragment), TorrentPropertiesFragment.PagerFragment {
+class TorrentDetailsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment) {
     private var firstUpdate = true
 
     private val binding by viewBinding(TorrentDetailsFragmentBinding::bind)

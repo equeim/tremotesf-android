@@ -2,16 +2,13 @@
 <resources>
     <color name="list_item_selected_color">#26000000</color>
 
-    <color name="status_bar_color">#757575</color>
-    <color name="navigation_bar_color">#000000</color>
-    <color name="status_bar_color_dark">#000000</color>
-    <color name="navigation_bar_color_dark">#000000</color>
+    <color name="status_bar_color">#80000000</color>
+    <color name="navigation_bar_color">#80000000</color>
 
     <color name="color_primary">#b71c1c</color>
     <color name="color_on_primary">#ffffff</color>
     <color name="color_background">#ffffff</color>
+    <color name="color_background_dark">#ff202020</color>
 
     <color name="color_primary_old">#008577</color>
-
-    <color name="splash_background">#303030</color>
 </resources>

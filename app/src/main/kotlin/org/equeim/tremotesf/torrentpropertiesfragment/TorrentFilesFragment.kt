@@ -49,7 +49,7 @@ import org.equeim.tremotesf.utils.NonNullMutableLiveData
 import org.equeim.tremotesf.utils.viewBinding
 
 
-class TorrentFilesFragment : Fragment(R.layout.torrent_files_fragment), TorrentPropertiesFragment.PagerFragment {
+class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
