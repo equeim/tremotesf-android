@@ -21,6 +21,7 @@ package org.equeim.tremotesf
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -52,8 +53,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     @Suppress("LeakingThis")
     private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
 
-    private val handler = Handler()
-    private val updateActionModeCallback = Runnable(::updateActionMode)
+    private val handler = SelectionTrackerHandler()
 
     var actionMode: ActionMode? = null
 
@@ -147,9 +147,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
 
     private fun finishRemovingSelection() {
         if (hasSelection) {
-            if (!handler.hasCallbacks(updateActionModeCallback)) {
-                handler.post(updateActionModeCallback)
-            }
+            handler.postUpdateActionMode()
         } else {
             actionMode?.finish()
         }
@@ -315,6 +313,22 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
             }
             Collections.rotate(subList(changedFrom, changedTo), distance)
             return changedFrom until changedTo
+        }
+    }
+
+    private inner class SelectionTrackerHandler : Handler() {
+        private val msgUpdateActionMode = 0
+
+        override fun handleMessage(msg: Message) {
+            if (msg.what == msgUpdateActionMode) {
+                updateActionMode()
+            }
+        }
+
+        fun postUpdateActionMode() {
+            if (!hasMessages(msgUpdateActionMode)) {
+                sendEmptyMessage(msgUpdateActionMode)
+            }
         }
     }
 }
