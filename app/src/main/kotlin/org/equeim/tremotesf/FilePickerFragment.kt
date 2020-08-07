@@ -222,7 +222,11 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             if (newFiles != null) {
                 files.addAll(newFiles.sortedWith(comparator))
                 if (hasHeaderItem) {
-                    notifyItemRangeInserted(1, files.size)
+                    if (hadHeaderItem) {
+                        notifyItemRangeInserted(1, files.size)
+                    } else {
+                        notifyItemRangeInserted(0, files.size + 1)
+                    }
                 } else {
                     notifyItemRangeInserted(0, files.size)
                 }
