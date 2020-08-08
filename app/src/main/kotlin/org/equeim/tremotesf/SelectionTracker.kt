@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.RecyclerView
 
+import java.lang.ref.WeakReference
 import java.util.Collections
 
 
@@ -53,7 +54,8 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     @Suppress("LeakingThis")
     private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
 
-    private val handler = SelectionTrackerHandler()
+    @Suppress("LeakingThis")
+    private val handler = SelectionTrackerHandler(this)
 
     private var actionMode: ActionMode? = null
 
@@ -319,12 +321,13 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
         }
     }
 
-    private inner class SelectionTrackerHandler : Handler() {
+    private class SelectionTrackerHandler(selectionTracker: SelectionTracker<*>) : Handler() {
+        private val selectionTrackerWeak = WeakReference(selectionTracker)
         private val msgUpdateActionMode = 0
 
         override fun handleMessage(msg: Message) {
             if (msg.what == msgUpdateActionMode) {
-                updateActionMode()
+                selectionTrackerWeak.get()?.updateActionMode()
             }
         }
 
