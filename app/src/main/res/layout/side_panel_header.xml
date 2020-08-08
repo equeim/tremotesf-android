@@ -11,8 +11,7 @@
         android:id="@+id/servers_view_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/horizontal_edge_padding"
-        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:hint="@string/server">
@@ -29,8 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="@dimen/horizontal_edge_padding"
-        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:text="@string/connection_settings"/>
@@ -45,8 +43,7 @@
         android:id="@+id/list_settings_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/horizontal_edge_padding"
-        android:layout_marginRight="@dimen/horizontal_edge_padding"
+        android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
         android:orientation="vertical">
 

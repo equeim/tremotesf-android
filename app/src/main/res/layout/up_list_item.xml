@@ -10,7 +10,6 @@
     android:drawablePadding="8dp"
     android:drawableStart="@drawable/ic_folder_24dp"
     android:gravity="center_vertical"
-    android:paddingLeft="@dimen/horizontal_edge_padding"
-    android:paddingRight="@dimen/horizontal_edge_padding"
+    android:paddingHorizontal="@dimen/horizontal_edge_padding"
     android:text="@string/parent_directory_list_item_label"
     android:textAppearance="?attr/textAppearanceListItemSmall"/>

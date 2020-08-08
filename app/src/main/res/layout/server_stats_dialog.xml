@@ -10,10 +10,8 @@
     <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dialog_horizontal_padding"
-        android:layout_marginRight="@dimen/dialog_horizontal_padding"
-        android:paddingBottom="@dimen/vertical_edge_padding"
-        android:paddingTop="@dimen/vertical_edge_padding"
+        android:layout_marginHorizontal="@dimen/dialog_horizontal_padding"
+        android:paddingVertical="@dimen/vertical_edge_padding"
         app:columnCount="2">
 
         <TextView

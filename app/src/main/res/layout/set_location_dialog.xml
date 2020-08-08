@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/dialog_horizontal_padding"
-    android:paddingRight="@dimen/dialog_horizontal_padding"
+    android:paddingHorizontal="@dimen/horizontal_edge_padding"
     android:paddingTop="@dimen/vertical_edge_padding">
 
     <include layout="@layout/download_directory_edit" android:id="@+id/download_directory_layout"/>

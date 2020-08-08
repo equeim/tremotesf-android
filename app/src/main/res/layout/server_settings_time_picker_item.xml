@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
     android:background="?attr/selectableItemBackground"
-    android:paddingLeft="@dimen/horizontal_edge_padding"
-    android:paddingRight="@dimen/horizontal_edge_padding">
+    android:paddingHorizontal="@dimen/horizontal_edge_padding">
 
     <TextView
         android:id="@+id/title_text_view"

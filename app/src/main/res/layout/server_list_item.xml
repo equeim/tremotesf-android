@@ -11,8 +11,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/selected_background"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/horizontal_edge_padding"
-        android:paddingRight="@dimen/horizontal_edge_padding">
+        android:paddingHorizontal="@dimen/horizontal_edge_padding">
 
         <RadioButton
             android:id="@+id/radio_button"
@@ -23,8 +22,7 @@
             android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginHorizontal="16dp"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"

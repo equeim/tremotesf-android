@@ -7,8 +7,7 @@
         android:id="@+id/text_field_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dialog_horizontal_padding"
-        android:layout_marginRight="@dimen/dialog_horizontal_padding"
+        android:layout_marginHorizontal="@dimen/dialog_horizontal_padding"
         android:layout_marginTop="@dimen/vertical_edge_padding">
 
         <com.google.android.material.textfield.TextInputEditText

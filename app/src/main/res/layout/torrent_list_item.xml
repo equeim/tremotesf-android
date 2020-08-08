@@ -9,10 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/selected_background"
-        android:paddingBottom="8dp"
-        android:paddingLeft="@dimen/horizontal_edge_padding"
-        android:paddingRight="@dimen/horizontal_edge_padding"
-        android:paddingTop="8dp">
+        android:paddingHorizontal="@dimen/horizontal_edge_padding"
+        android:paddingVertical="8dp">
 
         <TextView
             android:id="@+id/name_text_view"

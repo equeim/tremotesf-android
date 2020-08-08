@@ -12,8 +12,6 @@
         android:layout_height="wrap_content"
         android:autoLink="web|email"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/vertical_edge_padding"
-        android:paddingLeft="@dimen/horizontal_edge_padding"
-        android:paddingRight="@dimen/horizontal_edge_padding"
-        android:paddingTop="@dimen/vertical_edge_padding"/>
+        android:paddingHorizontal="@dimen/horizontal_edge_padding"
+        android:paddingVertical="@dimen/vertical_edge_padding" />
 </androidx.core.widget.NestedScrollView>

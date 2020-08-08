@@ -24,10 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/vertical_edge_padding"
-                android:paddingTop="@dimen/vertical_edge_padding"
-                android:paddingLeft="@dimen/horizontal_edge_padding"
-                android:paddingRight="@dimen/horizontal_edge_padding">
+                android:paddingHorizontal="@dimen/horizontal_edge_padding"
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -86,8 +84,7 @@
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                    android:paddingBottom="@dimen/linear_layout_vertical_spacing"
+                    android:paddingVertical="@dimen/linear_layout_vertical_spacing"
                     android:text="@string/proxy_settings" />
 
                 <CheckBox
@@ -102,8 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                    android:paddingBottom="@dimen/linear_layout_vertical_spacing"
+                    android:paddingVertical="@dimen/linear_layout_vertical_spacing"
                     android:text="@string/certificates" />
 
                 <CheckBox

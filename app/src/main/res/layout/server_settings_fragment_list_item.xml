@@ -6,6 +6,5 @@
     android:layout_height="?attr/listPreferredItemHeightSmall"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:paddingLeft="@dimen/horizontal_edge_padding"
-    android:paddingRight="@dimen/horizontal_edge_padding"
+    android:paddingHorizontal="@dimen/horizontal_edge_padding"
     android:textAppearance="?attr/textAppearanceListItem"/>

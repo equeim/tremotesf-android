@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/linear_layout_vertical_spacing"
-    android:paddingRight="@dimen/dialog_horizontal_padding"
-    android:paddingLeft="@dimen/dialog_horizontal_padding">
+    android:paddingHorizontal="@dimen/dialog_horizontal_padding">
 
     <CheckBox
         android:id="@+id/delete_files_check_box"

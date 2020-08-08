@@ -24,11 +24,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/horizontal_edge_padding"
-                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/vertical_edge_padding"
-                android:paddingTop="@dimen/vertical_edge_padding">
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
                 <CheckBox
                     android:id="@+id/download_queue_check_box"

@@ -33,8 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="@dimen/horizontal_edge_padding"
-                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/PlaceholderTextAppearance"/>
@@ -50,11 +49,9 @@
                 android:id="@+id/info_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/horizontal_edge_padding"
-                android:layout_marginRight="@dimen/horizontal_edge_padding"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/vertical_edge_padding"
-                android:paddingTop="@dimen/vertical_edge_padding">
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
