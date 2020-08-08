@@ -40,9 +40,11 @@ import org.equeim.tremotesf.utils.TristateCheckbox
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
 abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
-                                       private val activity: AppCompatActivity) : BaseFilesAdapter<BaseTorrentFilesAdapter.Item, BaseTorrentFilesAdapter.Directory>(rootDirectory) {
+                                       private val activity: AppCompatActivity) : BaseFilesAdapter<BaseTorrentFilesAdapter.Item, BaseTorrentFilesAdapter.Directory>() {
     var rootDirectory = rootDirectory
         private set
+
+    override var currentDirectory = rootDirectory
 
     override val hasHeaderItem: Boolean
         get() = (currentDirectory !== rootDirectory)

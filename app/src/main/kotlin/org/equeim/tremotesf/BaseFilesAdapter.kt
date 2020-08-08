@@ -24,13 +24,13 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.utils.AlphanumericComparator
 import java.util.Comparator
 
-abstract class BaseFilesAdapter<T : Any, D : T>(rootDirectory: D)  : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseFilesAdapter<T : Any, D : T>  : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
     }
 
-    protected var currentDirectory = rootDirectory
+    protected abstract var currentDirectory: D
     var items = emptyList<T>()
         protected set
 

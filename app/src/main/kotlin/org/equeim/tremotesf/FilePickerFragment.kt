@@ -38,12 +38,18 @@ import android.widget.TextView
 
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.viewBinding
+
+import kotlin.properties.Delegates
 
 
 class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
@@ -52,10 +58,12 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     private val binding by viewBinding(FilePickerFragmentBinding::bind)
     private var adapter: FilePickerAdapter? = null
 
+    private val model by viewModels<Model>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = FilePickerAdapter(this)
+        val adapter = FilePickerAdapter(this, model)
         this.adapter = adapter
 
         binding.filesView.apply {
@@ -106,9 +114,22 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         }
     }
 
-    @Suppress("DEPRECATION")
-    private class FilePickerAdapter(private val fragment: FilePickerFragment) : BaseFilesAdapter<File, File>(Environment.getExternalStorageDirectory()) {
+    class Model(savedStateHandle: SavedStateHandle) : ViewModel() {
+        companion object {
+            private const val CURRENT_DIRECTORY = "currentDirectory"
+        }
+        @Suppress("DEPRECATION")
+        val currentDirectory = savedStateHandle.getLiveData<File>(CURRENT_DIRECTORY, Environment.getExternalStorageDirectory())
+    }
+
+    private class FilePickerAdapter(private val fragment: FilePickerFragment, model: Model) : BaseFilesAdapter<File, File>() {
         private val filesFilter = { file: File -> file.isDirectory || file.name.endsWith(".torrent") }
+
+        override var currentDirectory: File by Delegates.observable(model.currentDirectory.value!!) { _, oldValue, newValue ->
+            if (newValue != oldValue) {
+                model.currentDirectory.value = newValue
+            }
+        }
 
         override val hasHeaderItem: Boolean
             get() = (currentDirectory.parentFile != null)
