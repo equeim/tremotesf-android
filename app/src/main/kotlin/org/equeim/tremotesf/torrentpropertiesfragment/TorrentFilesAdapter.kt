@@ -85,7 +85,6 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         if (firstIndex != -1) {
             notifyItemRangeChanged(firstIndex + add, items.size - firstIndex)
         }
-        selectionTracker.actionMode?.invalidate()
     }
 
     fun reset() {

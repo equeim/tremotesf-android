@@ -197,7 +197,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
     private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnClickListener {
-                if (selectionTracker.actionMode == null) {
+                if (!selectionTracker.hasSelection) {
                     navigateUp()
                 }
             }
@@ -240,7 +240,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
                 Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
             }
-            checkBox.isEnabled = (selectionTracker.actionMode == null)
+            checkBox.isEnabled = !selectionTracker.hasSelection
         }
     }
 
@@ -341,8 +341,6 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                 }
                 else -> return false
             }
-
-            selectionTracker.actionMode?.invalidate()
 
             return true
         }

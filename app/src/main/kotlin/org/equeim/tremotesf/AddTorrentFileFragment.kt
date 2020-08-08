@@ -184,7 +184,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
-                    findFragment<FilesFragment>()?.adapter?.selectionTracker?.actionMode?.finish()
+                    findFragment<FilesFragment>()?.adapter?.selectionTracker?.clearSelection()
                     hideKeyboard()
                 }
                 previousPage = position

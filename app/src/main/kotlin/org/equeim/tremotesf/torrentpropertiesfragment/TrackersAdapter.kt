@@ -126,7 +126,6 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
             this.torrent = null
             submitList(null)
-            selectionTracker.actionMode?.finish()
             return
         }
 

@@ -213,7 +213,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                     .setPositiveButton(R.string.remove) { _, _ ->
                         selectionTracker?.apply {
                             Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
-                            actionMode?.finish()
+                            clearSelection()
                         }
                     }
                     .create()

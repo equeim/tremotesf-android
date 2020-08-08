@@ -55,7 +55,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
 
     private val handler = SelectionTrackerHandler()
 
-    var actionMode: ActionMode? = null
+    private var actionMode: ActionMode? = null
 
     private val _selectedKeys = mutableSetOf<K>()
     val selectedKeys: Set<K>
@@ -115,7 +115,10 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
         updateActionMode()
     }
 
-    fun clearSelection() {
+    fun clearSelection(finishActionMode: Boolean = true) {
+        if (finishActionMode) {
+            actionMode?.finish()
+        }
         actionMode = null
 
         if (selectedKeys.isEmpty()) {
@@ -154,7 +157,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     }
 
     fun saveInstanceState(outState: Bundle) {
-        if (actionMode != null) {
+        if (hasSelection) {
             putKeysToBundle(outState)
         }
     }
@@ -216,7 +219,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            selectionTracker.clearSelection()
+            selectionTracker.clearSelection(false)
         }
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
