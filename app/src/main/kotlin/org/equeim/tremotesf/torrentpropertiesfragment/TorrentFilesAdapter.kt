@@ -70,7 +70,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     fun treeUpdated() {
         val add = if (hasHeaderItem) 1 else 0
         var firstIndex = -1
-        for ((i, item) in currentItems.withIndex()) {
+        for ((i, item) in items.withIndex()) {
             if (item.changed) {
                 if (firstIndex == -1) {
                     firstIndex = i
@@ -83,7 +83,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
             }
         }
         if (firstIndex != -1) {
-            notifyItemRangeChanged(firstIndex + add, currentItems.size - firstIndex)
+            notifyItemRangeChanged(firstIndex + add, items.size - firstIndex)
         }
         selectionTracker.actionMode?.invalidate()
     }
@@ -91,7 +91,7 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     fun reset() {
         val count = itemCount
         currentDirectory = rootDirectory
-        currentItems.clear()
+        items = emptyList()
         notifyItemRangeRemoved(0, count)
     }
 

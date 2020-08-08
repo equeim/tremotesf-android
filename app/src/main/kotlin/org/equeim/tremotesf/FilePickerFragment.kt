@@ -20,7 +20,6 @@
 package org.equeim.tremotesf
 
 import java.io.File
-import java.util.Comparator
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -30,6 +29,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.LayoutInflater
 
 import android.view.MenuItem
 import android.view.View
@@ -43,7 +43,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
-import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.viewBinding
 
 
@@ -100,80 +99,45 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 
     fun updatePlaceholder() {
-        binding.placeholder.text = if (adapter?.files?.isEmpty() == true) {
+        binding.placeholder.text = if (adapter?.items?.isEmpty() == true) {
             getString(R.string.no_files)
         } else {
             null
         }
     }
 
-    private class FilePickerAdapter(private val fragment: FilePickerFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        companion object {
-            private const val TYPE_HEADER = 0
-            private const val TYPE_ITEM = 1
-        }
-
-        @Suppress("DEPRECATION")
-        private var currentDirectory = Environment.getExternalStorageDirectory()
-        val files = mutableListOf<File>()
-
+    @Suppress("DEPRECATION")
+    private class FilePickerAdapter(private val fragment: FilePickerFragment) : BaseFilesAdapter<File, File>(Environment.getExternalStorageDirectory()) {
         private val filesFilter = { file: File -> file.isDirectory || file.name.endsWith(".torrent") }
-        private val comparator = object : Comparator<File> {
-            private val nameComparator = AlphanumericComparator()
 
-            override fun compare(file1: File,
-                                 file2: File): Int {
-                if (file1.isDirectory == file2.isDirectory) {
-                    return nameComparator.compare(file1.name, file2.name)
-                }
+        override val hasHeaderItem: Boolean
+            get() = (currentDirectory.parentFile != null)
 
-                if (file1.isDirectory) {
-                    return -1
-                }
+        override fun getItemParentDirectory(item: File): File? = item.parentFile
+        override fun getItemName(item: File): String = item.name
+        override fun itemIsDirectory(item: File): Boolean = item.isDirectory
 
-                return 1
-            }
-        }
-
-        private val hasHeaderItem: Boolean
-            get() {
-                return (currentDirectory.parentFile != null)
-            }
-
-        override fun getItemCount(): Int {
-            if (hasHeaderItem) {
-                return files.size + 1
-            }
-            return files.size
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            if (hasHeaderItem && position == 0) {
-                return TYPE_HEADER
-            }
-            return TYPE_ITEM
+        override fun getDirectoryChildren(directory: File): List<File> {
+            return directory.listFiles(filesFilter)?.asList() ?: emptyList()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
             if (viewType == TYPE_HEADER) {
-                return HeaderHolder(fragment.layoutInflater.inflate(R.layout.up_list_item,
-                                                                    parent,
-                                                                    false))
+                return HeaderHolder(inflater.inflate(R.layout.up_list_item,
+                                                     parent,
+                                                     false))
             }
-            return ItemHolder(fragment.layoutInflater.inflate(R.layout.file_picker_fragment_list_item,
-                                                              parent,
-                                                              false))
+            return ItemHolder(inflater.inflate(R.layout.file_picker_fragment_list_item,
+                                               parent,
+                                               false))
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if (holder.itemViewType == TYPE_ITEM) {
                 holder as ItemHolder
 
-                val file = if (hasHeaderItem) {
-                    files[position - 1]
-                } else {
-                    files[position]
-                }
+                val file = getItem(position)
 
                 holder.file = file
                 holder.textView.text = file.name
@@ -182,10 +146,9 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         }
 
         fun init() {
-            currentDirectory.listFiles(filesFilter)?.let { it ->
-                files.addAll(it.sortedWith(comparator))
-            }
-            notifyItemRangeInserted(1, files.size)
+            items = getDirectoryChildren(currentDirectory).sortedWith(comparator)
+            notifyItemRangeInserted(1, items.size)
+            fragment.updatePlaceholder()
         }
 
         fun navigateToHome() {
@@ -196,42 +159,8 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             }
         }
 
-        private fun navigateUp() {
-            val parentDirectory = currentDirectory.parentFile
-            if (parentDirectory != null) {
-                navigateTo(parentDirectory)
-            }
-        }
-
-        private fun navigateTo(directory: File) {
-            val hadHeaderItem = hasHeaderItem
-            currentDirectory = directory
-            val count = files.size
-            files.clear()
-            if (hadHeaderItem) {
-                if (hasHeaderItem) {
-                    notifyItemRangeRemoved(1, count)
-                } else {
-                    notifyItemRangeRemoved(0, count + 1)
-                }
-            } else {
-                notifyItemRangeRemoved(0, count)
-            }
-
-            val newFiles = currentDirectory.listFiles(filesFilter)
-            if (newFiles != null) {
-                files.addAll(newFiles.sortedWith(comparator))
-                if (hasHeaderItem) {
-                    if (hadHeaderItem) {
-                        notifyItemRangeInserted(1, files.size)
-                    } else {
-                        notifyItemRangeInserted(0, files.size + 1)
-                    }
-                } else {
-                    notifyItemRangeInserted(0, files.size)
-                }
-            }
-
+        override fun navigateTo(directory: File, directoryChildren: List<File>) {
+            super.navigateTo(directory, directoryChildren)
             fragment.updatePlaceholder()
         }
 

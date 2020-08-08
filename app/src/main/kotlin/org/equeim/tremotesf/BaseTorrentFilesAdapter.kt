@@ -19,8 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.util.Comparator
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -36,46 +34,29 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.libtremotesf.TorrentFile
-import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.utils.TristateCheckbox
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
 
 abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
-                                       private val activity: AppCompatActivity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    protected companion object {
-        const val TYPE_HEADER = 0
-        const val TYPE_ITEM = 1
-    }
-
+                                       private val activity: AppCompatActivity) : BaseFilesAdapter<BaseTorrentFilesAdapter.Item, BaseTorrentFilesAdapter.Directory>(rootDirectory) {
     var rootDirectory = rootDirectory
         private set
 
-    protected var currentDirectory = rootDirectory
-
-    protected val currentItems = mutableListOf<Item>()
-
-    protected val hasHeaderItem: Boolean
+    override val hasHeaderItem: Boolean
         get() = (currentDirectory !== rootDirectory)
-
-    private val comparator = object : Comparator<Item> {
-        private val nameComparator = AlphanumericComparator()
-
-        override fun compare(item1: Item,
-                             item2: Item): Int {
-            if (item1::class.java == item2::class.java) {
-                return nameComparator.compare(item1.name, item2.name)
-            }
-            if (item1 is Directory) {
-                return -1
-            }
-            return 1
-        }
-    }
 
     lateinit var selectionTracker: SelectionTracker<Int>
         private set
+
+    override fun getItemParentDirectory(item: Item): Directory? = item.parentDirectory
+    override fun getItemName(item: Item): String = item.name
+    override fun itemIsDirectory(item: Item): Boolean = item is Directory
+
+    override fun getDirectoryChildren(directory: Directory): List<Item> {
+        return directory.children
+    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         selectionTracker = createSelectionTrackerInt(activity,
@@ -84,13 +65,6 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                                                      this) {
             if (it == 0 && hasHeaderItem) SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT else getItem(it).row
         }
-    }
-
-    override fun getItemCount(): Int {
-        if (hasHeaderItem) {
-            return currentItems.size + 1
-        }
-        return currentItems.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -108,55 +82,9 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
     }
 
-    fun getItem(position: Int): Item {
-        return currentItems[if (hasHeaderItem) position - 1 else position]
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        if (hasHeaderItem && (position == 0)) {
-            return TYPE_HEADER
-        }
-        return TYPE_ITEM
-    }
-
     private fun navigateDown(item: Item) {
         if (item is Directory) {
             navigateTo(item)
-        }
-    }
-
-    fun navigateUp(): Boolean {
-        if (hasHeaderItem) {
-            navigateTo(currentDirectory.parentDirectory!!)
-            return true
-        }
-        return false
-    }
-
-    private fun navigateTo(directory: Directory) {
-        val hadHeaderItem = hasHeaderItem
-
-        currentDirectory = directory
-        val oldCount = currentItems.size
-        currentItems.clear()
-        if (hadHeaderItem) {
-            if (hasHeaderItem) {
-                notifyItemRangeRemoved(1, oldCount)
-            } else {
-                notifyItemRangeRemoved(0, oldCount + 1)
-            }
-        } else {
-            notifyItemRangeRemoved(0, oldCount)
-        }
-        currentItems.addAll(directory.children.sortedWith(comparator))
-        if (hasHeaderItem) {
-            if (hadHeaderItem) {
-                notifyItemRangeInserted(1, currentItems.size)
-            } else {
-                notifyItemRangeInserted(0, currentItems.size + 1)
-            }
-        } else {
-            notifyItemRangeInserted(0, currentItems.size)
         }
     }
 
@@ -196,15 +124,15 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
 
         if (root) {
-            currentItems.addAll(rootDirectory.children.sortedWith(comparator))
-            notifyItemRangeInserted(0, currentItems.size)
+            items = rootDirectory.children.sortedWith(comparator)
+            notifyItemRangeInserted(0, items.size)
         }
 
         selectionTracker.restoreInstanceState(savedInstanceState)
     }
 
     private fun getItemPosition(item: Item): Int {
-        val index = currentItems.indexOf(item)
+        val index = items.indexOf(item)
         if (index != -1 && hasHeaderItem) {
             return index + 1
         }
@@ -255,7 +183,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
         if (item != null) {
             item.name = newName
-            val index = currentItems.indexOf(item)
+            val index = items.indexOf(item)
             if (index != -1) {
                 if (hasHeaderItem) {
                     notifyItemChanged(index + 1)
@@ -337,9 +265,9 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             renameItem = menu.findItem(R.id.rename)
 
             if (hasHeaderItem) {
-                notifyItemRangeChanged(1, currentItems.size)
+                notifyItemRangeChanged(1, items.size)
             } else {
-                notifyItemRangeChanged(0, currentItems.size)
+                notifyItemRangeChanged(0, items.size)
             }
 
             return true
