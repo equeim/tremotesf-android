@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
@@ -16,10 +17,10 @@
             android:id="@+id/name_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/torrent_icon"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/torrent_icon"
-            android:textAppearance="?attr/textAppearanceListItemSmall" />
+            android:textAppearance="?attr/textAppearanceListItemSmall"
+            app:drawableLeftCompat="@drawable/torrent_icon"
+            app:drawableStartCompat="@drawable/torrent_icon" />
 
         <TextView
             android:id="@+id/size_text_view"

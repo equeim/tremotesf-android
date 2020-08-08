@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="?attr/listPreferredItemHeightSmall"
     android:background="?attr/selectableItemBackground"
-    android:drawableLeft="@drawable/file_list_item_icon"
     android:drawablePadding="8dp"
-    android:drawableStart="@drawable/file_list_item_icon"
     android:ellipsize="end"
     android:gravity="center_vertical"
     android:maxLines="1"
@@ -14,4 +13,6 @@
     android:singleLine="true"
     android:textAppearance="?attr/textAppearanceListItemSmall"
     android:clickable="true"
-    android:focusable="true"/>
+    android:focusable="true"
+    app:drawableLeftCompat="@drawable/file_list_item_icon"
+    app:drawableStartCompat="@drawable/file_list_item_icon" />
