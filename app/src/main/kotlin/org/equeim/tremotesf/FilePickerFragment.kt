@@ -41,12 +41,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.viewBinding
 
 import kotlin.properties.Delegates
@@ -78,6 +78,10 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
             adapter.init()
+        }
+
+        model.currentDirectory.observe(viewLifecycleOwner) {
+            binding.currentDirectoryTextView.text = it.absolutePath
         }
     }
 
