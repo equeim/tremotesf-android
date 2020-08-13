@@ -3,7 +3,7 @@
     <color name="list_item_selected_color">#26ffffff</color>
 
     <color name="status_bar_color">@android:color/transparent</color>
-    <color name="navigation_bar_color">@android:color/transparent</color>
+    <color name="navigation_bar_color">@color/system_bars_semi_transparent_dark</color>
 
     <color name="color_primary">#ef5350</color>
     <color name="color_on_primary">#ffffff</color>

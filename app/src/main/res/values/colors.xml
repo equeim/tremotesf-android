@@ -2,8 +2,11 @@
 <resources>
     <color name="list_item_selected_color">#26000000</color>
 
-    <color name="status_bar_color">#80000000</color>
-    <color name="navigation_bar_color">#80000000</color>
+    <color name="system_bars_semi_transparent_light">#e6ffffff</color>
+    <color name="system_bars_semi_transparent_dark">#66000000</color>
+
+    <color name="status_bar_color">@color/system_bars_semi_transparent_dark</color>
+    <color name="navigation_bar_color">@color/system_bars_semi_transparent_dark</color>
 
     <color name="color_primary">#b71c1c</color>
     <color name="color_on_primary">#ffffff</color>

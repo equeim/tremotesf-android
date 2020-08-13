@@ -152,14 +152,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         }
     }
 
-    private fun findStatusBarPlaceholderContainer(toolbar: Toolbar): LinearLayout {
-        val placeholder = toolbar.parent
-        if (placeholder is AppBarLayout) {
-            return (placeholder.parent as CoordinatorLayout).parent as LinearLayout
-        }
-        return placeholder as LinearLayout
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         addNavigationBarPadding()
@@ -249,13 +241,9 @@ fun Fragment.addNavigationBarPadding() {
 
         // Set padding for scroll view is system gestures are enabled, or reset it to zero
         scrollView?.apply {
+            clipToPadding = false
             setOnApplyWindowInsetsListener { _, insets ->
-                if (insets.isSystemGesturesEnabled) {
-                    updatePadding(bottom = insets.systemWindowInsetBottom)
-                    clipToPadding = false
-                } else {
-                    updatePadding(bottom = 0)
-                }
+                updatePadding(bottom = insets.systemWindowInsetBottom)
                 insets
             }
         }
@@ -264,15 +252,9 @@ fun Fragment.addNavigationBarPadding() {
         rootView.findChildRecursively { it is FloatingActionButton }?.apply {
             val initialMargin = marginBottom
             setOnApplyWindowInsetsListener { _, insets ->
-                if (insets.isSystemGesturesEnabled) {
-                    if (marginBottom != (initialMargin + insets.systemWindowInsetBottom)) {
-                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            bottomMargin = initialMargin + insets.systemWindowInsetBottom
-                        }
-                    }
-                } else if (marginBottom != initialMargin) {
+                if (marginBottom != (initialMargin + insets.systemWindowInsetBottom)) {
                     updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = initialMargin
+                        bottomMargin = initialMargin + insets.systemWindowInsetBottom
                     }
                 }
                 insets

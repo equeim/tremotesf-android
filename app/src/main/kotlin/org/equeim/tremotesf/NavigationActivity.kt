@@ -26,8 +26,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowInsets
 import android.widget.Checkable
 import android.widget.ImageView
 import android.widget.Toast
@@ -40,8 +38,6 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -65,12 +61,6 @@ import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.safeNavigate
 import org.equeim.tremotesf.utils.setChildrenEnabled
 
-
-val WindowInsets.isSystemGesturesEnabled: Boolean
-    get() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                systemWindowInsetBottom < systemGestureInsets.bottom
-    }
 
 class NavigationActivity : AppCompatActivity(), Logger {
     companion object {
@@ -127,22 +117,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
                             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-            binding.root.setOnApplyWindowInsetsListener { _, insets ->
-                binding.navHost.apply {
-                    if (insets.isSystemGesturesEnabled) {
-                        if (marginBottom != 0) {
-                            updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                bottomMargin = 0
-                            }
-                        }
-                    } else if (insets.systemWindowInsetBottom != marginBottom) {
-                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            bottomMargin = insets.systemWindowInsetBottom
-                        }
-                    }
-                }
-                insets
-            }
         }
 
         createdActivities.add(this)
