@@ -41,6 +41,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -403,7 +404,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(DividerItemDecoration(activity,
                                                         DividerItemDecoration.VERTICAL))
-                itemAnimator = null
+                (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
             model.status.observe(viewLifecycleOwner) {

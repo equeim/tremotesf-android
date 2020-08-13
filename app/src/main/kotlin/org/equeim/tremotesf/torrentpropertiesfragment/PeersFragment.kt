@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -80,7 +81,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             layoutManager = LinearLayoutManager(activity)
             addItemDecoration(DividerItemDecoration(activity,
                                                                DividerItemDecoration.VERTICAL))
-            itemAnimator = null
+            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
         model.peers.observe(viewLifecycleOwner, ::updateAdapter)
