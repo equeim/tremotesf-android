@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Added support of Qt 5.15
+
+### Changed
+- Added support of drawing under status bar and navigation bar
+
+### Fixed
+- Fixed displaying multiple trackers for torrent
+
 ## [2.1.1] - 2020-04-01
 ### Fixed
 - Fixed crash when torrent metadata is downloaded while torrent's files tab is active
