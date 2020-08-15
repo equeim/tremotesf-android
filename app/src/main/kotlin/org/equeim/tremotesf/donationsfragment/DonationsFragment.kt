@@ -44,7 +44,7 @@ import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.viewBinding
 
-
+@Suppress("ConstantConditionIf")
 class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
     companion object {
         private const val PAYPAL_USER = "DDQTRHTY5YV2G"

@@ -215,7 +215,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     private fun updateTorrent(torrents: List<Torrent>) {
         val newTorrent = torrents.find { it.hashString == hash }
-        if (newTorrent !== torrent) {
+        if (newTorrent != torrent) {
             torrent = newTorrent
             if (newTorrent == null) {
                 if (Rpc.isConnected) {

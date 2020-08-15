@@ -83,6 +83,8 @@ object Rpc : Logger {
     init {
         System.loadLibrary("c++_shared")
         QtNative.setClassLoader(context.classLoader)
+
+        @Suppress("ConstantConditionIf")
         if (BuildConfig.QT_HAS_ABI_SUFFIX) {
             val suffix = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 @Suppress("DEPRECATION")
@@ -204,6 +206,7 @@ object Rpc : Logger {
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
     var serverSettings: JniServerSettingsData = nativeInstance.serverSettingsData()
+        private set
     val serverStats = NonNullMutableLiveData(ServerStats(0, 0, SessionStats(), SessionStats()))
 
     val status = NonNullMutableLiveData(RpcStatus.Disconnected)

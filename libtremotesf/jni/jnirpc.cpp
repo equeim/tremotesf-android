@@ -1,7 +1,6 @@
 #include "jnirpc.h"
 
 #include <array>
-#include <string>
 
 #include <QThread>
 #include <QCoreApplication>

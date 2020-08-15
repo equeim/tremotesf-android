@@ -22,8 +22,6 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 import android.os.Bundle
 import android.view.View
 
-import androidx.fragment.app.Fragment
-
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Torrent

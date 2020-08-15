@@ -22,7 +22,6 @@ package org.equeim.tremotesf.torrentpropertiesfragment
 import android.os.Bundle
 import android.view.View
 
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager

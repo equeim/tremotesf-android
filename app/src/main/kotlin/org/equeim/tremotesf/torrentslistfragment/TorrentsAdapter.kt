@@ -479,7 +479,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val ids = requireArguments().getIntArray(TORRENT_IDS)!!
 
-            val builder = MaterialAlertDialogBuilder(requireContext());
+            val builder = MaterialAlertDialogBuilder(requireContext())
             val binding = RemoveTorrentsDialogBinding.inflate(LayoutInflater.from(builder.context))
 
             binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles

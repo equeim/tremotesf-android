@@ -64,8 +64,6 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
         if (!Rpc.isConnected) return
 
         binding?.apply {
-            val sessionDownloadedTextView = sessionDownloadedTextView ?: return
-
             val stats = Rpc.serverStats.value
             val sessionStats = stats.currentSession
             sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),

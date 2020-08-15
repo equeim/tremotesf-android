@@ -83,11 +83,11 @@ data class TrackersAdapterItem(val id: Int,
     }
 
     fun updateNextUpdateEta() {
-        if (nextUpdateTime > 0) {
+        nextUpdateEta = if (nextUpdateTime > 0) {
             val eta = nextUpdateTime - System.currentTimeMillis() / 1000
-            nextUpdateEta = if (eta < 0) -1 else eta
+            if (eta < 0) -1 else eta
         } else {
-            nextUpdateEta = -1
+            -1
         }
     }
 }
