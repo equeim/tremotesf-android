@@ -16,4 +16,6 @@
 
     <dimen name="fastscroll_handle_width">6dp</dimen>
     <dimen name="fastscroll_handle_radius">6dp</dimen>
+
+    <integer name="config_navAnimTime">300</integer>
 </resources>
