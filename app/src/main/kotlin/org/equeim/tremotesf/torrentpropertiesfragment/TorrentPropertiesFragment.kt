@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.torrentpropertiesfragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -46,7 +45,7 @@ import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.NavigationFragment
 import org.equeim.tremotesf.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.addNavigationBarPadding
+import org.equeim.tremotesf.addNavigationBarBottomPadding
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.findFragment
@@ -326,10 +325,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            addNavigationBarPadding()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                requireView().requestApplyInsets()
-            }
+            addNavigationBarBottomPadding(true)
         }
     }
 }

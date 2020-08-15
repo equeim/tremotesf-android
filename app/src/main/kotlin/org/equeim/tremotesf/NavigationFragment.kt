@@ -154,7 +154,7 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        addNavigationBarPadding()
+        addNavigationBarBottomPadding()
     }
 
     private fun findNavDestination() {
@@ -220,7 +220,7 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     protected open fun onNavigatedFrom() = Unit
 }
 
-fun Fragment.addNavigationBarPadding() {
+fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) {
     val rootView = requireView()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && rootView is ViewGroup) {
         // Find scroll view
@@ -249,7 +249,8 @@ fun Fragment.addNavigationBarPadding() {
         }
 
         // Set margin for FAB if system gestures are enabled, or reset it to its initial margin
-        rootView.findChildRecursively { it is FloatingActionButton }?.apply {
+        val fab = rootView.findChildRecursively { it is FloatingActionButton }
+        fab?.apply {
             val initialMargin = marginBottom
             setOnApplyWindowInsetsListener { _, insets ->
                 if (marginBottom != (initialMargin + insets.systemWindowInsetBottom)) {
@@ -259,6 +260,10 @@ fun Fragment.addNavigationBarPadding() {
                 }
                 insets
             }
+        }
+
+        if (requestApplyInsets && (scrollView != null || fab != null)) {
+            rootView.requestApplyInsets()
         }
     }
 }

@@ -37,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.addNavigationBarBottomPadding
 import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
 import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
@@ -67,6 +68,8 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
                 yandexDonateButton.setOnClickListener { donateYandex() }
             }
         }
+
+        addNavigationBarBottomPadding(true)
     }
 
     private fun onBillingSetup(isSetUp: Boolean) {

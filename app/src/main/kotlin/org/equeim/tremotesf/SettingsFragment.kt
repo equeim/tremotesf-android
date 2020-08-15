@@ -22,6 +22,7 @@ package org.equeim.tremotesf
 import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
@@ -54,9 +55,9 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             }
         }
 
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            super.onActivityCreated(savedInstanceState)
-            addNavigationBarPadding()
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            addNavigationBarBottomPadding()
         }
 
         override fun onDestroy() {

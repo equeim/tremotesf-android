@@ -23,6 +23,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.view.View
+import androidx.annotation.LayoutRes
 
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
@@ -98,7 +99,14 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         }
     }
 
-    class MainTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
+    open class PagerFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            addNavigationBarBottomPadding(true)
+        }
+    }
+
+    class MainTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.about).use { inputStream ->
@@ -114,7 +122,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         }
     }
 
-    class AuthorsTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
+    class AuthorsTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
@@ -131,7 +139,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         }
     }
 
-    class TranslatorsTabFragment : Fragment(R.layout.about_fragment_base_tab_fragment) {
+    class TranslatorsTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.translators).use {
@@ -140,7 +148,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         }
     }
 
-    class LicenseTabFragment : Fragment(R.layout.about_fragment_license_tab_fragment) {
+    class LicenseTabFragment : PagerFragment(R.layout.about_fragment_license_tab_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.license).use {
