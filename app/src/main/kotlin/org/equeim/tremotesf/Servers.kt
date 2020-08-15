@@ -20,6 +20,7 @@
 package org.equeim.tremotesf
 
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import kotlin.system.measureTimeMillis
@@ -48,6 +49,8 @@ import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
 private const val FILE_NAME = "servers.json"
+private const val TEMP_FILE_PREFIX = "servers"
+private const val TEMP_FILE_SUFFIX = ".json"
 
 private const val MINIMUM_PORT = 0
 private const val MAXIMUM_PORT = 65535
@@ -342,11 +345,13 @@ class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(
         val elapsed = measureTimeMillis {
             if (data != null) {
                 try {
-                    Application.instance.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use { writer ->
-                        writer.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
+                    val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
+                    temp.bufferedWriter().use {
+                        it.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
                     }
-                } catch (error: FileNotFoundException) {
-                    error("Failed to open servers file", error)
+                    if (!temp.renameTo(Application.instance.getFileStreamPath(FILE_NAME))) {
+                        error("Failed to rename temp file")
+                    }
                 } catch (error: IOException) {
                     error("Failed to save servers file", error)
                 } catch (error: JsonException) {
