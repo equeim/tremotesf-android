@@ -101,7 +101,7 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
         super.onViewStateRestored(savedInstanceState)
 
         with(binding) {
-            update(restored = priorityView.text.isNotEmpty())
+            updateView(restored = priorityView.text.isNotEmpty())
 
             globalLimitsCheckBox.setOnCheckedChangeListener { _, checked ->
                 torrent?.setHonorSessionLimits(checked)
@@ -151,10 +151,15 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
         }
     }
 
-    private fun update(restored: Boolean = false) {
-        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent ?: return
+    override fun update() {
+        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent
         this.torrent = torrent
+    }
 
+    private fun updateView(restored: Boolean) {
+        update()
+
+        val torrent = this.torrent ?: return
         val data = torrent.data
 
         with(binding) {

@@ -353,8 +353,10 @@ object Rpc : Logger {
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
         val newTorrents = torrents.value.toMutableList()
 
+        val deleteNativeObjects = ArrayList<TorrentData>(removed.size + changed.size)
+
         for (index in removed) {
-            newTorrents.removeAt(index).data.delete()
+            deleteNativeObjects.add(newTorrents.removeAt(index).data)
         }
 
         if (changed.isNotEmpty()) {
@@ -365,8 +367,8 @@ object Rpc : Logger {
             while (torrentsIter.hasNext()) {
                 val torrent = torrentsIter.next()
                 if (torrent.id == changedId) {
+                    deleteNativeObjects.add(torrent.data)
                     torrentsIter.set(Torrent(changedTorrentData, context, torrent))
-                    torrent.data.delete()
                     if (changedIter.hasNext()) {
                         changedTorrentData = changedIter.next()
                         changedId = changedTorrentData.id
@@ -384,6 +386,7 @@ object Rpc : Logger {
         }
 
         torrents.value = newTorrents
+        deleteNativeObjects.forEach(TorrentData::delete)
 
         if (isConnected) {
             handleWorkerCompleter()
@@ -430,13 +433,16 @@ object Rpc : Logger {
 
     private fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
         val stats = serverStats.value
-        stats.downloadSpeed = downloadSpeed
-        stats.uploadSpeed = uploadSpeed
-        stats.currentSession.delete()
-        stats.currentSession = currentSession
-        stats.total.delete()
-        stats.total = total
-        serverStats.value = stats
+        val oldCurrent = stats.currentSession
+        val oldTotal = stats.total
+        serverStats.value = stats.apply {
+            this.downloadSpeed = downloadSpeed
+            this.uploadSpeed = uploadSpeed
+            this.currentSession = currentSession
+            this.total = total
+        }
+        oldCurrent.delete()
+        oldTotal.delete()
     }
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {
