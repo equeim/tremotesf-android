@@ -36,6 +36,7 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.res.use
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
@@ -193,11 +194,12 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             requireView().findViewById<FrameLayout>(R.id.content_frame)?.let { contentFrame ->
                 val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
-                ta.getDrawable(0)?.let { windowContentOverlay ->
-                    contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
-                                                                    windowContentOverlay))
+                ta.use {
+                    it.getDrawable(0)?.let { windowContentOverlay ->
+                        contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
+                                                                        windowContentOverlay))
+                    }
                 }
-                ta.recycle()
             }
         }
     }

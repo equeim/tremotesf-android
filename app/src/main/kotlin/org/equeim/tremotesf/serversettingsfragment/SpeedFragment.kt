@@ -36,6 +36,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TimePicker
 
+import androidx.core.content.res.use
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 
@@ -199,8 +200,9 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
                                                       intArrayOf(android.R.attr.title),
                                                       0,
                                                       0)
-        binding.titleTextView.text = ta.getText(0)
-        ta.recycle()
+        ta.use {
+            binding.titleTextView.text = ta.getText(0)
+        }
 
         setOnClickListener {
             findNavController().safeNavigate(R.id.action_speedFragment_to_timePickerFragment,

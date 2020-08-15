@@ -24,6 +24,7 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 
+import androidx.core.content.res.use
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 import org.equeim.tremotesf.R
@@ -37,10 +38,11 @@ class NonFilteringAutoCompleteTextView(context: Context,
 
     init {
         val ta = context.obtainStyledAttributes(attrs, R.styleable.NonFilteringAutoCompleteTextView, defStyleAttr, 0)
-        if (ta.getBoolean(R.styleable.NonFilteringAutoCompleteTextView_readOnly, false)) {
-            inputType = InputType.TYPE_NULL
+        ta.use {
+            if (ta.getBoolean(R.styleable.NonFilteringAutoCompleteTextView_readOnly, false)) {
+                inputType = InputType.TYPE_NULL
+            }
         }
-        ta.recycle()
     }
 
     override fun performFiltering(text: CharSequence?, keyCode: Int) {}
