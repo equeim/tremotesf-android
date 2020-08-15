@@ -21,27 +21,43 @@ package org.equeim.tremotesf.utils
 
 import android.util.Log
 
+private val Class<*>.loggerTag: String
+    get() {
+        var decl: Class<*>? = declaringClass ?: return simpleName.ifEmpty { name }
+        val builder = StringBuilder(simpleName)
+        while (decl != null) {
+            val name = decl.simpleName
+            builder.apply {
+                ensureCapacity(name.length + 1)
+                insert(0, ".")
+                insert(0, name)
+            }
+            decl = decl.declaringClass
+        }
+        return builder.toString()
+    }
+
 interface Logger {
-    private val tag: String
-        get() = javaClass.simpleName
+    private val loggerTag: String
+        get() = javaClass.loggerTag
 
     fun verbose(msg: String, tr: Throwable? = null) {
-        Log.v(tag, msg, tr)
+        Log.v(loggerTag, msg, tr)
     }
 
     fun debug(msg: String, tr: Throwable? = null) {
-        Log.d(tag, msg, tr)
+        Log.d(loggerTag, msg, tr)
     }
 
     fun info(msg: String, tr: Throwable? = null) {
-        Log.i(tag, msg, tr)
+        Log.i(loggerTag, msg, tr)
     }
 
     fun warn(msg: String, tr: Throwable? = null) {
-        Log.w(tag, msg, tr)
+        Log.w(loggerTag, msg, tr)
     }
 
     fun error(msg: String, tr: Throwable? = null) {
-        Log.e(tag, msg, tr)
+        Log.e(loggerTag, msg, tr)
     }
 }
