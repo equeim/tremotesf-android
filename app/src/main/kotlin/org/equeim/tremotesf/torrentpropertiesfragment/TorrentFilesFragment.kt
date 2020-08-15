@@ -123,8 +123,12 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
     }
 
     override fun onNavigatedFrom() {
-        model.state.removeObservers(viewLifecycleOwner)
-        model.torrent = null
+        with(model) {
+            if (view != null) {
+                state.removeObservers(viewLifecycleOwner)
+            }
+            torrent = null
+        }
     }
 
     private fun updatePlaceholder(modelState: TreeModel.State) {
