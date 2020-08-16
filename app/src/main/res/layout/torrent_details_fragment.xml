@@ -314,8 +314,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:autoLink="web"
-            android:ellipsize="end"
-            android:maxLines="2"
             android:textIsSelectable="true"
             app:layout_columnWeight="2"/>
     </androidx.gridlayout.widget.GridLayout>
