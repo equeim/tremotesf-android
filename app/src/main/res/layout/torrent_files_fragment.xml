@@ -25,6 +25,7 @@
         android:id="@+id/files_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="none"
         app:handleColor="?attr/colorControlNormal"
         app:bubbleColor="?attr/colorControlActivated" />
 </FrameLayout>
