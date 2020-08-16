@@ -193,8 +193,8 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
     var sortOrder: SortOrder by resortDelegate(Settings.torrentsSortOrder)
 
     var statusFilterMode: StatusFilterMode by updateDelegate(Settings.torrentsStatusFilter)
-    var trackerFilter: String by updateDelegate("")
-    var directoryFilter: String by updateDelegate("")
+    var trackerFilter: String by updateDelegate(Settings.torrentsTrackerFilter)
+    var directoryFilter: String by updateDelegate(Settings.torrentsDirectoryFilter)
     var filterString: String by updateDelegate("")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
