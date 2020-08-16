@@ -74,6 +74,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }
 
+    private var savedInstanceState: Bundle? = null
+
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
@@ -86,6 +88,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navigatedFrom = savedInstanceState?.getBoolean(NAVIGATED_FROM_KEY) ?: false
+        this.savedInstanceState = savedInstanceState
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -216,14 +219,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        torrentsAdapter?.apply {
-            restoreInstanceState(savedInstanceState)
-            update()
-        }
-    }
-
     override fun onDestroyView() {
         menu = null
         searchMenuItem = null
@@ -326,7 +321,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             (trackersView.adapter as TrackersViewAdapter).update()
             (directoriesView.adapter as DirectoriesViewAdapter).update()
         }
-        torrentsAdapter?.update(torrents)
+
+        torrentsAdapter?.updateAndRestoreInstanceState(torrents, savedInstanceState)
+        savedInstanceState = null
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
                 if (Rpc.isConnected) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false

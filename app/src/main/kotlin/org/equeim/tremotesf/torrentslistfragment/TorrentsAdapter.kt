@@ -222,16 +222,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         submitList(torrents.filter(filterPredicate).sortedWith(comparator))
     }
 
-    fun saveInstanceState(outState: Bundle) {
-        outState.putBundle(INSTANCE_STATE, bundleOf(SORT_MODE to sortMode.ordinal,
-                                                    SORT_ORDER to sortOrder.ordinal,
-                                                    STATUS_FILTER_MODE to statusFilterMode.ordinal,
-                                                    TRACKER_FILTER to trackerFilter,
-                                                    DIRECTORY_FILTER to directoryFilter))
-        selectionTracker.saveInstanceState(outState)
-    }
-
-    fun restoreInstanceState(savedInstanceState: Bundle?) {
+    fun updateAndRestoreInstanceState(torrents: List<Torrent>, savedInstanceState: Bundle?) {
         savedInstanceState?.getBundle(INSTANCE_STATE)?.let { state ->
             sortMode = SortMode.values()[state.getInt(SORT_MODE)]
             sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
@@ -239,7 +230,17 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
             trackerFilter = state.getString(TRACKER_FILTER, "")
             directoryFilter = state.getString(DIRECTORY_FILTER, "")
         }
+        update(torrents)
         selectionTracker.restoreInstanceState(savedInstanceState)
+    }
+
+    fun saveInstanceState(outState: Bundle) {
+        outState.putBundle(INSTANCE_STATE, bundleOf(SORT_MODE to sortMode.ordinal,
+                                                    SORT_ORDER to sortOrder.ordinal,
+                                                    STATUS_FILTER_MODE to statusFilterMode.ordinal,
+                                                    TRACKER_FILTER to trackerFilter,
+                                                    DIRECTORY_FILTER to directoryFilter))
+        selectionTracker.saveInstanceState(outState)
     }
 
     inner class TorrentsViewHolder(multilineName: Boolean,
