@@ -88,7 +88,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
         model.state.observe(viewLifecycleOwner) { state ->
             if (state == TreeModel.State.TreeCreated) {
                 if (adapter.rootDirectory != model.rootDirectory || savedInstanceState != null) {
-                    adapter.restoreInstanceState(this.savedInstanceState, model.rootDirectory)
+                    adapter.initAndRestoreInstanceState(this.savedInstanceState, model.rootDirectory)
                     this.savedInstanceState = null
                 } else {
                     adapter.treeUpdated()

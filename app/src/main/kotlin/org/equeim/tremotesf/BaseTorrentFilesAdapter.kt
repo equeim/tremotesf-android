@@ -101,7 +101,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         selectionTracker.saveInstanceState(outState)
     }
 
-    fun restoreInstanceState(savedInstanceState: Bundle?, newRootDirectory: Directory? = null) {
+    fun initAndRestoreInstanceState(savedInstanceState: Bundle?, newRootDirectory: Directory? = null) {
         if (newRootDirectory != null) {
             rootDirectory = newRootDirectory
             currentDirectory = rootDirectory

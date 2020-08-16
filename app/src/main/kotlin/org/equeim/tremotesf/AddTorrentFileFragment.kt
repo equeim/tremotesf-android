@@ -408,7 +408,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
 
             model.status.observe(viewLifecycleOwner) {
-                adapter.restoreInstanceState(this.savedInstanceState)
+                adapter.initAndRestoreInstanceState(this.savedInstanceState)
                 this.savedInstanceState = null
             }
         }
