@@ -15,6 +15,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_baseline_share_24"
+        android:title="@string/share"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/check"
         android:icon="@drawable/ic_find_in_page_24dp"
         android:orderInCategory="2"

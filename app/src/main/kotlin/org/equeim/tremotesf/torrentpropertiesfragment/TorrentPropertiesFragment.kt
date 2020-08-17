@@ -48,6 +48,7 @@ import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.addNavigationBarBottomPadding
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.utils.Utils
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.popDialog
@@ -173,6 +174,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.remove -> navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
                                         bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
                                                  TorrentsAdapter.RemoveTorrentDialogFragment.POP_BACK_STACK to true))
+                R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
                 else -> return false
             }
         }

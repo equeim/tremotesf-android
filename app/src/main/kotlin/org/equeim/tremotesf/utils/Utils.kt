@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.utils
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
@@ -100,6 +101,18 @@ object Utils : Logger {
             ta.use {
                 progressBar.progressDrawable.colorFilter = PorterDuffColorFilter(ta.getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
             }
+        }
+    }
+
+    fun shareTorrents(magnetLinks: List<String>, context: Context) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, magnetLinks.joinToString("\n"))
+        }
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_torrent)))
+        } else {
+            warn("Failed to share torrent, intent $intent did not resolve activity")
         }
     }
 }

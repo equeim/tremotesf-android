@@ -467,6 +467,8 @@
 
     <string name="proxy_settings">Proxy settings</string>
     <string name="proxy_type">Proxy type</string>
+    <string name="share">Share</string>
+    <string name="share_torrent">Share torrent</string>
 
     <string-array name="proxy_type_items">
         <item>Default</item>

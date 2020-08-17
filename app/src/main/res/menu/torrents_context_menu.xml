@@ -10,6 +10,11 @@
         android:title="@string/pause"/>
 
     <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_baseline_share_24"
+        android:title="@string/share" />
+
+    <item
         android:id="@+id/check"
         android:icon="@drawable/ic_find_in_page_24dp"
         android:title="@string/check_local_data"/>

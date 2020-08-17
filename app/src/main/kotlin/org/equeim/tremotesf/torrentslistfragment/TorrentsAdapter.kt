@@ -356,15 +356,19 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
     }
 
     private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
-        private var startItem: MenuItem? = null
-        private var pauseItem: MenuItem? = null
-        private var setLocationItem: MenuItem? = null
+        private inner class MenuItems(val startItem: MenuItem,
+                                      val pauseItem: MenuItem,
+                                      val setLocationItem: MenuItem,
+                                      val shareItem: MenuItem)
+
+        private var menuItems: MenuItems? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
-            startItem = menu.findItem(R.id.start)
-            pauseItem = menu.findItem(R.id.pause)
-            setLocationItem = menu.findItem(R.id.set_location)
+            menuItems = MenuItems(menu.findItem(R.id.start),
+                                  menu.findItem(R.id.pause),
+                                  menu.findItem(R.id.set_location),
+                                  menu.findItem(R.id.share))
             return true
         }
 
@@ -377,11 +381,15 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
                     TorrentData.Status.Errored -> true
                     else -> false
                 }
-                startItem!!.isEnabled = startEnabled
-                pauseItem!!.isEnabled = !startEnabled
+                menuItems?.apply {
+                    startItem.isEnabled = startEnabled
+                    pauseItem.isEnabled = !startEnabled
+                }
             } else {
-                startItem!!.isEnabled = true
-                pauseItem!!.isEnabled = true
+                menuItems?.apply {
+                    startItem.isEnabled = true
+                    pauseItem.isEnabled = true
+                }
             }
 
             return true
@@ -417,6 +425,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
                 R.id.remove -> activity.findNavController(R.id.nav_host)
                         .safeNavigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
                                       bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to getTorrentIds()))
+                R.id.share -> {
+                    val magnetLinks = currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted()).map { it.data.magnetLink }
+                    Utils.shareTorrents(magnetLinks, activity)
+                }
                 else -> return false
             }
 
@@ -424,9 +436,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            startItem = null
-            pauseItem = null
-            setLocationItem = null
+            menuItems = null
             super.onDestroyActionMode(mode)
         }
 
