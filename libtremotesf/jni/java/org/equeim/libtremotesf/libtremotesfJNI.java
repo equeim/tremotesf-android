@@ -143,6 +143,7 @@ public class libtremotesfJNI {
   public final static native int TorrentData_id_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_hashString_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_name_get(long jarg1, TorrentData jarg1_);
+  public final static native String TorrentData_magnetLink_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_errorString_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_status_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_queuePosition_get(long jarg1, TorrentData jarg1_);

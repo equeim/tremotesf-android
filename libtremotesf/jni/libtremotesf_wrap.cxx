@@ -4082,6 +4082,23 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
 }
 
 
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1magnetLink_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (QString *) & ((arg1)->magnetLink);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
 SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1errorString_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;

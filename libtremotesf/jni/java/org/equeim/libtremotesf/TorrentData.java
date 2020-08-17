@@ -48,6 +48,10 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_name_get(swigCPtr, this);
 }
 
+  public String getMagnetLink() {
+    return libtremotesfJNI.TorrentData_magnetLink_get(swigCPtr, this);
+}
+
   public String getErrorString() {
     return libtremotesfJNI.TorrentData_errorString_get(swigCPtr, this);
 }
