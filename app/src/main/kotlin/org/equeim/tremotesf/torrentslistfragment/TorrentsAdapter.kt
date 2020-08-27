@@ -358,18 +358,14 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
 
     private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         private inner class MenuItems(val startItem: MenuItem,
-                                      val pauseItem: MenuItem,
-                                      val setLocationItem: MenuItem,
-                                      val shareItem: MenuItem)
+                                      val pauseItem: MenuItem)
 
         private var menuItems: MenuItems? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
             menuItems = MenuItems(menu.findItem(R.id.start),
-                                  menu.findItem(R.id.pause),
-                                  menu.findItem(R.id.set_location),
-                                  menu.findItem(R.id.share))
+                                  menu.findItem(R.id.pause))
             return true
         }
 
