@@ -117,9 +117,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
-    fun update() {
-        val torrent = torrentPropertiesFragment.torrent
-
+    fun update(torrent: Torrent?) {
         if (torrent == null) {
             if (this.torrent == null) {
                 return

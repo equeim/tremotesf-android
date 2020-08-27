@@ -80,8 +80,8 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
 
     override fun update() {
         trackersAdapter?.let { adapter ->
-            adapter.update()
             val torrent = torrentPropertiesFragment.torrent
+            adapter.update(torrent)
             binding.placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
                 View.VISIBLE
             } else {
