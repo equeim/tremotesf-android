@@ -306,7 +306,8 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
 
     open inner class BaseTorrentsViewHolder(multilineName: Boolean,
                                             itemView: View) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
-        lateinit var torrent: Torrent
+        protected lateinit var torrent: Torrent
+            private set
 
         protected val context: Context = itemView.context
 

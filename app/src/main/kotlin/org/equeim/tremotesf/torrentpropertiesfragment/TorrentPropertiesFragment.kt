@@ -66,6 +66,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     lateinit var hash: String
     var torrent: Torrent? = null
+        private set
 
     val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)
 
