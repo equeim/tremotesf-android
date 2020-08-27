@@ -149,7 +149,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
                     oldTorrent?.peersEnabled = false
                     reset()
                     Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
-                } else {
+                } else if (oldTorrent == null) {
                     torrent.peersEnabled = true
                     Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
                 }

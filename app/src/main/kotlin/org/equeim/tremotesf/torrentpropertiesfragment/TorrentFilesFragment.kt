@@ -179,7 +179,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                     oldTorrent?.filesEnabled = false
                     reset()
                     Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
-                } else {
+                } else if (oldTorrent == null) {
                     torrent.filesEnabled = true
                     state.value = State.Loading
                     Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)

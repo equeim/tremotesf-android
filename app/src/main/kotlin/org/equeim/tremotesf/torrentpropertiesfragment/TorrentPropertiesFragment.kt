@@ -218,27 +218,28 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     private fun updateTorrent(torrents: List<Torrent>) {
         val newTorrent = torrents.find { it.hashString == hash }
         if (newTorrent != torrent) {
+            val oldTorrent = torrent
             torrent = newTorrent
-            if (newTorrent == null) {
-                if (Rpc.isConnected) {
-                    binding.placeholder.text = getString(R.string.torrent_removed)
+
+            if (newTorrent == null || oldTorrent == null) {
+                if (newTorrent == null) {
+                    if (Rpc.isConnected) {
+                        binding.placeholder.text = getString(R.string.torrent_removed)
+                    }
+                    navController.popDialog()
                 }
-                navController.popDialog()
+
+                updatePlaceholderVisibility()
+                updateMenu()
+
+                for (fragment in childFragmentManager.fragments) {
+                    (fragment as? PagerFragment)?.update()
+                }
             }
-            updatePlaceholderVisibility()
-        }
-        updateView()
-    }
 
-    private fun updateView() {
-        torrent?.let { torrent ->
-            toolbar?.title = torrent.name
-        }
-
-        updateMenu()
-
-        for (fragment in childFragmentManager.fragments) {
-            (fragment as? PagerFragment)?.update()
+            torrent?.let { torrent ->
+                toolbar?.title = torrent.name
+            }
         }
     }
 
