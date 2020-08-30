@@ -232,14 +232,14 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
                 updatePlaceholderVisibility()
                 updateMenu()
-
-                for (fragment in childFragmentManager.fragments) {
-                    (fragment as? PagerFragment)?.update()
-                }
             }
 
             torrent?.let { torrent ->
                 toolbar?.title = torrent.name
+            }
+
+            for (fragment in childFragmentManager.fragments) {
+                (fragment as? PagerFragment)?.update()
             }
         }
     }
