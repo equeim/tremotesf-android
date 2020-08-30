@@ -96,8 +96,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         setupToolbar()
         createStatusBarPlaceholder()
 
-        setPreLollipopContentShadow()
-
         navController.addOnDestinationChangedListener(destinationListener)
     }
 
@@ -188,20 +186,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         toolbar = null
         navController.removeOnDestinationChangedListener(destinationListener)
         super.onDestroyView()
-    }
-
-    private fun setPreLollipopContentShadow() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            requireView().findViewById<FrameLayout>(R.id.content_frame)?.let { contentFrame ->
-                val ta = contentFrame.context.theme.obtainStyledAttributes(intArrayOf(android.R.attr.windowContentOverlay))
-                ta.use {
-                    it.getDrawable(0)?.let { windowContentOverlay ->
-                        contentFrame.foreground = LayerDrawable(arrayOf(windowContentOverlay,
-                                                                        windowContentOverlay))
-                    }
-                }
-            }
-        }
     }
 
     fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {

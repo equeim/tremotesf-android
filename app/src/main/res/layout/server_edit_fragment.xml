@@ -4,167 +4,159 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include
+    <include layout="@layout/toolbar" />
 
-        layout="@layout/toolbar" />
-
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="vertical">
 
-        <ScrollView
-            android:id="@+id/scroll_view"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/horizontal_edge_padding"
+            android:paddingVertical="@dimen/vertical_edge_padding">
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="@dimen/horizontal_edge_padding"
-                android:paddingVertical="@dimen/vertical_edge_padding">
+                android:hint="@string/name">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/name_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/name">
+                    android:inputType="text"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/name_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"/>
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/address_edit_hint">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/address_edit_hint">
+                    android:inputType="textUri"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/address_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textUri"/>
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/port">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/port_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/port">
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/port_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"/>
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/api_path">
 
-                <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/api_path_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/api_path">
+                    android:inputType="textUri"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/api_path_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textUri"/>
-                </com.google.android.material.textfield.TextInputLayout>
+            <Button
+                android:id="@+id/proxy_settings_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:paddingVertical="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/proxy_settings" />
 
-                <Button
-                    android:id="@+id/proxy_settings_button"
+            <CheckBox
+                android:id="@+id/https_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/https"/>
+
+            <Button
+                android:id="@+id/certificated_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:paddingVertical="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/certificates" />
+
+            <CheckBox
+                android:id="@+id/authentication_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/authentication"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/username_edit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:hint="@string/username">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/username_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:paddingVertical="@dimen/linear_layout_vertical_spacing"
-                    android:text="@string/proxy_settings" />
+                    android:inputType="textNoSuggestions" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <CheckBox
-                    android:id="@+id/https_check_box"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_edit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:hint="@string/password">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:text="@string/https"/>
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/certificated_button"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:hint="@string/update_interval">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/update_interval_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:paddingVertical="@dimen/linear_layout_vertical_spacing"
-                    android:text="@string/certificates" />
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <CheckBox
-                    android:id="@+id/authentication_check_box"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/timeout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/timeout_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:text="@string/authentication"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/username_edit_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:hint="@string/username">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/username_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textNoSuggestions" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/password_edit_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:hint="@string/password">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/password_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-                    android:hint="@string/update_interval">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/update_interval_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/timeout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/timeout_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"/>
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-        </ScrollView>
-    </FrameLayout>
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

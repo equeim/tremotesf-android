@@ -11,28 +11,6 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <TextView
-                android:id="@+id/placeholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-                android:gravity="center_horizontal"
-                android:textAppearance="@style/PlaceholderTextAppearance"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/files_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"/>
-        </FrameLayout>
-
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
@@ -54,5 +32,26 @@
                 android:textColor="?android:textColorSecondary"
                 android:maxLines="3"/>
         </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <TextView
+                android:id="@+id/placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/PlaceholderTextAppearance"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/files_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+        </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

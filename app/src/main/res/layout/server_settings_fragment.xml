@@ -33,20 +33,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
+        <include layout="@layout/toolbar" />
 
-            layout="@layout/toolbar" />
-
-        <FrameLayout
-            android:id="@+id/content_frame"
+        <ListView
+            android:id="@+id/list_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <ListView
-                android:id="@+id/list_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
+            android:layout_weight="1" />
     </LinearLayout>
 </FrameLayout>
