@@ -589,6 +589,8 @@ object Rpc : Logger {
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
+            updateWorkerCompleter?.set(Result.success())
+
             return CallbackToFutureAdapter.getFuture { completer ->
                 updateWorkerCompleter = completer
                 if (status.value == RpcStatus.Disconnected) {
