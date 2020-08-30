@@ -3,12 +3,14 @@
 ## [Unreleased]
 ### Added
 - Added support of Qt 5.15
+- Added support of sharing torrents' magnet links
 
 ### Changed
 - Added support of drawing under status bar and navigation bar
 
 ### Fixed
 - Fixed displaying multiple trackers for torrent
+- Fixed displaying speed limits in kB/s
 
 ## [2.1.1] - 2020-04-01
 ### Fixed
