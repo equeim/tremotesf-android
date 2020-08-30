@@ -232,8 +232,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
     }
 
     private fun setupDrawer() {
-        binding.drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             binding.sidePanel.apply {
                 setOnApplyWindowInsetsListener { _, insets ->
