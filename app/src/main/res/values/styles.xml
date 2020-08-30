@@ -23,7 +23,7 @@
 
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-        <item name="appBarLayoutStyle">@style/AppBarLayout</item>
+        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
     </style>
 
     <style name="AppTheme.Old">
@@ -44,10 +44,5 @@
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <style name="AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
-        <item name="android:elevation" tools:targetApi="21">@dimen/action_bar_elevation</item>
-        <item name="android:background">?colorSurface</item>
     </style>
 </resources>

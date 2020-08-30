@@ -55,6 +55,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.MaterialShapeUtils
 
 import org.equeim.tremotesf.utils.findChildRecursively
 import org.equeim.tremotesf.utils.safeNavigate
@@ -119,6 +120,15 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                 inflateMenu(toolbarMenuRes)
                 setOnMenuItemClickListener(::onToolbarMenuItemClicked)
             }
+
+            val parent = parent as View
+            if (parent is AppBarLayout) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    MaterialShapeUtils.setElevation(parent, resources.getDimension(R.dimen.action_bar_elevation))
+                }
+            } else {
+                parent.background = MaterialShapeDrawable.createWithElevationOverlay(requireContext(), resources.getDimension(R.dimen.action_bar_elevation))
+            }
         }
     }
 
@@ -141,7 +151,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                 container.addView(placeholder, 0)
             } else {
                 container.apply {
-                    background = MaterialShapeDrawable.createWithElevationOverlay(requireContext(), ViewCompat.getElevation(this))
                     setOnApplyWindowInsetsListener { _, insets ->
                         updatePadding(top = insets.systemWindowInsetTop)
                         insets
