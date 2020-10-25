@@ -7,6 +7,7 @@ pluginManagement {
         kotlin("android") version(kotlin)
         kotlin("android.extensions") version(kotlin)
         kotlin("plugin.serialization") version(kotlin)
+        id("com.github.ben-manes.versions") version("0.33.0")
     }
     resolutionStrategy {
         eachPlugin {

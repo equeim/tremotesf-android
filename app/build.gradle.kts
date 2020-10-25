@@ -1,11 +1,13 @@
 import com.android.build.VariantOutput
 import com.android.build.gradle.api.ApkVariantOutput
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
     kotlin("plugin.serialization")
+    id("com.github.ben-manes.versions")
 }
 
 
@@ -188,4 +190,17 @@ dependencies {
 
     "googleImplementation"("com.android.billingclient:billing:${Versions.billing}")
     "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
+}
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
 }
