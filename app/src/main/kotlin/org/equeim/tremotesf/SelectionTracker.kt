@@ -21,6 +21,7 @@ package org.equeim.tremotesf
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
@@ -321,7 +322,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
         }
     }
 
-    private class SelectionTrackerHandler(selectionTracker: SelectionTracker<*>) : Handler() {
+    private class SelectionTrackerHandler(selectionTracker: SelectionTracker<*>) : Handler(Looper.getMainLooper()) {
         private val selectionTrackerWeak = WeakReference(selectionTracker)
         private val msgUpdateActionMode = 0
 

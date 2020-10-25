@@ -19,13 +19,11 @@
 
 package org.equeim.tremotesf
 
-import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 
@@ -36,7 +34,6 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.res.use
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
@@ -141,20 +138,18 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
                 val placeholder = View(context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
                     background = (toolbar.parent as View).background
-                    setOnApplyWindowInsetsListener { _, insets ->
-                        updateLayoutParams {
-                            height = insets.systemWindowInsetTop
-                        }
-                        insets
+                }
+                ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
+                    view.updateLayoutParams {
+                        height = insets.systemWindowInsetTop
                     }
+                    insets
                 }
                 container.addView(placeholder, 0)
             } else {
-                container.apply {
-                    setOnApplyWindowInsetsListener { _, insets ->
-                        updatePadding(top = insets.systemWindowInsetTop)
-                        insets
-                    }
+                ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
+                    view.updatePadding(top = insets.systemWindowInsetTop)
+                    insets
                 }
             }
         }
@@ -235,22 +230,23 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) 
         }
 
         // Set padding for scroll view is system gestures are enabled, or reset it to zero
-        scrollView?.apply {
-            clipToPadding = false
-            setOnApplyWindowInsetsListener { _, insets ->
-                updatePadding(bottom = insets.systemWindowInsetBottom)
+        if (scrollView != null) {
+            scrollView.clipToPadding = false
+            ViewCompat.setOnApplyWindowInsetsListener(scrollView) { view, insets ->
+                view.updatePadding(bottom = insets.systemWindowInsetBottom)
                 insets
             }
         }
 
         // Set margin for FAB if system gestures are enabled, or reset it to its initial margin
         val fab = rootView.findChildRecursively { it is FloatingActionButton }
-        fab?.apply {
-            val initialMargin = marginBottom
-            setOnApplyWindowInsetsListener { _, insets ->
-                if (marginBottom != (initialMargin + insets.systemWindowInsetBottom)) {
-                    updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = initialMargin + insets.systemWindowInsetBottom
+        if (fab != null) {
+            val initialMargin = fab.marginBottom
+            ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
+                val systemWindow = insets.systemWindowInsets
+                if (view.marginBottom != (initialMargin + systemWindow.bottom)) {
+                    view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = initialMargin + systemWindow.bottom
                     }
                 }
                 insets

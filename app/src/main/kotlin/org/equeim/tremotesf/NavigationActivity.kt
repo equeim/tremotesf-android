@@ -39,6 +39,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
@@ -116,17 +117,24 @@ class NavigationActivity : AppCompatActivity(), Logger {
         setContentView(binding.root)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.decorView.systemUiVisibility = (
-                    window.decorView.systemUiVisibility or
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-            binding.root.setOnApplyWindowInsetsListener { _, insets ->
-                binding.root.apply {
-                    if (marginLeft != insets.systemWindowInsetLeft || marginRight != insets.systemWindowInsetRight) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+            } else {
+                @Suppress("DEPRECATION")
+                window.decorView.systemUiVisibility = (
+                        window.decorView.systemUiVisibility or
+                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+                val systemWindow = insets.systemWindowInsets
+                view.apply {
+                    if (marginLeft != systemWindow.left || marginRight != systemWindow.right) {
                         updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            leftMargin = insets.systemWindowInsetLeft
-                            rightMargin = insets.systemWindowInsetRight
+                            leftMargin = systemWindow.left
+                            rightMargin = systemWindow.right
                         }
                     }
                 }
@@ -233,11 +241,9 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     private fun setupDrawer() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            binding.sidePanel.apply {
-                setOnApplyWindowInsetsListener { _, insets ->
-                    updatePadding(top = insets.systemWindowInsetTop)
-                    insets
-                }
+            ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel) { view, insets ->
+                view.updatePadding(top = insets.systemWindowInsetTop)
+                insets
             }
         }
 
