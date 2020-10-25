@@ -74,7 +74,7 @@ abstract class SelectionTracker<K: Any>(private val activity: AppCompatActivity,
     }
 
     fun getFirstSelectedPosition(): Int {
-        return getSelectedPositionsUnsorted().min() ?: -1
+        return getSelectedPositionsUnsorted().minOrNull() ?: -1
     }
 
     fun isSelected(key: K): Boolean {

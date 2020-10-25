@@ -30,7 +30,6 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.observe
 import androidx.lifecycle.viewModelScope
 
 import com.google.android.material.snackbar.Snackbar

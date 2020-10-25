@@ -23,7 +23,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 
-import androidx.lifecycle.observe
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.tremotesf.NavigationDialogFragment
