@@ -117,7 +117,7 @@ android {
 }
 
 rootProject.ext.vers += [
-        kotlinxSerialization: '0.20.0',
+        kotlinxSerialization: '1.0.0',
 
         androidx: [
                 appcompat: '1.2.0',
@@ -145,7 +145,7 @@ dependencies {
     implementation files("$qtInstallDir/jar/QtAndroid.jar")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${vers.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${vers.kotlinxSerialization}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${vers.kotlinxSerialization}"
 
     implementation "androidx.appcompat:appcompat:${vers.androidx.appcompat}"
     implementation "androidx.concurrent:concurrent-futures:${vers.androidx.concurrentFutures}"

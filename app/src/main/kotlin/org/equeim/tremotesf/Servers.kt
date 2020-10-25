@@ -41,8 +41,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonException
 
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.NonNullMutableLiveData
@@ -193,7 +191,7 @@ object Servers : Logger {
             val servers = mutableListOf<Server>()
 
             val fileData = context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
-            val saveData = Json(JsonConfiguration.Stable).parse(SaveData.serializer(), fileData)
+            val saveData = Json.decodeFromString(SaveData.serializer(), fileData)
             for (server in saveData.servers) {
                 info("Reading server $server")
                 if (server.name.isBlank()) {
@@ -230,9 +228,6 @@ object Servers : Logger {
             info("Error opening servers file", error)
         } catch (error: IOException) {
             error("Error reading servers file", error)
-            reset()
-        } catch (error: JsonException) {
-            error("Error parsing servers file", error)
             reset()
         } catch (error: SerializationException) {
             error("Error deserializing servers file", error)
@@ -347,15 +342,13 @@ class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(
                 try {
                     val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
                     temp.bufferedWriter().use {
-                        it.write(Json(JsonConfiguration.Stable.copy(prettyPrint = true)).stringify(SaveData.serializer(), data))
+                        it.write(Json { prettyPrint = true }.encodeToString(SaveData.serializer(), data))
                     }
                     if (!temp.renameTo(Application.instance.getFileStreamPath(FILE_NAME))) {
                         error("Failed to rename temp file")
                     }
                 } catch (error: IOException) {
                     error("Failed to save servers file", error)
-                } catch (error: JsonException) {
-                    error("Failed to encode servers to JSON", error)
                 } catch (error: SerializationException) {
                     error("Failed to serialize servers", error)
                 }
