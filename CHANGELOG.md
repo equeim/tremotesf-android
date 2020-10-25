@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.2.0] - 2020-10-25
 ### Added
 - Added support of Qt 5.15
 - Added support of sharing torrents' magnet links
