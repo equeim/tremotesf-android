@@ -38,13 +38,13 @@ val (qtHasAbiSuffix, qtInstallDir) = getQtInfo()
 
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     ndkVersion = "21.2.6472646"
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
         minSdkVersion(16)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 35
         versionName = "2.2.0"
 
