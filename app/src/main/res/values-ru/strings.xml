@@ -461,6 +461,8 @@
 
     <string name="proxy_settings">Настройки прокси</string>
     <string name="proxy_type">Тип прокси</string>
+    <string name="share">Поделиться</string>
+    <string name="share_torrent">Поделиться торрентом</string>
 
     <string-array name="proxy_type_items">
         <item>По умолчанию</item>

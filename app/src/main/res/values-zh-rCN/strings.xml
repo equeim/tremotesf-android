@@ -53,7 +53,11 @@
     </plurals>
 
     <string name="next_update">%s 后请求更多节点</string>
+    <string name="add_trackers">添加 tracker</string>
     <string name="edit_tracker">编辑Tracker</string>
+
+    <string name="tracker_announce_url">Tracker 宣告地址</string>
+    <string name="trackers_announce_urls">Tracker 宣告地址</string>
 
     <string name="torrent_finished">下载已完成</string>
     <string name="torrent_added">种子已添加</string>
@@ -109,6 +113,8 @@
 
     <string name="loading">正在加载 \u2026</string>
     <string name="no_peers">无节点</string>
+
+    <string name="no_trackers">无 tracker</string>
 
     <string name="error">错误</string>
 
@@ -370,8 +376,18 @@
     <string name="donations_description">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
     <string name="donations_donate">捐赠</string>
     <string name="donations_amount">捐赠数额</string>
+    <string name="donations_google_title">Google Play 商店</string>
+    <string name="donations_google_description">Google 将收取 30% 的费用</string>
     <string name="donations_paypal_description">点击这个按钮之后选择你想要捐赠多少</string>
     <string name="donations_snackbar_ok">感谢您的捐赠！</string>
     <string name="donations_snackbar_error">处理您的捐赠时出错</string>
 
-    </resources>
+    <string name="proxy_settings">代理设定</string>
+    <string name="proxy_type">代理类型</string>
+    <string name="share">分享</string>
+    <string name="share_torrent">分享种子</string>
+
+    <string-array name="proxy_type_items">
+        <item>默认</item>
+    </string-array>
+</resources>

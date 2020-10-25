@@ -9,7 +9,7 @@
 
     <string name="timed_out">Bağlantı zaman aşımı</string>
     <string name="connection_error">Bağlantı hatası</string>
-    <string name="authentication_error">Doğrulama hatası</string>
+    <string name="authentication_error">Kimlik doğrulama hatası</string>
     <string name="parsing_error">Ayrıştırma hatası</string>
     <string name="server_is_too_new">Sunucu sürümü çok yeni</string>
     <string name="server_is_too_old">Sunucu sürümü çok eski</string>
@@ -33,14 +33,14 @@
 
     <string name="status">Durum</string>
 
-    <string name="no_torrents">Torrent yok</string>
+    <string name="no_torrents">Torrentler yok</string>
 
     <string name="torrents_all">Hepsi (%d)</string>
     <string name="torrents_active">Etkin (%d)</string>
     <string name="torrents_downloading">İndiriliyor (%d)</string>
     <string name="torrents_seeding">Gönderiliyor (%d)</string>
     <string name="torrents_paused">Durduruldu (%d)</string>
-    <string name="torrents_checking">Kontrol ediliyor (%d)</string>
+    <string name="torrents_checking">Denetliyor (%d)</string>
     <string name="torrents_errored">Hatalı (%d)</string>
 
     <!-- e.g. "example.com (42)" -->
@@ -71,9 +71,10 @@
     <string name="add_trackers">İzleyicilere ekle</string>
     <string name="edit_tracker">İzleyici düzenle</string>
 
-    <string name="trackers_announce_urls">İzleyicilerin URL\'lerini duyurur</string>
+    <string name="tracker_announce_url">İzleyici duyuru URL\'si</string>
+    <string name="trackers_announce_urls">İzleyicilerin duyuru URL\'leri</string>
 
-    <string name="torrent_finished">Torrent bitti</string>
+    <string name="torrent_finished">Torrent bitirildi</string>
     <string name="torrent_added">Torrent eklendi</string>
 
     <string name="torrent_not_found">Torrent bulunamadı</string>
@@ -86,14 +87,14 @@
     <string name="peers">Eşler</string>
     <string name="limits">Sınırlar</string>
 
-    <string name="activity">Faaliyet</string>
-    <string name="information">Bilgi</string>
+    <string name="activity">Etkinlik</string>
+    <string name="information">Bilgilendirme</string>
 
     <string name="completed">Tamamlandı</string>
     <string name="downloaded">İndirildi</string>
-    <string name="uploaded">Gönderildi</string>
+    <string name="uploaded">Yüklenildi</string>
     <string name="download_speed">İndirme hızı</string>
-    <string name="upload_speed">Gönderme hızı</string>
+    <string name="upload_speed">Yükleme hızı</string>
     <string name="seeders">Gönderenler</string>
     <string name="leechers">İndirenler</string>
     <string name="last_activity">Son etkinlik</string>
@@ -125,7 +126,7 @@
 
     <string name="no_files">Dosya yok.</string>
 
-    <string name="tracker_inactive">Pasif</string>
+    <string name="tracker_inactive">Ettkin değil</string>
     <string name="tracker_active">Etkin</string>
     <string name="tracker_queued">Sıraya alındı</string>
     <string name="tracker_updating">Güncelleniyor</string>
@@ -139,7 +140,7 @@
     <string name="error">Hata</string>
 
     <string name="speed">Hız</string>
-    <string name="honor_global_limits">Genel saygınlık sınırları</string>
+    <string name="honor_global_limits">Evrensel saygınlık sınırları</string>
     <string name="kbps">kB/s</string>
     <string name="download_noun">İndir</string>
     <string name="upload_noun">Yükle</string>
@@ -148,20 +149,20 @@
 
     <string name="ratio_limit">Oran sınırı</string>
     <string-array name="ratio_limit_mode">
-        <item>Genel ayarları kullan</item>
+        <item>Evrensel ayarları kullan</item>
         <item>Oran ne olursa olsun gönderimde kal</item>
         <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
-    <string name="idle_seeding">Gönderme boşta</string>
+    <string name="idle_seeding">Boşta gönderme </string>
     <string-array name="idle_seeding_mode">
-        <item>Genel ayarları kullan</item>
-        <item>Etkinlik ne olursa olsun göndermede kal</item>
+        <item>Evrensel ayarları kullan</item>
+        <item>Etkinlik ne olursa olsun gönder</item>
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="min">dakika</string>
-    <string name="maximum_peers">Azami Eş</string>
+    <string name="maximum_peers">Azami Eşler</string>
 
     <string name="settings">Ayarlar</string>
     <string name="notifications">Bildirimler</string>
@@ -184,7 +185,7 @@
 
     <plurals name="remove_servers_message">
         <item quantity="one">Seçilen %d sunucuyu silmek istediğinizden emin misiniz?</item>
-        <item quantity="other">Seçilen %d sunucuyu silmek istediğinizden emin misiniz?</item>
+        <item quantity="other">Seçilen %d sunucuyu kaldırmak istediğinizden emin misiniz?</item>
     </plurals>
 
     <string name="no_servers">Sunucu yok</string>
@@ -198,7 +199,7 @@
     <string name="server_uses_self_signed_certificate">Sunucu kendinden imzalı sertifika kullanıyor</string>
     <string name="certificate">PEM biçiminde sertifika</string>
     <string name="use_client_certificate_authentication">İstemci sertifikası kimlik doğrulamasını kullan</string>
-    <string name="authentication">Doğrulama</string>
+    <string name="authentication">Kimlik doğrulama</string>
     <string name="username">Kullanıcı adı</string>
     <string name="password">Şifre</string>
     <string name="update_interval">Güncelleme aralığı, saniye</string>
@@ -220,18 +221,18 @@
 
     <string name="server_settings_downloading">İndiriliyor</string>
     <string name="server_settings_seeding">Gönderiliyor</string>
-    <string name="server_settings_queue">Sıra</string>
+    <string name="server_settings_queue">Kuyruk</string>
     <string name="server_settings_speed">Hız</string>
     <string name="server_settings_network">Ağ</string>
 
     <string name="start_added_torrents">Eklenen torrentleri başlat</string>
     <string name="rename_incomplete_files">Tamamlanmamış dosyaların adlarına \".part\" ekleyin</string>
-    <string name="incomplete_files_directory">Eksik dosyalar için dizin</string>
+    <string name="incomplete_files_directory">Tamamlanmamış dosyalar için dizin</string>
     <string name="stop_seeding_at_ratio">Göndermeyi bu oranda durdur</string>
-    <string name="stop_seeding_if_idle_for">Boşta kalırsa göndermeyi durdurun</string>
-    <string name="maximum_active_downloads">Azami etkin indirme</string>
-    <string name="maximum_active_uploads">Azami etkin yükleme</string>
-    <string name="ignore_queue">Boşsa, sıra konumunu görmezden gelin</string>
+    <string name="stop_seeding_if_idle_for">Boşta kalırsa göndermeyi durdur</string>
+    <string name="maximum_active_downloads">Azami etkin indirmeler</string>
+    <string name="maximum_active_uploads">Azami etkin yüklemeler</string>
+    <string name="ignore_queue">Boşta kalırsa kuyruk konumunu yoksay</string>
     <string name="alternative_limits">Muadil sınırlar</string>
     <string name="enable">Etkinleştir</string>
     <string name="download_kbps">İndirme, kB/s</string>
@@ -299,8 +300,8 @@
         <item quantity="other">Seçilen %d torrenti silmek istediğinizden emin misiniz?</item>
     </plurals>
     <string name="delete_files">Ayrıca sabit diskteki dosyaları da silin</string>
-    <string name="check_local_data">Yerel verileri kontrol et</string>
-    <string name="reannounce">Yeniden bildirme</string>
+    <string name="check_local_data">Yerel verileri denetle</string>
+    <string name="reannounce">Yeniden duyurma</string>
     <string name="torrent_duplicate">Bu torrent zaten eklenmiş</string>
     <string name="torrent_add_error">Torrent eklenirken hata oluştu</string>
 
@@ -319,8 +320,8 @@
     </plurals>
     <string name="torrent_seeding_stalled">Gönderiliyor</string>
     <string name="torrent_queued">Sıraya alındı</string>
-    <string name="torrent_checking">Kontrol ediliyor (%s%%)</string>
-    <string name="torrent_queued_for_checking">Kontrol için sıraya alındı</string>
+    <string name="torrent_checking">Denetliyor (%s%%)</string>
+    <string name="torrent_queued_for_checking">Denetim için sıraya alındı</string>
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Seçilen %d izleyiciyi kaldırmak istediğinizden emin misiniz?</item>
@@ -351,7 +352,7 @@
         <item>%s YiB/s</item>
     </string-array>
 
-    <string name="remove_torrent_message">Bu torrent\'i silmek istediğinden emin misin?</string>
+    <string name="remove_torrent_message">Bu torrent\'i kaldırmak istediğinden emin misin?</string>
 
     <string name="set_location">Konumu ayarla</string>
     <string name="move_files">Geçerli dizinden dosyaları taşı</string>
@@ -369,14 +370,14 @@
 
     <string name="prefs_old_colors_title">Eski renkleri kullan</string>
 
-    <string name="prefs_torrent_compact_view_title">Torrentler için dar görünüm kullanın</string>
-    <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda gösterme</string>
+    <string name="prefs_torrent_compact_view_title">Torrentler için derlitoplu görünüm kullanın</string>
+    <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda göster</string>
 
     <string name="prefs_persistent_notification_title">Kalıcı bildirimi göster</string>
 
     <string name="persistent_notification_channel_name">Kalıcı bildirim</string>
-    <string name="finished_torrents_channel_name">Bitmiş torrentler</string>
-    <string name="added_torrents_channel_name">Eklenmiş torrentler</string>
+    <string name="finished_torrents_channel_name">Biten torrentler</string>
+    <string name="added_torrents_channel_name">Eklenen torrentler</string>
 
     <string name="appearance">Görünüm</string>
     <string name="torrents">Torrentler</string>
@@ -391,16 +392,16 @@
     <string name="free_space">Boş alan: %s</string>
     <string name="free_space_error">Boş alan elde edilirken hata oluştu</string>
 
-    <string name="notify_on_finished">Bitmiş torrentleri bildir</string>
+    <string name="notify_on_finished">Biten torrentleri bildir</string>
     <string name="notify_on_added">Eklenen torrentleri bildir</string>
 
     <string name="notifications_on_connect">Sunucuya bağlanırken bildirimler</string>
-    <string name="notify_on_finished_since_last">Sunucuya son bağlantıdan bu yana bitmiş torrentlerİ bildir</string>
-    <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenmiş torrentlere bildirme</string>
+    <string name="notify_on_finished_since_last">Sunucuya son bağlantıdan bu yana biten torrentlerİ bildir</string>
+    <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenen torrentleri bildir</string>
 
     <string name="persistent_notification">Kalıcı bildirim</string>
 
-    <string name="persistent_notification_warning">Kalıcı bildirimin etkinleştirilmesi, uygulamanın arka plan güncelleme moduna geçmesini engeller ve aşırı pil tüketimine neden olabilir</string>
+    <string name="persistent_notification_warning">Kalıcı bildirimin etkinleştirilmesi uygulamanın arka plan güncelleme moduna geçmesini önler ve pilin aşırı boşalmasına neden olabilir</string>
 
     <string name="prefs_background_update_interval_title">Arka plan güncelleme aralığı</string>
     <string-array name="prefs_background_update_interval_entries">
@@ -431,14 +432,13 @@
     <string name="donations_google_title">Google Play Store</string>
     <string name="donations_google_description">Google ücretin %30\\\'unu talep ediyor</string>
     <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_paypal_description">Butona bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
+    <string name="donations_paypal_description">Düğmeye bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
     <string name="donations_yandex_title">Yandex.Money</string>
     <string name="donations_snackbar_ok">Bağışınız için teşekkürler!</string>
     <string name="donations_snackbar_error">Bağış işlenirken hata oluştu</string>
 
     <string name="proxy_settings">Vekil ayarları</string>
     <string name="proxy_type">Vekil türü</string>
-
     <string-array name="proxy_type_items">
         <item>Varsayılan</item>
         <item>HTTP</item>

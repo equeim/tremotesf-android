@@ -71,6 +71,7 @@
     <string name="add_trackers">Tracker hinzufügen</string>
     <string name="edit_tracker">Tracker editieren</string>
 
+    <string name="tracker_announce_url">Tracker Ankündigungs-URL</string>
     <string name="trackers_announce_urls">Ankündigungs-URLs der Tracker</string>
 
     <string name="torrent_finished">Torrent fertiggestellt</string>
@@ -438,6 +439,8 @@
 
     <string name="proxy_settings">Proxy-Einstellungen</string>
     <string name="proxy_type">Proxy-Typ</string>
+    <string name="share">Teilen</string>
+    <string name="share_torrent">Torrent teilen</string>
 
     <string-array name="proxy_type_items">
         <item>Standard</item>
