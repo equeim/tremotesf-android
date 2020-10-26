@@ -121,8 +121,8 @@ android {
         }
     }
 
-    applicationVariants.all {
-        outputs.all {
+    applicationVariants.configureEach {
+        outputs.configureEach {
             val abi = (this as ApkVariantOutput).getFilter(VariantOutput.FilterType.ABI)
             val baseAbiVersionCode = abiVersionCodes[abi]
             if (baseAbiVersionCode != null) {
@@ -192,15 +192,19 @@ dependencies {
     "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
 }
 
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
+object DependencyVersionChecker {
+    private val stableKeywords = listOf("RELEASE", "FINAL", "GA")
+    private val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+
+    fun isNonStable(version: String): Boolean {
+        val hasStableKeyword = stableKeywords.any { version.toUpperCase().contains(it) }
+        val isStable = hasStableKeyword || regex.matches(version)
+        return isStable.not()
+    }
 }
 
-tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     rejectVersionIf {
-        isNonStable(candidate.version)
+        DependencyVersionChecker.isNonStable(candidate.version)
     }
 }
