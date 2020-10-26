@@ -39,7 +39,7 @@ val (qtHasAbiSuffix, qtInstallDir) = getQtInfo()
 
 android {
     compileSdkVersion(30)
-    ndkVersion = "21.2.6472646"
+    ndkVersion = "21.3.6528147"
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
