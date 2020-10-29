@@ -31,6 +31,7 @@ import org.equeim.tremotesf.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.SelectionTracker
 import org.equeim.tremotesf.Torrent
+import org.equeim.tremotesf.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
@@ -64,7 +65,10 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
     }
 
     override fun onNavigateToRenameDialog(args: Bundle) {
-        fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment, args)
+        torrent?.let { torrent ->
+            fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+                                                      args.apply { putInt(TorrentFileRenameDialogFragment.TORRENT_ID, torrent.id) })
+        }
     }
 
     fun treeUpdated() {
