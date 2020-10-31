@@ -33,6 +33,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.RpcStatus
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.viewBinding
@@ -62,7 +63,8 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
                          })
             }
         }
-        Rpc.status.observe(viewLifecycleOwner) { updateView() }
+
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { updateView(Rpc.status.value, it) }
     }
 
     override fun onDestroyView() {
@@ -70,14 +72,14 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         super.onDestroyView()
     }
 
-    private fun updateView() {
-        when (Rpc.status.value) {
+    private fun updateView(rpcStatus: Int, statusString: String) {
+        when (rpcStatus) {
             RpcStatus.Disconnected -> {
                 snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }
-                binding.placeholder.text = Rpc.statusString
+                binding.placeholder.text = statusString
 
                 hideKeyboard()
             }
@@ -89,7 +91,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         }
 
         with(binding) {
-            if (Rpc.isConnected) {
+            if (rpcStatus == RpcStatus.Connected) {
                 listView.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
             } else {
@@ -97,7 +99,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
                 listView.visibility = View.GONE
             }
 
-            progressBar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
+            progressBar.visibility = if (rpcStatus == RpcStatus.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE
@@ -107,15 +109,12 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
 
     open class BaseFragment(@LayoutRes contentLayoutId: Int,
                             @StringRes titleRes: Int) : NavigationFragment(contentLayoutId, titleRes) {
-
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
-        }
-
-        private fun onRpcStatusChanged(status: Int) {
-            if (status == RpcStatus.Disconnected) {
-                navController.popBackStack()
+            Rpc.isConnected.collectWhenStarted(viewLifecycleOwner) {
+                if (!it) {
+                    navController.popBackStack()
+                }
             }
         }
     }

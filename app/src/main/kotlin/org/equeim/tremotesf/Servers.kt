@@ -29,7 +29,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Parcelable
 
-import androidx.lifecycle.MutableLiveData
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -37,13 +36,14 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
 
 
 private const val FILE_NAME = "servers.json"
@@ -160,30 +160,25 @@ data class SaveData(@SerialName("current") val currentServerName: String?,
 object Servers : Logger {
     private val context = Application.instance
 
-    val servers = NonNullMutableLiveData<List<Server>>(emptyList())
+    private val _servers = MutableStateFlow<List<Server>>(emptyList())
+    val servers: StateFlow<List<Server>> by ::_servers
 
     val hasServers: Boolean
         get() {
             return servers.value.isNotEmpty()
         }
 
-    private var saveOnCurrentChanged = false
     // currentServer observers should not access servers or hasServers
-    val currentServer = MutableLiveData<Server>(null)
+    private val _currentServer = MutableStateFlow<Server?>(null)
+    val currentServer: StateFlow<Server?> by ::_currentServer
 
     init {
         load()
-        currentServer.observeForever {
-            if (saveOnCurrentChanged) save()
-        }
-        saveOnCurrentChanged = true
     }
 
-    private fun setCurrentServer(server: Server?) {
-        val save = saveOnCurrentChanged
-        saveOnCurrentChanged = false
-        currentServer.value = server
-        saveOnCurrentChanged = save
+    fun setCurrentServer(server: Server?) {
+        _currentServer.value = server
+        save()
     }
 
     private fun load() {
@@ -217,27 +212,20 @@ object Servers : Logger {
                 servers.add(server)
             }
 
-            setCurrentServer(servers.find { it.name == saveData.currentServerName })
-            this.servers.value = servers
+            _currentServer.value = servers.find { it.name == saveData.currentServerName }
+            _servers.value = servers
 
             if (currentServer.value == null && servers.isNotEmpty()) {
-                currentServer.value = servers.first()
+                _currentServer.value = servers.first()
                 save()
             }
         } catch (error: FileNotFoundException) {
             info("Error opening servers file", error)
         } catch (error: IOException) {
             error("Error reading servers file", error)
-            reset()
         } catch (error: SerializationException) {
             error("Error deserializing servers file", error)
-            reset()
         }
-    }
-
-    private fun reset() {
-        currentServer.value = null
-        servers.value = emptyList()
     }
 
     fun save() {
@@ -277,10 +265,10 @@ object Servers : Logger {
         }
 
         if (servers.size == 1 || newServer.name == currentServer.value?.name) {
-            setCurrentServer(newServer)
+            _currentServer.value = newServer
         }
 
-        this.servers.value = servers
+        _servers.value = servers
 
         save()
     }
@@ -305,10 +293,10 @@ object Servers : Logger {
         servers[servers.indexOf(server)] = newServer
 
         if (currentChanged) {
-            setCurrentServer(newServer)
+            _currentServer.value = newServer
         }
 
-        this.servers.value = servers
+        _servers.value = servers
 
         save()
     }
@@ -318,10 +306,10 @@ object Servers : Logger {
         servers.removeAll(toRemove)
 
         if (currentServer.value in toRemove) {
-            setCurrentServer(servers.firstOrNull())
+            _currentServer.value = servers.firstOrNull()
         }
 
-        this.servers.value = servers
+        _servers.value = servers
 
         save()
     }

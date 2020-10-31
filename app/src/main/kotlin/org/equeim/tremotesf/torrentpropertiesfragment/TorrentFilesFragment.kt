@@ -27,15 +27,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
@@ -44,7 +47,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.viewBinding
 
 
@@ -84,7 +87,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.state.observe(viewLifecycleOwner) { state ->
+        model.state.collectWhenStarted(viewLifecycleOwner) { state ->
             if (state == TreeModel.State.TreeCreated) {
                 if (adapter.rootDirectory != model.rootDirectory || savedInstanceState != null) {
                     adapter.initAndRestoreInstanceState(this.savedInstanceState, model.rootDirectory)
@@ -100,7 +103,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             updateProgressBar(state)
         }
 
-        Rpc.torrentFileRenamedEvent.observe(viewLifecycleOwner) { (torrentId, filePath, newName) ->
+        Rpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == torrent?.id) {
                 adapter.fileRenamed(filePath, newName)
             }
@@ -123,9 +126,6 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
 
     override fun onNavigatedFrom() {
         with(model) {
-            if (view != null) {
-                state.removeObservers(viewLifecycleOwner)
-            }
             torrent = null
         }
     }
@@ -177,11 +177,9 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                 if (torrent == null) {
                     oldTorrent?.filesEnabled = false
                     reset()
-                    Rpc.torrentFilesUpdatedEvent.removeObserver(filesUpdatedObserver)
                 } else if (oldTorrent == null) {
                     torrent.filesEnabled = true
-                    state.value = State.Loading
-                    Rpc.torrentFilesUpdatedEvent.observeForever(filesUpdatedObserver)
+                    _state.value = State.Loading
                 }
             }
         }
@@ -190,19 +188,19 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             private set
         var files: List<BaseTorrentFilesAdapter.File> = emptyList()
             private set
-        val state = NonNullMutableLiveData(State.None)
-
-        private val filesUpdatedObserver = Observer(::onTorrentFilesUpdated)
+        private val _state = MutableStateFlow(State.None)
+        val state: StateFlow<State> by ::_state
 
         init {
             this.torrent = torrent
+            viewModelScope.launch { Rpc.torrentFilesUpdatedEvents.collect(::onTorrentFilesUpdated) }
         }
 
         private fun createTree(rpcFiles: List<TorrentFile>) {
             if (rpcFiles.isEmpty()) {
-                state.value = State.TreeCreated
+                _state.value = State.TreeCreated
             } else {
-                state.value = State.CreatingTree
+                _state.value = State.CreatingTree
                 viewModelScope.launch(Dispatchers.Default) {
                     doCreateTree(rpcFiles)
                 }
@@ -248,7 +246,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                 if (state.value == State.CreatingTree) {
                     this@TreeModel.rootDirectory = rootDirectory
                     this@TreeModel.files = files
-                    this@TreeModel.state.value = State.TreeCreated
+                    _state.value = State.TreeCreated
                 }
             }
         }
@@ -262,7 +260,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                     file.changed = true
                     changed.add(file)
                 }
-                state.value = state.value
+                _state.value = state.value
                 for (file in changed) {
                     file.changed = false
                 }
@@ -276,7 +274,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                 }
                 rootDirectory.clearChildren()
                 files = emptyList()
-                state.value = State.None
+                _state.value = State.None
             }
         }
 

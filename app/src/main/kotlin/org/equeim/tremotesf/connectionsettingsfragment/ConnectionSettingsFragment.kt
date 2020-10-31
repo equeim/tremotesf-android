@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
 
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.NavigationFragment
@@ -50,6 +51,7 @@ import org.equeim.tremotesf.createSelectionTrackerString
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.safeNavigate
 import org.equeim.tremotesf.utils.viewBinding
 
@@ -93,7 +95,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             })
         }
 
-        Servers.servers.observe(viewLifecycleOwner, ::update)
+        Servers.servers.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -158,7 +160,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 binding.radioButton.setOnClickListener {
                     val server = adapter.servers[adapterPosition]
                     if (server.name != Servers.currentServer.value?.name) {
-                        Servers.currentServer.value = server
+                        Servers.setCurrentServer(server)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
                     }
                 }

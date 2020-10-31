@@ -133,6 +133,7 @@ android {
 }
 
 object Versions {
+    const val kotlinxCoroutines = "1.4.0"
     const val kotlinxSerialization = "1.0.0"
 
     object AndroidX {
@@ -160,6 +161,7 @@ object Versions {
 dependencies {
     implementation(files("$qtInstallDir/jar/QtAndroid.jar"))
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
     implementation("androidx.appcompat:appcompat:${Versions.AndroidX.appcompat}")
@@ -188,8 +190,12 @@ dependencies {
     implementation("io.github.raindev:benjamin:${Versions.benjamin}")
     implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
-    "googleImplementation"("com.android.billingclient:billing:${Versions.billing}")
-    "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
+    // FIXME: this is a workaround for compilation error with billing-ktx and kotlinx-coroutines. Do something about it
+    "googleImplementation"(kotlin("stdlib-jdk8", kotlin.coreLibrariesVersion))
+    "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}") {
+        exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+    }
 }
 
 object DependencyVersionChecker {

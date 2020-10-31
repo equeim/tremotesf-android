@@ -25,9 +25,10 @@ import android.view.View
 
 import androidx.core.text.trimmedLength
 import com.google.android.material.snackbar.Snackbar
-import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 
+import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.textInputLayout
@@ -64,7 +65,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(binding.downloadDirectoryLayout, this, savedInstanceState)
 
-        Rpc.status.observe(viewLifecycleOwner) { updateView() }
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { updateView(Rpc.status.value, it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -119,17 +120,19 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         return false
     }
 
-    private fun updateView() {
-        doneMenuItem?.isVisible = Rpc.isConnected
+    private fun updateView(status: Int, statusString: String) {
+        val isConnected = (status == RpcStatus.Connected)
+
+        doneMenuItem?.isVisible = isConnected
 
         with(binding) {
-            when (Rpc.status.value) {
+            when (status) {
                 RpcStatus.Disconnected -> {
                     snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
-                    placeholder.text = Rpc.statusString
+                    placeholder.text = statusString
 
                     hideKeyboard()
                 }
@@ -140,7 +143,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
                 }
             }
 
-            if (Rpc.isConnected) {
+            if (isConnected) {
                 if (scrollView.visibility != View.VISIBLE) {
                     downloadDirectoryLayout.downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
                     startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
@@ -152,7 +155,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
                 scrollView.visibility = View.GONE
             }
 
-            progressBar.visibility = if (Rpc.status.value == RpcStatus.Connecting) {
+            progressBar.visibility = if (status == RpcStatus.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE

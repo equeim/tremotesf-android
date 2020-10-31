@@ -27,15 +27,20 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
 import org.equeim.tremotesf.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.viewBinding
 
 
@@ -83,7 +88,9 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.peers.observe(viewLifecycleOwner, ::updateAdapter)
+        model.peers.collectWhenStarted(viewLifecycleOwner, ::updateAdapter)
+
+        //model.peers.observe(viewLifecycleOwner, ::updateAdapter)
     }
 
     override fun onDestroyView() {
@@ -96,7 +103,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
     }
 
     override fun onNavigatedFrom() {
-        model.peers.removeObservers(viewLifecycleOwner)
+        //model.peers.removeObservers(viewLifecycleOwner)
         model.torrent = null
     }
 
@@ -148,26 +155,24 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
                 if (torrent == null) {
                     oldTorrent?.peersEnabled = false
                     reset()
-                    Rpc.torrentPeersUpdatedEvent.removeObserver(peersUpdatedObserver)
                 } else if (oldTorrent == null) {
                     torrent.peersEnabled = true
-                    Rpc.torrentPeersUpdatedEvent.observeForever(peersUpdatedObserver)
                 }
             }
         }
 
-        val peers = NonNullMutableLiveData<List<Peer>>(emptyList())
+        private val _peers = MutableStateFlow<List<Peer>>(emptyList())
+        val peers: StateFlow<List<Peer>> by ::_peers
         var loaded = false
             private set
 
-        private val peersUpdatedObserver = Observer(::onTorrentPeersUpdated)
-
         init {
             this.torrent = torrent
+            viewModelScope.launch { Rpc.torrentPeersUpdatedEvents.collect(::onTorrentPeersUpdated) }
         }
 
         private fun reset() {
-            peers.value = emptyList()
+            _peers.value = emptyList()
         }
 
         private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
@@ -210,7 +215,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
             loaded = true
 
-            this.peers.value = peers
+            _peers.value = peers
         }
 
         override fun onCleared() {

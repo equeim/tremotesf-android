@@ -35,8 +35,12 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
 
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
@@ -88,6 +92,9 @@ class ForegroundService : LifecycleService(), Logger {
         }
 
         startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+
+        combine(Rpc.statusString, Rpc.serverStats, Servers.currentServer) { _, _, _ -> Unit }.drop(1)
+                .collectWhenStarted(this) { updatePersistentNotification() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -116,11 +123,6 @@ class ForegroundService : LifecycleService(), Logger {
                 stopSelfAndNotification()
                 return START_NOT_STICKY
             }
-
-            Rpc.status.observe(this, NotificationObserver())
-            Rpc.error.observe(this, NotificationObserver())
-            Rpc.serverStats.observe(this, NotificationObserver())
-            Servers.currentServer.observe(this, NotificationObserver())
 
             Rpc.connectOnce()
 
@@ -175,7 +177,7 @@ class ForegroundService : LifecycleService(), Logger {
             notificationBuilder.setShowWhen(false)
         }
 
-        if (Rpc.isConnected) {
+        if (Rpc.isConnected.value) {
             val stats = Rpc.serverStats.value
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
@@ -183,7 +185,7 @@ class ForegroundService : LifecycleService(), Logger {
                                                          Utils.formatByteSpeed(this,
                                                                                stats.uploadSpeed)))
         } else {
-            notificationBuilder.setContentText(Rpc.statusString)
+            notificationBuilder.setContentText(Rpc.statusString.value)
         }
 
         if (Rpc.status.value == RpcStatus.Disconnected) {

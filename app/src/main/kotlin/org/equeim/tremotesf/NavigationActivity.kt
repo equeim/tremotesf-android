@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.Checkable
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.viewModels
 
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
@@ -45,11 +46,14 @@ import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
@@ -61,6 +65,7 @@ import org.equeim.tremotesf.torrentslistfragment.TrackersViewAdapter
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.findChildRecursively
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.safeNavigate
@@ -104,6 +109,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     lateinit var sidePanelBinding: SidePanelHeaderBinding
 
+    private val model by viewModels<NavigationActivityModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
 
@@ -146,10 +153,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }
-        Rpc.error.observe(this) { error ->
-            if (error == RpcError.ConnectionError) {
-                Toast.makeText(this, Rpc.errorMessage, Toast.LENGTH_LONG).show()
-            }
+        model.connectionErrorMessage.collectWhenStarted(this) { error ->
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
         }
         Rpc.connectOnce()
 
@@ -265,11 +270,11 @@ class NavigationActivity : AppCompatActivity(), Logger {
             serversView.setOnItemClickListener { _, _, position, _ ->
                 serversViewAdapter.servers[position].let {
                     if (it != Servers.currentServer.value) {
-                        Servers.currentServer.value = it
+                        Servers.setCurrentServer(it)
                     }
                 }
             }
-            Servers.servers.observe(this@NavigationActivity) { servers ->
+            Servers.servers.collectWhenStarted(this@NavigationActivity) { servers ->
                 serversView.isEnabled = servers.isNotEmpty()
                 serversViewAdapter.update()
             }
@@ -278,15 +283,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
                 navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
             }
 
-            listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
-            Rpc.status.observe(this@NavigationActivity) { status ->
-                when (status) {
-                    RpcStatus.Disconnected,
-                    RpcStatus.Connected -> {
-                        listSettingsLayout.setChildrenEnabled(Rpc.isConnected)
-                    }
-                }
-            }
+            Rpc.isConnected.collectWhenStarted(this@NavigationActivity, listSettingsLayout::setChildrenEnabled)
 
             sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
             sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
@@ -329,4 +326,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
     fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
         navController.safeNavigate(resId, args, navOptions)
     }
+}
+
+class NavigationActivityModel : ViewModel() {
+    val connectionErrorMessage = Rpc.error.filter { it == RpcError.ConnectionError }.map { Rpc.errorMessage }
 }

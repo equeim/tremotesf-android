@@ -19,9 +19,6 @@
 
 package org.equeim.tremotesf
 
-import java.io.FileNotFoundException
-import java.io.IOException
-
 import android.content.Context
 import android.net.Uri
 
@@ -29,21 +26,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 import org.benjamin.Bdecoder
-
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
+
+import java.io.FileNotFoundException
+import java.io.IOException
 
 
-class AddTorrentFileModel : ViewModel(), Logger {
-    companion object {
-        // 10 MiB
-        const val MAX_FILE_SIZE = 10 * 1024 * 1024
-    }
-
+interface AddTorrentFileModel {
     enum class ParserStatus {
         None,
         Loading,
@@ -57,30 +54,62 @@ class AddTorrentFileModel : ViewModel(), Logger {
                               val lowPriorityFiles: List<Int>,
                               val highPriorityFiles: List<Int>)
 
+    data class ViewUpdateData(val parserStatus: ParserStatus,
+                              val rpcStatus: Int,
+                              val rpcStatusString: String,
+                              val hasStoragePermission: Boolean = false)
 
-    val status = NonNullMutableLiveData(ParserStatus.None)
+    val parserStatus: StateFlow<ParserStatus>
+    val viewUpdateData: Flow<ViewUpdateData>
 
-    lateinit var fileData: ByteArray
+    val fileData: ByteArray
+    val rootDirectory: BaseTorrentFilesAdapter.Directory
+    val torrentName: String
+    val renamedFiles: MutableMap<String, String>
+
+    fun onRequestPermissionResult(hasStoragePermission: Boolean)
+
+    fun load(uri: Uri)
+
+    fun getFilePriorities(): FilePriorities
+}
+
+class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
+    companion object {
+        // 10 MiB
+        const val MAX_FILE_SIZE = 10 * 1024 * 1024
+    }
+
+    override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
+
+    private val hasStoragePermission = MutableStateFlow(false)
+    override val viewUpdateData = combine(parserStatus, Rpc.status, Rpc.statusString, hasStoragePermission) { parserStatus, rpcStatus, rpcStatusString, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, rpcStatusString, hasPermission) }
+
+    override lateinit var fileData: ByteArray
         private set
 
-    val rootDirectory = BaseTorrentFilesAdapter.Directory()
-    val torrentName: String
+    override val rootDirectory = BaseTorrentFilesAdapter.Directory()
+    override val torrentName: String
         get() = rootDirectory.children.first().name
 
-    val renamedFiles = mutableMapOf<String, String>()
+    override val renamedFiles = mutableMapOf<String, String>()
 
     private lateinit var files: List<BaseTorrentFilesAdapter.File>
 
-    fun load(uri: Uri) {
-        if (status.value == ParserStatus.None) {
-            status.value = ParserStatus.Loading
+    override fun onRequestPermissionResult(hasStoragePermission: Boolean) {
+        this.hasStoragePermission.value = hasStoragePermission
+    }
+
+    override fun load(uri: Uri) {
+        if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
+            parserStatus.value = AddTorrentFileModel.ParserStatus.Loading
             viewModelScope.launch(Dispatchers.IO) {
                 doLoad(uri, Application.instance)
             }
         }
     }
 
-    fun getFilePriorities(): FilePriorities {
+    override fun getFilePriorities(): AddTorrentFileModel.FilePriorities {
         val unwantedFiles = mutableListOf<Int>()
         val lowPriorityFiles = mutableListOf<Int>()
         val highPriorityFiles = mutableListOf<Int>()
@@ -93,66 +122,66 @@ class AddTorrentFileModel : ViewModel(), Logger {
             when (file.priority) {
                 BaseTorrentFilesAdapter.Item.Priority.Low -> lowPriorityFiles.add(id)
                 BaseTorrentFilesAdapter.Item.Priority.High -> highPriorityFiles.add(id)
-                else -> {}
+                else -> {
+                }
             }
         }
 
-        return FilePriorities(unwantedFiles,
-                              lowPriorityFiles,
-                              highPriorityFiles)
+        return AddTorrentFileModel.FilePriorities(unwantedFiles,
+                                                  lowPriorityFiles,
+                                                  highPriorityFiles)
     }
 
     private suspend fun doLoad(uri: Uri, context: Context) {
         val (status, fileData) = readFile(uri, context)
-        if (status != ParserStatus.Loading) {
-            withContext(Dispatchers.Main) {
-                this@AddTorrentFileModel.status.value = status
-            }
+        if (status != AddTorrentFileModel.ParserStatus.Loading) {
+            parserStatus.value = status
         } else {
             val parsed = parseFile(fileData!!)
             withContext(Dispatchers.Main) {
                 if (parsed == null) {
-                    this@AddTorrentFileModel.status.value = ParserStatus.ParsingError
+                    parserStatus.value =
+                            AddTorrentFileModel.ParserStatus.ParsingError
                 } else {
-                    this@AddTorrentFileModel.fileData = fileData
+                    this@AddTorrentFileModelImpl.fileData = fileData
 
                     val (rootDirectoryChild, files) = parsed
 
                     rootDirectoryChild.parentDirectory = rootDirectory
                     rootDirectory.addChild(rootDirectoryChild)
 
-                    this@AddTorrentFileModel.files = files
+                    this@AddTorrentFileModelImpl.files = files
 
-                    this@AddTorrentFileModel.status.value = ParserStatus.Loaded
+                    parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
                 }
             }
         }
     }
 
-    private fun readFile(uri: Uri, context: Context): Pair<ParserStatus, ByteArray?> {
+    private fun readFile(uri: Uri, context: Context): Pair<AddTorrentFileModel.ParserStatus, ByteArray?> {
         try {
             val stream = context.contentResolver.openInputStream(uri)
             if (stream == null) {
                 error("openInputStream() returned null")
-                return Pair(ParserStatus.ReadingError, null)
+                return Pair(AddTorrentFileModel.ParserStatus.ReadingError, null)
             }
             stream.use {
                 val size = stream.available()
                 if (size > MAX_FILE_SIZE) {
                     error("Torrent file is too large")
-                    return Pair(ParserStatus.FileIsTooLarge, null)
+                    return Pair(AddTorrentFileModel.ParserStatus.FileIsTooLarge, null)
                 }
-                return Pair(ParserStatus.Loading, stream.readBytes())
+                return Pair(AddTorrentFileModel.ParserStatus.Loading, stream.readBytes())
             }
         } catch (error: FileNotFoundException) {
             error("File not found", error)
-            return Pair(ParserStatus.ReadingError, null)
+            return Pair(AddTorrentFileModel.ParserStatus.ReadingError, null)
         } catch (error: IOException) {
             error("Error reading torrent file", error)
-            return Pair(ParserStatus.ReadingError, null)
+            return Pair(AddTorrentFileModel.ParserStatus.ReadingError, null)
         } catch (error: SecurityException) {
             error("Error reading torrent file", error)
-            return Pair(ParserStatus.ReadingError, null)
+            return Pair(AddTorrentFileModel.ParserStatus.ReadingError, null)
         }
     }
 

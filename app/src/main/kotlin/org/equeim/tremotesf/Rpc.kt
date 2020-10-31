@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("ObjectPropertyName")
+
 package org.equeim.tremotesf
 
 import java.util.concurrent.TimeUnit
@@ -44,6 +46,17 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 
 import org.qtproject.qt5.android.QtNative
 
@@ -58,10 +71,8 @@ import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
 import org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment
-import org.equeim.tremotesf.utils.LiveEvent
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
-import org.equeim.tremotesf.utils.emit
+import org.equeim.tremotesf.utils.MutableEventFlow
 
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
@@ -70,7 +81,9 @@ typealias RpcError = org.equeim.libtremotesf.Rpc.Error
 data class ServerStats(var downloadSpeed: Long,
                        var uploadSpeed: Long,
                        var currentSession: SessionStats,
-                       var total: SessionStats)
+                       var total: SessionStats) {
+    constructor() : this(0, 0, SessionStats(), SessionStats())
+}
 
 object Rpc : Logger {
     private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
@@ -79,6 +92,7 @@ object Rpc : Logger {
     private val context = Application.instance
 
     private val handler = Handler(Looper.getMainLooper())
+    private val mainThreadScope = MainScope()
 
     init {
         System.loadLibrary("c++_shared")
@@ -104,9 +118,7 @@ object Rpc : Logger {
 
     val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
-            handler.post {
-                Rpc.onStatusChanged(status)
-            }
+            _status.value = status
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
@@ -131,9 +143,7 @@ object Rpc : Logger {
         }
 
         override fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
-            handler.post {
-                Rpc.onServerStatsUpdated(downloadSpeed, uploadSpeed, currentSession, total)
-            }
+            Rpc.onServerStatsUpdated(downloadSpeed, uploadSpeed, currentSession, total)
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
@@ -149,15 +159,11 @@ object Rpc : Logger {
         }
 
         override fun onTorrentAddDuplicate() {
-            handler.post {
-                Rpc.onTorrentAddDuplicate()
-            }
+            _torrentAddDuplicateEvents.tryEmit(Unit)
         }
 
         override fun onTorrentAddError() {
-            handler.post {
-                Rpc.onTorrentAddError()
-            }
+            _torrentAddErrorEvents.tryEmit(Unit)
         }
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
@@ -177,21 +183,15 @@ object Rpc : Logger {
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-            handler.post {
-                Rpc.onTorrentFileRenamed(torrentId, filePath, newName)
-            }
+            _torrentFileRenamedEvents.tryEmit(TorrentFileRenamedData(torrentId, filePath, newName))
         }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) {
-            handler.post {
-                Rpc.onGotDownloadDirFreeSpace(bytes)
-            }
+            _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
         }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-            handler.post {
-                Rpc.onGotFreeSpaceForPath(path, success, bytes)
-            }
+            _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
         }
 
         override fun onAboutToDisconnect() {
@@ -207,52 +207,69 @@ object Rpc : Logger {
 
     var serverSettings: JniServerSettingsData = nativeInstance.serverSettingsData()
         private set
-    val serverStats = NonNullMutableLiveData(ServerStats(0, 0, SessionStats(), SessionStats()))
 
-    val status = NonNullMutableLiveData(RpcStatus.Disconnected)
+    private val _serverStats = MutableStateFlow(ServerStats())
+    val serverStats: StateFlow<ServerStats> by ::_serverStats
 
-    val isConnected: Boolean
-        get() = (status.value == RpcStatus.Connected)
+    private val _status = MutableStateFlow(RpcStatus.Disconnected)
+    val status: StateFlow<Int> by ::_status
 
-    val statusString: String
-        get() {
-            return when (status.value) {
-                RpcStatus.Disconnected -> when (error.value) {
-                    RpcError.NoError -> context.getString(R.string.disconnected)
-                    RpcError.TimedOut -> context.getString(R.string.timed_out)
-                    RpcError.ConnectionError -> context.getString(R.string.connection_error)
-                    RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
-                    RpcError.ParseError -> context.getString(R.string.parsing_error)
-                    RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
-                    RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
-                    else -> context.getString(R.string.disconnected)
-                }
-                RpcStatus.Connecting -> context.getString(R.string.connecting)
-                RpcStatus.Connected -> context.getString(R.string.connected)
-                else -> context.getString(R.string.disconnected)
-            }
+    val isConnected: StateFlow<Boolean> = status.transform {
+        if (it != RpcStatus.Connecting) {
+            emit(it == RpcStatus.Connected)
         }
+    }.stateIn(mainThreadScope, SharingStarted.Eagerly, false)
 
-    val error = NonNullMutableLiveData(RpcError.NoError)
+    private val _error = MutableStateFlow(RpcError.NoError)
+    val error: StateFlow<Int> by ::_error
     var errorMessage: String = ""
         private set
 
-    val torrentAddDuplicateEvent = LiveEvent<Unit>()
-    val torrentAddErrorEvent = LiveEvent<Unit>()
+    val statusString: StateFlow<String> = combine(status, error) { status, error ->
+        when (status) {
+            RpcStatus.Disconnected -> when (error) {
+                RpcError.NoError -> context.getString(R.string.disconnected)
+                RpcError.TimedOut -> context.getString(R.string.timed_out)
+                RpcError.ConnectionError -> context.getString(R.string.connection_error)
+                RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
+                RpcError.ParseError -> context.getString(R.string.parsing_error)
+                RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
+                RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                else -> context.getString(R.string.disconnected)
+            }
+            RpcStatus.Connecting -> context.getString(R.string.connecting)
+            RpcStatus.Connected -> context.getString(R.string.connected)
+            else -> context.getString(R.string.disconnected)
+        }
+    }.stateIn(mainThreadScope, SharingStarted.Eagerly, "")
+
+    private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
+    val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents
+
+    private val _torrentAddErrorEvents = MutableEventFlow<Unit>()
+    val torrentAddErrorEvents: Flow<Unit> by ::_torrentAddErrorEvents
 
     data class TorrentFilesUpdatedData(val torrentId: Int, val changedFiles: List<TorrentFile>)
-    val torrentFilesUpdatedEvent = LiveEvent<TorrentFilesUpdatedData>()
+    private val _torrentFilesUpdatedEvents = MutableEventFlow<TorrentFilesUpdatedData>()
+    val torrentFilesUpdatedEvents: Flow<TorrentFilesUpdatedData> by ::_torrentFilesUpdatedEvents
+
     data class TorrentPeersUpdatedData(val torrentId: Int, val removed: List<Int>, val changed: List<Peer>, val added: List<Peer>)
-    val torrentPeersUpdatedEvent = LiveEvent<TorrentPeersUpdatedData>()
+    private val _torrentPeersUpdatedEvents = MutableEventFlow<TorrentPeersUpdatedData>()
+    val torrentPeersUpdatedEvents: Flow<TorrentPeersUpdatedData> by ::_torrentPeersUpdatedEvents
 
     data class TorrentFileRenamedData(val torrentId: Int, val filePath: String, val newName: String)
-    val torrentFileRenamedEvent = LiveEvent<TorrentFileRenamedData>()
+    private val _torrentFileRenamedEvents = MutableEventFlow<TorrentFileRenamedData>()
+    val torrentFileRenamedEvents: Flow<TorrentFileRenamedData> by ::_torrentFileRenamedEvents
 
-    val gotDownloadDirFreeSpaceEvent = LiveEvent<Long>()
+    private val _gotDownloadDirFreeSpaceEvent = MutableEventFlow<Long>()
+    val gotDownloadDirFreeSpaceEvents: Flow<Long> by ::_gotDownloadDirFreeSpaceEvent
+
     data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
-    val gotFreeSpaceForPathEvent = LiveEvent<GotFreeSpaceForPathData>()
+    private val _gotFreeSpaceForPathEvents = MutableEventFlow<GotFreeSpaceForPathData>()
+    val gotFreeSpaceForPathEvents: Flow<GotFreeSpaceForPathData> by ::_gotFreeSpaceForPathEvents
 
-    val torrents = NonNullMutableLiveData<List<Torrent>>(emptyList())
+    private val _torrents = MutableStateFlow<List<Torrent>>(emptyList())
+    val torrents: StateFlow<List<Torrent>> by ::_torrents
 
     private var disconnectingAfterCurrentServerChanged = false
 
@@ -268,26 +285,34 @@ object Rpc : Logger {
                             NotificationManager.IMPORTANCE_DEFAULT)))
         }
 
-        var gotFirst = false
-        Servers.currentServer.observeForever { server ->
-            if (!gotFirst) {
-                gotFirst = true
-                return@observeForever
-            }
+        Servers.currentServer.value?.let(::setServer)
 
-            if (isConnected) {
-                disconnectingAfterCurrentServerChanged = true
-            }
+        mainThreadScope.launch {
+            Servers.currentServer.drop(1).collect { server ->
+                if (isConnected.value) {
+                    disconnectingAfterCurrentServerChanged = true
+                }
 
-            if (server != null) {
-                setServer(server)
-                nativeInstance.connect()
-            } else {
-                nativeInstance.resetServer()
+                if (server != null) {
+                    setServer(server)
+                    nativeInstance.connect()
+                } else {
+                    nativeInstance.resetServer()
+                }
             }
         }
 
-        Servers.currentServer.value?.let(::setServer)
+        mainThreadScope.launch {
+            status.collect {
+                when (it) {
+                    RpcStatus.Connected -> {
+                        showNotificationsSinceLastConnection()
+                        handleWorkerCompleter()
+                    }
+                    RpcStatus.Disconnected -> handleWorkerCompleter()
+                }
+            }
+        }
     }
 
     private fun setServer(server: Server) {
@@ -332,20 +357,9 @@ object Rpc : Logger {
         connectedOnce = false
     }
 
-    private fun onStatusChanged(newStatus: Int) {
-        status.value = newStatus
-        when (newStatus) {
-            RpcStatus.Connected -> {
-                showNotificationsSinceLastConnection()
-                handleWorkerCompleter()
-            }
-            RpcStatus.Disconnected -> handleWorkerCompleter()
-        }
-    }
-
     private fun onErrorChanged(newError: Int, newErrorMessage: String) {
         errorMessage = newErrorMessage
-        error.value = newError
+        _error.value = newError
     }
 
     private fun onServerSettingsChanged(data: JniServerSettingsData) {
@@ -388,10 +402,10 @@ object Rpc : Logger {
             newTorrents.add(Torrent(torrentData, context))
         }
 
-        torrents.value = newTorrents
+        _torrents.value = newTorrents
         deleteNativeObjects.forEach(TorrentData::delete)
 
-        if (isConnected) {
+        if (isConnected.value) {
             handleWorkerCompleter()
         }
     }
@@ -435,17 +449,10 @@ object Rpc : Logger {
     }
 
     private fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
-        val stats = serverStats.value
-        val oldCurrent = stats.currentSession
-        val oldTotal = stats.total
-        serverStats.value = stats.apply {
-            this.downloadSpeed = downloadSpeed
-            this.uploadSpeed = uploadSpeed
-            this.currentSession = currentSession
-            this.total = total
-        }
-        oldCurrent.delete()
-        oldTotal.delete()
+        val oldStats = _serverStats.value
+        _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
+        oldStats.currentSession.delete()
+        oldStats.total.delete()
     }
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {
@@ -460,18 +467,10 @@ object Rpc : Logger {
         }
     }
 
-    private fun onTorrentAddDuplicate() {
-        torrentAddDuplicateEvent.emit()
-    }
-
-    private fun onTorrentAddError() {
-        torrentAddErrorEvent.emit()
-    }
-
     private fun onTorrentFilesUpdated(torrentId: Int, files: List<TorrentFile>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.filesEnabled) {
-                torrentFilesUpdatedEvent.emit(TorrentFilesUpdatedData(torrentId, files))
+                _torrentFilesUpdatedEvents.tryEmit(TorrentFilesUpdatedData(torrentId, files))
             }
         }
     }
@@ -479,21 +478,9 @@ object Rpc : Logger {
     private fun onTorrentPeersUpdated(torrentId: Int, removed: List<Int>, changed: List<Peer>, added: List<Peer>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.peersEnabled) {
-                torrentPeersUpdatedEvent.emit(TorrentPeersUpdatedData(torrentId, removed, changed, added))
+                _torrentPeersUpdatedEvents.tryEmit(TorrentPeersUpdatedData(torrentId, removed, changed, added))
             }
         }
-    }
-
-    private fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-        torrentFileRenamedEvent.emit(TorrentFileRenamedData(torrentId, filePath, newName))
-    }
-
-    private fun onGotDownloadDirFreeSpace(bytes: Long) {
-        gotDownloadDirFreeSpaceEvent.emit(bytes)
-    }
-
-    private fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-        gotFreeSpaceForPathEvent.emit(GotFreeSpaceForPathData(path, success, bytes))
     }
 
     private fun onAboutToDisconnect() {
@@ -563,7 +550,7 @@ object Rpc : Logger {
     private fun handleWorkerCompleter() {
         updateWorkerCompleter?.let { completer ->
             info("Rpc.handleWorkerCompleter()")
-            if (isConnected) {
+            if (isConnected.value) {
                 Servers.save()
             }
             completer.set(ListenableWorker.Result.success())

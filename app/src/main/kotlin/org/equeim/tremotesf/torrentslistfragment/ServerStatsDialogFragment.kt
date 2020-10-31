@@ -25,13 +25,16 @@ import android.view.LayoutInflater
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import kotlinx.coroutines.flow.combine
+
 import org.equeim.tremotesf.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.Rpc
+import org.equeim.tremotesf.ServerStats
 import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
-import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 class ServerStatsDialogFragment : NavigationDialogFragment() {
@@ -39,8 +42,7 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        BasicMediatorLiveData<Nothing>(Rpc.status, Rpc.serverStats)
-                .observe(this) { update() }
+        Rpc.isConnected.combine(Rpc.serverStats, ::Pair).collectWhenStarted(this, ::update)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -59,11 +61,13 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
         binding = null
     }
 
-    private fun update() {
-        if (!Rpc.isConnected) return
+    private fun update(viewUpdateData: Pair<Boolean, ServerStats>) {
+        val (isConnected, serverStats) = viewUpdateData
+
+        if (!isConnected) return
 
         binding?.apply {
-            val stats = Rpc.serverStats.value
+            val stats = serverStats
             val sessionStats = stats.currentSession
             sessionDownloadedTextView.text = Utils.formatByteSize(requireContext(),
                                                                   sessionStats.downloaded())

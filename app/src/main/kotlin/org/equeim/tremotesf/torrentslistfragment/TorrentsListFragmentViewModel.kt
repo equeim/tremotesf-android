@@ -17,11 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.donationsfragment
+package org.equeim.tremotesf.torrentslistfragment
 
-import android.content.Context
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.combine
+import org.equeim.tremotesf.Rpc
 
-interface IGoogleBillingHelperFactory {
-    fun createBillingWrapper(context: Context, coroutineScope: CoroutineScope): IGoogleBillingHelper?
+class TorrentsListFragmentViewModel : ViewModel() {
+    val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 }

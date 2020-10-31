@@ -58,8 +58,8 @@ import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.utils.BasicMediatorLiveData
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.showSnackbar
@@ -100,14 +100,14 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             val directoriesAdapter = AddTorrentDirectoriesAdapter(downloadDirectoryEdit, savedInstanceState)
             downloadDirectoryEdit.setAdapter(directoriesAdapter)
 
-            Rpc.gotDownloadDirFreeSpaceEvent.observe(fragment.viewLifecycleOwner) { bytes ->
+            Rpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
                 val text = downloadDirectoryEdit.text?.trim()
                 if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory?.contentEquals(text) == true) {
                     downloadDirectoryLayout.helperText = fragment.getString(R.string.free_space, Utils.formatByteSize(fragment.requireContext(), bytes))
                 }
             }
 
-            Rpc.gotFreeSpaceForPathEvent.observe(fragment.viewLifecycleOwner) { (path, success, bytes) ->
+            Rpc.gotFreeSpaceForPathEvents.collectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
                 val text = downloadDirectoryEdit.text?.trim()
                 if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     downloadDirectoryLayout.helperText = if (success) {
@@ -129,11 +129,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     private var backPressedCallback: OnBackPressedCallback? = null
     private var snackbar: Snackbar? = null
 
-    val model: AddTorrentFileModel by viewModels()
+    val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl>()
 
     private lateinit var uri: Uri
-
-    private var noPermission = false
 
     private var done = false
 
@@ -145,6 +143,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
+            model.onRequestPermissionResult(true)
             model.load(uri)
         }
     }
@@ -152,12 +151,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<out String>,
                                             grantResults: IntArray) {
-        if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-            model.load(uri)
-        } else {
-            noPermission = true
-            updateView(model.status.value)
-        }
+        model.onRequestPermissionResult(grantResults.first() == PackageManager.PERMISSION_GRANTED)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,10 +185,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
         })
 
-        BasicMediatorLiveData<Nothing>(Rpc.status, model.status)
-                .observe(viewLifecycleOwner) {
-                    updateView(model.status.value)
-                }
+        model.viewUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onDestroyView() {
@@ -207,9 +198,6 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.add_torrent_fragment_menu, menu)
-        doneMenuItem = menu.findItem(R.id.done).apply {
-            isVisible = (model.status.value == AddTorrentFileModel.ParserStatus.Loaded && Rpc.isConnected)
-        }
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -240,11 +228,11 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         findFragment<FilesFragment>()?.adapter?.fileRenamed(filePath, newName)
     }
 
-    private fun updateView(parserStatus: AddTorrentFileModel.ParserStatus) {
-        val view = this.view ?: return
+    private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
+        val (parserStatus, rpcStatus, rpcStatusString, hasStoragePermission) = viewUpdateData
 
         with(binding) {
-            if (Rpc.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
+            if (Rpc.isConnected.value && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
                 this@AddTorrentFileFragment.toolbar?.apply {
                     (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
@@ -259,7 +247,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
                 placeholderLayout.visibility = View.GONE
             } else {
-                placeholder.text = if (noPermission) {
+                placeholder.text = if (hasStoragePermission) {
                     getString(R.string.storage_permission_error)
                 } else {
                     when (parserStatus) {
@@ -267,13 +255,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                         AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
                         AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
-                        AddTorrentFileModel.ParserStatus.Loaded -> Rpc.statusString
+                        AddTorrentFileModel.ParserStatus.Loaded -> rpcStatusString
                         else -> null
                     }
                 }
 
                 progressBar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
-                        (Rpc.status.value == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
+                        (rpcStatus == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -295,9 +283,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                    when (Rpc.status.value) {
+                    when (rpcStatus) {
                         RpcStatus.Disconnected -> {
-                            snackbar = view.showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                            snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                                 snackbar = null
                                 Rpc.nativeInstance.connect()
                             }
@@ -406,9 +394,15 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            model.status.observe(viewLifecycleOwner) {
-                adapter.initAndRestoreInstanceState(this.savedInstanceState)
-                this.savedInstanceState = null
+
+            model.parserStatus.collectWhenStarted(viewLifecycleOwner) {
+                when (it) {
+                    AddTorrentFileModel.ParserStatus.None, AddTorrentFileModel.ParserStatus.Loading -> Unit
+                    else -> {
+                        adapter.initAndRestoreInstanceState(this@FilesFragment.savedInstanceState)
+                        this@FilesFragment.savedInstanceState = null
+                    }
+                }
             }
         }
 
@@ -452,3 +446,4 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }
     }
 }
+

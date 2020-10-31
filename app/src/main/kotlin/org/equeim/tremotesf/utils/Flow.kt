@@ -17,27 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.donationsfragment
+package org.equeim.tremotesf.utils
 
-import android.app.Activity
-import androidx.lifecycle.LiveData
-import org.equeim.tremotesf.utils.LiveEvent
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
 
-interface IGoogleBillingHelper {
-    enum class PurchaseError {
-        None,
-        Cancelled,
-        Error
-    }
-
-    val isSetUp: LiveData<Boolean>
-    val skus: List<SkuData>
-    val purchasesUpdatedEvent: LiveEvent<PurchaseError>
-
-    fun launchBillingFlow(skuIndex: Int, activity: Activity): PurchaseError
-
-    fun endConnection()
-
-    data class SkuData(val sku: String,
-                       val price: String)
+@Suppress("FunctionName")
+fun <T>MutableEventFlow(): MutableSharedFlow<T> {
+    return MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 }
+
+inline fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner, crossinline action: suspend (value: T) -> Unit)
+    = lifecycleOwner.lifecycleScope.launchWhenStarted { collect(action) }

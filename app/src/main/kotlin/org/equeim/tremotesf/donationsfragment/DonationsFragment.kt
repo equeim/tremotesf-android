@@ -40,10 +40,10 @@ import org.equeim.tremotesf.addNavigationBarBottomPadding
 import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
 import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.showSnackbar
 import org.equeim.tremotesf.utils.viewBinding
 
-@Suppress("ConstantConditionIf")
 class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
     companion object {
         private const val PAYPAL_USER = "DDQTRHTY5YV2G"
@@ -60,7 +60,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (BuildConfig.DONATIONS_GOOGLE) {
-            model.billing?.isSetUp?.observe(viewLifecycleOwner, ::onBillingSetup)
+            model.billing?.isSetUp?.collectWhenStarted(viewLifecycleOwner, ::onBillingSetup)
         } else {
             with(bindingFdroid) {
                 paypalDonateButton.setOnClickListener { donatePayPal() }
@@ -78,7 +78,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
                 val items = if (BuildConfig.DEBUG) {
                     billing.skus.map { "${it.sku}: ${it.price}" }
                 } else {
-                    billing.skus.map(IGoogleBillingHelper.SkuData::price)
+                    billing.skus.map(GoogleBillingHelper.SkuData::price)
                 }
                 skusView.setAdapter(ArrayDropdownAdapter(items))
                 if (items.isNotEmpty()) {
@@ -87,7 +87,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
                 donateButton.setOnClickListener {
                     donateGoogle(items.indexOf(skusView.text.toString()))
                 }
-                billing.purchasesUpdatedEvent.observe(viewLifecycleOwner, ::onBillingPurchasesUpdated)
+                billing.purchasesUpdatedEvent.collectWhenStarted(viewLifecycleOwner, ::onBillingPurchasesUpdated)
             }
             skusViewLayout.isEnabled = isSetUp
             donateButton.isEnabled = isSetUp
@@ -97,21 +97,21 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
     private fun donateGoogle(skuIndex: Int) {
         model.billing?.let { billing ->
             val error = billing.launchBillingFlow(skuIndex, requireActivity())
-            if (error != IGoogleBillingHelper.PurchaseError.None) {
+            if (error != GoogleBillingHelper.PurchaseError.None) {
                 onBillingPurchasesUpdated(error)
             }
         }
     }
 
-    private fun onBillingPurchasesUpdated(error: IGoogleBillingHelper.PurchaseError) {
+    private fun onBillingPurchasesUpdated(error: GoogleBillingHelper.PurchaseError) {
         when (error) {
-            IGoogleBillingHelper.PurchaseError.None -> {
+            GoogleBillingHelper.PurchaseError.None -> {
                 requireView().showSnackbar(R.string.donations_snackbar_ok, Snackbar.LENGTH_SHORT)
             }
-            IGoogleBillingHelper.PurchaseError.Error -> {
+            GoogleBillingHelper.PurchaseError.Error -> {
                 requireView().showSnackbar(R.string.donations_snackbar_error, Snackbar.LENGTH_LONG)
             }
-            IGoogleBillingHelper.PurchaseError.Cancelled -> {}
+            GoogleBillingHelper.PurchaseError.Cancelled -> {}
         }
     }
 
@@ -141,7 +141,11 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
     }
 
     class Model(application: Application) : AndroidViewModel(application) {
-        val billing: IGoogleBillingHelper? = GoogleBillingHelperFactory().createBillingWrapper(application, viewModelScope)
+        val billing: GoogleBillingHelper? = if (BuildConfig.DONATIONS_GOOGLE) {
+            GoogleBillingHelper(application, viewModelScope)
+        } else {
+            null
+        }
 
         override fun onCleared() {
             billing?.endConnection()

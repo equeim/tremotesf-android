@@ -49,6 +49,7 @@ import org.equeim.tremotesf.addNavigationBarBottomPadding
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter
 import org.equeim.tremotesf.utils.Utils
+import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.findFragment
 import org.equeim.tremotesf.utils.hideKeyboard
 import org.equeim.tremotesf.utils.popDialog
@@ -126,8 +127,13 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
             navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
         }
 
-        Rpc.torrents.observe(viewLifecycleOwner, ::updateTorrent)
-        Rpc.status.observe(viewLifecycleOwner, ::onRpcStatusChanged)
+        Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::updateTorrent)
+
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { onRpcStatusStringChanged(Rpc.status.value, it) }
+
+        view.post {
+            binding.pager.currentItem = PagerAdapter.Tab.Files.ordinal
+        }
     }
 
     override fun onDestroyView() {
@@ -186,7 +192,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
-    private fun onRpcStatusChanged(status: Int) {
+    private fun onRpcStatusStringChanged(status: Int, statusString: String) {
         with(binding) {
             when (status) {
                 RpcStatus.Disconnected -> {
@@ -194,7 +200,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
-                    placeholder.text = Rpc.statusString
+                    placeholder.text = statusString
                 }
                 RpcStatus.Connecting -> {
                     snackbar?.dismiss()
@@ -224,7 +230,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
             if (newTorrent == null || oldTorrent == null) {
                 if (newTorrent == null) {
-                    if (Rpc.isConnected) {
+                    if (Rpc.isConnected.value) {
                         binding.placeholder.text = getString(R.string.torrent_removed)
                     }
                     navController.popDialog()

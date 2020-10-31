@@ -19,9 +19,26 @@
 
 package org.equeim.tremotesf.donationsfragment
 
-import android.content.Context
-import kotlinx.coroutines.CoroutineScope
+import android.app.Activity
 
-class GoogleBillingHelperFactory : IGoogleBillingHelperFactory {
-    override fun createBillingWrapper(context: Context, coroutineScope: CoroutineScope) = GoogleBillingHelper(context, coroutineScope)
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+
+interface GoogleBillingHelper {
+    enum class PurchaseError {
+        None,
+        Cancelled,
+        Error
+    }
+
+    val isSetUp: StateFlow<Boolean>
+    val skus: List<SkuData>
+    val purchasesUpdatedEvent: Flow<PurchaseError>
+
+    fun launchBillingFlow(skuIndex: Int, activity: Activity): PurchaseError
+
+    fun endConnection()
+
+    data class SkuData(val sku: String,
+                       val price: String)
 }

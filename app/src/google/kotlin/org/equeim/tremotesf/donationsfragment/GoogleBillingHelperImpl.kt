@@ -17,17 +17,18 @@ import com.android.billingclient.api.querySkuDetails
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 import org.equeim.tremotesf.BuildConfig
-import org.equeim.tremotesf.utils.LiveEvent
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.NonNullMutableLiveData
+import org.equeim.tremotesf.utils.MutableEventFlow
 
+@Suppress("FunctionName")
+fun GoogleBillingHelper(context: Context, coroutineScope: CoroutineScope): GoogleBillingHelper = GoogleBillingHelperImpl(context, coroutineScope)
 
-class GoogleBillingHelper(context: Context, private val coroutineScope: CoroutineScope) :
-        IGoogleBillingHelper,
+private class GoogleBillingHelperImpl(context: Context, private val coroutineScope: CoroutineScope) :
+        GoogleBillingHelper,
         BillingClientStateListener,
         PurchasesUpdatedListener,
         Logger {
@@ -43,11 +44,11 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
                                          "android.test.refunded",
                                          "android.test.item_unavailable")
 
-        private fun createPurchaseError(result: BillingResult): IGoogleBillingHelper.PurchaseError {
+        private fun createPurchaseError(result: BillingResult): GoogleBillingHelper.PurchaseError {
             return when (result.responseCode) {
-                BillingClient.BillingResponseCode.OK -> IGoogleBillingHelper.PurchaseError.None
-                BillingClient.BillingResponseCode.USER_CANCELED -> IGoogleBillingHelper.PurchaseError.Cancelled
-                else -> IGoogleBillingHelper.PurchaseError.Error
+                BillingClient.BillingResponseCode.OK -> GoogleBillingHelper.PurchaseError.None
+                BillingClient.BillingResponseCode.USER_CANCELED -> GoogleBillingHelper.PurchaseError.Cancelled
+                else -> GoogleBillingHelper.PurchaseError.Error
             }
         }
 
@@ -56,9 +57,9 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
         }
     }
 
-    override val isSetUp = NonNullMutableLiveData(false)
-    override val purchasesUpdatedEvent = LiveEvent<IGoogleBillingHelper.PurchaseError>()
-    override var skus: List<IGoogleBillingHelper.SkuData> = emptyList()
+    override val isSetUp = MutableStateFlow(false)
+    override val purchasesUpdatedEvent = MutableEventFlow<GoogleBillingHelper.PurchaseError>()
+    override var skus: List<GoogleBillingHelper.SkuData> = emptyList()
 
     private val billingClient = BillingClient.newBuilder(context).enablePendingPurchases().setListener(this).build()
     private var skuDetails: List<SkuDetails>? = null
@@ -68,10 +69,10 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
         billingClient.startConnection(this)
     }
 
-    override fun launchBillingFlow(skuIndex: Int, activity: Activity): IGoogleBillingHelper.PurchaseError {
+    override fun launchBillingFlow(skuIndex: Int, activity: Activity): GoogleBillingHelper.PurchaseError {
         debug("launchBillingFlow")
         val skuDetails = this.skuDetails
-        if (!billingClient.isReady || skuDetails == null) return IGoogleBillingHelper.PurchaseError.Error
+        if (!billingClient.isReady || skuDetails == null) return GoogleBillingHelper.PurchaseError.Error
 
         if (skuIndex !in skuDetails.indices) throw IllegalArgumentException()
 
@@ -131,10 +132,8 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
         if (result.responseCode == BillingClient.BillingResponseCode.OK && skuDetails != null) {
             val sorted = skuDetails.sortedBy(SkuDetails::getPriceAmountMicros)
             this.skuDetails = sorted
-            skus = sorted.map { IGoogleBillingHelper.SkuData(it.sku, it.price) }
-            withContext(Dispatchers.Main) {
-                isSetUp.value = true
-            }
+            skus = sorted.map { GoogleBillingHelper.SkuData(it.sku, it.price) }
+            isSetUp.value = true
         }
     }
 
@@ -147,7 +146,7 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
                 }
             }
         } else {
-            purchasesUpdatedEvent.emit(createPurchaseError(result))
+            purchasesUpdatedEvent.tryEmit(createPurchaseError(result))
         }
     }
 
@@ -160,9 +159,7 @@ class GoogleBillingHelper(context: Context, private val coroutineScope: Coroutin
             val (result, purchaseToken) = billingClient.consumePurchase(params)
             debug("consumePurchases result=${resultToString(result)} purchaseToken=$purchaseToken")
             if (emitError) {
-                withContext(Dispatchers.Main) {
-                    purchasesUpdatedEvent.emit(createPurchaseError(result))
-                }
+                purchasesUpdatedEvent.emit(createPurchaseError(result))
             }
         }
     }
