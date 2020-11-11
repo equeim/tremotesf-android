@@ -109,8 +109,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     lateinit var sidePanelBinding: SidePanelHeaderBinding
 
-    private val model by viewModels<NavigationActivityModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         info("NavigationActivity.onCreate(), intent=$intent")
 
@@ -153,8 +151,10 @@ class NavigationActivity : AppCompatActivity(), Logger {
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }
-        model.connectionErrorMessage.collectWhenStarted(this) { error ->
-            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+        Rpc.error.map { it.errorMessage }.collectWhenStarted(this) { error ->
+            if (error.isNotEmpty()) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+            }
         }
         Rpc.connectOnce()
 
@@ -326,8 +326,4 @@ class NavigationActivity : AppCompatActivity(), Logger {
     fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
         navController.safeNavigate(resId, args, navOptions)
     }
-}
-
-class NavigationActivityModel : ViewModel() {
-    val connectionErrorMessage = Rpc.error.filter { it == RpcError.ConnectionError }.map { Rpc.errorMessage }
 }

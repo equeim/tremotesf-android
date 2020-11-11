@@ -122,9 +122,7 @@ object Rpc : Logger {
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
-            handler.post {
-                Rpc.onErrorChanged(error, errorMessage)
-            }
+            _error.value = Error(error, errorMessage)
         }
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
@@ -221,14 +219,13 @@ object Rpc : Logger {
         }
     }.stateIn(mainThreadScope, SharingStarted.Eagerly, false)
 
-    private val _error = MutableStateFlow(RpcError.NoError)
-    val error: StateFlow<Int> by ::_error
-    var errorMessage: String = ""
-        private set
+    data class Error(val error: Int, val errorMessage: String)
+    private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
+    val error: StateFlow<Error> by ::_error
 
     val statusString: StateFlow<String> = combine(status, error) { status, error ->
         when (status) {
-            RpcStatus.Disconnected -> when (error) {
+            RpcStatus.Disconnected -> when (error.error) {
                 RpcError.NoError -> context.getString(R.string.disconnected)
                 RpcError.TimedOut -> context.getString(R.string.timed_out)
                 RpcError.ConnectionError -> context.getString(R.string.connection_error)
@@ -356,11 +353,6 @@ object Rpc : Logger {
     fun disconnectOnShutdown() {
         nativeInstance.disconnect()
         connectedOnce = false
-    }
-
-    private fun onErrorChanged(newError: Int, newErrorMessage: String) {
-        errorMessage = newErrorMessage
-        _error.value = newError
     }
 
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {

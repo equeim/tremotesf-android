@@ -130,10 +130,6 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::updateTorrent)
 
         Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { onRpcStatusStringChanged(Rpc.status.value, it) }
-
-        view.post {
-            binding.pager.currentItem = PagerAdapter.Tab.Files.ordinal
-        }
     }
 
     override fun onDestroyView() {
