@@ -129,7 +129,8 @@ object Rpc : Logger {
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
             handler.post {
-                Rpc.onServerSettingsChanged(data)
+                serverSettings.delete()
+                serverSettings = data
             }
         }
 
@@ -143,7 +144,7 @@ object Rpc : Logger {
         }
 
         override fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
-            Rpc.onServerStatsUpdated(downloadSpeed, uploadSpeed, currentSession, total)
+            _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
@@ -362,11 +363,6 @@ object Rpc : Logger {
         _error.value = newError
     }
 
-    private fun onServerSettingsChanged(data: JniServerSettingsData) {
-        serverSettings.delete()
-        serverSettings = data
-    }
-
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
         val newTorrents = torrents.value.toMutableList()
 
@@ -446,13 +442,6 @@ object Rpc : Logger {
                 }
             }
         }
-    }
-
-    private fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
-        val oldStats = _serverStats.value
-        _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
-        oldStats.currentSession.delete()
-        oldStats.total.delete()
     }
 
     private fun onTorrentAdded(id: Int, hashString: String, name: String) {
