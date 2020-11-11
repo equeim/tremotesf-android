@@ -1,7 +1,7 @@
 pluginManagement {
     val android = "4.0.2"
     val kotlin = "1.4.10"
-    val versions = "0.33.0"
+    val versions = "0.36.0"
 
     plugins {
         kotlin("android") version(kotlin)

@@ -133,8 +133,8 @@ android {
 }
 
 object Versions {
-    const val kotlinxCoroutines = "1.4.0"
-    const val kotlinxSerialization = "1.0.0"
+    const val kotlinxCoroutines = "1.4.1"
+    const val kotlinxSerialization = "1.0.1"
 
     object AndroidX {
         const val appcompat = "1.2.0"
