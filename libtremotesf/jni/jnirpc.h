@@ -58,6 +58,9 @@ namespace libtremotesf
         void setMaximumPeersGlobally(int peers);
 
     private:
+        template<typename Func>
+        void runOnThread(Func&& function);
+
         ServerSettings* mSettings = nullptr;
     };
 

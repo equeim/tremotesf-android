@@ -59,240 +59,303 @@ namespace libtremotesf
     void JniServerSettingsData::setDownloadDirectory(const QString& directory)
     {
         downloadDirectory = directory;
-        QMetaObject::invokeMethod(mSettings, "setDownloadDirectory", Q_ARG(QString, directory));
+        runOnThread([=] {
+            mSettings->setDownloadDirectory(directory);
+        });
     }
 
     void JniServerSettingsData::setStartAddedTorrents(bool start)
     {
         startAddedTorrents = start;
-        QMetaObject::invokeMethod(mSettings, "setStartAddedTorrents", Q_ARG(bool, start));
+        runOnThread([=] {
+            mSettings->setStartAddedTorrents(start);
+        });
     }
 
     void JniServerSettingsData::setTrashTorrentFiles(bool trash)
     {
         trashTorrentFiles = trash;
-        QMetaObject::invokeMethod(mSettings, "setTrashTorrentFiles", Q_ARG(bool, trash));
+        runOnThread([=] {
+            mSettings->setTrashTorrentFiles(trash);
+        });
     }
 
     void JniServerSettingsData::setRenameIncompleteFiles(bool rename)
     {
         renameIncompleteFiles = rename;
-        QMetaObject::invokeMethod(mSettings, "setRenameIncompleteFiles", Q_ARG(bool, rename));
+        runOnThread([=] {
+            mSettings->setRenameIncompleteFiles(rename);
+        });
     }
 
     void JniServerSettingsData::setIncompleteDirectoryEnabled(bool enabled)
     {
         incompleteDirectoryEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setIncompleteDirectoryEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setIncompleteDirectoryEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setIncompleteDirectory(const QString& directory)
     {
         incompleteDirectory = directory;
-        QMetaObject::invokeMethod(mSettings, "setIncompleteDirectory", Q_ARG(QString, directory));
+        runOnThread([=] {
+            mSettings->setIncompleteDirectory(directory);
+        });
     }
 
     void JniServerSettingsData::setRatioLimited(bool limited)
     {
         ratioLimited = limited;
-        QMetaObject::invokeMethod(mSettings, "setRatioLimited", Q_ARG(bool, limited));
+        runOnThread([=] {
+            mSettings->setRatioLimited(limited);
+        });
     }
 
     void JniServerSettingsData::setRatioLimit(double limit)
     {
         ratioLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setRatioLimit", Q_ARG(double, limit));
+        runOnThread([=] {
+            mSettings->setRatioLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setIdleSeedingLimited(bool limited)
     {
-        idleQueueLimited = limited;
-        QMetaObject::invokeMethod(mSettings, "setIdleSeedingLimited", Q_ARG(bool, limited));
+        idleSeedingLimited = limited;
+        runOnThread([=] {
+            mSettings->setIdleSeedingLimited(limited);
+        });
     }
 
     void JniServerSettingsData::setIdleSeedingLimit(int limit)
     {
         idleSeedingLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setIdleSeedingLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setIdleSeedingLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setDownloadQueueEnabled(bool enabled)
     {
         downloadQueueEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setDownloadQueueEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setDownloadQueueEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setDownloadQueueSize(int size)
     {
         downloadQueueSize = size;
-        QMetaObject::invokeMethod(mSettings, "setDownloadQueueSize", Q_ARG(int, size));
+        runOnThread([=] {
+            mSettings->setDownloadQueueSize(size);
+        });
     }
 
     void JniServerSettingsData::setSeedQueueEnabled(bool enabled)
     {
         seedQueueEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setSeedQueueEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setSeedQueueEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setSeedQueueSize(int size)
     {
         seedQueueSize = size;
-        QMetaObject::invokeMethod(mSettings, "setSeedQueueSize", Q_ARG(int, size));
+        runOnThread([=] {
+            mSettings->setSeedQueueSize(size);
+        });
     }
 
     void JniServerSettingsData::setIdleQueueLimited(bool limited)
     {
         idleQueueLimited = limited;
-        QMetaObject::invokeMethod(mSettings, "setIdleQueueLimited", Q_ARG(bool, limited));
+        runOnThread([=] {
+            mSettings->setIdleQueueLimited(limited);
+        });
     }
 
     void JniServerSettingsData::setIdleQueueLimit(int limit)
     {
         idleQueueLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setIdleQueueLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setIdleQueueLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setDownloadSpeedLimited(bool limited)
     {
         downloadSpeedLimited = limited;
-        QMetaObject::invokeMethod(mSettings, "setDownloadSpeedLimited", Q_ARG(bool, limited));
+        runOnThread([=] {
+            mSettings->setDownloadSpeedLimited(limited);
+        });
     }
 
     void JniServerSettingsData::setDownloadSpeedLimit(int limit)
     {
         downloadSpeedLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setDownloadSpeedLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setDownloadSpeedLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setUploadSpeedLimited(bool limited)
     {
         uploadSpeedLimited = limited;
-        QMetaObject::invokeMethod(mSettings, "setUploadSpeedLimited", Q_ARG(bool, limited));
+        runOnThread([=] {
+            mSettings->setUploadSpeedLimited(limited);
+        });
     }
 
     void JniServerSettingsData::setUploadSpeedLimit(int limit)
     {
         uploadSpeedLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setUploadSpeedLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setUploadSpeedLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setAlternativeSpeedLimitsEnabled(bool enabled)
     {
         alternativeSpeedLimitsEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeSpeedLimitsEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setAlternativeSpeedLimitsEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setAlternativeDownloadSpeedLimit(int limit)
     {
         alternativeDownloadSpeedLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeDownloadSpeedLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setAlternativeDownloadSpeedLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setAlternativeUploadSpeedLimit(int limit)
     {
         alternativeUploadSpeedLimit = limit;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeUploadSpeedLimit", Q_ARG(int, limit));
+        runOnThread([=] {
+            mSettings->setAlternativeUploadSpeedLimit(limit);
+        });
     }
 
     void JniServerSettingsData::setAlternativeSpeedLimitsScheduled(bool scheduled)
     {
         alternativeSpeedLimitsScheduled = scheduled;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeSpeedLimitsScheduled", Q_ARG(bool, scheduled));
+        runOnThread([=] {
+            mSettings->setAlternativeSpeedLimitsScheduled(scheduled);
+        });
     }
 
     void JniServerSettingsData::setAlternativeSpeedLimitsBeginTime(QTime time)
     {
         alternativeSpeedLimitsBeginTime = time;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeSpeedLimitsBeginTime", Q_ARG(QTime, time));
+        runOnThread([=] {
+            mSettings->setAlternativeSpeedLimitsBeginTime(time);
+        });
     }
 
     void JniServerSettingsData::setAlternativeSpeedLimitsEndTime(QTime time)
     {
         alternativeSpeedLimitsEndTime = time;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeSpeedLimitsEndTime", Q_ARG(QTime, time));
+        runOnThread([=] {
+            mSettings->setAlternativeSpeedLimitsEndTime(time);
+        });
     }
 
     void JniServerSettingsData::setAlternativeSpeedLimitsDays(ServerSettingsData::AlternativeSpeedLimitsDays days)
     {
         alternativeSpeedLimitsDays = days;
-        QMetaObject::invokeMethod(mSettings, "setAlternativeSpeedLimitsDays", Q_ARG(libtremotesf::ServerSettingsData::AlternativeSpeedLimitsDays, days));
+        runOnThread([=] {
+            mSettings->setAlternativeSpeedLimitsDays(days);
+        });
     }
 
     void JniServerSettingsData::setPeerPort(int port)
     {
         peerPort = port;
-        QMetaObject::invokeMethod(mSettings, "setPeerPort", Q_ARG(int, port));
+        runOnThread([=] {
+            mSettings->setPeerPort(port);
+        });
     }
 
     void JniServerSettingsData::setRandomPortEnabled(bool enabled)
     {
         randomPortEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setRandomPortEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setRandomPortEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setPortForwardingEnabled(bool enabled)
     {
         portForwardingEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setPortForwardingEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setPortForwardingEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setEncryptionMode(ServerSettingsData::EncryptionMode mode)
     {
         encryptionMode = mode;
-        QMetaObject::invokeMethod(mSettings, "setEncryptionMode", Q_ARG(libtremotesf::ServerSettingsData::EncryptionMode, mode));
+        runOnThread([=] {
+            mSettings->setEncryptionMode(mode);
+        });
     }
 
     void JniServerSettingsData::setUtpEnabled(bool enabled)
     {
         utpEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setUtpEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setUtpEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setPexEnabled(bool enabled)
     {
         pexEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setPexEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setPexEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setDhtEnabled(bool enabled)
     {
         dhtEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setDhtEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setDhtEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setLpdEnabled(bool enabled)
     {
         lpdEnabled = enabled;
-        QMetaObject::invokeMethod(mSettings, "setLpdEnabled", Q_ARG(bool, enabled));
+        runOnThread([=] {
+            mSettings->setLpdEnabled(enabled);
+        });
     }
 
     void JniServerSettingsData::setMaximumPeersPerTorrent(int peers)
     {
         maximumPeersPerTorrent = peers;
-        QMetaObject::invokeMethod(mSettings, "setMaximumPeersPerTorrent", Q_ARG(int, peers));
+        runOnThread([=] {
+            mSettings->setMaximumPeersPerTorrent(peers);
+        });
     }
 
     void JniServerSettingsData::setMaximumPeersGlobally(int peers)
     {
         maximumPeersGlobally = peers;
-        QMetaObject::invokeMethod(mSettings, "setMaximumPeersGlobally", Q_ARG(int, peers));
-    }
-
-    template<typename Func>
-    void JniRpc::runOnThread(Func&& function)
-    {
-        QMetaObject::invokeMethod(mThread.eventDispatcher(), std::forward<Func>(function));
-    }
-
-    template<typename Func>
-    void JniRpc::runOnTorrent(int torrentId, Func&& function)
-    {
-        runOnThread([=, f = std::forward<Func>(function)] {
-            const auto torrent = mRpc->torrentById(torrentId);
-            if (torrent) {
-                f(torrent);
-            }
+        runOnThread([=] {
+            mSettings->setMaximumPeersGlobally(peers);
         });
+    }
+
+    template<typename Func>
+    void JniServerSettingsData::runOnThread(Func&& function)
+    {
+        QMetaObject::invokeMethod(mSettings, std::forward<Func>(function));
     }
 
     JniRpc::JniRpc()
@@ -630,6 +693,23 @@ namespace libtremotesf
     void JniRpc::updateData()
     {
         runOnThread([=] { mRpc->updateData(); });
+    }
+
+    template<typename Func>
+    void JniRpc::runOnThread(Func&& function)
+    {
+        QMetaObject::invokeMethod(mThread.eventDispatcher(), std::forward<Func>(function));
+    }
+
+    template<typename Func>
+    void JniRpc::runOnTorrent(int torrentId, Func&& function)
+    {
+        runOnThread([=, f = std::forward<Func>(function)] {
+            const auto torrent = mRpc->torrentById(torrentId);
+            if (torrent) {
+                f(torrent);
+            }
+        });
     }
 }
 
