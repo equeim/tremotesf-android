@@ -1,0 +1,11 @@
+--- a/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
++++ b/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
+@@ -101,7 +101,7 @@
+     private static Method m_checkSelfPermissionMethod = null;
+     private static Boolean m_tabletEventSupported = null;
+     private static boolean m_usePrimaryClip = false;
+-    public static QtThread m_qtThread = new QtThread();
++    public static QtThread m_qtThread = null;
+     private static Method m_addItemMethod = null;
+     private static final Runnable runPendingCppRunnablesRunnable = new Runnable() {
+         @Override

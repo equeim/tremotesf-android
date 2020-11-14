@@ -6,9 +6,6 @@ readonly QT_SOURCE_DIR="$QT_DIR/qtbase"
 test -f "$QT_SOURCE_DIR/dist/changes-5.12.0"
 readonly HAS_5_12=$?
 
-test -f "$QT_SOURCE_DIR/dist/changes-5.14.0"
-readonly HAS_5_14=$?
-
 test -f "$QT_SOURCE_DIR/dist/changes-5.15.0"
 readonly HAS_5_15=$?
 
@@ -65,10 +62,10 @@ function patch_if_needed() {
     local -r patch="$1"
     local -r fail_on_failure="$2"
     echo "Applying patch $patch"
-    if patch -p1 -R --dry-run --force --fuzz=0 --input="../$patch" > /dev/null; then
+    if patch -p1 -R --dry-run --force --fuzz=0 --input="../patches/$patch" > /dev/null; then
         echo 'Already applied'
     else
-        local -r output="$(patch -p1 --fuzz=0 --input="../$patch")" code="$?"
+        local -r output="$(patch -p1 --fuzz=0 --input="../patches/$patch")" code="$?"
         if [ "$code" -ne 0 ]; then
             printf '%s\n' "$output"
             if [ "$fail_on_failure" = true ]; then
@@ -93,31 +90,27 @@ function apply_patches() {
     if [ "$HAS_5_15" -eq 0 ]; then
         # Qt 5.15
 
-        patch_if_needed donottryondemand_qt5.15.patch true
-        patch_if_needed qsslcertificate.patch true
-    else
-        # Qt 5.14 and older
+        patch_if_needed 5.15/donottryondemand.patch true
+        patch_if_needed 5.15/qsslcertificate.patch true
+        patch_if_needed 5.15/qtMainLoopThread.patch true
 
-        patch_if_needed donottryondemand.patch true
+        # Needed to build Qt for 32-bit architectures separately
+        patch_if_needed 5.15/default-arch.patch true
+    else
+        # Qt 5.12 and older
+
+        patch_if_needed 5.12/donottryondemand.patch true
+        patch_if_needed 5.12/qtMainLoopThread.patch true
+        patch_if_needed 5.12/android-platform.patch true
 
         # NEON fix
-        patch_if_needed fp16.patch false
-    fi
-
-    if [ "$HAS_5_14" -eq 0 ]; then
-        # Qt 5.14 and newer
-        # Needed to build Qt for 32-bit architectures separately
-        patch_if_needed default-arch.patch true
-    else
-        # Qt 5.13 and older
+        patch_if_needed 5.12/fp16.patch false
 
         # NDK r19 toolchain
-        patch_if_needed libc++.patch false
-        patch_if_needed mips.patch false
-        patch_if_needed ndk-r19.patch true
+        patch_if_needed 5.12/ndk-r19.patch true
 
         # LTO
-        patch_if_needed thin-lto.patch true
+        patch_if_needed 5.12/thin-lto.patch true
     fi
 
     # LTO
@@ -208,7 +201,7 @@ if [ "$HAS_5_12" -ne 0 ]; then
     exit 1
 fi
 
-if [ "$HAS_5_14" -eq 0 ]; then
+if [ "$HAS_5_15" -eq 0 ]; then
     "$TOP_DIR/3rdparty/openssl/build.sh" true || exit 1
 else
     "$TOP_DIR/3rdparty/openssl/build.sh" false || exit 1
@@ -216,7 +209,7 @@ fi
 
 apply_patches
 
-if [ "$HAS_5_14" -eq 0 ]; then
+if [ "$HAS_5_15" -eq 0 ]; then
     build_514 "$ANDROID_ABIS_32" "$ANDROID_API_32" || exit 1
     build_514 "$ANDROID_ABIS_64" "$ANDROID_API_64" || exit 1
 else
