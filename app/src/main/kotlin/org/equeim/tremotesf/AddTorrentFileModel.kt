@@ -186,16 +186,17 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
     }
 
     private fun parseFile(fileData: ByteArray): Pair<BaseTorrentFilesAdapter.Item, List<BaseTorrentFilesAdapter.File>>? {
-        return try {
+        try {
             val torrentFileMap = Bdecoder(Charsets.UTF_8, fileData.inputStream()).decodeDict()
-            createTree(torrentFileMap)
+            return createTree(torrentFileMap)
         } catch (error: IllegalStateException) {
             error("Error parsing torrent file", error)
-            null
         } catch (error: ClassCastException) {
             error("Error parsing torrent file", error)
-            null
+        } catch (error: OutOfMemoryError) {
+            error("Error parsing torrent file", error)
         }
+        return null
     }
 
     @Suppress("UNCHECKED_CAST")
