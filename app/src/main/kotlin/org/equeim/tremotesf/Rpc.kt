@@ -126,9 +126,13 @@ object Rpc : Logger {
         }
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
-            val old = serverSettings
+            val old = if (::serverSettings.isInitialized) {
+                serverSettings
+            } else {
+                null
+            }
             serverSettings = data
-            old.delete()
+            old?.delete()
         }
 
         override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
