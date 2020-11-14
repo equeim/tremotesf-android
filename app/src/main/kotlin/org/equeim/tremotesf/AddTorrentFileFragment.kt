@@ -247,7 +247,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
                 placeholderLayout.visibility = View.GONE
             } else {
-                placeholder.text = if (hasStoragePermission) {
+                placeholder.text = if (!hasStoragePermission) {
                     getString(R.string.storage_permission_error)
                 } else {
                     when (parserStatus) {
