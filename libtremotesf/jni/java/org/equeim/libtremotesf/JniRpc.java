@@ -51,10 +51,6 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_director_connect(this, swigCPtr, true, true);
   }
 
-  public JniServerSettingsData serverSettingsData() {
-    return new JniServerSettingsData(libtremotesfJNI.JniRpc_serverSettingsData(swigCPtr, this), true);
-  }
-
   public void setServer(Server server) {
     libtremotesfJNI.JniRpc_setServer(swigCPtr, this, Server.getCPtr(server), server);
   }

@@ -73,9 +73,12 @@ namespace libtremotesf
 %newobject std::vector<libtremotesf::Peer*>::doGet;
 %template(TorrentPeersVector) std::vector<libtremotesf::Peer*>;
 
+%typemap(javafinalize) std::vector<QString> ""
 %template(StringsVector) std::vector<QString>;
+%typemap(javafinalize) std::unordered_map<QString, QString> ""
 %template(StringMap) std::unordered_map<QString, QString>;
 
+%typemap(javafinalize) std::vector<int> ""
 %template(IntVector) std::vector<int>;
 
 %include "../libtremotesf/peer.h"

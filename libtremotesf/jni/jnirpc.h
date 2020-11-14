@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 
+#include <QThread>
+
 #include "../libtremotesf/rpc.h"
 #include "../libtremotesf/serversettings.h"
 #include "../libtremotesf/serverstats.h"
@@ -14,6 +16,7 @@ namespace libtremotesf
     struct JniServerSettingsData : ServerSettingsData
     {
     public:
+        JniServerSettingsData() = default;
         explicit JniServerSettingsData(ServerSettings* settings);
 
         void setDownloadDirectory(const QString& directory);
@@ -55,7 +58,7 @@ namespace libtremotesf
         void setMaximumPeersGlobally(int peers);
 
     private:
-        ServerSettings* mSettings;
+        ServerSettings* mSettings = nullptr;
     };
 
     class JniRpc
@@ -63,8 +66,6 @@ namespace libtremotesf
     public:
         JniRpc();
         virtual ~JniRpc() = default;
-
-        JniServerSettingsData serverSettingsData() const;
 
         void setServer(const Server& server);
         void resetServer();
@@ -151,7 +152,16 @@ namespace libtremotesf
         virtual void onGotFreeSpaceForPath(const QString& path, bool success, long long bytes) = 0;
 
     private:
-        Rpc mRpc;
+        template<typename Func>
+        void runOnThread(Func&& function);
+
+        template<typename Func>
+        void runOnTorrent(int torrentId, Func&& function);
+
+        void initRpc();
+
+        QThread mThread;
+        Rpc* mRpc = nullptr;
     };
 }
 

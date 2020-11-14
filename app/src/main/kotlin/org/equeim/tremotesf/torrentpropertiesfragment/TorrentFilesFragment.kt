@@ -240,6 +240,8 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                         currentDirectory = childDirectory
                     }
                 }
+
+                path.delete()
             }
 
             withContext(Dispatchers.Main) {

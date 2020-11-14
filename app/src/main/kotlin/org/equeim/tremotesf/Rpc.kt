@@ -126,18 +126,20 @@ object Rpc : Logger {
         }
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
-            handler.post {
-                serverSettings.delete()
-                serverSettings = data
-            }
+            val old = serverSettings
+            serverSettings = data
+            old.delete()
         }
 
         override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
             val r = removed.toList()
+            removed.delete()
             val c = changed.toList()
+            changed.delete()
             val a = added.toList()
+            added.delete()
             handler.post {
-                Rpc.onTorrentsUpdated(r, c, a)
+                onTorrentsUpdated(r, c, a)
             }
         }
 
@@ -167,17 +169,21 @@ object Rpc : Logger {
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
             val list = files.toList()
+            files.delete()
             handler.post {
-                Rpc.onTorrentFilesUpdated(torrentId, list)
+                onTorrentFilesUpdated(torrentId, list)
             }
         }
 
         override fun onTorrentPeersUpdated(torrentId: Int, removed: IntVector, changed: TorrentPeersVector, added: TorrentPeersVector) {
             val r = removed.toList()
+            removed.delete()
             val c = changed.toList()
+            changed.delete()
             val a = added.toList()
+            added.delete()
             handler.post {
-                Rpc.onTorrentPeersUpdated(torrentId, r, c, a)
+                onTorrentPeersUpdated(torrentId, r, c, a)
             }
         }
 
@@ -204,7 +210,8 @@ object Rpc : Logger {
 
     private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
 
-    var serverSettings: JniServerSettingsData = nativeInstance.serverSettingsData()
+    @Volatile
+    lateinit var serverSettings: JniServerSettingsData
         private set
 
     private val _serverStats = MutableStateFlow(ServerStats())

@@ -39,6 +39,10 @@ public class ServerSettingsData {
     return libtremotesfJNI.ServerSettingsData_canShowFreeSpaceForPath(swigCPtr, this);
   }
 
+  public boolean hasSessionIdFile() {
+    return libtremotesfJNI.ServerSettingsData_hasSessionIdFile(swigCPtr, this);
+  }
+
   public int getRpcVersion() {
     return libtremotesfJNI.ServerSettingsData_rpcVersion_get(swigCPtr, this);
   }

@@ -229,6 +229,7 @@ public class libtremotesfJNI {
   public final static native void delete_Server(long jarg1);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_canShowFreeSpaceForPath(long jarg1, ServerSettingsData jarg1_);
+  public final static native boolean ServerSettingsData_hasSessionIdFile(long jarg1, ServerSettingsData jarg1_);
   public final static native int ServerSettingsData_rpcVersion_get(long jarg1, ServerSettingsData jarg1_);
   public final static native int ServerSettingsData_minimumRpcVersion_get(long jarg1, ServerSettingsData jarg1_);
   public final static native String ServerSettingsData_downloadDirectory_get(long jarg1, ServerSettingsData jarg1_);
@@ -316,7 +317,6 @@ public class libtremotesfJNI {
   public final static native void delete_JniServerSettingsData(long jarg1);
   public final static native long new_JniRpc();
   public final static native void delete_JniRpc(long jarg1);
-  public final static native long JniRpc_serverSettingsData(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setServer(long jarg1, JniRpc jarg1_, long jarg2, Server jarg2_);
   public final static native void JniRpc_resetServer(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_connect(long jarg1, JniRpc jarg1_);

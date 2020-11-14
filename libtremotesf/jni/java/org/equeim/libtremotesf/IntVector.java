@@ -21,11 +21,6 @@ public class IntVector extends java.util.AbstractList<Integer> implements java.u
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    delete();
-  }
-
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
