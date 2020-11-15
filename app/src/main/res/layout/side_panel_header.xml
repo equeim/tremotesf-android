@@ -16,7 +16,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:hint="@string/server">
 
-        <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+        <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
             android:id="@+id/servers_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             app:startIconCheckable="true"
             android:hint="@string/sort">
 
-            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
                 android:id="@+id/sort_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/status">
 
-            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
                 android:id="@+id/status_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/trackers">
 
-            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
                 android:id="@+id/trackers_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/directories">
 
-            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
                 android:id="@+id/directories_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

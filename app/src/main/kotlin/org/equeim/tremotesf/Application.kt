@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 
-import org.equeim.tremotesf.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.utils.Logger
 
 class Application : android.app.Application(), Logger {

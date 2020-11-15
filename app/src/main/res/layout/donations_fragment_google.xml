@@ -42,7 +42,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/donations_amount">
 
-            <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
                 android:id="@+id/skus_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

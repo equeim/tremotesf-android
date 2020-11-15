@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/torrentsListFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsListFragment">
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragment">
         <action
             android:id="@+id/action_torrentsListFragment_to_torrentPropertiesFragment"
             app:destination="@id/torrentPropertiesFragment"
@@ -89,7 +89,7 @@
     </fragment>
     <fragment
         android:id="@+id/torrentPropertiesFragment"
-        android:name="org.equeim.tremotesf.torrentpropertiesfragment.TorrentPropertiesFragment">
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment">
         <argument
             android:name="hash"
             app:argType="string" />
@@ -114,14 +114,14 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="org.equeim.tremotesf.SettingsFragment" >
+        android:name="org.equeim.tremotesf.ui.SettingsFragment" >
         <action
             android:id="@+id/action_settingsFragment_to_persistentNotificationWarningFragment"
             app:destination="@id/persistentNotificationWarningFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="org.equeim.tremotesf.AboutFragment" >
+        android:name="org.equeim.tremotesf.ui.AboutFragment" >
         <argument
             android:name="donate"
             app:argType="boolean"
@@ -129,7 +129,7 @@
     </fragment>
     <fragment
         android:id="@+id/connectionSettingsFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ConnectionSettingsFragment">
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment">
         <action
             android:id="@+id/action_connectionSettingsFragment_to_serverEditFragment"
             app:destination="@id/serverEditFragment"
@@ -143,7 +143,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTorrentFileFragment"
-        android:name="org.equeim.tremotesf.AddTorrentFileFragment">
+        android:name="org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment">
         <argument
             android:name="uri"
             app:argType="string" />
@@ -157,14 +157,14 @@
     </fragment>
     <fragment
         android:id="@+id/addTorrentLinkFragment"
-        android:name="org.equeim.tremotesf.AddTorrentLinkFragment">
+        android:name="org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment">
         <argument
             android:name="uri"
             app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/filePickerFragment"
-        android:name="org.equeim.tremotesf.FilePickerFragment">
+        android:name="org.equeim.tremotesf.ui.addtorrent.FilePickerFragment">
         <action
             android:id="@+id/action_filePickerFragment_to_addTorrentFileFragment"
             app:destination="@id/addTorrentFileFragment"
@@ -193,7 +193,7 @@
         app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     <fragment
         android:id="@+id/serverSettingsFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.ServerSettingsFragment">
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.ServerSettingsFragment">
         <action
             android:id="@+id/action_serverSettingsFragment_to_downloadingFragment"
             app:destination="@id/downloadingFragment"
@@ -232,26 +232,26 @@
     </fragment>
     <fragment
         android:id="@+id/downloadingFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.DownloadingFragment" />
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.DownloadingFragment" />
     <fragment
         android:id="@+id/networkFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.NetworkFragment" />
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.NetworkFragment" />
     <fragment
         android:id="@+id/queueFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.QueueFragment" />
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.QueueFragment" />
     <fragment
         android:id="@+id/seedingFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.SeedingFragment" />
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SeedingFragment" />
     <fragment
         android:id="@+id/speedFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.SpeedFragment" >
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedFragment" >
         <action
             android:id="@+id/action_speedFragment_to_timePickerFragment"
             app:destination="@id/timePickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/serverEditFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment">
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment">
         <action
             android:id="@+id/action_serverEditFragment_to_certificatesFragment"
             app:destination="@id/certificatesFragment"
@@ -275,7 +275,7 @@
     </fragment>
     <fragment
         android:id="@+id/certificatesFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$CertificatesFragment">
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$CertificatesFragment">
 
         <argument
             android:name="server"
@@ -283,13 +283,13 @@
     </fragment>
     <dialog
         android:id="@+id/persistentNotificationWarningFragment"
-        android:name="org.equeim.tremotesf.SettingsFragment$PreferenceFragment$PersistentNotificationWarningFragment" />
+        android:name="org.equeim.tremotesf.ui.SettingsFragment$PreferenceFragment$PersistentNotificationWarningFragment" />
     <dialog
         android:id="@+id/removeServerDialogFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ConnectionSettingsFragment$RemoveServerDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment$RemoveServerDialogFragment" />
     <dialog
         android:id="@+id/timePickerFragment"
-        android:name="org.equeim.tremotesf.serversettingsfragment.TimePickerItem$TimePickerFragment" >
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.TimePickerItem$TimePickerFragment" >
         <argument
             android:name="beginTime"
             app:argType="boolean" />
@@ -302,7 +302,7 @@
     </dialog>
     <dialog
         android:id="@+id/torrentRenameDialogFragment"
-        android:name="org.equeim.tremotesf.TorrentFileRenameDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment" >
         <argument
             android:name="torrentId"
             app:argType="integer"
@@ -316,7 +316,7 @@
     </dialog>
     <dialog
         android:id="@+id/editTrackerDialogFragment"
-        android:name="org.equeim.tremotesf.torrentpropertiesfragment.TrackersAdapter$EditTrackerDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TrackersAdapter$EditTrackerDialogFragment" >
         <argument
             android:name="trackerId"
             app:argType="integer"
@@ -327,17 +327,17 @@
     </dialog>
     <dialog
         android:id="@+id/serverOverwriteDialogFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$ServerOverwriteDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$ServerOverwriteDialogFragment" />
     <dialog
         android:id="@+id/removeTrackerDialogFragment"
-        android:name="org.equeim.tremotesf.torrentpropertiesfragment.TrackersAdapter$RemoveTrackerDialogFragment">
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TrackersAdapter$RemoveTrackerDialogFragment">
         <argument
             android:name="ids"
             app:argType="integer[]" />
     </dialog>
     <dialog
         android:id="@+id/removeTorrentDialogFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter$RemoveTorrentDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter$RemoveTorrentDialogFragment" >
         <argument
             android:name="torrentIds"
             app:argType="integer[]" />
@@ -348,7 +348,7 @@
     </dialog>
     <dialog
         android:id="@+id/setLocationDialogFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsAdapter$SetLocationDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter$SetLocationDialogFragment" >
         <argument
             android:name="torrentIds"
             app:argType="integer[]" />
@@ -358,7 +358,7 @@
     </dialog>
     <dialog
         android:id="@+id/donateDialogFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.TorrentsListFragment$DonateDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragment$DonateDialogFragment" >
         <action
             android:id="@+id/action_donateDialogFragment_to_aboutFragment"
             app:destination="@id/aboutFragment"
@@ -369,10 +369,10 @@
     </dialog>
     <dialog
         android:id="@+id/serverStatsDialogFragment"
-        android:name="org.equeim.tremotesf.torrentslistfragment.ServerStatsDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.ServerStatsDialogFragment" />
     <fragment
         android:id="@+id/proxySettingsFragment"
-        android:name="org.equeim.tremotesf.connectionsettingsfragment.ServerEditFragment$ProxySettingsFragment"
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$ProxySettingsFragment"
         android:label="ProxySettingsFragment" >
         <argument
             android:name="server"

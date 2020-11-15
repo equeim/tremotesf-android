@@ -7,7 +7,7 @@
     android:hint="@string/download_directory"
     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-    <org.equeim.tremotesf.utils.NonFilteringAutoCompleteTextView
+    <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
         android:id="@+id/download_directory_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

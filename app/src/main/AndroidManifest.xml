@@ -21,7 +21,7 @@
         tools:targetApi="m">
 
         <activity
-            android:name=".NavigationActivity"
+            android:name=".ui.NavigationActivity"
             android:launchMode="singleTop">
 
             <intent-filter>
@@ -63,6 +63,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ForegroundService"/>
+        <service android:name=".ui.ForegroundService"/>
     </application>
 </manifest>
