@@ -24,15 +24,18 @@ import kotlin.properties.Delegates
 import android.os.Bundle
 import android.view.View
 
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.equeim.tremotesf.R
@@ -65,12 +68,8 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
     private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 
-    private lateinit var model: Model
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val parent = requireParentFragment() as TorrentPropertiesFragment
-        model = ViewModelProvider(parent, ModelFactory(parent.torrent))[Model::class.java]
+    private val model by viewModels<Model> {
+        ModelFactory((requireParentFragment() as TorrentPropertiesFragment).torrent)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,9 +86,9 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.peers.collectWhenStarted(viewLifecycleOwner, ::updateAdapter)
-
-        //model.peers.observe(viewLifecycleOwner, ::updateAdapter)
+        model.peers.collectWhenStarted(viewLifecycleOwner, peersAdapter::update)
+        model.peers.combine(model.loaded, ::Pair)
+                .collectWhenStarted(viewLifecycleOwner) { (peers, loaded) -> updatePlaceholder(peers, loaded) }
     }
 
     override fun onDestroyView() {
@@ -102,38 +101,23 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
     }
 
     override fun onNavigatedFrom() {
-        //model.peers.removeObservers(viewLifecycleOwner)
         model.torrent = null
     }
 
-    private fun updateAdapter(peers: List<Peer>) {
-        val peersAdapter = this.peersAdapter ?: return
-        val wasEmpty = (peersAdapter.itemCount == 0)
-        if (wasEmpty && peers.isEmpty()) {
-            updatePlaceholder(peersAdapter)
-            return
-        }
-        peersAdapter.update(peers)
-        if (wasEmpty || peers.isEmpty()) {
-            updatePlaceholder(peersAdapter)
-        }
-    }
-
-    private fun updatePlaceholder(peersAdapter: PeersAdapter) {
-        with(binding) {
-            if (model.torrent == null) {
+    private fun updatePlaceholder(peers: List<Peer>, loaded: Boolean) = with(binding) {
+        if (model.torrent == null) {
+            progressBar.visibility = View.GONE
+            placeholder.visibility = View.GONE
+        } else {
+            if (loaded) {
                 progressBar.visibility = View.GONE
-            } else {
-                if (model.loaded) {
-                    progressBar.visibility = View.GONE
-                    placeholder.visibility = if (peersAdapter.itemCount == 0) {
-                        View.VISIBLE
-                    } else {
-                        View.GONE
-                    }
+                placeholder.visibility = if (peers.isEmpty()) {
+                    View.VISIBLE
                 } else {
-                    progressBar.visibility = View.VISIBLE
+                    View.GONE
                 }
+            } else {
+                progressBar.visibility = View.VISIBLE
             }
         }
     }
@@ -162,8 +146,9 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
         private val _peers = MutableStateFlow<List<Peer>>(emptyList())
         val peers: StateFlow<List<Peer>> by ::_peers
-        var loaded = false
-            private set
+
+        private val _loaded = MutableStateFlow(false)
+        val loaded: StateFlow<Boolean> by ::_loaded
 
         init {
             this.torrent = torrent
@@ -172,6 +157,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
         private fun reset() {
             _peers.value = emptyList()
+            _loaded.value = false
         }
 
         private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
@@ -179,7 +165,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
             if (torrentId != torrent?.id) return
 
-            if (loaded && removed.isEmpty() && changed.isEmpty() && added.isEmpty()) {
+            if (loaded.value && removed.isEmpty() && changed.isEmpty() && added.isEmpty()) {
                 return
             }
 
@@ -212,8 +198,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
                 peers.add(Peer(peer))
             }
 
-            loaded = true
-
+            _loaded.value = true
             _peers.value = peers
         }
 
