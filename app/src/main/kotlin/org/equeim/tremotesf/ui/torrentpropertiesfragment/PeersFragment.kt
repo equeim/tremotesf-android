@@ -24,9 +24,7 @@ import kotlin.properties.Delegates
 import android.os.Bundle
 import android.view.View
 
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -44,6 +42,7 @@ import org.equeim.tremotesf.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewModels
 
 
 data class Peer(val address: String,
@@ -68,9 +67,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
     private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 
-    private val model by viewModels<Model> {
-        ModelFactory((requireParentFragment() as TorrentPropertiesFragment).torrent)
-    }
+    private val model by viewModels { Model((requireParentFragment() as TorrentPropertiesFragment).torrent) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -119,16 +116,6 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             } else {
                 progressBar.visibility = View.VISIBLE
             }
-        }
-    }
-
-    private class ModelFactory(private val torrent: Torrent?) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass == Model::class.java) {
-                @Suppress("UNCHECKED_CAST")
-                return Model(torrent) as T
-            }
-            throw IllegalArgumentException()
         }
     }
 

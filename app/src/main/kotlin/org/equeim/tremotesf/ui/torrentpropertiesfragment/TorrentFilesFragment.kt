@@ -45,6 +45,7 @@ import org.equeim.tremotesf.rpc.Rpc
 import org.equeim.tremotesf.rpc.Torrent
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewModels
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 import kotlin.properties.Delegates
@@ -56,7 +57,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
 
     private var savedInstanceState: Bundle? = null
 
-    private lateinit var model: TreeModel
+    private val model by viewModels { TreeModel(torrentPropertiesFragment.torrent) }
 
     var torrent: Torrent? = null
         private set
@@ -68,8 +69,6 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
-        model = ViewModelProvider(torrentPropertiesFragment,
-                                  TreeModelFactory(torrentPropertiesFragment.torrent))[TreeModel::class.java]
         torrent = model.torrent
     }
 
@@ -142,16 +141,6 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             TreeModel.State.Loading,
             TreeModel.State.CreatingTree -> View.VISIBLE
             else -> View.GONE
-        }
-    }
-
-    private class TreeModelFactory(private val torrent: Torrent?) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass == TreeModel::class.java) {
-                @Suppress("UNCHECKED_CAST")
-                return TreeModel(torrent) as T
-            }
-            throw IllegalArgumentException()
         }
     }
 
