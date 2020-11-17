@@ -73,10 +73,6 @@ import java.util.concurrent.TimeUnit
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                                 0,
                                                 R.menu.torrents_list_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
-    private companion object {
-        const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
-    }
-
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
@@ -84,14 +80,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     var torrentsAdapter: TorrentsAdapter? = null
         private set
 
-    private var navigatedFrom = false
-
     private val model by viewModels<TorrentsListFragmentViewModel>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        navigatedFrom = savedInstanceState?.getBoolean(NAVIGATED_FROM_KEY) ?: false
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -156,7 +145,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                         navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                     }
                 }
-            } else if (!navigatedFrom) {
+            } else if (!model.navigatedFromFragment.value) {
                 navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         }
@@ -234,11 +223,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         torrentsAdapter?.saveInstanceState(outState)
-        outState.putBoolean(NAVIGATED_FROM_KEY, navigatedFrom)
     }
 
     override fun onNavigatedFrom() {
-        navigatedFrom = true
+        model.navigatedFromFragment.value = true
     }
 
     override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {

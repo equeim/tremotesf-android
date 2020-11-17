@@ -112,6 +112,8 @@ class TorrentsListFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewMo
 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
+    val navigatedFromFragment = savedStateHandle.getStateFlow("navigatedFromFragment", false)
+
     private fun createFilterPredicate(statusFilterMode: StatusFilterMode,
                                       trackerFilter: String,
                                       directoryFilter: String,
