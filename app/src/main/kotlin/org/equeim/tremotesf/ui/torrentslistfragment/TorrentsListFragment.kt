@@ -133,19 +133,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             view.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }
 
-        if (savedInstanceState == null) {
+        if (!model.navigatedFromFragment.value) {
             if (Servers.hasServers) {
-                if (!Settings.donateDialogShown) {
-                    val info = requireActivity().packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
-                    val currentTime = System.currentTimeMillis()
-                    val installDays = TimeUnit.DAYS.convert(currentTime - info.firstInstallTime, TimeUnit.MILLISECONDS)
-                    val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
-                    if (installDays >= 2 && updateDays >= 1) {
-                        Settings.donateDialogShown = true
-                        navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
-                    }
+                if (model.shouldShowDonateDialog()) {
+                    Settings.donateDialogShown = true
+                    navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
                 }
-            } else if (!model.navigatedFromFragment.value) {
+            } else {
                 navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
             }
         }

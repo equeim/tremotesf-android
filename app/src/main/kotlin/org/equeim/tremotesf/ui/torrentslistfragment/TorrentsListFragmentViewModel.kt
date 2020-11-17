@@ -19,8 +19,10 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
+import android.app.Application
+
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
 
 import org.equeim.libtremotesf.TorrentData
+import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.rpc.Rpc
 import org.equeim.tremotesf.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
@@ -37,7 +40,9 @@ import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.getStateFlow
 import org.equeim.tremotesf.utils.Logger
 
-class TorrentsListFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel(), Logger {
+import java.util.concurrent.TimeUnit
+
+class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application), Logger {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
@@ -113,6 +118,17 @@ class TorrentsListFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewMo
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
     val navigatedFromFragment = savedStateHandle.getStateFlow("navigatedFromFragment", false)
+
+    fun shouldShowDonateDialog(): Boolean {
+        if (Settings.donateDialogShown) {
+            return false
+        }
+        val info = getApplication<Application>().packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
+        val currentTime = System.currentTimeMillis()
+        val installDays = TimeUnit.DAYS.convert(currentTime - info.firstInstallTime, TimeUnit.MILLISECONDS)
+        val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
+        return (installDays >= 2 && updateDays >= 1)
+    }
 
     private fun createFilterPredicate(statusFilterMode: StatusFilterMode,
                                       trackerFilter: String,
