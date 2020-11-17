@@ -77,6 +77,7 @@ import org.equeim.tremotesf.utils.MutableEventFlow
 
 import org.qtproject.qt5.android.QtNative
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 
 typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
@@ -140,15 +141,10 @@ object Rpc : Logger {
         }
 
         override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
-            val r = removed.toList()
+            Rpc.onTorrentsUpdated(removed, changed, added)
             removed.delete()
-            val c = changed.toList()
             changed.delete()
-            val a = added.toList()
             added.delete()
-            handler.post {
-                onTorrentsUpdated(r, c, a)
-            }
         }
 
         override fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
@@ -216,7 +212,7 @@ object Rpc : Logger {
 
     private val notificationManager: NotificationManager = context.getSystemService()!!
 
-    private var updateWorkerCompleter: CallbackToFutureAdapter.Completer<ListenableWorker.Result>? = null
+    private var updateWorkerCompleter = AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
 
     @Volatile
     lateinit var serverSettings: JniServerSettingsData
@@ -375,10 +371,8 @@ object Rpc : Logger {
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
         val newTorrents = torrents.value.toMutableList()
 
-        val deleteNativeObjects = ArrayList<TorrentData>(removed.size + changed.size)
-
         for (index in removed) {
-            deleteNativeObjects.add(newTorrents.removeAt(index).data)
+            newTorrents.removeAt(index)
         }
 
         if (changed.isNotEmpty()) {
@@ -389,7 +383,6 @@ object Rpc : Logger {
             while (torrentsIter.hasNext()) {
                 val torrent = torrentsIter.next()
                 if (torrent.id == changedId) {
-                    deleteNativeObjects.add(torrent.data)
                     torrentsIter.set(Torrent(changedTorrentData, context, torrent))
                     if (changedIter.hasNext()) {
                         changedTorrentData = changedIter.next()
@@ -408,7 +401,6 @@ object Rpc : Logger {
         }
 
         _torrents.value = newTorrents
-        deleteNativeObjects.forEach(TorrentData::delete)
 
         if (isConnected.value) {
             handleWorkerCompleter()
@@ -418,7 +410,7 @@ object Rpc : Logger {
     private fun showNotificationsSinceLastConnection() {
         val notifyOnFinished: Boolean
         val notifyOnAdded: Boolean
-        if (updateWorkerCompleter == null) {
+        if (updateWorkerCompleter.get() == null) {
             notifyOnFinished = Settings.notifyOnFinishedSinceLastConnection
             notifyOnAdded = Settings.notifyOnAddedSinceLastConnection
         } else {
@@ -546,13 +538,16 @@ object Rpc : Logger {
     }
 
     private fun handleWorkerCompleter() {
-        updateWorkerCompleter?.let { completer ->
+        updateWorkerCompleter.getAndSet(null)?.let { completer ->
             info("Rpc.handleWorkerCompleter()")
             if (isConnected.value) {
-                Servers.save()
+                handler.post {
+                    if (isConnected.value) {
+                        Servers.save()
+                    }
+                }
             }
             completer.set(ListenableWorker.Result.success())
-            updateWorkerCompleter = null
         }
     }
 
@@ -574,10 +569,9 @@ object Rpc : Logger {
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
-            updateWorkerCompleter?.set(Result.success())
-
             return CallbackToFutureAdapter.getFuture { completer ->
-                updateWorkerCompleter = completer
+                val oldCompleter = updateWorkerCompleter.getAndSet(completer)
+                oldCompleter?.set(Result.success())
                 if (status.value == RpcStatus.Disconnected) {
                     nativeInstance.connect()
                 } else {
