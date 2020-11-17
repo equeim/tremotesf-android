@@ -172,23 +172,15 @@ object Rpc : Logger {
         }
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
-            val list = files.toList()
+            onTorrentFilesUpdated(torrentId, files.toList())
             files.delete()
-            handler.post {
-                onTorrentFilesUpdated(torrentId, list)
-            }
         }
 
         override fun onTorrentPeersUpdated(torrentId: Int, removed: IntVector, changed: TorrentPeersVector, added: TorrentPeersVector) {
-            val r = removed.toList()
+            onTorrentPeersUpdated(torrentId, removed.toList(), changed.toList(), added.toList())
             removed.delete()
-            val c = changed.toList()
             changed.delete()
-            val a = added.toList()
             added.delete()
-            handler.post {
-                onTorrentPeersUpdated(torrentId, r, c, a)
-            }
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
