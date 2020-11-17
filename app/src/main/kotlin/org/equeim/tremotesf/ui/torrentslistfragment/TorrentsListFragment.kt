@@ -291,7 +291,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             } else {
                 requiredActivity.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
-                navController.popDialog()
+                if (navController.currentDestination?.id != R.id.donateDialogFragment) {
+                    navController.popDialog()
+                }
             }
         }
 
