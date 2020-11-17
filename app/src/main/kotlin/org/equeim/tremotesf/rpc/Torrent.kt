@@ -30,20 +30,15 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 
 
-class Torrent(data: TorrentData, private val context: Context, prevTorrent: Torrent? = null) {
-    var data = data
-        private set
-
+class Torrent(val data: TorrentData, private val context: Context, prevTorrent: Torrent? = null) {
     val id = data.id
     val hashString: String = data.hashString
 
-    var name: String = data.name
-        private set
+    val name: String = data.name
 
-    var status = data.status
-        private set
+    val status = data.status
 
-    private var errorString: String = data.errorString
+    private val errorString: String = data.errorString
 
     val statusString: String
         get() {
@@ -67,46 +62,29 @@ class Torrent(data: TorrentData, private val context: Context, prevTorrent: Torr
             }
         }
 
-    var totalSize = data.totalSize
-        private set
-    var completedSize = data.completedSize
-        private set
-    var sizeWhenDone = data.sizeWhenDone
-        private set
-    var percentDone = data.percentDone
-        private set
-    var isFinished = data.leftUntilDone == 0L
-        private set
-    var recheckProgress = data.recheckProgress
-        private set
-    var eta = data.eta
-        private set
+    val totalSize = data.totalSize
+    val completedSize = data.completedSize
+    val sizeWhenDone = data.sizeWhenDone
+    val percentDone = data.percentDone
+    val isFinished = data.leftUntilDone == 0L
+    val recheckProgress = data.recheckProgress
+    val eta = data.eta
 
-    var downloadSpeed = data.downloadSpeed
-        private set
-    var uploadSpeed = data.uploadSpeed
-        private set
+    val downloadSpeed = data.downloadSpeed
+    val uploadSpeed = data.uploadSpeed
 
-    var totalDownloaded = data.totalDownloaded
-        private set
-    var totalUploaded = data.totalUploaded
-        private set
-    var ratio = data.ratio
-        private set
+    val totalDownloaded = data.totalDownloaded
+    val totalUploaded = data.totalUploaded
+    val ratio = data.ratio
 
-    var seeders = data.seeders
-        private set
-    var leechers = data.leechers
-        private set
+    val seeders = data.seeders
+    val leechers = data.leechers
 
-    var addedDateTime: Long = data.addedDateTime
-        private set
+    val addedDateTime: Long = data.addedDateTime
 
-    var downloadDirectory: String = data.downloadDirectory
-        private set
+    val downloadDirectory: String = data.downloadDirectory
 
-    var trackers: List<Tracker> = data.trackers
-        private set
+    val trackers: List<Tracker> = data.trackers
     val trackerSites: List<String>
 
     var filesEnabled: Boolean by Delegates.observable(prevTorrent?.filesEnabled ?: false) { _, oldFilesEnabled, filesEnabled ->
