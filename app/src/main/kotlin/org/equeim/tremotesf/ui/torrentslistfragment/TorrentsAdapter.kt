@@ -60,75 +60,14 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.createSelectionTrackerInt
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment
-import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
-import java.util.Comparator
-import kotlin.properties.Delegates
 
-
-private const val INSTANCE_STATE = "org.equeim.tremotesf.mainactivity.TorrentsAdapter"
-private const val SORT_MODE = "sortMode"
-private const val SORT_ORDER = "sortOrder"
-private const val STATUS_FILTER_MODE = "statusFilterMode"
-private const val TRACKER_FILTER = "trackerFilter"
-private const val DIRECTORY_FILTER = "directoryFilter"
-
-class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
-    companion object {
-        fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
-            return when (filterMode) {
-                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading) ||
-                                           (torrent.status == TorrentData.Status.Seeding)
-                StatusFilterMode.Downloading -> when (torrent.status) {
-                    TorrentData.Status.Downloading,
-                    TorrentData.Status.StalledDownloading,
-                    TorrentData.Status.QueuedForDownloading -> true
-                    else -> false
-                }
-                StatusFilterMode.Seeding -> when (torrent.status) {
-                    TorrentData.Status.Seeding,
-                    TorrentData.Status.StalledSeeding,
-                    TorrentData.Status.QueuedForSeeding -> true
-                    else -> false
-                }
-                StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
-                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking) ||
-                                             (torrent.status == TorrentData.Status.Checking)
-                StatusFilterMode.Errored -> (torrent.status == TorrentData.Status.Errored)
-                StatusFilterMode.All -> true
-            }
-        }
-    }
-
-    enum class SortMode {
-        Name,
-        Status,
-        Progress,
-        Eta,
-        Ratio,
-        Size,
-        AddedDate
-    }
-
-    enum class SortOrder {
-        Ascending,
-        Descending
-    }
-
-    enum class StatusFilterMode {
-        All,
-        Active,
-        Downloading,
-        Seeding,
-        Paused,
-        Checking,
-        Errored
-    }
-
+class TorrentsAdapter(private val fragment: TorrentsListFragment,
+                      private var selectionTrackerInstanceState: Bundle?) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = createSelectionTrackerInt(fragment.requiredActivity,
                                                              ::ActionModeCallback,
                                                              R.plurals.torrents_selected,
@@ -136,65 +75,8 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         getItem(it).id
     }
 
-    private val filterPredicate = { torrent: Torrent ->
-        statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
-        (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
-        (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
-        torrent.name.contains(filterString, true)
-    }
-
-    private val comparator = object : Comparator<Torrent> {
-        private val nameComparator = AlphanumericComparator()
-
-        override fun compare(o1: Torrent, o2: Torrent): Int {
-            var compared = when (sortMode) {
-                SortMode.Name -> nameComparator.compare(o1.name, o2.name)
-                SortMode.Status -> o1.status.compareTo(o2.status)
-                SortMode.Progress -> o1.percentDone.compareTo(o2.percentDone)
-                SortMode.Eta -> o1.eta.compareTo(o2.eta)
-                SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
-                SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
-                SortMode.AddedDate -> o1.addedDateTime.compareTo(o2.addedDateTime)
-            }
-            if (sortMode != SortMode.Name && compared == 0) {
-                compared = nameComparator.compare(o1.name, o2.name)
-            }
-            if (sortOrder == SortOrder.Descending) {
-                compared = -compared
-            }
-            return compared
-        }
-    }
-
     private val compactView = Settings.torrentCompactView
     private val multilineName = Settings.torrentNameMultiline
-
-    private fun <T> resortDelegate(initialValue: T) =
-            Delegates.observable(initialValue) { _, oldValue, newValue ->
-                if (newValue != oldValue) {
-                    currentList.let { list ->
-                        submitList(null)
-                        submitList(list.sortedWith(comparator))
-                    }
-                    fragment.binding.torrentsView.scrollToPosition(0)
-                }
-            }
-
-    private fun <T> updateDelegate(initialValue: T) =
-            Delegates.observable(initialValue) { _, oldValue, newValue ->
-                if (newValue != oldValue) {
-                    update()
-                    fragment.binding.torrentsView.scrollToPosition(0)
-                }
-            }
-
-    var sortMode: SortMode by resortDelegate(Settings.torrentsSortMode)
-    var sortOrder: SortOrder by resortDelegate(Settings.torrentsSortOrder)
-
-    var statusFilterMode: StatusFilterMode by updateDelegate(Settings.torrentsStatusFilter)
-    var trackerFilter: String by updateDelegate(Settings.torrentsTrackerFilter)
-    var directoryFilter: String by updateDelegate(Settings.torrentsDirectoryFilter)
-    var filterString: String by updateDelegate("")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {
@@ -217,28 +99,15 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         super.submitList(if (list?.isEmpty() == true) null else list)
     }
 
-    fun update(torrents: List<Torrent> = Rpc.torrents.value) {
-        submitList(torrents.filter(filterPredicate).sortedWith(comparator))
-    }
-
-    fun updateAndRestoreInstanceState(torrents: List<Torrent>, savedInstanceState: Bundle?) {
-        savedInstanceState?.getBundle(INSTANCE_STATE)?.let { state ->
-            sortMode = SortMode.values()[state.getInt(SORT_MODE)]
-            sortOrder = SortOrder.values()[state.getInt(SORT_ORDER)]
-            statusFilterMode = StatusFilterMode.values()[state.getInt(STATUS_FILTER_MODE)]
-            trackerFilter = state.getString(TRACKER_FILTER, "")
-            directoryFilter = state.getString(DIRECTORY_FILTER, "")
+    fun update(torrents: List<Torrent>) {
+        submitList(torrents)
+        if (selectionTrackerInstanceState != null) {
+            selectionTracker.restoreInstanceState(selectionTrackerInstanceState)
+            selectionTrackerInstanceState = null
         }
-        update(torrents)
-        selectionTracker.restoreInstanceState(savedInstanceState)
     }
 
     fun saveInstanceState(outState: Bundle) {
-        outState.putBundle(INSTANCE_STATE, bundleOf(SORT_MODE to sortMode.ordinal,
-                                                    SORT_ORDER to sortOrder.ordinal,
-                                                    STATUS_FILTER_MODE to statusFilterMode.ordinal,
-                                                    TRACKER_FILTER to trackerFilter,
-                                                    DIRECTORY_FILTER to directoryFilter))
         selectionTracker.saveInstanceState(outState)
     }
 

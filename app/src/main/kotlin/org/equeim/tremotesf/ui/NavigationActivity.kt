@@ -64,7 +64,7 @@ import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.findChildRecursively
@@ -292,7 +292,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
             sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
             val startIconDrawable = sortViewLayout.startIconDrawable
             sortViewLayout.findChildRecursively { it is ImageView && it.drawable === startIconDrawable }?.let {
-                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
+                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
             }
 
             statusView.setAdapter(StatusFilterViewAdapter(this@NavigationActivity, statusView))

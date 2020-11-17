@@ -24,8 +24,10 @@ import android.widget.AutoCompleteTextView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.Companion.statusFilterAcceptsTorrent
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.StatusFilterMode
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 
@@ -59,7 +61,7 @@ class StatusFilterViewAdapter(private val context: Context,
         return getItem(Settings.torrentsStatusFilter.ordinal)
     }
 
-    fun update() {
+    fun update(torrents: List<Torrent>) {
         activeTorrents = 0
         downloadingTorrents = 0
         seedingTorrents = 0
@@ -67,23 +69,23 @@ class StatusFilterViewAdapter(private val context: Context,
         checkingTorrents = 0
         erroredTorrents = 0
 
-        for (torrent in Rpc.torrents.value) {
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Active)) {
+        for (torrent in torrents) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Active)) {
                 activeTorrents++
             }
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Downloading)) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Downloading)) {
                 downloadingTorrents++
             }
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Seeding)) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Seeding)) {
                 seedingTorrents++
             }
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Paused)) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Paused)) {
                 pausedTorrents++
             }
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Checking)) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Checking)) {
                 checkingTorrents++
             }
-            if (TorrentsAdapter.statusFilterAcceptsTorrent(torrent, TorrentsAdapter.StatusFilterMode.Errored)) {
+            if (statusFilterAcceptsTorrent(torrent, StatusFilterMode.Errored)) {
                 erroredTorrents++
             }
         }

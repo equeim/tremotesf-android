@@ -38,12 +38,19 @@ import androidx.core.view.postDelayed
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
 
 fun View.showSnackbar(message: CharSequence, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null): Snackbar {
@@ -142,4 +149,14 @@ fun NavController.popDialog() {
     if (currentDestination is DialogFragmentNavigator.Destination) {
         popBackStack()
     }
+}
+
+fun <T> SavedStateHandle.getStateFlow(scope: CoroutineScope, key: String, initialValue: T): MutableStateFlow<T> {
+    val flow = MutableStateFlow(get(key) ?: initialValue)
+    scope.launch {
+        flow.drop(1).collect {
+            set(key, it)
+        }
+    }
+    return flow
 }

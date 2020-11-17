@@ -77,8 +77,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         const val NAVIGATED_FROM_KEY = "org.equeim.tremotesf.TorrentsListFragment.navigatedFrom"
     }
 
-    private var savedInstanceState: Bundle? = null
-
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
@@ -93,14 +91,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navigatedFrom = savedInstanceState?.getBoolean(NAVIGATED_FROM_KEY) ?: false
-        this.savedInstanceState = savedInstanceState
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenuItems()
 
-        val torrentsAdapter = TorrentsAdapter(this)
+        val torrentsAdapter = TorrentsAdapter(this, savedInstanceState)
         this.torrentsAdapter = torrentsAdapter
 
         setupDrawerListeners()
@@ -111,6 +108,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
+
+        model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
 
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::onTorrentsUpdated)
 
@@ -166,49 +165,45 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private fun setupDrawerListeners() {
         with(requiredActivity.sidePanelBinding) {
             sortView.setOnItemClickListener { _, _, position, _ ->
-                torrentsAdapter?.apply {
-                    sortMode = TorrentsAdapter.SortMode.values()[position]
+                model.apply {
+                    sortMode.value = TorrentsListFragmentViewModel.SortMode.values()[position]
                     if (Rpc.isConnected.value) {
-                        Settings.torrentsSortMode = sortMode
+                        Settings.torrentsSortMode = sortMode.value
                     }
                 }
             }
 
             sortViewLayout.setStartIconOnClickListener {
-                torrentsAdapter?.apply {
-                    sortOrder = if (sortOrder == TorrentsAdapter.SortOrder.Ascending) {
-                        TorrentsAdapter.SortOrder.Descending
-                    } else {
-                        TorrentsAdapter.SortOrder.Ascending
-                    }
-                    Settings.torrentsSortOrder = sortOrder
+                model.apply {
+                    sortOrder.value = sortOrder.value.inverted()
+                    Settings.torrentsSortOrder = sortOrder.value
                 }
-                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsAdapter.SortOrder.Descending
+                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
             }
 
             statusView.setOnItemClickListener { _, _, position, _ ->
-                torrentsAdapter?.apply {
-                    statusFilterMode = TorrentsAdapter.StatusFilterMode.values()[position]
+                model.apply {
+                    statusFilterMode.value = TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
                     if (Rpc.isConnected.value) {
-                        Settings.torrentsStatusFilter = statusFilterMode
+                        Settings.torrentsStatusFilter = statusFilterMode.value
                     }
                 }
             }
 
             trackersView.setOnItemClickListener { _, _, position, _ ->
-                torrentsAdapter?.apply {
-                    trackerFilter = (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
+                model.apply {
+                    trackerFilter.value = (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
                     if (Rpc.isConnected.value) {
-                        Settings.torrentsTrackerFilter = trackerFilter
+                        Settings.torrentsTrackerFilter = trackerFilter.value
                     }
                 }
             }
 
             directoriesView.setOnItemClickListener { _, _, position, _ ->
-                torrentsAdapter?.apply {
-                    directoryFilter = (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
+                model.apply {
+                    directoryFilter.value = (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
                     if (Rpc.isConnected.value) {
-                        Settings.torrentsDirectoryFilter = directoryFilter
+                        Settings.torrentsDirectoryFilter = directoryFilter.value
                     }
                 }
             }
@@ -261,7 +256,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val searchView = searchMenuItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                torrentsAdapter?.filterString = newText.trim()
+                model.nameFilter.value = newText.trim()
                 return true
             }
 
@@ -323,13 +318,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private fun onTorrentsUpdated(torrents: List<Torrent>) {
         with (requiredActivity.sidePanelBinding) {
-            (statusView.adapter as StatusFilterViewAdapter).update()
-            (trackersView.adapter as TrackersViewAdapter).update()
-            (directoriesView.adapter as DirectoriesViewAdapter).update()
+            (statusView.adapter as StatusFilterViewAdapter).update(torrents)
+            (trackersView.adapter as TrackersViewAdapter).update(torrents)
+            (directoriesView.adapter as DirectoriesViewAdapter).update(torrents)
         }
-
-        torrentsAdapter?.updateAndRestoreInstanceState(torrents, savedInstanceState)
-        savedInstanceState = null
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
                 if (Rpc.isConnected.value) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false

@@ -24,6 +24,7 @@ import android.widget.AutoCompleteTextView
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
@@ -61,9 +62,9 @@ class DirectoriesViewAdapter(private val context: Context,
         }
     }
 
-    fun update() {
+    fun update(torrents: List<Torrent>) {
         directoriesMap.clear()
-        for (torrent in Rpc.torrents.value) {
+        for (torrent in torrents) {
             var directory = torrent.downloadDirectory
             if (directory.endsWith('/')) {
                 directory = directory.dropLast(1)

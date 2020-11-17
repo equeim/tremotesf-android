@@ -28,7 +28,8 @@ import androidx.preference.PreferenceManager
 
 import org.equeim.tremotesf.Application
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
+import org.equeim.tremotesf.utils.enumFromInt
 
 
 private const val TORRENTS_SORT_MODE = "torrentsSortMode"
@@ -145,38 +146,20 @@ object Settings {
             return preferences.getBoolean(deleteFilesKey, false)
         }
 
-    var torrentsSortMode: TorrentsAdapter.SortMode
-        get() {
-            val int = preferences.getInt(TORRENTS_SORT_MODE, 0)
-            if (int in TorrentsAdapter.SortMode.values().indices) {
-                return TorrentsAdapter.SortMode.values()[int]
-            }
-            return TorrentsAdapter.SortMode.Name
-        }
+    var torrentsSortMode: TorrentsListFragmentViewModel.SortMode
+        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_MODE, 0))
         set(value) {
             preferences.edit { putInt(TORRENTS_SORT_MODE, value.ordinal) }
         }
 
-    var torrentsSortOrder: TorrentsAdapter.SortOrder
-        get() {
-            val int = preferences.getInt(TORRENTS_SORT_ORDER, 0)
-            if (int in TorrentsAdapter.SortOrder.values().indices) {
-                return TorrentsAdapter.SortOrder.values()[int]
-            }
-            return TorrentsAdapter.SortOrder.Ascending
-        }
+    var torrentsSortOrder: TorrentsListFragmentViewModel.SortOrder
+        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_ORDER, 0))
         set(value) {
             preferences.edit { putInt(TORRENTS_SORT_ORDER, value.ordinal) }
         }
 
-    var torrentsStatusFilter: TorrentsAdapter.StatusFilterMode
-        get() {
-            val int = preferences.getInt(TORRENTS_STATUS_FILTER, 0)
-            if (int in TorrentsAdapter.StatusFilterMode.values().indices) {
-                return TorrentsAdapter.StatusFilterMode.values()[int]
-            }
-            return TorrentsAdapter.StatusFilterMode.All
-        }
+    var torrentsStatusFilter: TorrentsListFragmentViewModel.StatusFilterMode
+        get() = enumFromInt(preferences.getInt(TORRENTS_STATUS_FILTER, 0))
         set(value) {
             preferences.edit { putInt(TORRENTS_STATUS_FILTER, value.ordinal) }
         }

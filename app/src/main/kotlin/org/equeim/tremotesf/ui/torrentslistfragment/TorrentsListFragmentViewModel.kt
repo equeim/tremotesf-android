@@ -19,10 +19,135 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.combine
-import org.equeim.tremotesf.rpc.Rpc
+import androidx.lifecycle.viewModelScope
 
-class TorrentsListFragmentViewModel : ViewModel() {
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.plus
+
+import org.equeim.libtremotesf.TorrentData
+import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.ui.utils.getStateFlow
+import org.equeim.tremotesf.utils.Logger
+
+class TorrentsListFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel(), Logger {
+    companion object {
+        fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
+            return when (filterMode) {
+                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading) ||
+                        (torrent.status == TorrentData.Status.Seeding)
+                StatusFilterMode.Downloading -> when (torrent.status) {
+                    TorrentData.Status.Downloading,
+                    TorrentData.Status.StalledDownloading,
+                    TorrentData.Status.QueuedForDownloading -> true
+                    else -> false
+                }
+                StatusFilterMode.Seeding -> when (torrent.status) {
+                    TorrentData.Status.Seeding,
+                    TorrentData.Status.StalledSeeding,
+                    TorrentData.Status.QueuedForSeeding -> true
+                    else -> false
+                }
+                StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
+                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking) ||
+                        (torrent.status == TorrentData.Status.Checking)
+                StatusFilterMode.Errored -> (torrent.status == TorrentData.Status.Errored)
+                StatusFilterMode.All -> true
+            }
+        }
+    }
+
+    enum class SortMode {
+        Name,
+        Status,
+        Progress,
+        Eta,
+        Ratio,
+        Size,
+        AddedDate
+    }
+
+    enum class SortOrder {
+        Ascending,
+        Descending;
+
+        fun inverted(): SortOrder {
+            return if (this == Ascending) Descending
+            else Ascending
+        }
+    }
+
+    enum class StatusFilterMode {
+        All,
+        Active,
+        Downloading,
+        Seeding,
+        Paused,
+        Checking,
+        Errored
+    }
+
+    val sortMode = savedStateHandle.getStateFlow("sortMode", Settings.torrentsSortMode)
+    val sortOrder = savedStateHandle.getStateFlow("sortOrder", Settings.torrentsSortOrder)
+
+    val statusFilterMode = savedStateHandle.getStateFlow("statusFilter", Settings.torrentsStatusFilter)
+    val trackerFilter = savedStateHandle.getStateFlow("trackerFilter", Settings.torrentsTrackerFilter)
+    val directoryFilter = savedStateHandle.getStateFlow("directoryFilter", Settings.torrentsDirectoryFilter)
+    val nameFilter = savedStateHandle.getStateFlow("nameFilter", "")
+
+    private val filteredTorrents = combine(Rpc.torrents, statusFilterMode, trackerFilter, directoryFilter, nameFilter) { torrents, status, tracker, directory, name ->
+        torrents.filter(createFilterPredicate(status, tracker, directory, name))
+    }
+    val torrents = combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
+        torrents.sortedWith(createComparator(sortMode, sortOrder))
+        // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
+    }.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(500), emptyList())
+
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
+
+    private fun createFilterPredicate(statusFilterMode: StatusFilterMode,
+                                      trackerFilter: String,
+                                      directoryFilter: String,
+                                      nameFilter: String): (Torrent) -> Boolean {
+        return { torrent: Torrent ->
+            statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
+                    (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
+                    (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
+                    torrent.name.contains(nameFilter, true)
+        }
+    }
+
+    private fun createComparator(sortMode: SortMode, sortOrder: SortOrder): Comparator<Torrent> {
+        return object : Comparator<Torrent> {
+            private val nameComparator = AlphanumericComparator()
+
+            override fun compare(o1: Torrent, o2: Torrent): Int {
+                var compared = when (sortMode) {
+                    SortMode.Name -> nameComparator.compare(o1.name, o2.name)
+                    SortMode.Status -> o1.status.compareTo(o2.status)
+                    SortMode.Progress -> o1.percentDone.compareTo(o2.percentDone)
+                    SortMode.Eta -> o1.eta.compareTo(o2.eta)
+                    SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
+                    SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
+                    SortMode.AddedDate -> o1.addedDateTime.compareTo(o2.addedDateTime)
+                }
+                if (sortMode != SortMode.Name && compared == 0) {
+                    compared = nameComparator.compare(o1.name, o2.name)
+                }
+                if (sortOrder == SortOrder.Descending) {
+                    compared = -compared
+                }
+                return compared
+            }
+        }
+    }
+
+    private fun <T> SavedStateHandle.getStateFlow(key: String, initialValue: T) = getStateFlow(viewModelScope, key, initialValue)
 }
