@@ -87,18 +87,25 @@ class Torrent(val data: TorrentData, private val context: Context, prevTorrent: 
     val trackers: List<Tracker> = data.trackers
     val trackerSites: List<String>
 
-    var filesEnabled: Boolean by Delegates.observable(prevTorrent?.filesEnabled ?: false) { _, oldFilesEnabled, filesEnabled ->
-        if (filesEnabled != oldFilesEnabled) {
-            Rpc.nativeInstance.setTorrentFilesEnabled(data, filesEnabled)
+    var filesEnabled: Boolean = prevTorrent?.filesEnabled ?: false
+        @Synchronized get
+        @Synchronized set(value) {
+            if (value != field) {
+                field = value
+                Rpc.nativeInstance.setTorrentFilesEnabled(data, value)
+            }
         }
-    }
 
-    var peersEnabled: Boolean by Delegates.observable(prevTorrent?.peersEnabled ?: false) { _, oldPeersEnabled, peersEnabled ->
-        if (peersEnabled != oldPeersEnabled) {
-            Rpc.nativeInstance.setTorrentPeersEnabled(data, peersEnabled)
+    var peersEnabled: Boolean = prevTorrent?.peersEnabled ?: false
+        @Synchronized get
+        @Synchronized set(value) {
+            if (value != field) {
+                field = value
+                Rpc.nativeInstance.setTorrentPeersEnabled(data, value)
+            }
         }
-    }
 
+    @Volatile
     var isChanged = true
 
     init {
