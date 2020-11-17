@@ -77,8 +77,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private var searchMenuItem: MenuItem? = null
 
     val binding by viewBinding(TorrentsListFragmentBinding::bind)
-    var torrentsAdapter: TorrentsAdapter? = null
-        private set
+    private var torrentsAdapter: TorrentsAdapter? = null
 
     private val model by viewModels<TorrentsListFragmentViewModel>()
 
