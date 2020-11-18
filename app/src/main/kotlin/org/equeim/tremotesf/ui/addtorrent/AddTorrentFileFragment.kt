@@ -58,8 +58,8 @@ import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcStatus
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker

@@ -25,8 +25,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 

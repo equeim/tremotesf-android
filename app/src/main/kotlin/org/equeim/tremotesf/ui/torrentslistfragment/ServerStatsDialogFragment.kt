@@ -29,8 +29,8 @@ import kotlinx.coroutines.flow.combine
 
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.ServerStats
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.ServerStats
 import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils

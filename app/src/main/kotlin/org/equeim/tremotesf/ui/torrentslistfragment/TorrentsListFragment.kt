@@ -44,12 +44,12 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.RpcStatus
-import org.equeim.tremotesf.rpc.Server
-import org.equeim.tremotesf.rpc.ServerStats
-import org.equeim.tremotesf.rpc.Servers
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.Server
+import org.equeim.tremotesf.data.rpc.ServerStats
+import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.AboutFragment
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment

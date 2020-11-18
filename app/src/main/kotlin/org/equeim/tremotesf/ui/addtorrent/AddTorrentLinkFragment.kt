@@ -28,8 +28,8 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcStatus
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar

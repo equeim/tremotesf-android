@@ -43,7 +43,7 @@ import androidx.navigation.findNavController
 import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter

@@ -29,7 +29,7 @@ import android.widget.ProgressBar
 import androidx.core.content.res.use
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.ui.ForegroundService
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.utils.Logger

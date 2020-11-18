@@ -42,7 +42,7 @@ import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.createSelectionTrackerInt

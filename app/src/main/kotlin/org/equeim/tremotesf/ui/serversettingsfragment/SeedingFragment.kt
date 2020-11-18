@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.view.View
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsSeedingFragmentBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter

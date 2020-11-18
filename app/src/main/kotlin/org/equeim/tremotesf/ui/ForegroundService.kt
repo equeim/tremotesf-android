@@ -39,9 +39,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.RpcStatus
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted

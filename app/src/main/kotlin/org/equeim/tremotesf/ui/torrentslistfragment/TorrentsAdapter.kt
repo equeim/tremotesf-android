@@ -50,8 +50,8 @@ import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker

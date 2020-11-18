@@ -23,8 +23,8 @@ import android.content.Context
 import android.widget.AutoCompleteTextView
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter

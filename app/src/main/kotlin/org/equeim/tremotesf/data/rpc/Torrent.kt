@@ -17,9 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.rpc
-
-import kotlin.properties.Delegates
+package org.equeim.tremotesf.data.rpc
 
 import android.content.Context
 

@@ -30,8 +30,8 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcStatus
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard

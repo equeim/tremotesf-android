@@ -37,8 +37,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding

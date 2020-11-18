@@ -38,8 +38,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
-import org.equeim.tremotesf.rpc.Server
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Server
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter

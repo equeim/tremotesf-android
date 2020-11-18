@@ -56,8 +56,8 @@ import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter

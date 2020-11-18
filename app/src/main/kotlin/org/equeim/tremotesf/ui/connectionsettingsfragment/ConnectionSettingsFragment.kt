@@ -41,8 +41,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
-import org.equeim.tremotesf.rpc.Server
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Server
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker

@@ -23,8 +23,8 @@ import java.util.Comparator
 
 import android.widget.AutoCompleteTextView
 
-import org.equeim.tremotesf.rpc.Server
-import org.equeim.tremotesf.rpc.Servers
+import org.equeim.tremotesf.data.rpc.Server
+import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 

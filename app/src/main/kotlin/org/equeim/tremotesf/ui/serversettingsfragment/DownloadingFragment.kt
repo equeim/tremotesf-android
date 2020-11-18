@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.view.View
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.viewBinding

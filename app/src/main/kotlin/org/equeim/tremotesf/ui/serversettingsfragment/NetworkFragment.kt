@@ -24,7 +24,7 @@ import android.view.View
 
 import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsNetworkFragmentBinding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter

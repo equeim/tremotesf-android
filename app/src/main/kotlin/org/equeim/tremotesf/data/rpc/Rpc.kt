@@ -19,7 +19,7 @@
 
 @file:Suppress("ObjectPropertyName")
 
-package org.equeim.tremotesf.rpc
+package org.equeim.tremotesf.data.rpc
 
 import android.app.Notification
 import android.app.NotificationChannel

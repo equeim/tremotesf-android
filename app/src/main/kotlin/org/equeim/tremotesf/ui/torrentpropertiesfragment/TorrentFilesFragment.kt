@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.view.View
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -41,8 +40,8 @@ import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
-import org.equeim.tremotesf.rpc.Rpc
-import org.equeim.tremotesf.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.viewModels
