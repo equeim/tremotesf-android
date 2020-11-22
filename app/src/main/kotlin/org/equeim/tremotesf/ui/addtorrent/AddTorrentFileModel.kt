@@ -39,9 +39,8 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
+import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
-import org.equeim.tremotesf.data.torrentfile.length
-import org.equeim.tremotesf.data.torrentfile.path
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.utils.Logger
 
@@ -151,7 +150,7 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
                 return@withContext
             }
 
-            val parseResult = try {
+            val torrentFile = try {
                 TorrentFileParser.parse(fd.fileDescriptor)
             } catch (error: FileReadException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
@@ -167,43 +166,38 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
                 return@withContext
             }
 
+            if (torrentFile.info.files == null && torrentFile.info.length == null) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                fd.close()
+                return@withContext
+            }
+
             withContext(Dispatchers.Default) {
-                try {
-                    val (rootDirectoryChild, files) = createTree(parseResult)
-                    withContext(Dispatchers.Main) {
-                        this@AddTorrentFileModelImpl.fd = fd
-                        rootDirectoryChild.parentDirectory = rootDirectory
-                        rootDirectory.addChild(rootDirectoryChild)
-                        this@AddTorrentFileModelImpl.files = files
-                        parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
-                    }
-                } catch (error: NullPointerException) {
-                    error("Failed to create torrent files tree (failed to get value from parsed map)", error)
-                    parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                    fd.close()
-                } catch (error: ClassCastException) {
-                    error("Failed to create torrent files tree (failed to get value from parsed map)", error)
-                    parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                    fd.close()
+                val (rootDirectoryChild, files) = createTree(torrentFile.info)
+                withContext(Dispatchers.Main) {
+                    this@AddTorrentFileModelImpl.fd = fd
+                    rootDirectoryChild.parentDirectory = rootDirectory
+                    rootDirectory.addChild(rootDirectoryChild)
+                    this@AddTorrentFileModelImpl.files = files
+                    parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
                 }
             }
         }
     }
 
-    private fun createTree(parseResult: TorrentFileParser.ParseResult): Pair<BaseTorrentFilesAdapter.Item, List<BaseTorrentFilesAdapter.File>> {
+    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<BaseTorrentFilesAdapter.Item, List<BaseTorrentFilesAdapter.File>> {
         val rootDirectoryChild: BaseTorrentFilesAdapter.Item
         val files = mutableListOf<BaseTorrentFilesAdapter.File>()
 
-        if (parseResult.rootDirectory == null) {
-            val fileMap = parseResult.files.first()
-            rootDirectoryChild = BaseTorrentFilesAdapter.File(0, null, fileMap.path.first(), fileMap.length, 0)
+        if (torrentFileInfo.files == null) {
+            rootDirectoryChild = BaseTorrentFilesAdapter.File(0, null, torrentFileInfo.name, torrentFileInfo.length!!, 0)
             files.add(rootDirectoryChild)
         } else {
             val rootDirectory = BaseTorrentFilesAdapter.Directory(0,
                                                                   null,
-                                                                  parseResult.rootDirectory)
+                                                                  torrentFileInfo.name)
             rootDirectoryChild = rootDirectory
-            for ((fileIndex, fileMap) in parseResult.files.withIndex()) {
+            for ((fileIndex, fileMap) in torrentFileInfo.files.withIndex()) {
                 var directory = rootDirectory
 
                 val pathParts = fileMap.path

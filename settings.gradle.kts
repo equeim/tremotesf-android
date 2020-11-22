@@ -7,6 +7,7 @@ pluginManagement {
         kotlin("android") version(kotlin)
         kotlin("android.extensions") version(kotlin)
         kotlin("plugin.serialization") version(kotlin)
+        kotlin("multiplatform") version(kotlin)
         id("com.github.ben-manes.versions") version(versions)
     }
     resolutionStrategy {
@@ -23,3 +24,4 @@ pluginManagement {
 }
 
 include(":app")
+include(":bencode")

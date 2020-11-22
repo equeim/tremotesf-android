@@ -19,7 +19,9 @@
 
 package org.equeim.tremotesf.data.torrentfile
 
-import org.benjamin.Bdecoder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import org.equeim.bencode.Bencode
 
 import org.equeim.tremotesf.utils.Logger
 
@@ -28,61 +30,42 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 
-typealias TorrentFileFile = Map<String, Any>
-
-@Suppress("UNCHECKED_CAST")
-val TorrentFileFile.path
-    get() = this["path"] as List<String>
-
-val TorrentFileFile.length
-    get() = this["length"] as Long
-
 
 class FileReadException(cause: Throwable) : Exception(cause)
 class FileIsTooLargeException : Exception()
 class FileParseException(cause: Throwable) : Exception(cause)
 
+@Serializable
+data class TorrentFile(val info: Info) {
+    @Serializable
+    data class Info(
+            val files: List<File>? = null,
+            val length: Long? = null,
+            val name: String
+    )
+
+    @Serializable
+    data class File(val length: Long, val path: List<String>)
+}
+
 object TorrentFileParser : Logger {
     // 10 MiB
     private const val MAX_FILE_SIZE = 10 * 1024 * 1024
 
-    data class ParseResult(val rootDirectory: String?,
-                           val files: List<TorrentFileFile>)
-
     fun parse(fd: FileDescriptor) = parseFile(FileInputStream(fd).buffered())
 
-    private fun parseFile(inputStream: InputStream): ParseResult {
+    private fun parseFile(inputStream: InputStream): TorrentFile {
         if (inputStream.available() > MAX_FILE_SIZE) {
             error("File is too large")
             throw FileIsTooLargeException()
         }
-
-        val torrentFileMap = try {
-            Bdecoder(Charsets.UTF_8, inputStream).decodeDict()
+        return try {
+            Bencode.decode(inputStream)
         } catch (error: IOException) {
             error("Failed to read file", error)
             throw FileReadException(error)
-        } catch (error: Exception) {
+        } catch (error: SerializationException) {
             error("Failed to parse bencode structure", error)
-            throw FileParseException(error)
-        }
-
-        return try {
-            val infoMap = torrentFileMap["info"] as Map<*, *>
-            if (infoMap.containsKey("files")) {
-                @Suppress("UNCHECKED_CAST")
-                ParseResult(infoMap["name"] as String,
-                            infoMap["files"] as List<TorrentFileFile>)
-            } else {
-                ParseResult(null,
-                            listOf(mapOf("path" to listOf(infoMap["name"] as String),
-                                         "length" to infoMap["length"] as Long)))
-            }
-        } catch (error: NullPointerException) {
-            error("Decoded map doesn't contain required key", error)
-            throw FileParseException(error)
-        } catch (error: ClassCastException) {
-            error("Decoded map doesn't contain required key", error)
             throw FileParseException(error)
         }
     }

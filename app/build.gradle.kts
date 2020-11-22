@@ -153,7 +153,6 @@ object Versions {
     }
 
     const val material = "1.2.1"
-    const val benjamin = "1.0.0"
     const val fastscroll = "2.0.1"
     const val billing = "3.0.1"
 }
@@ -163,6 +162,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
+    implementation(project(":bencode"))
 
     implementation("androidx.appcompat:appcompat:${Versions.AndroidX.appcompat}")
     implementation("androidx.concurrent:concurrent-futures:${Versions.AndroidX.concurrentFutures}")
@@ -187,7 +187,6 @@ dependencies {
 
     implementation("com.google.android.material:material:${Versions.material}")
 
-    implementation("io.github.raindev:benjamin:${Versions.benjamin}")
     implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
     // FIXME: this is a workaround for compilation error with billing-ktx and kotlinx-coroutines. Do something about it

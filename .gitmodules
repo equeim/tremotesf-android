@@ -1,3 +1,7 @@
 [submodule "libtremotesf/libtremotesf"]
 	path = libtremotesf/libtremotesf
 	url = https://github.com/equeim/libtremotesf
+
+[submodule "bencode"]
+	path = bencode
+	url = https://github.com/equeim/kotlinx-serialization-bencode
