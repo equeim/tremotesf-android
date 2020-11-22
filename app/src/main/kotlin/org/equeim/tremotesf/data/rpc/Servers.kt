@@ -44,6 +44,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.system.measureTimeMillis
 
 
@@ -243,10 +244,10 @@ object Servers : Logger {
             lastTorrents.saved = true
         }
 
-        SaveWorker.saveData = SaveData(
+        SaveWorker.saveData.set(SaveData(
                 currentServer.value?.name,
                 servers.value.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) }
-        )
+        ))
 
         WorkManager.getInstance(context).enqueueUniqueWork(
                 SaveWorker.UNIQUE_WORK_NAME,
@@ -319,12 +320,11 @@ object Servers : Logger {
 class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters), Logger {
     companion object {
         const val UNIQUE_WORK_NAME = "ServersSaveWorker"
-        @Volatile var saveData: SaveData? = null
+        val saveData = AtomicReference<SaveData>()
     }
 
     override fun doWork(): Result {
-        val data = saveData
-        saveData = null
+        val data = saveData.getAndSet(null)
         info("SaveWorker.doWork(), saveData=$data")
         val elapsed = measureTimeMillis {
             if (data != null) {
@@ -348,6 +348,6 @@ class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(
     }
 
     override fun onStopped() {
-        saveData = null
+        saveData.set(null)
     }
 }
