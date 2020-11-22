@@ -65,6 +65,7 @@ import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.utils.handleAndReset
 
 
 class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
@@ -122,12 +123,13 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Servers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
         model.subtitleUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
-        Rpc.torrentAddDuplicateEvents.collectWhenStarted(viewLifecycleOwner) {
+        model.showAddTorrentDuplicateError.handleAndReset {
             view.showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
-        }
-        Rpc.torrentAddErrorEvents.collectWhenStarted(viewLifecycleOwner) {
+        }.collectWhenStarted(viewLifecycleOwner)
+
+        model.showAddTorrentError.handleAndReset {
             view.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
-        }
+        }.collectWhenStarted(viewLifecycleOwner)
 
         if (!model.navigatedFromFragment.value) {
             if (Servers.hasServers) {

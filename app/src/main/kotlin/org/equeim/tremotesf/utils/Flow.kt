@@ -24,12 +24,24 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 
 @Suppress("FunctionName")
-fun <T>MutableEventFlow(): MutableSharedFlow<T> {
+fun <T> MutableEventFlow(): MutableSharedFlow<T> {
     return MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 }
 
+fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner)
+        = lifecycleOwner.lifecycleScope.launchWhenStarted { collect() }
+
 inline fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner, crossinline action: suspend (value: T) -> Unit)
     = lifecycleOwner.lifecycleScope.launchWhenStarted { collect(action) }
+
+inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit)
+    = filter { it }.onEach {
+    action()
+    compareAndSet(it, false)
+}

@@ -26,8 +26,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
 
@@ -117,7 +120,19 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
+    val showAddTorrentDuplicateError = MutableStateFlow(false)
+    val showAddTorrentError = MutableStateFlow(false)
+
     val navigatedFromFragment = savedStateHandle.getStateFlow("navigatedFromFragment", false)
+
+    init {
+        Rpc.torrentAddDuplicateEvents
+                .onEach { showAddTorrentDuplicateError.value = true }
+                .launchIn(viewModelScope)
+        Rpc.torrentAddErrorEvents
+                .onEach { showAddTorrentError.value = true }
+                .launchIn(viewModelScope)
+    }
 
     fun shouldShowDonateDialog(): Boolean {
         if (Settings.donateDialogShown) {
