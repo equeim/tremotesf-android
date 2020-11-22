@@ -152,14 +152,14 @@ object Rpc : Logger {
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
-            handler.post {
-                Rpc.onTorrentAdded(id, hashString, name)
+            if (Settings.notifyOnAdded) {
+                showAddedNotification(id, hashString, name)
             }
         }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) {
-            handler.post {
-                Rpc.onTorrentFinished(id, hashString, name)
+            if (Settings.notifyOnFinished) {
+                showFinishedNotification(id, hashString, name)
             }
         }
 
@@ -434,18 +434,6 @@ object Rpc : Logger {
                     }
                 }
             }
-        }
-    }
-
-    private fun onTorrentAdded(id: Int, hashString: String, name: String) {
-        if (Settings.notifyOnAdded) {
-            showAddedNotification(id, hashString, name)
-        }
-    }
-
-    private fun onTorrentFinished(id: Int, hashString: String, name: String) {
-        if (Settings.notifyOnFinished) {
-            showFinishedNotification(id, hashString, name)
         }
     }
 
