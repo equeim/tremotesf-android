@@ -6750,9 +6750,9 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jlong jarg7, jobject jarg7_, jint jarg8, jboolean jarg9) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jlong jarg7, jobject jarg7_, jint jarg8, jboolean jarg9) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QByteArray *arg2 = 0 ;
+  int arg2 ;
   QString *arg3 = 0 ;
   QVariantList *arg4 = 0 ;
   QVariantList *arg5 = 0 ;
@@ -6766,17 +6766,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   (void)jarg1_;
   (void)jarg7_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QByteArray");
-    return ;
-  }
-  jbyte* arg2_pstr = jenv->GetByteArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QByteArray arg2_str(QByteArray::fromRawData(reinterpret_cast<const char*>(arg2_pstr), arg2_len));
-  arg2 = &arg2_str;
-  
+  arg2 = (int)jarg2; 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
@@ -6850,7 +6840,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   } 
   arg8 = (int)jarg8; 
   arg9 = jarg9 ? true : false; 
-  (arg1)->addTorrentFile((QByteArray const &)*arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(std::unordered_map< QString,QString > const &)*arg7,arg8,arg9);
+  (arg1)->addTorrentFile(arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(std::unordered_map< QString,QString > const &)*arg7,arg8,arg9);
 }
 
 

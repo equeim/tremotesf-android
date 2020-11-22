@@ -214,7 +214,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         val infoFragment = findFragment<InfoFragment>()
         if (infoFragment?.check() == true) {
             val priorities = model.getFilePriorities()
-            Rpc.nativeInstance.addTorrentFile(model.fileData,
+            Rpc.nativeInstance.addTorrentFile(model.detachFd(),
                                               infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                                               priorities.unwantedFiles.toIntArray(),
                                               priorities.highPriorityFiles.toIntArray(),

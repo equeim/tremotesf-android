@@ -477,15 +477,21 @@ namespace libtremotesf
         runOnThread([=] { mRpc->setUpdateDisabled(disabled); });
     }
 
-    void JniRpc::addTorrentFile(const QByteArray& fileData, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, int bandwidthPriority, bool start)
     {
+        auto file(std::make_shared<QFile>());
+        if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
+            qWarning("Failed to open file by fd");
+            return;
+        }
+        file->seek(0);
         QVariantMap renamed;
         for (const auto& i : renamedFiles) {
             renamed.insert(i.first, i.second);
         }
-        runOnThread([=, renamed = std::move(renamed)] {
+        runOnThread([=, file = std::move(file), renamed = std::move(renamed)]() mutable {
             mRpc->addTorrentFile(
-                    fileData,
+                    std::move(file),
                     downloadDirectory,
                     unwantedFiles,
                     highPriorityFiles,

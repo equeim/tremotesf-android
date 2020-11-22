@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.content.Context
+import android.content.res.AssetFileDescriptor
 import android.net.Uri
 
 import androidx.lifecycle.ViewModel
@@ -33,9 +34,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-import org.benjamin.Bdecoder
 import org.equeim.tremotesf.Application
-import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.data.torrentfile.FileParseException
@@ -43,10 +42,8 @@ import org.equeim.tremotesf.data.torrentfile.FileReadException
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.data.torrentfile.length
 import org.equeim.tremotesf.data.torrentfile.path
+import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.utils.Logger
-
-import java.io.FileNotFoundException
-import java.io.IOException
 
 
 interface AddTorrentFileModel {
@@ -71,15 +68,13 @@ interface AddTorrentFileModel {
     val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
 
-    val fileData: ByteArray
     val rootDirectory: BaseTorrentFilesAdapter.Directory
     val torrentName: String
     val renamedFiles: MutableMap<String, String>
 
     fun onRequestPermissionResult(hasStoragePermission: Boolean)
-
     fun load(uri: Uri)
-
+    fun detachFd(): Int
     fun getFilePriorities(): FilePriorities
 }
 
@@ -89,9 +84,7 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
     private val hasStoragePermission = MutableStateFlow(false)
     override val viewUpdateData = combine(parserStatus, Rpc.status, Rpc.statusString, hasStoragePermission) { parserStatus, rpcStatus, rpcStatusString, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, rpcStatusString, hasPermission) }
 
-    @Volatile
-    override lateinit var fileData: ByteArray
-        private set
+    private var fd: AssetFileDescriptor? = null
 
     override val rootDirectory = BaseTorrentFilesAdapter.Directory()
     override val torrentName: String
@@ -100,6 +93,10 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
     override val renamedFiles = mutableMapOf<String, String>()
 
     private lateinit var files: List<BaseTorrentFilesAdapter.File>
+
+    override fun onCleared() {
+        fd?.close()
+    }
 
     override fun onRequestPermissionResult(hasStoragePermission: Boolean) {
         this.hasStoragePermission.value = hasStoragePermission
@@ -111,6 +108,12 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
             viewModelScope.launch {
                 doLoad(uri, Application.instance)
             }
+        }
+    }
+
+    override fun detachFd(): Int {
+        return fd!!.parcelFileDescriptor.detachFd().also {
+            fd = null
         }
     }
 
@@ -138,17 +141,29 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
     }
 
     private suspend fun doLoad(uri: Uri, context: Context) {
+        @Suppress("BlockingMethodInNonBlockingContext")
         withContext(Dispatchers.IO) {
+            val fd = try {
+                context.contentResolver.openAssetFileDescriptor(uri, "r")!!
+            } catch (error: Exception) {
+                error("Failed to open file descriptor")
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+                return@withContext
+            }
+
             val parseResult = try {
-                TorrentFileParser.parse(uri, context)
+                TorrentFileParser.parse(fd.fileDescriptor)
             } catch (error: FileReadException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+                fd.close()
                 return@withContext
             } catch (error: FileIsTooLargeException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
+                fd.close()
                 return@withContext
             } catch (error: FileParseException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                fd.close()
                 return@withContext
             }
 
@@ -156,7 +171,7 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
                 try {
                     val (rootDirectoryChild, files) = createTree(parseResult)
                     withContext(Dispatchers.Main) {
-                        fileData = parseResult.fileData
+                        this@AddTorrentFileModelImpl.fd = fd
                         rootDirectoryChild.parentDirectory = rootDirectory
                         rootDirectory.addChild(rootDirectoryChild)
                         this@AddTorrentFileModelImpl.files = files
@@ -165,9 +180,11 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
                 } catch (error: NullPointerException) {
                     error("Failed to create torrent files tree (failed to get value from parsed map)", error)
                     parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                    fd.close()
                 } catch (error: ClassCastException) {
                     error("Failed to create torrent files tree (failed to get value from parsed map)", error)
                     parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                    fd.close()
                 }
             }
         }

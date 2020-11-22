@@ -19,10 +19,14 @@
 
 package org.equeim.tremotesf.data.torrentfile
 
-import android.content.Context
-import android.net.Uri
 import org.benjamin.Bdecoder
+
 import org.equeim.tremotesf.utils.Logger
+
+import java.io.FileDescriptor
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 
 typealias TorrentFileFile = Map<String, Any>
 
@@ -42,32 +46,22 @@ object TorrentFileParser : Logger {
     // 10 MiB
     private const val MAX_FILE_SIZE = 10 * 1024 * 1024
 
-    @Suppress("ArrayInDataClass")
     data class ParseResult(val rootDirectory: String?,
-                           val files: List<TorrentFileFile>,
-                           val fileData: ByteArray)
+                           val files: List<TorrentFileFile>)
 
-    fun parse(uri: Uri, context: Context) = parseFile(readFile(uri, context))
+    fun parse(fd: FileDescriptor) = parseFile(FileInputStream(fd).buffered())
 
-    private fun readFile(uri: Uri, context: Context): ByteArray {
-        return try {
-            context.contentResolver.openInputStream(uri)!!.use {
-                val size = it.available()
-                if (size > MAX_FILE_SIZE) {
-                    error("Torrent file is too large")
-                    throw FileIsTooLargeException()
-                }
-                it.readBytes()
-            }
-        } catch (error: Exception) {
-            error("Error reading torrent file", error)
-            throw FileReadException(error)
+    private fun parseFile(inputStream: InputStream): ParseResult {
+        if (inputStream.available() > MAX_FILE_SIZE) {
+            error("File is too large")
+            throw FileIsTooLargeException()
         }
-    }
 
-    private fun parseFile(fileData: ByteArray): ParseResult {
         val torrentFileMap = try {
-            Bdecoder(Charsets.UTF_8, fileData.inputStream()).decodeDict()
+            Bdecoder(Charsets.UTF_8, inputStream).decodeDict()
+        } catch (error: IOException) {
+            error("Failed to read file", error)
+            throw FileReadException(error)
         } catch (error: Exception) {
             error("Failed to parse bencode structure", error)
             throw FileParseException(error)
@@ -78,13 +72,11 @@ object TorrentFileParser : Logger {
             if (infoMap.containsKey("files")) {
                 @Suppress("UNCHECKED_CAST")
                 ParseResult(infoMap["name"] as String,
-                            infoMap["files"] as List<TorrentFileFile>,
-                            fileData)
+                            infoMap["files"] as List<TorrentFileFile>)
             } else {
                 ParseResult(null,
                             listOf(mapOf("path" to listOf(infoMap["name"] as String),
-                                         "length" to infoMap["length"] as Long)),
-                            fileData)
+                                         "length" to infoMap["length"] as Long)))
             }
         } catch (error: NullPointerException) {
             error("Decoded map doesn't contain required key", error)

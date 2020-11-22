@@ -78,7 +78,7 @@ namespace libtremotesf
 
         void setUpdateDisabled(bool disabled);
 
-        void addTorrentFile(const QByteArray& fileData,
+        void addTorrentFile(int fd,
                             const QString& downloadDirectory,
                             const QVariantList& unwantedFiles,
                             const QVariantList& highPriorityFiles,
