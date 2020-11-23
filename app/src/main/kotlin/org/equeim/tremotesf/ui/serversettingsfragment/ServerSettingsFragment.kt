@@ -64,7 +64,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
             }
         }
 
-        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { updateView(Rpc.status.value, it) }
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onDestroyView() {
@@ -72,14 +72,14 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         super.onDestroyView()
     }
 
-    private fun updateView(rpcStatus: Int, statusString: String) {
-        when (rpcStatus) {
+    private fun updateView(statusStringData: Rpc.StatusStringData) {
+        when (statusStringData.status) {
             RpcStatus.Disconnected -> {
                 snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
                 }
-                binding.placeholder.text = statusString
+                binding.placeholder.text = statusStringData.statusString
 
                 hideKeyboard()
             }
@@ -91,7 +91,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         }
 
         with(binding) {
-            if (rpcStatus == RpcStatus.Connected) {
+            if (statusStringData.status == RpcStatus.Connected) {
                 listView.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
             } else {
@@ -99,7 +99,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
                 listView.visibility = View.GONE
             }
 
-            progressBar.visibility = if (rpcStatus == RpcStatus.Connecting) {
+            progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE

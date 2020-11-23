@@ -32,7 +32,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
 import androidx.navigation.NavDeepLinkBuilder
 
 import kotlinx.coroutines.flow.combine
@@ -95,10 +94,10 @@ class ForegroundService : LifecycleService(), Logger {
             }
         }
 
-        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.statusString.value))
 
-        combine(Rpc.statusString, Rpc.serverStats, Servers.currentServer) { _, _, _ -> Unit }.drop(1)
-                .collectWhenStarted(this) { updatePersistentNotification() }
+        combine(Rpc.statusString, Rpc.serverStats, Servers.currentServer) { statusString, _, _ -> statusString }.drop(1)
+                .collectWhenStarted(this) { updatePersistentNotification(it) }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -152,13 +151,13 @@ class ForegroundService : LifecycleService(), Logger {
         stopSelf()
     }
 
-    private fun updatePersistentNotification() {
+    private fun updatePersistentNotification(statusStringData: Rpc.StatusStringData) {
         if (!stopUpdatingNotification) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification())
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(statusStringData))
         }
     }
 
-    private fun buildPersistentNotification(): Notification {
+    private fun buildPersistentNotification(statusStringData: Rpc.StatusStringData): Notification {
         val notificationBuilder = NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(NavDeepLinkBuilder(applicationContext)
@@ -181,7 +180,7 @@ class ForegroundService : LifecycleService(), Logger {
             notificationBuilder.setShowWhen(false)
         }
 
-        if (Rpc.isConnected.value) {
+        if (statusStringData.isConnected) {
             val stats = Rpc.serverStats.value
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
@@ -189,10 +188,10 @@ class ForegroundService : LifecycleService(), Logger {
                                                          Utils.formatByteSpeed(this,
                                                                                stats.uploadSpeed)))
         } else {
-            notificationBuilder.setContentText(Rpc.statusString.value)
+            notificationBuilder.setContentText(statusStringData.statusString)
         }
 
-        if (Rpc.status.value == RpcStatus.Disconnected) {
+        if (statusStringData.status == RpcStatus.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),
@@ -227,16 +226,5 @@ class ForegroundService : LifecycleService(), Logger {
                                      PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-    }
-
-    private inner class NotificationObserver<T> : Observer<T> {
-        private var gotFirstValue = false
-        override fun onChanged(t: T) {
-            if (gotFirstValue) {
-                updatePersistentNotification()
-            } else {
-                gotFirstValue = true
-            }
-        }
     }
 }

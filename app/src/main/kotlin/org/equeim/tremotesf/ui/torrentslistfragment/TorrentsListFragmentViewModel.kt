@@ -29,7 +29,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
@@ -119,6 +121,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     }.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(500), emptyList())
 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
+
+    private val hasTorrents = filteredTorrents.map { it.isNotEmpty() }.distinctUntilChanged()
+    data class PlaceholderUpdateData(val statusStringData: Rpc.StatusStringData, val hasTorrents: Boolean)
+    val placeholderUpdateData = combine(Rpc.statusString, hasTorrents, ::PlaceholderUpdateData)
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)

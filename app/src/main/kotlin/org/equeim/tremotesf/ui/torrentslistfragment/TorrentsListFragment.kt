@@ -37,7 +37,6 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -100,25 +99,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::onTorrentsUpdated)
 
         Rpc.status.collectWhenStarted(viewLifecycleOwner, ::onRpcStatusChanged)
-        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) {
-            updatePlaceholder(Rpc.status.value, it)
-        }
 
-        torrentsAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                // Adapter is now empty
-                if (itemCount > 0 && torrentsAdapter.itemCount == 0) {
-                    updatePlaceholder()
-                }
-            }
-
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                // Adapter was empty
-                if (itemCount > 0 && itemCount == torrentsAdapter.itemCount) {
-                    updatePlaceholder()
-                }
-            }
-        })
+        model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
         Servers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
         model.subtitleUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
@@ -351,18 +333,15 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         menu.findItem(R.id.action_torrentsListFragment_to_serverStatsDialogFragment).isEnabled = connected
     }
 
-    private fun updatePlaceholder() {
-        updatePlaceholder(Rpc.status.value, Rpc.statusString.value)
-    }
-
-    private fun updatePlaceholder(status: Int, statusString: String) {
+    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
+        val (statusStringData, hasTorrents) = data
         binding.placeholder.text = when {
-            torrentsAdapter?.itemCount ?: 0 != 0 -> null
-            (status == RpcStatus.Connected) -> getString(R.string.no_torrents)
-            else -> statusString
+            hasTorrents -> null
+            (statusStringData.status == RpcStatus.Connected) -> getString(R.string.no_torrents)
+            else -> statusStringData.statusString
         }
 
-        binding.progressBar.visibility = if (status == RpcStatus.Connecting && torrentsAdapter?.itemCount ?: 0 == 0) {
+        binding.progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting && !hasTorrents) {
             View.VISIBLE
         } else {
             View.GONE

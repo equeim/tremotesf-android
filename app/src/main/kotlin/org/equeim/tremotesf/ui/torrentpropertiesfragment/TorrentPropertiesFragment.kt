@@ -129,7 +129,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::updateTorrent)
 
-        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { onRpcStatusStringChanged(Rpc.status.value, it) }
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner, ::onRpcStatusStringChanged)
     }
 
     override fun onDestroyView() {
@@ -188,15 +188,15 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
-    private fun onRpcStatusStringChanged(status: Int, statusString: String) {
+    private fun onRpcStatusStringChanged(statusStringData: Rpc.StatusStringData) {
         with(binding) {
-            when (status) {
+            when (statusStringData.status) {
                 RpcStatus.Disconnected -> {
                     snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
-                    placeholder.text = statusString
+                    placeholder.text = statusStringData.statusString
                 }
                 RpcStatus.Connecting -> {
                     snackbar?.dismiss()
@@ -210,7 +210,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 }
             }
 
-            progressBar.visibility = if (status == RpcStatus.Connecting) {
+            progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE

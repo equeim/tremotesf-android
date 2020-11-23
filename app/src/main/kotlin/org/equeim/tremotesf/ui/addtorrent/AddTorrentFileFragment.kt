@@ -236,7 +236,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
-        val (parserStatus, rpcStatus, rpcStatusString, hasStoragePermission) = viewUpdateData
+        val (parserStatus, rpcStatusString, hasStoragePermission) = viewUpdateData
 
         with(binding) {
             if (Rpc.isConnected.value && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
@@ -262,13 +262,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                         AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
                         AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
-                        AddTorrentFileModel.ParserStatus.Loaded -> rpcStatusString
+                        AddTorrentFileModel.ParserStatus.Loaded -> rpcStatusString.statusString
                         else -> null
                     }
                 }
 
                 progressBar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
-                        (rpcStatus == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
+                        (rpcStatusString.status == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -290,7 +290,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                    when (rpcStatus) {
+                    when (rpcStatusString.status) {
                         RpcStatus.Disconnected -> {
                             snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                                 snackbar = null

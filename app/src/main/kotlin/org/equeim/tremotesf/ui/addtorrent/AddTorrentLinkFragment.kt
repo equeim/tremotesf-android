@@ -68,7 +68,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
 
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(binding.downloadDirectoryLayout, this, savedInstanceState)
 
-        Rpc.statusString.collectWhenStarted(viewLifecycleOwner) { updateView(Rpc.status.value, it) }
+        Rpc.statusString.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -123,19 +123,17 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         return false
     }
 
-    private fun updateView(status: Int, statusString: String) {
-        val isConnected = (status == RpcStatus.Connected)
-
-        doneMenuItem?.isVisible = isConnected
+    private fun updateView(statusStringData: Rpc.StatusStringData) {
+        doneMenuItem?.isVisible = statusStringData.isConnected
 
         with(binding) {
-            when (status) {
+            when (statusStringData.status) {
                 RpcStatus.Disconnected -> {
                     snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
-                    placeholder.text = statusString
+                    placeholder.text = statusStringData.statusString
 
                     hideKeyboard()
                 }
@@ -146,7 +144,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
                 }
             }
 
-            if (isConnected) {
+            if (statusStringData.isConnected) {
                 if (scrollView.visibility != View.VISIBLE) {
                     downloadDirectoryLayout.downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
                     startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
@@ -158,7 +156,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
                 scrollView.visibility = View.GONE
             }
 
-            progressBar.visibility = if (status == RpcStatus.Connecting) {
+            progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE

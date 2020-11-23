@@ -44,6 +44,8 @@ import androidx.work.WorkerParameters
 
 import com.google.common.util.concurrent.ListenableFuture
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,10 +53,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
@@ -216,33 +220,45 @@ object Rpc : Logger {
     private val _status = MutableStateFlow(RpcStatus.Disconnected)
     val status: StateFlow<Int> by ::_status
 
-    val isConnected: StateFlow<Boolean> = status.transform {
-        if (it != RpcStatus.Connecting) {
-            emit(it == RpcStatus.Connected)
-        }
-    }.stateIn(mainThreadScope, SharingStarted.Eagerly, false)
+    val isConnected: StateFlow<Boolean> = status
+            .map { it == RpcStatus.Connected }
+            .distinctUntilChanged()
+            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     data class Error(val error: Int, val errorMessage: String)
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
-    val statusString: StateFlow<String> = combine(status, error) { status, error ->
-        when (status) {
-            RpcStatus.Disconnected -> when (error.error) {
-                RpcError.NoError -> context.getString(R.string.disconnected)
-                RpcError.TimedOut -> context.getString(R.string.timed_out)
-                RpcError.ConnectionError -> context.getString(R.string.connection_error)
-                RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
-                RpcError.ParseError -> context.getString(R.string.parsing_error)
-                RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
-                RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
-                else -> context.getString(R.string.disconnected)
+    data class StatusStringData(val status: Int = RpcStatus.Disconnected,
+                                val statusString: String = "") {
+        private companion object {
+            fun getStatusString(status: Int, error: Int): String {
+                return when (status) {
+                    RpcStatus.Disconnected -> when (error) {
+                        RpcError.NoError -> context.getString(R.string.disconnected)
+                        RpcError.TimedOut -> context.getString(R.string.timed_out)
+                        RpcError.ConnectionError -> context.getString(R.string.connection_error)
+                        RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
+                        RpcError.ParseError -> context.getString(R.string.parsing_error)
+                        RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
+                        RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                        else -> context.getString(R.string.disconnected)
+                    }
+                    RpcStatus.Connecting -> context.getString(R.string.connecting)
+                    RpcStatus.Connected -> context.getString(R.string.connected)
+                    else -> context.getString(R.string.disconnected)
+                }
             }
-            RpcStatus.Connecting -> context.getString(R.string.connecting)
-            RpcStatus.Connected -> context.getString(R.string.connected)
-            else -> context.getString(R.string.disconnected)
         }
-    }.stateIn(mainThreadScope, SharingStarted.Eagerly, "")
+
+        constructor(status: Int, error: Error) : this(status, getStatusString(status, error.error))
+
+        val isConnected: Boolean
+            get() = status == RpcStatus.Connected
+    }
+
+    val statusString = combine(status, error, ::StatusStringData)
+            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, StatusStringData())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
     val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents
