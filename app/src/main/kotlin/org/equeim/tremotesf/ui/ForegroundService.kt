@@ -58,6 +58,8 @@ class ForegroundService : LifecycleService(), Logger {
         private var startRequestInProgress = false
         private var stopRequested = false
 
+        private val instances = mutableListOf<ForegroundService>()
+
         fun start(context: Context) {
             info("start()")
             ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
@@ -70,6 +72,7 @@ class ForegroundService : LifecycleService(), Logger {
                 warn("onStartCommand() haven't been called yet, set stopRequested=true")
                 stopRequested = true
             } else {
+                instances.forEach { it.stopUpdatingNotification = true }
                 context.stopService(Intent(context, ForegroundService::class.java))
             }
         }
@@ -77,10 +80,12 @@ class ForegroundService : LifecycleService(), Logger {
 
     private lateinit var notificationManager: NotificationManager
 
-    private var stopUpdatingNotification = false
+    var stopUpdatingNotification = false
 
     override fun onCreate() {
         super.onCreate()
+
+        instances.add(this)
 
         info("onCreate() stopRequested=$stopRequested")
 
@@ -143,6 +148,7 @@ class ForegroundService : LifecycleService(), Logger {
     override fun onDestroy() {
         info("onDestroy() ${lifecycle.currentState}")
         stopForeground(true)
+        instances.remove(this)
         super.onDestroy()
     }
 
