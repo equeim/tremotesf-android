@@ -84,7 +84,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 
-typealias RpcStatus = org.equeim.libtremotesf.Rpc.Status
+typealias RpcConnectionState = org.equeim.libtremotesf.Rpc.Status
 typealias RpcError = org.equeim.libtremotesf.Rpc.Error
 
 data class ServerStats(var downloadSpeed: Long,
@@ -127,7 +127,7 @@ object Rpc : Logger {
 
     val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
-            _status.value = status
+            _connectionState.value = status
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
@@ -217,11 +217,11 @@ object Rpc : Logger {
     private val _serverStats = MutableStateFlow(ServerStats())
     val serverStats: StateFlow<ServerStats> by ::_serverStats
 
-    private val _status = MutableStateFlow(RpcStatus.Disconnected)
-    val status: StateFlow<Int> by ::_status
+    private val _connectionState = MutableStateFlow(RpcConnectionState.Disconnected)
+    val connectionState: StateFlow<Int> by ::_connectionState
 
-    val isConnected: StateFlow<Boolean> = status
-            .map { it == RpcStatus.Connected }
+    val isConnected: StateFlow<Boolean> = connectionState
+            .map { it == RpcConnectionState.Connected }
             .distinctUntilChanged()
             .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
@@ -229,12 +229,12 @@ object Rpc : Logger {
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
-    data class StatusStringData(val status: Int = RpcStatus.Disconnected,
+    data class StatusStringData(val connectionState: Int = RpcConnectionState.Disconnected,
                                 val statusString: String = "") {
         private companion object {
-            fun getStatusString(status: Int, error: Int): String {
-                return when (status) {
-                    RpcStatus.Disconnected -> when (error) {
+            fun getStatusString(connectionState: Int, error: Int): String {
+                return when (connectionState) {
+                    RpcConnectionState.Disconnected -> when (error) {
                         RpcError.NoError -> context.getString(R.string.disconnected)
                         RpcError.TimedOut -> context.getString(R.string.timed_out)
                         RpcError.ConnectionError -> context.getString(R.string.connection_error)
@@ -244,20 +244,20 @@ object Rpc : Logger {
                         RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
                         else -> context.getString(R.string.disconnected)
                     }
-                    RpcStatus.Connecting -> context.getString(R.string.connecting)
-                    RpcStatus.Connected -> context.getString(R.string.connected)
+                    RpcConnectionState.Connecting -> context.getString(R.string.connecting)
+                    RpcConnectionState.Connected -> context.getString(R.string.connected)
                     else -> context.getString(R.string.disconnected)
                 }
             }
         }
 
-        constructor(status: Int, error: Error) : this(status, getStatusString(status, error.error))
+        constructor(connectionState: Int, error: Error) : this(connectionState, getStatusString(connectionState, error.error))
 
         val isConnected: Boolean
-            get() = status == RpcStatus.Connected
+            get() = connectionState == RpcConnectionState.Connected
     }
 
-    val statusString = combine(status, error, ::StatusStringData)
+    val statusString = combine(connectionState, error, ::StatusStringData)
             .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, StatusStringData())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
@@ -322,13 +322,13 @@ object Rpc : Logger {
         }
 
         mainThreadScope.launch {
-            status.collect {
+            connectionState.collect {
                 when (it) {
-                    RpcStatus.Connected -> {
+                    RpcConnectionState.Connected -> {
                         showNotificationsSinceLastConnection()
                         handleWorkerCompleter()
                     }
-                    RpcStatus.Disconnected -> handleWorkerCompleter()
+                    RpcConnectionState.Disconnected -> handleWorkerCompleter()
                 }
             }
         }
@@ -568,7 +568,7 @@ object Rpc : Logger {
             return CallbackToFutureAdapter.getFuture { completer ->
                 val oldCompleter = updateWorkerCompleter.getAndSet(completer)
                 oldCompleter?.set(Result.success())
-                if (status.value == RpcStatus.Disconnected) {
+                if (connectionState.value == RpcConnectionState.Disconnected) {
                     nativeInstance.connect()
                 } else {
                     nativeInstance.updateData()

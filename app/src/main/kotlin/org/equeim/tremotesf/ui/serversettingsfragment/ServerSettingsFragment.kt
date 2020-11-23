@@ -31,7 +31,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -73,8 +73,8 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
     }
 
     private fun updateView(statusStringData: Rpc.StatusStringData) {
-        when (statusStringData.status) {
-            RpcStatus.Disconnected -> {
+        when (statusStringData.connectionState) {
+            RpcConnectionState.Disconnected -> {
                 snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                     snackbar = null
                     Rpc.nativeInstance.connect()
@@ -83,7 +83,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
 
                 hideKeyboard()
             }
-            RpcStatus.Connecting -> {
+            RpcConnectionState.Connecting -> {
                 snackbar?.dismiss()
                 snackbar = null
                 binding.placeholder.text = getString(R.string.connecting)
@@ -91,7 +91,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         }
 
         with(binding) {
-            if (statusStringData.status == RpcStatus.Connected) {
+            if (statusStringData.connectionState == RpcConnectionState.Connected) {
                 listView.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
             } else {
@@ -99,7 +99,7 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
                 listView.visibility = View.GONE
             }
 
-            progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting) {
+            progressBar.visibility = if (statusStringData.connectionState == RpcConnectionState.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE

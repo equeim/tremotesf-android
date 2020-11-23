@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.drop
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.utils.Logger
@@ -191,7 +191,7 @@ class ForegroundService : LifecycleService(), Logger {
             notificationBuilder.setContentText(statusStringData.statusString)
         }
 
-        if (statusStringData.status == RpcStatus.Disconnected) {
+        if (statusStringData.connectionState == RpcConnectionState.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),

@@ -59,7 +59,7 @@ import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
 import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
@@ -268,7 +268,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 }
 
                 progressBar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
-                        (rpcStatusString.status == RpcStatus.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
+                        (rpcStatusString.connectionState == RpcConnectionState.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -290,14 +290,14 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                    when (rpcStatusString.status) {
-                        RpcStatus.Disconnected -> {
+                    when (rpcStatusString.connectionState) {
+                        RpcConnectionState.Disconnected -> {
                             snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                                 snackbar = null
                                 Rpc.nativeInstance.connect()
                             }
                         }
-                        RpcStatus.Connecting -> {
+                        RpcConnectionState.Connecting -> {
                             snackbar?.dismiss()
                             snackbar = null
                         }

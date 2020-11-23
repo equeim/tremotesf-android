@@ -42,7 +42,7 @@ import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcStatus
+import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
@@ -190,27 +190,27 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     private fun onRpcStatusStringChanged(statusStringData: Rpc.StatusStringData) {
         with(binding) {
-            when (statusStringData.status) {
-                RpcStatus.Disconnected -> {
+            when (statusStringData.connectionState) {
+                RpcConnectionState.Disconnected -> {
                     snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
                     placeholder.text = statusStringData.statusString
                 }
-                RpcStatus.Connecting -> {
+                RpcConnectionState.Connecting -> {
                     snackbar?.dismiss()
                     snackbar = null
                     placeholder.text = getString(R.string.connecting)
                 }
-                RpcStatus.Connected -> {
+                RpcConnectionState.Connected -> {
                     if (torrent == null) {
                         placeholder.text = getString(R.string.torrent_not_found)
                     }
                 }
             }
 
-            progressBar.visibility = if (statusStringData.status == RpcStatus.Connecting) {
+            progressBar.visibility = if (statusStringData.connectionState == RpcConnectionState.Connecting) {
                 View.VISIBLE
             } else {
                 View.GONE
