@@ -98,7 +98,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::onTorrentsUpdated)
 
-        Rpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onRpcStatusChanged)
+        Rpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectionStateChanged)
 
         model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
@@ -264,9 +264,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    private fun onRpcStatusChanged(rpcStatus: Int) {
-        if (rpcStatus == RpcConnectionState.Disconnected || rpcStatus == RpcConnectionState.Connected) {
-            if (rpcStatus == RpcConnectionState.Connected) {
+    private fun onRpcConnectionStateChanged(connectionState: Int) {
+        if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
+            if (connectionState == RpcConnectionState.Connected) {
                 menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
                 requiredActivity.actionMode?.finish()
@@ -277,7 +277,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             }
         }
 
-        updateMenuItems(rpcStatus)
+        updateMenuItems(connectionState)
     }
 
     private fun onTorrentsUpdated(torrents: List<Torrent>) {
@@ -312,19 +312,19 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    private fun updateMenuItems(rpcStatus: Int) {
+    private fun updateMenuItems(connectionState: Int) {
         val menu = this.menu ?: return
 
         val connectMenuItem = menu.findItem(R.id.connect)
         connectMenuItem.isEnabled = Servers.hasServers
-        connectMenuItem.title = when (rpcStatus) {
+        connectMenuItem.title = when (connectionState) {
             RpcConnectionState.Disconnected -> getString(R.string.connect)
             RpcConnectionState.Connecting,
             RpcConnectionState.Connected -> getString(R.string.disconnect)
             else -> ""
         }
 
-        val connected = (rpcStatus == RpcConnectionState.Connected)
+        val connected = (connectionState == RpcConnectionState.Connected)
         searchMenuItem?.isVisible = connected
         menu.findItem(R.id.add_torrent_file).isEnabled = connected
         menu.findItem(R.id.action_torrentsListFragment_to_addTorrentLinkFragment).isEnabled = connected
@@ -334,14 +334,14 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
-        val (statusStringData, hasTorrents) = data
+        val (status, hasTorrents) = data
         binding.placeholder.text = when {
             hasTorrents -> null
-            (statusStringData.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
-            else -> statusStringData.statusString
+            (status.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
+            else -> status.statusString
         }
 
-        binding.progressBar.visibility = if (statusStringData.connectionState == RpcConnectionState.Connecting && !hasTorrents) {
+        binding.progressBar.visibility = if (status.connectionState == RpcConnectionState.Connecting && !hasTorrents) {
             View.VISIBLE
         } else {
             View.GONE

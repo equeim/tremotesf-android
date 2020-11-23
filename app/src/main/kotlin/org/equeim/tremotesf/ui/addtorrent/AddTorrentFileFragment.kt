@@ -236,10 +236,10 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
-        val (parserStatus, rpcStatusString, hasStoragePermission) = viewUpdateData
+        val (parserStatus, rpcStatus, hasStoragePermission) = viewUpdateData
 
         with(binding) {
-            if (Rpc.isConnected.value && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
+            if (rpcStatus.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
                 this@AddTorrentFileFragment.toolbar?.apply {
                     (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
@@ -262,13 +262,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                         AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
                         AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
                         AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
-                        AddTorrentFileModel.ParserStatus.Loaded -> rpcStatusString.statusString
+                        AddTorrentFileModel.ParserStatus.Loaded -> rpcStatus.statusString
                         else -> null
                     }
                 }
 
                 progressBar.visibility = if (parserStatus == AddTorrentFileModel.ParserStatus.Loading ||
-                        (rpcStatusString.connectionState == RpcConnectionState.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
+                        (rpcStatus.connectionState == RpcConnectionState.Connecting && parserStatus == AddTorrentFileModel.ParserStatus.Loaded)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -290,7 +290,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                    when (rpcStatusString.connectionState) {
+                    when (rpcStatus.connectionState) {
                         RpcConnectionState.Disconnected -> {
                             snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
                                 snackbar = null

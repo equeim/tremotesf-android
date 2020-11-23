@@ -123,8 +123,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
     private val hasTorrents = filteredTorrents.map { it.isNotEmpty() }.distinctUntilChanged()
-    data class PlaceholderUpdateData(val statusStringData: Rpc.StatusStringData, val hasTorrents: Boolean)
-    val placeholderUpdateData = combine(Rpc.statusString, hasTorrents, ::PlaceholderUpdateData)
+    data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean)
+    val placeholderUpdateData = combine(Rpc.status, hasTorrents, ::PlaceholderUpdateData)
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)

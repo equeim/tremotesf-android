@@ -60,7 +60,7 @@ interface AddTorrentFileModel {
                               val highPriorityFiles: List<Int>)
 
     data class ViewUpdateData(val parserStatus: ParserStatus,
-                              val rpcStatusString: Rpc.StatusStringData,
+                              val rpcStatus: Rpc.Status,
                               val hasStoragePermission: Boolean = false)
 
     val parserStatus: StateFlow<ParserStatus>
@@ -80,7 +80,7 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
     private val hasStoragePermission = MutableStateFlow(false)
-    override val viewUpdateData = combine(parserStatus, Rpc.statusString, hasStoragePermission) { parserStatus, rpcStatusString, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatusString, hasPermission) }
+    override val viewUpdateData = combine(parserStatus, Rpc.status, hasStoragePermission) { parserStatus, rpcStatus, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, hasPermission) }
 
     private var fd: AssetFileDescriptor? = null
 

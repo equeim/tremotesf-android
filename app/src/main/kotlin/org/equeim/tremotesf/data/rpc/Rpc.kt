@@ -229,8 +229,9 @@ object Rpc : Logger {
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
-    data class StatusStringData(val connectionState: Int = RpcConnectionState.Disconnected,
-                                val statusString: String = "") {
+    data class Status(val connectionState: Int = RpcConnectionState.Disconnected,
+                      val error: Error = Error(RpcError.NoError, ""),
+                      val statusString: String = "") {
         private companion object {
             fun getStatusString(connectionState: Int, error: Int): String {
                 return when (connectionState) {
@@ -251,14 +252,14 @@ object Rpc : Logger {
             }
         }
 
-        constructor(connectionState: Int, error: Error) : this(connectionState, getStatusString(connectionState, error.error))
+        constructor(connectionState: Int, error: Error) : this(connectionState, error, getStatusString(connectionState, error.error))
 
         val isConnected: Boolean
             get() = connectionState == RpcConnectionState.Connected
     }
 
-    val statusString = combine(connectionState, error, ::StatusStringData)
-            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, StatusStringData())
+    val status = combine(connectionState, error, ::Status)
+            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
     val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents

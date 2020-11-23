@@ -99,9 +99,9 @@ class ForegroundService : LifecycleService(), Logger {
             }
         }
 
-        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.statusString.value))
+        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value))
 
-        combine(Rpc.statusString, Rpc.serverStats, Servers.currentServer) { statusString, _, _ -> statusString }.drop(1)
+        combine(Rpc.status, Rpc.serverStats, Servers.currentServer) { status, _, _ -> status }.drop(1)
                 .collectWhenStarted(this) { updatePersistentNotification(it) }
     }
 
@@ -157,13 +157,13 @@ class ForegroundService : LifecycleService(), Logger {
         stopSelf()
     }
 
-    private fun updatePersistentNotification(statusStringData: Rpc.StatusStringData) {
+    private fun updatePersistentNotification(status: Rpc.Status) {
         if (!stopUpdatingNotification) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(statusStringData))
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(status))
         }
     }
 
-    private fun buildPersistentNotification(statusStringData: Rpc.StatusStringData): Notification {
+    private fun buildPersistentNotification(status: Rpc.Status): Notification {
         val notificationBuilder = NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(NavDeepLinkBuilder(applicationContext)
@@ -186,7 +186,7 @@ class ForegroundService : LifecycleService(), Logger {
             notificationBuilder.setShowWhen(false)
         }
 
-        if (statusStringData.isConnected) {
+        if (status.isConnected) {
             val stats = Rpc.serverStats.value
             notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
                                                          Utils.formatByteSpeed(this,
@@ -194,10 +194,10 @@ class ForegroundService : LifecycleService(), Logger {
                                                          Utils.formatByteSpeed(this,
                                                                                stats.uploadSpeed)))
         } else {
-            notificationBuilder.setContentText(statusStringData.statusString)
+            notificationBuilder.setContentText(status.statusString)
         }
 
-        if (statusStringData.connectionState == RpcConnectionState.Disconnected) {
+        if (status.connectionState == RpcConnectionState.Disconnected) {
             notificationBuilder.addAction(
                     R.drawable.notification_connect,
                     getString(R.string.connect),
