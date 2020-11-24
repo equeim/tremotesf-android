@@ -36,6 +36,7 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.billing.GoogleBillingHelper
 import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
 import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
@@ -141,11 +142,8 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
     }
 
     class Model(application: Application) : AndroidViewModel(application) {
-        val billing: GoogleBillingHelper? = if (BuildConfig.DONATIONS_GOOGLE) {
-            GoogleBillingHelper(application, viewModelScope)
-        } else {
-            null
-        }
+        @Suppress("RedundantNullableReturnType")
+        val billing: GoogleBillingHelper? = GoogleBillingHelper(application, viewModelScope)
 
         override fun onCleared() {
             billing?.endConnection()

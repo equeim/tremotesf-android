@@ -17,10 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.donationsfragment
+package org.equeim.tremotesf.data.billing
 
-import android.content.Context
-import kotlinx.coroutines.CoroutineScope
+import android.app.Activity
 
-@Suppress("FunctionName", "UNUSED_PARAMETER")
-fun GoogleBillingHelper(context: Context, coroutineScope: CoroutineScope): GoogleBillingHelper = throw NotImplementedError()
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+
+interface GoogleBillingHelper {
+    enum class PurchaseError {
+        None,
+        Cancelled,
+        Error
+    }
+
+    val isSetUp: StateFlow<Boolean>
+    val skus: List<SkuData>
+    val purchasesUpdatedEvent: Flow<PurchaseError>
+
+    fun launchBillingFlow(skuIndex: Int, activity: Activity): PurchaseError
+
+    fun endConnection()
+
+    data class SkuData(val sku: String,
+                       val price: String)
+}

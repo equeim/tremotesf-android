@@ -1,4 +1,4 @@
-package org.equeim.tremotesf.ui.donationsfragment
+package org.equeim.tremotesf.data.billing
 
 import android.app.Activity
 import android.content.Context
