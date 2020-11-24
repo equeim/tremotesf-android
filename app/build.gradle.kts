@@ -5,7 +5,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
+    kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
     id("com.github.ben-manes.versions")
 }
