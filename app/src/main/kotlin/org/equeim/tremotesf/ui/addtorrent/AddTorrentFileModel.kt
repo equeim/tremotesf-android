@@ -22,10 +22,9 @@ package org.equeim.tremotesf.ui.addtorrent
 import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
-
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,15 +32,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
 import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
 import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
-import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.utils.Logger
 
 
@@ -66,7 +64,7 @@ interface AddTorrentFileModel {
     val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
 
-    val rootDirectory: BaseTorrentFilesAdapter.Directory
+    val filesTree: TorrentFilesTree
     val torrentName: String
     val renamedFiles: MutableMap<String, String>
 
@@ -76,7 +74,7 @@ interface AddTorrentFileModel {
     fun getFilePriorities(): FilePriorities
 }
 
-class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
+class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : ViewModel(), AddTorrentFileModel, Logger {
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
     private val hasStoragePermission = MutableStateFlow(false)
@@ -84,13 +82,13 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
 
     private var fd: AssetFileDescriptor? = null
 
-    override val rootDirectory = BaseTorrentFilesAdapter.Directory()
+    override val filesTree = TorrentFilesTree(viewModelScope)
     override val torrentName: String
-        get() = rootDirectory.children.first().name
+        get() = filesTree.rootNode.children.first().item.name
 
     override val renamedFiles = mutableMapOf<String, String>()
 
-    private lateinit var files: List<BaseTorrentFilesAdapter.File>
+    private lateinit var files: List<TorrentFilesTree.Item>
 
     override fun onCleared() {
         fd?.close()
@@ -121,13 +119,13 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
         val highPriorityFiles = mutableListOf<Int>()
 
         for (file in files) {
-            val id = file.id
-            if (file.wantedState == BaseTorrentFilesAdapter.Item.WantedState.Unwanted) {
+            val id = file.fileId
+            if (file.wantedState == TorrentFilesTree.Item.WantedState.Unwanted) {
                 unwantedFiles.add(id)
             }
             when (file.priority) {
-                BaseTorrentFilesAdapter.Item.Priority.Low -> lowPriorityFiles.add(id)
-                BaseTorrentFilesAdapter.Item.Priority.High -> highPriorityFiles.add(id)
+                TorrentFilesTree.Item.Priority.Low -> lowPriorityFiles.add(id)
+                TorrentFilesTree.Item.Priority.High -> highPriorityFiles.add(id)
                 else -> {
                 }
             }
@@ -172,60 +170,57 @@ class AddTorrentFileModelImpl : ViewModel(), AddTorrentFileModel, Logger {
             }
 
             withContext(Dispatchers.Default) {
-                val (rootDirectoryChild, files) = createTree(torrentFile.info)
+                val (rootNode, files) = createTree(torrentFile.info)
                 withContext(Dispatchers.Main) {
                     this@AddTorrentFileModelImpl.fd = fd
-                    rootDirectoryChild.parentDirectory = rootDirectory
-                    rootDirectory.addChild(rootDirectoryChild)
                     this@AddTorrentFileModelImpl.files = files
+                    filesTree.init(rootNode, savedStateHandle)
                     parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
                 }
             }
         }
     }
 
-    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<BaseTorrentFilesAdapter.Item, List<BaseTorrentFilesAdapter.File>> {
-        val rootDirectoryChild: BaseTorrentFilesAdapter.Item
-        val files = mutableListOf<BaseTorrentFilesAdapter.File>()
+    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<TorrentFilesTree.Node, List<TorrentFilesTree.Item>> {
+        val rootNode = TorrentFilesTree.Node.createRootNode()
+        val files = mutableListOf<TorrentFilesTree.Item>()
 
         if (torrentFileInfo.files == null) {
-            rootDirectoryChild = BaseTorrentFilesAdapter.File(0, null, torrentFileInfo.name, torrentFileInfo.length!!, 0)
-            files.add(rootDirectoryChild)
+            val node = rootNode.addFile(0,
+                                        torrentFileInfo.name,
+                                        torrentFileInfo.length!!,
+                                        0,
+                                        TorrentFilesTree.Item.WantedState.Wanted,
+                                        TorrentFilesTree.Item.Priority.Normal)
+            files.add(node.item)
         } else {
-            val rootDirectory = BaseTorrentFilesAdapter.Directory(0,
-                                                                  null,
-                                                                  torrentFileInfo.name)
-            rootDirectoryChild = rootDirectory
+            val rootDirectoryNode = rootNode.addDirectory(torrentFileInfo.name)
             for ((fileIndex, fileMap) in torrentFileInfo.files.withIndex()) {
-                var directory = rootDirectory
+                var currentNode = rootDirectoryNode
 
                 val pathParts = fileMap.path
                 for ((partIndex, part) in pathParts.withIndex()) {
                     if (partIndex == pathParts.lastIndex) {
-                        val file = BaseTorrentFilesAdapter.File(directory.children.size,
-                                                                directory,
-                                                                part,
-                                                                fileMap.length,
-                                                                fileIndex)
-                        directory.addChild(file)
-                        files.add(file)
+                        val node = currentNode.addFile(fileIndex,
+                                                       part,
+                                                       fileMap.length,
+                                                       0,
+                                                       TorrentFilesTree.Item.WantedState.Wanted,
+                                                       TorrentFilesTree.Item.Priority.Normal)
+                        files.add(node.item)
                     } else {
-                        var childDirectory = directory.childrenMap[part]
-                                as BaseTorrentFilesAdapter.Directory?
-                        if (childDirectory == null) {
-                            childDirectory = BaseTorrentFilesAdapter.Directory(directory.children.size,
-                                                                               directory,
-                                                                               part)
-                            directory.addChild(childDirectory)
+                        var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
+                        if (childDirectoryNode == null) {
+                            childDirectoryNode = currentNode.addDirectory(part)
                         }
-                        directory = childDirectory
+                        currentNode = childDirectoryNode
                     }
                 }
             }
+
+            rootDirectoryNode.initiallyCalculateFromChildrenRecursively()
         }
 
-        rootDirectoryChild.setWanted(true)
-
-        return Pair(rootDirectoryChild, files)
+        return Pair(rootNode, files)
     }
 }

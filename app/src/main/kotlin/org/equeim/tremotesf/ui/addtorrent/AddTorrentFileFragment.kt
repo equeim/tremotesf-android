@@ -36,6 +36,7 @@ import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -53,6 +54,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
@@ -173,8 +175,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (done ||
-                    binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
-                    findFragment<FilesFragment>()?.adapter?.navigateUp() != true) {
+                    binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !model.filesTree.navigateUp()) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -232,7 +233,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
     override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
         model.renamedFiles[filePath] = newName
-        findFragment<FilesFragment>()?.adapter?.fileRenamed(filePath, newName)
+        model.filesTree.renameFile(filePath, newName)
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
@@ -375,22 +376,16 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         private val mainFragment: AddTorrentFileFragment
             get() = requireParentFragment() as AddTorrentFileFragment
 
-        private var savedInstanceState: Bundle? = null
-
         var adapter: Adapter? = null
             private set
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            this.savedInstanceState = savedInstanceState
-        }
+        private var savedInstanceState: Bundle? = null
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             val model = mainFragment.model
 
-            val adapter = Adapter(requireActivity() as NavigationActivity, model.rootDirectory)
+            val adapter = Adapter(model.filesTree, requireActivity() as NavigationActivity)
             this.adapter = adapter
 
             AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
@@ -401,16 +396,20 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-
-            model.parserStatus.collectWhenStarted(viewLifecycleOwner) {
-                when (it) {
-                    AddTorrentFileModel.ParserStatus.None, AddTorrentFileModel.ParserStatus.Loading -> Unit
-                    else -> {
-                        adapter.initAndRestoreInstanceState(this@FilesFragment.savedInstanceState)
-                        this@FilesFragment.savedInstanceState = null
+            this.savedInstanceState = savedInstanceState
+            model.filesTree.items.collectWhenStarted(viewLifecycleOwner) {
+                adapter.update(it) {
+                    if (model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded && this.savedInstanceState != null) {
+                        adapter.selectionTracker.restoreInstanceState(this.savedInstanceState)
+                        this.savedInstanceState = null
                     }
                 }
             }
+        }
+
+        override fun onSaveInstanceState(outState: Bundle) {
+            super.onSaveInstanceState(outState)
+            adapter?.selectionTracker?.saveInstanceState(outState)
         }
 
         override fun onDestroyView() {
@@ -418,12 +417,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             super.onDestroyView()
         }
 
-        override fun onSaveInstanceState(outState: Bundle) {
-            adapter?.saveInstanceState(outState)
-        }
-
-        class Adapter(private val activity: NavigationActivity,
-                      rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory, activity) {
+        class Adapter(filesTree: TorrentFilesTree,
+                      private val activity: NavigationActivity) : BaseTorrentFilesAdapter(filesTree, activity) {
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
@@ -436,18 +431,20 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 return super.onCreateViewHolder(parent, viewType)
             }
 
-            override fun onNavigateToRenameDialog(args: Bundle) {
-                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment, args)
+            override fun navigateToRenameDialog(path: String, name: String) {
+                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment,
+                                  bundleOf(TorrentFileRenameDialogFragment.FILE_PATH to path,
+                                           TorrentFileRenameDialogFragment.FILE_NAME to name))
             }
 
-            private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
+            private class ItemHolder(private val adapter: Adapter,
                                      selectionTracker: SelectionTracker<Int>,
                                      val binding: LocalTorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
                 override fun update() {
                     super.update()
                     val context = binding.sizeTextView.context
                     binding.sizeTextView.text =
-                            Utils.formatByteSize(context, adapter.getItem(adapterPosition).size)
+                            Utils.formatByteSize(context, adapter.getItem(adapterPosition)!!.size)
                 }
             }
         }

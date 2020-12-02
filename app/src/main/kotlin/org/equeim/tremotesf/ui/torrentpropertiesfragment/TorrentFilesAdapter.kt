@@ -19,32 +19,25 @@
 
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-
-import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.data.rpc.Torrent
-import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
+import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
+import org.equeim.tremotesf.ui.SelectionTracker
+import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
-                          rootDirectory: Directory) : BaseTorrentFilesAdapter(rootDirectory, fragment.requireActivity() as AppCompatActivity) {
-    private val torrent: Torrent?
-        get() {
-            return fragment.torrent
-        }
-
+class TorrentFilesAdapter(filesTree: TorrentFilesTree,
+                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(filesTree, fragment.requireActivity() as AppCompatActivity) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
             val binding = TorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
@@ -56,54 +49,21 @@ class TorrentFilesAdapter(private val fragment: TorrentFilesFragment,
         return super.onCreateViewHolder(parent, viewType)
     }
 
-    override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        torrent?.setFilesWanted(ids, wanted)
-    }
-
-    override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
-    }
-
-    override fun onNavigateToRenameDialog(args: Bundle) {
-        torrent?.let { torrent ->
+    override fun navigateToRenameDialog(path: String, name: String) {
+        fragment.torrent?.let {
             fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
-                                                      args.apply { putInt(TorrentFileRenameDialogFragment.TORRENT_ID, torrent.id) })
+                                                      bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to it.id,
+                                                               TorrentFileRenameDialogFragment.FILE_PATH to path,
+                                                               TorrentFileRenameDialogFragment.FILE_NAME to name))
         }
     }
 
-    fun treeUpdated() {
-        val add = if (hasHeaderItem) 1 else 0
-        var firstIndex = -1
-        for ((i, item) in items.withIndex()) {
-            if (item.changed) {
-                if (firstIndex == -1) {
-                    firstIndex = i
-                }
-            } else {
-                if (firstIndex != -1) {
-                    notifyItemRangeChanged(firstIndex + add, i - firstIndex)
-                    firstIndex = -1
-                }
-            }
-        }
-        if (firstIndex != -1) {
-            notifyItemRangeChanged(firstIndex + add, items.size - firstIndex)
-        }
-    }
-
-    fun reset() {
-        val count = itemCount
-        currentDirectory = rootDirectory
-        items = emptyList()
-        notifyItemRangeRemoved(0, count)
-    }
-
-    private class ItemHolder(private val adapter: BaseTorrentFilesAdapter,
+    private class ItemHolder(private val adapter: TorrentFilesAdapter,
                              selectionTracker: SelectionTracker<Int>,
                              val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()
-            val item = adapter.getItem(adapterPosition)
+            val item = adapter.getItem(adapterPosition)!!
             with(binding) {
                 progressBar.progress = (item.progress * 100).toInt()
                 val context = progressBar.context

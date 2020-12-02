@@ -21,16 +21,28 @@ package org.equeim.tremotesf.ui.utils
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 inline fun <reified T : ViewModel> Fragment.viewModels(crossinline viewModelProducer: () -> T): Lazy<T> {
-    this.savedStateRegistry
     return viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return viewModelProducer() as T
+            }
+        }
+    }
+}
+
+inline fun <reified T : ViewModel> Fragment.savedStateViewModels(crossinline viewModelProducer: (SavedStateHandle) -> T): Lazy<T> {
+    return viewModels {
+        object : AbstractSavedStateViewModelFactory(this, arguments) {
+            override fun <T : ViewModel?> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
+                @Suppress("UNCHECKED_CAST")
+                return viewModelProducer(handle) as T
             }
         }
     }

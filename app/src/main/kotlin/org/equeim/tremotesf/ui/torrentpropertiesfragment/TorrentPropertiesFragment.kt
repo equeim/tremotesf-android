@@ -98,7 +98,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
-                    findFragment<TorrentFilesFragment>()?.adapter?.navigateUp() != true) {
+                    findFragment<TorrentFilesFragment>()?.model?.filesTree?.navigateUp() != true) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }

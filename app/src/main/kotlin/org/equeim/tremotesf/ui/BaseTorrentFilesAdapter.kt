@@ -19,54 +19,47 @@
 
 package org.equeim.tremotesf.ui
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-
-import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.ui.utils.TristateCheckbox
 
 
-private const val BUNDLE_KEY = "org.equeim.tremotesf.LocalTorrentFilesAdapter.currentDirectoryPath"
-
-abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
-                                       private val activity: AppCompatActivity) : BaseFilesAdapter<BaseTorrentFilesAdapter.Item, BaseTorrentFilesAdapter.Directory>() {
-    var rootDirectory = rootDirectory
-        private set
-
-    override var currentDirectory = rootDirectory
-
-    override val hasHeaderItem: Boolean
-        get() = (currentDirectory !== rootDirectory)
+abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
+                                       private val activity: AppCompatActivity) : ListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
+    protected companion object {
+        const val TYPE_HEADER = 0
+        const val TYPE_ITEM = 1
+    }
 
     lateinit var selectionTracker: SelectionTracker<Int>
         private set
-
-    override fun getItemParentDirectory(item: Item): Directory? = item.parentDirectory
-    override fun getItemName(item: Item): String = item.name
-    override fun itemIsDirectory(item: Item): Boolean = item is Directory
-
-    override fun getDirectoryChildren(directory: Directory): List<Item> {
-        return directory.children
-    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         selectionTracker = createSelectionTrackerInt(activity,
                                                      ::ActionModeCallback,
                                                      R.plurals.files_selected,
                                                      this) {
-            if (it == 0 && hasHeaderItem) SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT else getItem(it).row
+            getItem(it)?.nodePath?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (getItem(position) == null) {
+            TYPE_HEADER
+        } else {
+            TYPE_ITEM
         }
     }
 
@@ -76,7 +69,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
                                                                             parent,
                                                                             false))
         }
-        throw InvalidViewTypeException()
+        throw IllegalArgumentException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -85,115 +78,29 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         }
     }
 
-    private fun navigateDown(item: Item) {
-        if (item is Directory) {
-            navigateTo(item)
-        }
-    }
-
-    fun saveInstanceState(outState: Bundle) {
-        val path = mutableListOf<Int>()
-        var directory: Directory? = currentDirectory
-        while (directory != null && directory != rootDirectory) {
-            path.add(0, directory.row)
-            directory = directory.parentDirectory
-        }
-        outState.putIntArray(BUNDLE_KEY, path.toIntArray())
-        selectionTracker.saveInstanceState(outState)
-    }
-
-    fun initAndRestoreInstanceState(savedInstanceState: Bundle?, newRootDirectory: Directory? = null) {
-        if (newRootDirectory != null) {
-            rootDirectory = newRootDirectory
-            currentDirectory = rootDirectory
-        }
-
-        var root = true
-
-        if (savedInstanceState != null) {
-            savedInstanceState.getIntArray(BUNDLE_KEY)?.let { path ->
-                var directory: Directory? = rootDirectory
-                for (row in path) {
-                    directory = directory?.children?.find { it.row == row } as? Directory
-                    if (directory == null) {
-                        break
-                    }
-                }
-                if (directory !== rootDirectory && directory != null) {
-                    navigateTo(directory)
-                    root = false
-                }
-            }
-        }
-
-        if (root) {
-            items = rootDirectory.children.sortedWith(comparator)
-            notifyItemRangeInserted(0, items.size)
-        }
-
-        selectionTracker.restoreInstanceState(savedInstanceState)
-    }
-
-    private fun getItemPosition(item: Item): Int {
-        val index = items.indexOf(item)
-        if (index != -1 && hasHeaderItem) {
-            return index + 1
-        }
-        return index
+    fun update(items: List<TorrentFilesTree.Item?>, commitCallback: () -> Unit) {
+        submitList(if (items.isEmpty()) null else items, commitCallback)
     }
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
-        val ids = mutableListOf<Int>()
-        for (position in selectionTracker.getSelectedPositionsUnsorted()) {
-            val item = getItem(position)
-            item.setWanted(wanted, ids)
-            notifyItemChanged(getItemPosition(item))
-        }
-        onSetFilesWanted(ids.toIntArray(), wanted)
+        val nodeIndexes = selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+        filesTree.setItemsWanted(nodeIndexes, wanted)
     }
 
-    private fun setSelectedItemsPriority(priority: Item.Priority) {
-        val ids = mutableListOf<Int>()
-        for (position in selectionTracker.getSelectedPositionsUnsorted()) {
-            val item = getItem(position)
-            item.setPriority(priority, ids)
-        }
-        onSetFilesPriority(ids.toIntArray(), priority)
+    private fun setSelectedItemsPriority(priority: TorrentFilesTree.Item.Priority) {
+        val nodeIndexes = selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+        filesTree.setItemsPriority(nodeIndexes, priority)
     }
 
-    protected open fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
+    protected abstract fun navigateToRenameDialog(path: String, name: String)
 
-    }
-
-    protected open fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-
-    }
-
-    protected abstract fun onNavigateToRenameDialog(args: Bundle)
-
-    fun fileRenamed(path: String, newName: String) {
-        val pathParts = path.split('/').filter(String::isNotEmpty)
-        var item: Item? = rootDirectory
-        for (part in pathParts) {
-            item = (item as Directory).children.find { it.name == part }
-            if (item == null) {
-                break
-            }
-        }
-        if (item == rootDirectory) {
-            item = null
+    private class ItemCallback : DiffUtil.ItemCallback<TorrentFilesTree.Item?>() {
+        override fun areItemsTheSame(oldItem: TorrentFilesTree.Item, newItem: TorrentFilesTree.Item): Boolean {
+            return oldItem === newItem || oldItem.nodePath.contentEquals(newItem.nodePath)
         }
 
-        if (item != null) {
-            item.name = newName
-            val index = items.indexOf(item)
-            if (index != -1) {
-                if (hasHeaderItem) {
-                    notifyItemChanged(index + 1)
-                } else {
-                    notifyItemChanged(index)
-                }
-            }
+        override fun areContentsTheSame(oldItem: TorrentFilesTree.Item, newItem: TorrentFilesTree.Item): Boolean {
+            return oldItem == newItem
         }
     }
 
@@ -201,7 +108,7 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
         init {
             itemView.setOnClickListener {
                 if (!selectionTracker.hasSelection) {
-                    navigateUp()
+                    filesTree.navigateUp()
                 }
             }
         }
@@ -219,29 +126,37 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
 
         init {
             checkBox.setOnClickListener {
-                val ids = mutableListOf<Int>()
-                adapter.getItem(adapterPosition).setWanted(checkBox.isChecked, ids)
-                adapter.onSetFilesWanted(ids.toIntArray(), checkBox.isChecked)
+                val position = adapterPosition
+                if (position != -1) {
+                    with (adapter) {
+                        filesTree.setItemsWanted(listOf(getItem(position)!!.nodePath.last()), checkBox.isChecked)
+                    }
+                }
             }
         }
 
         override fun onClick(view: View) {
-            adapter.navigateDown(adapter.getItem(adapterPosition))
+            val position = adapterPosition
+            if (position != -1) {
+                with(adapter) {
+                    filesTree.navigateDown(getItem(position)!!)
+                }
+            }
         }
 
         override fun update() {
             super.update()
 
-            val item = adapter.getItem(adapterPosition)
+            val item = adapter.getItem(adapterPosition)!!
 
-            iconView.setImageLevel(if (item is Directory) 0 else 1)
+            iconView.setImageLevel(if (item.isDirectory) 0 else 1)
 
             nameTextView.text = item.name
 
             checkBox.state = when (item.wantedState) {
-                Item.WantedState.Wanted -> TristateCheckbox.State.Checked
-                Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
-                Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
+                TorrentFilesTree.Item.WantedState.Wanted -> TristateCheckbox.State.Checked
+                TorrentFilesTree.Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
+                TorrentFilesTree.Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
             }
             checkBox.isEnabled = !selectionTracker.hasSelection
         }
@@ -267,12 +182,6 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             mixedPriorityItem = menu.findItem(R.id.mixed_priority)
             renameItem = menu.findItem(R.id.rename)
 
-            if (hasHeaderItem) {
-                notifyItemRangeChanged(1, items.size)
-            } else {
-                notifyItemRangeChanged(0, items.size)
-            }
-
             return true
         }
 
@@ -284,17 +193,17 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             super.onPrepareActionMode(mode, menu)
 
             if (selectionTracker.selectedCount == 1) {
-                val first = getItem(selectionTracker.getFirstSelectedPosition())
-                val wanted = (first.wantedState == Item.WantedState.Wanted)
+                val first = getItem(selectionTracker.getFirstSelectedPosition())!!
+                val wanted = (first.wantedState == TorrentFilesTree.Item.WantedState.Wanted)
                 downloadItem!!.isEnabled = !wanted
                 notDownloadItem!!.isEnabled = wanted
                 when (first.priority) {
-                    Item.Priority.Low -> lowPriorityItem
-                    Item.Priority.Normal -> normalPriorityItem
-                    Item.Priority.High -> highPriorityItem
-                    Item.Priority.Mixed -> mixedPriorityItem
+                    TorrentFilesTree.Item.Priority.Low -> lowPriorityItem
+                    TorrentFilesTree.Item.Priority.Normal -> normalPriorityItem
+                    TorrentFilesTree.Item.Priority.High -> highPriorityItem
+                    TorrentFilesTree.Item.Priority.Mixed -> mixedPriorityItem
                 }!!.isChecked = true
-                mixedPriorityItem!!.isVisible = (first.priority == Item.Priority.Mixed)
+                mixedPriorityItem!!.isVisible = (first.priority == TorrentFilesTree.Item.Priority.Mixed)
                 renameItem!!.isEnabled = true
             } else {
                 downloadItem!!.isEnabled = true
@@ -326,21 +235,12 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             when (item.itemId) {
                 R.id.download -> setSelectedItemsWanted(true)
                 R.id.not_download -> setSelectedItemsWanted(false)
-                R.id.high_priority -> setSelectedItemsPriority(Item.Priority.High)
-                R.id.normal_priority -> setSelectedItemsPriority(Item.Priority.Normal)
-                R.id.low_priority -> setSelectedItemsPriority(Item.Priority.Low)
+                R.id.high_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.High)
+                R.id.normal_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Normal)
+                R.id.low_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Low)
                 R.id.rename -> {
-                    val file = getItem(selectionTracker.getFirstSelectedPosition())
-
-                    val pathParts = mutableListOf<String>()
-                    var i: Item? = file
-                    while (i != null && i != rootDirectory) {
-                        pathParts.add(0, i.name)
-                        i = i.parentDirectory
-                    }
-
-                    onNavigateToRenameDialog(bundleOf(TorrentFileRenameDialogFragment.FILE_PATH to pathParts.joinToString("/"),
-                                                      TorrentFileRenameDialogFragment.FILE_NAME to file.name))
+                    val i = getItem(selectionTracker.getFirstSelectedPosition())!!
+                    filesTree.getItemPath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
                 }
                 else -> return false
             }
@@ -348,171 +248,4 @@ abstract class BaseTorrentFilesAdapter(rootDirectory: Directory,
             return true
         }
     }
-
-
-    abstract class Item(val row: Int,
-                        var parentDirectory: Directory?,
-                        var name: String) {
-        enum class WantedState {
-            Wanted,
-            Unwanted,
-            Mixed
-        }
-
-        enum class Priority {
-            Low,
-            Normal,
-            High,
-            Mixed;
-
-            companion object {
-                fun fromTorrentFilePriority(priority: Int): Priority {
-                    return when (priority) {
-                        TorrentFile.Priority.LowPriority -> Low
-                        TorrentFile.Priority.NormalPriority -> Normal
-                        TorrentFile.Priority.HighPriority -> High
-                        else -> Normal
-                    }
-                }
-            }
-
-            fun toTorrentFilePriority(): Int {
-                return when (this) {
-                    Low -> TorrentFile.Priority.LowPriority
-                    Normal -> TorrentFile.Priority.NormalPriority
-                    High -> TorrentFile.Priority.HighPriority
-                    else -> TorrentFile.Priority.NormalPriority
-                }
-            }
-         }
-
-        abstract val size: Long
-        abstract val completedSize: Long
-        val progress: Float
-            get() {
-                val bytes = size
-                if (bytes == 0L) {
-                    return 0.0f
-                }
-                return (completedSize.toFloat() / bytes.toFloat())
-            }
-
-        abstract val wantedState: WantedState
-        abstract fun setWanted(wanted: Boolean, ids: MutableList<Int>? = null)
-
-        abstract val priority: Priority
-
-        abstract fun setPriority(priority: Priority, ids: MutableList<Int>? = null)
-
-        abstract val changed: Boolean
-    }
-
-    class Directory(row: Int,
-                    parentDirectory: Directory?,
-                    name: String) : Item(row, parentDirectory, name) {
-        constructor() : this(-1, null, "")
-
-        override val size: Long
-            get() {
-                var bytes = 0L
-                for (item in children) {
-                    bytes += item.size
-                }
-                return bytes
-            }
-
-        override val completedSize: Long
-            get() {
-                var bytes = 0L
-                for (item in children) {
-                    bytes += item.completedSize
-                }
-                return bytes
-            }
-
-        override val wantedState: WantedState
-            get() {
-                val first = children.first().wantedState
-                if (first == WantedState.Mixed) {
-                    return first
-                }
-                for (item in children.drop(1)) {
-                    if (item.wantedState != first) {
-                        return WantedState.Mixed
-                    }
-                }
-                return first
-            }
-
-        override fun setWanted(wanted: Boolean, ids: MutableList<Int>?) {
-            for (item in children) {
-                item.setWanted(wanted, ids)
-            }
-        }
-
-        override val priority: Priority
-            get() {
-                val first = children.first().priority
-                if (first == Priority.Mixed) {
-                    return first
-                }
-                for (item in children.drop(1)) {
-                    if (item.priority != first) {
-                        return Priority.Mixed
-                    }
-                }
-                return first
-            }
-
-        override fun setPriority(priority: Priority, ids: MutableList<Int>?) {
-            for (item in children) {
-                item.setPriority(priority, ids)
-            }
-        }
-
-        override val changed: Boolean
-            get() = children.any(Item::changed)
-
-        val children = mutableListOf<Item>()
-        val childrenMap = mutableMapOf<String, Item>()
-
-        fun addChild(child: Item) {
-            children.add(child)
-            childrenMap[child.name] = child
-        }
-
-        fun clearChildren() {
-            children.clear()
-            childrenMap.clear()
-        }
-    }
-
-    class File(row: Int,
-               parentDirectory: Directory?,
-               name: String,
-               override val size: Long,
-               val id: Int) : Item(row, parentDirectory, name) {
-        override var completedSize = 0L
-        override var wantedState = WantedState.Unwanted
-
-        override fun setWanted(wanted: Boolean, ids: MutableList<Int>?) {
-            wantedState = if (wanted) {
-                WantedState.Wanted
-            } else {
-                WantedState.Unwanted
-            }
-            ids?.add(id)
-        }
-
-        override var priority = Priority.Normal
-
-        override fun setPriority(priority: Priority, ids: MutableList<Int>?) {
-            this.priority = priority
-            ids?.add(id)
-        }
-
-        override var changed = false
-    }
-
-    class InvalidViewTypeException : Exception()
 }
