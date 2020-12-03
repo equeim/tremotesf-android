@@ -27,9 +27,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -46,7 +46,6 @@ import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.createSelectionTrackerString
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
@@ -58,19 +57,12 @@ import java.util.Comparator
 class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
                                                       R.string.connection_settings) {
     private val binding by viewBinding(ConnectionSettingsFragmentBinding::bind)
-    var adapter: ServersAdapter? = null
-
-    private var savedInstanceState: Bundle? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        this.savedInstanceState = savedInstanceState
-    }
+    private var adapter: ServersAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ServersAdapter(requireActivity() as AppCompatActivity)
+        val adapter = ServersAdapter(this)
         this.adapter = adapter
 
         with (binding) {
@@ -97,18 +89,8 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         Servers.servers.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        adapter?.selectionTracker?.saveInstanceState(outState)
-    }
-
     fun update(servers: List<Server>) {
-        adapter?.apply {
-            update(servers)
-            if (savedInstanceState != null) {
-                selectionTracker.restoreInstanceState(savedInstanceState)
-                savedInstanceState = null
-            }
-        }
+        adapter?.update(servers)
         binding.placeholder.visibility = if (adapter?.itemCount == 0) {
             View.VISIBLE
         } else {
@@ -116,7 +98,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         }
     }
 
-    class ServersAdapter(activity: AppCompatActivity) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
+    class ServersAdapter(fragment: Fragment) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
         private val _servers = mutableListOf<Server>()
         val servers: List<Server>
             get() = _servers
@@ -126,10 +108,10 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
         }
 
-        val selectionTracker = createSelectionTrackerString(activity,
-                                                            ::ActionModeCallback,
-                                                            R.plurals.servers_selected,
-                                                            this) { servers[it].name }
+        val selectionTracker = SelectionTracker.createForStringKeys(this,
+                                                                    fragment,
+                                                                    ::ActionModeCallback,
+                                                                    R.plurals.servers_selected) { servers[it].name }
 
         override fun getItemCount(): Int {
             return servers.size
@@ -149,6 +131,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             _servers.clear()
             _servers.addAll(servers.sortedWith(comparator))
             notifyDataSetChanged()
+            selectionTracker.restoreInstanceState()
         }
 
         class ViewHolder(private val adapter: ServersAdapter,
@@ -192,7 +175,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 }
 
                 if (selectionTracker.hasSelection && item.itemId == R.id.remove) {
-                    activity.findNavController(R.id.nav_host).safeNavigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
+                    activity.navigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
                     return true
                 }
 

@@ -30,7 +30,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
@@ -45,7 +44,6 @@ import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.createSelectionTrackerInt
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
@@ -90,7 +88,8 @@ data class TrackersAdapterItem(val id: Int,
     }
 }
 
-class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment) : ListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
+class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment,
+                      trackersFragment: TrackersFragment) : ListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
 
     private val comparator = object : Comparator<TrackersAdapterItem> {
@@ -99,12 +98,12 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                                                                                                           o2.announce)
     }
 
-    private val context = torrentPropertiesFragment.requireContext()
+    private val context = trackersFragment.requireContext()
 
-    val selectionTracker = createSelectionTrackerInt(torrentPropertiesFragment.requireActivity() as AppCompatActivity,
-                                                     ::ActionModeCallback,
-                                                     R.plurals.trackers_selected,
-                                                     this) { getItem(it).id }
+    private val selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                                     trackersFragment,
+                                                                     ::ActionModeCallback,
+                                                                     R.plurals.trackers_selected) { getItem(it).id }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(selectionTracker,
@@ -144,7 +143,9 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             newTrackers.add(tracker)
         }
 
-        submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator))
+        submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator)) {
+            selectionTracker.restoreInstanceState()
+        }
     }
 
     inner class ViewHolder(selectionTracker: SelectionTracker<Int>,

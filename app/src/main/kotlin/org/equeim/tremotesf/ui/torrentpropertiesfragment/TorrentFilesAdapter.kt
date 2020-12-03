@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +36,7 @@ import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 class TorrentFilesAdapter(filesTree: TorrentFilesTree,
-                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(filesTree, fragment.requireActivity() as AppCompatActivity) {
+                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(filesTree, fragment) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
             val binding = TorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),

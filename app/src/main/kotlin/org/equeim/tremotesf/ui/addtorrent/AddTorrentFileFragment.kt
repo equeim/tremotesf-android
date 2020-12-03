@@ -45,6 +45,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.savedstate.SavedStateRegistry
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 
@@ -378,14 +379,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
         var adapter: Adapter? = null
             private set
-        private var savedInstanceState: Bundle? = null
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             val model = mainFragment.model
 
-            val adapter = Adapter(model.filesTree, requireActivity() as NavigationActivity)
+            val adapter = Adapter(model.filesTree, this, requireActivity() as NavigationActivity)
             this.adapter = adapter
 
             AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
@@ -396,20 +396,13 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            this.savedInstanceState = savedInstanceState
             model.filesTree.items.collectWhenStarted(viewLifecycleOwner) {
                 adapter.update(it) {
-                    if (model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded && this.savedInstanceState != null) {
-                        adapter.selectionTracker.restoreInstanceState(this.savedInstanceState)
-                        this.savedInstanceState = null
+                    if (model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded) {
+                        adapter.selectionTracker.restoreInstanceState()
                     }
                 }
             }
-        }
-
-        override fun onSaveInstanceState(outState: Bundle) {
-            super.onSaveInstanceState(outState)
-            adapter?.selectionTracker?.saveInstanceState(outState)
         }
 
         override fun onDestroyView() {
@@ -418,7 +411,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }
 
         class Adapter(filesTree: TorrentFilesTree,
-                      private val activity: NavigationActivity) : BaseTorrentFilesAdapter(filesTree, activity) {
+                      fragment: Fragment,
+                      private val activity: NavigationActivity) : BaseTorrentFilesAdapter(filesTree, fragment) {
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {

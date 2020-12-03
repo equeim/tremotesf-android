@@ -44,7 +44,6 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
 
     private val binding by viewBinding(TorrentFilesFragmentBinding::bind)
     private var adapter: TorrentFilesAdapter? = null
-    private var savedInstanceState: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,12 +68,10 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             updateProgressBar(state)
         }
 
-        this.savedInstanceState = savedInstanceState
         model.filesTree.items.collectWhenStarted(viewLifecycleOwner) {
             adapter.update(it) {
-                if (model.state.value == TorrentFilesFragmentViewModel.State.TreeCreated && this.savedInstanceState != null) {
-                    adapter.selectionTracker.restoreInstanceState(this.savedInstanceState)
-                    this.savedInstanceState = null
+                if (model.state.value == TorrentFilesFragmentViewModel.State.TreeCreated) {
+                    adapter.selectionTracker.restoreInstanceState()
                 }
             }
         }
@@ -84,11 +81,6 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
                 model.filesTree.renameFile(filePath, newName)
             }
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        adapter?.selectionTracker?.saveInstanceState(outState)
     }
 
     override fun onDestroyView() {

@@ -82,7 +82,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onViewCreated(view, savedInstanceState)
         setupMenuItems()
 
-        val torrentsAdapter = TorrentsAdapter(this, savedInstanceState)
+        val torrentsAdapter = TorrentsAdapter(this)
         this.torrentsAdapter = torrentsAdapter
 
         setupDrawerListeners()
@@ -192,11 +192,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         torrentsAdapter = null
 
         super.onDestroyView()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        torrentsAdapter?.saveInstanceState(outState)
     }
 
     override fun onNavigatedFrom() {

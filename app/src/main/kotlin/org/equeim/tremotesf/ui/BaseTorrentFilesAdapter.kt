@@ -26,8 +26,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +37,7 @@ import org.equeim.tremotesf.ui.utils.TristateCheckbox
 
 
 abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
-                                       private val activity: AppCompatActivity) : ListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
+                                       private val fragment: Fragment) : ListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -47,10 +47,10 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         private set
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        selectionTracker = createSelectionTrackerInt(activity,
-                                                     ::ActionModeCallback,
-                                                     R.plurals.files_selected,
-                                                     this) {
+        selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                             fragment,
+                                                             ::ActionModeCallback,
+                                                             R.plurals.files_selected) {
             getItem(it)?.nodePath?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
         }
     }

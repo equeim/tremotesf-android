@@ -38,9 +38,10 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -58,7 +59,6 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
-import org.equeim.tremotesf.ui.createSelectionTrackerInt
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
@@ -66,12 +66,11 @@ import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-class TorrentsAdapter(private val fragment: TorrentsListFragment,
-                      private var selectionTrackerInstanceState: Bundle?) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
-    private val selectionTracker = createSelectionTrackerInt(fragment.requiredActivity,
-                                                             ::ActionModeCallback,
-                                                             R.plurals.torrents_selected,
-                                                             this) {
+class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
+    private val selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                                     fragment,
+                                                                     ::ActionModeCallback,
+                                                                     R.plurals.torrents_selected) {
         getItem(it).id
     }
 
@@ -100,15 +99,9 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment,
     }
 
     fun update(torrents: List<Torrent>) {
-        submitList(torrents)
-        if (selectionTrackerInstanceState != null) {
-            selectionTracker.restoreInstanceState(selectionTrackerInstanceState)
-            selectionTrackerInstanceState = null
+        submitList(torrents) {
+            selectionTracker.restoreInstanceState()
         }
-    }
-
-    fun saveInstanceState(outState: Bundle) {
-        selectionTracker.saveInstanceState(outState)
     }
 
     inner class TorrentsViewHolder(multilineName: Boolean,
@@ -275,24 +268,22 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment,
                 R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
-                    activity.findNavController(R.id.nav_host)
-                            .safeNavigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
-                                          bundleOf(SetLocationDialogFragment.TORRENT_IDS to getTorrentIds(),
-                                                   SetLocationDialogFragment.LOCATION to getFirstSelectedTorrent().downloadDirectory))
+                    fragment.navigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
+                                      bundleOf(SetLocationDialogFragment.TORRENT_IDS to getTorrentIds(),
+                                               SetLocationDialogFragment.LOCATION to getFirstSelectedTorrent().downloadDirectory))
                 }
                 R.id.rename -> {
                     val torrent = getFirstSelectedTorrent()
-                    activity.findNavController(R.id.nav_host).safeNavigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
-                                                                           bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
-                                                                                    TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
-                                                                                    TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
+                    fragment.navigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
+                                      bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
+                                               TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
+                                               TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 }
-                R.id.remove -> activity.findNavController(R.id.nav_host)
-                        .safeNavigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
-                                      bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to getTorrentIds()))
+                R.id.remove -> fragment.navigate(R.id.action_torrentsListFragment_to_removeTorrentDialogFragment,
+                                                 bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to getTorrentIds()))
                 R.id.share -> {
                     val magnetLinks = currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted()).map { it.data.magnetLink }
-                    Utils.shareTorrents(magnetLinks, activity)
+                    Utils.shareTorrents(magnetLinks, fragment.requireContext())
                 }
                 else -> return false
             }
