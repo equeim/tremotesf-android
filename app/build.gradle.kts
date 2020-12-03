@@ -136,7 +136,7 @@ android {
 val androidxNavigation: String by (gradle as ExtensionAware).extra
 
 object Versions {
-    const val kotlinxCoroutines = "1.4.1"
+    const val kotlinxCoroutines = "1.4.2"
     const val kotlinxSerialization = "1.0.1"
 
     object AndroidX {
@@ -156,7 +156,7 @@ object Versions {
 
     const val material = "1.2.1"
     const val fastscroll = "2.0.1"
-    const val billing = "3.0.1"
+    const val billing = "3.0.2"
 }
 
 dependencies {
@@ -191,12 +191,7 @@ dependencies {
 
     implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
-    // FIXME: this is a workaround for compilation error with billing-ktx and kotlinx-coroutines. Do something about it
-    "googleImplementation"(kotlin("stdlib-jdk8", kotlin.coreLibrariesVersion))
-    "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}") {
-        exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
-        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
-    }
+    "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
 }
 
 object DependencyVersionChecker {
