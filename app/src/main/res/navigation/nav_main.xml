@@ -72,14 +72,14 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/action_torrentsListFragment_to_torrentRenameDialogFragment"
-            app:destination="@id/torrentRenameDialogFragment" />
+            android:id="@+id/action_torrentsListFragment_to_torrentFileRenameDialogFragment"
+            app:destination="@id/torrentFileRenameDialogFragment" />
         <action
             android:id="@+id/action_torrentsListFragment_to_removeTorrentDialogFragment"
             app:destination="@id/removeTorrentDialogFragment" />
         <action
-            android:id="@+id/action_torrentsListFragment_to_setLocationDialogFragment"
-            app:destination="@id/setLocationDialogFragment" />
+            android:id="@+id/action_torrentsListFragment_to_torrentSetLocationDialogFragment"
+            app:destination="@id/torrentSetLocationDialogFragment" />
         <action
             android:id="@+id/action_torrentsListFragment_to_donateDialogFragment"
             app:destination="@id/donateDialogFragment" />
@@ -97,8 +97,8 @@
             android:name="name"
             app:argType="string" />
         <action
-            android:id="@+id/action_torrentPropertiesFragment_to_torrentRenameDialogFragment"
-            app:destination="@id/torrentRenameDialogFragment" />
+            android:id="@+id/action_torrentPropertiesFragment_to_torrentFileRenameDialogFragment"
+            app:destination="@id/torrentFileRenameDialogFragment" />
         <action
             android:id="@+id/action_torrentPropertiesFragment_to_editTrackerDialogFragment"
             app:destination="@id/editTrackerDialogFragment" />
@@ -109,8 +109,8 @@
             android:id="@+id/action_torrentPropertiesFragment_to_removeTorrentDialogFragment"
             app:destination="@id/removeTorrentDialogFragment" />
         <action
-            android:id="@+id/action_torrentPropertiesFragment_to_setLocationDialogFragment"
-            app:destination="@id/setLocationDialogFragment" />
+            android:id="@+id/action_torrentPropertiesFragment_to_torrentSetLocationDialogFragment"
+            app:destination="@id/torrentSetLocationDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -148,8 +148,8 @@
             android:name="uri"
             app:argType="string" />
         <action
-            android:id="@+id/action_addTorrentFileFragment_to_torrentRenameDialogFragment"
-            app:destination="@id/torrentRenameDialogFragment"
+            android:id="@+id/action_addTorrentFileFragment_to_torrentFileRenameDialogFragment"
+            app:destination="@id/torrentFileRenameDialogFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -246,15 +246,15 @@
         android:id="@+id/speedFragment"
         android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedFragment" >
         <action
-            android:id="@+id/action_speedFragment_to_timePickerFragment"
-            app:destination="@id/timePickerFragment" />
+            android:id="@+id/action_speedFragment_to_speedTimePickerFragment"
+            app:destination="@id/speedTimePickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/serverEditFragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment">
         <action
-            android:id="@+id/action_serverEditFragment_to_certificatesFragment"
-            app:destination="@id/certificatesFragment"
+            android:id="@+id/action_serverEditFragment_to_serverCertificatesFragment"
+            app:destination="@id/serverCertificatesFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -266,16 +266,16 @@
             android:id="@+id/action_serverEditFragment_to_serverOverwriteDialogFragment"
             app:destination="@id/serverOverwriteDialogFragment" />
         <action
-            android:id="@+id/action_serverEditFragment_to_proxySettingsFragment"
-            app:destination="@id/proxySettingsFragment"
+            android:id="@+id/action_serverEditFragment_to_serverProxySettingsFragment"
+            app:destination="@id/serverProxySettingsFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
-        android:id="@+id/certificatesFragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$CertificatesFragment">
+        android:id="@+id/serverCertificatesFragment"
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment">
 
         <argument
             android:name="server"
@@ -283,13 +283,13 @@
     </fragment>
     <dialog
         android:id="@+id/persistentNotificationWarningFragment"
-        android:name="org.equeim.tremotesf.ui.SettingsFragment$PreferenceFragment$PersistentNotificationWarningFragment" />
+        android:name="org.equeim.tremotesf.ui.SettingsPersistentNotificationWarningFragment" />
     <dialog
         android:id="@+id/removeServerDialogFragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment$RemoveServerDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.RemoveServerDialogFragment" />
     <dialog
-        android:id="@+id/timePickerFragment"
-        android:name="org.equeim.tremotesf.ui.serversettingsfragment.TimePickerItem$TimePickerFragment" >
+        android:id="@+id/speedTimePickerFragment"
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedTimePickerFragment" >
         <argument
             android:name="beginTime"
             app:argType="boolean" />
@@ -301,7 +301,7 @@
             app:argType="integer" />
     </dialog>
     <dialog
-        android:id="@+id/torrentRenameDialogFragment"
+        android:id="@+id/torrentFileRenameDialogFragment"
         android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment" >
         <argument
             android:name="torrentId"
@@ -316,7 +316,7 @@
     </dialog>
     <dialog
         android:id="@+id/editTrackerDialogFragment"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TrackersAdapter$EditTrackerDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.EditTrackerDialogFragment" >
         <argument
             android:name="trackerId"
             app:argType="integer"
@@ -327,17 +327,17 @@
     </dialog>
     <dialog
         android:id="@+id/serverOverwriteDialogFragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$ServerOverwriteDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerOverwriteDialogFragment" />
     <dialog
         android:id="@+id/removeTrackerDialogFragment"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TrackersAdapter$RemoveTrackerDialogFragment">
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.RemoveTrackerDialogFragment">
         <argument
             android:name="ids"
             app:argType="integer[]" />
     </dialog>
     <dialog
         android:id="@+id/removeTorrentDialogFragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter$RemoveTorrentDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.RemoveTorrentDialogFragment" >
         <argument
             android:name="torrentIds"
             app:argType="integer[]" />
@@ -347,8 +347,8 @@
             android:defaultValue="false" />
     </dialog>
     <dialog
-        android:id="@+id/setLocationDialogFragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter$SetLocationDialogFragment" >
+        android:id="@+id/torrentSetLocationDialogFragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment" >
         <argument
             android:name="torrentIds"
             app:argType="integer[]" />
@@ -358,7 +358,7 @@
     </dialog>
     <dialog
         android:id="@+id/donateDialogFragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragment$DonateDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.DonateDialogFragment" >
         <action
             android:id="@+id/action_donateDialogFragment_to_aboutFragment"
             app:destination="@id/aboutFragment"
@@ -371,8 +371,8 @@
         android:id="@+id/serverStatsDialogFragment"
         android:name="org.equeim.tremotesf.ui.torrentslistfragment.ServerStatsDialogFragment" />
     <fragment
-        android:id="@+id/proxySettingsFragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment$ProxySettingsFragment"
+        android:id="@+id/serverProxySettingsFragment"
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerProxySettingsFragment"
         android:label="ProxySettingsFragment" >
         <argument
             android:name="server"

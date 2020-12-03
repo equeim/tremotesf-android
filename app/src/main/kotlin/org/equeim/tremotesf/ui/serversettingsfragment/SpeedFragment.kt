@@ -205,7 +205,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
 
         setOnClickListener {
-            findNavController().safeNavigate(R.id.action_speedFragment_to_timePickerFragment,
+            findNavController().safeNavigate(R.id.action_speedFragment_to_speedTimePickerFragment,
                                              bundleOf("beginTime" to beginTime,
                                                       "hourOfDay" to calendar.get(Calendar.HOUR_OF_DAY),
                                                       "minute" to calendar.get(Calendar.MINUTE)))
@@ -231,32 +231,32 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         calendar.set(Calendar.MINUTE, minutesFromStartOfDay.rem(60))
         binding.textView.text = format.format(calendar.time)
     }
+}
 
-    class TimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnTimeSetListener {
-        companion object {
-            const val BEGIN_TIME = "beginTime"
-            const val HOUR_OF_DAY = "hourOfDay"
-            const val MINUTE = "minute"
-        }
+class SpeedTimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnTimeSetListener {
+    companion object {
+        const val BEGIN_TIME = "beginTime"
+        const val HOUR_OF_DAY = "hourOfDay"
+        const val MINUTE = "minute"
+    }
 
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return TimePickerDialog(activity,
-                                    this,
-                                    requireArguments().getInt(HOUR_OF_DAY),
-                                    requireArguments().getInt(MINUTE),
-                                    android.text.format.DateFormat.is24HourFormat(activity))
-        }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return TimePickerDialog(activity,
+                                this,
+                                requireArguments().getInt(HOUR_OF_DAY),
+                                requireArguments().getInt(MINUTE),
+                                android.text.format.DateFormat.is24HourFormat(activity))
+    }
 
-        override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-            val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
-            if (speedFragment != null) {
-                if (requireArguments().getBoolean(BEGIN_TIME)) {
-                    speedFragment.binding.beginTimeItem.setTime(hourOfDay, minute)
-                    Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
-                } else {
-                    speedFragment.binding.endTimeItem.setTime(hourOfDay, minute)
-                    Rpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
-                }
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
+        if (speedFragment != null) {
+            if (requireArguments().getBoolean(BEGIN_TIME)) {
+                speedFragment.binding.beginTimeItem.setTime(hourOfDay, minute)
+                Rpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
+            } else {
+                speedFragment.binding.endTimeItem.setTime(hourOfDay, minute)
+                Rpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
             }
         }
     }

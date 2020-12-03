@@ -20,12 +20,9 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Bundle
-import android.text.InputType
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
@@ -36,34 +33,22 @@ import android.widget.TextView
 
 import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
-import org.equeim.tremotesf.databinding.SetLocationDialogBinding
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
-import org.equeim.tremotesf.ui.NavigationDialogFragment
-import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.createTextFieldDialog
-import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
@@ -268,13 +253,13 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
                 R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
-                    fragment.navigate(R.id.action_torrentsListFragment_to_setLocationDialogFragment,
-                                      bundleOf(SetLocationDialogFragment.TORRENT_IDS to getTorrentIds(),
-                                               SetLocationDialogFragment.LOCATION to getFirstSelectedTorrent().downloadDirectory))
+                    fragment.navigate(R.id.action_torrentsListFragment_to_torrentSetLocationDialogFragment,
+                                      bundleOf(TorrentSetLocationDialogFragment.TORRENT_IDS to getTorrentIds(),
+                                               TorrentSetLocationDialogFragment.LOCATION to getFirstSelectedTorrent().downloadDirectory))
                 }
                 R.id.rename -> {
                     val torrent = getFirstSelectedTorrent()
-                    fragment.navigate(R.id.action_torrentsListFragment_to_torrentRenameDialogFragment,
+                    fragment.navigate(R.id.action_torrentsListFragment_to_torrentFileRenameDialogFragment,
                                       bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
                                                TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
                                                TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
@@ -298,83 +283,6 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
 
         private fun getFirstSelectedTorrent(): Torrent {
             return getItem(selectionTracker.getFirstSelectedPosition())
-        }
-    }
-
-    class SetLocationDialogFragment : NavigationDialogFragment() {
-        companion object {
-            const val TORRENT_IDS = "torrentIds"
-            const val LOCATION = "location"
-        }
-
-        private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return createTextFieldDialog(requireContext(),
-                                         null,
-                                         SetLocationDialogBinding::inflate,
-                                         R.id.download_directory_edit,
-                                         R.id.download_directory_layout,
-                                         getString(R.string.location),
-                                         InputType.TYPE_TEXT_VARIATION_URI,
-                                         requireArguments().getString(LOCATION),
-                                         {
-                                             it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
-                                                 directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
-                                                 edit.setAdapter(directoriesAdapter)
-                                             }
-                                         },
-                                         {
-                                             Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
-                                                                                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
-                                                                                    it.moveFilesCheckBox.isChecked)
-                                             directoriesAdapter?.save()
-                                         })
-        }
-
-        override fun onSaveInstanceState(outState: Bundle) {
-            directoriesAdapter?.saveInstanceState(outState)
-        }
-    }
-
-    class RemoveTorrentDialogFragment : NavigationDialogFragment() {
-        companion object {
-            const val TORRENT_IDS = "torrentIds"
-            const val POP_BACK_STACK = "popBackStack"
-        }
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val ids = requireArguments().getIntArray(TORRENT_IDS)!!
-
-            val builder = MaterialAlertDialogBuilder(requireContext())
-            val binding = RemoveTorrentsDialogBinding.inflate(LayoutInflater.from(builder.context))
-
-            binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles
-
-            return builder
-                    .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
-                                else resources.getQuantityString(R.plurals.remove_torrents_message,
-                                                                 ids.size,
-                                                                 ids.size))
-                    .setView(binding.root)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove) { _, _ ->
-                        Rpc.nativeInstance.removeTorrents(ids, binding.deleteFilesCheckBox.isChecked)
-                        activity?.actionMode?.finish()
-                        if (requireArguments().getBoolean(POP_BACK_STACK)) {
-                            val id = (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
-                            val listener = object : NavController.OnDestinationChangedListener {
-                                override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-                                    if (destination.id == id) {
-                                        navController.popBackStack()
-                                        controller.removeOnDestinationChangedListener(this)
-                                    }
-                                }
-                            }
-                            navController.addOnDestinationChangedListener(listener)
-                        }
-                    }
-                    .create()
         }
     }
 

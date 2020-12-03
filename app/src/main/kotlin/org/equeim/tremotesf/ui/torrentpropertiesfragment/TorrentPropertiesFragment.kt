@@ -45,9 +45,10 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsAdapter
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -166,17 +167,17 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> navigate(R.id.action_torrentPropertiesFragment_to_setLocationDialogFragment,
-                                              bundleOf(TorrentsAdapter.SetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                       TorrentsAdapter.SetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
+                R.id.set_location -> navigate(R.id.action_torrentPropertiesFragment_to_torrentSetLocationDialogFragment,
+                                              bundleOf(TorrentSetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                       TorrentSetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
                 R.id.rename ->
-                    navigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+                    navigate(R.id.action_torrentPropertiesFragment_to_torrentFileRenameDialogFragment,
                              bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
                                       TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
                                       TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
                 R.id.remove -> navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
-                                        bundleOf(TorrentsAdapter.RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                 TorrentsAdapter.RemoveTorrentDialogFragment.POP_BACK_STACK to true))
+                                        bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
+                                                 RemoveTorrentDialogFragment.POP_BACK_STACK to true))
                 R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
                 else -> return false
             }

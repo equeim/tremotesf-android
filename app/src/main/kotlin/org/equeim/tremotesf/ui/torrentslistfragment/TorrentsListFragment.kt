@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -38,7 +37,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.R
@@ -49,8 +47,6 @@ import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.ServerStats
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.data.rpc.Torrent
-import org.equeim.tremotesf.ui.AboutFragment
-import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
@@ -354,15 +350,4 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         }
     }
 
-    class DonateDialogFragment : NavigationDialogFragment() {
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(getString(R.string.donations_description) + "\n\n" + getString(R.string.donate_dialog_again))
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.donations_donate) { _, _ ->
-                        navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
-                    }
-                    .create()
-        }
-    }
 }

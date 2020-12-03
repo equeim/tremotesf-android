@@ -50,7 +50,7 @@ class TorrentFilesAdapter(filesTree: TorrentFilesTree,
 
     override fun navigateToRenameDialog(path: String, name: String) {
         fragment.torrent?.let {
-            fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentRenameDialogFragment,
+            fragment.findNavController().safeNavigate(R.id.action_torrentPropertiesFragment_to_torrentFileRenameDialogFragment,
                                                       bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to it.id,
                                                                TorrentFileRenameDialogFragment.FILE_PATH to path,
                                                                TorrentFileRenameDialogFragment.FILE_NAME to name))

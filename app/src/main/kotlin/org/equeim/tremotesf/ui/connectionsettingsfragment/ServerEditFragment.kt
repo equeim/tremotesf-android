@@ -66,14 +66,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
             proxySettingsButton.setOnClickListener {
-                navigate(R.id.action_serverEditFragment_to_proxySettingsFragment, requireArguments())
+                navigate(R.id.action_serverEditFragment_to_serverProxySettingsFragment, requireArguments())
             }
 
             httpsCheckBox.isChecked = false
 
             certificatedButton.isEnabled = false
             certificatedButton.setOnClickListener {
-                navigate(R.id.action_serverEditFragment_to_certificatesFragment, requireArguments())
+                navigate(R.id.action_serverEditFragment_to_serverCertificatesFragment, requireArguments())
             }
             httpsCheckBox.setOnCheckedChangeListener { _, checked ->
                 certificatedButton.isEnabled = checked
@@ -170,7 +170,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
     }
 
-    private fun save() {
+    fun save() {
         with(binding) {
             model.server.apply {
                 name = nameEdit.text?.toString()?.trim() ?: ""
@@ -217,129 +217,129 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
         val server: Server = savedStateHandle[SERVER] ?: (existingServer?.copy() ?: Server()).also { savedStateHandle[SERVER] = it }
     }
+}
 
-    class ServerOverwriteDialogFragment : NavigationDialogFragment() {
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(R.string.server_exists)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.overwrite) { _, _ ->
-                        (parentFragmentManager.primaryNavigationFragment as? ServerEditFragment)?.save()
-                    }
-                    .create()
-        }
+class ServerOverwriteDialogFragment : NavigationDialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.server_exists)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.overwrite) { _, _ ->
+                    (parentFragmentManager.primaryNavigationFragment as? ServerEditFragment)?.save()
+                }
+                .create()
     }
+}
 
-    class CertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
-                                                    R.string.certificates) {
-        private lateinit var model: Model
+class ServerCertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
+                                                R.string.certificates) {
+    private lateinit var model: ServerEditFragment.Model
 
-        private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
+    private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-            model = Model.from(this)
+        model = ServerEditFragment.Model.from(this)
 
-            with(binding) {
-                selfSignedCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
-                    selfSignedCertificateLayout.isEnabled = checked
-                }
-                selfSignedCertificateLayout.isEnabled = false
-                clientCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
-                    clientCertificateLayout.isEnabled = checked
-                }
-                clientCertificateLayout.isEnabled = false
-
-                with(model.server) {
-                    selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
-                    selfSignedCertificateEdit.setText(selfSignedCertificate)
-                    clientCertificateCheckBox.isChecked = clientCertificateEnabled
-                    clientCertificateEdit.setText(clientCertificate)
-                }
+        with(binding) {
+            selfSignedCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
+                selfSignedCertificateLayout.isEnabled = checked
             }
-        }
+            selfSignedCertificateLayout.isEnabled = false
+            clientCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
+                clientCertificateLayout.isEnabled = checked
+            }
+            clientCertificateLayout.isEnabled = false
 
-        override fun onNavigatedFrom() {
-            if (view != null) {
-                with(binding) {
-                    model.server.apply {
-                        selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked
-                        selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: ""
-                        clientCertificateEnabled = clientCertificateCheckBox.isChecked
-                        clientCertificate = clientCertificateEdit.text?.toString() ?: ""
-                    }
-                }
+            with(model.server) {
+                selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
+                selfSignedCertificateEdit.setText(selfSignedCertificate)
+                clientCertificateCheckBox.isChecked = clientCertificateEnabled
+                clientCertificateEdit.setText(clientCertificate)
             }
         }
     }
 
-    class ProxySettingsFragment : NavigationFragment(R.layout.server_edit_proxy_fragment,
-                                                     R.string.proxy_settings) {
-        private companion object {
-            // Should match R.array.proxy_type_items
-            val proxyTypeItems = arrayOf(org.equeim.libtremotesf.Server.ProxyType.Default,
-                                         org.equeim.libtremotesf.Server.ProxyType.Http,
-                                         org.equeim.libtremotesf.Server.ProxyType.Socks5)
-        }
-
-        private lateinit var model: Model
-        private lateinit var proxyTypeItemValues: Array<String>
-
-        private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            model = Model.from(this)
-
+    override fun onNavigatedFrom() {
+        if (view != null) {
             with(binding) {
-                proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
-                proxyTypeView.setOnItemClickListener { _, _, position, _ ->
-                    update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
-                }
-
-                portEdit.filters = arrayOf(IntFilter(Server.portRange))
-
-                with(model.server) {
-                    proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
-                    addressEdit.setText(proxyHostname)
-                    portEdit.setText(proxyPort.toString())
-                    usernameEdit.setText(proxyUser)
-                    passwordEdit.setText(proxyPassword)
-
-                    if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
-                        update(false)
-                    }
+                model.server.apply {
+                    selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked
+                    selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: ""
+                    clientCertificateEnabled = clientCertificateCheckBox.isChecked
+                    clientCertificate = clientCertificateEdit.text?.toString() ?: ""
                 }
             }
         }
+    }
+}
 
-        override fun onNavigatedFrom() {
-            if (view != null) {
-                with(binding) {
-                    model.server.apply {
-                        proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())])
-                        proxyHostname = addressEdit.text?.toString() ?: ""
-                        proxyPort = portEdit.text?.toString()?.toInt() ?: 0
-                        proxyUser = usernameEdit.text?.toString() ?: ""
-                        proxyPassword = passwordEdit.text?.toString() ?: ""
-                    }
+class ServerProxySettingsFragment : NavigationFragment(R.layout.server_edit_proxy_fragment,
+                                                 R.string.proxy_settings) {
+    private companion object {
+        // Should match R.array.proxy_type_items
+        val proxyTypeItems = arrayOf(org.equeim.libtremotesf.Server.ProxyType.Default,
+                                     org.equeim.libtremotesf.Server.ProxyType.Http,
+                                     org.equeim.libtremotesf.Server.ProxyType.Socks5)
+    }
+
+    private lateinit var model: ServerEditFragment.Model
+    private lateinit var proxyTypeItemValues: Array<String>
+
+    private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        model = ServerEditFragment.Model.from(this)
+
+        with(binding) {
+            proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
+            proxyTypeView.setOnItemClickListener { _, _, position, _ ->
+                update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
+            }
+
+            portEdit.filters = arrayOf(IntFilter(Server.portRange))
+
+            with(model.server) {
+                proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
+                addressEdit.setText(proxyHostname)
+                portEdit.setText(proxyPort.toString())
+                usernameEdit.setText(proxyUser)
+                passwordEdit.setText(proxyPassword)
+
+                if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                    update(false)
                 }
             }
         }
+    }
 
-        private fun update(enabled: Boolean) {
+    override fun onNavigatedFrom() {
+        if (view != null) {
             with(binding) {
-                addressEditLayout.isEnabled = enabled
-                portEditLayout.isEnabled = enabled
-                usernameEditLayout.isEnabled = enabled
-                passwordEditLayout.isEnabled = enabled
+                model.server.apply {
+                    proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())])
+                    proxyHostname = addressEdit.text?.toString() ?: ""
+                    proxyPort = portEdit.text?.toString()?.toInt() ?: 0
+                    proxyUser = usernameEdit.text?.toString() ?: ""
+                    proxyPassword = passwordEdit.text?.toString() ?: ""
+                }
             }
+        }
+    }
+
+    private fun update(enabled: Boolean) {
+        with(binding) {
+            addressEditLayout.isEnabled = enabled
+            portEditLayout.isEnabled = enabled
+            usernameEditLayout.isEnabled = enabled
+            passwordEditLayout.isEnabled = enabled
         }
     }
 }

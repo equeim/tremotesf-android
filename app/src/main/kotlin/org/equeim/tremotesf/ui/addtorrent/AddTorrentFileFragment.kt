@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.savedstate.SavedStateRegistry
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 
@@ -426,7 +425,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
 
             override fun navigateToRenameDialog(path: String, name: String) {
-                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentRenameDialogFragment,
+                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentFileRenameDialogFragment,
                                   bundleOf(TorrentFileRenameDialogFragment.FILE_PATH to path,
                                            TorrentFileRenameDialogFragment.FILE_NAME to name))
             }

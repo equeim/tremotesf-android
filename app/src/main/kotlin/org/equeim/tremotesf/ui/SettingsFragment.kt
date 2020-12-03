@@ -94,18 +94,18 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
                     ?.isEnabled = (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
         }
+    }
+}
 
-        class PersistentNotificationWarningFragment : NavigationDialogFragment() {
-            override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-                return MaterialAlertDialogBuilder(requireContext())
-                        .setMessage(R.string.persistent_notification_warning)
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(R.id.preference_fragment) as PreferenceFragment?)
-                                    ?.enablePersistentNotification()
-                        }
-                        .create()
-            }
-        }
+class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.persistent_notification_warning)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(R.id.preference_fragment) as SettingsFragment.PreferenceFragment?)
+                            ?.enablePersistentNotification()
+                }
+                .create()
     }
 }

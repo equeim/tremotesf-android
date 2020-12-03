@@ -57,7 +57,8 @@ import java.util.Comparator
 class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
                                                       R.string.connection_settings) {
     private val binding by viewBinding(ConnectionSettingsFragmentBinding::bind)
-    private var adapter: ServersAdapter? = null
+    var adapter: ServersAdapter? = null
+        private set
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -183,24 +184,24 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
         }
     }
+}
 
-    class RemoveServerDialogFragment : NavigationDialogFragment() {
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val adapter = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
-            val selectionTracker = adapter?.selectionTracker
-            val selectedCount = selectionTracker?.selectedCount ?: 0
-            return MaterialAlertDialogBuilder(requireContext())
-                    .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
-                                                            selectedCount,
-                                                            selectedCount))
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(R.string.remove) { _, _ ->
-                        selectionTracker?.apply {
-                            Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
-                            clearSelection()
-                        }
+class RemoveServerDialogFragment : NavigationDialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val adapter = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
+        val selectionTracker = adapter?.selectionTracker
+        val selectedCount = selectionTracker?.selectedCount ?: 0
+        return MaterialAlertDialogBuilder(requireContext())
+                .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
+                                                        selectedCount,
+                                                        selectedCount))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.remove) { _, _ ->
+                    selectionTracker?.apply {
+                        Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
+                        clearSelection()
                     }
-                    .create()
-        }
+                }
+                .create()
     }
 }
