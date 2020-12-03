@@ -7,6 +7,7 @@ plugins {
     kotlin("android")
     kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
+    id("androidx.navigation.safeargs.kotlin")
     id("com.github.ben-manes.versions")
 }
 
@@ -132,6 +133,8 @@ android {
     }
 }
 
+val androidxNavigation: String by (gradle as ExtensionAware).extra
+
 object Versions {
     const val kotlinxCoroutines = "1.4.1"
     const val kotlinxSerialization = "1.0.1"
@@ -145,7 +148,6 @@ object Versions {
         const val fragment = "1.2.5"
         const val gridlayout = "1.0.0"
         const val lifecycle = "2.3.0-beta01"
-        const val navigation = "2.3.1"
         const val recyclerview = "1.1.0"
         const val preference = "1.1.1"
         const val viewpager2 = "1.0.0"
@@ -178,8 +180,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.AndroidX.lifecycle}")
     implementation("androidx.lifecycle:lifecycle-service:${Versions.AndroidX.lifecycle}")
     implementation("androidx.lifecycle:lifecycle-common-java8:${Versions.AndroidX.lifecycle}")
-    implementation("androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigation}")
-    implementation("androidx.navigation:navigation-ui-ktx:${Versions.AndroidX.navigation}")
+    implementation("androidx.navigation:navigation-fragment-ktx:$androidxNavigation")
+    implementation("androidx.navigation:navigation-ui-ktx:$androidxNavigation")
     implementation("androidx.recyclerview:recyclerview:${Versions.AndroidX.recyclerview}")
     implementation("androidx.preference:preference:${Versions.AndroidX.preference}")
     implementation("androidx.viewpager2:viewpager2:${Versions.AndroidX.viewpager2}")

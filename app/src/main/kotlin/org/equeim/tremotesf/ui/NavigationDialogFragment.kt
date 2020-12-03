@@ -19,11 +19,9 @@
 
 package org.equeim.tremotesf.ui
 
-import android.os.Bundle
-
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 
 import org.equeim.tremotesf.ui.utils.safeNavigate
@@ -38,7 +36,7 @@ open class NavigationDialogFragment : AppCompatDialogFragment() {
     val navController: NavController
         get() = requiredActivity.navController
 
-    fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
-        navController.safeNavigate(resId, args, navOptions)
+    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
+        navController.safeNavigate(directions, navOptions)
     }
 }

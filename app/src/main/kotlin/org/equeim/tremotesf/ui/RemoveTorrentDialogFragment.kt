@@ -24,36 +24,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
 
 class RemoveTorrentDialogFragment : NavigationDialogFragment() {
-    companion object {
-        const val TORRENT_IDS = "torrentIds"
-        const val POP_BACK_STACK = "popBackStack"
-    }
+    private val args: RemoveTorrentDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val ids = requireArguments().getIntArray(TORRENT_IDS)!!
-
         val builder = MaterialAlertDialogBuilder(requireContext())
         val binding = RemoveTorrentsDialogBinding.inflate(LayoutInflater.from(builder.context))
 
         binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles
 
         return builder
-                .setMessage(if (ids.size == 1) getString(R.string.remove_torrent_message)
+                .setMessage(if (args.torrentIds.size == 1) getString(R.string.remove_torrent_message)
                             else resources.getQuantityString(R.plurals.remove_torrents_message,
-                                                             ids.size,
-                                                             ids.size))
+                                                             args.torrentIds.size,
+                                                             args.torrentIds.size))
                 .setView(binding.root)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.remove) { _, _ ->
-                    Rpc.nativeInstance.removeTorrents(ids, binding.deleteFilesCheckBox.isChecked)
+                    Rpc.nativeInstance.removeTorrents(args.torrentIds, binding.deleteFilesCheckBox.isChecked)
                     activity?.actionMode?.finish()
-                    if (requireArguments().getBoolean(POP_BACK_STACK)) {
+                    if (args.popBackStack) {
                         val id = (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
                         val listener = object : NavController.OnDestinationChangedListener {
                             override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {

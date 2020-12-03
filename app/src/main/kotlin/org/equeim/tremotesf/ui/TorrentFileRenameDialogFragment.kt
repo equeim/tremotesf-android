@@ -22,29 +22,23 @@ package org.equeim.tremotesf.ui
 import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
+import androidx.navigation.fragment.navArgs
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
 class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
-    companion object {
-        const val TORRENT_ID = "torrentId"
-        const val FILE_PATH = "filePath"
-        const val FILE_NAME = "fileName"
-    }
+    private val args: TorrentFileRenameDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val fileName = requireArguments().getString(FILE_NAME)
         return createTextFieldDialog(requireContext(),
                                      null,
                                      getString(R.string.file_name),
                                      InputType.TYPE_TEXT_VARIATION_URI,
-                                     fileName,
+                                     args.fileName,
                                      null) {
-            val torrentId = requireArguments().getInt(TORRENT_ID)
-            val path = requireArguments().getString(FILE_PATH)!!
             val newName = it.textField.text?.toString() ?: ""
-            (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(torrentId, path, newName)
+            (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(args.torrentId, args.filePath, newName)
             activity?.actionMode?.finish()
         }
     }

@@ -27,10 +27,10 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavDestination
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 
@@ -45,10 +45,8 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -61,12 +59,8 @@ import org.equeim.tremotesf.utils.collectWhenStarted
 class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
                                                      0,
                                                      R.menu.torrent_properties_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
-    companion object {
-        const val HASH = "hash"
-        const val NAME = "name"
-    }
+    val args: TorrentPropertiesFragmentArgs by navArgs()
 
-    lateinit var hash: String
     var torrent: Torrent? = null
         private set
 
@@ -80,14 +74,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
     private var pagerAdapter: PagerAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        hash = requireArguments().getString(HASH)!!
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar?.title = requireArguments().getString(NAME)
+        toolbar?.title = args.name
         setupToolbarMenu()
 
         val pagerAdapter = PagerAdapter(this)
@@ -125,7 +114,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         })
 
         binding.fab.setOnClickListener {
-            navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment)
+            navigate(TorrentPropertiesFragmentDirections.editTrackerDialogFragment())
         }
 
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::updateTorrent)
@@ -167,17 +156,10 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> navigate(R.id.action_torrentPropertiesFragment_to_torrentSetLocationDialogFragment,
-                                              bundleOf(TorrentSetLocationDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                       TorrentSetLocationDialogFragment.LOCATION to torrent.downloadDirectory))
+                R.id.set_location -> navigate(TorrentPropertiesFragmentDirections.torrentSetLocationDialogFragment(intArrayOf(torrent.id), torrent.downloadDirectory))
                 R.id.rename ->
-                    navigate(R.id.action_torrentPropertiesFragment_to_torrentFileRenameDialogFragment,
-                             bundleOf(TorrentFileRenameDialogFragment.TORRENT_ID to torrent.id,
-                                      TorrentFileRenameDialogFragment.FILE_PATH to torrent.name,
-                                      TorrentFileRenameDialogFragment.FILE_NAME to torrent.name))
-                R.id.remove -> navigate(R.id.action_torrentPropertiesFragment_to_removeTorrentDialogFragment,
-                                        bundleOf(RemoveTorrentDialogFragment.TORRENT_IDS to intArrayOf(torrent.id),
-                                                 RemoveTorrentDialogFragment.POP_BACK_STACK to true))
+                    navigate(TorrentPropertiesFragmentDirections.torrentFileRenameDialogFragment(torrent.name, torrent.name, torrent.id))
+                R.id.remove -> navigate(TorrentPropertiesFragmentDirections.removeTorrentDialogFragment(intArrayOf(torrent.id), true))
                 R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
                 else -> return false
             }
@@ -220,7 +202,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
     }
 
     private fun updateTorrent(torrents: List<Torrent>) {
-        val newTorrent = torrents.find { it.hashString == hash }
+        val newTorrent = torrents.find { it.hashString == args.hash }
         if (newTorrent != torrent) {
             val oldTorrent = torrent
             torrent = newTorrent

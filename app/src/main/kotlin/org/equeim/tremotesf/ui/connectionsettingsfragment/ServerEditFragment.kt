@@ -24,13 +24,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-
 import androidx.core.os.bundleOf
+
 import androidx.core.text.trimmedLength
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -51,11 +52,8 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                                               0,
                                               R.menu.server_edit_fragment_menu) {
-    companion object {
-        const val SERVER = "server"
-    }
-
-    private lateinit var model: Model
+    private val args: ServerEditFragmentArgs by navArgs()
+    private lateinit var model: ServerEditFragmentViewModel
 
     private val binding by viewBinding(ServerEditFragmentBinding::bind)
 
@@ -66,14 +64,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
             proxySettingsButton.setOnClickListener {
-                navigate(R.id.action_serverEditFragment_to_serverProxySettingsFragment, requireArguments())
+                navigate(ServerEditFragmentDirections.proxySettingsFragment(args.server))
             }
 
             httpsCheckBox.isChecked = false
 
             certificatedButton.isEnabled = false
             certificatedButton.setOnClickListener {
-                navigate(R.id.action_serverEditFragment_to_serverCertificatesFragment, requireArguments())
+                navigate(ServerEditFragmentDirections.certificatesFragment(args.server))
             }
             httpsCheckBox.setOnCheckedChangeListener { _, checked ->
                 certificatedButton.isEnabled = checked
@@ -92,7 +90,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             timeoutEdit.filters = arrayOf(IntFilter(Server.timeoutRange))
         }
 
-        model = Model.from(this)
+        model = ServerEditFragmentViewModel.from(this, args.server)
 
         setupToolbar()
 
@@ -149,7 +147,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                     timeoutOk) {
                 if (nameEditText != model.existingServer?.name &&
                         Servers.servers.value.find { it.name == nameEditText } != null) {
-                    navigate(R.id.action_serverEditFragment_to_serverOverwriteDialogFragment)
+                    navigate(ServerEditFragmentDirections.overwriteDialogFragment())
                 } else {
                     save()
                 }
@@ -196,27 +194,27 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 
         navController.popBackStack(R.id.serverEditFragment, true)
     }
+}
 
-    class Model(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-        companion object {
-            private const val SERVER_NAME = "serverName"
-            private const val SERVER = "server"
+class ServerEditFragmentViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+    companion object {
+        private const val SERVER_NAME = "serverName"
+        private const val SERVER = "server"
 
-            fun from(fragment: NavigationFragment): Model {
-                with(fragment) {
-                    val entry = navController.getBackStackEntry(R.id.serverEditFragment)
-                    val serverName = requireArguments().getString(SERVER)
-                    val factory = SavedStateViewModelFactory(requireActivity().application,
-                                                             entry, bundleOf(SERVER_NAME to serverName))
-                    return ViewModelProvider(entry, factory)[Model::class.java]
-                }
-            }
+        fun from(fragment: NavigationFragment, server: String?): ServerEditFragmentViewModel {
+            val entry = fragment.navController.getBackStackEntry(R.id.serverEditFragment)
+            val factory = SavedStateViewModelFactory(fragment.requireActivity().application,
+                                                     entry, bundleOf(SERVER_NAME to server))
+            return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
-
-        private val serverName: String? = savedStateHandle[SERVER_NAME]
-        val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
-        val server: Server = savedStateHandle[SERVER] ?: (existingServer?.copy() ?: Server()).also { savedStateHandle[SERVER] = it }
     }
+
+    val existingServer: Server?
+    init {
+        val serverName: String? = savedStateHandle[SERVER_NAME]
+        existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
+    }
+    val server: Server = savedStateHandle[SERVER] ?: (existingServer?.copy() ?: Server()).also { savedStateHandle[SERVER] = it }
 }
 
 class ServerOverwriteDialogFragment : NavigationDialogFragment() {
@@ -233,14 +231,15 @@ class ServerOverwriteDialogFragment : NavigationDialogFragment() {
 
 class ServerCertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
                                                 R.string.certificates) {
-    private lateinit var model: ServerEditFragment.Model
+    private val args: ServerCertificatesFragmentArgs by navArgs()
+    private lateinit var model: ServerEditFragmentViewModel
 
     private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model = ServerEditFragment.Model.from(this)
+        model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {
             selfSignedCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
@@ -284,7 +283,8 @@ class ServerProxySettingsFragment : NavigationFragment(R.layout.server_edit_prox
                                      org.equeim.libtremotesf.Server.ProxyType.Socks5)
     }
 
-    private lateinit var model: ServerEditFragment.Model
+    private val args: ServerProxySettingsFragmentArgs by navArgs()
+    private lateinit var model: ServerEditFragmentViewModel
     private lateinit var proxyTypeItemValues: Array<String>
 
     private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
@@ -296,7 +296,7 @@ class ServerProxySettingsFragment : NavigationFragment(R.layout.server_edit_prox
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model = ServerEditFragment.Model.from(this)
+        model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {
             proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))

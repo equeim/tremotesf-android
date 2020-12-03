@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@id/action_torrentsListFragment_to_settingsFragment"
+        android:id="@id/settingsFragment"
         android:title="@string/settings"/>
 
     <item
-        android:id="@id/action_torrentsListFragment_to_aboutFragment"
+        android:id="@id/aboutFragment"
         android:title="@string/about"/>
 
     <item

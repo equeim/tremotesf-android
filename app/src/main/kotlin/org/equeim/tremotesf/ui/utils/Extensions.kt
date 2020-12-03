@@ -21,7 +21,6 @@
 package org.equeim.tremotesf.ui.utils
 
 import android.app.Activity
-import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
 import androidx.core.view.children
@@ -40,6 +38,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 
@@ -139,9 +138,9 @@ inline fun <reified T : Fragment> Fragment.findFragment(): T? {
     return childFragmentManager.findFragment()
 }
 
-fun NavController.safeNavigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
+fun NavController.safeNavigate(directions: NavDirections, navOptions: NavOptions? = null) {
     try {
-        navigate(resId, args, navOptions)
+        navigate(directions, navOptions)
     } catch (ignore: IllegalArgumentException) {}
 }
 

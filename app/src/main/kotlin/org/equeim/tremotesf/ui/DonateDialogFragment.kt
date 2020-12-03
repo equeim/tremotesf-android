@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import androidx.core.os.bundleOf
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 
@@ -31,7 +30,7 @@ class DonateDialogFragment : NavigationDialogFragment() {
                 .setMessage(getString(R.string.donations_description) + "\n\n" + getString(R.string.donate_dialog_again))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.donations_donate) { _, _ ->
-                    navigate(R.id.action_donateDialogFragment_to_aboutFragment, bundleOf(AboutFragment.DONATE to true))
+                    navigate(DonateDialogFragmentDirections.aboutFragment(true))
                 }
                 .create()
     }

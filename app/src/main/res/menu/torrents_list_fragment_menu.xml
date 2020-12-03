@@ -18,12 +18,12 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@id/action_torrentsListFragment_to_addTorrentLinkFragment"
+        android:id="@id/addTorrentLinkFragment"
         android:title="@string/add_torrent_link"
         app:showAsAction="never"/>
 
     <item
-        android:id="@id/action_torrentsListFragment_to_serverSettingsFragment"
+        android:id="@id/serverSettingsFragment"
         android:title="@string/server_settings"
         app:showAsAction="never"/>
 
@@ -34,7 +34,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@id/action_torrentsListFragment_to_serverStatsDialogFragment"
+        android:id="@id/serverStatsDialogFragment"
         android:title="@string/server_stats"
         app:showAsAction="never"/>
 </menu>

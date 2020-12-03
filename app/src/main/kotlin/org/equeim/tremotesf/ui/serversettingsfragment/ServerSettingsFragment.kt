@@ -53,14 +53,17 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
             divider = null
             setSelector(android.R.color.transparent)
             setOnItemClickListener { _, _, position, _ ->
-                navigate(when (position) {
-                             0 -> R.id.action_serverSettingsFragment_to_downloadingFragment
-                             1 -> R.id.action_serverSettingsFragment_to_seedingFragment
-                             2 -> R.id.action_serverSettingsFragment_to_queueFragment
-                             3 -> R.id.action_serverSettingsFragment_to_speedFragment
-                             4 -> R.id.action_serverSettingsFragment_to_networkFragment
-                             else -> 0
-                         })
+                val directions = when (position) {
+                    0 -> ServerSettingsFragmentDirections.downloadingFragment()
+                    1 -> ServerSettingsFragmentDirections.seedingFragment()
+                    2 -> ServerSettingsFragmentDirections.queueFragment()
+                    3 -> ServerSettingsFragmentDirections.speedFragment()
+                    4 -> ServerSettingsFragmentDirections.networkFragment()
+                    else -> null
+                }
+                if (directions != null) {
+                    navigate(directions)
+                }
             }
         }
 

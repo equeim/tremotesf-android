@@ -37,7 +37,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginLeft
@@ -46,24 +45,26 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
 
 import kotlinx.coroutines.flow.map
+import org.equeim.tremotesf.NavMainDirections
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Servers
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentDirections
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
@@ -283,7 +284,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
             }
 
             connectionSettingsButton.setOnClickListener {
-                navigate(R.id.action_torrentsListFragment_to_connectionSettingsFragment)
+                navigate(TorrentsListFragmentDirections.connectionSettingsFragment())
             }
 
             Rpc.isConnected.collectWhenStarted(this@NavigationActivity, listSettingsLayout::setChildrenEnabled)
@@ -305,17 +306,17 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     private fun handleAddTorrentIntent(intent: Intent?) {
         if (intent?.action == Intent.ACTION_VIEW) {
-            val action = when (intent.scheme) {
+            val uri = intent.data!!
+            val directions = when (intent.scheme) {
                 ContentResolver.SCHEME_FILE,
-                ContentResolver.SCHEME_CONTENT -> R.id.action_global_addTorrentFileFragment
-                AddTorrentLinkFragment.SCHEME_MAGNET -> R.id.action_global_addTorrentLinkFragment
+                ContentResolver.SCHEME_CONTENT -> NavMainDirections.addTorrentFileFragment(uri)
+                AddTorrentLinkFragment.SCHEME_MAGNET -> NavMainDirections.addTorrentLinkFragment(uri.toString())
                 else -> return
             }
-            val arguments = bundleOf(AddTorrentFragment.URI to intent.data!!.toString())
             if (isTaskRoot) {
-                navigate(action, arguments)
+                navigate(directions)
             } else {
-                navigate(action, arguments,
+                navigate(directions,
                          NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
             }
         }
@@ -326,7 +327,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
         return appBarConfiguration.topLevelDestinations.contains(destinationId)
     }
 
-    fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
-        navController.safeNavigate(resId, args, navOptions)
+    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
+        navController.safeNavigate(directions, navOptions)
     }
 }

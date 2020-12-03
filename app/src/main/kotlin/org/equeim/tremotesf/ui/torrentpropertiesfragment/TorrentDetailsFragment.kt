@@ -37,7 +37,7 @@ class TorrentDetailsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.hashTextView.text = (requireParentFragment() as TorrentPropertiesFragment).hash
+        binding.hashTextView.text = (requireParentFragment() as TorrentPropertiesFragment).args.hash
         firstUpdate = true
         update()
     }

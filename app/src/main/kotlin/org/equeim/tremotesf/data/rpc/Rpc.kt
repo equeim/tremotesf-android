@@ -32,7 +32,6 @@ import android.os.Looper
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
-import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -75,7 +74,7 @@ import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment
+import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
 
@@ -492,8 +491,7 @@ object Rpc : Logger {
                         .setContentIntent(NavDeepLinkBuilder(context)
                                                   .setGraph(R.navigation.nav_main)
                                                   .setDestination(R.id.torrentPropertiesFragment)
-                                                  .setArguments(bundleOf(TorrentPropertiesFragment.HASH to hashString,
-                                                                         TorrentPropertiesFragment.NAME to name))
+                                                  .setArguments(TorrentPropertiesFragmentArgs(hashString, name).toBundle())
                                                   .createPendingIntent())
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL)

@@ -22,7 +22,6 @@ package org.equeim.tremotesf.ui.addtorrent
 import android.Manifest
 import android.content.ContentResolver
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -35,12 +34,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -131,6 +129,8 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }
     }
 
+    private val args: AddTorrentFileFragmentArgs by navArgs()
+
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
     private var doneMenuItem: MenuItem? = null
@@ -140,20 +140,17 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
     val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl>()
 
-    private lateinit var uri: Uri
-
     private var done = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        uri = requireArguments().getString(URI)!!.toUri()
-        if (uri.scheme == ContentResolver.SCHEME_FILE &&
+        if (args.uri.scheme == ContentResolver.SCHEME_FILE &&
                 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
         } else {
             model.onRequestPermissionResult(true)
-            model.load(uri)
+            model.load(args.uri)
         }
     }
 
@@ -425,9 +422,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             }
 
             override fun navigateToRenameDialog(path: String, name: String) {
-                activity.navigate(R.id.action_addTorrentFileFragment_to_torrentFileRenameDialogFragment,
-                                  bundleOf(TorrentFileRenameDialogFragment.FILE_PATH to path,
-                                           TorrentFileRenameDialogFragment.FILE_NAME to name))
+                activity.navigate(AddTorrentFileFragmentDirections.torrentFileRenameDialogFragment(path, name))
             }
 
             private class ItemHolder(private val adapter: Adapter,

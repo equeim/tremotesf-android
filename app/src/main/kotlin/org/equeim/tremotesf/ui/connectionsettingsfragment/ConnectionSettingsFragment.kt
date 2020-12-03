@@ -28,7 +28,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import androidx.appcompat.view.ActionMode
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -73,7 +72,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             fab.setOnClickListener {
-                navigate(R.id.action_connectionSettingsFragment_to_serverEditFragment)
+                navigate(ConnectionSettingsFragmentDirections.serverEditFragment(null))
             }
 
             serversView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -159,8 +158,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
 
             override fun onClick(view: View) {
-                itemView.findNavController().safeNavigate(R.id.action_connectionSettingsFragment_to_serverEditFragment,
-                                                          bundleOf(ServerEditFragment.SERVER to adapter.servers[adapterPosition].name))
+                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.serverEditFragment(adapter.servers[adapterPosition].name))
             }
         }
 
@@ -176,7 +174,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 }
 
                 if (selectionTracker.hasSelection && item.itemId == R.id.remove) {
-                    activity.navigate(R.id.action_connectionSettingsFragment_to_removeServerDialogFragment)
+                    activity.navigate(ConnectionSettingsFragmentDirections.removeServerDialogFragment())
                     return true
                 }
 

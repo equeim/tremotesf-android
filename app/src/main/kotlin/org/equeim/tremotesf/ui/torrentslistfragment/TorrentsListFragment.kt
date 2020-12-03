@@ -30,7 +30,6 @@ import android.widget.Checkable
 
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -51,6 +50,7 @@ import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment
+import org.equeim.tremotesf.ui.addtorrent.FilePickerFragmentDirections
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
@@ -113,10 +113,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             if (Servers.hasServers) {
                 if (model.shouldShowDonateDialog()) {
                     Settings.donateDialogShown = true
-                    navigate(R.id.action_torrentsListFragment_to_donateDialogFragment)
+                    navigate(TorrentsListFragmentDirections.donateDialogFragment())
                 }
             } else {
-                navigate(R.id.action_torrentsListFragment_to_serverEditFragment)
+                navigate(TorrentsListFragmentDirections.serverEditFragment(null))
             }
         }
     }
@@ -251,7 +251,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onActivityResult(requestCode, resultCode, data)
         info("onActivityResult $resultCode $data")
         if (resultCode == Activity.RESULT_OK && data != null) {
-            navigate(R.id.action_torrentsListFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to data.data!!.toString()))
+            navigate(TorrentsListFragmentDirections.addTorrentFileFragment(data.data!!))
         }
     }
 
@@ -318,10 +318,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val connected = (connectionState == RpcConnectionState.Connected)
         searchMenuItem?.isVisible = connected
         menu.findItem(R.id.add_torrent_file).isEnabled = connected
-        menu.findItem(R.id.action_torrentsListFragment_to_addTorrentLinkFragment).isEnabled = connected
-        menu.findItem(R.id.action_torrentsListFragment_to_serverSettingsFragment).isEnabled = connected
+        menu.findItem(R.id.addTorrentLinkFragment).isEnabled = connected
+        menu.findItem(R.id.serverSettingsFragment).isEnabled = connected
         menu.findItem(R.id.alternative_speed_limits).isEnabled = connected
-        menu.findItem(R.id.action_torrentsListFragment_to_serverStatsDialogFragment).isEnabled = connected
+        menu.findItem(R.id.serverStatsDialogFragment).isEnabled = connected
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
@@ -346,7 +346,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                                            .setType("application/x-bittorrent"),
                                    0)
         } catch (error: ActivityNotFoundException) {
-            navigate(R.id.action_torrentsListFragment_to_filePickerFragment)
+            navigate(TorrentsListFragmentDirections.filePickerFragment())
         }
     }
 

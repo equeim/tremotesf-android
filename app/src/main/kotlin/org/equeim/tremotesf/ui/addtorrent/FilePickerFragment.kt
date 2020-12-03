@@ -32,7 +32,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -118,7 +117,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 
     fun finish(fileUri: Uri) {
-        navigate(R.id.action_filePickerFragment_to_addTorrentFileFragment, bundleOf(AddTorrentFragment.URI to fileUri.toString()))
+        navigate(FilePickerFragmentDirections.addTorrentFileFragment(fileUri))
     }
 }
 

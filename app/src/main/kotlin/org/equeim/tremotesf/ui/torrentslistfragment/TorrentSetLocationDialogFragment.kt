@@ -22,6 +22,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
+import androidx.navigation.fragment.navArgs
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
@@ -30,11 +31,7 @@ import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
 class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
-    companion object {
-        const val TORRENT_IDS = "torrentIds"
-        const val LOCATION = "location"
-    }
-
+    private val args: TorrentSetLocationDialogFragmentArgs by navArgs()
     private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -45,7 +42,7 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
                                      R.id.download_directory_layout,
                                      getString(R.string.location),
                                      InputType.TYPE_TEXT_VARIATION_URI,
-                                     requireArguments().getString(LOCATION),
+                                     args.location,
                                      {
                                          it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
                                              directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
@@ -53,7 +50,7 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
                                          }
                                      },
                                      {
-                                         Rpc.nativeInstance.setTorrentsLocation(requireArguments().getIntArray(TORRENT_IDS),
+                                         Rpc.nativeInstance.setTorrentsLocation(args.torrentIds,
                                                                                 it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                                                                                 it.moveFilesCheckBox.isChecked)
                                          directoriesAdapter?.save()

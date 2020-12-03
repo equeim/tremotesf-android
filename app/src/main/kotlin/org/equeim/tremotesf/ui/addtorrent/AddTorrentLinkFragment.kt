@@ -24,6 +24,7 @@ import android.view.MenuItem
 import android.view.View
 
 import androidx.core.text.trimmedLength
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.R
@@ -45,6 +46,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         const val SCHEME_MAGNET = "magnet"
     }
 
+    private val args: AddTorrentLinkFragmentArgs by navArgs()
+
     private val binding by viewBinding(AddTorrentLinkFragmentBinding::bind)
 
     private var doneMenuItem: MenuItem? = null
@@ -56,7 +59,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            torrentLinkEdit.setText(requireArguments().getString(URI))
+            torrentLinkEdit.setText(args.uri)
 
             priorityView.setText(R.string.normal_priority)
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))

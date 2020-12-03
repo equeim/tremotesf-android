@@ -27,6 +27,7 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 import com.google.android.material.tabs.TabLayoutMediator
@@ -40,10 +41,7 @@ import org.equeim.tremotesf.ui.donationsfragment.DonationsFragment
 
 
 class AboutFragment : NavigationFragment(R.layout.about_fragment) {
-    companion object {
-        const val DONATE = "donate"
-    }
-
+    private val args: AboutFragmentArgs by navArgs()
     private var pagerAdapter: PagerAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +56,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
                 tab.setText(PagerAdapter.getTitle(position))
             }.attach()
 
-            if (requireArguments().getBoolean(DONATE)) {
+            if (args.donate) {
                 pager.currentItem = 1
             }
         }

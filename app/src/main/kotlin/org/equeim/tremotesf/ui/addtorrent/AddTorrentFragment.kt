@@ -33,10 +33,6 @@ import org.equeim.tremotesf.R
 abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
                                   @StringRes titleRes: Int,
                                   @MenuRes toolbarMenuRes: Int) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
-    companion object {
-        const val URI = "uri"
-    }
-
     protected lateinit var priorityItems: Array<String>
     protected val priorityItemEnums = arrayOf(TorrentData.Priority.HighPriority,
                                               TorrentData.Priority.NormalPriority,

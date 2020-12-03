@@ -31,7 +31,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import androidx.appcompat.view.ActionMode
-import androidx.core.os.bundleOf
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
@@ -152,9 +152,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                            val binding: TrackerListItemBinding) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
             val tracker = getItem(adapterPosition)
-            torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_editTrackerDialogFragment,
-                                               bundleOf(EditTrackerDialogFragment.TRACKER_ID to tracker.id,
-                                                        EditTrackerDialogFragment.ANNOUNCE to tracker.announce))
+            torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.editTrackerDialogFragment(tracker.id, tracker.announce))
         }
 
         override fun update() {
@@ -218,8 +216,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
 
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.navigate(R.id.action_torrentPropertiesFragment_to_removeTrackerDialogFragment,
-                                                   bundleOf(RemoveTrackerDialogFragment.IDS to selectionTracker.selectedKeys.toIntArray()))
+                torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.removeTrackerDialogFragment(selectionTracker.selectedKeys.toIntArray()))
                 return true
             }
 
@@ -229,14 +226,10 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
 }
 
 class EditTrackerDialogFragment : NavigationDialogFragment() {
-    companion object {
-        const val TRACKER_ID = "trackerId"
-        const val ANNOUNCE = "announce"
-    }
+    private val args: EditTrackerDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val trackerId = requireArguments().getInt(TRACKER_ID)
-        val addingTrackers = (trackerId == -1)
+        val addingTrackers = (args.trackerId == -1)
 
         val onAccepted = { textField: TextView ->
             val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
@@ -245,7 +238,7 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
                     if (addingTrackers) {
                         torrent.addTrackers(text.lines().filter(String::isNotEmpty))
                     } else {
-                        torrent.setTracker(trackerId, text.toString())
+                        torrent.setTracker(args.trackerId, text.toString())
                     }
                 }
             }
@@ -259,7 +252,7 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
                                          R.id.text_field_layout,
                                          getString(R.string.trackers_announce_urls),
                                          InputType.TYPE_TEXT_VARIATION_URI,
-                                         requireArguments().getString(ANNOUNCE),
+                                         args.announce,
                                          null) {
                 onAccepted(it.textField)
             }
@@ -268,7 +261,7 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
                                      R.string.edit_tracker,
                                      getString(R.string.tracker_announce_url),
                                      InputType.TYPE_TEXT_VARIATION_URI,
-                                     requireArguments().getString(ANNOUNCE),
+                                     args.announce,
                                      null) {
             onAccepted(it.textField)
         }
@@ -276,19 +269,16 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
 }
 
 class RemoveTrackerDialogFragment : NavigationDialogFragment() {
-    companion object {
-        const val IDS = "ids"
-    }
+    private val args: RemoveTrackerDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val ids = requireArguments().getIntArray(IDS)!!
         return MaterialAlertDialogBuilder(requireContext())
                 .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,
-                                                        ids.size,
-                                                        ids.size))
+                                                        args.ids.size,
+                                                        args.ids.size))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.remove) { _, _ ->
-                    (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(ids)
+                    (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(args.ids)
                     requiredActivity.actionMode?.finish()
                 }
                 .create()

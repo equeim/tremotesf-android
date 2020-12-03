@@ -42,6 +42,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
@@ -193,8 +194,8 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         super.onDestroyView()
     }
 
-    fun navigate(@IdRes resId: Int, args: Bundle? = null, navOptions: NavOptions? = null) {
-        navController.safeNavigate(resId, args, navOptions)
+    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
+        navController.safeNavigate(directions, navOptions)
     }
 
     fun showOverflowMenu(): Boolean {
