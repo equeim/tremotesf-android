@@ -11,32 +11,19 @@ plugins {
     id("com.github.ben-manes.versions")
 }
 
-
 val abis = arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64")
 val abiVersionCodes = mapOf("armeabi-v7a" to 1, "x86" to 2, "arm64-v8a" to 3, "x86_64" to 4)
 
-
-data class QtInfo(val hasAbiSuffix: Boolean, val installDir: String)
-
-fun getQtInfo(): QtInfo {
-    val qtInstallDirNew = "$rootDir/3rdparty/qt/install-api16"
-    val qtInstallDirOld = "$rootDir/3rdparty/qt/install-${abis.first()}"
-    return if (file(qtInstallDirNew).isDirectory) {
-        QtInfo(true, qtInstallDirNew)
+data class QtInfo(val dir: String, val jarDir: String, val hasAbiSuffix: Boolean)
+val qtInfo: QtInfo by lazy {
+    val qtDir = rootProject.file("3rdparty/qt")
+    val jarDirNew = qtDir.resolve("install-api16/jar")
+    if (jarDirNew.isDirectory) {
+        QtInfo(qtDir.path, jarDirNew.path, true)
     } else {
-        if (!file(qtInstallDirOld).isDirectory) {
-            // Do not abort if we are cleaning
-            val tasks = gradle.startParameter.taskNames
-            if (tasks.firstOrNull() != "clean") {
-                throw GradleException("Qt is not installed in $rootDir/3rdparty/qt")
-            }
-        }
-        QtInfo(false, qtInstallDirOld)
+        QtInfo(qtDir.path, qtDir.resolve("install-${abis.first()}").path, false)
     }
 }
-
-val (qtHasAbiSuffix, qtInstallDir) = getQtInfo()
-
 
 android {
     compileSdkVersion(30)
@@ -51,11 +38,11 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_HAS_ABI_SUFFIX=$qtHasAbiSuffix")
+                arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_DIR=${qtInfo.dir}", "-DQT_HAS_ABI_SUFFIX=${qtInfo.hasAbiSuffix}")
             }
         }
 
-        buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "$qtHasAbiSuffix")
+        buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "${qtInfo.hasAbiSuffix}")
     }
 
     buildTypes {
@@ -160,7 +147,7 @@ object Versions {
 }
 
 dependencies {
-    implementation(files("$qtInstallDir/jar/QtAndroid.jar"))
+    implementation(files("${qtInfo.jarDir}/QtAndroid.jar"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")

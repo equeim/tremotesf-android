@@ -3,11 +3,20 @@
 readonly QT_DIR="$(realpath -- "$(dirname -- "$0")")"
 readonly QT_SOURCE_DIR="$QT_DIR/qtbase"
 
-test -f "$QT_SOURCE_DIR/dist/changes-5.12.0"
-readonly HAS_5_12=$?
+readonly QT_5_12_VERSION="5.12.10"
+readonly QT_5_15_VERSION="5.15.2"
 
-test -f "$QT_SOURCE_DIR/dist/changes-5.15.0"
-readonly HAS_5_15=$?
+latest_change_file=$(basename $(ls "$QT_SOURCE_DIR"/dist/changes-* | sort --version-sort | tail -n1))
+if [[ $latest_change_file = "changes-$QT_5_15_VERSION" ]]; then
+    readonly QT_5_15=true
+elif [[ $latest_change_file = "changes-$QT_5_12_VERSION" ]]; then
+    readonly QT_5_15=false
+else
+    echo "Unsupported Qt version $latest_change_file"
+    exit 1
+fi
+unset latest_change_file
+
 
 readonly COMMON_FLAGS=(
     '-v'
@@ -84,10 +93,9 @@ function apply_patches() {
     cd "$QT_SOURCE_DIR" || return 1
 
     patch_if_needed qmakemake.patch false
-    patch_if_needed java7.patch true
     patch_if_needed o2.patch true
 
-    if [ "$HAS_5_15" -eq 0 ]; then
+    if [ "$QT_5_15" = true ]; then
         # Qt 5.15
 
         patch_if_needed 5.15/donottryondemand.patch true
@@ -99,6 +107,7 @@ function apply_patches() {
     else
         # Qt 5.12 and older
 
+        patch_if_needed 5.12/java7.patch true
         patch_if_needed 5.12/donottryondemand.patch true
         patch_if_needed 5.12/qtMainLoopThread.patch true
         patch_if_needed 5.12/android-platform.patch true
@@ -121,7 +130,7 @@ function apply_patches() {
 function join_by { local IFS="$1"; shift; echo "$*"; }
 function get_first { echo "$1"; }
 
-function build_514() {
+function build_515() {
     local -r abis="$1"
     local -r api="$2"
 
@@ -196,12 +205,7 @@ if [ ! -d "$QT_SOURCE_DIR" ] ; then
     exit 1
 fi
 
-if [ "$HAS_5_12" -ne 0 ]; then
-    echo 'Minimum Qt version is 5.12.0, aborting'
-    exit 1
-fi
-
-if [ "$HAS_5_15" -eq 0 ]; then
+if [[ "$QT_5_15" = true ]]; then
     "$TOP_DIR/3rdparty/openssl/build.sh" true || exit 1
 else
     "$TOP_DIR/3rdparty/openssl/build.sh" false || exit 1
@@ -209,9 +213,9 @@ fi
 
 apply_patches
 
-if [ "$HAS_5_15" -eq 0 ]; then
-    build_514 "$ANDROID_ABIS_32" "$ANDROID_API_32" || exit 1
-    build_514 "$ANDROID_ABIS_64" "$ANDROID_API_64" || exit 1
+if [ "$QT_5_15" = true ]; then
+    build_515 "$ANDROID_ABIS_32" "$ANDROID_API_32" || exit 1
+    build_515 "$ANDROID_ABIS_64" "$ANDROID_API_64" || exit 1
 else
     for abi in $ANDROID_ABIS_32; do
         build_512 "$abi" "$ANDROID_API_32" || exit 1
