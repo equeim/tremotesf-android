@@ -134,7 +134,7 @@ object Versions {
         const val drawerlayout = "1.1.1"
         const val fragment = "1.2.5"
         const val gridlayout = "1.0.0"
-        const val lifecycle = "2.3.0-beta01"
+        const val lifecycle = "2.3.0-rc01"
         const val recyclerview = "1.1.0"
         const val preference = "1.1.1"
         const val viewpager2 = "1.0.0"

@@ -1,6 +1,6 @@
 pluginManagement {
-    val android = "4.0.2"
-    val kotlin = "1.4.20"
+    val android = "4.1.2"
+    val kotlin = "1.4.21"
     val androidxNavigation by (gradle as ExtensionAware).extra("2.3.2")
     val versions = "0.36.0"
 
