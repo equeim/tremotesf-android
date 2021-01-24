@@ -48,6 +48,7 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                             true,
                                                              fragment,
                                                              ::ActionModeCallback,
                                                              R.plurals.files_selected) {
@@ -79,7 +80,10 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
     }
 
     fun update(items: List<TorrentFilesTree.Item?>, commitCallback: () -> Unit) {
-        submitList(if (items.isEmpty()) null else items, commitCallback)
+        submitList(if (items.isEmpty()) null else items) {
+            selectionTracker.commitAdapterUpdate()
+            commitCallback()
+        }
     }
 
     private fun setSelectedItemsWanted(wanted: Boolean) {

@@ -109,6 +109,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         }
 
         val selectionTracker = SelectionTracker.createForStringKeys(this,
+                                                                    false,
                                                                     fragment,
                                                                     ::ActionModeCallback,
                                                                     R.plurals.servers_selected) { servers[it].name }

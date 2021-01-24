@@ -49,6 +49,7 @@ import org.equeim.tremotesf.ui.utils.Utils
 
 class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                                     true,
                                                                      fragment,
                                                                      ::ActionModeCallback,
                                                                      R.plurals.torrents_selected) {
@@ -81,6 +82,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
 
     fun update(torrents: List<Torrent>) {
         submitList(torrents) {
+            selectionTracker.commitAdapterUpdate()
             selectionTracker.restoreInstanceState()
         }
     }

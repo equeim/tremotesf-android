@@ -101,6 +101,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     private val context = trackersFragment.requireContext()
 
     private val selectionTracker = SelectionTracker.createForIntKeys(this,
+                                                                     true,
                                                                      trackersFragment,
                                                                      ::ActionModeCallback,
                                                                      R.plurals.trackers_selected) { getItem(it).id }
@@ -144,6 +145,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         }
 
         submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator)) {
+            selectionTracker.commitAdapterUpdate()
             selectionTracker.restoreInstanceState()
         }
     }

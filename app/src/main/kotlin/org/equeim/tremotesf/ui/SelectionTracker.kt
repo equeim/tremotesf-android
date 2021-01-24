@@ -49,6 +49,7 @@ typealias SelectionActionModeCallbackFactory<K> = (SelectionTracker<K>) -> Selec
 typealias AdapterSelectionKeyGetter<K> = RecyclerView.Adapter<*>.(Int) -> K
 
 class SelectionTracker<K : Any> private constructor(private val adapter: RecyclerView.Adapter<*>,
+                                                    adapterCommitsUpdates: Boolean,
                                                     getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
                                                     private val unselectableKey: K,
 
@@ -63,6 +64,7 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
                                                     private val actionModeCallbackFactory: SelectionActionModeCallbackFactory<K>,
                                                     @PluralsRes private val titleStringId: Int) {
     private constructor(adapter: RecyclerView.Adapter<*>,
+                        adapterCommitsUpdates: Boolean,
                         getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
                         unselectableKey: K,
                         fragment: Fragment,
@@ -70,55 +72,60 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
                         putSelectedKeysToBundle: Bundle.(Set<K>) -> Unit,
                         actionModeCallbackFactory: SelectionActionModeCallbackFactory<K>,
                         @PluralsRes titleStringId: Int) : this(adapter,
-                                                               getSelectionKeyForPosition,
-                                                               unselectableKey,
-                                                               fragment.requireContext(),
-                                                               fragment,
-                                                               getSelectedKeysFromBundle,
-                                                               putSelectedKeysToBundle,
-                                                               fragment.viewLifecycleOwner,
-                                                               fragment.requireActivity() as NavigationActivity,
-                                                               actionModeCallbackFactory,
-                                                               titleStringId)
+            adapterCommitsUpdates,
+            getSelectionKeyForPosition,
+            unselectableKey,
+            fragment.requireContext(),
+            fragment,
+            getSelectedKeysFromBundle,
+            putSelectedKeysToBundle,
+            fragment.viewLifecycleOwner,
+            fragment.requireActivity() as NavigationActivity,
+            actionModeCallbackFactory,
+            titleStringId)
 
     companion object {
         const val SELECTION_KEY_UNSELECTABLE_INT = -1
         const val SELECTION_KEY_UNSELECTABLE_STRING = ""
 
         fun createForIntKeys(adapter: RecyclerView.Adapter<*>,
+                             adapterCommitsUpdates: Boolean,
                              fragment: Fragment,
                              actionModeCallbackFactory: SelectionActionModeCallbackFactory<Int>,
                              @PluralsRes titleStringId: Int,
                              getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>): SelectionTracker<Int> {
             return SelectionTracker(adapter,
-                                    getSelectionKeyForPosition,
-                                    SELECTION_KEY_UNSELECTABLE_INT,
-                                    fragment,
-                                    { it.getIntArray(null)?.toSet() },
-                                    { putIntArray(null, it.toIntArray()) },
-                                    actionModeCallbackFactory,
-                                    titleStringId)
+                    adapterCommitsUpdates,
+                    getSelectionKeyForPosition,
+                    SELECTION_KEY_UNSELECTABLE_INT,
+                    fragment,
+                    { it.getIntArray(null)?.toSet() },
+                    { putIntArray(null, it.toIntArray()) },
+                    actionModeCallbackFactory,
+                    titleStringId)
         }
 
         fun createForStringKeys(adapter: RecyclerView.Adapter<*>,
+                                adapterCommitsUpdates: Boolean,
                                 fragment: Fragment,
                                 actionModeCallbackFactory: SelectionActionModeCallbackFactory<String>,
                                 @PluralsRes titleStringId: Int,
                                 getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>): SelectionTracker<String> {
             return SelectionTracker(adapter,
-                                    getSelectionKeyForPosition,
-                                    SELECTION_KEY_UNSELECTABLE_STRING,
-                                    fragment,
-                                    { it.getStringArray(null)?.toSet() },
-                                    { putStringArray(null, it.toTypedArray()) },
-                                    actionModeCallbackFactory,
-                                    titleStringId)
+                    adapterCommitsUpdates,
+                    getSelectionKeyForPosition,
+                    SELECTION_KEY_UNSELECTABLE_STRING,
+                    fragment,
+                    { it.getStringArray(null)?.toSet() },
+                    { putStringArray(null, it.toTypedArray()) },
+                    actionModeCallbackFactory,
+                    titleStringId)
         }
     }
 
     private var restoredInstanceState = false
 
-    private val selectionKeysProvider = SelectionKeysProvider(this, adapter, getSelectionKeyForPosition)
+    private val selectionKeysProvider = SelectionKeysProvider(this, adapter, adapterCommitsUpdates, getSelectionKeyForPosition)
 
     private val handler = SelectionTrackerHandler(this)
 
@@ -138,8 +145,8 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
         savedStateRegistryOwner.savedStateRegistry.registerSavedStateProvider(BUNDLE_KEY) {
             Bundle().apply { putSelectedKeysToBundle(selectedKeys) }
         }
-        // View may outlive saved state registry (e.g. in case of Fragments) so we need to unregister
-        // when view is destroyed, since out lifecycle is tied to adapter and therefore view
+        // Saved state registry may outlive view (e.g. in case of Fragments) so we need to unregister
+        // when view is destroyed, since our lifecycle is tied to adapter and therefore view
         viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
                 savedStateRegistryOwner.savedStateRegistry.unregisterSavedStateProvider(BUNDLE_KEY)
@@ -218,8 +225,8 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
     private fun updateActionMode() {
         actionMode?.apply {
             title = context.resources.getQuantityString(titleStringId,
-                                                        selectedCount,
-                                                        selectedCount)
+                    selectedCount,
+                    selectedCount)
             invalidate()
         }
     }
@@ -235,6 +242,8 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
             actionMode?.finish()
         }
     }
+
+    fun commitAdapterUpdate() = selectionKeysProvider.commitAdapterUpdate()
 
     fun restoreInstanceState() {
         if (!restoredInstanceState) {
@@ -306,34 +315,57 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
 
     private class SelectionKeysProvider<K : Any>(private val selectionTracker: SelectionTracker<K>,
                                                  private val adapter: RecyclerView.Adapter<*>,
+                                                 private val adapterCommitsUpdates: Boolean,
                                                  private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>) {
-        private val positionToKey = ArrayList<K>()
+        private val positionToKey = ArrayList<K?>()
         private val keyToPosition = mutableMapOf<K, Int>()
 
         val allKeys: List<K>
-            get() = positionToKey
+            get() = if (adapterCommitsUpdates) {
+                positionToKey.requireNoNulls()
+            } else {
+                @Suppress("UNCHECKED_CAST")
+                positionToKey as List<K>
+            }
+
+        private var waitingForCommit = false
 
         init {
             val observer = object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     if (itemCount > 0) {
-                        positionToKey.ensureCapacity(positionToKey.size + itemCount)
-                        for (position in positionStart until (positionStart + itemCount)) {
-                            val key = adapter.getSelectionKeyForPosition(position)
-                            positionToKey.add(position, key)
-                            keyToPosition[key] = position
+                        if (!adapterCommitsUpdates || ((positionToKey.size + itemCount) == adapter.itemCount)) {
+                            positionToKey.addAll(positionStart, List(itemCount) { adapter.getSelectionKeyForPosition(positionStart + it) })
+                            for (position in positionStart until (positionStart + itemCount)) {
+                                val key = checkNotNull(positionToKey[position])
+                                keyToPosition[key] = position
+                            }
+                        } else {
+                            positionToKey.addAll(positionStart, List(itemCount) { null })
+                            waitingForCommit = true
+                        }
+                        for (position in (positionStart + itemCount) until positionToKey.size) {
+                            val key = positionToKey[position]
+                            if (key != null) {
+                                keyToPosition[key] = position
+                            }
                         }
                     }
                 }
 
                 override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                     if (itemCount > 0) {
-                        for (position in (positionStart + itemCount - 1) downTo positionStart) {
-                            val key = positionToKey[position]
-                            positionToKey.removeAt(position)
+                        for (position in positionStart until (positionStart + itemCount)) {
+                            val key = checkNotNull(positionToKey[position])
                             keyToPosition.remove(key)
-
                             selectionTracker.removeSelectionInProgress(key)
+                        }
+                        positionToKey.subList(positionStart, positionStart + itemCount).clear()
+                        for (position in positionStart until positionToKey.size) {
+                            val key = positionToKey[position]
+                            if (key != null) {
+                                keyToPosition[key] = position
+                            }
                         }
                         selectionTracker.finishRemovingSelection()
                     }
@@ -344,7 +376,9 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
                         val changedPositions = positionToKey.moveItems(fromPosition, toPosition, itemCount)
                         for (position in changedPositions) {
                             val key = positionToKey[position]
-                            keyToPosition[key] = position
+                            if (key != null) {
+                                keyToPosition[key] = position
+                            }
                         }
                     }
                 }
@@ -359,8 +393,23 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
             adapter.registerAdapterDataObserver(observer)
         }
 
+        fun commitAdapterUpdate() {
+            if (waitingForCommit) {
+                val iter = positionToKey.listIterator()
+                while (iter.hasNext()) {
+                    val position = iter.nextIndex()
+                    if (iter.next() == null) {
+                        val key = adapter.getSelectionKeyForPosition(position)
+                        iter.set(key)
+                        keyToPosition[key] = position
+                    }
+                }
+                waitingForCommit = false
+            }
+        }
+
         fun getKeyForPosition(position: Int): K {
-            return positionToKey[position]
+            return requireNotNull(positionToKey[position])
         }
 
         fun getPositionForKey(key: K): Int {
