@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Improved performance and memory usage when opening torrent files
+
+### Fixed
+- Fixed crashes when changing torrent filters
+- Fixed download directory filter not showing some torrents
+- Fixed renaming of torrent files
+
 ## [2.2.0] - 2020-10-25
 ### Added
 - Added support of Qt 5.15
