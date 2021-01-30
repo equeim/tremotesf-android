@@ -1,0 +1,1 @@
+Клиент удаленного управления для BitTorrent-клиента Transmission
