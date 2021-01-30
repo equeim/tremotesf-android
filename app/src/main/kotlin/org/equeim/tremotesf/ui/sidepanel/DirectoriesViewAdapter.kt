@@ -28,6 +28,7 @@ import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
+import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
 
 class DirectoriesViewAdapter(private val context: Context,
@@ -65,10 +66,7 @@ class DirectoriesViewAdapter(private val context: Context,
     fun update(torrents: List<Torrent>) {
         directoriesMap.clear()
         for (torrent in torrents) {
-            var directory = torrent.downloadDirectory
-            if (directory.endsWith('/')) {
-                directory = directory.dropLast(1)
-            }
+            val directory = torrent.downloadDirectory.dropTrailingPathSeparator()
             directoriesMap[directory] = directoriesMap.getOrElse(directory) { 0 } + 1
         }
         directories = directoriesMap.keys.sortedWith(comparator)

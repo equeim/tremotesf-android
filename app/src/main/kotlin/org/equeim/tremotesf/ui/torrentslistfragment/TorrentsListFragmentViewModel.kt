@@ -44,6 +44,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.getStateFlow
 import org.equeim.tremotesf.utils.Logger
+import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
 import java.util.concurrent.TimeUnit
 
@@ -158,7 +159,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         return { torrent: Torrent ->
             statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
                     (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
-                    (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
+                    (directoryFilter.isEmpty() || torrent.downloadDirectory.dropTrailingPathSeparator() == directoryFilter) &&
                     torrent.name.contains(nameFilter, true)
         }
     }

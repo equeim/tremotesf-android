@@ -23,3 +23,9 @@ inline fun <reified T : Enum<T>> enumFromInt(value: Int): T {
     val values = enumValues<T>()
     return values.getOrNull(value) ?: values.first()
 }
+
+fun String.dropTrailingPathSeparator(): String = if (endsWith('/')) {
+    dropLast(1)
+} else {
+    this
+}
