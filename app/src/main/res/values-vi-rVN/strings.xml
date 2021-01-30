@@ -1,0 +1,331 @@
+<resources>
+    <string name="disconnected">Ngắt kết nối</string>
+    <string name="connecting">Đang kết nối\u2026</string>
+    <string name="connected">Đã kết nối</string>
+
+    <string name="connect">Kết nối</string>
+    <string name="disconnect">Ngắt kết nối</string>
+    <string name="add">Thêm</string>
+
+    <string name="timed_out">Kết nối quá hạn</string>
+    <string name="connection_error">Lỗi kết nối</string>
+    <string name="authentication_error">Lỗi xác thực</string>
+    <string name="parsing_error">Lỗi phân tích cú pháp</string>
+    <string name="server_is_too_new">Phiên bản máy chủ quá mới</string>
+    <string name="server_is_too_old">Phiên bản máy chủ quá cũ</string>
+
+    <string name="server">Máy chủ</string>
+    <string name="server_settings">Cài đặt máy chủ</string>
+
+    <string name="sort">Sắp xếp</string>
+    <string name="progress">Tiến độ</string>
+    <string name="eta">Thời gian dự kiến đến</string>
+    <string name="ratio">Tỉ lệ</string>
+    <string name="size">Kích cỡ</string>
+    <string name="added_date">Ngày thêm vào</string>
+
+    <string name="status">Trạng thái</string>
+
+    <string name="no_torrents">Không có torrent</string>
+
+    <string name="torrents_all">Tất cả (%d)</string>
+    <string name="torrents_active">Đang hoạt động (%d)</string>
+    <string name="torrents_downloading">Đang tải về (%d)</string>
+    <string name="torrents_seeding">Đang seed (%d)</string>
+    <string name="torrents_paused">Đã dừng (%d)</string>
+    <string name="torrents_checking">Đang kiểm tra (%d)</string>
+    <string name="torrents_errored">Bị lỗi (%d)</string>
+
+    <plurals name="torrents_selected">
+        <item quantity="other">%d torrent đã chọn</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="other">%d tệp đã chọn</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="other">%d tracker đã chọn</item>
+    </plurals>
+
+    <string name="details">Chi tiết</string>
+    <string name="files">Tệp</string>
+    <string name="activity">Hoạt động</string>
+    <string name="information">Thông tin</string>
+
+    <string name="completed">Đã hoàn thành</string>
+    <string name="downloaded">Đã tải về</string>
+    <string name="uploaded">Đã tải lên</string>
+    <string name="download_speed">Tốc độ tải về</string>
+    <string name="upload_speed">Tốc độ tải lên</string>
+    <string name="last_activity">Hoạt động sau cùng</string>
+
+    <string name="total_size">Tổng kích thước</string>
+    <string name="location">Vị trí</string>
+    <string name="hash">Mã hash</string>
+    <string name="created_by">Được tạo bởi</string>
+    <string name="created_on">Ngày được tạo</string>
+    <string name="comment">Bình luận</string>
+
+    <string name="priority">Mức ưu tiên</string>
+    <string name="high_priority">Cao</string>
+    <string name="normal_priority">Bình thường</string>
+    <string name="low_pririty">Thấp</string>
+    <string name="mixed_priority">Hỗn hợp</string>
+
+    <string name="download_verb">Tải về</string>
+    <string name="not_download">Không tải về</string>
+
+    <string name="no_files">Không có tệp</string>
+
+    <string name="tracker_inactive">Không hoạt động</string>
+    <string name="tracker_active">Hoạt động</string>
+    <string name="tracker_queued">Đã đặt vào hàng đợi</string>
+    <string name="tracker_error">Lỗi: %s</string>
+
+    <string name="loading">Đang tải\u2026</string>
+    <string name="no_peers">Không có peer</string>
+
+    <string name="no_trackers">Không có tracker</string>
+
+    <string name="error">Lỗi</string>
+
+    <string name="speed">Tốc độ</string>
+    <string name="honor_global_limits">Theo các giới hạn chung</string>
+    <string name="download_noun">Tải về</string>
+    <string name="upload_noun">Tải lên</string>
+
+    <string name="seeding">Đang seed</string>
+
+    <string name="ratio_limit">Giới hạn tỷ lệ</string>
+    <string-array name="ratio_limit_mode">
+        <item>Sử dụng cài đặt chung</item>
+        <item>Seed bất kể tỉ lệ</item>
+    </string-array>
+
+    <string-array name="idle_seeding_mode">
+        <item>Sử dụng cài đặt chung</item>
+        <item>Seed bất kể tỉ lệ</item>
+    </string-array>
+
+    <string name="maximum_peers">Số lượng peer tối đa</string>
+
+    <string name="settings">Cài đặt</string>
+    <string name="notifications">Các thông báo</string>
+
+    <string name="quit">Thoát</string>
+
+    <string name="select_all">Chọn tất cả</string>
+
+    <string name="add_server">Thêm máy chủ</string>
+    <string name="edit_server">Sửa máy chủ</string>
+
+    <plurals name="servers_selected">
+        <item quantity="other">%d máy chủ được chọn</item>
+    </plurals>
+
+    <string name="save">Lưu</string>
+
+    <string name="remove">Xóa bỏ</string>
+
+    <plurals name="remove_servers_message">
+        <item quantity="other">Bạn có chắc muốn xóa bỏ %d máy chủ đã chọn?</item>
+    </plurals>
+
+    <string name="no_servers">Không máy chủ</string>
+
+    <string name="name">Tên</string>
+    <string name="address_edit_hint">Tên miền hoặc địa chỉ IP</string>
+    <string name="port">Cổng</string>
+    <string name="api_path">Đường dẫn API</string>
+    <string name="https">HTTPS</string>
+    <string name="certificates">Các chứng chỉ</string>
+    <string name="server_uses_self_signed_certificate">Máy chủ sử dụng chứng chỉ tự ký</string>
+    <string name="certificate">Chứng chỉ ở định dạng PEM</string>
+    <string name="use_client_certificate_authentication">Sử dụng xác thực chứng chỉ ứng dụng khách</string>
+    <string name="authentication">Xác thực</string>
+    <string name="username">Tên người dùng</string>
+    <string name="password">Mật khẩu</string>
+    <string name="update_interval">Khoảng thời gian cập nhật, tính bằng giây</string>
+    <string name="timeout">Thời gian chờ, tính bằng giây</string>
+
+    <string name="empty_field_error">Trường này không thể bỏ trống</string>
+
+    <string name="server_exists">Máy chủ có tên này đã tồn tại</string>
+    <string name="overwrite">Ghi đè</string>
+
+    <string name="add_torrent">Thêm torrent</string>
+    <string name="add_torrent_file">Thêm tệp torrent</string>
+    <string name="storage_permission_error">Cần có sự cho phép lưu trữ</string>
+    <string name="file_is_too_large">Kích cỡ tệp quá lớn</string>
+    <string name="file_reading_error">Lỗi đọc tệp</string>
+    <string name="file_parsing_error">Lỗi phân tích tệp</string>
+
+    <string name="download_directory">Thư mục tải về</string>
+
+    <string name="server_settings_downloading">Đang tải về</string>
+    <string name="server_settings_seeding">Đang seed</string>
+    <string name="server_settings_queue">Hàng đợi</string>
+    <string name="server_settings_speed">Tốc độ</string>
+    <string name="server_settings_network">Mạng</string>
+
+    <string name="start_added_torrents">Bắt đầu các torrent vừa thêm vào</string>
+    <string name="rename_incomplete_files">Nối \".part\" vào tên của các tệp chưa hoàn thành</string>
+    <string name="incomplete_files_directory">Thư mục cho các tệp chưa hoàn thành</string>
+    <string name="stop_seeding_at_ratio">Dừng seed ở tỷ lệ</string>
+    <string name="stop_seeding_if_idle_for">Ngừng seed khi không hoạt động được</string>
+    <string name="enable">Kích hoạt</string>
+    <string name="scheduled">Lên kế hoạch</string>
+    <string name="from">Từ</string>
+    <string name="to">Đến</string>
+    <string name="every_day">Hằng ngày</string>
+    <string name="weekdays">Các ngày trong tuần</string>
+    <string name="weekends">Cuối tuần</string>
+    <string name="connection">Kết nối</string>
+    <string name="peer_port">Cổng peer</string>
+    <string name="random_port">Chọn cổng ngẫu nhiên khi chạy Transmission</string>
+    <string name="port_forwarding">Cho phép chuyển tiếp cổng</string>
+    <string name="encryption">Mã hóa</string>
+    <string-array name="encryption_items">
+        <item>Cho phép</item>
+        <item>Bắt buộc</item>
+    </string-array>
+    <string name="enable_utp">Kích hoạt µTP</string>
+    <string name="enable_pex">Kích hoạt PEX</string>
+    <string name="enable_dht">Kích hoạt DHT</string>
+    <string name="enable_lpd">Kích hoạt LPD</string>
+    <string name="peer_limits">Giới hạn peer</string>
+    <string name="maximum_peers_per_torrent">Số lượng peer tối đa mỗi torrent</string>
+    <string name="maximum_peers_globally">Số lượng peer tối đa chung</string>
+
+    <string name="start_downloading_after_adding">Bắt đầu tải xuống sau khi thêm</string>
+
+    <string name="torrent_link">Liên kết của torrent</string>
+    <string name="add_torrent_link">Thêm liên kết của torrent</string>
+
+    <string name="select_file">Chọn tệp</string>
+    <string name="primary_storage">Bộ lưu trữ chính</string>
+
+    <string name="current_session">Phiên hiện tại</string>
+    <string name="total">Tổng</string>
+    <string name="duration">Thời gian</string>
+    <string name="close">Đóng</string>
+    <string name="server_stats">Thống kê máy chủ</string>
+
+    <plurals name="started_times">
+        <item quantity="other">Bắt đầu %d lần</item>
+    </plurals>
+
+    <string name="start">Bắt đầu</string>
+    <string name="pause">Dừng</string>
+
+    <plurals name="remove_torrents_message">
+        <item quantity="other">Bạn có chắc muốn xóa bỏ %d torrent đã chọn?</item>
+    </plurals>
+    <string name="delete_files">Cũng đồng thời xóa các tập tin trên đĩa cứng</string>
+    <string name="check_local_data">Kiểm tra dữ liệu nội bộ</string>
+    <string name="torrent_duplicate">Torrent này đã thêm rồi</string>
+    <string name="torrent_add_error">Lỗi khi thêm torrent</string>
+
+    <string name="torrent_paused">Tạm dừng</string>
+    <plurals name="torrent_downloading">
+        <item quantity="other">Đang tải tử %d peer</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">Đang tải</string>
+    <plurals name="torrent_seeding">
+        <item quantity="other">Đang seed cho %d peer</item>
+    </plurals>
+    <string name="torrent_seeding_stalled">Đang seed</string>
+    <string name="torrent_queued">Xếp hàng</string>
+    <string name="torrent_queued_for_checking">Xếp hàng để kiểm tra</string>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="other">Bạn có chắc muốn xóa bỏ %d tracker đã chọn?</item>
+    </plurals>
+
+    <string name="remove_torrent_message">Bạn có chắc muốn xóa bỏ torrent này?</string>
+
+    <string name="set_location">Thiết lập vị trí</string>
+    <string name="move_files">Di chuyển các tệp từ thư mục hiện tại</string>
+
+    <string name="rename">Đổi tên</string>
+
+    <string name="file_name">Tên tệp</string>
+
+    <string name="about">Thông tin</string>
+    <string name="authors">Tác giả</string>
+    <string name="translators">Biên dịch viên</string>
+    <string name="license">Giấy phép</string>
+
+    <string name="prefs_dark_theme_mode_title">Chủ đề</string>
+
+    <string name="prefs_old_colors_title">Sử dụng màu cũ</string>
+
+    <string name="prefs_torrent_compact_view_title">Sử dụng chế độ xem nhỏ gọn cho torrent</string>
+    <string name="prefs_torrent_name_multiline_title">Hiển thị tên của torrent trên nhiều dòng</string>
+
+    <string name="prefs_persistent_notification_title">Hiển thị thông báo liên tục</string>
+
+    <string name="persistent_notification_channel_name">Thông báo liên tục</string>
+    <string name="finished_torrents_channel_name">Torrent đã xong</string>
+    <string name="added_torrents_channel_name">Torrent đã thêm</string>
+
+    <string name="appearance">Vẻ bề ngoài</string>
+    <string name="torrents">Torrent</string>
+
+    <string name="prefs_delete_files_title">Xóa tệp trên đĩa cứng khi xóa torrent</string>
+
+    <string name="alternative_speed_limits">Giới hạn tốc độ thay thế</string>
+
+    <string name="donate_tab">Tặng</string>
+    <string name="donate_dialog_again">Hộp thoại này sẽ không được hiển thị lại.</string>
+
+    <string name="free_space">Dung lượng trống: %s</string>
+    <string name="free_space_error">Lỗi khi kiểm tra dung lượng trống</string>
+
+    <string name="notify_on_finished">Thông báo về torrent đã hoàn thành</string>
+    <string name="notify_on_added">Thông báo về các torrent được thêm vào</string>
+
+    <string name="notifications_on_connect">Thông báo khi kết nối với máy chủ</string>
+    <string name="notify_on_finished_since_last">Thông báo về các torrent đã hoàn thành kể từ lần kết nối cuối cùng với máy chủ</string>
+    <string name="notify_on_added_since_last">Thông báo về các torrent được thêm vào kể từ lần kết nối cuối cùng với máy chủ</string>
+
+    <string name="persistent_notification">Thông báo liên tục</string>
+
+    <string name="persistent_notification_warning">Bật thông báo liên tục sẽ ngăn ứng dụng chuyển sang chế độ cập nhật nền và có thể gây hao pin quá mức</string>
+
+    <string name="prefs_background_update_interval_title">Khoảng thời gian cập nhật nền</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Vô hiệu</item>
+        <item>15 phút</item>
+        <item>30 phút</item>
+        <item>1 giờ</item>
+        <item>3 giờ</item>
+        <item>6 giờ</item>
+        <item>12 giờ</item>
+        <item>24 giờ</item>
+    </string-array>
+
+    <string name="connection_settings">Cài đặt kết nối</string>
+
+    <string name="theme_auto_pre_q">Đặt theo trình tiết kiệm pin</string>
+    <string name="theme_auto_q">Mặc định của hệ thống</string>
+
+    <string-array name="prefs_theme_entries">
+        <item>Tối</item>
+        <item>Sáng</item>
+    </string-array>
+
+    <string name="donations_description">Nếu bạn thích ứng dụng này, bạn có thể hỗ trợ sự phát triển của nó bằng cách gửi quyên góp cho nhà phát triển.</string>
+    <string name="donations_donate">Quyên góp</string>
+    <string name="donations_amount">Số tiền quyên góp</string>
+    <string name="donations_google_title">Cửa hàng Google Play</string>
+    <string name="donations_google_description">Google tính phí 30%</string>
+    <string name="donations_paypal_description">Bạn có thể chọn số tiền bạn muốn quyên góp sau khi nhấp vào nút</string>
+    <string name="donations_snackbar_ok">Cảm ơn sự ủng hộ của bạn!</string>
+    <string name="donations_snackbar_error">Lỗi trong khi xử lý quyên góp.</string>
+
+    <string-array name="proxy_type_items">
+        <item>Mặc định</item>
+    </string-array>
+</resources>

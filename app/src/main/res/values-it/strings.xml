@@ -439,6 +439,9 @@
 
     <string name="proxy_settings">Impostazioni Proxy</string>
     <string name="proxy_type">Tipo di Proxy</string>
+    <string name="share">Condividi</string>
+    <string name="share_torrent">Condividi torrent</string>
+
     <string-array name="proxy_type_items">
         <item>Predefinito</item>
         <item>HTTP</item>
