@@ -33,8 +33,8 @@ android {
         applicationId = "org.equeim.tremotesf"
         minSdkVersion(16)
         targetSdkVersion(30)
-        versionCode = 35
-        versionName = "2.2.0"
+        versionCode = 36
+        versionName = "2.3.0"
 
         externalNativeBuild {
             cmake {

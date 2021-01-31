@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.3.0] - 2021-01-31
 ### Changed
 - Improved performance and memory usage when opening torrent files
 

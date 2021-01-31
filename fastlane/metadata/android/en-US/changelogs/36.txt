@@ -1,0 +1,4 @@
+- Improved performance and memory usage when opening torrent files
+- Fixed crashes when changing torrent filters
+- Fixed download directory filter not showing some torrents
+- Fixed renaming of torrent files
