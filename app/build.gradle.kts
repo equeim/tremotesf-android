@@ -11,9 +11,6 @@ plugins {
     id("com.github.ben-manes.versions")
 }
 
-val abis = arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64")
-val abiVersionCodes = mapOf("armeabi-v7a" to 1, "x86" to 2, "arm64-v8a" to 3, "x86_64" to 4)
-
 data class QtInfo(val dir: String, val jarDir: String, val hasAbiSuffix: Boolean)
 val qtInfo: QtInfo by lazy {
     val qtDir = rootProject.file("3rdparty/qt")
@@ -21,7 +18,7 @@ val qtInfo: QtInfo by lazy {
     if (jarDirNew.isDirectory) {
         QtInfo(qtDir.path, jarDirNew.path, true)
     } else {
-        QtInfo(qtDir.path, qtDir.resolve("install-${abis.first()}").path, false)
+        QtInfo(qtDir.path, qtDir.resolve("install-armeabi-v7a").path, false)
     }
 }
 
@@ -33,7 +30,7 @@ android {
         applicationId = "org.equeim.tremotesf"
         minSdkVersion(16)
         targetSdkVersion(30)
-        versionCode = 36
+        versionCode = 4036
         versionName = "2.3.0"
 
         externalNativeBuild {
@@ -97,25 +94,6 @@ android {
         register("fdroid") {
             dimension = "freedom"
             buildConfigField("boolean", "DONATIONS_GOOGLE", "false")
-        }
-    }
-
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include(*abis)
-            isUniversalApk = true
-        }
-    }
-
-    applicationVariants.configureEach {
-        outputs.configureEach {
-            val abi = (this as ApkVariantOutput).getFilter(VariantOutput.FilterType.ABI)
-            val baseAbiVersionCode = abiVersionCodes[abi]
-            if (baseAbiVersionCode != null) {
-                versionCodeOverride = baseAbiVersionCode * 1000 + versionCode
-            }
         }
     }
 }
