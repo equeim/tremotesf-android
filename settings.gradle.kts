@@ -1,7 +1,7 @@
 pluginManagement {
     val android = "4.1.2"
     val kotlin = "1.4.21"
-    val androidxNavigation by (gradle as ExtensionAware).extra("2.3.2")
+    val navigation by (gradle as ExtensionAware).extra("2.3.2")
     val versions = "0.36.0"
 
     plugins {
@@ -15,7 +15,7 @@ pluginManagement {
         eachPlugin {
             when (requested.id.namespace) {
                 "com.android" -> useModule("com.android.tools.build:gradle:$android")
-                "androidx.navigation.safeargs" -> useModule("androidx.navigation:navigation-safe-args-gradle-plugin:$androidxNavigation")
+                "androidx.navigation.safeargs" -> useModule("androidx.navigation:navigation-safe-args-gradle-plugin:$navigation")
             }
         }
     }
