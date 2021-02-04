@@ -16,7 +16,7 @@ val qtInfo: QtInfo by lazy {
     if (jarDirNew.isDirectory) {
         QtInfo(qtDir.path, jarDirNew.path, true)
     } else {
-        QtInfo(qtDir.path, qtDir.resolve("install-armeabi-v7a").path, false)
+        QtInfo(qtDir.path, qtDir.resolve("install-armeabi-v7a/jar").path, false)
     }
 }
 

@@ -4,6 +4,7 @@
 
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QEventLoop>
 #include <QTimer>
 
