@@ -1,7 +1,9 @@
 #!/bin/bash
 
-readonly QT_DIR="$(realpath -- "$(dirname -- "$0")")"
+readonly QT_DIR="$(dirname -- "$(realpath -s -- "$0")")"
 readonly QT_SOURCE_DIR="$QT_DIR/qtbase"
+
+source "$QT_DIR/../lib.sh" || exit 1
 
 readonly QT_5_12_VERSION="5.12.10"
 readonly QT_5_15_VERSION="5.15.2"
@@ -28,6 +30,7 @@ readonly COMMON_FLAGS=(
     '-android-sdk' "$ANDROID_SDK_ROOT"
     '-android-ndk-host' 'linux-x86_64'
     '-ltcg'
+    '-no-use-gold-linker'
     '-nomake' 'examples'
     '-nomake' 'tests'
     '-no-dbus'
@@ -66,65 +69,44 @@ readonly COMMON_FLAGS=(
     '-openssl-linked'
 )
 
-function patch_if_needed() {
-    # if can't reverse, patch
-    local -r patch="$1"
-    local -r fail_on_failure="$2"
-    echo "Applying patch $patch"
-    if patch -p1 -R --dry-run --force --fuzz=0 --input="../patches/$patch" > /dev/null; then
-        echo 'Already applied'
-    else
-        local -r output="$(patch -p1 --fuzz=0 --input="../patches/$patch")" code="$?"
-        if [ "$code" -ne 0 ]; then
-            printf '%s\n' "$output"
-            if [ "$fail_on_failure" = true ]; then
-                echo 'Failed to apply patch, exiting'
-                exit 1
-            fi
-            echo 'Failed to apply patch, continuing'
-        else
-            echo 'Applied'
-        fi
-    fi
-    echo
-}
-
 function apply_patches() {
-    cd "$QT_SOURCE_DIR" || return 1
+    cd "$QT_SOURCE_DIR" || exit 1
 
-    patch_if_needed qmakemake.patch false
-    patch_if_needed o2.patch true
+    patch_if_needed qmake-makeopts.patch
+    patch_if_needed o2.patch
 
-    if [ "$QT_5_15" = true ]; then
+    # LTO
+    patch_if_needed openssl-test-ltcg.patch
+
+    if [[ "$QT_5_15" = true ]]; then
         # Qt 5.15
 
-        patch_if_needed 5.15/donottryondemand.patch true
-        patch_if_needed 5.15/qsslcertificate.patch true
-        patch_if_needed 5.15/qtMainLoopThread.patch true
+        patch_if_needed 5.15/donottryondemand.patch
+        patch_if_needed 5.15/qsslsocket-qdiriterator.patch
+        patch_if_needed 5.15/qtMainLoopThread.patch
+
+        # NDK r22 toolchain
+        patch_if_needed 5.15/ndk-r22.patch
 
         # Needed to build Qt for 32-bit architectures separately
-        patch_if_needed 5.15/default-arch.patch true
+        patch_if_needed 5.15/default-arch.patch
     else
         # Qt 5.12 and older
 
-        patch_if_needed 5.12/java7.patch true
-        patch_if_needed 5.12/donottryondemand.patch true
-        patch_if_needed 5.12/qtMainLoopThread.patch true
-        patch_if_needed 5.12/android-platform.patch true
+        patch_if_needed 5.12/java7.patch
+        patch_if_needed 5.12/qsslsocket-qdiriterator.patch
+        patch_if_needed 5.12/qtMainLoopThread.patch
+        patch_if_needed 5.12/android-platform.patch
 
         # NEON fix
-        patch_if_needed 5.12/fp16.patch false
+        patch_if_needed 5.12/qfloat16-neon.patch
 
-        # NDK r19 toolchain
-        patch_if_needed 5.12/ndk-r19.patch true
+        # NDK r22 toolchain
+        patch_if_needed 5.12/ndk-r22.patch
 
-        # LTO
-        patch_if_needed 5.12/thin-lto.patch true
+        # Thin LTO
+        patch_if_needed 5.12/thin-lto.patch
     fi
-
-    # LTO
-    patch_if_needed ltcg-armv7.patch true
-    patch_if_needed openssl-test-ltcg.patch true
 }
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
@@ -138,8 +120,8 @@ function build_515() {
     echo
 
     local -r build_dir="$QT_DIR/build-api$api"
-    mkdir -p "$build_dir" || return 1
-    cd "$build_dir" || return 1
+    mkdir -p "$build_dir" || exit 1
+    cd "$build_dir" || exit 1
 
     local -r openssl_libdir="$QT_DIR/../openssl/install/lib"
     local -r openssl_incdir="$QT_DIR/../openssl/install/include"
@@ -155,14 +137,12 @@ function build_515() {
         "-L$openssl_libdir"
     )
 
-    # OPENSSL_LIBS is used only for tests
-    #export OPENSSL_LIBS="-L${openssl_libdir}_$abi -lssl -lcrypto"
     local -r first_abi=$(get_first $abis)
     export OPENSSL_LIBS="-lssl_$first_abi -lcrypto_$first_abi"
-    "$QT_DIR/qtbase/configure" "${flags[@]}" || return 1
+    "$QT_DIR/qtbase/configure" "${flags[@]}" || exit 1
 
-    make $MAKEOPTS || return 1
-    make install $MAKEOPTS || return 1
+    make $MAKEOPTS || exit 1
+    make install $MAKEOPTS || exit 1
 
     echo
 }
@@ -175,8 +155,8 @@ function build_512() {
     echo
 
     local -r build_dir="$QT_DIR/build-$abi"
-    mkdir -p "$build_dir" || return 1
-    cd "$build_dir" || return 1
+    mkdir -p "$build_dir" || exit 1
+    cd "$build_dir" || exit 1
 
     local -r openssl_libdir="$QT_DIR/../openssl/install-$abi/lib"
     local -r openssl_incdir="$QT_DIR/../openssl/install-$abi/include"
@@ -192,36 +172,32 @@ function build_512() {
         "-L$openssl_libdir"
     )
 
-    "$QT_DIR/qtbase/configure" "${flags[@]}" || return 1
+    "$QT_DIR/qtbase/configure" "${flags[@]}" || exit 1
 
-    make $MAKEOPTS || return 1
-    make install $MAKEOPTS || return 1
+    make $MAKEOPTS || exit 1
+    make install $MAKEOPTS || exit 1
 
     echo
 }
 
-if [ ! -d "$QT_SOURCE_DIR" ] ; then
+if [[ ! -d "$QT_SOURCE_DIR" ]]; then
     echo "Qt source directory $QT_SOURCE_DIR does not exist"
     exit 1
 fi
 
-if [[ "$QT_5_15" = true ]]; then
-    "$TOP_DIR/3rdparty/openssl/build.sh" true || exit 1
-else
-    "$TOP_DIR/3rdparty/openssl/build.sh" false || exit 1
-fi
+"$TOP_DIR/3rdparty/openssl/build.sh" "$QT_5_15" || exit 1
 
 apply_patches
 
-if [ "$QT_5_15" = true ]; then
-    build_515 "$ANDROID_ABIS_32" "$ANDROID_API_32" || exit 1
-    build_515 "$ANDROID_ABIS_64" "$ANDROID_API_64" || exit 1
+if [[ "$QT_5_15" = true ]]; then
+    build_515 "$ANDROID_ABIS_32" "$ANDROID_API_32"
+    build_515 "$ANDROID_ABIS_64" "$ANDROID_API_64"
 else
     for abi in $ANDROID_ABIS_32; do
-        build_512 "$abi" "$ANDROID_API_32" || exit 1
+        build_512 "$abi" "$ANDROID_API_32"
     done
 
     for abi in $ANDROID_ABIS_64; do
-        build_512 "$abi" "$ANDROID_API_64" || exit 1
+        build_512 "$abi" "$ANDROID_API_64"
     done
 fi

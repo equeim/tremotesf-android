@@ -22,7 +22,7 @@ val qtInfo: QtInfo by lazy {
 
 android {
     compileSdk = 30
-    ndkVersion = "21.3.6528147"
+    ndkVersion = "22.0.7026061"
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"

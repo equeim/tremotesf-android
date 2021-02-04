@@ -27,18 +27,19 @@
 -    QMAKE_CFLAGS += -target mips64el-none-linux-android
 
 -QMAKE_CFLAGS += -gcc-toolchain $$NDK_TOOLCHAIN_PATH -fno-limit-debug-info
-+QMAKE_CFLAGS += -fno-limit-debug-info
++QMAKE_CFLAGS += -fstack-protector-strong
++DEFINES += _FORTIFY_SOURCE=2
 
 -QMAKE_LINK    = $$QMAKE_CXX $$QMAKE_CFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -nostdlib++
-+QMAKE_LFLAGS = $$QMAKE_CFLAGS -fuse-ld=lld -Wl,--exclude-libs,libgcc.a,--exclude-libs,libgcc_real.a,--build-id=sha1
- equals(ANDROID_TARGET_ARCH, armeabi-v7a): QMAKE_LINK += -Wl,--exclude-libs,libunwind.a
+-equals(ANDROID_TARGET_ARCH, armeabi-v7a): QMAKE_LINK += -Wl,--exclude-libs,libunwind.a
++QMAKE_LFLAGS = $$QMAKE_CFLAGS -Wl,--build-id=sha1,--no-rosegment,--gc-sections,--exclude-libs=libgcc.a,--exclude-libs=libgcc_real.a
++equals(ANDROID_TARGET_ARCH, armeabi-v7a): QMAKE_LFLAGS += -Wl,--exclude-libs,libunwind.a
 
 -QMAKE_CFLAGS += -DANDROID_HAS_WSTRING --sysroot=$$NDK_ROOT/sysroot \
 -                -isystem $$NDK_ROOT/sysroot/usr/include/$$NDK_TOOLS_PREFIX \
 -                -isystem $$NDK_ROOT/sources/cxx-stl/llvm-libc++/include \
 -                -isystem $$NDK_ROOT/sources/android/support/include \
 -                -isystem $$NDK_ROOT/sources/cxx-stl/llvm-libc++abi/include
-+QMAKE_CFLAGS += -DANDROID_HAS_WSTRING
 
 -ANDROID_SOURCES_CXX_STL_LIBDIR = $$NDK_ROOT/sources/cxx-stl/llvm-libc++/libs/$$ANDROID_TARGET_ARCH
 -

@@ -35,11 +35,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_compile_definitions(${PROJECT_NAME} PRIVATE QT_DEPRECATED_WARNINGS QT_DISABLE_DEPRECATED_BEFORE=0x05f00)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5Concurrent_INCLUDE_DIRS})
-
-target_link_libraries(${PROJECT_NAME} -fuse-ld=lld)
-
-# When building for armeabi-v7, -Oz is added to CXXFLAGS. When LTO is enabled, it is passed to
-# linker flags too, and linker doesn't like -Oz. So we just override it with -O2
-target_link_libraries(${PROJECT_NAME} $<$<AND:$<STREQUAL:${CMAKE_ANDROID_ARCH_ABI},armeabi-v7a>,$<CONFIG:RELEASE>>:-O2>)
-
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+
+# CMake overrides linker with -fuse-ld=gold when INTERPROCEDURAL_OPTIMIZATION is enabled. Bring it back
+target_link_libraries(${PROJECT_NAME} -fuse-ld=lld)
