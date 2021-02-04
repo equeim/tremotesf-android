@@ -7,6 +7,15 @@ readonly OPENSSL_SOURCE_DIR="${OPENSSL_DIR}/openssl"
 
 source "$OPENSSL_DIR/../lib.sh" || exit 1
 
+readonly OPENSSL_VERSION="0x1010109fL"
+
+version="$(echo OPENSSL_VERSION_NUMBER | cpp -imacros "$OPENSSL_SOURCE_DIR/include/openssl/opensslv.h" - | tail -n1)"
+if [[ "$version" != "$OPENSSL_VERSION" ]]; then
+    echo "Unsupport OpenSSL version $version"
+    exit 1
+fi
+unset version
+
 function build() {
     local -r abi="$1"
     local -r api="$2"
