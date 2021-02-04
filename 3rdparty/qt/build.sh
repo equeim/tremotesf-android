@@ -81,8 +81,8 @@ function apply_patches() {
     if [[ "$QT_5_15" = true ]]; then
         # Qt 5.15
 
-        patch_if_needed 5.15/donottryondemand.patch
         patch_if_needed 5.15/qsslsocket-qdiriterator.patch
+        patch_if_needed 5.15/qsslcertificate.patch
         patch_if_needed 5.15/qtMainLoopThread.patch
 
         # NDK r22 toolchain
