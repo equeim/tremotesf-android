@@ -99,7 +99,7 @@ class Versions(gradle: Gradle) {
         val recyclerview = "1.1.0"
         val preference = "1.1.1"
         val viewpager2 = "1.0.0"
-        val work = "2.4.0"
+        val work = "2.5.0"
     }
     val androidX = AndroidX(gradle)
 
