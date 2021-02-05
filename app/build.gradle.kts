@@ -35,7 +35,7 @@ class Versions(rootProject: Project) {
     }
     val androidX = AndroidX(rootProject.gradle)
 
-    val material = "1.2.1"
+    val material = "1.3.0"
     val fastscroll = "2.0.1"
     val billing = "3.0.2"
 }
