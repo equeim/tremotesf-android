@@ -11,7 +11,7 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5Core REQUIRED)
+find_package(Qt5Core)
 find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5Network REQUIRED)
 
@@ -23,8 +23,8 @@ add_library(${PROJECT_NAME} SHARED
         libtremotesf/torrent.cpp
         libtremotesf/torrentfile.cpp
         libtremotesf/tracker.cpp
-        jni/jnirpc.cpp
-        jni/libtremotesf_wrap.cxx)
+        jnirpc.cpp
+        libtremotesf_wrap.cxx)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 17
@@ -38,4 +38,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5Concurrent_INCLUDE_DIRS}
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
 
 # CMake overrides linker with -fuse-ld=gold when INTERPROCEDURAL_OPTIMIZATION is enabled. Bring it back
+# We are using target_link_libraries instead of target_link_options
+# because CMake adds -fuse-ld=gold at the end of link flags, so we can't override it there
+# target_link_libraries flags, on the other hand, are added after target_link_options, so it works
 target_link_libraries(${PROJECT_NAME} -fuse-ld=lld)

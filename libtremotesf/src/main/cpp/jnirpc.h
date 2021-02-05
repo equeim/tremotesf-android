@@ -5,11 +5,11 @@
 
 #include <QThread>
 
-#include "../libtremotesf/rpc.h"
-#include "../libtremotesf/serversettings.h"
-#include "../libtremotesf/serverstats.h"
-#include "../libtremotesf/stdutils.h"
-#include "../libtremotesf/torrent.h"
+#include "libtremotesf/rpc.h"
+#include "libtremotesf/serversettings.h"
+#include "libtremotesf/serverstats.h"
+#include "libtremotesf/stdutils.h"
+#include "libtremotesf/torrent.h"
 
 namespace libtremotesf
 {

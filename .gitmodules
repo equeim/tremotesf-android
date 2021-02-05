@@ -1,5 +1,5 @@
 [submodule "libtremotesf/libtremotesf"]
-	path = libtremotesf/libtremotesf
+	path = libtremotesf/src/main/cpp/libtremotesf
 	url = https://github.com/equeim/libtremotesf
 
 [submodule "bencode"]

@@ -70,7 +70,6 @@ import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
 import org.equeim.tremotesf.Application
-import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.Settings
@@ -107,7 +106,7 @@ object Rpc : Logger {
         QtNative.setClassLoader(context.classLoader)
 
         @Suppress("ConstantConditionIf")
-        if (BuildConfig.QT_HAS_ABI_SUFFIX) {
+        if (org.equeim.libtremotesf.BuildConfig.QT_HAS_ABI_SUFFIX) {
             val suffix = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 @Suppress("DEPRECATION")
                 Build.CPU_ABI

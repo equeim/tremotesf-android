@@ -764,11 +764,11 @@ namespace Swig {
   }
 }
 
-#include "../libtremotesf/rpc.h"
-#include "../libtremotesf/torrent.h"
-#include "../libtremotesf/tracker.h"
-#include "../libtremotesf/serverstats.h"
-#include "../libtremotesf/serversettings.h"
+#include "libtremotesf/rpc.h"
+#include "libtremotesf/torrent.h"
+#include "libtremotesf/tracker.h"
+#include "libtremotesf/serverstats.h"
+#include "libtremotesf/serversettings.h"
 #include "jnirpc.h"
 
 

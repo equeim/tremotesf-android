@@ -25,5 +25,4 @@ pluginManagement {
     }
 }
 
-include(":app")
-include(":bencode")
+include(":app", ":libtremotesf", ":bencode")

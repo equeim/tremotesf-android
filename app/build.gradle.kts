@@ -9,80 +9,12 @@ plugins {
     id("com.github.ben-manes.versions")
 }
 
-data class QtInfo(val dir: String, val jarDir: String, val hasAbiSuffix: Boolean)
-val qtInfo: QtInfo by lazy {
-    val qtDir = rootProject.file("3rdparty/qt")
-    val jarDirNew = qtDir.resolve("install-api16/jar")
-    if (jarDirNew.isDirectory) {
-        QtInfo(qtDir.path, jarDirNew.path, true)
-    } else {
-        QtInfo(qtDir.path, qtDir.resolve("install-armeabi-v7a/jar").path, false)
-    }
-}
+class Versions(rootProject: Project) {
+    val compileSdk: Int by rootProject.extra
+    val ndk: String by rootProject.extra
+    val minSdk: Int by rootProject.extra
+    val targetSdk: Int by rootProject.extra
 
-android {
-    compileSdk = 30
-    ndkVersion = "22.0.7026061"
-
-    defaultConfig {
-        applicationId = "org.equeim.tremotesf"
-        minSdk = 16
-        targetSdk = 30
-        versionCode = 4036
-        versionName = "2.3.0"
-
-        externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_DIR=${qtInfo.dir}", "-DQT_HAS_ABI_SUFFIX=${qtInfo.hasAbiSuffix}")
-
-        buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "${qtInfo.hasAbiSuffix}")
-    }
-
-    buildTypes.named("release") {
-        isShrinkResources = true
-        isMinifyEnabled = true
-        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
-    }
-
-    buildFeatures.viewBinding = true
-
-    sourceSets {
-        named("main") {
-            java.srcDirs("src/main/kotlin", "../libtremotesf/jni/java")
-        }
-        register("google") {
-            java.srcDirs("src/google/kotlin")
-        }
-        register("fdroid") {
-            java.srcDirs("src/fdroid/kotlin")
-        }
-    }
-
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    externalNativeBuild.cmake {
-        path = file("../libtremotesf/CMakeLists.txt")
-        version = "3.10.2"
-    }
-
-    lintOptions.isCheckReleaseBuilds = false
-
-    flavorDimensions("freedom")
-    productFlavors {
-        register("google") {
-            dimension = "freedom"
-            buildConfigField("boolean", "DONATIONS_GOOGLE", "true")
-        }
-        register("fdroid") {
-            dimension = "freedom"
-            buildConfigField("boolean", "DONATIONS_GOOGLE", "false")
-        }
-    }
-}
-
-class Versions(gradle: Gradle) {
     val kotlinxCoroutines = "1.4.2"
     val kotlinxSerialization = "1.0.1"
 
@@ -101,20 +33,79 @@ class Versions(gradle: Gradle) {
         val viewpager2 = "1.0.0"
         val work = "2.5.0"
     }
-    val androidX = AndroidX(gradle)
+    val androidX = AndroidX(rootProject.gradle)
 
     val material = "1.2.1"
     val fastscroll = "2.0.1"
     val billing = "3.0.2"
 }
-val vers = Versions(gradle)
+val vers = Versions(rootProject)
+
+android {
+    compileSdk = vers.compileSdk
+    ndkVersion = vers.ndk
+
+    defaultConfig {
+        applicationId = "org.equeim.tremotesf"
+        minSdk = vers.minSdk
+        targetSdk = vers.targetSdk
+        versionCode = 4036
+        versionName = "2.3.0"
+    }
+
+    buildTypes.named("release") {
+        isShrinkResources = true
+        isMinifyEnabled = true
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
+    }
+
+    buildFeatures.viewBinding = true
+
+    sourceSets {
+        named("main") {
+            java.srcDirs("src/main/kotlin")
+        }
+        register("google") {
+            java.srcDirs("src/google/kotlin")
+        }
+        register("fdroid") {
+            java.srcDirs("src/fdroid/kotlin")
+        }
+    }
+
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    lintOptions.isCheckReleaseBuilds = false
+
+    flavorDimensions("freedom")
+    productFlavors {
+        register("google") {
+            dimension = "freedom"
+            buildConfigField("boolean", "DONATIONS_GOOGLE", "true")
+        }
+        register("fdroid") {
+            dimension = "freedom"
+            buildConfigField("boolean", "DONATIONS_GOOGLE", "false")
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    google()
+    mavenCentral()
+}
 
 dependencies {
-    implementation(files("${qtInfo.jarDir}/QtAndroid.jar"))
+    implementation(project(":libtremotesf"))
+    implementation(project(":bencode"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${vers.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${vers.kotlinxSerialization}")
-    implementation(project(":bencode"))
 
     implementation("androidx.appcompat:appcompat:${vers.androidX.appcompat}")
     implementation("androidx.concurrent:concurrent-futures:${vers.androidX.concurrentFutures}")
