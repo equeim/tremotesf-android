@@ -160,7 +160,9 @@
         android:name="org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment">
         <argument
             android:name="uri"
-            app:argType="string" />
+            app:argType="android.net.Uri"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/filePickerFragment"
@@ -262,7 +264,8 @@
         <argument
             android:name="server"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/overwriteDialogFragment"
             app:destination="@id/serverOverwriteDialogFragment" />
@@ -281,7 +284,8 @@
         <argument
             android:name="server"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <dialog
         android:id="@+id/persistentNotificationWarningFragment"
@@ -380,6 +384,7 @@
         <argument
             android:name="server"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

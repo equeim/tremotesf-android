@@ -59,7 +59,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            torrentLinkEdit.setText(args.uri)
+            args.uri?.let { torrentLinkEdit.setText(it.toString()) }
 
             priorityView.setText(R.string.normal_priority)
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
