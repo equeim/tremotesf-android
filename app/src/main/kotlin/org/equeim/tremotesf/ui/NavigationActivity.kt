@@ -310,7 +310,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
             val directions = when (intent.scheme) {
                 ContentResolver.SCHEME_FILE,
                 ContentResolver.SCHEME_CONTENT -> NavMainDirections.addTorrentFileFragment(uri)
-                AddTorrentLinkFragment.SCHEME_MAGNET -> NavMainDirections.addTorrentLinkFragment(uri.toString())
+                AddTorrentLinkFragment.SCHEME_MAGNET -> NavMainDirections.addTorrentLinkFragment(uri)
                 else -> return
             }
             if (isTaskRoot) {
