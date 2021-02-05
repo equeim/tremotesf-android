@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.1] - 2021-02-06
+### Fixed
+- Crash when adding torrent link
+
 ## [2.3.0] - 2021-01-31
 ### Changed
 - Improved performance and memory usage when opening torrent files
