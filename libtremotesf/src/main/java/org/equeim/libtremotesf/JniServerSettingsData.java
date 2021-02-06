@@ -31,6 +31,10 @@ public class JniServerSettingsData extends ServerSettingsData {
     super.delete();
   }
 
+  public JniServerSettingsData() {
+    this(libtremotesfJNI.new_JniServerSettingsData(), true);
+  }
+
   public void setDownloadDirectory(String directory) {
     libtremotesfJNI.JniServerSettingsData_setDownloadDirectory(swigCPtr, this, directory);
   }
