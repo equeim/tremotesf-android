@@ -58,10 +58,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
+import org.equeim.libtremotesf.LibTremotesf
 import org.equeim.libtremotesf.Peer
 import org.equeim.libtremotesf.SessionStats
 import org.equeim.libtremotesf.TorrentData
@@ -69,6 +69,7 @@ import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
+
 import org.equeim.tremotesf.Application
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationActivity
@@ -77,7 +78,6 @@ import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragme
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
 
-import org.qtproject.qt5.android.QtNative
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
@@ -102,25 +102,7 @@ object Rpc : Logger {
     private val mainThreadScope = MainScope()
 
     init {
-        System.loadLibrary("c++_shared")
-        QtNative.setClassLoader(context.classLoader)
-
-        @Suppress("ConstantConditionIf")
-        if (org.equeim.libtremotesf.BuildConfig.QT_HAS_ABI_SUFFIX) {
-            val suffix = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                @Suppress("DEPRECATION")
-                Build.CPU_ABI
-            } else {
-                Build.SUPPORTED_ABIS.first()
-            }
-            System.loadLibrary("Qt5Core_$suffix")
-            System.loadLibrary("Qt5Network_$suffix")
-            System.loadLibrary("tremotesf_$suffix")
-        } else {
-            System.loadLibrary("Qt5Core")
-            System.loadLibrary("Qt5Network")
-            System.loadLibrary("tremotesf")
-        }
+        LibTremotesf.init(javaClass.classLoader)
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
