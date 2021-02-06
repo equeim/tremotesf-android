@@ -1,3 +1,4 @@
+import java.util.Properties
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
@@ -41,6 +42,17 @@ class Versions(rootProject: Project) {
 }
 val vers = Versions(rootProject)
 
+class KeystoreProperties(rootProject: Project) {
+    private val properties = Properties().apply {
+        load(rootProject.file("keystore.properties").inputStream())
+    }
+    val keyAlias: String by properties
+    val keyPassword: String by properties
+    val storeFile: String by properties
+    val storePassword: String by properties
+}
+val keystoreProperties = KeystoreProperties(rootProject)
+
 android {
     compileSdk = vers.compileSdk
     ndkVersion = vers.ndk
@@ -53,10 +65,19 @@ android {
         versionName = "2.3.2"
     }
 
+    signingConfigs.register("release") {
+        keyAlias = keystoreProperties.keyAlias
+        keyPassword = keystoreProperties.keyPassword
+        storeFile = rootProject.file(keystoreProperties.storeFile)
+        storePassword = keystoreProperties.storePassword
+    }
+
     buildTypes.named("release") {
         isShrinkResources = false
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
+
+        signingConfig = signingConfigs["release"]
     }
 
     buildFeatures.viewBinding = true
