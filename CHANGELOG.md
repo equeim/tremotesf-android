@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.3.2] - 2021-02-06
+### Fixed
+- Fixed another crash when adding torrent link
+- Fixed crash when renaming torrents
+
 ## [2.3.1] - 2021-02-06
 ### Fixed
 - Crash when adding torrent link
