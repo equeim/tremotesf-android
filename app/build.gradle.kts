@@ -49,8 +49,8 @@ android {
         applicationId = "org.equeim.tremotesf"
         minSdk = vers.minSdk
         targetSdk = vers.targetSdk
-        versionCode = 4037
-        versionName = "2.3.1"
+        versionCode = 4038
+        versionName = "2.3.2"
     }
 
     buildTypes.named("release") {

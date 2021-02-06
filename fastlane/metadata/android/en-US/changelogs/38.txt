@@ -1,0 +1,2 @@
+- Fixed another crash when adding torrent link
+- Fixed crash when renaming torrents
