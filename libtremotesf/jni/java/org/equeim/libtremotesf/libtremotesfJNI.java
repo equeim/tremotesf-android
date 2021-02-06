@@ -227,6 +227,7 @@ public class libtremotesfJNI {
   public final static native int Server_timeout_get(long jarg1, Server jarg1_);
   public final static native long new_Server();
   public final static native void delete_Server(long jarg1);
+  public final static native void delete_ServerSettingsData(long jarg1);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_canShowFreeSpaceForPath(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_hasSessionIdFile(long jarg1, ServerSettingsData jarg1_);
@@ -270,13 +271,13 @@ public class libtremotesfJNI {
   public final static native int ServerSettingsData_maximumPeersPerTorrent_get(long jarg1, ServerSettingsData jarg1_);
   public final static native int ServerSettingsData_maximumPeersGlobally_get(long jarg1, ServerSettingsData jarg1_);
   public final static native long new_ServerSettingsData();
-  public final static native void delete_ServerSettingsData(long jarg1);
   public final static native long SessionStats_downloaded(long jarg1, SessionStats jarg1_);
   public final static native long SessionStats_uploaded(long jarg1, SessionStats jarg1_);
   public final static native int SessionStats_duration(long jarg1, SessionStats jarg1_);
   public final static native int SessionStats_sessionCount(long jarg1, SessionStats jarg1_);
   public final static native long new_SessionStats();
   public final static native void delete_SessionStats(long jarg1);
+  public final static native long new_JniServerSettingsData();
   public final static native void JniServerSettingsData_setDownloadDirectory(long jarg1, JniServerSettingsData jarg1_, String jarg2);
   public final static native void JniServerSettingsData_setStartAddedTorrents(long jarg1, JniServerSettingsData jarg1_, boolean jarg2);
   public final static native void JniServerSettingsData_setTrashTorrentFiles(long jarg1, JniServerSettingsData jarg1_, boolean jarg2);

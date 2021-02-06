@@ -5397,6 +5397,16 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Ser
 }
 
 
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1ServerSettingsData(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1canRenameFiles(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
@@ -6047,16 +6057,6 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1Serve
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1ServerSettingsData(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
-  delete arg1;
-}
-
-
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_SessionStats_1downloaded(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::SessionStats *arg1 = (libtremotesf::SessionStats *) 0 ;
@@ -6136,6 +6136,18 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Ses
   (void)jcls;
   arg1 = *(libtremotesf::SessionStats **)&jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1JniServerSettingsData(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::JniServerSettingsData *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::JniServerSettingsData *)new libtremotesf::JniServerSettingsData();
+  *(libtremotesf::JniServerSettingsData **)&jresult = result; 
+  return jresult;
 }
 
 

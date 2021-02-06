@@ -134,13 +134,9 @@ object Rpc : Logger {
         }
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
-            val old = if (::serverSettings.isInitialized) {
-                serverSettings
-            } else {
-                null
-            }
+            val old = serverSettings
             serverSettings = data
-            old?.delete()
+            old.delete()
         }
 
         override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
@@ -210,7 +206,7 @@ object Rpc : Logger {
     private var updateWorkerCompleter = AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
 
     @Volatile
-    lateinit var serverSettings: JniServerSettingsData
+    var serverSettings = JniServerSettingsData()
         private set
 
     private val _serverStats = MutableStateFlow(ServerStats())

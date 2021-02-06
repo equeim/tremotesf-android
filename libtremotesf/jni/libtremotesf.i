@@ -53,7 +53,7 @@ namespace libtremotesf
     %ignore SessionStats::update;
 
     %ignore ServerSettings;
-    %ignore JniServerSettingsData::JniServerSettingsData;
+    %ignore JniServerSettingsData::JniServerSettingsData(ServerSettings*);
     %ignore Rpc::serverSettings;
     %typemap(javafinalize) ServerSettingsData ""
     %typemap(javafinalize) JniServerSettingsData ""

@@ -355,7 +355,9 @@ namespace libtremotesf
     template<typename Func>
     void JniServerSettingsData::runOnThread(Func&& function)
     {
-        QMetaObject::invokeMethod(mSettings, std::forward<Func>(function));
+        if (mSettings) {
+            QMetaObject::invokeMethod(mSettings, std::forward<Func>(function));
+        }
     }
 
     JniRpc::JniRpc()
