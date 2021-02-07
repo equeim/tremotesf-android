@@ -1,12 +1,16 @@
 #include "jnirpc.h"
 
 #include <array>
+#include <atomic>
+#include <thread>
 
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QTimer>
+
+#include <android/log.h>
 
 #include <jni.h>
 
@@ -18,6 +22,7 @@ namespace libtremotesf
     namespace
     {
         constexpr int threadStartTimeoutMs = 5000;
+        constexpr const char* logTag = "LibTremotesf";
 
         template<typename I, typename O, typename IndexIterator, typename Functor>
         std::vector<O*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end, Functor&& transform)
@@ -370,34 +375,65 @@ namespace libtremotesf
         qRegisterMetaType<TorrentFile::Priority>();
         qRegisterMetaType<ServerSettingsData::AlternativeSpeedLimitsDays>();
         qRegisterMetaType<ServerSettingsData::EncryptionMode>();
+    }
 
-        // We need to block here to make sure that runOnThread()
-        // works right after constructor is called
-        qInfo("Starting thread and waiting for started() signal");
-        QEventLoop loop;
-        QObject::connect(&mThread, &QThread::started, &loop, &QEventLoop::quit);
-        QTimer::singleShot(threadStartTimeoutMs, &loop, &QEventLoop::quit);
+    struct JniRpc::ThreadStartArgs {
+        int argc = 0;
+        std::array<char*, 1> argv {nullptr};
+
+        std::mutex mutex;
+        std::condition_variable cv;
+        std::atomic_bool applicationCreated{false};
+    };
+
+    void JniRpc::init()
+    {
+        __android_log_print(ANDROID_LOG_INFO, logTag, "Starting thread and waiting for QCoreApplication creation");
+
+        auto args = std::make_shared<ThreadStartArgs>();
+
+        std::thread thread(&JniRpc::exec, this, args);
+        thread.detach();
+
         QElapsedTimer timer;
         timer.start();
-        mThread.start();
-        loop.exec();
-        {
-            const auto elapsed = timer.nsecsElapsed();
-            qInfo("Exited event loop after %f ms", elapsed / 1000000.0);
-        }
-        if (!mThread.eventDispatcher()) {
-            qFatal("Thread failed to start");
-        }
-        qInfo("Thread started");
 
-        runOnThread([this] {
-            initRpc();
-        });
+        bool createdApplication;
+        {
+            std::unique_lock<std::mutex> lock(args->mutex);
+            createdApplication = args->cv.wait_for(lock,
+                                                   std::chrono::milliseconds(threadStartTimeoutMs),
+                                                   [args] { return args->applicationCreated.load(); });
+        }
+        const auto elapsed = timer.nsecsElapsed() / 1000000.0;
+        if (!createdApplication) {
+            __android_log_print(ANDROID_LOG_FATAL, logTag, "Failed to create QCoreApplication, elapsed time = %f ms", elapsed);
+            std::terminate();
+        }
+        qInfo("Created QCoreApplication, elapsed time = %f ms", elapsed);
+    }
+
+    void JniRpc::exec(std::shared_ptr<ThreadStartArgs> args)
+    {
+        new QCoreApplication(args->argc, args->argv.data());
+        QCoreApplication::setApplicationName(QLatin1String(logTag));
+        qInfo("Created QCoreApplication");
+
+        {
+            std::unique_lock<std::mutex> lock(args->mutex);
+            args->applicationCreated = true;
+        }
+        args->cv.notify_one();
+        args.reset();
+
+        initRpc();
+
+        QCoreApplication::exec();
     }
 
     void JniRpc::initRpc()
     {
-        qInfo("Initialize Rpc");
+        qInfo("Initializing Rpc");
 
         mRpc = new Rpc();
 
@@ -707,7 +743,7 @@ namespace libtremotesf
     template<typename Func>
     void JniRpc::runOnThread(Func&& function)
     {
-        QMetaObject::invokeMethod(mThread.eventDispatcher(), std::forward<Func>(function));
+        QMetaObject::invokeMethod(QCoreApplication::eventDispatcher(), std::forward<Func>(function));
     }
 
     template<typename Func>
@@ -724,10 +760,5 @@ namespace libtremotesf
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM*, void*)
 {
-    static int argc = 0;
-    static std::string arg;
-    static std::array<char*, 1> argv { &arg.front() };
-    new QCoreApplication(argc, argv.data());
-    QCoreApplication::setApplicationName(QLatin1String("LibTremotesf"));
     return JNI_VERSION_1_2;
 }

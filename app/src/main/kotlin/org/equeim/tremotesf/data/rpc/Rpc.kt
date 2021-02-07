@@ -182,6 +182,10 @@ object Rpc : Logger {
         }
     }
 
+    init {
+        nativeInstance.init()
+    }
+
     private val notificationManager: NotificationManager = context.getSystemService()!!
 
     private var updateWorkerCompleter = AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()

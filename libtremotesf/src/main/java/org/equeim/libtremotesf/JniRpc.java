@@ -51,6 +51,10 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_director_connect(this, swigCPtr, true, true);
   }
 
+  public void init() {
+    libtremotesfJNI.JniRpc_init(swigCPtr, this);
+  }
+
   public void setServer(Server server) {
     libtremotesfJNI.JniRpc_setServer(swigCPtr, this, Server.getCPtr(server), server);
   }

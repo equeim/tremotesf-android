@@ -1,9 +1,8 @@
 #ifndef LIBTREMOTESF_JNIRPC_H
 #define LIBTREMOTESF_JNIRPC_H
 
+#include <memory>
 #include <unordered_map>
-
-#include <QThread>
 
 #include "libtremotesf/rpc.h"
 #include "libtremotesf/serversettings.h"
@@ -69,6 +68,8 @@ namespace libtremotesf
     public:
         JniRpc();
         virtual ~JniRpc() = default;
+
+        void init();
 
         void setServer(const Server& server);
         void resetServer();
@@ -161,9 +162,11 @@ namespace libtremotesf
         template<typename Func>
         void runOnTorrent(int torrentId, Func&& function);
 
+        struct ThreadStartArgs;
+        void exec(std::shared_ptr<ThreadStartArgs> args);
+
         void initRpc();
 
-        QThread mThread;
         Rpc* mRpc = nullptr;
     };
 }

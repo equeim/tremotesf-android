@@ -227,7 +227,6 @@ public class libtremotesfJNI {
   public final static native int Server_timeout_get(long jarg1, Server jarg1_);
   public final static native long new_Server();
   public final static native void delete_Server(long jarg1);
-  public final static native void delete_ServerSettingsData(long jarg1);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_canShowFreeSpaceForPath(long jarg1, ServerSettingsData jarg1_);
   public final static native boolean ServerSettingsData_hasSessionIdFile(long jarg1, ServerSettingsData jarg1_);
@@ -271,6 +270,7 @@ public class libtremotesfJNI {
   public final static native int ServerSettingsData_maximumPeersPerTorrent_get(long jarg1, ServerSettingsData jarg1_);
   public final static native int ServerSettingsData_maximumPeersGlobally_get(long jarg1, ServerSettingsData jarg1_);
   public final static native long new_ServerSettingsData();
+  public final static native void delete_ServerSettingsData(long jarg1);
   public final static native long SessionStats_downloaded(long jarg1, SessionStats jarg1_);
   public final static native long SessionStats_uploaded(long jarg1, SessionStats jarg1_);
   public final static native int SessionStats_duration(long jarg1, SessionStats jarg1_);
@@ -318,6 +318,7 @@ public class libtremotesfJNI {
   public final static native void delete_JniServerSettingsData(long jarg1);
   public final static native long new_JniRpc();
   public final static native void delete_JniRpc(long jarg1);
+  public final static native void JniRpc_init(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_setServer(long jarg1, JniRpc jarg1_, long jarg2, Server jarg2_);
   public final static native void JniRpc_resetServer(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_connect(long jarg1, JniRpc jarg1_);

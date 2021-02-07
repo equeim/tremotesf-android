@@ -11,7 +11,9 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5Core)
+find_library(log-lib log)
+
+find_package(Qt5Core REQUIRED)
 find_package(Qt5Concurrent REQUIRED)
 find_package(Qt5Network REQUIRED)
 
@@ -35,7 +37,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_compile_definitions(${PROJECT_NAME} PRIVATE QT_DEPRECATED_WARNINGS QT_DISABLE_DEPRECATED_BEFORE=0x05f00)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5Concurrent_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+target_link_libraries(${PROJECT_NAME} ${log-lib} Qt5::Core Qt5::Network)
 
 # CMake overrides linker with -fuse-ld=gold when INTERPROCEDURAL_OPTIMIZATION is enabled. Bring it back
 # We are using target_link_libraries instead of target_link_options
