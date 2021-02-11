@@ -1,13 +1,10 @@
 #include "jnirpc.h"
 
-#include <atomic>
 #include <thread>
 
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
 #include <QElapsedTimer>
-#include <QEventLoop>
-#include <QTimer>
 
 #include <android/log.h>
 
@@ -379,7 +376,7 @@ namespace libtremotesf
     struct JniRpc::ThreadStartArgs {
         std::mutex mutex;
         std::condition_variable cv;
-        std::atomic_bool applicationCreated{false};
+        bool applicationCreated{false};
     };
 
     void JniRpc::init()
@@ -399,7 +396,7 @@ namespace libtremotesf
             std::unique_lock<std::mutex> lock(args->mutex);
             createdApplication = args->cv.wait_for(lock,
                                                    std::chrono::milliseconds(threadStartTimeoutMs),
-                                                   [args] { return args->applicationCreated.load(); });
+                                                   [args] { return args->applicationCreated; });
         }
         const auto elapsed = timer.nsecsElapsed() / 1000000.0;
         if (!createdApplication) {
