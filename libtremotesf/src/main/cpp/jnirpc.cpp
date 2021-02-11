@@ -1,6 +1,5 @@
 #include "jnirpc.h"
 
-#include <array>
 #include <atomic>
 #include <thread>
 
@@ -378,9 +377,6 @@ namespace libtremotesf
     }
 
     struct JniRpc::ThreadStartArgs {
-        int argc = 0;
-        std::array<char*, 1> argv {nullptr};
-
         std::mutex mutex;
         std::condition_variable cv;
         std::atomic_bool applicationCreated{false};
@@ -415,7 +411,11 @@ namespace libtremotesf
 
     void JniRpc::exec(std::shared_ptr<ThreadStartArgs> args)
     {
-        new QCoreApplication(args->argc, args->argv.data());
+        int argc = 1;
+        char argv0[] {'\0'};
+        char* argv[] {argv0, nullptr};
+
+        new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationName(QLatin1String(logTag));
         qInfo("Created QCoreApplication");
 
