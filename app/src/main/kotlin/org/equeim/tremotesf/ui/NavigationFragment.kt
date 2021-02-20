@@ -182,8 +182,8 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         addNavigationBarBottomPadding()
     }
 

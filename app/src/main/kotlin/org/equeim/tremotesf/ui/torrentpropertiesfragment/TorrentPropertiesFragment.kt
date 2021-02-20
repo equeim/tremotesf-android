@@ -312,8 +312,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         open fun update() = Unit
         open fun onNavigatedFrom() = Unit
 
-        override fun onActivityCreated(savedInstanceState: Bundle?) {
-            super.onActivityCreated(savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             addNavigationBarBottomPadding(true)
         }
     }
