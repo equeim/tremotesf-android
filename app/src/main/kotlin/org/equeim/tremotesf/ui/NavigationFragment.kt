@@ -46,6 +46,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,18 +85,42 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     protected var toolbar: Toolbar? = null
         private set
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        navController = findNavController()
+        findNavDestination()
+    }
+
+    private fun findNavDestination() {
+        val className = javaClass.name
+        if (!findDestinationInGraph(navController.graph, className)) {
+            throw RuntimeException("Didn't find NavDestination for $className")
+        }
+    }
+
+    private fun findDestinationInGraph(navGraph: NavGraph, className: String): Boolean {
+        for (destination in navGraph) {
+            when (destination) {
+                is FragmentNavigator.Destination -> {
+                    if (destination.className == className) {
+                        destinationId = destination.id
+                        return true
+                    }
+                }
+                is NavGraph -> {
+                    if (findDestinationInGraph(destination, className)) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // We can't do it in onCreate() because NavController may not exist yet at that point
-        // (e.g. after configuration change when all fragments are recreated)
-        if (!::navController.isInitialized) {
-            navController = requiredActivity.navController
-            findNavDestination()
-        }
-
         setupToolbar()
         createStatusBarPlaceholder()
-
         navController.addOnDestinationChangedListener(destinationListener)
     }
 
@@ -160,32 +185,6 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         addNavigationBarBottomPadding()
-    }
-
-    private fun findNavDestination() {
-        val className = javaClass.name
-        if (!findDestinationInGraph(navController.graph, className)) {
-            throw RuntimeException("Didn't find NavDestination for $className")
-        }
-    }
-
-    private fun findDestinationInGraph(navGraph: NavGraph, className: String): Boolean {
-        for (destination in navGraph) {
-            when (destination) {
-                is FragmentNavigator.Destination -> {
-                    if (destination.className == className) {
-                        destinationId = destination.id
-                        return true
-                    }
-                }
-                is NavGraph -> {
-                    if (findDestinationInGraph(destination, className)) {
-                        return true
-                    }
-                }
-            }
-        }
-        return false
     }
 
     override fun onDestroyView() {
