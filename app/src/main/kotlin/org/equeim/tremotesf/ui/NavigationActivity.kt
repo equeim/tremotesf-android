@@ -101,8 +101,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
     var actionMode: ActionMode? = null
         private set
 
-    lateinit var navController: NavController
-        private set
+    private lateinit var navController: NavController
+
     lateinit var appBarConfiguration: AppBarConfiguration
         private set
 
