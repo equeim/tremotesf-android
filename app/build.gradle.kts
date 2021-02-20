@@ -17,7 +17,7 @@ class Versions(rootProject: Project) {
     val targetSdk: Int by rootProject.extra
 
     val kotlinxCoroutines = "1.4.2"
-    val kotlinxSerialization = "1.0.1"
+    val kotlinxSerialization = "1.1.0"
 
     class AndroidX(gradle: Gradle) {
         val appcompat = "1.2.0"
@@ -25,9 +25,9 @@ class Versions(rootProject: Project) {
         val core = "1.3.2"
         val coordinatorlayout = "1.1.0"
         val drawerlayout = "1.1.1"
-        val fragment = "1.2.5"
+        val fragment = "1.3.0"
         val gridlayout = "1.0.0"
-        val lifecycle = "2.3.0-rc01"
+        val lifecycle = "2.3.0"
         val navigation: String by (gradle as ExtensionAware).extra
         val recyclerview = "1.1.0"
         val preference = "1.1.1"
