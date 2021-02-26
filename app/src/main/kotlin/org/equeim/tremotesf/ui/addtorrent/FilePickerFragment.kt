@@ -31,7 +31,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -42,6 +44,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
@@ -62,6 +67,18 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
 
     private val model by viewModels<FilePickerFragmentViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            model.onRequestPermissionResult(true)
+        } else if (!model.requestedPermission) {
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+                model.onRequestPermissionResult(granted)
+            }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -75,23 +92,24 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            binding.filesView.visibility = View.GONE
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
-        } else {
-            model.navigator.init()
-        }
-
         model.currentDirectory.collectWhenStarted(viewLifecycleOwner) {
             binding.currentDirectoryTextView.text = it.absolutePath
         }
 
-        model.navigator.items.map { it.isEmpty() }.distinctUntilChanged().collectWhenStarted(viewLifecycleOwner) {
-            binding.placeholder.text = if (it) {
-                getString(R.string.no_files)
-            } else {
-                null
+        model.navigator.items
+            .map { it.isEmpty() }
+            .distinctUntilChanged()
+            .combine(model.hasStoragePermission, ::Pair)
+            .collectWhenStarted(viewLifecycleOwner) { (noFiles, hasStoragePermission) ->
+                binding.placeholder.text = when {
+                    !hasStoragePermission -> getText(R.string.storage_permission_error)
+                    noFiles -> getText(R.string.no_files)
+                    else -> null
+                }
             }
+
+        model.hasStoragePermission.collectWhenStarted(viewLifecycleOwner) {
+            binding.filesView.isVisible = it
         }
     }
 
@@ -101,19 +119,6 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
             return true
         }
         return false
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>,
-                                            grantResults: IntArray) {
-        with(binding) {
-            if (grantResults.first() == PackageManager.PERMISSION_GRANTED) {
-                filesView.visibility = View.VISIBLE
-                model.navigator.init()
-            } else {
-                placeholder.text = getString(R.string.storage_permission_error)
-            }
-        }
     }
 
     fun finish(fileUri: Uri) {
@@ -205,4 +210,20 @@ class FilePickerFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewMode
     val currentDirectory = savedStateHandle.getStateFlow(viewModelScope, "currentDirectory", Environment.getExternalStorageDirectory())
 
     val navigator = FilesystemNavigator(currentDirectory, viewModelScope)
+
+    private val _hasStoragePermission = MutableStateFlow(false)
+    val hasStoragePermission: StateFlow<Boolean> by ::_hasStoragePermission
+
+    var requestedPermission = false
+        private set
+
+    fun onRequestPermissionResult(hasStoragePermission: Boolean) {
+        if (!requestedPermission) {
+            requestedPermission = true
+            _hasStoragePermission.value = hasStoragePermission
+            if (hasStoragePermission) {
+                navigator.init()
+            }
+        }
+    }
 }

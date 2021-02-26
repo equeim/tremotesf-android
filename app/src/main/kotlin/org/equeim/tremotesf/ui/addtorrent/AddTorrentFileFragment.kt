@@ -32,6 +32,7 @@ import android.view.ViewGroup
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.trimmedLength
@@ -146,18 +147,17 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         super.onCreate(savedInstanceState)
 
         if (args.uri.scheme == ContentResolver.SCHEME_FILE &&
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
-        } else {
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             model.onRequestPermissionResult(true)
             model.load(args.uri)
+        } else if (!model.requestedPermission) {
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+                model.onRequestPermissionResult(granted)
+                if (granted) {
+                    model.load(args.uri)
+                }
+            }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>,
-                                            grantResults: IntArray) {
-        model.onRequestPermissionResult(grantResults.first() == PackageManager.PERMISSION_GRANTED)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

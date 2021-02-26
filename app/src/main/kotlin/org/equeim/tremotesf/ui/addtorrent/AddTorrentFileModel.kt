@@ -61,6 +61,8 @@ interface AddTorrentFileModel {
                               val rpcStatus: Rpc.Status,
                               val hasStoragePermission: Boolean = false)
 
+    val requestedPermission: Boolean
+
     val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
 
@@ -75,6 +77,8 @@ interface AddTorrentFileModel {
 }
 
 class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : ViewModel(), AddTorrentFileModel, Logger {
+    override var requestedPermission = false
+
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
     private val hasStoragePermission = MutableStateFlow(false)
@@ -95,6 +99,7 @@ class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : 
     }
 
     override fun onRequestPermissionResult(hasStoragePermission: Boolean) {
+        requestedPermission = true
         this.hasStoragePermission.value = hasStoragePermission
     }
 

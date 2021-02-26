@@ -19,9 +19,7 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -29,6 +27,8 @@ import android.view.View
 import android.widget.Checkable
 
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.navigation.ui.onNavDestinationSelected
@@ -49,8 +49,6 @@ import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment
-import org.equeim.tremotesf.ui.addtorrent.FilePickerFragmentDirections
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
@@ -73,6 +71,17 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private var torrentsAdapter: TorrentsAdapter? = null
 
     private val model by viewModels<TorrentsListFragmentViewModel>()
+
+    private lateinit var getContentActivityLauncher: ActivityResultLauncher<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        getContentActivityLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+            if (it != null) {
+                navigate(TorrentsListFragmentDirections.addTorrentFileFragment(it))
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -247,14 +256,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        info("onActivityResult $resultCode $data")
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            navigate(TorrentsListFragmentDirections.addTorrentFileFragment(data.data!!))
-        }
-    }
-
     private fun onRpcConnectionStateChanged(connectionState: Int) {
         if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
             if (connectionState == RpcConnectionState.Connected) {
@@ -341,13 +342,9 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     private fun startFilePickerActivity() {
         try {
-            startActivityForResult(Intent(Intent.ACTION_GET_CONTENT)
-                                           .addCategory(Intent.CATEGORY_OPENABLE)
-                                           .setType("application/x-bittorrent"),
-                                   0)
+            getContentActivityLauncher.launch("application/x-bittorrent")
         } catch (error: ActivityNotFoundException) {
             navigate(TorrentsListFragmentDirections.filePickerFragment())
         }
     }
-
 }
