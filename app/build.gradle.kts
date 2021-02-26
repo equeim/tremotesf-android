@@ -120,9 +120,13 @@ android {
 }
 
 repositories {
-    jcenter()
-    google()
     mavenCentral()
+    google()
+    jcenter {
+        content {
+            includeModule("com.l4digital.fastscroll", "fastscroll")
+        }
+    }
 }
 
 dependencies {
