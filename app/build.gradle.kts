@@ -94,7 +94,11 @@ android {
         }
     }
 
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+    kotlinOptions{
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        useIR = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
