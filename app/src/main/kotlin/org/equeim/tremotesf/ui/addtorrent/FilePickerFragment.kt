@@ -97,7 +97,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         }
 
         model.navigator.items
-            .map { it.isEmpty() }
+            .map { it.asSequence().filterNotNull().none() }
             .distinctUntilChanged()
             .combine(model.hasStoragePermission, ::Pair)
             .collectWhenStarted(viewLifecycleOwner) { (noFiles, hasStoragePermission) ->
