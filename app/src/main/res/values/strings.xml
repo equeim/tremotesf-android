@@ -418,18 +418,18 @@
     <string name="free_space">Free space: %s</string>
     <string name="free_space_error">Error getting free space</string>
 
-    <string name="notify_on_finished">Notify on finished torrents</string>
-    <string name="notify_on_added">Notify on added torrents</string>
+    <string name="notify_on_finished">Notifications lorsqu'un torrent est terminé</string>
+    <string name="notify_on_added">Notifications lors de l'ajout d'un torrent</string>
 
-    <string name="notifications_on_connect">Notifications when connecting to server</string>
-    <string name="notify_on_finished_since_last">Notify on finished torrents since last connection to server</string>
-    <string name="notify_on_added_since_last">Notify on added torrents since last connection to server</string>
+    <string name="notifications_on_connect">Notifications lors de la connexion au serveur</string>
+    <string name="notify_on_finished_since_last">Notifications des torrents complétés lors de la dernière connexion au serveur</string>
+    <string name="notify_on_added_since_last">Notifications des torrents ajoutés lors de la dernière connecion au serveur</string>
 
-    <string name="persistent_notification">Persistent notification</string>
+    <string name="persistent_notification">Notification persistente</string>
 
     <string name="persistent_notification_warning">Enabling persistent notification will prevent application from switching to background update mode and may cause excessive battery drain</string>
 
-    <string name="prefs_background_update_interval_title">Background update interval</string>
+    <string name="prefs_background_update_interval_title">Intervale de mise à jour en arrière plan</string>
     <string-array name="prefs_background_update_interval_entries">
         <item>Disabled</item>
         <item>15 minutes</item>
@@ -441,7 +441,7 @@
         <item>24 hours</item>
     </string-array>
 
-    <string name="connection_settings">Connection settings</string>
+    <string name="connection_settings">Paramètres de connexion</string>
 
     <string name="theme_auto_pre_q">Set by Battery Saver</string>
     <string name="theme_auto_q">System default</string>
@@ -455,20 +455,20 @@
     </string-array>
 
     <string name="donations_description">If you like this application, you can support its development by sending a donation to the developer.</string>
-    <string name="donations_donate">Donate</string>
-    <string name="donations_amount">Donation amount</string>
+    <string name="donations_donate">Faire un don</string>
+    <string name="donations_amount">Montant du don</string>
     <string name="donations_google_title">Google Play Store</string>
     <string name="donations_google_description">Google charges a fee of 30%</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">You can choose how much you want to donate after clicking the button</string>
     <string name="donations_yandex_title">Yandex.Money</string>
-    <string name="donations_snackbar_ok">Thank you for your donation!</string>
-    <string name="donations_snackbar_error">Error while processing donation</string>
+    <string name="donations_snackbar_ok">Merci pour votre donation!</string>
+    <string name="donations_snackbar_error">Error lors de la donation</string>
 
-    <string name="proxy_settings">Proxy settings</string>
-    <string name="proxy_type">Proxy type</string>
-    <string name="share">Share</string>
-    <string name="share_torrent">Share torrent</string>
+    <string name="proxy_settings">Paramètres du proxy</string>
+    <string name="proxy_type">Type de proxy</string>
+    <string name="share">Partager</string>
+    <string name="share_torrent">Partager le torrent</string>
 
     <string-array name="proxy_type_items">
         <item>Default</item>
