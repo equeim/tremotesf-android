@@ -18,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Splash"
         android:extractNativeLibs="false"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="m">
 
         <activity
