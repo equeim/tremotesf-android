@@ -65,13 +65,6 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/serverEditFragment"
-            app:destination="@id/serverEditFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-        <action
             android:id="@+id/torrentFileRenameDialogFragment"
             app:destination="@id/torrentFileRenameDialogFragment" />
         <action
@@ -80,9 +73,6 @@
         <action
             android:id="@+id/torrentSetLocationDialogFragment"
             app:destination="@id/torrentSetLocationDialogFragment" />
-        <action
-            android:id="@+id/donateDialogFragment"
-            app:destination="@id/donateDialogFragment" />
         <action
             android:id="@+id/serverStatsDialogFragment"
             app:destination="@id/serverStatsDialogFragment" />
@@ -177,7 +167,7 @@
             app:popUpTo="@+id/torrentsListFragment" />
     </fragment>
     <action
-        android:id="@+id/addTorrentFileFragment"
+        android:id="@+id/toAddTorrentFileFragment"
         app:destination="@id/addTorrentFileFragment"
         app:enterAnim="@anim/nav_default_enter_anim"
         app:exitAnim="@anim/nav_default_exit_anim"
@@ -186,13 +176,22 @@
         app:popExitAnim="@anim/nav_default_pop_exit_anim" />
 
     <action
-        android:id="@+id/addTorrentLinkFragment"
+        android:id="@+id/toAddTorrentLinkFragment"
         app:destination="@id/addTorrentLinkFragment"
         app:enterAnim="@anim/nav_default_enter_anim"
         app:exitAnim="@anim/nav_default_exit_anim"
         app:popUpTo="@id/torrentsListFragment"
         app:popEnterAnim="@anim/nav_default_pop_enter_anim"
         app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+    <action
+        android:id="@+id/toServerEditFragment"
+        app:destination="@id/serverEditFragment" />
+
+    <action
+        android:id="@+id/toDonateDialogFragment"
+        app:destination="@id/donateDialogFragment" />
+
     <fragment
         android:id="@+id/serverSettingsFragment"
         android:name="org.equeim.tremotesf.ui.serversettingsfragment.ServerSettingsFragment">

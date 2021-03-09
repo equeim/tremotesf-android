@@ -26,6 +26,7 @@ import org.equeim.tremotesf.R
 
 class DonateDialogFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        Settings.donateDialogShown = true
         return MaterialAlertDialogBuilder(requireContext())
                 .setMessage(getString(R.string.donations_description) + "\n\n" + getString(R.string.donate_dialog_again))
                 .setNegativeButton(android.R.string.cancel, null)

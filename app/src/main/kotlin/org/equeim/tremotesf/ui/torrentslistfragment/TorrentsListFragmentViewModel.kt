@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
 
 import org.equeim.libtremotesf.TorrentData
-import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
@@ -45,8 +44,6 @@ import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.getStateFlow
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.dropTrailingPathSeparator
-
-import java.util.concurrent.TimeUnit
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application), Logger {
     companion object {
@@ -130,8 +127,6 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)
 
-    val navigatedFromFragment = savedStateHandle.getStateFlow("navigatedFromFragment", false)
-
     init {
         Rpc.torrentAddDuplicateEvents
                 .onEach { showAddTorrentDuplicateError.value = true }
@@ -139,17 +134,6 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Rpc.torrentAddErrorEvents
                 .onEach { showAddTorrentError.value = true }
                 .launchIn(viewModelScope)
-    }
-
-    fun shouldShowDonateDialog(): Boolean {
-        if (Settings.donateDialogShown) {
-            return false
-        }
-        val info = getApplication<Application>().packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, 0)
-        val currentTime = System.currentTimeMillis()
-        val installDays = TimeUnit.DAYS.convert(currentTime - info.firstInstallTime, TimeUnit.MILLISECONDS)
-        val updateDays = TimeUnit.DAYS.convert(currentTime - info.lastUpdateTime, TimeUnit.MILLISECONDS)
-        return (installDays >= 2 && updateDays >= 1)
     }
 
     private fun createFilterPredicate(statusFilterMode: StatusFilterMode,

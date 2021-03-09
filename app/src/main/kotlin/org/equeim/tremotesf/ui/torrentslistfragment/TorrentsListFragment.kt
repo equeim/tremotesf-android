@@ -117,17 +117,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         model.showAddTorrentError.handleAndReset {
             view.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }.collectWhenStarted(viewLifecycleOwner)
-
-        if (!model.navigatedFromFragment.value) {
-            if (Servers.hasServers) {
-                if (model.shouldShowDonateDialog()) {
-                    Settings.donateDialogShown = true
-                    navigate(TorrentsListFragmentDirections.donateDialogFragment())
-                }
-            } else {
-                navigate(TorrentsListFragmentDirections.serverEditFragment(null))
-            }
-        }
     }
 
     private fun setupDrawerListeners() {
@@ -197,10 +186,6 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         torrentsAdapter = null
 
         super.onDestroyView()
-    }
-
-    override fun onNavigatedFrom() {
-        model.navigatedFromFragment.value = true
     }
 
     override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {

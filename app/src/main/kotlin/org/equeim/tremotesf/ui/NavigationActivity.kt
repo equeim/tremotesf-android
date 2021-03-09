@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.ui
 
-import android.content.ContentResolver
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +29,7 @@ import android.view.ViewGroup
 import android.widget.Checkable
 import android.widget.ImageView
 import android.widget.Toast
-
+import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -44,22 +43,19 @@ import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
-
 import kotlinx.coroutines.flow.map
-import org.equeim.tremotesf.NavMainDirections
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.NavigationActivityBinding
-import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Servers
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
+import org.equeim.tremotesf.databinding.NavigationActivityBinding
+import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
@@ -101,7 +97,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
     var actionMode: ActionMode? = null
         private set
 
-    private lateinit var navController: NavController
+    lateinit var navController: NavController
+        private set
 
     lateinit var appBarConfiguration: AppBarConfiguration
         private set
@@ -114,7 +111,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
     lateinit var sidePanelBinding: SidePanelHeaderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        info("NavigationActivity.onCreate(), intent=$intent")
+        info("onCreate() called with: savedInstanceState = $savedInstanceState")
 
         AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
         setTheme(Settings.theme)
@@ -180,10 +177,27 @@ class NavigationActivity : AppCompatActivity(), Logger {
             binding.drawerLayout.setDrawerLockMode(lockMode, GravityCompat.START)
         }
 
-        handleAddTorrentIntent(intent)
+        initialNavigation()
+
+        info("onCreate: return")
+    }
+
+    private fun initialNavigation() {
+        val model by viewModels<NavigationActivityViewModel>()
+
+        if (model.navigatedInitially) return
+        model.navigatedInitially = true
+
+        val (directions, options) = model.getInitialNavigationDirections(this, intent) ?: return
+        lifecycleScope.launchWhenStarted {
+            if (navController.currentDestination?.id == navController.graph.startDestination) {
+                navigate(directions, options)
+            }
+        }
     }
 
     override fun onStart() {
+        info("onStart() called")
         super.onStart()
         if (activeActivity == null) {
             Rpc.cancelUpdateWorker()
@@ -193,6 +207,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
     }
 
     override fun onStop() {
+        info("onStop() called")
         if (!isChangingConfigurations) {
             if (activeActivity === this) {
                 activeActivity = null
@@ -208,15 +223,16 @@ class NavigationActivity : AppCompatActivity(), Logger {
     }
 
     override fun onDestroy() {
-        info("NavigationActivity.onDestroy()")
+        info("onDestroy() called")
         createdActivities.remove(this)
         super.onDestroy()
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        info("NavigationActivity.onNewIntent(), intent=$intent")
+    override fun onNewIntent(intent: Intent) {
+        info("onNewIntent() called with: intent = $intent")
         super.onNewIntent(intent)
-        handleAddTorrentIntent(intent)
+        val model by viewModels<NavigationActivityViewModel>()
+        model.getAddTorrentDirections(this, intent)?.let { navigate(it) }
     }
 
     override fun onBackPressed() {
@@ -301,24 +317,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
             directoriesView.setAdapter(DirectoriesViewAdapter(this@NavigationActivity, directoriesView))
 
             sidePanelBinding = this
-        }
-    }
-
-    private fun handleAddTorrentIntent(intent: Intent?) {
-        if (intent?.action == Intent.ACTION_VIEW) {
-            val uri = intent.data!!
-            val directions = when (intent.scheme) {
-                ContentResolver.SCHEME_FILE,
-                ContentResolver.SCHEME_CONTENT -> NavMainDirections.addTorrentFileFragment(uri)
-                AddTorrentLinkFragment.SCHEME_MAGNET -> NavMainDirections.addTorrentLinkFragment(uri)
-                else -> return
-            }
-            if (isTaskRoot) {
-                navigate(directions)
-            } else {
-                navigate(directions,
-                         NavOptions.Builder().setPopUpTo(R.id.nav_main, true).build())
-            }
         }
     }
 
