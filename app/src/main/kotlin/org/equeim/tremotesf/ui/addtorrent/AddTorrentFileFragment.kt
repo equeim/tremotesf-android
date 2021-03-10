@@ -146,17 +146,22 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (args.uri.scheme == ContentResolver.SCHEME_FILE &&
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            model.onRequestPermissionResult(granted)
+            if (granted) {
+                model.load(args.uri)
+            }
+        }
+        if (args.uri.scheme == ContentResolver.SCHEME_FILE) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                model.onRequestPermissionResult(true)
+                model.load(args.uri)
+            } else {
+                launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        } else {
             model.onRequestPermissionResult(true)
             model.load(args.uri)
-        } else if (!model.requestedPermission) {
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-                model.onRequestPermissionResult(granted)
-                if (granted) {
-                    model.load(args.uri)
-                }
-            }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
