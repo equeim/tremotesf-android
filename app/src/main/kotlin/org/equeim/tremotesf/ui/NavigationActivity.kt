@@ -112,6 +112,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         info("onCreate() called with: savedInstanceState = $savedInstanceState")
+        info("onCreate: intent = $intent")
 
         AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
         setTheme(Settings.theme)
@@ -189,10 +190,24 @@ class NavigationActivity : AppCompatActivity(), Logger {
         model.navigatedInitially = true
 
         val (directions, options) = model.getInitialNavigationDirections(this, intent) ?: return
-        lifecycleScope.launchWhenStarted {
-            if (navController.currentDestination?.id == navController.graph.startDestination) {
-                navigate(directions, options)
+        info("initialNavigation: initial navigation directions is $directions")
+
+        if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
+            info("initialNavigation: activity was launched from history, skip initial navigation")
+            return
+        }
+
+        if (navController.currentDestination?.id == navController.graph.startDestination) {
+            lifecycleScope.launchWhenStarted {
+                if (navController.currentDestination?.id == navController.graph.startDestination) {
+                    info("initialNavigation: initially navigating to $directions")
+                    navigate(directions, options)
+                } else {
+                    info("initialNavigation: current destination is not start destination, skip initial navigation")
+                }
             }
+        } else {
+            info("initialNavigation: current destination is not start destination, skip initial navigation")
         }
     }
 
