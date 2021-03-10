@@ -16,7 +16,7 @@ class Versions(rootProject: Project) {
     val minSdk: Int by rootProject.extra
     val targetSdk: Int by rootProject.extra
 
-    val kotlinxCoroutines = "1.4.2"
+    val kotlinxCoroutines = "1.4.3"
     val kotlinxSerialization = "1.1.0"
 
     class AndroidX(gradle: Gradle) {
@@ -25,7 +25,7 @@ class Versions(rootProject: Project) {
         val core = "1.3.2"
         val coordinatorlayout = "1.1.0"
         val drawerlayout = "1.1.1"
-        val fragment = "1.3.0"
+        val fragment = "1.3.1"
         val gridlayout = "1.0.0"
         val lifecycle = "2.3.0"
         val navigation: String by (gradle as ExtensionAware).extra
@@ -38,7 +38,7 @@ class Versions(rootProject: Project) {
 
     val material = "1.3.0"
     val fastscroll = "2.0.1"
-    val billing = "3.0.2"
+    val billing = "3.0.3"
 }
 val vers = Versions(rootProject)
 

@@ -1,8 +1,8 @@
 pluginManagement {
-    val android = "4.2.0-beta05"
+    val android = "4.2.0-beta06"
     val kotlin = "1.4.31"
-    val navigation by (gradle as ExtensionAware).extra("2.3.3")
-    val versions = "0.36.0"
+    val navigation by (gradle as ExtensionAware).extra("2.3.4")
+    val versions = "0.38.0"
 
     plugins {
         kotlin("android") version(kotlin)
