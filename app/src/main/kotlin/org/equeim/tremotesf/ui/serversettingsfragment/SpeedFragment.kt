@@ -156,7 +156,7 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
             alternativeUploadSpeedLimitEdit.filters = limitsFilters
             alternativeUploadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeUploadSpeedLimit.toString())
-            alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
+            alternativeUploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 Rpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
             }
 
