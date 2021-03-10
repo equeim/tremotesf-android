@@ -40,8 +40,8 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     fun getInitialNavigationDirections(activity: NavigationActivity, intent: Intent): Pair<NavDirections, NavOptions>? {
         val navOptionsBuilder = lazy {
             NavOptions.Builder()
-                .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
-                .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
+                .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
+                .setPopExitAnim(R.animator.nav_default_pop_exit_anim)
         }
 
         var directions = getAddTorrentDirections(activity, intent, navOptionsBuilder)
