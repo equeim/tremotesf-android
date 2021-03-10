@@ -53,7 +53,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.FilesystemNavigator
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.getStateFlow
+import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 import java.io.File
@@ -207,7 +207,7 @@ private class FilePickerAdapter(private val fragment: FilePickerFragment, privat
 
 class FilePickerFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     @Suppress("DEPRECATION")
-    val currentDirectory = savedStateHandle.getStateFlow(viewModelScope, "currentDirectory", Environment.getExternalStorageDirectory())
+    val currentDirectory by savedStateFlow(savedStateHandle) { Environment.getExternalStorageDirectory() }
 
     val navigator = FilesystemNavigator(currentDirectory, viewModelScope)
 

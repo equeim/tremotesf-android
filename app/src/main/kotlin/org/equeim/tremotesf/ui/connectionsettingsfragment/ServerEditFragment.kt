@@ -45,6 +45,7 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
+import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
 
@@ -199,7 +200,6 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
 class ServerEditFragmentViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
     companion object {
         private const val SERVER_NAME = "serverName"
-        private const val SERVER = "server"
 
         fun from(fragment: NavigationFragment, server: String?): ServerEditFragmentViewModel {
             val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
@@ -214,7 +214,7 @@ class ServerEditFragmentViewModel(private val savedStateHandle: SavedStateHandle
         val serverName: String? = savedStateHandle[SERVER_NAME]
         existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     }
-    val server: Server = savedStateHandle[SERVER] ?: (existingServer?.copy() ?: Server()).also { savedStateHandle[SERVER] = it }
+    val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 }
 
 class ServerOverwriteDialogFragment : NavigationDialogFragment() {

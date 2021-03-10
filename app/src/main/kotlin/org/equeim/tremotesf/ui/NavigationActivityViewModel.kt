@@ -31,17 +31,11 @@ import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
+import org.equeim.tremotesf.ui.utils.savedState
 import java.util.concurrent.TimeUnit
 
-class NavigationActivityViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
-    private companion object {
-        const val navigatedInitiallyKey = "navigatedInitially"
-    }
-    var navigatedInitially: Boolean = savedStateHandle.get<Boolean>(navigatedInitiallyKey) ?: false
-        set(value) {
-            field = value
-            savedStateHandle[navigatedInitiallyKey] = value
-        }
+class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+    var navigatedInitially by savedState(savedStateHandle) { false }
 
     fun getInitialNavigationDirections(activity: NavigationActivity, intent: Intent): Pair<NavDirections, NavOptions>? {
         val navOptionsBuilder = lazy {

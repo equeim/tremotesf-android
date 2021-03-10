@@ -149,13 +149,3 @@ fun NavController.popDialog() {
         popBackStack()
     }
 }
-
-fun <T> SavedStateHandle.getStateFlow(scope: CoroutineScope, key: String, initialValue: T): MutableStateFlow<T> {
-    val flow = MutableStateFlow(get(key) ?: initialValue)
-    scope.launch {
-        flow.drop(1).collect {
-            set(key, it)
-        }
-    }
-    return flow
-}

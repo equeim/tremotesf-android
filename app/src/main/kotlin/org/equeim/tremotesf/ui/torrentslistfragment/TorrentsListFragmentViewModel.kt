@@ -41,7 +41,7 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
-import org.equeim.tremotesf.ui.utils.getStateFlow
+import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
@@ -102,13 +102,13 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Errored
     }
 
-    val sortMode = savedStateHandle.getStateFlow("sortMode", Settings.torrentsSortMode)
-    val sortOrder = savedStateHandle.getStateFlow("sortOrder", Settings.torrentsSortOrder)
+    val sortMode by savedStateFlow(savedStateHandle) { Settings.torrentsSortMode }
+    val sortOrder by savedStateFlow(savedStateHandle) { Settings.torrentsSortOrder }
 
-    val statusFilterMode = savedStateHandle.getStateFlow("statusFilter", Settings.torrentsStatusFilter)
-    val trackerFilter = savedStateHandle.getStateFlow("trackerFilter", Settings.torrentsTrackerFilter)
-    val directoryFilter = savedStateHandle.getStateFlow("directoryFilter", Settings.torrentsDirectoryFilter)
-    val nameFilter = savedStateHandle.getStateFlow("nameFilter", "")
+    val statusFilterMode by savedStateFlow(savedStateHandle) { Settings.torrentsStatusFilter }
+    val trackerFilter by savedStateFlow(savedStateHandle) { Settings.torrentsTrackerFilter }
+    val directoryFilter by savedStateFlow(savedStateHandle) { Settings.torrentsDirectoryFilter }
+    val nameFilter by savedStateFlow(savedStateHandle) { "" }
 
     private val filteredTorrents = combine(Rpc.torrents, statusFilterMode, trackerFilter, directoryFilter, nameFilter) { torrents, status, tracker, directory, name ->
         torrents.filter(createFilterPredicate(status, tracker, directory, name))
@@ -172,6 +172,4 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             }
         }
     }
-
-    private fun <T> SavedStateHandle.getStateFlow(key: String, initialValue: T) = getStateFlow(viewModelScope, key, initialValue)
 }
