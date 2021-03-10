@@ -471,7 +471,7 @@ object Rpc : Logger {
                         .setContentText(name)
                         .setContentIntent(NavDeepLinkBuilder(context)
                                                   .setGraph(R.navigation.nav_main)
-                                                  .setDestination(R.id.torrentPropertiesFragment)
+                                                  .setDestination(R.id.torrent_properties_fragment)
                                                   .setArguments(TorrentPropertiesFragmentArgs(hashString, name).toBundle())
                                                   .createPendingIntent())
                         .setAutoCancel(true)

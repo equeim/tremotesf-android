@@ -114,7 +114,7 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         })
 
         binding.fab.setOnClickListener {
-            navigate(TorrentPropertiesFragmentDirections.editTrackerDialogFragment())
+            navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog())
         }
 
         Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::updateTorrent)
@@ -156,10 +156,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> navigate(TorrentPropertiesFragmentDirections.torrentSetLocationDialogFragment(intArrayOf(torrent.id), torrent.downloadDirectory))
-                R.id.rename ->
-                    navigate(TorrentPropertiesFragmentDirections.torrentFileRenameDialogFragment(torrent.name, torrent.name, torrent.id))
-                R.id.remove -> navigate(TorrentPropertiesFragmentDirections.removeTorrentDialogFragment(intArrayOf(torrent.id), true))
+                R.id.set_location -> navigate(TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(intArrayOf(torrent.id), torrent.downloadDirectory))
+                R.id.rename -> navigate(TorrentPropertiesFragmentDirections.toTorrentFileRenameDialog(torrent.name, torrent.name, torrent.id))
+                R.id.remove -> navigate(TorrentPropertiesFragmentDirections.toRemoveTorrentDialog(intArrayOf(torrent.id), true))
                 R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
                 else -> return false
             }

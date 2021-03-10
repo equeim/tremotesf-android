@@ -50,7 +50,7 @@ class TorrentFilesAdapter(filesTree: TorrentFilesTree,
     override fun navigateToRenameDialog(path: String, name: String) {
         val torrent = fragment.torrent ?: return
         fragment.findNavController().safeNavigate(TorrentPropertiesFragmentDirections
-                                                          .torrentFileRenameDialogFragment(path, name, torrent.id))
+                                                          .toTorrentFileRenameDialog(path, name, torrent.id))
     }
 
     private class ItemHolder(private val adapter: TorrentFilesAdapter,

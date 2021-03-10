@@ -205,7 +205,7 @@ class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
 
         setOnClickListener {
-            findNavController().safeNavigate(SpeedFragmentDirections.timePickerFragment(beginTime, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+            findNavController().safeNavigate(SpeedFragmentDirections.toTimePickerDialog(beginTime, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
         }
     }
 

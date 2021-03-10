@@ -78,7 +78,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         super.onCreate(savedInstanceState)
         getContentActivityLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
             if (it != null) {
-                navigate(TorrentsListFragmentDirections.addTorrentFileFragment(it))
+                navigate(TorrentsListFragmentDirections.toAddTorrentFileFragment(it))
             }
         }
     }
@@ -248,7 +248,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             } else {
                 requiredActivity.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
-                if (navController.currentDestination?.id != R.id.donateDialogFragment) {
+                if (navController.currentDestination?.id != R.id.donate_dialog) {
                     navController.popDialog()
                 }
             }
@@ -304,10 +304,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         val connected = (connectionState == RpcConnectionState.Connected)
         searchMenuItem?.isVisible = connected
         menu.findItem(R.id.add_torrent_file).isEnabled = connected
-        menu.findItem(R.id.addTorrentLinkFragment).isEnabled = connected
-        menu.findItem(R.id.serverSettingsFragment).isEnabled = connected
+        menu.findItem(R.id.to_add_torrent_link_fragment).isEnabled = connected
+        menu.findItem(R.id.to_server_settings_fragment).isEnabled = connected
         menu.findItem(R.id.alternative_speed_limits).isEnabled = connected
-        menu.findItem(R.id.serverStatsDialogFragment).isEnabled = connected
+        menu.findItem(R.id.to_server_stats_dialog).isEnabled = connected
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
@@ -329,7 +329,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         try {
             getContentActivityLauncher.launch("application/x-bittorrent")
         } catch (error: ActivityNotFoundException) {
-            navigate(TorrentsListFragmentDirections.filePickerFragment())
+            navigate(TorrentsListFragmentDirections.toFilePickerFragment())
         }
     }
 }

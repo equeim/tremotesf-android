@@ -48,7 +48,7 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
             findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
-                    findNavController().safeNavigate(SettingsFragmentDirections.persistentNotificationWarningFragment())
+                    findNavController().safeNavigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
                     false
                 } else {
                     true

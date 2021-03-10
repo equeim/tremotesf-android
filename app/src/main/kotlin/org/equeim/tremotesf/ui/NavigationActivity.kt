@@ -300,7 +300,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
             }
 
             connectionSettingsButton.setOnClickListener {
-                navigate(TorrentsListFragmentDirections.connectionSettingsFragment())
+                navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
             }
 
             Rpc.isConnected.collectWhenStarted(this@NavigationActivity, listSettingsLayout::setChildrenEnabled)

@@ -168,7 +168,7 @@ class ForegroundService : LifecycleService(), Logger {
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(NavDeepLinkBuilder(applicationContext)
                                           .setGraph(R.navigation.nav_main)
-                                          .setDestination(R.id.torrentsListFragment)
+                                          .setDestination(R.id.torrents_list_fragment)
                                           .createPendingIntent())
 
         val currentServer = Servers.currentServer.value

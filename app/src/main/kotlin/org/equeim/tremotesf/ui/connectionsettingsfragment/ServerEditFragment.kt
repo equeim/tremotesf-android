@@ -64,14 +64,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
             proxySettingsButton.setOnClickListener {
-                navigate(ServerEditFragmentDirections.proxySettingsFragment(args.server))
+                navigate(ServerEditFragmentDirections.toProxySettingsFragment(args.server))
             }
 
             httpsCheckBox.isChecked = false
 
             certificatedButton.isEnabled = false
             certificatedButton.setOnClickListener {
-                navigate(ServerEditFragmentDirections.certificatesFragment(args.server))
+                navigate(ServerEditFragmentDirections.toCertificatesFragment(args.server))
             }
             httpsCheckBox.setOnCheckedChangeListener { _, checked ->
                 certificatedButton.isEnabled = checked
@@ -147,7 +147,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                     timeoutOk) {
                 if (nameEditText != model.existingServer?.name &&
                         Servers.servers.value.find { it.name == nameEditText } != null) {
-                    navigate(ServerEditFragmentDirections.overwriteDialogFragment())
+                    navigate(ServerEditFragmentDirections.toOverwriteDialog())
                 } else {
                     save()
                 }
@@ -192,7 +192,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             }
         }
 
-        navController.popBackStack(R.id.serverEditFragment, true)
+        navController.popBackStack(R.id.server_edit_fragment, true)
     }
 }
 
@@ -202,7 +202,7 @@ class ServerEditFragmentViewModel(private val savedStateHandle: SavedStateHandle
         private const val SERVER = "server"
 
         fun from(fragment: NavigationFragment, server: String?): ServerEditFragmentViewModel {
-            val entry = fragment.navController.getBackStackEntry(R.id.serverEditFragment)
+            val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
             val factory = SavedStateViewModelFactory(fragment.requireActivity().application,
                                                      entry, bundleOf(SERVER_NAME to server))
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]

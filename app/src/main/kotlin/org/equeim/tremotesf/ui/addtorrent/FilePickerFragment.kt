@@ -122,7 +122,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 
     fun finish(fileUri: Uri) {
-        navigate(FilePickerFragmentDirections.addTorrentFileFragment(fileUri))
+        navigate(FilePickerFragmentDirections.toAddTorrentFileFragment(fileUri))
     }
 }
 

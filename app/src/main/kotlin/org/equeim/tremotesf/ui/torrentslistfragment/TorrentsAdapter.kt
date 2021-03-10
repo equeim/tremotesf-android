@@ -194,7 +194,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         }
 
         override fun onClick(view: View) {
-            fragment.navigate(TorrentsListFragmentDirections.torrentPropertiesFragment(torrent.hashString, torrent.name))
+            fragment.navigate(TorrentsListFragmentDirections.toTorrentPropertiesFragment(torrent.hashString, torrent.name))
         }
     }
 
@@ -249,14 +249,14 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
                 R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
-                    fragment.navigate(TorrentsListFragmentDirections.torrentSetLocationDialogFragment(getTorrentIds(),
-                                                                                                      getFirstSelectedTorrent().downloadDirectory))
+                    fragment.navigate(TorrentsListFragmentDirections.toTorrentSetLocationDialog(getTorrentIds(),
+                                                                                                getFirstSelectedTorrent().downloadDirectory))
                 }
                 R.id.rename -> {
                     val torrent = getFirstSelectedTorrent()
-                    fragment.navigate(TorrentsListFragmentDirections.torrentFileRenameDialogFragment(torrent.name, torrent.name, torrent.id))
+                    fragment.navigate(TorrentsListFragmentDirections.toTorrentFileRenameDialog(torrent.name, torrent.name, torrent.id))
                 }
-                R.id.remove -> fragment.navigate(TorrentsListFragmentDirections.removeTorrentDialogFragment(getTorrentIds()))
+                R.id.remove -> fragment.navigate(TorrentsListFragmentDirections.toRemoveTorrentDialog(getTorrentIds()))
                 R.id.share -> {
                     val magnetLinks = currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted()).map { it.data.magnetLink }
                     Utils.shareTorrents(magnetLinks, fragment.requireContext())

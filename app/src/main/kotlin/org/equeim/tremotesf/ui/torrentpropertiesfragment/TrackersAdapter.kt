@@ -154,7 +154,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                            val binding: TrackerListItemBinding) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
             val tracker = getItem(adapterPosition)
-            torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.editTrackerDialogFragment(tracker.id, tracker.announce))
+            torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog(tracker.id, tracker.announce))
         }
 
         override fun update() {
@@ -218,7 +218,7 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
 
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.removeTrackerDialogFragment(selectionTracker.selectedKeys.toIntArray()))
+                torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.toRemoveTrackerDialog(selectionTracker.selectedKeys.toIntArray()))
                 return true
             }
 

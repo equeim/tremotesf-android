@@ -72,7 +72,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             fab.setOnClickListener {
-                navigate(ConnectionSettingsFragmentDirections.serverEditFragment(null))
+                navigate(ConnectionSettingsFragmentDirections.toServerEditFragment(null))
             }
 
             serversView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -159,7 +159,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
 
             override fun onClick(view: View) {
-                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.serverEditFragment(adapter.servers[adapterPosition].name))
+                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[adapterPosition].name))
             }
         }
 
@@ -175,7 +175,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
                 }
 
                 if (selectionTracker.hasSelection && item.itemId == R.id.remove) {
-                    activity.navigate(ConnectionSettingsFragmentDirections.removeServerDialogFragment())
+                    activity.navigate(ConnectionSettingsFragmentDirections.toRemoveServerDialog())
                     return true
                 }
 

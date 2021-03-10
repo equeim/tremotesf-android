@@ -55,7 +55,7 @@ class NavigationActivityViewModel(application: Application, private val savedSta
             if (!Servers.hasServers) {
                 directions = NavMainDirections.toServerEditFragment()
             } else if (shouldShowDonateDialog()) {
-                directions = NavMainDirections.toDonateDialogFragment()
+                directions = NavMainDirections.toDonateDialog()
             } else {
                 return null
             }
