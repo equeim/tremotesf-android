@@ -70,12 +70,12 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission(), model::onRequestPermissionResult)
+
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             model.onRequestPermissionResult(true)
         } else if (!model.requestedPermission) {
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-                model.onRequestPermissionResult(granted)
-            }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
