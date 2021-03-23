@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Disabled APK ABI splitting
+- Supported OpenSSL version is fixed to 1.1.1j
+- Supported Qt versions are fixed to 5.15.2 and 5.12.10
+
+### Fixed
+- Fixed opening file:// URIs on Android 10
+- Fixed setting alternative speed limits
+
 ## [2.3.2] - 2021-02-06
 ### Fixed
 - Fixed another crash when adding torrent link
