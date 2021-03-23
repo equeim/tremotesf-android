@@ -14,8 +14,5 @@
     <dimen name="linear_layout_vertical_spacing">8dp</dimen>
     <dimen name="linear_layout_vertical_spacing_double">16dp</dimen>
 
-    <dimen name="fastscroll_handle_width">6dp</dimen>
-    <dimen name="fastscroll_handle_radius">6dp</dimen>
-
     <integer name="config_navAnimTime">300</integer>
 </resources>
