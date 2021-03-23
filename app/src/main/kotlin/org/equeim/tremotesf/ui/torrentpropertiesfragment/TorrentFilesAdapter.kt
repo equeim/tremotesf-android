@@ -28,7 +28,6 @@ import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate

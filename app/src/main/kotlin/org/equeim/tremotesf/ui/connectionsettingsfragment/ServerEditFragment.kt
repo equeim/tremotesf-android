@@ -197,7 +197,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
     }
 }
 
-class ServerEditFragmentViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class ServerEditFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     companion object {
         private const val SERVER_NAME = "serverName"
 
