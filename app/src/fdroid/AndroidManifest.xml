@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.equeim.tremotesf">
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data
+                android:host="www.paypal.com"
+                android:scheme="https" />
+        </intent>
+    </queries>
+</manifest>
