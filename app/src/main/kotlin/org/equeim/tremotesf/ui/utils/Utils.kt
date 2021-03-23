@@ -110,10 +110,15 @@ object Utils : Logger {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, magnetLinks.joinToString("\n"))
         }
+        startActivityChooser(intent, context.getText(R.string.share_torrent), context)
+    }
+
+    fun startActivityChooser(intent: Intent, title: CharSequence, context: Context) {
+        info("startActivityChooser() is called with: intent = $intent, title = $title, context = $context")
         if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_torrent)))
+            context.startActivity(Intent.createChooser(intent, title))
         } else {
-            warn("Failed to share torrent, intent $intent did not resolve activity")
+            warn("startActivityChooser: failed to resolve activity")
         }
     }
 }

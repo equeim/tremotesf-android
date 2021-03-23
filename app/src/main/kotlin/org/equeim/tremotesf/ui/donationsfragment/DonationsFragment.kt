@@ -41,6 +41,7 @@ import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
 import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
@@ -128,11 +129,11 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
                 .appendQueryParameter("no_note", "1")
                 .appendQueryParameter("no_shipping", "1")
                 .appendQueryParameter("currency_code", PAYPAL_CURRENCY_CODE)
-        val intent = Intent(Intent.ACTION_VIEW, builder.build())
-        val chooser = Intent.createChooser(intent, getString(R.string.donations_paypal_title))
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivity(chooser)
-        }
+        Utils.startActivityChooser(
+            Intent(Intent.ACTION_VIEW, builder.build()),
+            getText(R.string.donations_paypal_title),
+            requireContext()
+        )
     }
 
     private fun donateYandex() {
