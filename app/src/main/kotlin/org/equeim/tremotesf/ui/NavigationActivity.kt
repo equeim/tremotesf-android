@@ -80,8 +80,10 @@ import org.equeim.tremotesf.utils.collectWhenStarted
 class NavigationActivity : AppCompatActivity(), Logger {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
-        var activeActivity: NavigationActivity? = null
-            private set
+
+        private var startedActivity: NavigationActivity? = null
+        val hasStartedActivity: Boolean
+            get() = startedActivity != null
 
         fun recreateAllActivities() {
             for (activity in createdActivities) {
@@ -202,18 +204,18 @@ class NavigationActivity : AppCompatActivity(), Logger {
     override fun onStart() {
         info("onStart() called")
         super.onStart()
-        if (activeActivity == null) {
+        if (startedActivity == null) {
             Rpc.cancelUpdateWorker()
             Rpc.nativeInstance.setUpdateDisabled(false)
         }
-        activeActivity = this
+        startedActivity = this
     }
 
     override fun onStop() {
         info("onStop() called")
         if (!isChangingConfigurations) {
-            if (activeActivity === this) {
-                activeActivity = null
+            if (startedActivity === this) {
+                startedActivity = null
 
                 if (!Settings.showPersistentNotification) {
                     Servers.save()

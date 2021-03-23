@@ -533,15 +533,15 @@ object Rpc : Logger {
         }
 
         override fun startWork(): ListenableFuture<Result> {
-            info("Rpc.UpdateWorker.startWork()")
+            info("startWork() called")
 
-            if (NavigationActivity.activeActivity != null) {
-                warn("Rpc.UpdateWorker.startWork(), activity is not null, return")
+            if (NavigationActivity.hasStartedActivity) {
+                warn("startWork: has started activity, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
             if (!Settings.notifyOnFinished && !Settings.notifyOnAdded) {
-                warn("Rpc.UpdateWorker.startWork(), notifications are disabled, return")
+                warn("startWork:, notifications are disabled, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
