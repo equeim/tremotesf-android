@@ -71,13 +71,16 @@ import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_fragment,
                                                   R.string.add_torrent_file,
-                                                  R.menu.add_torrent_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
+                                                  R.menu.add_torrent_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
     companion object {
+        val SCHEMES = arrayOf(ContentResolver.SCHEME_FILE, ContentResolver.SCHEME_CONTENT)
+
         fun setupDownloadDirectoryEdit(binding: DownloadDirectoryEditBinding,
                                        fragment: Fragment,
                                        savedInstanceState: Bundle?): AddTorrentDirectoriesAdapter {
@@ -130,8 +133,6 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }
     }
 
-    private val args: AddTorrentFileFragmentArgs by navArgs()
-
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
     private var doneMenuItem: MenuItem? = null
@@ -145,6 +146,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        info("onCreate: arguments = $arguments")
+        val args: AddTorrentFileFragmentArgs by navArgs()
 
         val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             model.onRequestPermissionResult(granted)

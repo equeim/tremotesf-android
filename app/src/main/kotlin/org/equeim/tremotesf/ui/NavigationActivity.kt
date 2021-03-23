@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +31,9 @@ import android.widget.Checkable
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
+import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
@@ -43,10 +46,12 @@ import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
@@ -92,6 +97,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
         }
     }
 
+    private val model by viewModels<NavigationActivityViewModel>()
+
     private lateinit var binding: NavigationActivityBinding
 
     var actionMode: ActionMode? = null
@@ -118,6 +125,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
         setTheme(Settings.theme)
 
         super.onCreate(savedInstanceState)
+
+        overrideIntentWithDeepLink()
 
         binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
 
@@ -178,37 +187,16 @@ class NavigationActivity : AppCompatActivity(), Logger {
             binding.drawerLayout.setDrawerLockMode(lockMode, GravityCompat.START)
         }
 
-        initialNavigation()
-
         info("onCreate: return")
     }
 
-    private fun initialNavigation() {
-        val model by viewModels<NavigationActivityViewModel>()
-
+    private fun overrideIntentWithDeepLink() {
         if (model.navigatedInitially) return
         model.navigatedInitially = true
 
-        val (directions, options) = model.getInitialNavigationDirections(this, intent) ?: return
-        info("initialNavigation: initial navigation directions is $directions")
-
-        if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
-            info("initialNavigation: activity was launched from history, skip initial navigation")
-            return
-        }
-
-        if (navController.currentDestination?.id == navController.graph.startDestination) {
-            lifecycleScope.launchWhenStarted {
-                if (navController.currentDestination?.id == navController.graph.startDestination) {
-                    info("initialNavigation: initially navigating to $directions")
-                    navigate(directions, options)
-                } else {
-                    info("initialNavigation: current destination is not start destination, skip initial navigation")
-                }
-            }
-        } else {
-            info("initialNavigation: current destination is not start destination, skip initial navigation")
-        }
+        val intent = model.getInitialDeepLinkIntent(intent) ?: return
+        info("overrideIntentWithDeepLink: intent = $intent")
+        this.intent = intent
     }
 
     override fun onStart() {
@@ -246,8 +234,15 @@ class NavigationActivity : AppCompatActivity(), Logger {
     override fun onNewIntent(intent: Intent) {
         info("onNewIntent() called with: intent = $intent")
         super.onNewIntent(intent)
-        val model by viewModels<NavigationActivityViewModel>()
-        model.getAddTorrentDirections(this, intent)?.let { navigate(it) }
+        model.getAddTorrentDirections(intent)?.let { (destinationId, arguments) ->
+            navController.navigate(
+                destinationId,
+                arguments,
+                NavOptions.Builder()
+                    .setPopUpTo(navController.graph.startDestination, false)
+                    .build()
+            )
+        }
     }
 
     override fun onBackPressed() {
@@ -342,5 +337,57 @@ class NavigationActivity : AppCompatActivity(), Logger {
 
     fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
         navController.safeNavigate(directions, navOptions)
+    }
+}
+
+@Keep
+class NavHostFragment : NavHostFragment(), Logger {
+    override fun onCreateNavController(navController: NavController) {
+        super.onCreateNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            info("Desination changed: destination = $destination, arguments = $arguments")
+        }
+    }
+
+    override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
+        return FragmentNavigator(requireContext(), childFragmentManager, id, navController)
+    }
+
+    // NavController doesn't set any pop animations when handling deep links
+    // Use this workaround to always set pop animations
+    @Navigator.Name("fragment")
+    class FragmentNavigator(
+        context: Context,
+        fragmentManager: FragmentManager,
+        @IdRes containerId: Int,
+        private val navController: NavController
+    ) : androidx.navigation.fragment.FragmentNavigator(context, fragmentManager, containerId) {
+        override fun navigate(
+            destination: Destination,
+            args: Bundle?,
+            navOptions: NavOptions?,
+            navigatorExtras: Navigator.Extras?
+        ): NavDestination? {
+            val options = NavOptions.Builder()
+                .apply {
+                    if (navController.currentDestination != null) {
+                        setPopEnterAnim(navOptions?.popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
+                        setPopExitAnim(navOptions?.popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
+                    }
+                    if (navOptions != null) {
+                        setEnterAnim(navOptions.enterAnim)
+                        setExitAnim(navOptions.exitAnim)
+                        setLaunchSingleTop(navOptions.shouldLaunchSingleTop())
+                        setPopUpTo(navOptions.popUpTo, navOptions.isPopUpToInclusive)
+                    }
+                }
+                .build()
+            return super.navigate(destination, args, options, navigatorExtras)
+        }
+
+        private fun Int?.orDefault(@AnimatorRes defaultAnimator: Int): Int = when (this) {
+            null, -1 -> defaultAnimator
+            else -> this
+        }
     }
 }

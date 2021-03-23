@@ -36,14 +36,15 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_fragment,
                                                   R.string.add_torrent_link,
-                                                  R.menu.add_torrent_fragment_menu) {
+                                                  R.menu.add_torrent_fragment_menu), Logger {
     companion object {
-        const val SCHEME_MAGNET = "magnet"
+        val SCHEMES = arrayOf("magnet")
     }
 
     private val args: AddTorrentLinkFragmentArgs by navArgs()
@@ -54,6 +55,11 @@ class AddTorrentLinkFragment : AddTorrentFragment(R.layout.add_torrent_link_frag
     private var snackbar: Snackbar? = null
 
     private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        info("onCreate: arguments = $arguments")
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

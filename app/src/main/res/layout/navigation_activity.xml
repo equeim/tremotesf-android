@@ -10,7 +10,7 @@
         android:id="@+id/nav_host"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:name="org.equeim.tremotesf.ui.NavHostFragment"
         app:navGraph="@navigation/nav_main"
         app:defaultNavHost="true" />
 
