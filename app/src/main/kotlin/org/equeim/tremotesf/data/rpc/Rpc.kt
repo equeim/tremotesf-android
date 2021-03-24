@@ -58,6 +58,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
@@ -302,11 +303,13 @@ object Rpc : Logger {
             }
         }
 
-        mainThreadScope.launch {
+        mainThreadScope.launch(Dispatchers.Unconfined) {
             connectionState.collect {
                 when (it) {
                     RpcConnectionState.Connected -> {
-                        showNotificationsSinceLastConnection()
+                        withContext(Dispatchers.Main) {
+                            showNotificationsSinceLastConnection()
+                        }
                         handleWorkerCompleter()
                     }
                     RpcConnectionState.Disconnected -> handleWorkerCompleter()
@@ -392,7 +395,7 @@ object Rpc : Logger {
         _torrents.value = newTorrents
 
         if (isConnected.value) {
-            handleWorkerCompleter()
+            mainThreadScope.launch(Dispatchers.Unconfined) { handleWorkerCompleter() }
         }
     }
 
@@ -513,16 +516,18 @@ object Rpc : Logger {
         WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME)
     }
 
-    private fun handleWorkerCompleter() {
+    private suspend fun handleWorkerCompleter() {
         updateWorkerCompleter.getAndSet(null)?.let { completer ->
-            info("Rpc.handleWorkerCompleter()")
+            info("handleWorkerCompleter: completing update worker")
             if (isConnected.value) {
-                handler.post {
+                info("handleWorkerCompleter: save servers")
+                withContext(Dispatchers.Main) {
                     if (isConnected.value) {
                         Servers.save()
                     }
                 }
             }
+            info("handleWorkerCompleter: setting worker result")
             completer.set(ListenableWorker.Result.success())
         }
     }
