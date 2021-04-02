@@ -35,6 +35,7 @@ import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.NetworkType
+import androidx.work.Operation
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -512,22 +513,33 @@ object Rpc : Logger {
                                 context.getString(R.string.torrent_added))
     }
 
-    fun enqueueUpdateWorker() {
+    private fun enqueueUpdateWorker() {
+        info("enqueueUpdateWorker() called")
         val interval = Settings.backgroundUpdateInterval
         if (interval > 0 && (Settings.notifyOnFinished || Settings.notifyOnAdded)) {
-            info("Rpc.enqueueUpdateWorker(), interval=$interval")
+            info("enqueueUpdateWorker: enqueueing worker, interval = $interval minutes")
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
             val request = PeriodicWorkRequest.Builder(UpdateWorker::class.java, interval, TimeUnit.MINUTES)
                     .setInitialDelay(interval, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request).state.observeForever { state ->
+                if (state !is Operation.State.IN_PROGRESS) {
+                    info("enqueueUpdateWorker: enqueuing worker result = $state")
+                }
+            }
+        } else {
+            info("enqueueUpdateWorker: not enqueueing worker, disabled in settings")
         }
     }
 
-    fun cancelUpdateWorker() {
-        info("Rpc.cancelUpdateWorker()")
-        WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME)
+    private fun cancelUpdateWorker() {
+        info("cancelUpdateWorker() called")
+        WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME).state.observeForever { state ->
+            if (state !is Operation.State.IN_PROGRESS) {
+                info("cancelUpdateWorker: cancelling worker result = $state")
+            }
+        }
     }
 
     private suspend fun handleWorkerCompleter() {
@@ -574,6 +586,10 @@ object Rpc : Logger {
                 }
                 javaClass.simpleName
             }
+        }
+
+        override fun onStopped() {
+            info("onStopped() called")
         }
     }
 }
