@@ -20,11 +20,15 @@
 package org.equeim.libtremotesf;
 
 import android.os.Build;
+import android.util.Log;
 
 import org.qtproject.qt5.android.QtNative;
 
 public class LibTremotesf {
+    private static final String TAG = "LibTremotesf";
+
     public static void init(ClassLoader classLoader) {
+        Log.d(TAG, "init() called with: classLoader = [" + classLoader + "]");
         System.loadLibrary("c++_shared");
         QtNative.setClassLoader(classLoader);
 
@@ -43,5 +47,7 @@ public class LibTremotesf {
             System.loadLibrary("Qt5Network");
             System.loadLibrary("tremotesf");
         }
+
+        Log.d(TAG, "init: loaded native libraries");
     }
 }
