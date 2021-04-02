@@ -82,8 +82,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
         private var startedActivity: NavigationActivity? = null
-        val hasStartedActivity: Boolean
-            get() = startedActivity != null
 
         fun recreateAllActivities() {
             for (activity in createdActivities) {
@@ -169,7 +167,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
             }
         }
-        Rpc.connectOnce()
 
         drawerNavigationIcon = DrawerArrowDrawable(this)
         upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
@@ -205,8 +202,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
         info("onStart() called")
         super.onStart()
         if (startedActivity == null) {
-            Rpc.cancelUpdateWorker()
-            Rpc.nativeInstance.setUpdateDisabled(false)
+            AppForegroundTracker.hasStartedActivity.value = true
         }
         startedActivity = this
     }
@@ -216,12 +212,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
         if (!isChangingConfigurations) {
             if (startedActivity === this) {
                 startedActivity = null
-
-                if (!Settings.showPersistentNotification) {
-                    Servers.save()
-                    Rpc.nativeInstance.setUpdateDisabled(true)
-                    Rpc.enqueueUpdateWorker()
-                }
+                AppForegroundTracker.hasStartedActivity.value = false
             }
         }
         super.onStop()

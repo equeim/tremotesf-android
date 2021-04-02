@@ -52,7 +52,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -71,7 +73,8 @@ import org.equeim.libtremotesf.TorrentPeersVector
 
 import org.equeim.tremotesf.Application
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.NavigationActivity
+import org.equeim.tremotesf.ui.AppForegroundTracker
+import org.equeim.tremotesf.ui.AppForegroundTracker.dropUntilInForeground
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.utils.Logger
@@ -311,6 +314,11 @@ object Rpc : Logger {
                 }
             }
         }
+
+        AppForegroundTracker.appInForeground
+            .dropUntilInForeground()
+            .onEach(::onAppForegroundStateChanged)
+            .launchIn(scope)
     }
 
     private fun setServer(server: Server) {
@@ -353,6 +361,17 @@ object Rpc : Logger {
     fun disconnectOnShutdown() {
         nativeInstance.disconnect()
         connectedOnce = false
+    }
+
+    private fun onAppForegroundStateChanged(inForeground: Boolean) {
+        info("onAppForegroundStateChanged() called with: inForeground = $inForeground")
+        if (inForeground) {
+            connectOnce()
+            cancelUpdateWorker()
+        } else {
+            enqueueUpdateWorker()
+        }
+        nativeInstance.setUpdateDisabled(!inForeground)
     }
 
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
@@ -535,7 +554,7 @@ object Rpc : Logger {
         override fun startWork(): ListenableFuture<Result> {
             info("startWork() called")
 
-            if (NavigationActivity.hasStartedActivity) {
+            if (AppForegroundTracker.hasStartedActivity.value) {
                 warn("startWork: has started activity, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }

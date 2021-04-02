@@ -132,7 +132,7 @@ class ForegroundService : LifecycleService(), Logger {
                 return START_NOT_STICKY
             }
 
-            Rpc.connectOnce()
+            AppForegroundTracker.foregroundServiceStarted.value = true
 
             info("Service started")
         }
@@ -147,6 +147,7 @@ class ForegroundService : LifecycleService(), Logger {
 
     override fun onDestroy() {
         info("onDestroy() ${lifecycle.currentState}")
+        AppForegroundTracker.foregroundServiceStarted.value = false
         stopForeground(true)
         instances.remove(this)
         super.onDestroy()

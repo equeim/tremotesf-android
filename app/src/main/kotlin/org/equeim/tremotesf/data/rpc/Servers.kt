@@ -28,9 +28,12 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.MainScope
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,6 +41,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.ui.AppForegroundTracker
+import org.equeim.tremotesf.ui.AppForegroundTracker.dropUntilInForeground
 import org.equeim.tremotesf.utils.Logger
 
 import java.io.BufferedReader
@@ -176,6 +181,13 @@ object Servers : Logger {
 
     init {
         load()
+
+        AppForegroundTracker.appInForeground
+            .dropUntilInForeground()
+            .onEach { inForeground ->
+                if (!inForeground) save()
+            }
+            .launchIn(MainScope())
     }
 
     fun setCurrentServer(server: Server?) {
