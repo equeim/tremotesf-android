@@ -27,6 +27,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 
+import androidx.annotation.AnyThread
+import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -322,6 +325,7 @@ object Rpc : Logger {
             .launchIn(scope)
     }
 
+    @AnyThread
     private fun setServer(server: Server) {
         val s = org.equeim.libtremotesf.Server()
         with(server) {
@@ -352,6 +356,7 @@ object Rpc : Logger {
         nativeInstance.setServer(s)
     }
 
+    @MainThread
     fun connectOnce() {
         if (!connectedOnce) {
             nativeInstance.connect()
@@ -359,11 +364,13 @@ object Rpc : Logger {
         }
     }
 
+    @MainThread
     fun disconnectOnShutdown() {
         nativeInstance.disconnect()
         connectedOnce = false
     }
 
+    @MainThread
     private fun onAppForegroundStateChanged(inForeground: Boolean) {
         info("onAppForegroundStateChanged() called with: inForeground = $inForeground")
         if (inForeground) {
@@ -375,6 +382,7 @@ object Rpc : Logger {
         nativeInstance.setUpdateDisabled(!inForeground)
     }
 
+    @WorkerThread
     private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
         val newTorrents = torrents.value.toMutableList()
 
@@ -414,6 +422,7 @@ object Rpc : Logger {
         }
     }
 
+    @MainThread
     private fun showNotificationsSinceLastConnection() {
         val notifyOnFinished: Boolean
         val notifyOnAdded: Boolean
@@ -452,6 +461,7 @@ object Rpc : Logger {
         }
     }
 
+    @AnyThread
     private fun onTorrentFilesUpdated(torrentId: Int, files: List<TorrentFile>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.filesEnabled) {
@@ -460,6 +470,7 @@ object Rpc : Logger {
         }
     }
 
+    @AnyThread
     private fun onTorrentPeersUpdated(torrentId: Int, removed: List<Int>, changed: List<Peer>, added: List<Peer>) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.peersEnabled) {
@@ -468,6 +479,7 @@ object Rpc : Logger {
         }
     }
 
+    @MainThread
     private fun onAboutToDisconnect() {
         if (disconnectingAfterCurrentServerChanged) {
             disconnectingAfterCurrentServerChanged = false
@@ -476,6 +488,7 @@ object Rpc : Logger {
         }
     }
 
+    @AnyThread
     private fun showTorrentNotification(torrentId: Int,
                                         hashString: String,
                                         name: String,
@@ -497,6 +510,7 @@ object Rpc : Logger {
                         .build())
     }
 
+    @AnyThread
     private fun showFinishedNotification(id: Int, hashString: String, name: String) {
         showTorrentNotification(id,
                                 hashString,
@@ -505,6 +519,7 @@ object Rpc : Logger {
                                 context.getString(R.string.torrent_finished))
     }
 
+    @AnyThread
     private fun showAddedNotification(id: Int, hashString: String, name: String) {
         showTorrentNotification(id,
                                 hashString,
@@ -513,6 +528,7 @@ object Rpc : Logger {
                                 context.getString(R.string.torrent_added))
     }
 
+    @AnyThread
     private fun enqueueUpdateWorker() {
         info("enqueueUpdateWorker() called")
         val interval = Settings.backgroundUpdateInterval
@@ -533,6 +549,7 @@ object Rpc : Logger {
         }
     }
 
+    @AnyThread
     private fun cancelUpdateWorker() {
         info("cancelUpdateWorker() called")
         WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME).state.observeForever { state ->
@@ -542,6 +559,7 @@ object Rpc : Logger {
         }
     }
 
+    @AnyThread
     private suspend fun handleWorkerCompleter() {
         updateWorkerCompleter.getAndSet(null)?.let { completer ->
             info("handleWorkerCompleter: completing update worker")
