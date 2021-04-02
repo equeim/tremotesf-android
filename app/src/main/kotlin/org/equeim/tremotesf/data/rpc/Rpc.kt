@@ -26,8 +26,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
@@ -99,8 +97,7 @@ object Rpc : Logger {
 
     private val context = Application.instance
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val mainThreadScope = MainScope()
+    private val scope = MainScope()
 
     init {
         LibTremotesf.init(javaClass.classLoader)
@@ -177,9 +174,7 @@ object Rpc : Logger {
         }
 
         override fun onAboutToDisconnect() {
-            handler.post {
-                Rpc.onAboutToDisconnect()
-            }
+            scope.launch { Rpc.onAboutToDisconnect() }
         }
     }
 
@@ -288,7 +283,7 @@ object Rpc : Logger {
 
         Servers.currentServer.value?.let(::setServer)
 
-        mainThreadScope.launch {
+        scope.launch {
             Servers.currentServer.drop(1).collect { server ->
                 if (isConnected.value) {
                     disconnectingAfterCurrentServerChanged = true
@@ -303,7 +298,7 @@ object Rpc : Logger {
             }
         }
 
-        mainThreadScope.launch(Dispatchers.Unconfined) {
+        scope.launch(Dispatchers.Unconfined) {
             connectionState.collect {
                 when (it) {
                     RpcConnectionState.Connected -> {
@@ -395,7 +390,7 @@ object Rpc : Logger {
         _torrents.value = newTorrents
 
         if (isConnected.value) {
-            mainThreadScope.launch(Dispatchers.Unconfined) { handleWorkerCompleter() }
+            scope.launch(Dispatchers.Unconfined) { handleWorkerCompleter() }
         }
     }
 
