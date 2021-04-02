@@ -112,10 +112,12 @@ object Rpc : Logger {
 
     val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
+            info("onStatusChanged() called with: status = $status")
             _connectionState.value = status
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
+            info("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
             _error.value = Error(error, errorMessage)
         }
 
@@ -137,22 +139,26 @@ object Rpc : Logger {
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
+            info("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
             if (Settings.notifyOnAdded) {
                 showAddedNotification(id, hashString, name)
             }
         }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) {
+            info("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
             if (Settings.notifyOnFinished) {
                 showFinishedNotification(id, hashString, name)
             }
         }
 
         override fun onTorrentAddDuplicate() {
+            info("onTorrentAddDuplicate() called")
             _torrentAddDuplicateEvents.tryEmit(Unit)
         }
 
         override fun onTorrentAddError() {
+            info("onTorrentAddError() called")
             _torrentAddErrorEvents.tryEmit(Unit)
         }
 
@@ -169,24 +175,30 @@ object Rpc : Logger {
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
+            info("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
             _torrentFileRenamedEvents.tryEmit(TorrentFileRenamedData(torrentId, filePath, newName))
         }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) {
+            info("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
             _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
         }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
+            info("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
             _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
         }
 
         override fun onAboutToDisconnect() {
+            info("onAboutToDisconnect() called")
             scope.launch { Rpc.onAboutToDisconnect() }
         }
     }
 
     init {
+        info("init: initializing native instance")
         nativeInstance.init()
+        info("init: initialized native instance")
     }
 
     private val notificationManager: NotificationManager = context.getSystemService()!!
@@ -286,6 +298,7 @@ object Rpc : Logger {
                                                context.getString(R.string.added_torrents_channel_name),
                                                NotificationManager.IMPORTANCE_DEFAULT))
             )
+            info("init: created notification channels")
         }
 
         Servers.currentServer.value?.let(::setServer)
@@ -323,10 +336,14 @@ object Rpc : Logger {
             .dropUntilInForeground()
             .onEach(::onAppForegroundStateChanged)
             .launchIn(scope)
+
+        info("init: finished initialization")
     }
 
     @AnyThread
     private fun setServer(server: Server) {
+        info("setServer() called for server with: name = ${server.name}, address = ${server.address}, port = ${server.port}")
+
         val s = org.equeim.libtremotesf.Server()
         with(server) {
             s.name = name
@@ -358,14 +375,19 @@ object Rpc : Logger {
 
     @MainThread
     fun connectOnce() {
+        info("connectOnce() called")
         if (!connectedOnce) {
+            info("connectOnce: first connection")
             nativeInstance.connect()
             connectedOnce = true
+        } else {
+            info("connectOnce: already connected once")
         }
     }
 
     @MainThread
     fun disconnectOnShutdown() {
+        info("disconnectOnShutdown() called")
         nativeInstance.disconnect()
         connectedOnce = false
     }
@@ -424,6 +446,7 @@ object Rpc : Logger {
 
     @MainThread
     private fun showNotificationsSinceLastConnection() {
+        info("showNotificationsSinceLastConnection() called")
         val notifyOnFinished: Boolean
         val notifyOnAdded: Boolean
         if (updateWorkerCompleter.get() == null) {
@@ -434,27 +457,33 @@ object Rpc : Logger {
             notifyOnAdded = Settings.notifyOnAdded
         }
 
-        if (notifyOnFinished || notifyOnAdded) {
-            val server = Servers.currentServer.value
-            if (server != null) {
-                val lastTorrents = server.lastTorrents
-                if (lastTorrents.saved) {
-                    for (torrent in torrents.value) {
-                        val hashString: String = torrent.hashString
-                        val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
-                        if (oldTorrent == null) {
-                            if (notifyOnAdded) {
-                                showAddedNotification(torrent.id,
-                                                      hashString,
-                                                      torrent.name)
-                            }
-                        } else {
-                            if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                                showFinishedNotification(torrent.id,
-                                                         hashString,
-                                                         torrent.name)
-                            }
-                        }
+        if (!notifyOnFinished && !notifyOnAdded) {
+            info("showNotificationsSinceLastConnection: notifications are disabled")
+            return
+        }
+
+        val server = Servers.currentServer.value
+        if (server == null) {
+            error("showNotificationsSinceLastConnection: server is null")
+            return
+        }
+
+        val lastTorrents = server.lastTorrents
+        if (lastTorrents.saved) {
+            for (torrent in torrents.value) {
+                val hashString: String = torrent.hashString
+                val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
+                if (oldTorrent == null) {
+                    if (notifyOnAdded) {
+                        showAddedNotification(torrent.id,
+                            hashString,
+                            torrent.name)
+                    }
+                } else {
+                    if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
+                        showFinishedNotification(torrent.id,
+                            hashString,
+                            torrent.name)
                     }
                 }
             }
@@ -494,6 +523,7 @@ object Rpc : Logger {
                                         name: String,
                                         notificationChannel: String,
                                         notificationTitle: String) {
+        info("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, name = $name, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
         notificationManager.notify(
                 torrentId,
                 NotificationCompat.Builder(context, notificationChannel)
