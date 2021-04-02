@@ -188,7 +188,7 @@ object Servers : Logger {
         AppForegroundTracker.appInForeground
             .dropUntilInForeground()
             .onEach { inForeground ->
-                if (!inForeground) save()
+                if (!inForeground && Rpc.isConnected.value) save()
             }
             .launchIn(MainScope())
     }
