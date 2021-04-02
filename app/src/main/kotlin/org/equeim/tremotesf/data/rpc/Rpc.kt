@@ -85,6 +85,7 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
 
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -189,10 +190,7 @@ object Rpc : Logger {
             _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
         }
 
-        override fun onAboutToDisconnect() {
-            info("onAboutToDisconnect() called")
-            scope.launch { Rpc.onAboutToDisconnect() }
-        }
+        override fun onAboutToDisconnect() = Rpc.onAboutToDisconnect()
     }
 
     init {
@@ -284,7 +282,7 @@ object Rpc : Logger {
     private val _torrents = MutableStateFlow<List<Torrent>>(emptyList())
     val torrents: StateFlow<List<Torrent>> by ::_torrents
 
-    private var disconnectingAfterCurrentServerChanged = false
+    private val disconnectingAfterCurrentServerChanged = AtomicBoolean(false)
 
     private var connectedOnce = false
 
@@ -305,8 +303,10 @@ object Rpc : Logger {
 
         scope.launch {
             Servers.currentServer.drop(1).collect { server ->
+                info("Current server changed")
+
                 if (isConnected.value) {
-                    disconnectingAfterCurrentServerChanged = true
+                    disconnectingAfterCurrentServerChanged.set(true)
                 }
 
                 if (server != null) {
@@ -508,12 +508,14 @@ object Rpc : Logger {
         }
     }
 
-    @MainThread
+    @AnyThread
     private fun onAboutToDisconnect() {
-        if (disconnectingAfterCurrentServerChanged) {
-            disconnectingAfterCurrentServerChanged = false
-        } else {
+        info("onAboutToDisconnect() called")
+        if (!disconnectingAfterCurrentServerChanged.compareAndSet(true, false)) {
+            info("onAboutToDisconnect: saving servers")
             Servers.save()
+        } else {
+            info("onAboutToDisconnect: current server changed, do nothing")
         }
     }
 

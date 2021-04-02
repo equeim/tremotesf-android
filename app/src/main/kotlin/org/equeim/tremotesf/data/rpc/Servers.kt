@@ -22,6 +22,7 @@ package org.equeim.tremotesf.data.rpc
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Parcelable
+import androidx.annotation.AnyThread
 
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
@@ -108,14 +109,16 @@ data class Server(@SerialName("name")
                   @SerialName("password")
                   var password: String = "",
 
-                  @SerialName("updateInterval")
+                  @SerialName("updateIntervar")
                   var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
                   @SerialName("timeout")
                   var timeout: Int = DEFAULT_TIMEOUT,
 
                   @SerialName("lastTorrents")
+                  @Volatile
                   var lastTorrents: LastTorrents = LastTorrents(),
                   @SerialName("addTorrentDialogDirectories")
+                  @Volatile
                   var addTorrentDialogDirectories: List<String> = emptyList()) : Parcelable, Logger {
     companion object {
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
@@ -155,8 +158,8 @@ data class Server(@SerialName("name")
 
     @Serializable
     @Parcelize
-    data class LastTorrents(var saved: Boolean = false,
-                            var torrents: MutableList<Torrent> = mutableListOf()) : Parcelable
+    data class LastTorrents(val saved: Boolean = false,
+                            val torrents: List<Torrent> = emptyList()) : Parcelable
 }
 
 @Serializable
@@ -242,23 +245,28 @@ object Servers : Logger {
         }
     }
 
+    @AnyThread
     fun save() {
-        info("Servers.save()")
-        val lastTorrents = currentServer.value?.lastTorrents
-        if (lastTorrents != null) {
-            lastTorrents.torrents.clear()
-            for (torrent in Rpc.torrents.value) {
-                lastTorrents.torrents.add(Server.Torrent(torrent.id,
-                                                         torrent.hashString,
-                                                         torrent.name,
-                                                         torrent.isFinished))
-            }
-            lastTorrents.saved = true
+        info("save() called")
+        val currentServer = currentServer.value
+        val servers = servers.value
+
+        if (Rpc.isConnected.value) {
+            info("save: updating last torrents")
+            currentServer?.lastTorrents = Server.LastTorrents(true, Rpc.torrents.value.map {
+                Server.Torrent(it.id,
+                it.hashString,
+                it.name,
+                it.isFinished)
+            })
+            info("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size}")
+        } else {
+            info("save: disconnected, not updating last torrents")
         }
 
         SaveWorker.saveData.set(SaveData(
-                currentServer.value?.name,
-                servers.value.map { server -> server.copy(lastTorrents = server.lastTorrents.copy(torrents = server.lastTorrents.torrents.toMutableList())) }
+            currentServer?.name,
+            servers.map { it.copy(lastTorrents = it.lastTorrents.copy()) }
         ))
 
         WorkManager.getInstance(context).enqueueUniqueWork(
