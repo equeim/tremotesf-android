@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightSmall"
-    android:background="?attr/selectableItemBackground"
-    android:paddingHorizontal="@dimen/horizontal_edge_padding">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout">
 
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_height="match_parent"
         android:layout_marginLeft="24dp"
         android:layout_marginStart="24dp"
+        android:gravity="center_vertical"
         android:textAppearance="?attr/textAppearanceListItemSmall"
         android:textColor="?android:attr/textColorSecondary"/>
 
     <TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
         android:textAppearance="?attr/textAppearanceListItemSmall"/>
-</LinearLayout>
+</merge>

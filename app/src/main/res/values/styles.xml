@@ -26,6 +26,8 @@
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
 
         <item name="android:windowBackground">@color/color_background</item>
+
+        <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
     </style>
 
     <style name="AppTheme.Old">
@@ -46,5 +48,9 @@
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.Tremotesf.TimePickerItem" parent="android:Widget">
+        <item name="android:background">?selectableItemBackground</item>
     </style>
 </resources>

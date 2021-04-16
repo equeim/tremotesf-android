@@ -3,4 +3,10 @@
     <declare-styleable name="NonFilteringAutoCompleteTextView">
         <attr name="readOnly" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="TimePickerItem">
+        <attr name="android:title" format="string"/>
+    </declare-styleable>
+
+    <attr name="timePickerItemStyle" format="reference"/>
 </resources>

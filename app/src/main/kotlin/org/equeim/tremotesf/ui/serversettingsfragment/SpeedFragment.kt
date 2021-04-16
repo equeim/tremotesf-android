@@ -25,18 +25,16 @@ import java.util.Calendar
 
 import android.app.Dialog
 import android.app.TimePickerDialog
-
 import android.content.Context
 import android.os.Bundle
-
 import android.util.AttributeSet
 import android.view.LayoutInflater
-
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TimePicker
 
-import androidx.core.content.res.use
+import androidx.annotation.AttrRes
+import androidx.core.content.withStyledAttributes
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 
@@ -170,30 +168,43 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
     }
 }
 
-class TimePickerItem(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+class TimePickerItem @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle
+) : LinearLayout(context, attrs, defStyleAttr) {
+
     var beginTime = false
     private val calendar: Calendar = Calendar.getInstance()
     private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
 
-    private val binding = ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding =
+        ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this)
 
     init {
-        val ta = context.theme.obtainStyledAttributes(attrs,
-                                                      intArrayOf(android.R.attr.title),
-                                                      0,
-                                                      0)
-        ta.use {
-            binding.titleTextView.text = ta.getText(0)
+        context.withStyledAttributes(
+            attrs,
+            R.styleable.TimePickerItem,
+            0,
+            R.style.Widget_Tremotesf_TimePickerItem
+        ) {
+            binding.titleTextView.text = getText(R.styleable.TimePickerItem_android_title)
         }
 
         setOnClickListener {
-            findNavController().safeNavigate(SpeedFragmentDirections.toTimePickerDialog(beginTime, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+            findNavController().safeNavigate(
+                SpeedFragmentDirections.toTimePickerDialog(
+                    beginTime,
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE)
+                )
+            )
         }
     }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        with (binding) {
+        with(binding) {
             titleTextView.isEnabled = enabled
             textView.isEnabled = enabled
         }
@@ -216,11 +227,13 @@ class SpeedTimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnT
     private val args: SpeedTimePickerFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return TimePickerDialog(activity,
-                                this,
-                                args.hourOfDay,
-                                args.minute,
-                                android.text.format.DateFormat.is24HourFormat(activity))
+        return TimePickerDialog(
+            activity,
+            this,
+            args.hourOfDay,
+            args.minute,
+            android.text.format.DateFormat.is24HourFormat(activity)
+        )
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {

@@ -144,14 +144,16 @@
             <org.equeim.tremotesf.ui.serversettingsfragment.TimePickerItem
                 android:id="@+id/begin_time_item"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?android:attr/listPreferredItemHeightSmall"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:title="@string/from"/>
 
             <org.equeim.tremotesf.ui.serversettingsfragment.TimePickerItem
                 android:id="@+id/end_time_item"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:title="@string/to"/>
 
             <FrameLayout
