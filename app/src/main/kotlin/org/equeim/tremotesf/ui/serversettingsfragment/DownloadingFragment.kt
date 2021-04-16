@@ -26,6 +26,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
@@ -52,12 +53,10 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
             }
 
             incompleteFilesDirectoryCheckBox.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled
-            incompleteFilesDirectoryCheckBox.setOnCheckedChangeListener { _, checked ->
-                incompleteFilesDirectoryLayout.isEnabled = checked
+            incompleteFilesDirectoryCheckBox.setDependentViews(incompleteFilesDirectoryLayout) { checked ->
                 Rpc.serverSettings.incompleteDirectoryEnabled = checked
             }
 
-            incompleteFilesDirectoryLayout.isEnabled = incompleteFilesDirectoryCheckBox.isChecked
             incompleteFilesDirectoryEdit.setText(Rpc.serverSettings.incompleteDirectory)
             incompleteFilesDirectoryEdit.doAfterTextChangedAndNotEmpty {
                 Rpc.serverSettings.incompleteDirectory = it.toString()

@@ -27,6 +27,7 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsQueueFragmentBinding
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
@@ -38,12 +39,10 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             downloadQueueCheckBox.isChecked = Rpc.serverSettings.downloadQueueEnabled
-            downloadQueueCheckBox.setOnCheckedChangeListener { _, checked ->
-                downloadQueueLayout.isEnabled = checked
+            downloadQueueCheckBox.setDependentViews(downloadQueueLayout) { checked ->
                 Rpc.serverSettings.downloadQueueEnabled = checked
             }
 
-            downloadQueueLayout.isEnabled = downloadQueueCheckBox.isChecked
             downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
             downloadQueueEdit.setText(Rpc.serverSettings.downloadQueueSize.toString())
             downloadQueueEdit.doAfterTextChangedAndNotEmpty {
@@ -51,12 +50,10 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             seedQueueCheckBox.isChecked = Rpc.serverSettings.seedQueueEnabled
-            seedQueueCheckBox.setOnCheckedChangeListener { _, checked ->
-                seedQueueLayout.isEnabled = checked
+            seedQueueCheckBox.setDependentViews(seedQueueLayout) { checked ->
                 Rpc.serverSettings.seedQueueEnabled = checked
             }
 
-            seedQueueLayout.isEnabled = seedQueueCheckBox.isChecked
             seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
             seedQueueEdit.setText(Rpc.serverSettings.seedQueueSize.toString())
             seedQueueEdit.doAfterTextChangedAndNotEmpty {
@@ -64,12 +61,9 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             idleQueueCheckBox.isChecked = Rpc.serverSettings.idleQueueLimited
-            idleQueueCheckBox.setOnCheckedChangeListener { _, checked ->
-                idleQueueLayout.isEnabled = checked
+            idleQueueCheckBox.setDependentViews(idleQueueLayout) { checked ->
                 Rpc.serverSettings.idleQueueLimited = checked
             }
-
-            idleQueueLayout.isEnabled = idleQueueCheckBox.isChecked
 
             idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
             idleQueueEdit.setText(Rpc.serverSettings.idleQueueLimit.toString())

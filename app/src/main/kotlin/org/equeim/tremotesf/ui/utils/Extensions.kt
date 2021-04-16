@@ -29,6 +29,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.view.inputmethod.InputMethodManager
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 
@@ -93,6 +94,16 @@ fun ViewGroup.findChildRecursively(predicate: (View) -> Boolean): View? {
         }
     }
     return null
+}
+
+inline fun CheckBox.setDependentViews(vararg views: View, crossinline onCheckedChanged: (Boolean) -> Unit = {}) {
+    views.forEach { it.isEnabled = isChecked }
+    setOnCheckedChangeListener { _, isChecked ->
+        views.forEach {
+            it.isEnabled = isChecked
+        }
+        onCheckedChanged(isChecked)
+    }
 }
 
 inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Editable) -> Unit) = doAfterTextChanged {

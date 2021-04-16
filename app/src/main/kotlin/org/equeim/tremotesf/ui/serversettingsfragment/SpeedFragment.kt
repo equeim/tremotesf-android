@@ -50,6 +50,7 @@ import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.safeNavigate
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
@@ -111,12 +112,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         with (binding) {
             downloadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.downloadSpeedLimited
-            downloadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
-                downloadSpeedLimitLayout.isEnabled = checked
+            downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 Rpc.serverSettings.downloadSpeedLimited = checked
             }
-
-            downloadSpeedLimitLayout.isEnabled = downloadSpeedLimitCheckBox.isChecked
 
             downloadSpeedLimitEdit.filters = limitsFilters
             downloadSpeedLimitEdit.setText(Rpc.serverSettings.downloadSpeedLimit.toString())
@@ -125,12 +123,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             uploadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.uploadSpeedLimited
-            uploadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
-                uploadSpeedLimitLayout.isEnabled = checked
+            uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
                 Rpc.serverSettings.uploadSpeedLimited = checked
             }
-
-            uploadSpeedLimitLayout.isEnabled = uploadSpeedLimitCheckBox.isChecked
 
             uploadSpeedLimitEdit.filters = limitsFilters
             uploadSpeedLimitEdit.setText(Rpc.serverSettings.uploadSpeedLimit.toString())
@@ -139,14 +134,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             alternativeLimitsCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
-            alternativeLimitsCheckBox.setOnCheckedChangeListener { _, checked ->
-                alternativeDownloadSpeedLimitLayout.isEnabled = checked
-                alternativeUploadSpeedLimitLayout.isEnabled = checked
+            alternativeLimitsCheckBox.setDependentViews(alternativeDownloadSpeedLimitLayout, alternativeUploadSpeedLimitLayout) { checked ->
                 Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
             }
-
-            alternativeDownloadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
-            alternativeUploadSpeedLimitLayout.isEnabled = alternativeLimitsCheckBox.isChecked
 
             alternativeDownloadSpeedLimitEdit.filters = limitsFilters
             alternativeDownloadSpeedLimitEdit.setText(Rpc.serverSettings.alternativeDownloadSpeedLimit.toString())
@@ -161,17 +151,9 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             scheduleCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsScheduled
-            val setEnabled = { enabled: Boolean ->
-                beginTimeItem.isEnabled = enabled
-                endTimeItem.isEnabled = enabled
-                daysViewLayout.isEnabled = enabled
-            }
-            scheduleCheckBox.setOnCheckedChangeListener { _, checked ->
-                setEnabled(checked)
+            scheduleCheckBox.setDependentViews(beginTimeItem, endTimeItem, daysViewLayout) { checked ->
                 Rpc.serverSettings.alternativeSpeedLimitsScheduled = checked
             }
-
-            setEnabled(scheduleCheckBox.isChecked)
 
             beginTimeItem.beginTime = true
             beginTimeItem.setTime(Rpc.serverSettings.alternativeSpeedLimitsBeginTime)

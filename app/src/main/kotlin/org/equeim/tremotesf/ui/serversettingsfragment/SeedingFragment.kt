@@ -29,6 +29,7 @@ import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_seeding_fragment,
@@ -39,12 +40,10 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             ratioLimitCheckBox.isChecked = Rpc.serverSettings.ratioLimited
-            ratioLimitCheckBox.setOnCheckedChangeListener { _, checked ->
-                ratioLimitLayout.isEnabled = checked
+            ratioLimitCheckBox.setDependentViews(ratioLimitLayout) { checked ->
                 Rpc.serverSettings.ratioLimited = checked
             }
 
-            ratioLimitLayout.isEnabled = ratioLimitCheckBox.isChecked
             val doubleFilter = DoubleFilter(0.0..10000.0)
             ratioLimitEdit.filters = arrayOf(doubleFilter)
             ratioLimitEdit.setText(DecimalFormats.ratio.format(Rpc.serverSettings.ratioLimit))
@@ -53,12 +52,9 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_sett
             }
 
             idleSeedingCheckBox.isChecked = Rpc.serverSettings.idleSeedingLimited
-            idleSeedingCheckBox.setOnCheckedChangeListener { _, checked ->
-                idleSeedingLimitLayout.isEnabled = checked
+            idleSeedingCheckBox.setDependentViews(idleSeedingLimitLayout) { checked ->
                 Rpc.serverSettings.idleSeedingLimited = checked
             }
-
-            idleSeedingLimitLayout.isEnabled = idleSeedingCheckBox.isChecked
 
             idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..10000))
             idleSeedingLimitEdit.setText(Rpc.serverSettings.idleSeedingLimit.toString())

@@ -31,6 +31,7 @@ import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
@@ -105,16 +106,14 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
                 torrent?.setHonorSessionLimits(checked)
             }
 
-            downloadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
-                downloadSpeedLimitLayout.isEnabled = checked
+            downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 torrent?.setDownloadSpeedLimited(checked)
             }
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 torrent?.setDownloadSpeedLimit(it.toString().toInt())
             }
 
-            uploadSpeedLimitCheckBox.setOnCheckedChangeListener { _, checked ->
-                uploadSpeedLimitLayout.isEnabled = checked
+            uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
                 torrent?.setUploadSpeedLimited(checked)
             }
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
@@ -181,8 +180,6 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
                 maximumPeersEdit.setText(data.peersLimit.toString())
             }
 
-            downloadSpeedLimitLayout.isEnabled = downloadSpeedLimitCheckBox.isChecked
-            uploadSpeedLimitLayout.isEnabled = uploadSpeedLimitCheckBox.isChecked
             ratioLimitLayout.isEnabled = (ratioLimitModeView.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(TorrentData.RatioLimitMode.SingleRatioLimit)])
             idleSeedingLimitLayout.isEnabled = (idleSeedingModeView.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)])
         }

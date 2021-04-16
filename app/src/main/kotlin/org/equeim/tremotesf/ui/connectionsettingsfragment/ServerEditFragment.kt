@@ -58,6 +58,7 @@ import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.RuntimePermissionViewModel
 import org.equeim.tremotesf.ui.utils.savedState
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.viewModelFactory
@@ -132,13 +133,10 @@ class ServerEditFragment : NavigationFragment(
 
             httpsCheckBox.isChecked = false
 
-            certificatedButton.isEnabled = false
             certificatedButton.setOnClickListener {
                 navigate(ServerEditFragmentDirections.toCertificatesFragment(args.server))
             }
-            httpsCheckBox.setOnCheckedChangeListener { _, checked ->
-                certificatedButton.isEnabled = checked
-            }
+            httpsCheckBox.setDependentViews(certificatedButton)
 
             authenticationCheckBox.isChecked = false
             authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
@@ -337,15 +335,6 @@ class ServerEditFragment : NavigationFragment(
     }
 
     private companion object {
-        fun CheckBox.setDependentViews(vararg views: View) {
-            views.forEach { it.isEnabled = isChecked }
-            setOnCheckedChangeListener { _, isChecked ->
-                views.forEach {
-                    it.isEnabled = isChecked
-                }
-            }
-        }
-
         fun canRequestBackgroundLocationPermission() =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
     }
@@ -396,14 +385,8 @@ class ServerCertificatesFragment : NavigationFragment(R.layout.server_edit_certi
         model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {
-            selfSignedCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
-                selfSignedCertificateLayout.isEnabled = checked
-            }
-            selfSignedCertificateLayout.isEnabled = false
-            clientCertificateCheckBox.setOnCheckedChangeListener { _, checked ->
-                clientCertificateLayout.isEnabled = checked
-            }
-            clientCertificateLayout.isEnabled = false
+            selfSignedCertificateCheckBox.setDependentViews(selfSignedCertificateLayout)
+            clientCertificateCheckBox.setDependentViews(clientCertificateLayout)
 
             with(model.server) {
                 selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
