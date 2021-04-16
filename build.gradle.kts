@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application") apply(false)
-    kotlin("android") apply(false)
     kotlin("multiplatform") apply(false)
+    kotlin("android") apply(false)
     id("androidx.navigation.safeargs.kotlin") apply(false)
 }
 
