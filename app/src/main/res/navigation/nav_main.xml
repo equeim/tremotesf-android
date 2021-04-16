@@ -275,6 +275,12 @@
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/to_runtime_permission_rationale_dialog"
+            app:destination="@id/runtime_permission_rationale_dialog" />
+        <action
+            android:id="@+id/to_runtime_permission_system_settings_dialog"
+            app:destination="@id/runtime_permission_system_settings_dialog" />
     </fragment>
     <fragment
         android:id="@+id/server_certificates_fragment"
@@ -386,4 +392,22 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+
+    <dialog
+        android:id="@+id/runtime_permission_rationale_dialog"
+        android:name="org.equeim.tremotesf.ui.utils.RuntimePermissionRationaleDialog">
+
+        <argument
+            android:name="permission_rationale_text"
+            app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/runtime_permission_system_settings_dialog"
+        android:name="org.equeim.tremotesf.ui.utils.RuntimePermissionSystemSettingsDialog">
+
+        <argument
+            android:name="permission_rationale_text"
+            app:argType="string" />
+    </dialog>
 </navigation>

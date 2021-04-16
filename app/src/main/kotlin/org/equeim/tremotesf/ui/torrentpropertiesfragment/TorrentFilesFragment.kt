@@ -37,7 +37,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
-    val model by savedStateViewModels { TorrentFilesFragmentViewModel(torrentPropertiesFragment.torrent, it) }
+    val model by savedStateViewModels { _, handle -> TorrentFilesFragmentViewModel(torrentPropertiesFragment.torrent, handle) }
 
     var torrent: Torrent? = null
         private set

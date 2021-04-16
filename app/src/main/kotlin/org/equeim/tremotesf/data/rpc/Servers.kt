@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.AnyThread
+import androidx.annotation.MainThread
 
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
@@ -113,6 +114,11 @@ data class Server(@SerialName("name")
                   var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
                   @SerialName("timeout")
                   var timeout: Int = DEFAULT_TIMEOUT,
+
+                  @SerialName("autoConnectOnWifiNetworkEnabled")
+                  var autoConnectOnWifiNetworkEnabled: Boolean = false,
+                  @SerialName("autoConnectOnWifiNetworkSSID")
+                  var autoConnectOnWifiNetworkSSID: String = "",
 
                   @SerialName("lastTorrents")
                   @Volatile
@@ -334,6 +340,35 @@ object Servers : Logger {
         _servers.value = servers
 
         save()
+    }
+
+    @MainThread
+    fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { WifiNetworkHelper.currentWifiSsid }): Boolean {
+        info("setCurrentServerFromWifiNetwork() called")
+
+        val ssid by ssidLazy
+
+        for (server in servers.value) {
+            if (server.autoConnectOnWifiNetworkEnabled) {
+                if (ssid == null) {
+                    info("setCurrentServerFromWifiNetwork: SSID is null")
+                    return false
+                }
+                if (server.autoConnectOnWifiNetworkSSID == ssid) {
+                    info("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
+                    if (server != currentServer.value) {
+                        info("setCurrentServerFromWifiNetwork: setting current server")
+                        setCurrentServer(server)
+                        return true
+                    } else {
+                        info("setCurrentServerFromWifiNetwork: current server is already the same")
+                        return false
+                    }
+                }
+            }
+        }
+        info("setCurrentServerFromWifiNetwork: no matching servers found")
+        return false
     }
 }
 

@@ -110,11 +110,11 @@ android {
     productFlavors {
         register("google") {
             dimension = "freedom"
-            buildConfigField("boolean", "DONATIONS_GOOGLE", "true")
+            buildConfigField("boolean", "GOOGLE", "true")
         }
         register("fdroid") {
             dimension = "freedom"
-            buildConfigField("boolean", "DONATIONS_GOOGLE", "false")
+            buildConfigField("boolean", "GOOGLE", "false")
         }
     }
 }

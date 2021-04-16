@@ -46,7 +46,7 @@ import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 
-class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
+class DonationsFragment : Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
     companion object {
         private const val PAYPAL_USER = "DDQTRHTY5YV2G"
         private const val PAYPAL_CURRENCY_CODE = "USD"
@@ -61,7 +61,7 @@ class DonationsFragment : Fragment(if (BuildConfig.DONATIONS_GOOGLE) R.layout.do
     private val bindingGoogle by viewBinding(DonationsFragmentGoogleBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (BuildConfig.DONATIONS_GOOGLE) {
+        if (BuildConfig.GOOGLE) {
             model.billing?.isSetUp?.collectWhenStarted(viewLifecycleOwner, ::onBillingSetup)
         } else {
             with(bindingFdroid) {

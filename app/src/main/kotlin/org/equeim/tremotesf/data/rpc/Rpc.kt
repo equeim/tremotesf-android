@@ -327,7 +327,13 @@ object Rpc : Logger {
                         }
                         handleWorkerCompleter()
                     }
-                    RpcConnectionState.Disconnected -> handleWorkerCompleter()
+                    RpcConnectionState.Disconnected -> {
+                        if (disconnectingAfterCurrentServerChanged.compareAndSet(true, false)) {
+                            info("Disconnected after current server changed")
+                        } else {
+                            handleWorkerCompleter()
+                        }
+                    }
                 }
             }
         }
@@ -336,6 +342,8 @@ object Rpc : Logger {
             .dropUntilInForeground()
             .onEach(::onAppForegroundStateChanged)
             .launchIn(scope)
+
+        WifiNetworkHelper.subscribeToForegroundTracker()
 
         info("init: finished initialization")
     }
@@ -378,6 +386,7 @@ object Rpc : Logger {
         info("connectOnce() called")
         if (!connectedOnce) {
             info("connectOnce: first connection")
+            Servers.setCurrentServerFromWifiNetwork()
             nativeInstance.connect()
             connectedOnce = true
         } else {
@@ -511,7 +520,7 @@ object Rpc : Logger {
     @AnyThread
     private fun onAboutToDisconnect() {
         info("onAboutToDisconnect() called")
-        if (!disconnectingAfterCurrentServerChanged.compareAndSet(true, false)) {
+        if (!disconnectingAfterCurrentServerChanged.get()) {
             info("onAboutToDisconnect: saving servers")
             Servers.save()
         } else {
@@ -616,8 +625,13 @@ object Rpc : Logger {
         override fun startWork(): ListenableFuture<Result> {
             info("startWork() called")
 
-            if (AppForegroundTracker.hasStartedActivity.value) {
-                warn("startWork: has started activity, return")
+            if (AppForegroundTracker.appInForeground.value) {
+                warn("startWork: app is in foreground, return")
+                return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
+            }
+
+            if (!Servers.hasServers) {
+                warn("startWork: no servers, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
@@ -627,12 +641,13 @@ object Rpc : Logger {
             }
 
             return CallbackToFutureAdapter.getFuture { completer ->
-                val oldCompleter = updateWorkerCompleter.getAndSet(completer)
-                oldCompleter?.set(Result.success())
-                if (connectionState.value == RpcConnectionState.Disconnected) {
-                    nativeInstance.connect()
-                } else {
-                    nativeInstance.updateData()
+                updateWorkerCompleter.getAndSet(completer)?.set(Result.success())
+                if (!Servers.setCurrentServerFromWifiNetwork()) {
+                    if (connectionState.value == RpcConnectionState.Disconnected) {
+                        nativeInstance.connect()
+                    } else {
+                        nativeInstance.updateData()
+                    }
                 }
                 javaClass.simpleName
             }

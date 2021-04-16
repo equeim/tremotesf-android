@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -157,6 +158,68 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/wifi_auto_connect_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:text="@string/auto_connect_on_wifi_network" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/location_permission_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                tools:text="@string/location_permission_granted"
+                tools:icon="@drawable/ic_done_24dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/wifi_auto_connect_ssid_edit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:hint="@string/wifi_ssid_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/wifi_auto_connect_ssid_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/set_ssid_from_current_network_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/wifi_ssid_set_from_current" />
+
+            <TextView
+                android:id="@+id/background_wifi_networks_explanation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                tools:text="@string/background_wifi_networks_explanation_fdroid"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/background_location_permission_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                tools:text="@string/request_background_location_permission" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

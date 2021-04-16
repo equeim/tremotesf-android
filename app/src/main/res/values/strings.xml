@@ -475,4 +475,21 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
+
+    <string name="auto_connect_on_wifi_network">Automatically connect to this server when connecting to Wi-Fi network</string>
+    <string name="wifi_ssid_hint">Wi-Fi network SSID</string>
+    <string name="wifi_ssid_set_from_current">Set from current Wi-Fi network</string>
+    <string name="location_permission_rationale">Tremotesf requires access to location permission to get information about Wi-Fi SSID</string>
+    <string name="request_location_permission">Request location permission</string>
+    <string name="location_permission_granted">Location permission granted</string>
+    <string name="background_wifi_networks_explanation_fdroid">In order to use this feature when app is in background, enable persistent notification in app settings or grant background location permission</string>
+    <string name="background_wifi_networks_explanation_google">In order to use this feature when app is in background, enable persistent notification in app settings</string>
+    <string name="background_location_permission_rationale">Tremotesf requires access to background location permission to get information about Wi-Fi SSID in background without use of persistent notification</string>
+    <string name="request_background_location_permission">Request background location permission</string>
+    <string name="background_location_permission_granted">Background location permission granted</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">Please grant this permission from system settings</string>
+    <string name="go_to_settings">Go to settings</string>
+
+    <string name="current_ssid_error">SSID of current Wi-Fi network is unknown</string>
 </resources>

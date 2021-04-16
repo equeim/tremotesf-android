@@ -21,6 +21,9 @@
 package org.equeim.tremotesf.ui.utils
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
+import android.content.ContextWrapper
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +47,18 @@ import androidx.navigation.fragment.DialogFragmentNavigator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
+
+val Context.application: Application
+    get() {
+        var context = applicationContext
+        while (context is ContextWrapper) {
+            if (context is Application) {
+                return context
+            }
+            context = context.baseContext
+        }
+        throw IllegalStateException()
+    }
 
 fun View.showSnackbar(message: CharSequence, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null): Snackbar {
     val snackbar = Snackbar.make(this, message, length)

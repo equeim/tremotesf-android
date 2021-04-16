@@ -19,14 +19,22 @@
 
 package org.equeim.tremotesf.ui.connectionsettingsfragment
 
+import android.Manifest
+import android.app.Application
 import android.app.Dialog
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
-import androidx.core.os.bundleOf
+import android.widget.Toast
 
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
+import androidx.core.view.isVisible
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModel
@@ -34,29 +42,83 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.onEach
 
+import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.data.rpc.WifiNetworkHelper
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
+import org.equeim.tremotesf.ui.utils.RuntimePermissionViewModel
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewModelFactory
+import org.equeim.tremotesf.utils.Logger
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
-class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
-                                              0,
-                                              R.menu.server_edit_fragment_menu) {
+class ServerEditFragment : NavigationFragment(
+    R.layout.server_edit_fragment,
+    0,
+    R.menu.server_edit_fragment_menu
+), Logger {
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
+    private lateinit var locationPermissionModel: RuntimePermissionViewModel
+    private lateinit var requestLocationPermissionLauncher: ActivityResultLauncher<String>
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private lateinit var backgroundLocationPermissionModel: RuntimePermissionViewModel
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private lateinit var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<String>
+
     private val binding by viewBinding(ServerEditFragmentBinding::bind)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        model = ServerEditFragmentViewModel.from(this, args.server)
+
+        locationPermissionModel = ViewModelProvider(this, viewModelFactory { application ->
+            RuntimePermissionViewModel(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(application.getString(R.string.location_permission_rationale)),
+                ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(application.getString(R.string.location_permission_rationale)),
+                application
+            )
+        })["locationPermissionModel", RuntimePermissionViewModel::class.java]
+
+        requestLocationPermissionLauncher = locationPermissionModel.registerWithFragment(this)
+
+        if (canRequestBackgroundLocationPermission()) {
+            backgroundLocationPermissionModel =
+                ViewModelProvider(this, viewModelFactory { application ->
+                    RuntimePermissionViewModel(
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                        ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(
+                            application.getString(
+                                R.string.background_location_permission_rationale
+                            )
+                        ),
+                        ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(
+                            application.getString(R.string.background_location_permission_rationale)
+                        ),
+                        application
+                    )
+                })["backgroundLocationPermissionModel", RuntimePermissionViewModel::class.java]
+
+            requestBackgroundLocationPermissionLauncher =
+                backgroundLocationPermissionModel.registerWithFragment(this)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,19 +141,81 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
             }
 
             authenticationCheckBox.isChecked = false
-
-            usernameEditLayout.isEnabled = false
-            passwordEditLayout.isEnabled = false
-            authenticationCheckBox.setOnCheckedChangeListener { _, checked ->
-                usernameEditLayout.isEnabled = checked
-                passwordEditLayout.isEnabled = checked
-            }
+            authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
 
             updateIntervalEdit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
             timeoutEdit.filters = arrayOf(IntFilter(Server.timeoutRange))
-        }
 
-        model = ServerEditFragmentViewModel.from(this, args.server)
+            wifiAutoConnectCheckbox.setOnClickListener {
+                if (wifiAutoConnectCheckbox.isChecked) {
+                    locationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+                    if (canRequestBackgroundLocationPermission()) {
+                        backgroundLocationPermissionModel.checkPermission(requireContext())
+                    }
+                }
+            }
+            wifiAutoConnectCheckbox.setDependentViews(
+                locationPermissionButton,
+                wifiAutoConnectSsidEditLayout,
+                setSsidFromCurrentNetworkButton,
+                backgroundWifiNetworksExplanation,
+                backgroundLocationPermissionButton
+            )
+            locationPermissionModel.permissionGranted.onEach { granted ->
+                locationPermissionButton.apply {
+                    if (granted) {
+                        setIconResource(R.drawable.ic_done_24dp)
+                        setText(R.string.location_permission_granted)
+                    } else {
+                        setIconResource(R.drawable.ic_error_24dp)
+                        setText(R.string.request_location_permission)
+                    }
+                    isClickable = !granted
+                }
+            }.collectWhenStarted(viewLifecycleOwner)
+            locationPermissionButton.setOnClickListener {
+                locationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+            }
+
+            if (canRequestBackgroundLocationPermission()) {
+                backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_fdroid)
+
+                backgroundLocationPermissionModel.permissionGranted.onEach { granted ->
+                    info("background granted = $granted")
+                    backgroundLocationPermissionButton.apply {
+                        if (granted) {
+                            setIconResource(R.drawable.ic_done_24dp)
+                            setText(R.string.background_location_permission_granted)
+                        } else {
+                            icon = null
+                            setText(R.string.request_background_location_permission)
+                        }
+                        isClickable = !granted
+                    }
+                }.collectWhenStarted(viewLifecycleOwner)
+                backgroundLocationPermissionButton.setOnClickListener {
+                    backgroundLocationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestBackgroundLocationPermissionLauncher)
+                }
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_google)
+                } else {
+                    backgroundWifiNetworksExplanation.isVisible = false
+                }
+                backgroundLocationPermissionButton.isVisible = false
+            }
+
+            setSsidFromCurrentNetworkButton.setOnClickListener {
+                val ssid = WifiNetworkHelper.currentWifiSsid
+
+                if (ssid != null) {
+                    wifiAutoConnectSsidEdit.setText(ssid)
+                } else {
+                    Toast.makeText(requireContext(), R.string.current_ssid_error, Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+        }
 
         setupToolbar()
 
@@ -108,6 +232,19 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 passwordEdit.setText(server.password)
                 updateIntervalEdit.setText(server.updateInterval.toString())
                 timeoutEdit.setText(server.timeout.toString())
+                wifiAutoConnectCheckbox.isChecked = server.autoConnectOnWifiNetworkEnabled
+                wifiAutoConnectSsidEdit.setText(server.autoConnectOnWifiNetworkSSID)
+            }
+        }
+    }
+
+    override fun onStart() {
+        info("onStart() called")
+        super.onStart()
+        if (binding.wifiAutoConnectCheckbox.isChecked) {
+            locationPermissionModel.checkPermission(requireContext())
+            if (canRequestBackgroundLocationPermission()) {
+                backgroundLocationPermissionModel.checkPermission(requireContext())
             }
         }
     }
@@ -182,6 +319,9 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
                 password = passwordEdit.text?.toString()?.trim() ?: ""
                 updateInterval = updateIntervalEdit.text?.toString()?.toInt() ?: 0
                 timeout = timeoutEdit.text?.toString()?.toInt() ?: 0
+                autoConnectOnWifiNetworkEnabled = wifiAutoConnectCheckbox.isChecked
+                autoConnectOnWifiNetworkSSID =
+                    wifiAutoConnectSsidEdit.text?.toString()?.trim() ?: ""
             }
         }
 
@@ -194,6 +334,20 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment,
         }
 
         navController.popBackStack(R.id.server_edit_fragment, true)
+    }
+
+    private companion object {
+        fun CheckBox.setDependentViews(vararg views: View) {
+            views.forEach { it.isEnabled = isChecked }
+            setOnCheckedChangeListener { _, isChecked ->
+                views.forEach {
+                    it.isEnabled = isChecked
+                }
+            }
+        }
+
+        fun canRequestBackgroundLocationPermission() =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
     }
 }
 

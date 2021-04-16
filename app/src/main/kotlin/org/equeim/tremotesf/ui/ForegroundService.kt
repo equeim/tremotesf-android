@@ -25,8 +25,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -41,6 +43,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.data.rpc.WifiNetworkHelper
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
@@ -99,10 +102,25 @@ class ForegroundService : LifecycleService(), Logger {
             }
         }
 
-        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value))
-
         combine(Rpc.status, Rpc.serverStats, Servers.currentServer) { status, _, _ -> status }.drop(1)
                 .collectWhenStarted(this) { updatePersistentNotification(it) }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            WifiNetworkHelper.observingActiveWifiNetwork.collectWhenStarted(this, ::startForegroundV29)
+        } else {
+            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun startForegroundV29(observingWifiNetworks: Boolean) {
+        info("startForeground() called with: observingWifiNetworks = $observingWifiNetworks")
+        val type = if (observingWifiNetworks) {
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+        } else {
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        }
+        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value), type)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

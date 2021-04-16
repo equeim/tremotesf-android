@@ -55,6 +55,7 @@ import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
@@ -297,10 +298,11 @@ class NavigationActivity : AppCompatActivity(), Logger {
                     }
                 }
             }
-            Servers.servers.collectWhenStarted(this@NavigationActivity) { servers ->
-                serversView.isEnabled = servers.isNotEmpty()
-                serversViewAdapter.update()
-            }
+            combine(Servers.servers, Servers.currentServer) { servers, _ -> servers }
+                .collectWhenStarted(this@NavigationActivity) { servers ->
+                    serversView.isEnabled = servers.isNotEmpty()
+                    serversViewAdapter.update()
+                }
 
             connectionSettingsButton.setOnClickListener {
                 navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
