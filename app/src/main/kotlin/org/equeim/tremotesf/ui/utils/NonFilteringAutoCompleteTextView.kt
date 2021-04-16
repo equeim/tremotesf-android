@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2020 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2021 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -17,29 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package org.equeim.tremotesf.ui.utils
 
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 
-import androidx.core.content.res.use
+import androidx.annotation.AttrRes
+import androidx.core.content.withStyledAttributes
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 import org.equeim.tremotesf.R
 
-class NonFilteringAutoCompleteTextView(context: Context,
-                                       attrs: AttributeSet?,
-                                       defStyleAttr: Int) : MaterialAutoCompleteTextView(context, attrs, defStyleAttr) {
-    constructor(context: Context,
-                attrs: AttributeSet?) : this(context, attrs, R.attr.autoCompleteTextViewStyle)
-    constructor(context: Context) : this(context, null)
-
+class NonFilteringAutoCompleteTextView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = R.attr.autoCompleteTextViewStyle
+) : MaterialAutoCompleteTextView(context, attrs, defStyleAttr) {
     init {
-        val ta = context.obtainStyledAttributes(attrs, R.styleable.NonFilteringAutoCompleteTextView, defStyleAttr, 0)
-        ta.use {
-            if (ta.getBoolean(R.styleable.NonFilteringAutoCompleteTextView_readOnly, false)) {
+        context.withStyledAttributes(
+            attrs,
+            R.styleable.NonFilteringAutoCompleteTextView,
+            defStyleAttr,
+            0
+        ) {
+            if (getBoolean(R.styleable.NonFilteringAutoCompleteTextView_readOnly, false)) {
                 inputType = InputType.TYPE_NULL
             }
         }

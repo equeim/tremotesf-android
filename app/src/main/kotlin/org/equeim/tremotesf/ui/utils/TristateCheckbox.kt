@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2020 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2021 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -23,14 +23,17 @@ import kotlin.properties.Delegates
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.AttrRes
 
+import androidx.appcompat.R
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.core.widget.CompoundButtonCompat
 
-
-class TristateCheckbox(context: Context,
-                       attrs: AttributeSet?) : AppCompatCheckBox(context, attrs) {
-    constructor(context: Context) : this(context, null)
+class TristateCheckbox @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = R.attr.checkboxStyle
+) : AppCompatCheckBox(context, attrs, defStyleAttr) {
 
     enum class State {
         Checked,
@@ -49,11 +52,12 @@ class TristateCheckbox(context: Context,
     var state by Delegates.observable(State.Unchecked) { _, oldState, state ->
         if (state != oldState) {
             isChecked = (state != State.Unchecked)
-            CompoundButtonCompat.getButtonDrawable(this)?.alpha = if (state == State.Indeterminate) {
-                127
-            } else {
-                255
-            }
+            CompoundButtonCompat.getButtonDrawable(this)?.alpha =
+                if (state == State.Indeterminate) {
+                    127
+                } else {
+                    255
+                }
         }
     }
 }

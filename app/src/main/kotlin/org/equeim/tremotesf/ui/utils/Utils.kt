@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2020 Alexey Rochev <equeim@gmail.com>
+ * Copyright (C) 2017-2021 Alexey Rochev <equeim@gmail.com>
  *
  * This file is part of Tremotesf.
  *
@@ -26,7 +26,7 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.widget.ProgressBar
 
-import androidx.core.content.res.use
+import androidx.core.content.withStyledAttributes
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
@@ -98,9 +98,8 @@ object Utils : Logger {
 
     fun setProgressBarColor(progressBar: ProgressBar) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            val ta = progressBar.context.obtainStyledAttributes(intArrayOf(R.attr.colorSecondary))
-            ta.use {
-                progressBar.progressDrawable.colorFilter = PorterDuffColorFilter(ta.getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
+            progressBar.context.withStyledAttributes(attrs = intArrayOf(R.attr.colorSecondary)) {
+                progressBar.progressDrawable.colorFilter = PorterDuffColorFilter(getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
             }
         }
     }
