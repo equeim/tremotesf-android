@@ -277,7 +277,7 @@
 
     <string name="alternative_speed_limits">Giới hạn tốc độ thay thế</string>
 
-    <string name="donate_tab">Tặng</string>
+    <string name="donate_tab">Quyên góp</string>
     <string name="donate_dialog_again">Hộp thoại này sẽ không được hiển thị lại.</string>
 
     <string name="free_space">Dung lượng trống: %s</string>
