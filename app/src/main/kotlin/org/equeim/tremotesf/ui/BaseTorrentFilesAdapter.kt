@@ -29,15 +29,15 @@ import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.TorrentFilesTree
+import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.TristateCheckbox
 
 
 abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
-                                       private val fragment: Fragment) : ListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
+                                       private val fragment: Fragment) : StateRestoringListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -79,11 +79,14 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         }
     }
 
-    fun update(items: List<TorrentFilesTree.Item?>, commitCallback: () -> Unit) {
-        submitList(if (items.isEmpty()) null else items) {
+    fun update(items: List<TorrentFilesTree.Item?>) {
+        submitList(items) {
             selectionTracker.commitAdapterUpdate()
-            commitCallback()
         }
+    }
+
+    override fun onStateRestored() {
+        selectionTracker.restoreInstanceState()
     }
 
     private fun setSelectedItemsWanted(wanted: Boolean) {

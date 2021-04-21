@@ -390,7 +390,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
             val model = mainFragment.model
 
-            val adapter = Adapter(model.filesTree, this, requireActivity() as NavigationActivity)
+            val adapter = Adapter(model, this, requireActivity() as NavigationActivity)
             this.adapter = adapter
 
             AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
@@ -401,13 +401,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            model.filesTree.items.collectWhenStarted(viewLifecycleOwner) {
-                adapter.update(it) {
-                    if (model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded) {
-                        adapter.selectionTracker.restoreInstanceState()
-                    }
-                }
-            }
+            model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
         }
 
         override fun onDestroyView() {
@@ -415,9 +409,9 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
             super.onDestroyView()
         }
 
-        class Adapter(filesTree: TorrentFilesTree,
+        class Adapter(private val model: AddTorrentFileModel,
                       fragment: Fragment,
-                      private val activity: NavigationActivity) : BaseTorrentFilesAdapter(filesTree, fragment) {
+                      private val activity: NavigationActivity) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
@@ -428,6 +422,10 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                                                                               false))
                 }
                 return super.onCreateViewHolder(parent, viewType)
+            }
+
+            override fun allowStateRestoring(): Boolean {
+                return model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded
             }
 
             override fun navigateToRenameDialog(path: String, name: String) {

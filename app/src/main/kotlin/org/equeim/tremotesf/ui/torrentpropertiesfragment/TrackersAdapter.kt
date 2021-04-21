@@ -33,18 +33,19 @@ import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
 import java.util.Comparator
@@ -89,7 +90,7 @@ data class TrackersAdapterItem(val id: Int,
 }
 
 class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment,
-                      trackersFragment: TrackersFragment) : ListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
+                      trackersFragment: TrackersFragment) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
 
     private val comparator = object : Comparator<TrackersAdapterItem> {
@@ -144,10 +145,17 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             newTrackers.add(tracker)
         }
 
-        submitList(if (newTrackers.isEmpty()) null else newTrackers.sortedWith(comparator)) {
+        submitList(newTrackers.sortedWith(comparator)) {
             selectionTracker.commitAdapterUpdate()
-            selectionTracker.restoreInstanceState()
         }
+    }
+
+    override fun allowStateRestoring(): Boolean {
+        return Rpc.isConnected.value
+    }
+
+    override fun onStateRestored() {
+        selectionTracker.restoreInstanceState()
     }
 
     inner class ViewHolder(selectionTracker: SelectionTracker<Int>,

@@ -33,7 +33,6 @@ import android.widget.TextView
 
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
@@ -44,10 +43,11 @@ import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 
 
-class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
+class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestoringListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = SelectionTracker.createForIntKeys(this,
                                                                      true,
                                                                      fragment,
@@ -76,15 +76,18 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         holder.update()
     }
 
-    override fun submitList(list: List<Torrent>?) {
-        super.submitList(if (list?.isEmpty() == true) null else list)
-    }
-
     fun update(torrents: List<Torrent>) {
         submitList(torrents) {
             selectionTracker.commitAdapterUpdate()
-            selectionTracker.restoreInstanceState()
         }
+    }
+
+    override fun allowStateRestoring(): Boolean {
+        return Rpc.isConnected.value
+    }
+
+    override fun onStateRestored() {
+        selectionTracker.restoreInstanceState()
     }
 
     inner class TorrentsViewHolder(multilineName: Boolean,

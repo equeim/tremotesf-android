@@ -53,7 +53,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TorrentFilesAdapter(model.filesTree, this)
+        val adapter = TorrentFilesAdapter(model, this)
         this.adapter = adapter
 
         binding.filesView.apply {
@@ -68,13 +68,7 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
             updateProgressBar(state)
         }
 
-        model.filesTree.items.collectWhenStarted(viewLifecycleOwner) {
-            adapter.update(it) {
-                if (model.state.value == TorrentFilesFragmentViewModel.State.TreeCreated) {
-                    adapter.selectionTracker.restoreInstanceState()
-                }
-            }
-        }
+        model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
 
         Rpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == torrent?.id) {

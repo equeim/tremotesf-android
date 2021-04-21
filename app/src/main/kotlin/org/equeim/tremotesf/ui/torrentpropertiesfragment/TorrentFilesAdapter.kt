@@ -33,8 +33,8 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-class TorrentFilesAdapter(filesTree: TorrentFilesTree,
-                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(filesTree, fragment) {
+class TorrentFilesAdapter(private val model: TorrentFilesFragmentViewModel,
+                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
             val binding = TorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
@@ -44,6 +44,10 @@ class TorrentFilesAdapter(filesTree: TorrentFilesTree,
             return ItemHolder(this, selectionTracker, binding)
         }
         return super.onCreateViewHolder(parent, viewType)
+    }
+
+    override fun allowStateRestoring(): Boolean {
+        return model.state.value == TorrentFilesFragmentViewModel.State.TreeCreated
     }
 
     override fun navigateToRenameDialog(path: String, name: String) {
