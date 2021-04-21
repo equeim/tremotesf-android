@@ -51,7 +51,11 @@ class KeystoreProperties(rootProject: Project) {
     val storeFile: String by properties
     val storePassword: String by properties
 }
-val keystoreProperties = KeystoreProperties(rootProject)
+val keystoreProperties = try {
+    KeystoreProperties(rootProject)
+} catch (e: Exception) {
+    null
+}
 
 android {
     compileSdk = vers.compileSdk
@@ -65,11 +69,13 @@ android {
         versionName = "2.3.2"
     }
 
-    signingConfigs.register("release") {
-        keyAlias = keystoreProperties.keyAlias
-        keyPassword = keystoreProperties.keyPassword
-        storeFile = rootProject.file(keystoreProperties.storeFile)
-        storePassword = keystoreProperties.storePassword
+    if (keystoreProperties != null) {
+        signingConfigs.register("release") {
+            keyAlias = keystoreProperties.keyAlias
+            keyPassword = keystoreProperties.keyPassword
+            storeFile = rootProject.file(keystoreProperties.storeFile)
+            storePassword = keystoreProperties.storePassword
+        }
     }
 
     buildTypes.named("release") {
@@ -77,7 +83,7 @@ android {
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
 
-        signingConfig = signingConfigs["release"]
+        signingConfig = signingConfigs.findByName("release")
     }
 
     buildFeatures.viewBinding = true
