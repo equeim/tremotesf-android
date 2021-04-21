@@ -25,7 +25,7 @@ class Versions(rootProject: Project) {
         val core = "1.3.2"
         val coordinatorlayout = "1.1.0"
         val drawerlayout = "1.1.1"
-        val fragment = "1.3.2"
+        val fragment = "1.3.3"
         val gridlayout = "1.0.0"
         val lifecycle = "2.3.1"
         val navigation: String by (gradle as ExtensionAware).extra
