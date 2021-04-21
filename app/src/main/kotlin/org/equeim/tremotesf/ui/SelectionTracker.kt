@@ -266,7 +266,7 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
         init {
             itemView.setOnClickListener {
                 if (selectionTracker.hasSelection && getSelectionKey() != selectionTracker.unselectableKey) {
-                    selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
+                    selectionTracker.toggleSelection(getSelectionKey(), bindingAdapterPosition)
                 } else {
                     onClick(it)
                 }
@@ -283,13 +283,13 @@ class SelectionTracker<K : Any> private constructor(private val adapter: Recycle
             if (selectionTracker.hasSelection || getSelectionKey() == selectionTracker.unselectableKey) {
                 return false
             }
-            selectionTracker.toggleSelection(getSelectionKey(), adapterPosition)
+            selectionTracker.toggleSelection(getSelectionKey(), bindingAdapterPosition)
             selectionTracker.startActionMode()
             return true
         }
 
         private fun getSelectionKey(): K {
-            return selectionTracker.selectionKeysProvider.getKeyForPosition(adapterPosition)
+            return selectionTracker.selectionKeysProvider.getKeyForPosition(bindingAdapterPosition)
         }
     }
 

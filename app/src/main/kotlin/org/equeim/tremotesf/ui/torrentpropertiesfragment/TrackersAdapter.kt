@@ -153,13 +153,13 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     inner class ViewHolder(selectionTracker: SelectionTracker<Int>,
                            val binding: TrackerListItemBinding) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
-            val tracker = getItem(adapterPosition)
+            val tracker = getItem(bindingAdapterPosition)
             torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog(tracker.id, tracker.announce))
         }
 
         override fun update() {
             super.update()
-            val tracker = getItem(adapterPosition)
+            val tracker = getItem(bindingAdapterPosition)
             with(binding) {
                 nameTextView.text = tracker.announce
                 statusTextView.text = when (tracker.status) {

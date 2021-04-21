@@ -57,7 +57,7 @@ class TorrentFilesAdapter(filesTree: TorrentFilesTree,
                              val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()
-            val item = adapter.getItem(adapterPosition)!!
+            val item = adapter.getItem(bindingAdapterPosition)!!
             with(binding) {
                 progressBar.progress = (item.progress * 100).toInt()
                 val context = progressBar.context

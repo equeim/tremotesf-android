@@ -441,7 +441,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                     super.update()
                     val context = binding.sizeTextView.context
                     binding.sizeTextView.text =
-                            Utils.formatByteSize(context, adapter.getItem(adapterPosition)!!.size)
+                            Utils.formatByteSize(context, adapter.getItem(bindingAdapterPosition)!!.size)
                 }
             }
         }

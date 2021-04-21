@@ -175,7 +175,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : ListAdapter<
         override fun update() {
             super.update()
 
-            torrent = getItem(adapterPosition)
+            torrent = getItem(bindingAdapterPosition)
 
             nameTextView.text = torrent.name
             statusIconDrawable.level = when (torrent.status) {

@@ -141,7 +141,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
             init {
                 binding.radioButton.setOnClickListener {
-                    val server = adapter.servers[adapterPosition]
+                    val server = adapter.servers[bindingAdapterPosition]
                     if (server.name != Servers.currentServer.value?.name) {
                         Servers.setCurrentServer(server)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
@@ -151,7 +151,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
             override fun update() {
                 super.update()
-                val server = adapter.servers[adapterPosition]
+                val server = adapter.servers[bindingAdapterPosition]
                 with(binding) {
                     radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
                     textView.text = server.name
@@ -159,7 +159,7 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
 
             override fun onClick(view: View) {
-                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[adapterPosition].name))
+                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[bindingAdapterPosition].name))
             }
         }
 

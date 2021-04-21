@@ -130,7 +130,7 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
 
         init {
             checkBox.setOnClickListener {
-                val position = adapterPosition
+                val position = bindingAdapterPosition
                 if (position != -1) {
                     with (adapter) {
                         filesTree.setItemsWanted(listOf(getItem(position)!!.nodePath.last()), checkBox.isChecked)
@@ -140,7 +140,7 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         }
 
         override fun onClick(view: View) {
-            val position = adapterPosition
+            val position = bindingAdapterPosition
             if (position != -1) {
                 with(adapter) {
                     filesTree.navigateDown(getItem(position)!!)
@@ -151,7 +151,7 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         override fun update() {
             super.update()
 
-            val item = adapter.getItem(adapterPosition)!!
+            val item = adapter.getItem(bindingAdapterPosition)!!
 
             iconView.setImageLevel(if (item.isDirectory) 0 else 1)
 
