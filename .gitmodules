@@ -5,3 +5,10 @@
 [submodule "bencode"]
 	path = bencode
 	url = https://github.com/equeim/kotlinx-serialization-bencode
+[submodule "3rdparty/qt/qtbase"]
+	path = 3rdparty/qt/qtbase
+	url = https://invent.kde.org/qt/qt/qtbase.git
+	branch = kde/5.15
+[submodule "3rdparty/openssl/openssl"]
+	path = 3rdparty/openssl/openssl
+	url = git://git.openssl.org/openssl.git

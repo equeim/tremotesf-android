@@ -10,10 +10,7 @@
 /app/fdroid
 /app/google
 /libtremotesf/build
-/3rdparty/openssl/openssl
 /3rdparty/openssl/build-*
-/3rdparty/openssl/install-*
 /3rdparty/openssl/install
 /3rdparty/qt/build-*
 /3rdparty/qt/install-*
-/3rdparty/qt/qtbase

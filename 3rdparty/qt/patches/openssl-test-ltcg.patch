@@ -14,7 +14,7 @@
      # for platforms with multiple architectures (macOS, iOS, tvOS, watchOS),
      # make sure tests are only built for a single architecture
      qmake_configs += "single_arch"
-+    
++
 +    equals(test, openssl) {
 +        qmake_configs += "ltcg"
 +    }

@@ -3,24 +3,28 @@
 readonly QT_DIR="$(dirname -- "$(realpath -s -- "$0")")"
 readonly QT_SOURCE_DIR="$QT_DIR/qtbase"
 
-source "$QT_DIR/../lib.sh" || exit 1
+readonly OPENSSL_DIR="$(realpath -s -- "$QT_DIR/../openssl")"
+readonly OPENSSL_INCDIR="$OPENSSL_DIR/install/include"
+readonly OPENSSL_LIBDIR="$OPENSSL_DIR/install/lib"
 
-readonly QT_5_12_VERSION="5.12.10"
-readonly QT_5_15_VERSION="5.15.2"
+readonly PATCHES=(
+    qmake-makeopts.patch
+    o2.patch
 
-latest_change_file=$(basename $(ls "$QT_SOURCE_DIR"/dist/changes-* | sort --version-sort | tail -n1))
-if [[ $latest_change_file = "changes-$QT_5_15_VERSION" ]]; then
-    readonly QT_5_15=true
-elif [[ $latest_change_file = "changes-$QT_5_12_VERSION" ]]; then
-    readonly QT_5_15=false
-else
-    echo "Unsupported Qt version $latest_change_file"
-    exit 1
-fi
-unset latest_change_file
+    # LTO
+    openssl-test-ltcg.patch
 
+    qsslsocket-qdiriterator.patch
+    qsslcertificate.patch
+    qtMainLoopThread.patch
 
-readonly COMMON_FLAGS=(
+    ndk-r22.patch
+
+    # Needed to build Qt for 32-bit ABIs targeting API 16
+    default-arch.patch
+)
+
+readonly CONFIGURE_FLAGS=(
     '-v'
     '-confirm-license'
     '-opensource'
@@ -29,6 +33,7 @@ readonly COMMON_FLAGS=(
     '-android-ndk' "$ANDROID_NDK_ROOT"
     '-android-sdk' "$ANDROID_SDK_ROOT"
     '-android-ndk-host' 'linux-x86_64'
+    '-linker' 'lld'
     '-ltcg'
     '-no-use-gold-linker'
     '-nomake' 'examples'
@@ -67,52 +72,16 @@ readonly COMMON_FLAGS=(
     '-no-feature-xmlstream'
     '-no-feature-regularexpression'
     '-openssl-linked'
+    "-I$OPENSSL_INCDIR"
+    "-L$OPENSSL_LIBDIR"
 )
 
-function apply_patches() {
-    cd "$QT_SOURCE_DIR" || exit 1
-
-    patch_if_needed qmake-makeopts.patch
-    patch_if_needed o2.patch
-
-    # LTO
-    patch_if_needed openssl-test-ltcg.patch
-
-    if [[ "$QT_5_15" = true ]]; then
-        # Qt 5.15
-
-        patch_if_needed 5.15/qsslsocket-qdiriterator.patch
-        patch_if_needed 5.15/qsslcertificate.patch
-        patch_if_needed 5.15/qtMainLoopThread.patch
-
-        # NDK r22 toolchain
-        patch_if_needed 5.15/ndk-r22.patch
-
-        # Needed to build Qt for 32-bit architectures separately
-        patch_if_needed 5.15/default-arch.patch
-    else
-        # Qt 5.12 and older
-
-        patch_if_needed 5.12/java7.patch
-        patch_if_needed 5.12/qsslsocket-qdiriterator.patch
-        patch_if_needed 5.12/qtMainLoopThread.patch
-        patch_if_needed 5.12/android-platform.patch
-
-        # NEON fix
-        patch_if_needed 5.12/qfloat16-neon.patch
-
-        # NDK r22 toolchain
-        patch_if_needed 5.12/ndk-r22.patch
-
-        # Thin LTO
-        patch_if_needed 5.12/thin-lto.patch
-    fi
-}
+source "$QT_DIR/../lib.sh" || exit 1
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 function get_first { echo "$1"; }
 
-function build_515() {
+function build() {
     local -r abis="$1"
     local -r api="$2"
 
@@ -120,62 +89,24 @@ function build_515() {
     echo
 
     local -r build_dir="$QT_DIR/build-api$api"
-    mkdir -p "$build_dir" || exit 1
-    cd "$build_dir" || exit 1
-
-    local -r openssl_libdir="$QT_DIR/../openssl/install/lib"
-    local -r openssl_incdir="$QT_DIR/../openssl/install/include"
+    mkdir -p "$build_dir" || return 1
+    cd "$build_dir" || return 1
 
     local -r prefix="$QT_DIR/install-api$api"
-    local flags=("${COMMON_FLAGS[@]}")
+    local flags=("${CONFIGURE_FLAGS[@]}")
     flags+=(
         '-prefix' "$prefix"
-        '-linker' 'lld'
         '-android-abis' "$(join_by ',' $abis)"
         '-android-ndk-platform' "android-$api"
-        "-I$openssl_incdir"
-        "-L$openssl_libdir"
     )
 
     local -r first_abi=$(get_first $abis)
     export OPENSSL_LIBS="-lssl_$first_abi -lcrypto_$first_abi"
-    "$QT_DIR/qtbase/configure" "${flags[@]}" || exit 1
+    "$QT_DIR/qtbase/configure" "${flags[@]}" || return 1
+    unset OPENSSL_LIBS
 
-    make $MAKEOPTS || exit 1
-    make install $MAKEOPTS || exit 1
-
-    echo
-}
-
-function build_512() {
-    local -r abi="$1"
-    local -r api="$2"
-
-    echo "Building Qt for $abi, API $api"
-    echo
-
-    local -r build_dir="$QT_DIR/build-$abi"
-    mkdir -p "$build_dir" || exit 1
-    cd "$build_dir" || exit 1
-
-    local -r openssl_libdir="$QT_DIR/../openssl/install-$abi/lib"
-    local -r openssl_incdir="$QT_DIR/../openssl/install-$abi/include"
-
-    local -r prefix="$QT_DIR/install-$abi"
-
-    local flags=("${COMMON_FLAGS[@]}")
-    flags+=(
-        '-prefix' "$prefix"
-        '-android-arch' "$abi"
-        '-android-ndk-platform' "android-$api"
-        "-I$openssl_incdir"
-        "-L$openssl_libdir"
-    )
-
-    "$QT_DIR/qtbase/configure" "${flags[@]}" || exit 1
-
-    make $MAKEOPTS || exit 1
-    make install $MAKEOPTS || exit 1
+    make $MAKEOPTS || return 1
+    make install $MAKEOPTS || return 1
 
     echo
 }
@@ -185,19 +116,10 @@ if [[ ! -d "$QT_SOURCE_DIR" ]]; then
     exit 1
 fi
 
-"$TOP_DIR/3rdparty/openssl/build.sh" "$QT_5_15" || exit 1
+"$OPENSSL_DIR/build.sh" || exit 1
 
-apply_patches
+cd "$QT_SOURCE_DIR" || exit 1
+apply_patches "${PATCHES[@]}" || exit 1
 
-if [[ "$QT_5_15" = true ]]; then
-    build_515 "$ANDROID_ABIS_32" "$ANDROID_API_32"
-    build_515 "$ANDROID_ABIS_64" "$ANDROID_API_64"
-else
-    for abi in $ANDROID_ABIS_32; do
-        build_512 "$abi" "$ANDROID_API_32"
-    done
-
-    for abi in $ANDROID_ABIS_64; do
-        build_512 "$abi" "$ANDROID_API_64"
-    done
-fi
+build "$ANDROID_ABIS_32" "$ANDROID_API_32" || exit 1
+build "$ANDROID_ABIS_64" "$ANDROID_API_64" || exit 1

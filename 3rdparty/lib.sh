@@ -16,3 +16,10 @@ function patch_if_needed() {
     fi
     echo
 }
+
+function apply_patches() {
+    local -r patches=("$@")
+    for patch in "${patches[@]}"; do
+        patch_if_needed "$patch" || return 1
+    done
+}
