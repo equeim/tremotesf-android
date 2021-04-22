@@ -36,12 +36,14 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.utils.Logger
+import org.equeim.tremotesf.utils.MutableEventFlow
 
 class RuntimePermissionHelper(
     private val permission: String,
@@ -51,10 +53,14 @@ class RuntimePermissionHelper(
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
 
+    private val _permissionRequestResult = MutableEventFlow<Boolean>()
+    val permissionRequestResult: Flow<Boolean> by ::_permissionRequestResult
+
     fun registerWithFragment(fragment: NavigationFragment): ActivityResultLauncher<String> {
         val launcher =
             fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
                 _permissionGranted.value = granted
+                _permissionRequestResult.tryEmit(granted)
                 if (granted) {
                     info("Permission $permission granted")
                 } else {
@@ -90,7 +96,10 @@ class RuntimePermissionHelper(
         fragment: NavigationFragment,
         launcher: ActivityResultLauncher<String>
     ) {
-        if (checkPermission(fragment.requireContext())) return
+        if (checkPermission(fragment.requireContext())) {
+            _permissionRequestResult.tryEmit(true)
+            return
+        }
         if (fragment.shouldShowRequestPermissionRationale(permission)) {
             info("Showing rationale for requesting permission")
             fragment.navigate(permissionRationaleDialogDirections)

@@ -481,7 +481,6 @@
     <string name="wifi_ssid_set_from_current">Set from current Wi-Fi network</string>
     <string name="location_permission_rationale">Tremotesf requires access to location permission to get information about Wi-Fi SSID</string>
     <string name="request_location_permission">Request location permission</string>
-    <string name="location_permission_granted">Location permission granted</string>
     <string name="background_wifi_networks_explanation_fdroid">In order to use this feature when app is in background, enable persistent notification in app settings or grant background location permission</string>
     <string name="background_wifi_networks_explanation_google">In order to use this feature when app is in background, enable persistent notification in app settings</string>
     <string name="background_location_permission_rationale">Tremotesf requires access to background location permission to get information about Wi-Fi SSID in background without use of persistent notification</string>
@@ -492,4 +491,7 @@
     <string name="go_to_settings">Go to settings</string>
 
     <string name="current_ssid_error">SSID of current Wi-Fi network is unknown</string>
+
+    <string name="request_enable_location">Please enable location in system settings</string>
+    <string name="enable_location">Enable location</string>
 </resources>

@@ -281,6 +281,9 @@
         <action
             android:id="@+id/to_runtime_permission_system_settings_dialog"
             app:destination="@id/runtime_permission_system_settings_dialog" />
+        <action
+            android:id="@+id/to_enable_locaiton_dialog"
+            app:destination="@id/enable_location_dialog" />
     </fragment>
     <fragment
         android:id="@+id/server_certificates_fragment"
@@ -410,4 +413,8 @@
             android:name="permission_rationale_text"
             app:argType="string" />
     </dialog>
+
+    <dialog
+        android:id="@+id/enable_location_dialog"
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.EnableLocationDialog"/>
 </navigation>

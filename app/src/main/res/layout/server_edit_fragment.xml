@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -167,14 +168,14 @@
                 android:text="@string/auto_connect_on_wifi_network" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/location_permission_button"
+                android:id="@+id/location_error_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                app:icon="@drawable/ic_error_24dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                tools:text="@string/location_permission_granted"
-                tools:icon="@drawable/ic_done_24dp"/>
+                tools:text="@string/request_location_permission" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/wifi_auto_connect_ssid_edit_layout"

@@ -23,7 +23,9 @@ import android.Manifest
 import android.app.Application
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -33,6 +35,8 @@ import android.widget.EditText
 import android.widget.Toast
 
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.getSystemService
+import androidx.core.location.LocationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
@@ -43,6 +47,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 
 import org.equeim.tremotesf.BuildConfig
@@ -119,27 +127,34 @@ class ServerEditFragment : NavigationFragment(
                 }
             }
             wifiAutoConnectCheckbox.setDependentViews(
-                locationPermissionButton,
+                locationErrorButton,
                 wifiAutoConnectSsidEditLayout,
                 setSsidFromCurrentNetworkButton,
                 backgroundWifiNetworksExplanation,
                 backgroundLocationPermissionButton
             )
-            model.locationPermissionHelper.permissionGranted.onEach { granted ->
-                locationPermissionButton.apply {
-                    if (granted) {
-                        setIconResource(R.drawable.ic_done_24dp)
-                        setText(R.string.location_permission_granted)
-                    } else {
-                        setIconResource(R.drawable.ic_error_24dp)
-                        setText(R.string.request_location_permission)
+            combine(model.locationPermissionHelper.permissionGranted, model.locationEnabled, ::Pair)
+                .onEach { (locationPermissionGranted, locationEnabled) ->
+                    locationErrorButton.apply {
+                        when {
+                            !locationPermissionGranted -> {
+                                isVisible = true
+                                setText(R.string.request_location_permission)
+                                setOnClickListener {
+                                    model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+                                }
+                            }
+                            !locationEnabled -> {
+                                isVisible = true
+                                setText(R.string.enable_location)
+                                setOnClickListener {
+                                    navigate(ServerEditFragmentDirections.toEnableLocaitonDialog())
+                                }
+                            }
+                            else -> isVisible = false
+                        }
                     }
-                    isClickable = !granted
-                }
-            }.collectWhenStarted(viewLifecycleOwner)
-            locationPermissionButton.setOnClickListener {
-                model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
-            }
+                }.collectWhenStarted(viewLifecycleOwner)
 
             val backgroundLocationPermissionHelper = model.backgroundLocationPermissionHelper
             if (backgroundLocationPermissionHelper != null) {
@@ -182,6 +197,14 @@ class ServerEditFragment : NavigationFragment(
             }
         }
 
+        model.locationPermissionHelper.permissionRequestResult
+            .filter { it }
+            .onEach {
+                if (!model.locationEnabled.value) {
+                    navigate(ServerEditFragmentDirections.toEnableLocaitonDialog())
+                }
+            }.collectWhenStarted(viewLifecycleOwner)
+
         setupToolbar()
 
         if (savedInstanceState == null) {
@@ -210,6 +233,7 @@ class ServerEditFragment : NavigationFragment(
             with(model) {
                 locationPermissionHelper.checkPermission(requireContext())
                 backgroundLocationPermissionHelper?.checkPermission(requireContext())
+                checkIfLocationEnabled()
             }
         }
     }
@@ -302,14 +326,12 @@ class ServerEditFragment : NavigationFragment(
     }
 }
 
-class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application), Logger {
     companion object {
-        private const val SERVER_NAME = "serverName"
-
-        fun from(fragment: NavigationFragment, server: String?): ServerEditFragmentViewModel {
+        fun from(fragment: NavigationFragment, serverName: String?): ServerEditFragmentViewModel {
             val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
             val factory = SavedStateViewModelFactory(fragment.requireActivity().application,
-                                                     entry, bundleOf(SERVER_NAME to server))
+                                                     entry, bundleOf(ServerEditFragmentViewModel::serverName.name to serverName))
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
@@ -317,11 +339,9 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
     }
 
-    val existingServer: Server?
-    init {
-        val serverName: String? = savedStateHandle[SERVER_NAME]
-        existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
-    }
+    private val serverName: String? = savedStateHandle[::serverName.name]
+
+    val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
     val locationPermissionHelper = RuntimePermissionHelper(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -340,6 +360,46 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
             ))
     } else {
         null
+    }
+
+    private val _locationEnabled = MutableStateFlow(isLocationEnabled())
+    val locationEnabled: StateFlow<Boolean> by ::_locationEnabled
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getApplication<Application>().getSystemService<LocationManager>()
+        if (locationManager == null) {
+            error("isLocationEnabled: LocationManager is null")
+            return false
+        }
+        if (LocationManagerCompat.isLocationEnabled(locationManager)) {
+            info("isLocationEnabled: location is enabled")
+            return true
+        }
+        info("isLocationEnabled: location is disabled")
+        return false
+    }
+
+    fun checkIfLocationEnabled() {
+        _locationEnabled.value = isLocationEnabled()
+    }
+}
+
+class EnableLocationDialog : NavigationDialogFragment(), Logger {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return MaterialAlertDialogBuilder(requireContext())
+            .setMessage(R.string.request_enable_location)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.go_to_settings) { _, _ -> goToLocationSettings() }
+            .create()
+    }
+
+    private fun goToLocationSettings() {
+        info("Going to system location settings activity")
+        try {
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        } catch (e: ActivityNotFoundException) {
+            error("Failed to start activity", e)
+        }
     }
 }
 
