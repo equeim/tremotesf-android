@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.ui.utils
 
-import android.app.Application
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -34,7 +33,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.AndroidViewModel
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -45,12 +43,11 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.utils.Logger
 
-class RuntimePermissionViewModel(
+class RuntimePermissionHelper(
     private val permission: String,
     private val permissionRationaleDialogDirections: NavDirections,
-    private val permissionSettingsDialogDirections: NavDirections,
-    application: Application
-) : AndroidViewModel(application), Logger {
+    private val permissionSettingsDialogDirections: NavDirections
+) : Logger {
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
 
@@ -89,7 +86,7 @@ class RuntimePermissionViewModel(
         return false
     }
 
-    fun checkAndRequestPermission(
+    fun requestPermission(
         fragment: NavigationFragment,
         launcher: ActivityResultLauncher<String>
     ) {

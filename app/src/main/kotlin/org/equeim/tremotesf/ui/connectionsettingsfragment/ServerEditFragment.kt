@@ -22,22 +22,23 @@ package org.equeim.tremotesf.ui.connectionsettingsfragment
 import android.Manifest
 import android.app.Application
 import android.app.Dialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 
 import androidx.activity.result.ActivityResultLauncher
-import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 
@@ -56,12 +57,11 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.RuntimePermissionViewModel
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.viewModelFactory
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
 
@@ -74,12 +74,8 @@ class ServerEditFragment : NavigationFragment(
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
-    private lateinit var locationPermissionModel: RuntimePermissionViewModel
     private lateinit var requestLocationPermissionLauncher: ActivityResultLauncher<String>
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private lateinit var backgroundLocationPermissionModel: RuntimePermissionViewModel
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private lateinit var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<String>
+    private var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<String>? = null
 
     private val binding by viewBinding(ServerEditFragmentBinding::bind)
 
@@ -88,37 +84,9 @@ class ServerEditFragment : NavigationFragment(
 
         model = ServerEditFragmentViewModel.from(this, args.server)
 
-        locationPermissionModel = ViewModelProvider(this, viewModelFactory { application ->
-            RuntimePermissionViewModel(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(application.getString(R.string.location_permission_rationale)),
-                ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(application.getString(R.string.location_permission_rationale)),
-                application
-            )
-        })["locationPermissionModel", RuntimePermissionViewModel::class.java]
-
-        requestLocationPermissionLauncher = locationPermissionModel.registerWithFragment(this)
-
-        if (canRequestBackgroundLocationPermission()) {
-            backgroundLocationPermissionModel =
-                ViewModelProvider(this, viewModelFactory { application ->
-                    RuntimePermissionViewModel(
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                        ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(
-                            application.getString(
-                                R.string.background_location_permission_rationale
-                            )
-                        ),
-                        ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(
-                            application.getString(R.string.background_location_permission_rationale)
-                        ),
-                        application
-                    )
-                })["backgroundLocationPermissionModel", RuntimePermissionViewModel::class.java]
-
-            requestBackgroundLocationPermissionLauncher =
-                backgroundLocationPermissionModel.registerWithFragment(this)
-        }
+        requestLocationPermissionLauncher = model.locationPermissionHelper.registerWithFragment(this)
+        requestBackgroundLocationPermissionLauncher =
+            model.backgroundLocationPermissionHelper?.registerWithFragment(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -146,10 +114,8 @@ class ServerEditFragment : NavigationFragment(
 
             wifiAutoConnectCheckbox.setOnClickListener {
                 if (wifiAutoConnectCheckbox.isChecked) {
-                    locationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
-                    if (canRequestBackgroundLocationPermission()) {
-                        backgroundLocationPermissionModel.checkPermission(requireContext())
-                    }
+                    model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+                    model.backgroundLocationPermissionHelper?.checkPermission(requireContext())
                 }
             }
             wifiAutoConnectCheckbox.setDependentViews(
@@ -159,7 +125,7 @@ class ServerEditFragment : NavigationFragment(
                 backgroundWifiNetworksExplanation,
                 backgroundLocationPermissionButton
             )
-            locationPermissionModel.permissionGranted.onEach { granted ->
+            model.locationPermissionHelper.permissionGranted.onEach { granted ->
                 locationPermissionButton.apply {
                     if (granted) {
                         setIconResource(R.drawable.ic_done_24dp)
@@ -172,13 +138,14 @@ class ServerEditFragment : NavigationFragment(
                 }
             }.collectWhenStarted(viewLifecycleOwner)
             locationPermissionButton.setOnClickListener {
-                locationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+                model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
             }
 
-            if (canRequestBackgroundLocationPermission()) {
+            val backgroundLocationPermissionHelper = model.backgroundLocationPermissionHelper
+            if (backgroundLocationPermissionHelper != null) {
                 backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_fdroid)
 
-                backgroundLocationPermissionModel.permissionGranted.onEach { granted ->
+                backgroundLocationPermissionHelper.permissionGranted.onEach { granted ->
                     info("background granted = $granted")
                     backgroundLocationPermissionButton.apply {
                         if (granted) {
@@ -192,7 +159,7 @@ class ServerEditFragment : NavigationFragment(
                     }
                 }.collectWhenStarted(viewLifecycleOwner)
                 backgroundLocationPermissionButton.setOnClickListener {
-                    backgroundLocationPermissionModel.checkAndRequestPermission(this@ServerEditFragment, requestBackgroundLocationPermissionLauncher)
+                    backgroundLocationPermissionHelper.requestPermission(this@ServerEditFragment, checkNotNull(requestBackgroundLocationPermissionLauncher))
                 }
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -240,9 +207,9 @@ class ServerEditFragment : NavigationFragment(
         info("onStart() called")
         super.onStart()
         if (binding.wifiAutoConnectCheckbox.isChecked) {
-            locationPermissionModel.checkPermission(requireContext())
-            if (canRequestBackgroundLocationPermission()) {
-                backgroundLocationPermissionModel.checkPermission(requireContext())
+            with(model) {
+                locationPermissionHelper.checkPermission(requireContext())
+                backgroundLocationPermissionHelper?.checkPermission(requireContext())
             }
         }
     }
@@ -333,14 +300,9 @@ class ServerEditFragment : NavigationFragment(
 
         navController.popBackStack(R.id.server_edit_fragment, true)
     }
-
-    private companion object {
-        fun canRequestBackgroundLocationPermission() =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
-    }
 }
 
-class ServerEditFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
     companion object {
         private const val SERVER_NAME = "serverName"
 
@@ -350,6 +312,9 @@ class ServerEditFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewMode
                                                      entry, bundleOf(SERVER_NAME to server))
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
+
+        private fun canRequestBackgroundLocationPermission() =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
     }
 
     val existingServer: Server?
@@ -358,6 +323,24 @@ class ServerEditFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewMode
         existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     }
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
+
+    val locationPermissionHelper = RuntimePermissionHelper(Manifest.permission.ACCESS_FINE_LOCATION,
+        ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(application.getString(R.string.location_permission_rationale)),
+        ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(application.getString(R.string.location_permission_rationale)))
+
+    val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission()) {
+        RuntimePermissionHelper(Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(
+                application.getString(
+                    R.string.background_location_permission_rationale
+                )
+            ),
+            ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(
+                application.getString(R.string.background_location_permission_rationale)
+            ))
+    } else {
+        null
+    }
 }
 
 class ServerOverwriteDialogFragment : NavigationDialogFragment() {
