@@ -37,6 +37,12 @@ fun <T : Any> ViewModel.savedState(
 ): ReadWriteProperty<ViewModel, T> =
     ViewModelSavedStateProperty(savedStateHandle, initialValueProducer)
 
+@Suppress("unused")
+fun <T : Any> ViewModel.savedState(
+    savedStateHandle: SavedStateHandle,
+    initialValue: T
+): ReadWriteProperty<ViewModel, T> = savedState(savedStateHandle) { initialValue }
+
 private class ViewModelSavedStateProperty<T : Any>(
     private val savedStateHandle: SavedStateHandle,
     private val initialValueProducer: () -> T,

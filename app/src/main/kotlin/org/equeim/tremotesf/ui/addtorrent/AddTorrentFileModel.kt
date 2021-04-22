@@ -40,6 +40,7 @@ import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
 import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
+import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.utils.Logger
 
 
@@ -61,6 +62,8 @@ interface AddTorrentFileModel {
                               val rpcStatus: Rpc.Status,
                               val hasStoragePermission: Boolean = false)
 
+    var rememberedPagerItem: Int
+
     val requestedPermission: Boolean
 
     val parserStatus: StateFlow<ParserStatus>
@@ -77,6 +80,8 @@ interface AddTorrentFileModel {
 }
 
 class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : ViewModel(), AddTorrentFileModel, Logger {
+    override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
+
     override var requestedPermission = false
 
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)

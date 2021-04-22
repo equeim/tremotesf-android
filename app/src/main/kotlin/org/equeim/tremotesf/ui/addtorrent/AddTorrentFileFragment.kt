@@ -53,7 +53,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
@@ -202,6 +201,15 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         model.viewUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        with(binding.pager) {
+            if (isVisible) {
+                model.rememberedPagerItem = currentItem
+            }
+        }
+    }
+
     override fun onDestroyView() {
         doneMenuItem = null
         pagerAdapter = null
@@ -260,6 +268,11 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                 pager.visibility = View.VISIBLE
 
                 placeholderLayout.visibility = View.GONE
+
+                if (model.rememberedPagerItem != -1) {
+                    pager.setCurrentItem(model.rememberedPagerItem, false)
+                    model.rememberedPagerItem = -1
+                }
             } else {
                 placeholder.text = if (!hasStoragePermission) {
                     getString(R.string.storage_permission_error)
@@ -293,7 +306,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
 
                 tabLayout.visibility = View.GONE
                 pager.visibility = View.GONE
-                pager.currentItem = 0
+                pager.setCurrentItem(0, false)
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {

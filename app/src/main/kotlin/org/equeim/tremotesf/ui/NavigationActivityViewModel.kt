@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
 
 class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application), Logger {
-    var navigatedInitially by savedState(savedStateHandle) { false }
+    var navigatedInitially by savedState(savedStateHandle, false)
 
     data class AddTorrentDirections(@IdRes val destinationId: Int, val arguments: Bundle)
 
