@@ -168,9 +168,14 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
         @Suppress("BlockingMethodInNonBlockingContext")
         withContext(Dispatchers.IO) {
             val fd = try {
-                context.contentResolver.openAssetFileDescriptor(uri, "r")!!
+                context.contentResolver.openAssetFileDescriptor(uri, "r")
             } catch (error: Exception) {
-                error("Failed to open file descriptor")
+                error("Failed to open file descriptor", error)
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+                return@withContext
+            }
+            if (fd == null) {
+                error("File descriptor is null")
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
                 return@withContext
             }
