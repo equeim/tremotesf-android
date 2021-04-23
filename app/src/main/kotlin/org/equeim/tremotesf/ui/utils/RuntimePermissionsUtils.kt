@@ -30,15 +30,16 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
@@ -47,8 +48,7 @@ import org.equeim.tremotesf.utils.MutableEventFlow
 
 class RuntimePermissionHelper(
     private val permission: String,
-    private val permissionRationaleDialogDirections: NavDirections,
-    private val permissionSettingsDialogDirections: NavDirections
+    @StringRes private val permissionRationaleStringId: Int
 ) : Logger {
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
@@ -66,7 +66,7 @@ class RuntimePermissionHelper(
                 } else {
                     info("Permission $permission not granted")
                     info("Showing rationale for going to permission settings")
-                    fragment.navigate(permissionSettingsDialogDirections)
+                    fragment.navigate(NavMainDirections.toRuntimePermissionSystemSettingsDialog(permissionRationaleStringId))
                 }
             }
 
@@ -102,7 +102,7 @@ class RuntimePermissionHelper(
         }
         if (fragment.shouldShowRequestPermissionRationale(permission)) {
             info("Showing rationale for requesting permission")
-            fragment.navigate(permissionRationaleDialogDirections)
+            fragment.navigate(NavMainDirections.toRuntimePermissionRationaleDialog(permissionRationaleStringId))
         } else {
             requestPermission(launcher)
         }
@@ -122,7 +122,7 @@ class RuntimePermissionRationaleDialog : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val args by navArgs<RuntimePermissionRationaleDialogArgs>()
         return MaterialAlertDialogBuilder(requireContext())
-            .setMessage(args.permissionRationaleText)
+            .setMessage(args.permissionRationaleStringId)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 setFragmentResult(RESULT_KEY, Bundle.EMPTY)
@@ -141,7 +141,7 @@ class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment(), Logger
             .apply {
                 val args by navArgs<RuntimePermissionRationaleDialogArgs>()
                 var msg =
-                    "${args.permissionRationaleText}\n\n${getText(R.string.runtime_permission_go_to_settings_rationale)}"
+                    "${getText(args.permissionRationaleStringId)}\n\n${getText(R.string.runtime_permission_go_to_settings_rationale)}"
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     msg += "\n\n${requireContext().packageManager.backgroundPermissionOptionLabel}"
                 }

@@ -20,7 +20,7 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.app.Application
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -31,12 +31,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
@@ -44,15 +43,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.FilesystemNavigator
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
@@ -69,13 +69,13 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission(), model::onRequestPermissionResult)
-
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            model.onRequestPermissionResult(true)
-        } else if (!model.requestedPermission) {
-            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        with(model.storagePermissionHelper) {
+            val launcher = registerWithFragment(this@FilePickerFragment)
+            if (!checkPermission(requireContext())) {
+                lifecycleScope.launchWhenStarted {
+                    requestPermission(this@FilePickerFragment, launcher)
+                }
+            }
         }
     }
 
@@ -99,7 +99,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         model.navigator.items
             .map { it.asSequence().filterNotNull().none() }
             .distinctUntilChanged()
-            .combine(model.hasStoragePermission, ::Pair)
+            .combine(model.storagePermissionHelper.permissionGranted, ::Pair)
             .collectWhenStarted(viewLifecycleOwner) { (noFiles, hasStoragePermission) ->
                 binding.placeholder.text = when {
                     !hasStoragePermission -> getText(R.string.storage_permission_error)
@@ -108,7 +108,7 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
                 }
             }
 
-        model.hasStoragePermission.collectWhenStarted(viewLifecycleOwner) {
+        model.storagePermissionHelper.permissionGranted.collectWhenStarted(viewLifecycleOwner) {
             binding.filesView.isVisible = it
         }
     }
@@ -205,25 +205,21 @@ private class FilePickerAdapter(private val fragment: FilePickerFragment, privat
     }
 }
 
-class FilePickerFragmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class FilePickerFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
     @Suppress("DEPRECATION")
     val currentDirectory by savedStateFlow(savedStateHandle) { Environment.getExternalStorageDirectory() }
 
     val navigator = FilesystemNavigator(currentDirectory, viewModelScope)
 
-    private val _hasStoragePermission = MutableStateFlow(false)
-    val hasStoragePermission: StateFlow<Boolean> by ::_hasStoragePermission
+    val storagePermissionHelper = RuntimePermissionHelper(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        R.string.storage_permission_rationale_file_picker
+    )
 
-    var requestedPermission = false
-        private set
-
-    fun onRequestPermissionResult(hasStoragePermission: Boolean) {
-        if (!requestedPermission) {
-            requestedPermission = true
-            _hasStoragePermission.value = hasStoragePermission
-            if (hasStoragePermission) {
-                navigator.init()
-            }
+    init {
+        viewModelScope.launch {
+            storagePermissionHelper.permissionGranted.first { it }
+            navigator.init()
         }
     }
 }

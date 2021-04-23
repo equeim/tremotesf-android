@@ -19,20 +19,24 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
+import android.Manifest
+import android.app.Application
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.torrentfile.FileIsTooLargeException
@@ -40,6 +44,7 @@ import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
 import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.utils.Logger
 
@@ -60,11 +65,14 @@ interface AddTorrentFileModel {
 
     data class ViewUpdateData(val parserStatus: ParserStatus,
                               val rpcStatus: Rpc.Status,
-                              val hasStoragePermission: Boolean = false)
+                              val hasStoragePermission: Boolean)
 
     var rememberedPagerItem: Int
 
-    val requestedPermission: Boolean
+    val uri: Uri
+    val needStoragePermission: Boolean
+
+    val storagePermissionHelper: RuntimePermissionHelper
 
     val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
@@ -73,21 +81,24 @@ interface AddTorrentFileModel {
     val torrentName: String
     val renamedFiles: MutableMap<String, String>
 
-    fun onRequestPermissionResult(hasStoragePermission: Boolean)
-    fun load(uri: Uri)
     fun detachFd(): Int
     fun getFilePriorities(): FilePriorities
 }
 
-class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : ViewModel(), AddTorrentFileModel, Logger {
+class AddTorrentFileModelImpl(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application), AddTorrentFileModel, Logger {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
-    override var requestedPermission = false
+    override val uri: Uri by savedState(savedStateHandle, Uri.EMPTY)
+    override val needStoragePermission = uri.scheme == ContentResolver.SCHEME_FILE
+
+    override val storagePermissionHelper = RuntimePermissionHelper(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        R.string.storage_permission_rationale_torrent
+    )
 
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
-    private val hasStoragePermission = MutableStateFlow(false)
-    override val viewUpdateData = combine(parserStatus, Rpc.status, hasStoragePermission) { parserStatus, rpcStatus, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, hasPermission) }
+    override val viewUpdateData = combine(parserStatus, Rpc.status, storagePermissionHelper.permissionGranted) { parserStatus, rpcStatus, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, hasPermission) }
 
     private var fd: AssetFileDescriptor? = null
 
@@ -99,20 +110,27 @@ class AddTorrentFileModelImpl(private val savedStateHandle: SavedStateHandle) : 
 
     private lateinit var files: List<TorrentFilesTree.Item>
 
+    init {
+        if (needStoragePermission) {
+            viewModelScope.launch {
+                storagePermissionHelper.permissionGranted.first { it }
+                load()
+            }
+        } else {
+            load()
+        }
+    }
+
     override fun onCleared() {
         fd?.close()
     }
 
-    override fun onRequestPermissionResult(hasStoragePermission: Boolean) {
-        requestedPermission = true
-        this.hasStoragePermission.value = hasStoragePermission
-    }
-
-    override fun load(uri: Uri) {
+    private fun load() {
+        info("load: loading $uri")
         if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
             parserStatus.value = AddTorrentFileModel.ParserStatus.Loading
             viewModelScope.launch {
-                doLoad(uri, Application.instance)
+                doLoad(uri, getApplication())
             }
         }
     }

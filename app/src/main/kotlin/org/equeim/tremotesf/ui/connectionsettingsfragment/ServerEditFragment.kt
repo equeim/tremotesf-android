@@ -23,7 +23,6 @@ import android.Manifest
 import android.app.Application
 import android.app.Dialog
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
@@ -148,7 +147,7 @@ class ServerEditFragment : NavigationFragment(
                                 isVisible = true
                                 setText(R.string.enable_location)
                                 setOnClickListener {
-                                    navigate(ServerEditFragmentDirections.toEnableLocaitonDialog())
+                                    navigate(ServerEditFragmentDirections.toEnableLocationDialog())
                                 }
                             }
                             else -> isVisible = false
@@ -201,7 +200,7 @@ class ServerEditFragment : NavigationFragment(
             .filter { it }
             .onEach {
                 if (!model.locationEnabled.value) {
-                    navigate(ServerEditFragmentDirections.toEnableLocaitonDialog())
+                    navigate(ServerEditFragmentDirections.toEnableLocationDialog())
                 }
             }.collectWhenStarted(viewLifecycleOwner)
 
@@ -344,20 +343,16 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
     val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
-    val locationPermissionHelper = RuntimePermissionHelper(Manifest.permission.ACCESS_FINE_LOCATION,
-        ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(application.getString(R.string.location_permission_rationale)),
-        ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(application.getString(R.string.location_permission_rationale)))
+    val locationPermissionHelper = RuntimePermissionHelper(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        R.string.location_permission_rationale
+    )
 
     val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission()) {
-        RuntimePermissionHelper(Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            ServerEditFragmentDirections.toRuntimePermissionRationaleDialog(
-                application.getString(
-                    R.string.background_location_permission_rationale
-                )
-            ),
-            ServerEditFragmentDirections.toRuntimePermissionSystemSettingsDialog(
-                application.getString(R.string.background_location_permission_rationale)
-            ))
+        RuntimePermissionHelper(
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            R.string.background_location_permission_rationale
+        )
     } else {
         null
     }

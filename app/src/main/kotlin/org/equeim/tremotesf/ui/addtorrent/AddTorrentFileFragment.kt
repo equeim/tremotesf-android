@@ -19,9 +19,7 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
-import android.Manifest
 import android.content.ContentResolver
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -32,14 +30,14 @@ import android.view.ViewGroup
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,6 +64,7 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.application
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
@@ -132,6 +131,11 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         }
     }
 
+    private val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl> {
+        val args = AddTorrentFileFragmentArgs.fromBundle(requireArguments())
+        SavedStateViewModelFactory(requireContext().application, this, bundleOf(AddTorrentFileModel::uri.name to args.uri))
+    }
+
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
     private var doneMenuItem: MenuItem? = null
@@ -139,32 +143,21 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
     private var backPressedCallback: OnBackPressedCallback? = null
     private var snackbar: Snackbar? = null
 
-    val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl>()
-
     private var done = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         info("onCreate: arguments = $arguments")
-        val args: AddTorrentFileFragmentArgs by navArgs()
 
-        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            model.onRequestPermissionResult(granted)
-            if (granted) {
-                model.load(args.uri)
+        with(model.storagePermissionHelper) {
+            val launcher = registerWithFragment(this@AddTorrentFileFragment)
+            if (model.needStoragePermission) {
+                if (!checkPermission(requireContext())) {
+                    lifecycleScope.launchWhenStarted {
+                        requestPermission(this@AddTorrentFileFragment, launcher)
+                    }
+                }
             }
-        }
-        if (args.uri.scheme == ContentResolver.SCHEME_FILE) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                model.onRequestPermissionResult(true)
-                model.load(args.uri)
-            } else {
-                launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-        } else {
-            model.onRequestPermissionResult(true)
-            model.load(args.uri)
         }
     }
 
@@ -199,6 +192,15 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
         })
 
         model.viewUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateView)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        with(model) {
+            if (needStoragePermission && !storagePermissionHelper.permissionGranted.value) {
+                storagePermissionHelper.checkPermission(requireContext())
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -274,7 +276,7 @@ class AddTorrentFileFragment : AddTorrentFragment(R.layout.add_torrent_file_frag
                     model.rememberedPagerItem = -1
                 }
             } else {
-                placeholder.text = if (!hasStoragePermission) {
+                placeholder.text = if (!hasStoragePermission && model.needStoragePermission) {
                     getString(R.string.storage_permission_error)
                 } else {
                     when (parserStatus) {
