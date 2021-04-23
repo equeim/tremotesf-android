@@ -173,9 +173,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:visibility="gone"
                 app:icon="@drawable/ic_error_24dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                tools:text="@string/request_location_permission" />
+                tools:text="@string/request_location_permission"
+                tools:visibility="visible" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/wifi_auto_connect_ssid_edit_layout"
@@ -210,7 +212,9 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                tools:text="@string/background_wifi_networks_explanation_fdroid"/>
+                android:visibility="gone"
+                tools:text="@string/background_wifi_networks_explanation_fdroid"
+                tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/background_location_permission_button"
@@ -219,8 +223,10 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:visibility="gone"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                tools:text="@string/request_background_location_permission" />
+                tools:text="@string/request_background_location_permission"
+                tools:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

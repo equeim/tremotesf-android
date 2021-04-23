@@ -81,7 +81,7 @@ class ServerEditFragment : NavigationFragment(
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
-    private lateinit var requestLocationPermissionLauncher: ActivityResultLauncher<String>
+    private var requestLocationPermissionLauncher: ActivityResultLauncher<String>? = null
     private var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<String>? = null
 
     private val binding by viewBinding(ServerEditFragmentBinding::bind)
@@ -91,7 +91,7 @@ class ServerEditFragment : NavigationFragment(
 
         model = ServerEditFragmentViewModel.from(this, args.server)
 
-        requestLocationPermissionLauncher = model.locationPermissionHelper.registerWithFragment(this)
+        requestLocationPermissionLauncher = model.locationPermissionHelper?.registerWithFragment(this)
         requestBackgroundLocationPermissionLauncher =
             model.backgroundLocationPermissionHelper?.registerWithFragment(this)
     }
@@ -121,7 +121,7 @@ class ServerEditFragment : NavigationFragment(
 
             wifiAutoConnectCheckbox.setOnClickListener {
                 if (wifiAutoConnectCheckbox.isChecked) {
-                    model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+                    model.locationPermissionHelper?.requestPermission(this@ServerEditFragment, checkNotNull(requestLocationPermissionLauncher))
                     model.backgroundLocationPermissionHelper?.checkPermission(requireContext())
                 }
             }
@@ -132,28 +132,30 @@ class ServerEditFragment : NavigationFragment(
                 backgroundWifiNetworksExplanation,
                 backgroundLocationPermissionButton
             )
-            combine(model.locationPermissionHelper.permissionGranted, model.locationEnabled, ::Pair)
-                .onEach { (locationPermissionGranted, locationEnabled) ->
-                    locationErrorButton.apply {
-                        when {
-                            !locationPermissionGranted -> {
-                                isVisible = true
-                                setText(R.string.request_location_permission)
-                                setOnClickListener {
-                                    model.locationPermissionHelper.requestPermission(this@ServerEditFragment, requestLocationPermissionLauncher)
+            model.locationPermissionHelper?.let { locationPermissionHelper ->
+                combine(locationPermissionHelper.permissionGranted, model.locationEnabled, ::Pair)
+                    .onEach { (locationPermissionGranted, locationEnabled) ->
+                        locationErrorButton.apply {
+                            when {
+                                !locationPermissionGranted -> {
+                                    isVisible = true
+                                    setText(R.string.request_location_permission)
+                                    setOnClickListener {
+                                        locationPermissionHelper.requestPermission(this@ServerEditFragment, checkNotNull(requestLocationPermissionLauncher))
+                                    }
                                 }
-                            }
-                            !locationEnabled -> {
-                                isVisible = true
-                                setText(R.string.enable_location)
-                                setOnClickListener {
-                                    navigate(ServerEditFragmentDirections.toEnableLocationDialog())
+                                !locationEnabled -> {
+                                    isVisible = true
+                                    setText(R.string.enable_location)
+                                    setOnClickListener {
+                                        navigate(ServerEditFragmentDirections.toEnableLocationDialog())
+                                    }
                                 }
+                                else -> isVisible = false
                             }
-                            else -> isVisible = false
                         }
-                    }
-                }.collectWhenStarted(viewLifecycleOwner)
+                    }.collectWhenStarted(viewLifecycleOwner)
+            }
 
             val backgroundLocationPermissionHelper = model.backgroundLocationPermissionHelper
             if (backgroundLocationPermissionHelper != null) {
@@ -196,13 +198,15 @@ class ServerEditFragment : NavigationFragment(
             }
         }
 
-        model.locationPermissionHelper.permissionRequestResult
-            .filter { it }
-            .onEach {
-                if (!model.locationEnabled.value) {
-                    navigate(ServerEditFragmentDirections.toEnableLocationDialog())
-                }
-            }.collectWhenStarted(viewLifecycleOwner)
+        model.locationPermissionHelper?.run {
+            permissionRequestResult
+                .filter { it }
+                .onEach {
+                    if (!model.locationEnabled.value) {
+                        navigate(ServerEditFragmentDirections.toEnableLocationDialog())
+                    }
+                }.collectWhenStarted(viewLifecycleOwner)
+        }
 
         setupToolbar()
 
@@ -228,12 +232,10 @@ class ServerEditFragment : NavigationFragment(
     override fun onStart() {
         info("onStart() called")
         super.onStart()
-        if (binding.wifiAutoConnectCheckbox.isChecked) {
-            with(model) {
-                locationPermissionHelper.checkPermission(requireContext())
-                backgroundLocationPermissionHelper?.checkPermission(requireContext())
-                checkIfLocationEnabled()
-            }
+        with(model) {
+            locationPermissionHelper?.checkPermission(requireContext())
+            backgroundLocationPermissionHelper?.checkPermission(requireContext())
+            checkIfLocationEnabled()
         }
     }
 
@@ -334,6 +336,7 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
+        private fun needLocationPermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
         private fun locationNeedsToBeEnabled() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
         private fun canRequestBackgroundLocationPermission() =
@@ -345,10 +348,14 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
     val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
-    val locationPermissionHelper = RuntimePermissionHelper(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        R.string.location_permission_rationale
-    )
+    val locationPermissionHelper = if (needLocationPermission()) {
+        RuntimePermissionHelper(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            R.string.location_permission_rationale
+        )
+    } else {
+        null
+    }
 
     val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission()) {
         RuntimePermissionHelper(
