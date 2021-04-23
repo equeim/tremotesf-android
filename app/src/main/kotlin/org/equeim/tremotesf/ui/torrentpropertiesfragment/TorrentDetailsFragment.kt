@@ -30,7 +30,8 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
-class TorrentDetailsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment) {
+class TorrentDetailsFragment :
+    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment) {
     private var firstUpdate = true
 
     private val binding by viewBinding(TorrentDetailsFragmentBinding::bind)
@@ -53,18 +54,22 @@ class TorrentDetailsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.
 
         with(binding) {
             completedTextView.text = Utils.formatByteSize(requireContext(), torrent.completedSize)
-            downloadedTextView.text = Utils.formatByteSize(requireContext(),
-                                                           torrent.totalDownloaded)
+            downloadedTextView.text = Utils.formatByteSize(
+                requireContext(),
+                torrent.totalDownloaded
+            )
             uploadedTextView.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
 
             ratioTextView.text = DecimalFormats.ratio.format(torrent.ratio)
 
-            downloadSpeedTextView.text = Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
+            downloadSpeedTextView.text =
+                Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
             uploadSpeedTextView.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
             etaTextView.text = Utils.formatDuration(requireContext(), torrent.eta)
             seedersTextView.text = torrent.seeders.toString()
             leechersTextView.text = torrent.leechers.toString()
-            lastActivityTextView.text = DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
+            lastActivityTextView.text =
+                DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
 
             totalSizeTextView.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
 
@@ -74,7 +79,8 @@ class TorrentDetailsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.
             }
 
             creatorTextView.text = torrent.data.creator
-            creationDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.data.creationDateTime)
+            creationDateTextView.text =
+                DateUtils.getRelativeTimeSpanString(torrent.data.creationDateTime)
             addedDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.addedDateTime)
 
             val comment: String = torrent.data.comment

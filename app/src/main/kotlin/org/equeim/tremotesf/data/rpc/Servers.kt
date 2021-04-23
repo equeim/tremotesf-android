@@ -72,60 +72,62 @@ private const val DEFAULT_TIMEOUT = 30
 
 @Serializable
 @Parcelize
-data class Server(@SerialName("name")
-                  var name: String = "",
-                  @SerialName("address")
-                  var address: String = "",
-                  @SerialName("port")
-                  var port: Int = DEFAULT_PORT,
-                  @SerialName("apiPath")
-                  var apiPath: String = DEFAULT_API_PATH,
+data class Server(
+    @SerialName("name")
+    var name: String = "",
+    @SerialName("address")
+    var address: String = "",
+    @SerialName("port")
+    var port: Int = DEFAULT_PORT,
+    @SerialName("apiPath")
+    var apiPath: String = DEFAULT_API_PATH,
 
-                  @SerialName("proxyType")
-                  var proxyType: String = "",
-                  @SerialName("proxyHostname")
-                  var proxyHostname: String = "",
-                  @SerialName("proxyPort")
-                  var proxyPort: Int = 0,
-                  @SerialName("proxyUser")
-                  var proxyUser: String = "",
-                  @SerialName("proxyPassword")
-                  var proxyPassword: String = "",
+    @SerialName("proxyType")
+    var proxyType: String = "",
+    @SerialName("proxyHostname")
+    var proxyHostname: String = "",
+    @SerialName("proxyPort")
+    var proxyPort: Int = 0,
+    @SerialName("proxyUser")
+    var proxyUser: String = "",
+    @SerialName("proxyPassword")
+    var proxyPassword: String = "",
 
-                  @SerialName("httpsEnabled")
-                  var httpsEnabled: Boolean = false,
-                  @SerialName("selfSignedCertificateEnabled")
-                  var selfSignedCertificateEnabled: Boolean = false,
-                  @SerialName("selfSignedCertificate")
-                  var selfSignedCertificate: String = "",
-                  @SerialName("clientCertificateEnabled")
-                  var clientCertificateEnabled: Boolean = false,
-                  @SerialName("clientCertificate")
-                  var clientCertificate: String = "",
+    @SerialName("httpsEnabled")
+    var httpsEnabled: Boolean = false,
+    @SerialName("selfSignedCertificateEnabled")
+    var selfSignedCertificateEnabled: Boolean = false,
+    @SerialName("selfSignedCertificate")
+    var selfSignedCertificate: String = "",
+    @SerialName("clientCertificateEnabled")
+    var clientCertificateEnabled: Boolean = false,
+    @SerialName("clientCertificate")
+    var clientCertificate: String = "",
 
-                  @SerialName("authentication")
-                  var authentication: Boolean = false,
-                  @SerialName("username")
-                  var username: String = "",
-                  @SerialName("password")
-                  var password: String = "",
+    @SerialName("authentication")
+    var authentication: Boolean = false,
+    @SerialName("username")
+    var username: String = "",
+    @SerialName("password")
+    var password: String = "",
 
-                  @SerialName("updateIntervar")
-                  var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
-                  @SerialName("timeout")
-                  var timeout: Int = DEFAULT_TIMEOUT,
+    @SerialName("updateIntervar")
+    var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
+    @SerialName("timeout")
+    var timeout: Int = DEFAULT_TIMEOUT,
 
-                  @SerialName("autoConnectOnWifiNetworkEnabled")
-                  var autoConnectOnWifiNetworkEnabled: Boolean = false,
-                  @SerialName("autoConnectOnWifiNetworkSSID")
-                  var autoConnectOnWifiNetworkSSID: String = "",
+    @SerialName("autoConnectOnWifiNetworkEnabled")
+    var autoConnectOnWifiNetworkEnabled: Boolean = false,
+    @SerialName("autoConnectOnWifiNetworkSSID")
+    var autoConnectOnWifiNetworkSSID: String = "",
 
-                  @SerialName("lastTorrents")
-                  @Volatile
-                  var lastTorrents: LastTorrents = LastTorrents(),
-                  @SerialName("addTorrentDialogDirectories")
-                  @Volatile
-                  var addTorrentDialogDirectories: List<String> = emptyList()) : Parcelable, Logger {
+    @SerialName("lastTorrents")
+    @Volatile
+    var lastTorrents: LastTorrents = LastTorrents(),
+    @SerialName("addTorrentDialogDirectories")
+    @Volatile
+    var addTorrentDialogDirectories: List<String> = emptyList()
+) : Parcelable, Logger {
     companion object {
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
@@ -157,20 +159,26 @@ data class Server(@SerialName("name")
 
     @Serializable
     @Parcelize
-    data class Torrent(val id: Int,
-                       val hashString: String,
-                       val name: String,
-                       val finished: Boolean) : Parcelable
+    data class Torrent(
+        val id: Int,
+        val hashString: String,
+        val name: String,
+        val finished: Boolean
+    ) : Parcelable
 
     @Serializable
     @Parcelize
-    data class LastTorrents(val saved: Boolean = false,
-                            val torrents: List<Torrent> = emptyList()) : Parcelable
+    data class LastTorrents(
+        val saved: Boolean = false,
+        val torrents: List<Torrent> = emptyList()
+    ) : Parcelable
 }
 
 @Serializable
-data class SaveData(@SerialName("current") val currentServerName: String?,
-                    @SerialName("servers") val servers: List<Server>)
+data class SaveData(
+    @SerialName("current") val currentServerName: String?,
+    @SerialName("servers") val servers: List<Server>
+)
 
 @SuppressLint("StaticFieldLeak")
 object Servers : Logger {
@@ -208,7 +216,8 @@ object Servers : Logger {
         try {
             val servers = mutableListOf<Server>()
 
-            val fileData = context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
+            val fileData =
+                context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
             val saveData = Json.decodeFromString(SaveData.serializer(), fileData)
             for (server in saveData.servers) {
                 info("Reading server $server")
@@ -260,10 +269,12 @@ object Servers : Logger {
         if (Rpc.isConnected.value) {
             info("save: updating last torrents")
             currentServer?.lastTorrents = Server.LastTorrents(true, Rpc.torrents.value.map {
-                Server.Torrent(it.id,
-                it.hashString,
-                it.name,
-                it.isFinished)
+                Server.Torrent(
+                    it.id,
+                    it.hashString,
+                    it.name,
+                    it.isFinished
+                )
             })
             info("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size}")
         } else {
@@ -276,9 +287,9 @@ object Servers : Logger {
         ))
 
         WorkManager.getInstance(context).enqueueUniqueWork(
-                SaveWorker.UNIQUE_WORK_NAME,
-                ExistingWorkPolicy.APPEND,
-                OneTimeWorkRequest.from(SaveWorker::class.java)
+            SaveWorker.UNIQUE_WORK_NAME,
+            ExistingWorkPolicy.APPEND,
+            OneTimeWorkRequest.from(SaveWorker::class.java)
         )
     }
 
@@ -305,7 +316,7 @@ object Servers : Logger {
         val currentChanged = when (currentServer.value?.name) {
             // editing current
             server.name,
-            // overwriting current with another
+                // overwriting current with another
             newServer.name -> true
             // nope
             else -> false
@@ -372,7 +383,8 @@ object Servers : Logger {
     }
 }
 
-class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters), Logger {
+class SaveWorker(context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters), Logger {
     companion object {
         const val UNIQUE_WORK_NAME = "ServersSaveWorker"
         val saveData = AtomicReference<SaveData>()
@@ -386,7 +398,12 @@ class SaveWorker(context: Context, workerParameters: WorkerParameters) : Worker(
                 try {
                     val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
                     temp.bufferedWriter().use {
-                        it.write(Json { prettyPrint = true }.encodeToString(SaveData.serializer(), data))
+                        it.write(
+                            Json { prettyPrint = true }.encodeToString(
+                                SaveData.serializer(),
+                                data
+                            )
+                        )
                     }
                     if (!temp.renameTo(Application.instance.getFileStreamPath(FILE_NAME))) {
                         error("Failed to rename temp file")

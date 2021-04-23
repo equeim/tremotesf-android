@@ -19,10 +19,6 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import java.text.DateFormat
-import java.text.DateFormatSymbols
-import java.util.Calendar
-
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -32,33 +28,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TimePicker
-
 import androidx.annotation.AttrRes
 import androidx.core.content.withStyledAttributes
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
-
 import org.equeim.libtremotesf.ServerSettingsData
-import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
+import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
+import java.text.DateFormat
+import java.text.DateFormatSymbols
+import java.util.Calendar
 
 
-class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_speed_fragment,
-                                                          R.string.server_settings_speed) {
+class SpeedFragment : ServerSettingsFragment.BaseFragment(
+    R.layout.server_settings_speed_fragment,
+    R.string.server_settings_speed
+) {
     val binding by viewBinding(ServerSettingsSpeedFragmentBinding::bind)
 
-    private val days = mutableListOf(ServerSettingsData.AlternativeSpeedLimitsDays.All,
-                                     ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
-                                     ServerSettingsData.AlternativeSpeedLimitsDays.Weekends)
+    private val days = mutableListOf(
+        ServerSettingsData.AlternativeSpeedLimitsDays.All,
+        ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
+        ServerSettingsData.AlternativeSpeedLimitsDays.Weekends
+    )
     private val daysSpinnerItems = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +109,7 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
-        with (binding) {
+        with(binding) {
             downloadSpeedLimitCheckBox.isChecked = Rpc.serverSettings.downloadSpeedLimited
             downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 Rpc.serverSettings.downloadSpeedLimited = checked
@@ -132,7 +133,10 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             alternativeLimitsCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
-            alternativeLimitsCheckBox.setDependentViews(alternativeDownloadSpeedLimitLayout, alternativeUploadSpeedLimitLayout) { checked ->
+            alternativeLimitsCheckBox.setDependentViews(
+                alternativeDownloadSpeedLimitLayout,
+                alternativeUploadSpeedLimitLayout
+            ) { checked ->
                 Rpc.serverSettings.alternativeSpeedLimitsEnabled = checked
             }
 
@@ -149,7 +153,11 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             }
 
             scheduleCheckBox.isChecked = Rpc.serverSettings.alternativeSpeedLimitsScheduled
-            scheduleCheckBox.setDependentViews(beginTimeItem, endTimeItem, daysViewLayout) { checked ->
+            scheduleCheckBox.setDependentViews(
+                beginTimeItem,
+                endTimeItem,
+                daysViewLayout
+            ) { checked ->
                 Rpc.serverSettings.alternativeSpeedLimitsScheduled = checked
             }
 
@@ -160,7 +168,10 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settin
             endTimeItem.setTime(Rpc.serverSettings.alternativeSpeedLimitsEndTime)
 
             daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
-            daysView.setText(daysView.adapter.getItem(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays)).toString())
+            daysView.setText(
+                daysView.adapter.getItem(days.indexOf(Rpc.serverSettings.alternativeSpeedLimitsDays))
+                    .toString()
+            )
             daysView.setOnItemClickListener { _, _, position, _ ->
                 Rpc.serverSettings.alternativeSpeedLimitsDays = days[position]
             }

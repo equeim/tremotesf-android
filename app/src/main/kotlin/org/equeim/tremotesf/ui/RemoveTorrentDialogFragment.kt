@@ -40,28 +40,40 @@ class RemoveTorrentDialogFragment : NavigationDialogFragment() {
         binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles
 
         return builder
-                .setMessage(if (args.torrentIds.size == 1) getString(R.string.remove_torrent_message)
-                            else resources.getQuantityString(R.plurals.remove_torrents_message,
-                                                             args.torrentIds.size,
-                                                             args.torrentIds.size))
-                .setView(binding.root)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.remove) { _, _ ->
-                    Rpc.nativeInstance.removeTorrents(args.torrentIds, binding.deleteFilesCheckBox.isChecked)
-                    activity?.actionMode?.finish()
-                    if (args.popBackStack) {
-                        val id = (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
-                        val listener = object : NavController.OnDestinationChangedListener {
-                            override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-                                if (destination.id == id) {
-                                    navController.popBackStack()
-                                    controller.removeOnDestinationChangedListener(this)
-                                }
+            .setMessage(
+                if (args.torrentIds.size == 1) getString(R.string.remove_torrent_message)
+                else resources.getQuantityString(
+                    R.plurals.remove_torrents_message,
+                    args.torrentIds.size,
+                    args.torrentIds.size
+                )
+            )
+            .setView(binding.root)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.remove) { _, _ ->
+                Rpc.nativeInstance.removeTorrents(
+                    args.torrentIds,
+                    binding.deleteFilesCheckBox.isChecked
+                )
+                activity?.actionMode?.finish()
+                if (args.popBackStack) {
+                    val id =
+                        (parentFragmentManager.primaryNavigationFragment as NavigationFragment).destinationId
+                    val listener = object : NavController.OnDestinationChangedListener {
+                        override fun onDestinationChanged(
+                            controller: NavController,
+                            destination: NavDestination,
+                            arguments: Bundle?
+                        ) {
+                            if (destination.id == id) {
+                                navController.popBackStack()
+                                controller.removeOnDestinationChangedListener(this)
                             }
                         }
-                        navController.addOnDestinationChangedListener(listener)
                     }
+                    navController.addOnDestinationChangedListener(listener)
                 }
-                .create()
+            }
+            .create()
     }
 }

@@ -32,7 +32,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
@@ -44,22 +43,20 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
-
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
-import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
-import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.data.rpc.WifiNetworkHelper
+import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
+import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
+import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
@@ -91,7 +88,8 @@ class ServerEditFragment : NavigationFragment(
 
         model = ServerEditFragmentViewModel.from(this, args.server)
 
-        requestLocationPermissionLauncher = model.locationPermissionHelper?.registerWithFragment(this)
+        requestLocationPermissionLauncher =
+            model.locationPermissionHelper?.registerWithFragment(this)
         requestBackgroundLocationPermissionLauncher =
             model.backgroundLocationPermissionHelper?.registerWithFragment(this)
     }
@@ -121,7 +119,10 @@ class ServerEditFragment : NavigationFragment(
 
             wifiAutoConnectCheckbox.setOnClickListener {
                 if (wifiAutoConnectCheckbox.isChecked) {
-                    model.locationPermissionHelper?.requestPermission(this@ServerEditFragment, checkNotNull(requestLocationPermissionLauncher))
+                    model.locationPermissionHelper?.requestPermission(
+                        this@ServerEditFragment,
+                        checkNotNull(requestLocationPermissionLauncher)
+                    )
                     model.backgroundLocationPermissionHelper?.checkPermission(requireContext())
                 }
             }
@@ -141,7 +142,10 @@ class ServerEditFragment : NavigationFragment(
                                     isVisible = true
                                     setText(R.string.request_location_permission)
                                     setOnClickListener {
-                                        locationPermissionHelper.requestPermission(this@ServerEditFragment, checkNotNull(requestLocationPermissionLauncher))
+                                        locationPermissionHelper.requestPermission(
+                                            this@ServerEditFragment,
+                                            checkNotNull(requestLocationPermissionLauncher)
+                                        )
                                     }
                                 }
                                 !locationEnabled -> {
@@ -175,7 +179,10 @@ class ServerEditFragment : NavigationFragment(
                     }
                 }.collectWhenStarted(viewLifecycleOwner)
                 backgroundLocationPermissionButton.setOnClickListener {
-                    backgroundLocationPermissionHelper.requestPermission(this@ServerEditFragment, checkNotNull(requestBackgroundLocationPermissionLauncher))
+                    backgroundLocationPermissionHelper.requestPermission(
+                        this@ServerEditFragment,
+                        checkNotNull(requestBackgroundLocationPermissionLauncher)
+                    )
                 }
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -268,13 +275,15 @@ class ServerEditFragment : NavigationFragment(
             val nameEditText = nameEdit.text?.toString() ?: ""
 
             if (nameOk &&
-                    addressOk &&
-                    portOk &&
-                    apiPathOk &&
-                    updateIntervalOk &&
-                    timeoutOk) {
+                addressOk &&
+                portOk &&
+                apiPathOk &&
+                updateIntervalOk &&
+                timeoutOk
+            ) {
                 if (nameEditText != model.existingServer?.name &&
-                        Servers.servers.value.find { it.name == nameEditText } != null) {
+                    Servers.servers.value.find { it.name == nameEditText } != null
+                ) {
                     navigate(ServerEditFragmentDirections.toOverwriteDialog())
                 } else {
                     save()
@@ -288,11 +297,13 @@ class ServerEditFragment : NavigationFragment(
     private fun setupToolbar() {
         toolbar?.apply {
             setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
-            menu.findItem(R.id.done).setTitle(if (model.existingServer == null) {
-                R.string.add
-            } else {
-                R.string.save
-            })
+            menu.findItem(R.id.done).setTitle(
+                if (model.existingServer == null) {
+                    R.string.add
+                } else {
+                    R.string.save
+                }
+            )
         }
     }
 
@@ -327,12 +338,15 @@ class ServerEditFragment : NavigationFragment(
     }
 }
 
-class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application), Logger {
+class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
+    AndroidViewModel(application), Logger {
     companion object {
         fun from(fragment: NavigationFragment, serverName: String?): ServerEditFragmentViewModel {
             val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
-            val factory = SavedStateViewModelFactory(fragment.requireActivity().application,
-                                                     entry, bundleOf(ServerEditFragmentViewModel::serverName.name to serverName))
+            val factory = SavedStateViewModelFactory(
+                fragment.requireActivity().application,
+                entry, bundleOf(ServerEditFragmentViewModel::serverName.name to serverName)
+            )
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
@@ -347,7 +361,8 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
 
     private val serverName: String? = savedStateHandle[::serverName.name]
 
-    val existingServer = if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
+    val existingServer =
+        if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
     val locationPermissionHelper = if (needLocationPermission()) {
@@ -418,17 +433,19 @@ class EnableLocationDialog : NavigationDialogFragment(), Logger {
 class ServerOverwriteDialogFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.server_exists)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.overwrite) { _, _ ->
-                    (parentFragmentManager.primaryNavigationFragment as? ServerEditFragment)?.save()
-                }
-                .create()
+            .setMessage(R.string.server_exists)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.overwrite) { _, _ ->
+                (parentFragmentManager.primaryNavigationFragment as? ServerEditFragment)?.save()
+            }
+            .create()
     }
 }
 
-class ServerCertificatesFragment : NavigationFragment(R.layout.server_edit_certificates_fragment,
-                                                R.string.certificates) {
+class ServerCertificatesFragment : NavigationFragment(
+    R.layout.server_edit_certificates_fragment,
+    R.string.certificates
+) {
     private val args: ServerCertificatesFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
@@ -466,13 +483,17 @@ class ServerCertificatesFragment : NavigationFragment(R.layout.server_edit_certi
     }
 }
 
-class ServerProxySettingsFragment : NavigationFragment(R.layout.server_edit_proxy_fragment,
-                                                 R.string.proxy_settings) {
+class ServerProxySettingsFragment : NavigationFragment(
+    R.layout.server_edit_proxy_fragment,
+    R.string.proxy_settings
+) {
     private companion object {
         // Should match R.array.proxy_type_items
-        val proxyTypeItems = arrayOf(org.equeim.libtremotesf.Server.ProxyType.Default,
-                                     org.equeim.libtremotesf.Server.ProxyType.Http,
-                                     org.equeim.libtremotesf.Server.ProxyType.Socks5)
+        val proxyTypeItems = arrayOf(
+            org.equeim.libtremotesf.Server.ProxyType.Default,
+            org.equeim.libtremotesf.Server.ProxyType.Http,
+            org.equeim.libtremotesf.Server.ProxyType.Socks5
+        )
     }
 
     private val args: ServerProxySettingsFragmentArgs by navArgs()
@@ -516,7 +537,9 @@ class ServerProxySettingsFragment : NavigationFragment(R.layout.server_edit_prox
         if (view != null) {
             with(binding) {
                 model.server.apply {
-                    proxyType = Server.fromNativeProxyType(proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())])
+                    proxyType = Server.fromNativeProxyType(
+                        proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())]
+                    )
                     proxyHostname = addressEdit.text?.toString() ?: ""
                     proxyPort = portEdit.text?.toString()?.toInt() ?: 0
                     proxyUser = usernameEdit.text?.toString() ?: ""

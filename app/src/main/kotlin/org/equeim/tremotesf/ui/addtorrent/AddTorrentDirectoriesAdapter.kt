@@ -31,11 +31,16 @@ import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 
 
-class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
-                                   savedInstanceState: Bundle?) : BaseDropdownAdapter(R.layout.download_directory_dropdown_item,
-                                                                                      android.R.id.text1) {
+class AddTorrentDirectoriesAdapter(
+    private val textEdit: EditText,
+    savedInstanceState: Bundle?
+) : BaseDropdownAdapter(
+    R.layout.download_directory_dropdown_item,
+    android.R.id.text1
+) {
     companion object {
-        private const val STATE_KEY = "org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter.items"
+        private const val STATE_KEY =
+            "org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter.items"
 
         private fun dropTrailingSeparator(path: String): String {
             return if (path.endsWith('/')) path.dropLast(1) else path
@@ -50,7 +55,9 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
             saved
         } else {
             val comparator = AlphanumericComparator()
-            val sorted = Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator) ?: sortedSetOf(comparator)
+            val sorted =
+                Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator)
+                    ?: sortedSetOf(comparator)
             for (torrent in Rpc.torrents.value) {
                 sorted.add(dropTrailingSeparator(torrent.downloadDirectory))
             }
@@ -91,6 +98,7 @@ class AddTorrentDirectoriesAdapter(private val textEdit: EditText,
 
     private inner class ViewHolder(view: View) : BaseViewHolder(view) {
         var position = -1
+
         init {
             view.findViewById<View>(R.id.remove_button).setOnClickListener {
                 if (count > 1) {

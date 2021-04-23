@@ -19,16 +19,22 @@
 
 package org.equeim.tremotesf.ui.utils
 
+import android.text.InputFilter
+import android.text.Spanned
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.ParsePosition
 
-import android.text.InputFilter
-import android.text.Spanned
-
 
 class IntFilter(private val range: IntRange) : InputFilter {
-    override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
+    override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dstart: Int,
+        dend: Int
+    ): CharSequence? {
         if (source.isEmpty()) {
             return null
         }
@@ -70,12 +76,14 @@ class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputF
         return number.toDouble()
     }
 
-    override fun filter(source: CharSequence,
-                        start: Int,
-                        end: Int,
-                        dest: Spanned,
-                        dstart: Int,
-                        dend: Int): CharSequence? {
+    override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dstart: Int,
+        dend: Int
+    ): CharSequence? {
         if (source.isEmpty()) {
             return null
         }

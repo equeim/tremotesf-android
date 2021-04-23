@@ -25,7 +25,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Checkable
-
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,17 +34,15 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.google.android.material.snackbar.Snackbar
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.ServerStats
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
@@ -61,9 +58,11 @@ import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.utils.handleAndReset
 
 
-class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
-                                                0,
-                                                R.menu.torrents_list_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
+class TorrentsListFragment : NavigationFragment(
+    R.layout.torrents_list_fragment,
+    0,
+    R.menu.torrents_list_fragment_menu
+), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
@@ -76,11 +75,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getContentActivityLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-            if (it != null) {
-                navigate(TorrentsListFragmentDirections.toAddTorrentFileFragment(it))
+        getContentActivityLauncher =
+            registerForActivityResult(ActivityResultContracts.GetContent()) {
+                if (it != null) {
+                    navigate(TorrentsListFragmentDirections.toAddTorrentFileFragment(it))
+                }
             }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,7 +95,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
         binding.torrentsView.apply {
             adapter = torrentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
@@ -135,12 +140,14 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
                     sortOrder.value = sortOrder.value.inverted()
                     Settings.torrentsSortOrder = sortOrder.value
                 }
-                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
+                (it as Checkable).isChecked =
+                    Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
             }
 
             statusView.setOnItemClickListener { _, _, position, _ ->
                 model.apply {
-                    statusFilterMode.value = TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
+                    statusFilterMode.value =
+                        TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
                     if (Rpc.isConnected.value) {
                         Settings.torrentsStatusFilter = statusFilterMode.value
                     }
@@ -149,7 +156,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
             trackersView.setOnItemClickListener { _, _, position, _ ->
                 model.apply {
-                    trackerFilter.value = (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
+                    trackerFilter.value =
+                        (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
                     if (Rpc.isConnected.value) {
                         Settings.torrentsTrackerFilter = trackerFilter.value
                     }
@@ -158,7 +166,10 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
 
             directoriesView.setOnItemClickListener { _, _, position, _ ->
                 model.apply {
-                    directoryFilter.value = (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(position)
+                    directoryFilter.value =
+                        (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(
+                            position
+                        )
                     if (Rpc.isConnected.value) {
                         Settings.torrentsDirectoryFilter = directoryFilter.value
                     }
@@ -168,7 +179,7 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun clearDrawerListeners() {
-        with (requiredActivity.sidePanelBinding) {
+        with(requiredActivity.sidePanelBinding) {
             sortView.onItemClickListener = null
             sortViewLayout.setStartIconOnClickListener(null)
             statusView.onItemClickListener = null
@@ -244,7 +255,8 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private fun onRpcConnectionStateChanged(connectionState: Int) {
         if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
             if (connectionState == RpcConnectionState.Connected) {
-                menu?.findItem(R.id.alternative_speed_limits)?.isChecked = Rpc.serverSettings.alternativeSpeedLimitsEnabled
+                menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
+                    Rpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
                 requiredActivity.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
@@ -258,21 +270,23 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     }
 
     private fun onTorrentsUpdated(torrents: List<Torrent>) {
-        with (requiredActivity.sidePanelBinding) {
+        with(requiredActivity.sidePanelBinding) {
             (statusView.adapter as StatusFilterViewAdapter).update(torrents)
             (trackersView.adapter as TrackersViewAdapter).update(torrents)
             (directoriesView.adapter as DirectoriesViewAdapter).update(torrents)
         }
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-                if (Rpc.isConnected.value) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false
+            if (Rpc.isConnected.value) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false
     }
 
     private fun updateTitle(currentServer: Server?) {
         toolbar?.title = if (currentServer != null) {
-            getString(R.string.current_server_string,
-                      currentServer.name,
-                      currentServer.address)
+            getString(
+                R.string.current_server_string,
+                currentServer.name,
+                currentServer.address
+            )
         } else {
             getString(R.string.app_name)
         }
@@ -281,9 +295,11 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
     private fun updateSubtitle(subtitleData: Pair<ServerStats, Boolean>) {
         val (stats, isConnected) = subtitleData
         toolbar?.subtitle = if (isConnected) {
-            getString(R.string.main_activity_subtitle,
-                      Utils.formatByteSpeed(requireContext(), stats.downloadSpeed),
-                      Utils.formatByteSpeed(requireContext(), stats.uploadSpeed))
+            getString(
+                R.string.main_activity_subtitle,
+                Utils.formatByteSpeed(requireContext(), stats.downloadSpeed),
+                Utils.formatByteSpeed(requireContext(), stats.uploadSpeed)
+            )
         } else {
             null
         }
@@ -318,11 +334,12 @@ class TorrentsListFragment : NavigationFragment(R.layout.torrents_list_fragment,
             else -> status.statusString
         }
 
-        binding.progressBar.visibility = if (status.connectionState == RpcConnectionState.Connecting && !hasTorrents) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+        binding.progressBar.visibility =
+            if (status.connectionState == RpcConnectionState.Connecting && !hasTorrents) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
     }
 
     private fun startFilePickerActivity() {

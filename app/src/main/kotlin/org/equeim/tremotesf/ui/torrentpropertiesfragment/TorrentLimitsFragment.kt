@@ -21,11 +21,10 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.view.View
-
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter
@@ -35,7 +34,8 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
-class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_limits_fragment) {
+class TorrentLimitsFragment :
+    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_limits_fragment) {
     private companion object {
         const val MAX_SPEED_LIMIT = 4 * 1024 * 1024 // kilobytes per second
         const val MAX_RATIO_LIMIT = 10000.0
@@ -43,19 +43,25 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
         const val MAX_PEERS = 10000
 
         // Should match R.array.priority_items
-        val priorityItems = arrayOf(TorrentData.Priority.HighPriority,
-                                    TorrentData.Priority.NormalPriority,
-                                    TorrentData.Priority.LowPriority)
+        val priorityItems = arrayOf(
+            TorrentData.Priority.HighPriority,
+            TorrentData.Priority.NormalPriority,
+            TorrentData.Priority.LowPriority
+        )
 
         // Should match R.array.ratio_limit_mode
-        val ratioLimitModeItems = arrayOf(TorrentData.RatioLimitMode.GlobalRatioLimit,
-                                          TorrentData.RatioLimitMode.UnlimitedRatio,
-                                          TorrentData.RatioLimitMode.SingleRatioLimit)
+        val ratioLimitModeItems = arrayOf(
+            TorrentData.RatioLimitMode.GlobalRatioLimit,
+            TorrentData.RatioLimitMode.UnlimitedRatio,
+            TorrentData.RatioLimitMode.SingleRatioLimit
+        )
 
         // Should match R.array.idle_seeding_mode
-        val idleSeedingModeItems = arrayOf(TorrentData.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
-                                           TorrentData.IdleSeedingLimitMode.UnlimitedIdleSeeding,
-                                           TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+        val idleSeedingModeItems = arrayOf(
+            TorrentData.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
+            TorrentData.IdleSeedingLimitMode.UnlimitedIdleSeeding,
+            TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit
+        )
     }
 
     private var torrent: Torrent? = null
@@ -135,7 +141,8 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
 
             idleSeedingModeView.setOnItemClickListener { _, _, position, _ ->
                 val mode = idleSeedingModeItems[position]
-                idleSeedingLimitLayout.isEnabled = (mode == TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+                idleSeedingLimitLayout.isEnabled =
+                    (mode == TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
                 torrent?.setIdleSeedingLimitMode(mode)
             }
             idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
@@ -174,14 +181,24 @@ class TorrentLimitsFragment : TorrentPropertiesFragment.PagerFragment(R.layout.t
                 ratioLimitModeView.setText(ratioLimitModeItemValues[ratioLimitModeItems.indexOf(data.ratioLimitMode)])
                 ratioLimitEdit.setText(DecimalFormats.ratio.format(data.ratioLimit))
 
-                idleSeedingModeView.setText(idleSeedingModeItemValues[idleSeedingModeItems.indexOf(data.idleSeedingLimitMode)])
+                idleSeedingModeView.setText(
+                    idleSeedingModeItemValues[idleSeedingModeItems.indexOf(
+                        data.idleSeedingLimitMode
+                    )]
+                )
                 idleSeedingLimitEdit.setText(data.idleSeedingLimit.toString())
 
                 maximumPeersEdit.setText(data.peersLimit.toString())
             }
 
-            ratioLimitLayout.isEnabled = (ratioLimitModeView.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(TorrentData.RatioLimitMode.SingleRatioLimit)])
-            idleSeedingLimitLayout.isEnabled = (idleSeedingModeView.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)])
+            ratioLimitLayout.isEnabled =
+                (ratioLimitModeView.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(
+                    TorrentData.RatioLimitMode.SingleRatioLimit
+                )])
+            idleSeedingLimitLayout.isEnabled =
+                (idleSeedingModeView.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(
+                    TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit
+                )])
         }
     }
 }

@@ -39,9 +39,9 @@ class FileParseException(cause: Throwable) : Exception(cause)
 data class TorrentFile(val info: Info) {
     @Serializable
     data class Info(
-            val files: List<File>? = null,
-            val length: Long? = null,
-            val name: String
+        val files: List<File>? = null,
+        val length: Long? = null,
+        val name: String
     )
 
     @Serializable

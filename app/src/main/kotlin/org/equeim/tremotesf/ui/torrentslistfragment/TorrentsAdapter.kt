@@ -30,16 +30,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
-
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.TorrentListItemBinding
-import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.databinding.TorrentListItemBinding
+import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
@@ -47,12 +45,15 @@ import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 
 
-class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestoringListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
-    private val selectionTracker = SelectionTracker.createForIntKeys(this,
-                                                                     true,
-                                                                     fragment,
-                                                                     ::ActionModeCallback,
-                                                                     R.plurals.torrents_selected) {
+class TorrentsAdapter(private val fragment: TorrentsListFragment) :
+    StateRestoringListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
+    private val selectionTracker = SelectionTracker.createForIntKeys(
+        this,
+        true,
+        fragment,
+        ::ActionModeCallback,
+        R.plurals.torrents_selected
+    ) {
         getItem(it).id
     }
 
@@ -61,15 +62,23 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestori
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {
-            return TorrentsViewHolderCompact(multilineName,
-                                             TorrentListItemCompactBinding.inflate(LayoutInflater.from(parent.context),
-                                                                                   parent,
-                                                                                   false))
+            return TorrentsViewHolderCompact(
+                multilineName,
+                TorrentListItemCompactBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
-        return TorrentsViewHolder(multilineName,
-                                  TorrentListItemBinding.inflate(LayoutInflater.from(parent.context),
-                                                                 parent,
-                                                                 false))
+        return TorrentsViewHolder(
+            multilineName,
+            TorrentListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: BaseTorrentsViewHolder, position: Int) {
@@ -90,8 +99,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestori
         selectionTracker.restoreInstanceState()
     }
 
-    inner class TorrentsViewHolder(multilineName: Boolean,
-                                   private val binding: TorrentListItemBinding) : BaseTorrentsViewHolder(multilineName, binding.root) {
+    inner class TorrentsViewHolder(
+        multilineName: Boolean,
+        private val binding: TorrentListItemBinding
+    ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         init {
             Utils.setProgressBarColor(binding.progressBar)
         }
@@ -101,71 +112,100 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestori
 
             with(binding) {
                 sizeTextView.text = if (torrent.isFinished) {
-                    context.getString(R.string.uploaded_string,
-                                      Utils.formatByteSize(context, torrent.sizeWhenDone),
-                                      Utils.formatByteSize(context, torrent.totalUploaded))
+                    context.getString(
+                        R.string.uploaded_string,
+                        Utils.formatByteSize(context, torrent.sizeWhenDone),
+                        Utils.formatByteSize(context, torrent.totalUploaded)
+                    )
                 } else {
-                    context.getString(R.string.completed_string,
-                                      Utils.formatByteSize(context, torrent.completedSize),
-                                      Utils.formatByteSize(context, torrent.sizeWhenDone),
-                                      DecimalFormats.generic.format(torrent.percentDone * 100))
+                    context.getString(
+                        R.string.completed_string,
+                        Utils.formatByteSize(context, torrent.completedSize),
+                        Utils.formatByteSize(context, torrent.sizeWhenDone),
+                        DecimalFormats.generic.format(torrent.percentDone * 100)
+                    )
                 }
                 etaTextView.text = Utils.formatDuration(context, torrent.eta)
 
                 progressBar.progress = (torrent.percentDone * 100).toInt()
-                downloadSpeedTextView.text = context.getString(R.string.download_speed_string,
-                                                               Utils.formatByteSpeed(context,
-                                                                                     torrent.downloadSpeed))
-                uploadSpeedTextView.text = context.getString(R.string.upload_speed_string,
-                                                             Utils.formatByteSpeed(context,
-                                                                                   torrent.uploadSpeed))
+                downloadSpeedTextView.text = context.getString(
+                    R.string.download_speed_string,
+                    Utils.formatByteSpeed(
+                        context,
+                        torrent.downloadSpeed
+                    )
+                )
+                uploadSpeedTextView.text = context.getString(
+                    R.string.upload_speed_string,
+                    Utils.formatByteSpeed(
+                        context,
+                        torrent.uploadSpeed
+                    )
+                )
 
                 statusTextView.text = torrent.statusString
             }
         }
     }
 
-    inner class TorrentsViewHolderCompact(multilineName: Boolean,
-                                          private val binding: TorrentListItemCompactBinding) : BaseTorrentsViewHolder(multilineName, binding.root) {
+    inner class TorrentsViewHolderCompact(
+        multilineName: Boolean,
+        private val binding: TorrentListItemCompactBinding
+    ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         override fun update() {
             super.update()
 
             downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
                 ""
             } else {
-                context.getString(R.string.download_speed_string,
-                                   Utils.formatByteSpeed(context,
-                                                         torrent.downloadSpeed))
+                context.getString(
+                    R.string.download_speed_string,
+                    Utils.formatByteSpeed(
+                        context,
+                        torrent.downloadSpeed
+                    )
+                )
             }
 
             uploadSpeedTextView.text = if (torrent.uploadSpeed == 0L) {
                 ""
             } else {
-                context.getString(R.string.upload_speed_string,
-                                   Utils.formatByteSpeed(context,
-                                                         torrent.uploadSpeed))
+                context.getString(
+                    R.string.upload_speed_string,
+                    Utils.formatByteSpeed(
+                        context,
+                        torrent.uploadSpeed
+                    )
+                )
             }
 
-            binding.progressTextView.text = context.getString(if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
-                                                              DecimalFormats.generic.format(torrent.percentDone * 100))
+            binding.progressTextView.text = context.getString(
+                if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
+                DecimalFormats.generic.format(torrent.percentDone * 100)
+            )
         }
     }
 
-    open inner class BaseTorrentsViewHolder(multilineName: Boolean,
-                                            itemView: View) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
+    open inner class BaseTorrentsViewHolder(
+        multilineName: Boolean,
+        itemView: View
+    ) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
         protected lateinit var torrent: Torrent
             private set
 
         protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
-        private val statusIconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            nameTextView.compoundDrawables.first()
-        } else {
-            nameTextView.compoundDrawablesRelative.first()
-        }
-        protected val downloadSpeedTextView = itemView.findViewById<TextView>(R.id.download_speed_text_view)!!
-        protected val uploadSpeedTextView = itemView.findViewById<TextView>(R.id.upload_speed_text_view)!!
+        private val statusIconDrawable: Drawable =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                nameTextView.compoundDrawables.first()
+            } else {
+                nameTextView.compoundDrawablesRelative.first()
+            }
+        protected val downloadSpeedTextView =
+            itemView.findViewById<TextView>(R.id.download_speed_text_view)!!
+        protected val uploadSpeedTextView =
+            itemView.findViewById<TextView>(R.id.upload_speed_text_view)!!
 
         init {
             if (!multilineName) {
@@ -197,20 +237,30 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestori
         }
 
         override fun onClick(view: View) {
-            fragment.navigate(TorrentsListFragmentDirections.toTorrentPropertiesFragment(torrent.hashString, torrent.name))
+            fragment.navigate(
+                TorrentsListFragmentDirections.toTorrentPropertiesFragment(
+                    torrent.hashString,
+                    torrent.name
+                )
+            )
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
-        private inner class MenuItems(val startItem: MenuItem,
-                                      val pauseItem: MenuItem)
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+        SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+        private inner class MenuItems(
+            val startItem: MenuItem,
+            val pauseItem: MenuItem
+        )
 
         private var menuItems: MenuItems? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
-            menuItems = MenuItems(menu.findItem(R.id.start),
-                                  menu.findItem(R.id.pause))
+            menuItems = MenuItems(
+                menu.findItem(R.id.start),
+                menu.findItem(R.id.pause)
+            )
             return true
         }
 
@@ -252,16 +302,32 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) : StateRestori
                 R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
-                    fragment.navigate(TorrentsListFragmentDirections.toTorrentSetLocationDialog(getTorrentIds(),
-                                                                                                getFirstSelectedTorrent().downloadDirectory))
+                    fragment.navigate(
+                        TorrentsListFragmentDirections.toTorrentSetLocationDialog(
+                            getTorrentIds(),
+                            getFirstSelectedTorrent().downloadDirectory
+                        )
+                    )
                 }
                 R.id.rename -> {
                     val torrent = getFirstSelectedTorrent()
-                    fragment.navigate(TorrentsListFragmentDirections.toTorrentFileRenameDialog(torrent.name, torrent.name, torrent.id))
+                    fragment.navigate(
+                        TorrentsListFragmentDirections.toTorrentFileRenameDialog(
+                            torrent.name,
+                            torrent.name,
+                            torrent.id
+                        )
+                    )
                 }
-                R.id.remove -> fragment.navigate(TorrentsListFragmentDirections.toRemoveTorrentDialog(getTorrentIds()))
+                R.id.remove -> fragment.navigate(
+                    TorrentsListFragmentDirections.toRemoveTorrentDialog(
+                        getTorrentIds()
+                    )
+                )
                 R.id.share -> {
-                    val magnetLinks = currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted()).map { it.data.magnetLink }
+                    val magnetLinks =
+                        currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
+                            .map { it.data.magnetLink }
                     Utils.shareTorrents(magnetLinks, fragment.requireContext())
                 }
                 else -> return false

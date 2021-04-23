@@ -34,14 +34,16 @@ fun <T> MutableEventFlow(): MutableSharedFlow<T> {
     return MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 }
 
-fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner)
-        = lifecycleOwner.lifecycleScope.launchWhenStarted { collect() }
+fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner) =
+    lifecycleOwner.lifecycleScope.launchWhenStarted { collect() }
 
-inline fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner, crossinline action: suspend (value: T) -> Unit)
-    = lifecycleOwner.lifecycleScope.launchWhenStarted { collect(action) }
+inline fun <T> Flow<T>.collectWhenStarted(
+    lifecycleOwner: LifecycleOwner,
+    crossinline action: suspend (value: T) -> Unit
+) = lifecycleOwner.lifecycleScope.launchWhenStarted { collect(action) }
 
-inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit)
-    = filter { it }.onEach {
-    action()
-    compareAndSet(it, false)
-}
+inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit) =
+    filter { it }.onEach {
+        action()
+        compareAndSet(it, false)
+    }

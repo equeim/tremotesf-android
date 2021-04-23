@@ -42,18 +42,24 @@ class Torrent(val data: TorrentData, private val context: Context, prevTorrent: 
         get() {
             return when (status) {
                 TorrentData.Status.Paused -> context.getString(R.string.torrent_paused)
-                TorrentData.Status.Downloading -> context.resources.getQuantityString(R.plurals.torrent_downloading,
-                                                                                      seeders,
-                                                                                      seeders)
+                TorrentData.Status.Downloading -> context.resources.getQuantityString(
+                    R.plurals.torrent_downloading,
+                    seeders,
+                    seeders
+                )
                 TorrentData.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
-                TorrentData.Status.Seeding -> context.resources.getQuantityString(R.plurals.torrent_seeding,
-                                                                                  leechers,
-                                                                                  leechers)
+                TorrentData.Status.Seeding -> context.resources.getQuantityString(
+                    R.plurals.torrent_seeding,
+                    leechers,
+                    leechers
+                )
                 TorrentData.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
                 TorrentData.Status.QueuedForDownloading,
                 TorrentData.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
-                TorrentData.Status.Checking -> context.getString(R.string.torrent_checking,
-                                                                 DecimalFormats.generic.format(recheckProgress * 100))
+                TorrentData.Status.Checking -> context.getString(
+                    R.string.torrent_checking,
+                    DecimalFormats.generic.format(recheckProgress * 100)
+                )
                 TorrentData.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
                 TorrentData.Status.Errored -> errorString
                 else -> ""

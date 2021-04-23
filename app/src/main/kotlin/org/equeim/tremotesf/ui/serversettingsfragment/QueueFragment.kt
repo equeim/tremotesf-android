@@ -31,8 +31,10 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
-class QueueFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_queue_fragment,
-                                                          R.string.server_settings_queue) {
+class QueueFragment : ServerSettingsFragment.BaseFragment(
+    R.layout.server_settings_queue_fragment,
+    R.string.server_settings_queue
+) {
     private val binding by viewBinding(ServerSettingsQueueFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

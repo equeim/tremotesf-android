@@ -66,7 +66,11 @@ class RuntimePermissionHelper(
                 } else {
                     info("Permission $permission not granted")
                     info("Showing rationale for going to permission settings")
-                    fragment.navigate(NavMainDirections.toRuntimePermissionSystemSettingsDialog(permissionRationaleStringId))
+                    fragment.navigate(
+                        NavMainDirections.toRuntimePermissionSystemSettingsDialog(
+                            permissionRationaleStringId
+                        )
+                    )
                 }
             }
 
@@ -102,7 +106,11 @@ class RuntimePermissionHelper(
         }
         if (fragment.shouldShowRequestPermissionRationale(permission)) {
             info("Showing rationale for requesting permission")
-            fragment.navigate(NavMainDirections.toRuntimePermissionRationaleDialog(permissionRationaleStringId))
+            fragment.navigate(
+                NavMainDirections.toRuntimePermissionRationaleDialog(
+                    permissionRationaleStringId
+                )
+            )
         } else {
             requestPermission(launcher)
         }

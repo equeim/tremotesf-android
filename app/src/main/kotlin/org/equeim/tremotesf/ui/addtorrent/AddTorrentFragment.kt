@@ -21,22 +21,24 @@ package org.equeim.tremotesf.ui.addtorrent
 
 import android.os.Bundle
 import android.view.View
-
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
-
 import org.equeim.libtremotesf.TorrentData
-import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.NavigationFragment
 
-abstract class AddTorrentFragment(@LayoutRes contentLayoutId: Int,
-                                  @StringRes titleRes: Int,
-                                  @MenuRes toolbarMenuRes: Int) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
+abstract class AddTorrentFragment(
+    @LayoutRes contentLayoutId: Int,
+    @StringRes titleRes: Int,
+    @MenuRes toolbarMenuRes: Int
+) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
     protected lateinit var priorityItems: Array<String>
-    protected val priorityItemEnums = arrayOf(TorrentData.Priority.HighPriority,
-                                              TorrentData.Priority.NormalPriority,
-                                              TorrentData.Priority.LowPriority)
+    protected val priorityItemEnums = arrayOf(
+        TorrentData.Priority.HighPriority,
+        TorrentData.Priority.NormalPriority,
+        TorrentData.Priority.LowPriority
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

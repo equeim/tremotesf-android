@@ -32,8 +32,10 @@ import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
-class SeedingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_seeding_fragment,
-                                                            R.string.server_settings_seeding) {
+class SeedingFragment : ServerSettingsFragment.BaseFragment(
+    R.layout.server_settings_seeding_fragment,
+    R.string.server_settings_seeding
+) {
     private val binding by viewBinding(ServerSettingsSeedingFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

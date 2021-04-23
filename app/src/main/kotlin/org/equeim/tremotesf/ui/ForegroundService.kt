@@ -65,7 +65,10 @@ class ForegroundService : LifecycleService(), Logger {
 
         fun start(context: Context) {
             info("start()")
-            ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
+            ContextCompat.startForegroundService(
+                context,
+                Intent(context, ForegroundService::class.java)
+            )
             startRequestInProgress = true
         }
 
@@ -96,19 +99,31 @@ class ForegroundService : LifecycleService(), Logger {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager.getNotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID) == null) {
-                notificationManager.createNotificationChannel(NotificationChannel(PERSISTENT_NOTIFICATION_CHANNEL_ID,
-                                                                                  getString(R.string.persistent_notification_channel_name),
-                                                                                  NotificationManager.IMPORTANCE_LOW))
+                notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                        PERSISTENT_NOTIFICATION_CHANNEL_ID,
+                        getString(R.string.persistent_notification_channel_name),
+                        NotificationManager.IMPORTANCE_LOW
+                    )
+                )
             }
         }
 
-        combine(Rpc.status, Rpc.serverStats, Servers.currentServer) { status, _, _ -> status }.drop(1)
-                .collectWhenStarted(this) { updatePersistentNotification(it) }
+        combine(Rpc.status, Rpc.serverStats, Servers.currentServer) { status, _, _ -> status }.drop(
+            1
+        )
+            .collectWhenStarted(this) { updatePersistentNotification(it) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            WifiNetworkHelper.observingActiveWifiNetwork.collectWhenStarted(this, ::startForegroundV29)
+            WifiNetworkHelper.observingActiveWifiNetwork.collectWhenStarted(
+                this,
+                ::startForegroundV29
+            )
         } else {
-            startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value))
+            startForeground(
+                PERSISTENT_NOTIFICATION_ID,
+                buildPersistentNotification(Rpc.status.value)
+            )
         }
     }
 
@@ -120,7 +135,11 @@ class ForegroundService : LifecycleService(), Logger {
         } else {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
         }
-        startForeground(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(Rpc.status.value), type)
+        startForeground(
+            PERSISTENT_NOTIFICATION_ID,
+            buildPersistentNotification(Rpc.status.value),
+            type
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -178,23 +197,33 @@ class ForegroundService : LifecycleService(), Logger {
 
     private fun updatePersistentNotification(status: Rpc.Status) {
         if (!stopUpdatingNotification) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(status))
+            notificationManager.notify(
+                PERSISTENT_NOTIFICATION_ID,
+                buildPersistentNotification(status)
+            )
         }
     }
 
     private fun buildPersistentNotification(status: Rpc.Status): Notification {
-        val notificationBuilder = NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
+        val notificationBuilder =
+            NotificationCompat.Builder(applicationContext, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentIntent(NavDeepLinkBuilder(applicationContext)
-                                          .setGraph(R.navigation.nav_main)
-                                          .setDestination(R.id.torrents_list_fragment)
-                                          .createPendingIntent())
+                .setContentIntent(
+                    NavDeepLinkBuilder(applicationContext)
+                        .setGraph(R.navigation.nav_main)
+                        .setDestination(R.id.torrents_list_fragment)
+                        .createPendingIntent()
+                )
 
         val currentServer = Servers.currentServer.value
         if (currentServer != null) {
-            notificationBuilder.setContentTitle(getString(R.string.current_server_string,
-                                                          currentServer.name,
-                                                          currentServer.address))
+            notificationBuilder.setContentTitle(
+                getString(
+                    R.string.current_server_string,
+                    currentServer.name,
+                    currentServer.address
+                )
+            )
         } else {
             notificationBuilder.setContentTitle(getString(R.string.no_servers))
         }
@@ -207,31 +236,41 @@ class ForegroundService : LifecycleService(), Logger {
 
         if (status.isConnected) {
             val stats = Rpc.serverStats.value
-            notificationBuilder.setContentText(getString(R.string.main_activity_subtitle,
-                                                         Utils.formatByteSpeed(this,
-                                                                               stats.downloadSpeed),
-                                                         Utils.formatByteSpeed(this,
-                                                                               stats.uploadSpeed)))
+            notificationBuilder.setContentText(
+                getString(
+                    R.string.main_activity_subtitle,
+                    Utils.formatByteSpeed(
+                        this,
+                        stats.downloadSpeed
+                    ),
+                    Utils.formatByteSpeed(
+                        this,
+                        stats.uploadSpeed
+                    )
+                )
+            )
         } else {
             notificationBuilder.setContentText(status.statusString)
         }
 
         if (status.connectionState == RpcConnectionState.Disconnected) {
             notificationBuilder.addAction(
-                    R.drawable.notification_connect,
-                    getString(R.string.connect),
-                    getPendingIntent(ACTION_CONNECT))
+                R.drawable.notification_connect,
+                getString(R.string.connect),
+                getPendingIntent(ACTION_CONNECT)
+            )
         } else {
             notificationBuilder.addAction(
-                    R.drawable.notification_disconnect,
-                    getString(R.string.disconnect),
-                    getPendingIntent(ACTION_DISCONNECT))
+                R.drawable.notification_disconnect,
+                getString(R.string.disconnect),
+                getPendingIntent(ACTION_DISCONNECT)
+            )
         }
 
         notificationBuilder.addAction(
-                R.drawable.notification_quit,
-                getString(R.string.quit),
-                getPendingIntent(ACTION_SHUTDOWN_APP)
+            R.drawable.notification_quit,
+            getString(R.string.quit),
+            getPendingIntent(ACTION_SHUTDOWN_APP)
         )
 
         return notificationBuilder.build()
@@ -240,15 +279,19 @@ class ForegroundService : LifecycleService(), Logger {
     private fun getPendingIntent(action: String): PendingIntent? {
         val intent = Intent(this, ForegroundService::class.java).setAction(action)
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PendingIntent.getForegroundService(this,
-                                               0,
-                                               intent,
-                                               PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getForegroundService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
         } else {
-            PendingIntent.getService(this,
-                                     0,
-                                     intent,
-                                     PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
         }
 
     }

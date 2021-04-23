@@ -30,13 +30,15 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
-class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_downloading_fragment,
-                                                                R.string.server_settings_downloading) {
+class DownloadingFragment : ServerSettingsFragment.BaseFragment(
+    R.layout.server_settings_downloading_fragment,
+    R.string.server_settings_downloading
+) {
     private val binding by viewBinding(ServerSettingsDownloadingFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with (binding) {
+        with(binding) {
             downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
             downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
                 Rpc.serverSettings.downloadDirectory = it.toString()
@@ -52,7 +54,8 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(R.layout.server_
                 Rpc.serverSettings.renameIncompleteFiles = checked
             }
 
-            incompleteFilesDirectoryCheckBox.isChecked = Rpc.serverSettings.incompleteDirectoryEnabled
+            incompleteFilesDirectoryCheckBox.isChecked =
+                Rpc.serverSettings.incompleteDirectoryEnabled
             incompleteFilesDirectoryCheckBox.setDependentViews(incompleteFilesDirectoryLayout) { checked ->
                 Rpc.serverSettings.incompleteDirectoryEnabled = checked
             }

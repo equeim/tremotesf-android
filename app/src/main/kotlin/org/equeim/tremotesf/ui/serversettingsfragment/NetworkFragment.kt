@@ -32,20 +32,24 @@ import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 
-class NetworkFragment : ServerSettingsFragment.BaseFragment(R.layout.server_settings_network_fragment,
-                                                            R.string.server_settings_network) {
+class NetworkFragment : ServerSettingsFragment.BaseFragment(
+    R.layout.server_settings_network_fragment,
+    R.string.server_settings_network
+) {
     private companion object {
         // Should match R.array.encryption_items
-        val encryptionItems = arrayOf(ServerSettingsData.EncryptionMode.AllowedEncryption,
-                                      ServerSettingsData.EncryptionMode.PreferredEncryption,
-                                      ServerSettingsData.EncryptionMode.RequiredEncryption)
+        val encryptionItems = arrayOf(
+            ServerSettingsData.EncryptionMode.AllowedEncryption,
+            ServerSettingsData.EncryptionMode.PreferredEncryption,
+            ServerSettingsData.EncryptionMode.RequiredEncryption
+        )
     }
 
     private val binding by viewBinding(ServerSettingsNetworkFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with (binding) {
+        with(binding) {
             peerPortEdit.filters = arrayOf(IntFilter(0..65535))
             peerPortEdit.setText(Rpc.serverSettings.peerPort.toString())
             peerPortEdit.doAfterTextChangedAndNotEmpty {

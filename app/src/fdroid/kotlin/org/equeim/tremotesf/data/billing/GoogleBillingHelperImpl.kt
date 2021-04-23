@@ -23,4 +23,5 @@ import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 
 @Suppress("FunctionName", "UNUSED_PARAMETER")
-fun GoogleBillingHelper(context: Context, coroutineScope: CoroutineScope): GoogleBillingHelper? = null
+fun GoogleBillingHelper(context: Context, coroutineScope: CoroutineScope): GoogleBillingHelper? =
+    null

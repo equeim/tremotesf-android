@@ -46,7 +46,8 @@ import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 
-class DonationsFragment : Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
+class DonationsFragment :
+    Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {
     companion object {
         private const val PAYPAL_USER = "DDQTRHTY5YV2G"
         private const val PAYPAL_CURRENCY_CODE = "USD"
@@ -89,7 +90,10 @@ class DonationsFragment : Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fr
                 donateButton.setOnClickListener {
                     donateGoogle(items.indexOf(skusView.text.toString()))
                 }
-                billing.purchasesUpdatedEvent.collectWhenStarted(viewLifecycleOwner, ::onBillingPurchasesUpdated)
+                billing.purchasesUpdatedEvent.collectWhenStarted(
+                    viewLifecycleOwner,
+                    ::onBillingPurchasesUpdated
+                )
             }
             skusViewLayout.isEnabled = isSetUp
             donateButton.isEnabled = isSetUp
@@ -113,22 +117,23 @@ class DonationsFragment : Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fr
             GoogleBillingHelper.PurchaseError.Error -> {
                 requireView().showSnackbar(R.string.donations_snackbar_error, Snackbar.LENGTH_LONG)
             }
-            GoogleBillingHelper.PurchaseError.Cancelled -> {}
+            GoogleBillingHelper.PurchaseError.Cancelled -> {
+            }
         }
     }
 
     private fun donatePayPal() {
         val builder = Uri.Builder()
-                .scheme("https")
-                .authority("www.paypal.com")
-                .path("cgi-bin/webscr")
-                .appendQueryParameter("cmd", "_donations")
-                .appendQueryParameter("business", PAYPAL_USER)
-                .appendQueryParameter("lc", "US")
-                .appendQueryParameter("item_name", PAYPAL_ITEM_NAME)
-                .appendQueryParameter("no_note", "1")
-                .appendQueryParameter("no_shipping", "1")
-                .appendQueryParameter("currency_code", PAYPAL_CURRENCY_CODE)
+            .scheme("https")
+            .authority("www.paypal.com")
+            .path("cgi-bin/webscr")
+            .appendQueryParameter("cmd", "_donations")
+            .appendQueryParameter("business", PAYPAL_USER)
+            .appendQueryParameter("lc", "US")
+            .appendQueryParameter("item_name", PAYPAL_ITEM_NAME)
+            .appendQueryParameter("no_note", "1")
+            .appendQueryParameter("no_shipping", "1")
+            .appendQueryParameter("currency_code", PAYPAL_CURRENCY_CODE)
         Utils.startActivityChooser(
             Intent(Intent.ACTION_VIEW, builder.build()),
             getText(R.string.donations_paypal_title),
@@ -139,7 +144,8 @@ class DonationsFragment : Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fr
     private fun donateYandex() {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, YANDEX_URL.toUri()))
-        } catch (ignore: ActivityNotFoundException) {}
+        } catch (ignore: ActivityNotFoundException) {
+        }
     }
 
     class Model(application: Application) : AndroidViewModel(application) {

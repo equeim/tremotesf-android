@@ -92,10 +92,12 @@ import java.util.concurrent.atomic.AtomicReference
 typealias RpcConnectionState = org.equeim.libtremotesf.Rpc.Status
 typealias RpcError = org.equeim.libtremotesf.Rpc.Error
 
-data class ServerStats(var downloadSpeed: Long,
-                       var uploadSpeed: Long,
-                       var currentSession: SessionStats,
-                       var total: SessionStats) {
+data class ServerStats(
+    var downloadSpeed: Long,
+    var uploadSpeed: Long,
+    var currentSession: SessionStats,
+    var total: SessionStats
+) {
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
@@ -128,14 +130,23 @@ object Rpc : Logger {
             old.delete()
         }
 
-        override fun onTorrentsUpdated(removed: IntVector, changed: TorrentDataVector, added: TorrentDataVector) {
+        override fun onTorrentsUpdated(
+            removed: IntVector,
+            changed: TorrentDataVector,
+            added: TorrentDataVector
+        ) {
             Rpc.onTorrentsUpdated(removed, changed, added)
             removed.delete()
             changed.delete()
             added.delete()
         }
 
-        override fun onServerStatsUpdated(downloadSpeed: Long, uploadSpeed: Long, currentSession: SessionStats, total: SessionStats) {
+        override fun onServerStatsUpdated(
+            downloadSpeed: Long,
+            uploadSpeed: Long,
+            currentSession: SessionStats,
+            total: SessionStats
+        ) {
             _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
         }
 
@@ -168,7 +179,12 @@ object Rpc : Logger {
             files.delete()
         }
 
-        override fun onTorrentPeersUpdated(torrentId: Int, removed: IntVector, changed: TorrentPeersVector, added: TorrentPeersVector) {
+        override fun onTorrentPeersUpdated(
+            torrentId: Int,
+            removed: IntVector,
+            changed: TorrentPeersVector,
+            added: TorrentPeersVector
+        ) {
             onTorrentPeersUpdated(torrentId, removed.toList(), changed.toList(), added.toList())
             removed.delete()
             changed.delete()
@@ -201,7 +217,8 @@ object Rpc : Logger {
 
     private val notificationManager: NotificationManager = context.getSystemService()!!
 
-    private var updateWorkerCompleter = AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
+    private var updateWorkerCompleter =
+        AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
 
     @Volatile
     var serverSettings = JniServerSettingsData()
@@ -214,17 +231,20 @@ object Rpc : Logger {
     val connectionState: StateFlow<Int> by ::_connectionState
 
     val isConnected: StateFlow<Boolean> = connectionState
-            .map { it == RpcConnectionState.Connected }
-            .distinctUntilChanged()
-            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
+        .map { it == RpcConnectionState.Connected }
+        .distinctUntilChanged()
+        .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     data class Error(val error: Int, val errorMessage: String)
+
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
-    data class Status(val connectionState: Int = RpcConnectionState.Disconnected,
-                      val error: Error = Error(RpcError.NoError, ""),
-                      val statusString: String = "") {
+    data class Status(
+        val connectionState: Int = RpcConnectionState.Disconnected,
+        val error: Error = Error(RpcError.NoError, ""),
+        val statusString: String = ""
+    ) {
         private companion object {
             fun getStatusString(connectionState: Int, error: Int): String {
                 return when (connectionState) {
@@ -245,14 +265,18 @@ object Rpc : Logger {
             }
         }
 
-        constructor(connectionState: Int, error: Error) : this(connectionState, error, getStatusString(connectionState, error.error))
+        constructor(connectionState: Int, error: Error) : this(
+            connectionState,
+            error,
+            getStatusString(connectionState, error.error)
+        )
 
         val isConnected: Boolean
             get() = connectionState == RpcConnectionState.Connected
     }
 
     val status = combine(connectionState, error, ::Status)
-            .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
+        .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
     val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents
@@ -261,14 +285,22 @@ object Rpc : Logger {
     val torrentAddErrorEvents: Flow<Unit> by ::_torrentAddErrorEvents
 
     data class TorrentFilesUpdatedData(val torrentId: Int, val changedFiles: List<TorrentFile>)
+
     private val _torrentFilesUpdatedEvents = MutableEventFlow<TorrentFilesUpdatedData>()
     val torrentFilesUpdatedEvents: Flow<TorrentFilesUpdatedData> by ::_torrentFilesUpdatedEvents
 
-    data class TorrentPeersUpdatedData(val torrentId: Int, val removed: List<Int>, val changed: List<Peer>, val added: List<Peer>)
+    data class TorrentPeersUpdatedData(
+        val torrentId: Int,
+        val removed: List<Int>,
+        val changed: List<Peer>,
+        val added: List<Peer>
+    )
+
     private val _torrentPeersUpdatedEvents = MutableEventFlow<TorrentPeersUpdatedData>()
     val torrentPeersUpdatedEvents: Flow<TorrentPeersUpdatedData> by ::_torrentPeersUpdatedEvents
 
     data class TorrentFileRenamedData(val torrentId: Int, val filePath: String, val newName: String)
+
     private val _torrentFileRenamedEvents = MutableEventFlow<TorrentFileRenamedData>()
     val torrentFileRenamedEvents: Flow<TorrentFileRenamedData> by ::_torrentFileRenamedEvents
 
@@ -276,6 +308,7 @@ object Rpc : Logger {
     val gotDownloadDirFreeSpaceEvents: Flow<Long> by ::_gotDownloadDirFreeSpaceEvent
 
     data class GotFreeSpaceForPathData(val path: String, val success: Boolean, val bytes: Long)
+
     private val _gotFreeSpaceForPathEvents = MutableEventFlow<GotFreeSpaceForPathData>()
     val gotFreeSpaceForPathEvents: Flow<GotFreeSpaceForPathData> by ::_gotFreeSpaceForPathEvents
 
@@ -289,12 +322,18 @@ object Rpc : Logger {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.createNotificationChannels(
-                    listOf(NotificationChannel(FINISHED_NOTIFICATION_CHANNEL_ID,
-                                               context.getString(R.string.finished_torrents_channel_name),
-                                               NotificationManager.IMPORTANCE_DEFAULT),
-                           NotificationChannel(ADDED_NOTIFICATION_CHANNEL_ID,
-                                               context.getString(R.string.added_torrents_channel_name),
-                                               NotificationManager.IMPORTANCE_DEFAULT))
+                listOf(
+                    NotificationChannel(
+                        FINISHED_NOTIFICATION_CHANNEL_ID,
+                        context.getString(R.string.finished_torrents_channel_name),
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    ),
+                    NotificationChannel(
+                        ADDED_NOTIFICATION_CHANNEL_ID,
+                        context.getString(R.string.added_torrents_channel_name),
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                )
             )
             info("init: created notification channels")
         }
@@ -414,7 +453,11 @@ object Rpc : Logger {
     }
 
     @WorkerThread
-    private fun onTorrentsUpdated(removed: List<Int>, changed: List<TorrentData>, added: List<TorrentData>) {
+    private fun onTorrentsUpdated(
+        removed: List<Int>,
+        changed: List<TorrentData>,
+        added: List<TorrentData>
+    ) {
         val newTorrents = torrents.value.toMutableList()
 
         for (index in removed) {
@@ -484,15 +527,19 @@ object Rpc : Logger {
                 val oldTorrent = lastTorrents.torrents.find { it.hashString == hashString }
                 if (oldTorrent == null) {
                     if (notifyOnAdded) {
-                        showAddedNotification(torrent.id,
+                        showAddedNotification(
+                            torrent.id,
                             hashString,
-                            torrent.name)
+                            torrent.name
+                        )
                     }
                 } else {
                     if (!oldTorrent.finished && (torrent.isFinished) && notifyOnFinished) {
-                        showFinishedNotification(torrent.id,
+                        showFinishedNotification(
+                            torrent.id,
                             hashString,
-                            torrent.name)
+                            torrent.name
+                        )
                     }
                 }
             }
@@ -509,10 +556,22 @@ object Rpc : Logger {
     }
 
     @AnyThread
-    private fun onTorrentPeersUpdated(torrentId: Int, removed: List<Int>, changed: List<Peer>, added: List<Peer>) {
+    private fun onTorrentPeersUpdated(
+        torrentId: Int,
+        removed: List<Int>,
+        changed: List<Peer>,
+        added: List<Peer>
+    ) {
         torrents.value.find { it.id == torrentId }?.let { torrent ->
             if (torrent.peersEnabled) {
-                _torrentPeersUpdatedEvents.tryEmit(TorrentPeersUpdatedData(torrentId, removed, changed, added))
+                _torrentPeersUpdatedEvents.tryEmit(
+                    TorrentPeersUpdatedData(
+                        torrentId,
+                        removed,
+                        changed,
+                        added
+                    )
+                )
             }
         }
     }
@@ -529,44 +588,53 @@ object Rpc : Logger {
     }
 
     @AnyThread
-    private fun showTorrentNotification(torrentId: Int,
-                                        hashString: String,
-                                        name: String,
-                                        notificationChannel: String,
-                                        notificationTitle: String) {
+    private fun showTorrentNotification(
+        torrentId: Int,
+        hashString: String,
+        name: String,
+        notificationChannel: String,
+        notificationTitle: String
+    ) {
         info("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, name = $name, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
         notificationManager.notify(
-                torrentId,
-                NotificationCompat.Builder(context, notificationChannel)
-                        .setSmallIcon(R.drawable.notification_icon)
-                        .setContentTitle(notificationTitle)
-                        .setContentText(name)
-                        .setContentIntent(NavDeepLinkBuilder(context)
-                                                  .setGraph(R.navigation.nav_main)
-                                                  .setDestination(R.id.torrent_properties_fragment)
-                                                  .setArguments(TorrentPropertiesFragmentArgs(hashString, name).toBundle())
-                                                  .createPendingIntent())
-                        .setAutoCancel(true)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .build())
+            torrentId,
+            NotificationCompat.Builder(context, notificationChannel)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(notificationTitle)
+                .setContentText(name)
+                .setContentIntent(
+                    NavDeepLinkBuilder(context)
+                        .setGraph(R.navigation.nav_main)
+                        .setDestination(R.id.torrent_properties_fragment)
+                        .setArguments(TorrentPropertiesFragmentArgs(hashString, name).toBundle())
+                        .createPendingIntent()
+                )
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .build()
+        )
     }
 
     @AnyThread
     private fun showFinishedNotification(id: Int, hashString: String, name: String) {
-        showTorrentNotification(id,
-                                hashString,
-                                name,
-                                FINISHED_NOTIFICATION_CHANNEL_ID,
-                                context.getString(R.string.torrent_finished))
+        showTorrentNotification(
+            id,
+            hashString,
+            name,
+            FINISHED_NOTIFICATION_CHANNEL_ID,
+            context.getString(R.string.torrent_finished)
+        )
     }
 
     @AnyThread
     private fun showAddedNotification(id: Int, hashString: String, name: String) {
-        showTorrentNotification(id,
-                                hashString,
-                                name,
-                                ADDED_NOTIFICATION_CHANNEL_ID,
-                                context.getString(R.string.torrent_added))
+        showTorrentNotification(
+            id,
+            hashString,
+            name,
+            ADDED_NOTIFICATION_CHANNEL_ID,
+            context.getString(R.string.torrent_added)
+        )
     }
 
     @AnyThread
@@ -575,12 +643,18 @@ object Rpc : Logger {
         val interval = Settings.backgroundUpdateInterval
         if (interval > 0 && (Settings.notifyOnFinished || Settings.notifyOnAdded)) {
             info("enqueueUpdateWorker: enqueueing worker, interval = $interval minutes")
-            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-            val request = PeriodicWorkRequest.Builder(UpdateWorker::class.java, interval, TimeUnit.MINUTES)
+            val constraints =
+                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+            val request =
+                PeriodicWorkRequest.Builder(UpdateWorker::class.java, interval, TimeUnit.MINUTES)
                     .setInitialDelay(interval, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(UpdateWorker.UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request).state.observeForever { state ->
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                UpdateWorker.UNIQUE_WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                request
+            ).state.observeForever { state ->
                 if (state !is Operation.State.IN_PROGRESS) {
                     info("enqueueUpdateWorker: enqueuing worker result = $state")
                 }
@@ -593,11 +667,12 @@ object Rpc : Logger {
     @AnyThread
     private fun cancelUpdateWorker() {
         info("cancelUpdateWorker() called")
-        WorkManager.getInstance(context).cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME).state.observeForever { state ->
-            if (state !is Operation.State.IN_PROGRESS) {
-                info("cancelUpdateWorker: cancelling worker result = $state")
+        WorkManager.getInstance(context)
+            .cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME).state.observeForever { state ->
+                if (state !is Operation.State.IN_PROGRESS) {
+                    info("cancelUpdateWorker: cancelling worker result = $state")
+                }
             }
-        }
     }
 
     @AnyThread
@@ -617,7 +692,8 @@ object Rpc : Logger {
         }
     }
 
-    class UpdateWorker(context: Context, workerParameters: WorkerParameters) : ListenableWorker(context, workerParameters), Logger {
+    class UpdateWorker(context: Context, workerParameters: WorkerParameters) :
+        ListenableWorker(context, workerParameters), Logger {
         companion object {
             const val UNIQUE_WORK_NAME = "RpcUpdateWorker"
         }

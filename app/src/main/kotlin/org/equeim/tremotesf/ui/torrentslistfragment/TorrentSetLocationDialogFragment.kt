@@ -36,25 +36,27 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return createTextFieldDialog(requireContext(),
-                                     null,
-                                     SetLocationDialogBinding::inflate,
-                                     R.id.download_directory_edit,
-                                     R.id.download_directory_layout,
-                                     getString(R.string.location),
-                                     InputType.TYPE_TEXT_VARIATION_URI,
-                                     args.location,
-                                     {
-                                         it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
-                                             directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
-                                             edit.setAdapter(directoriesAdapter)
-                                         }
-                                     },
-                                     {
-                                         Rpc.nativeInstance.setTorrentsLocation(args.torrentIds,
-                                                                                it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
-                                                                                it.moveFilesCheckBox.isChecked)
-                                         directoriesAdapter?.save()
-                                     })
+            null,
+            SetLocationDialogBinding::inflate,
+            R.id.download_directory_edit,
+            R.id.download_directory_layout,
+            getString(R.string.location),
+            InputType.TYPE_TEXT_VARIATION_URI,
+            args.location,
+            {
+                it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
+                    directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
+                    edit.setAdapter(directoriesAdapter)
+                }
+            },
+            {
+                Rpc.nativeInstance.setTorrentsLocation(
+                    args.torrentIds,
+                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+                    it.moveFilesCheckBox.isChecked
+                )
+                directoriesAdapter?.save()
+            })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

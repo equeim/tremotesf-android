@@ -22,34 +22,35 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-
 import com.google.android.material.snackbar.Snackbar
-
-import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
-class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragment,
-                                                  R.string.server_settings) {
+class ServerSettingsFragment : NavigationFragment(
+    R.layout.server_settings_fragment,
+    R.string.server_settings
+) {
     private val binding by viewBinding(ServerSettingsFragmentBinding::bind)
     private var snackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.listView.apply {
-            adapter = ArrayAdapter(requireContext(),
-                                   R.layout.server_settings_fragment_list_item,
-                                   resources.getStringArray(R.array.server_settings_items))
+            adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.server_settings_fragment_list_item,
+                resources.getStringArray(R.array.server_settings_items)
+            )
             divider = null
             setSelector(android.R.color.transparent)
             setOnItemClickListener { _, _, position, _ ->
@@ -78,10 +79,11 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
     private fun updateView(status: Rpc.Status) {
         when (status.connectionState) {
             RpcConnectionState.Disconnected -> {
-                snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
-                    snackbar = null
-                    Rpc.nativeInstance.connect()
-                }
+                snackbar =
+                    requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                        snackbar = null
+                        Rpc.nativeInstance.connect()
+                    }
                 binding.placeholder.text = status.statusString
 
                 hideKeyboard()
@@ -110,8 +112,10 @@ class ServerSettingsFragment : NavigationFragment(R.layout.server_settings_fragm
         }
     }
 
-    open class BaseFragment(@LayoutRes contentLayoutId: Int,
-                            @StringRes titleRes: Int) : NavigationFragment(contentLayoutId, titleRes) {
+    open class BaseFragment(
+        @LayoutRes contentLayoutId: Int,
+        @StringRes titleRes: Int
+    ) : NavigationFragment(contentLayoutId, titleRes) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             Rpc.isConnected.collectWhenStarted(viewLifecycleOwner) {

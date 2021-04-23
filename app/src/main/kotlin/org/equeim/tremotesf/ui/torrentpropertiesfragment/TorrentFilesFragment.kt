@@ -33,11 +33,17 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 
-class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
+class TorrentFilesFragment :
+    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
-    val model by savedStateViewModels { _, handle -> TorrentFilesFragmentViewModel(torrentPropertiesFragment.torrent, handle) }
+    val model by savedStateViewModels { _, handle ->
+        TorrentFilesFragmentViewModel(
+            torrentPropertiesFragment.torrent,
+            handle
+        )
+    }
 
     var torrent: Torrent? = null
         private set
@@ -59,7 +65,12 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
         binding.filesView.apply {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
@@ -94,11 +105,12 @@ class TorrentFilesFragment : TorrentPropertiesFragment.PagerFragment(R.layout.to
     }
 
     private fun updatePlaceholder(modelState: TorrentFilesFragmentViewModel.State) {
-        binding.placeholder.visibility = if (modelState == TorrentFilesFragmentViewModel.State.TreeCreated && model.filesTree.isEmpty) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+        binding.placeholder.visibility =
+            if (modelState == TorrentFilesFragmentViewModel.State.TreeCreated && model.filesTree.isEmpty) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
     }
 
     private fun updateProgressBar(modelState: TorrentFilesFragmentViewModel.State) {

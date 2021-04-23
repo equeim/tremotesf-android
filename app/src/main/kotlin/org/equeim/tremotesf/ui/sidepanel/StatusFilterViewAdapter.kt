@@ -31,8 +31,10 @@ import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewMode
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 
-class StatusFilterViewAdapter(private val context: Context,
-                              textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+class StatusFilterViewAdapter(
+    private val context: Context,
+    textView: AutoCompleteTextView
+) : AutoCompleteTextViewDynamicAdapter(textView) {
     private var activeTorrents = 0
     private var downloadingTorrents = 0
     private var seedingTorrents = 0

@@ -49,13 +49,17 @@ object Settings {
     val themeKey = context.getString(R.string.prefs_theme_key)
     val oldColorsKey = context.getString(R.string.prefs_old_colors_key)
     private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
-    private val torrentNameMultilineKey = context.getString(R.string.prefs_torrent_name_multiline_key)
+    private val torrentNameMultilineKey =
+        context.getString(R.string.prefs_torrent_name_multiline_key)
     val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
     val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
     val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
-    val backgroundUpdateIntervalKey = context.getString(R.string.prefs_background_update_interval_key)
-    private val notifyOnFinishedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_finished_since_last_key)
-    private val notifyOnAddedSinceLastConnectionKey = context.getString(R.string.prefs_notify_on_added_since_last_key)
+    val backgroundUpdateIntervalKey =
+        context.getString(R.string.prefs_background_update_interval_key)
+    private val notifyOnFinishedSinceLastConnectionKey =
+        context.getString(R.string.prefs_notify_on_finished_since_last_key)
+    private val notifyOnAddedSinceLastConnectionKey =
+        context.getString(R.string.prefs_notify_on_added_since_last_key)
     private val deleteFilesKey = context.getString(R.string.prefs_delete_files_key)
 
     private const val THEME_AUTO = "auto"
@@ -65,11 +69,13 @@ object Settings {
     init {
         if (!preferences.contains(themeKey) && preferences.contains(darkThemeKey)) {
             preferences.edit {
-                putString(themeKey, if (preferences.getBoolean(darkThemeKey, false)) {
-                    THEME_DARK
-                } else {
-                    THEME_LIGHT
-                })
+                putString(
+                    themeKey, if (preferences.getBoolean(darkThemeKey, false)) {
+                        THEME_DARK
+                    } else {
+                        THEME_LIGHT
+                    }
+                )
             }
         }
     }

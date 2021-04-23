@@ -61,9 +61,11 @@ import org.equeim.tremotesf.ui.utils.findChildRecursively
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-open class NavigationFragment(@LayoutRes contentLayoutId: Int,
-                              @StringRes private val titleRes: Int = 0,
-                              @MenuRes private val toolbarMenuRes: Int = 0) : Fragment(contentLayoutId) {
+open class NavigationFragment(
+    @LayoutRes contentLayoutId: Int,
+    @StringRes private val titleRes: Int = 0,
+    @MenuRes private val toolbarMenuRes: Int = 0
+) : Fragment(contentLayoutId) {
     val activity: NavigationActivity?
         get() = super.getActivity() as NavigationActivity?
     val requiredActivity: NavigationActivity
@@ -72,15 +74,17 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
     lateinit var navController: NavController
         private set
 
-    @IdRes var destinationId = 0
+    @IdRes
+    var destinationId = 0
         private set
 
-    private val destinationListener = NavController.OnDestinationChangedListener { _, destination, _ ->
-        if (destination.id != destinationId) {
-            onNavigatedFrom(destination)
-            onNavigatedFrom()
+    private val destinationListener =
+        NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.id != destinationId) {
+                onNavigatedFrom(destination)
+                onNavigatedFrom()
+            }
         }
-    }
 
     protected var toolbar: Toolbar? = null
         private set
@@ -148,10 +152,16 @@ open class NavigationFragment(@LayoutRes contentLayoutId: Int,
             val parent = parent as View
             if (parent is AppBarLayout) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    MaterialShapeUtils.setElevation(parent, resources.getDimension(R.dimen.action_bar_elevation))
+                    MaterialShapeUtils.setElevation(
+                        parent,
+                        resources.getDimension(R.dimen.action_bar_elevation)
+                    )
                 }
             } else {
-                parent.background = MaterialShapeDrawable.createWithElevationOverlay(requireContext(), resources.getDimension(R.dimen.action_bar_elevation))
+                parent.background = MaterialShapeDrawable.createWithElevationOverlay(
+                    requireContext(),
+                    resources.getDimension(R.dimen.action_bar_elevation)
+                )
             }
         }
     }
@@ -216,7 +226,7 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && rootView is ViewGroup) {
         // Find scroll view
         val isScrollView = { v: View ->
-            v.id != View.NO_ID && when(v) {
+            v.id != View.NO_ID && when (v) {
                 is ScrollView, is NestedScrollView -> true
                 is RecyclerView -> {
                     (v.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL

@@ -38,36 +38,42 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TextFieldDialogBinding
 
 
-fun createTextFieldDialog(context: Context,
-                          @StringRes title: Int?,
-                          hint: String,
-                          inputType: Int,
-                          defaultText: String?,
-                          onInflatedView: ((TextFieldDialogBinding) -> Unit)?,
-                          onAccepted: ((TextFieldDialogBinding) -> Unit)?): AlertDialog {
-    return createTextFieldDialog(context,
-                                 title,
-                                 TextFieldDialogBinding::inflate,
-                                 R.id.text_field,
-                                 R.id.text_field_layout,
-                                 hint,
-                                 inputType,
-                                 defaultText,
-                                 onInflatedView,
-                                 onAccepted)
+fun createTextFieldDialog(
+    context: Context,
+    @StringRes title: Int?,
+    hint: String,
+    inputType: Int,
+    defaultText: String?,
+    onInflatedView: ((TextFieldDialogBinding) -> Unit)?,
+    onAccepted: ((TextFieldDialogBinding) -> Unit)?
+): AlertDialog {
+    return createTextFieldDialog(
+        context,
+        title,
+        TextFieldDialogBinding::inflate,
+        R.id.text_field,
+        R.id.text_field_layout,
+        hint,
+        inputType,
+        defaultText,
+        onInflatedView,
+        onAccepted
+    )
 }
 
 
-inline fun <reified Binding : ViewBinding> createTextFieldDialog(context: Context,
-                                                                 @StringRes title: Int?,
-                                                                 crossinline viewBindingFactory: ((LayoutInflater) -> Binding),
-                                                                 @IdRes textFieldId: Int,
-                                                                 @IdRes textFieldLayoutId: Int,
-                                                                 hint: String,
-                                                                 inputType: Int,
-                                                                 defaultText: String?,
-                                                                 noinline onInflatedView: ((Binding) -> Unit)?,
-                                                                 noinline onAccepted: ((Binding) -> Unit)?): AlertDialog {
+inline fun <reified Binding : ViewBinding> createTextFieldDialog(
+    context: Context,
+    @StringRes title: Int?,
+    crossinline viewBindingFactory: ((LayoutInflater) -> Binding),
+    @IdRes textFieldId: Int,
+    @IdRes textFieldLayoutId: Int,
+    hint: String,
+    inputType: Int,
+    defaultText: String?,
+    noinline onInflatedView: ((Binding) -> Unit)?,
+    noinline onAccepted: ((Binding) -> Unit)?
+): AlertDialog {
     val builder = MaterialAlertDialogBuilder(context)
 
     val binding = viewBindingFactory.invoke(LayoutInflater.from(builder.context))
@@ -82,8 +88,8 @@ inline fun <reified Binding : ViewBinding> createTextFieldDialog(context: Contex
     onInflatedView?.invoke(binding)
 
     builder.setView(view)
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok) { _, _ -> onAccepted?.invoke(binding) }
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ -> onAccepted?.invoke(binding) }
 
     if (title != null) {
         builder.setTitle(title)

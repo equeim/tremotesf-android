@@ -37,10 +37,13 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
-                                            R.string.settings) {
+class SettingsFragment : NavigationFragment(
+    R.layout.settings_fragment,
+    R.string.settings
+) {
     @Keep
-    class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+    class PreferenceFragment : PreferenceFragmentCompat(),
+        SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
@@ -66,7 +69,10 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
             super.onDestroy()
         }
 
-        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences?,
+            key: String?
+        ) {
             when (key) {
                 Settings.themeKey -> AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
 
@@ -92,7 +98,8 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
 
         private fun updateBackgroundUpdatePreference() {
             findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
-                    ?.isEnabled = (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
+                ?.isEnabled =
+                (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
         }
     }
 }
@@ -100,12 +107,14 @@ class SettingsFragment : NavigationFragment(R.layout.settings_fragment,
 class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
-                .setMessage(R.string.persistent_notification_warning)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(R.id.preference_fragment) as SettingsFragment.PreferenceFragment?)
-                            ?.enablePersistentNotification()
-                }
-                .create()
+            .setMessage(R.string.persistent_notification_warning)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(
+                    R.id.preference_fragment
+                ) as SettingsFragment.PreferenceFragment?)
+                    ?.enablePersistentNotification()
+            }
+            .create()
     }
 }

@@ -48,8 +48,12 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         binding.trackersView.apply {
             adapter = trackersAdapter
             layoutManager = LinearLayoutManager(activity)
-            addItemDecoration(DividerItemDecoration(activity,
-                                                                  DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    activity,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {

@@ -19,47 +19,49 @@
 
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
-import kotlin.properties.Delegates
-
 import android.os.Bundle
 import android.view.View
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.viewModels
+import org.equeim.tremotesf.utils.collectWhenStarted
+import kotlin.properties.Delegates
 
 
-data class Peer(val address: String,
-                val client: String,
-                var downloadSpeed: Long,
-                var uploadSpeed: Long,
-                var progress: Double) {
-    constructor(peer: org.equeim.libtremotesf.Peer) : this(peer.address,
-                                                           peer.client,
-                                                           peer.downloadSpeed,
-                                                           peer.uploadSpeed,
-                                                           peer.progress)
+data class Peer(
+    val address: String,
+    val client: String,
+    var downloadSpeed: Long,
+    var uploadSpeed: Long,
+    var progress: Double
+) {
+    constructor(peer: org.equeim.libtremotesf.Peer) : this(
+        peer.address,
+        peer.client,
+        peer.downloadSpeed,
+        peer.uploadSpeed,
+        peer.progress
+    )
 
     fun updatedFrom(peer: org.equeim.libtremotesf.Peer): Peer {
-        return this.copy(downloadSpeed = peer.downloadSpeed,
-                         uploadSpeed = peer.uploadSpeed,
-                         progress = peer.progress)
+        return this.copy(
+            downloadSpeed = peer.downloadSpeed,
+            uploadSpeed = peer.uploadSpeed,
+            progress = peer.progress
+        )
     }
 }
 
@@ -78,14 +80,23 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         binding.peersView.apply {
             adapter = peersAdapter
             layoutManager = LinearLayoutManager(activity)
-            addItemDecoration(DividerItemDecoration(activity,
-                                                               DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    activity,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
         model.peers.collectWhenStarted(viewLifecycleOwner, peersAdapter::update)
         model.peers.combine(model.loaded, ::Pair)
-                .collectWhenStarted(viewLifecycleOwner) { (peers, loaded) -> updatePlaceholder(peers, loaded) }
+            .collectWhenStarted(viewLifecycleOwner) { (peers, loaded) ->
+                updatePlaceholder(
+                    peers,
+                    loaded
+                )
+            }
     }
 
     override fun onDestroyView() {

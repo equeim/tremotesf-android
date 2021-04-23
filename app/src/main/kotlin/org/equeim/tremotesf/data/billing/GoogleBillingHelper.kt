@@ -39,6 +39,8 @@ interface GoogleBillingHelper {
 
     fun endConnection()
 
-    data class SkuData(val sku: String,
-                       val price: String)
+    data class SkuData(
+        val sku: String,
+        val price: String
+    )
 }

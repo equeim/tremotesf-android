@@ -31,8 +31,10 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
 
-class DirectoriesViewAdapter(private val context: Context,
-                             textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+class DirectoriesViewAdapter(
+    private val context: Context,
+    textView: AutoCompleteTextView
+) : AutoCompleteTextViewDynamicAdapter(textView) {
     private val directoriesMap = mutableMapOf<String, Int>()
     var directories = emptyList<String>()
         private set

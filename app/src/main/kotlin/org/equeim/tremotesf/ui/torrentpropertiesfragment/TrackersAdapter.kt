@@ -29,54 +29,56 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import androidx.appcompat.view.ActionMode
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
-import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
-
 import java.util.Comparator
 
 
-data class TrackersAdapterItem(val id: Int,
-                               var announce: String,
-                               var status: Int,
-                               var errorMessage: String,
-                               var peers: Int,
-                               private var nextUpdateTime: Long) {
+data class TrackersAdapterItem(
+    val id: Int,
+    var announce: String,
+    var status: Int,
+    var errorMessage: String,
+    var peers: Int,
+    private var nextUpdateTime: Long
+) {
 
     var nextUpdateEta = 0L
 
-    constructor(rpcTracker: Tracker) : this(rpcTracker.id(),
-                                            rpcTracker.announce(),
-                                            rpcTracker.status(),
-                                            rpcTracker.errorMessage(),
-                                            rpcTracker.peers(),
-                                            rpcTracker.nextUpdateTime())
+    constructor(rpcTracker: Tracker) : this(
+        rpcTracker.id(),
+        rpcTracker.announce(),
+        rpcTracker.status(),
+        rpcTracker.errorMessage(),
+        rpcTracker.peers(),
+        rpcTracker.nextUpdateTime()
+    )
 
     init {
         updateNextUpdateEta()
     }
 
     fun updatedFrom(rpcTracker: Tracker): TrackersAdapterItem {
-        return copy(announce = rpcTracker.announce(),
-                    status = rpcTracker.status(),
-                    errorMessage = rpcTracker.errorMessage(),
-                    peers = rpcTracker.peers(),
-                    nextUpdateTime = rpcTracker.nextUpdateTime())
+        return copy(
+            announce = rpcTracker.announce(),
+            status = rpcTracker.status(),
+            errorMessage = rpcTracker.errorMessage(),
+            peers = rpcTracker.peers(),
+            nextUpdateTime = rpcTracker.nextUpdateTime()
+        )
     }
 
     fun updateNextUpdateEta() {
@@ -89,29 +91,40 @@ data class TrackersAdapterItem(val id: Int,
     }
 }
 
-class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFragment,
-                      trackersFragment: TrackersFragment) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
+class TrackersAdapter(
+    private val torrentPropertiesFragment: TorrentPropertiesFragment,
+    trackersFragment: TrackersFragment
+) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
 
     private val comparator = object : Comparator<TrackersAdapterItem> {
         private val stringComparator = AlphanumericComparator()
-        override fun compare(o1: TrackersAdapterItem, o2: TrackersAdapterItem) = stringComparator.compare(o1.announce,
-                                                                                                          o2.announce)
+        override fun compare(o1: TrackersAdapterItem, o2: TrackersAdapterItem) =
+            stringComparator.compare(
+                o1.announce,
+                o2.announce
+            )
     }
 
     private val context = trackersFragment.requireContext()
 
-    private val selectionTracker = SelectionTracker.createForIntKeys(this,
-                                                                     true,
-                                                                     trackersFragment,
-                                                                     ::ActionModeCallback,
-                                                                     R.plurals.trackers_selected) { getItem(it).id }
+    private val selectionTracker = SelectionTracker.createForIntKeys(
+        this,
+        true,
+        trackersFragment,
+        ::ActionModeCallback,
+        R.plurals.trackers_selected
+    ) { getItem(it).id }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(selectionTracker,
-                          TrackerListItemBinding.inflate(LayoutInflater.from(parent.context),
-                                                         parent,
-                                                         false))
+        return ViewHolder(
+            selectionTracker,
+            TrackerListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
@@ -158,11 +171,18 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
         selectionTracker.restoreInstanceState()
     }
 
-    inner class ViewHolder(selectionTracker: SelectionTracker<Int>,
-                           val binding: TrackerListItemBinding) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
+    inner class ViewHolder(
+        selectionTracker: SelectionTracker<Int>,
+        val binding: TrackerListItemBinding
+    ) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
             val tracker = getItem(bindingAdapterPosition)
-            torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog(tracker.id, tracker.announce))
+            torrentPropertiesFragment.navigate(
+                TorrentPropertiesFragmentDirections.toEditTrackerDialog(
+                    tracker.id,
+                    tracker.announce
+                )
+            )
         }
 
         override fun update() {
@@ -187,17 +207,21 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
                 if (tracker.status == Tracker.Status.Error) {
                     peersTextView.visibility = View.GONE
                 } else {
-                    peersTextView.text = context.resources.getQuantityString(R.plurals.peers_plural,
-                                                                             tracker.peers,
-                                                                             tracker.peers)
+                    peersTextView.text = context.resources.getQuantityString(
+                        R.plurals.peers_plural,
+                        tracker.peers,
+                        tracker.peers
+                    )
                     peersTextView.visibility = View.VISIBLE
                 }
 
                 if (tracker.nextUpdateEta < 0) {
                     nextUpdateTextView.visibility = View.GONE
                 } else {
-                    nextUpdateTextView.text = context.getString(R.string.next_update,
-                                                                DateUtils.formatElapsedTime(tracker.nextUpdateEta))
+                    nextUpdateTextView.text = context.getString(
+                        R.string.next_update,
+                        DateUtils.formatElapsedTime(tracker.nextUpdateEta)
+                    )
                     nextUpdateTextView.visibility = View.VISIBLE
                 }
             }
@@ -205,16 +229,23 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
     }
 
     private class Callback : DiffUtil.ItemCallback<TrackersAdapterItem>() {
-        override fun areItemsTheSame(oldItem: TrackersAdapterItem, newItem: TrackersAdapterItem): Boolean {
+        override fun areItemsTheSame(
+            oldItem: TrackersAdapterItem,
+            newItem: TrackersAdapterItem
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: TrackersAdapterItem, newItem: TrackersAdapterItem): Boolean {
+        override fun areContentsTheSame(
+            oldItem: TrackersAdapterItem,
+            newItem: TrackersAdapterItem
+        ): Boolean {
             return oldItem == newItem
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+        SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.trackers_context_menu, menu)
             return true
@@ -226,7 +257,11 @@ class TrackersAdapter(private val torrentPropertiesFragment: TorrentPropertiesFr
             }
 
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.navigate(TorrentPropertiesFragmentDirections.toRemoveTrackerDialog(selectionTracker.selectedKeys.toIntArray()))
+                torrentPropertiesFragment.navigate(
+                    TorrentPropertiesFragmentDirections.toRemoveTrackerDialog(
+                        selectionTracker.selectedKeys.toIntArray()
+                    )
+                )
                 return true
             }
 
@@ -242,7 +277,8 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
         val addingTrackers = (args.trackerId == -1)
 
         val onAccepted = { textField: TextView ->
-            val torrent = (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
+            val torrent =
+                (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
             if (torrent != null) {
                 textField.text?.let { text ->
                     if (addingTrackers) {
@@ -255,24 +291,28 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
         }
 
         if (addingTrackers) {
-            return createTextFieldDialog(requireContext(),
-                                         R.string.add_trackers,
-                                         AddTrackersDialogBinding::inflate,
-                                         R.id.text_field,
-                                         R.id.text_field_layout,
-                                         getString(R.string.trackers_announce_urls),
-                                         InputType.TYPE_TEXT_VARIATION_URI,
-                                         args.announce,
-                                         null) {
+            return createTextFieldDialog(
+                requireContext(),
+                R.string.add_trackers,
+                AddTrackersDialogBinding::inflate,
+                R.id.text_field,
+                R.id.text_field_layout,
+                getString(R.string.trackers_announce_urls),
+                InputType.TYPE_TEXT_VARIATION_URI,
+                args.announce,
+                null
+            ) {
                 onAccepted(it.textField)
             }
         }
-        return createTextFieldDialog(requireContext(),
-                                     R.string.edit_tracker,
-                                     getString(R.string.tracker_announce_url),
-                                     InputType.TYPE_TEXT_VARIATION_URI,
-                                     args.announce,
-                                     null) {
+        return createTextFieldDialog(
+            requireContext(),
+            R.string.edit_tracker,
+            getString(R.string.tracker_announce_url),
+            InputType.TYPE_TEXT_VARIATION_URI,
+            args.announce,
+            null
+        ) {
             onAccepted(it.textField)
         }
     }
@@ -283,14 +323,20 @@ class RemoveTrackerDialogFragment : NavigationDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
-                .setMessage(resources.getQuantityString(R.plurals.remove_trackers_message,
-                                                        args.ids.size,
-                                                        args.ids.size))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.remove) { _, _ ->
-                    (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(args.ids)
-                    requiredActivity.actionMode?.finish()
-                }
-                .create()
+            .setMessage(
+                resources.getQuantityString(
+                    R.plurals.remove_trackers_message,
+                    args.ids.size,
+                    args.ids.size
+                )
+            )
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.remove) { _, _ ->
+                (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(
+                    args.ids
+                )
+                requiredActivity.actionMode?.finish()
+            }
+            .create()
     }
 }

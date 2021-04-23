@@ -31,7 +31,10 @@ import java.io.File
 import java.io.FileFilter
 import java.util.Comparator
 
-class FilesystemNavigator(private val currentDirectory: MutableStateFlow<File>, private val scope: CoroutineScope) {
+class FilesystemNavigator(
+    private val currentDirectory: MutableStateFlow<File>,
+    private val scope: CoroutineScope
+) {
     private val filesFilter = FileFilter { it.isDirectory || it.name.endsWith(".torrent") }
     private val comparator = object : Comparator<File?> {
         private val nameComparator = AlphanumericComparator()

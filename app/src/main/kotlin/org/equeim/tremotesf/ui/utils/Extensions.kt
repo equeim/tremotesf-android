@@ -61,7 +61,12 @@ val Context.application: Application
         throw IllegalStateException()
     }
 
-fun View.showSnackbar(message: CharSequence, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null): Snackbar {
+fun View.showSnackbar(
+    message: CharSequence,
+    length: Int,
+    @StringRes actionText: Int = 0,
+    action: ((View) -> Unit)? = null
+): Snackbar {
     val snackbar = Snackbar.make(this, message, length)
     if (actionText == 0) {
         snackbar.setAction("", action)
@@ -72,8 +77,13 @@ fun View.showSnackbar(message: CharSequence, length: Int, @StringRes actionText:
     return snackbar
 }
 
-fun View.showSnackbar(@StringRes message: Int, length: Int, @StringRes actionText: Int = 0, action: ((View) -> Unit)? = null) =
-        showSnackbar(resources.getString(message), length, actionText, action)
+fun View.showSnackbar(
+    @StringRes message: Int,
+    length: Int,
+    @StringRes actionText: Int = 0,
+    action: ((View) -> Unit)? = null
+) =
+    showSnackbar(resources.getString(message), length, actionText, action)
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {
@@ -96,7 +106,10 @@ fun ViewGroup.findChildRecursively(predicate: (View) -> Boolean): View? {
     return null
 }
 
-inline fun CheckBox.setDependentViews(vararg views: View, crossinline onCheckedChanged: (Boolean) -> Unit = {}) {
+inline fun CheckBox.setDependentViews(
+    vararg views: View,
+    crossinline onCheckedChanged: (Boolean) -> Unit = {}
+) {
     views.forEach { it.isEnabled = isChecked }
     setOnCheckedChangeListener { _, isChecked ->
         views.forEach {
@@ -106,11 +119,12 @@ inline fun CheckBox.setDependentViews(vararg views: View, crossinline onCheckedC
     }
 }
 
-inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Editable) -> Unit) = doAfterTextChanged {
-    if (!it.isNullOrEmpty()) {
-        action(it)
+inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Editable) -> Unit) =
+    doAfterTextChanged {
+        if (!it.isNullOrEmpty()) {
+            action(it)
+        }
     }
-}
 
 val EditText.textInputLayout: TextInputLayout
     get() {
@@ -160,7 +174,8 @@ inline fun <reified T : Fragment> Fragment.findFragment(): T? {
 fun NavController.safeNavigate(directions: NavDirections, navOptions: NavOptions? = null) {
     try {
         navigate(directions, navOptions)
-    } catch (ignore: IllegalArgumentException) {}
+    } catch (ignore: IllegalArgumentException) {
+    }
 }
 
 fun NavController.popDialog() {

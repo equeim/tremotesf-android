@@ -172,7 +172,8 @@ class NavigationActivity : AppCompatActivity(), Logger {
         drawerNavigationIcon = DrawerArrowDrawable(this)
         upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
 
-        navController = (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
+        navController =
+            (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
         appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
 
         setupDrawer()
@@ -308,18 +309,28 @@ class NavigationActivity : AppCompatActivity(), Logger {
                 navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
             }
 
-            Rpc.isConnected.collectWhenStarted(this@NavigationActivity, listSettingsLayout::setChildrenEnabled)
+            Rpc.isConnected.collectWhenStarted(
+                this@NavigationActivity,
+                listSettingsLayout::setChildrenEnabled
+            )
 
             sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
             sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
             val startIconDrawable = sortViewLayout.startIconDrawable
-            sortViewLayout.findChildRecursively { it is ImageView && it.drawable === startIconDrawable }?.let {
-                (it as Checkable).isChecked = Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
-            }
+            sortViewLayout.findChildRecursively { it is ImageView && it.drawable === startIconDrawable }
+                ?.let {
+                    (it as Checkable).isChecked =
+                        Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
+                }
 
             statusView.setAdapter(StatusFilterViewAdapter(this@NavigationActivity, statusView))
             trackersView.setAdapter(TrackersViewAdapter(this@NavigationActivity, trackersView))
-            directoriesView.setAdapter(DirectoriesViewAdapter(this@NavigationActivity, directoriesView))
+            directoriesView.setAdapter(
+                DirectoriesViewAdapter(
+                    this@NavigationActivity,
+                    directoriesView
+                )
+            )
 
             sidePanelBinding = this
         }

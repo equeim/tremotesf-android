@@ -26,7 +26,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -34,14 +33,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
-import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
+import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
@@ -49,12 +46,13 @@ import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
-
 import java.util.Comparator
 
 
-class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settings_fragment,
-                                                      R.string.connection_settings) {
+class ConnectionSettingsFragment : NavigationFragment(
+    R.layout.connection_settings_fragment,
+    R.string.connection_settings
+) {
     private val binding by viewBinding(ConnectionSettingsFragmentBinding::bind)
     var adapter: ServersAdapter? = null
         private set
@@ -65,10 +63,15 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
         val adapter = ServersAdapter(this)
         this.adapter = adapter
 
-        with (binding) {
+        with(binding) {
             serversView.adapter = adapter
             serversView.layoutManager = LinearLayoutManager(requireContext())
-            serversView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            serversView.addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             fab.setOnClickListener {
@@ -108,22 +111,28 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
         }
 
-        val selectionTracker = SelectionTracker.createForStringKeys(this,
-                                                                    false,
-                                                                    fragment,
-                                                                    ::ActionModeCallback,
-                                                                    R.plurals.servers_selected) { servers[it].name }
+        val selectionTracker = SelectionTracker.createForStringKeys(
+            this,
+            false,
+            fragment,
+            ::ActionModeCallback,
+            R.plurals.servers_selected
+        ) { servers[it].name }
 
         override fun getItemCount(): Int {
             return servers.size
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(this,
-                              selectionTracker,
-                              ServerListItemBinding.inflate(LayoutInflater.from(parent.context),
-                                                            parent,
-                                                            false))
+            return ViewHolder(
+                this,
+                selectionTracker,
+                ServerListItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
@@ -135,9 +144,11 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             selectionTracker.restoreInstanceState()
         }
 
-        class ViewHolder(private val adapter: ServersAdapter,
-                         selectionTracker: SelectionTracker<String>,
-                         val binding: ServerListItemBinding) : SelectionTracker.ViewHolder<String>(selectionTracker, binding.root) {
+        class ViewHolder(
+            private val adapter: ServersAdapter,
+            selectionTracker: SelectionTracker<String>,
+            val binding: ServerListItemBinding
+        ) : SelectionTracker.ViewHolder<String>(selectionTracker, binding.root) {
 
             init {
                 binding.radioButton.setOnClickListener {
@@ -159,11 +170,13 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
             }
 
             override fun onClick(view: View) {
-                itemView.findNavController().safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[bindingAdapterPosition].name))
+                itemView.findNavController()
+                    .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[bindingAdapterPosition].name))
             }
         }
 
-        private class ActionModeCallback(selectionTracker: SelectionTracker<String>) : SelectionTracker.ActionModeCallback<String>(selectionTracker) {
+        private class ActionModeCallback(selectionTracker: SelectionTracker<String>) :
+            SelectionTracker.ActionModeCallback<String>(selectionTracker) {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                 mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
                 return true
@@ -187,20 +200,25 @@ class ConnectionSettingsFragment : NavigationFragment(R.layout.connection_settin
 
 class RemoveServerDialogFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val adapter = (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
+        val adapter =
+            (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
         val selectionTracker = adapter?.selectionTracker
         val selectedCount = selectionTracker?.selectedCount ?: 0
         return MaterialAlertDialogBuilder(requireContext())
-                .setMessage(resources.getQuantityString(R.plurals.remove_servers_message,
-                                                        selectedCount,
-                                                        selectedCount))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.remove) { _, _ ->
-                    selectionTracker?.apply {
-                        Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
-                        clearSelection()
-                    }
+            .setMessage(
+                resources.getQuantityString(
+                    R.plurals.remove_servers_message,
+                    selectedCount,
+                    selectedCount
+                )
+            )
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.remove) { _, _ ->
+                selectionTracker?.apply {
+                    Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
+                    clearSelection()
                 }
-                .create()
+            }
+            .create()
     }
 }

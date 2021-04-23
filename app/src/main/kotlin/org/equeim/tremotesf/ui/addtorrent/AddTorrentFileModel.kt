@@ -60,13 +60,17 @@ interface AddTorrentFileModel {
         Loaded
     }
 
-    data class FilePriorities(val unwantedFiles: List<Int>,
-                              val lowPriorityFiles: List<Int>,
-                              val highPriorityFiles: List<Int>)
+    data class FilePriorities(
+        val unwantedFiles: List<Int>,
+        val lowPriorityFiles: List<Int>,
+        val highPriorityFiles: List<Int>
+    )
 
-    data class ViewUpdateData(val parserStatus: ParserStatus,
-                              val rpcStatus: Rpc.Status,
-                              val hasStoragePermission: Boolean)
+    data class ViewUpdateData(
+        val parserStatus: ParserStatus,
+        val rpcStatus: Rpc.Status,
+        val hasStoragePermission: Boolean
+    )
 
     var rememberedPagerItem: Int
 
@@ -86,7 +90,10 @@ interface AddTorrentFileModel {
     fun getFilePriorities(): FilePriorities
 }
 
-class AddTorrentFileModelImpl(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application), AddTorrentFileModel, Logger {
+class AddTorrentFileModelImpl(
+    application: Application,
+    private val savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application), AddTorrentFileModel, Logger {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     override val uri: Uri by savedState(savedStateHandle, Uri.EMPTY)
@@ -99,7 +106,17 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
 
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
-    override val viewUpdateData = combine(parserStatus, Rpc.status, storagePermissionHelper.permissionGranted) { parserStatus, rpcStatus, hasPermission -> AddTorrentFileModel.ViewUpdateData(parserStatus, rpcStatus, hasPermission) }
+    override val viewUpdateData = combine(
+        parserStatus,
+        Rpc.status,
+        storagePermissionHelper.permissionGranted
+    ) { parserStatus, rpcStatus, hasPermission ->
+        AddTorrentFileModel.ViewUpdateData(
+            parserStatus,
+            rpcStatus,
+            hasPermission
+        )
+    }
 
     private var fd: AssetFileDescriptor? = null
 
@@ -170,9 +187,11 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
             }
         }
 
-        return AddTorrentFileModel.FilePriorities(unwantedFiles,
-                                                  lowPriorityFiles,
-                                                  highPriorityFiles)
+        return AddTorrentFileModel.FilePriorities(
+            unwantedFiles,
+            lowPriorityFiles,
+            highPriorityFiles
+        )
     }
 
     private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
@@ -230,12 +249,14 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
         val files = mutableListOf<TorrentFilesTree.Item>()
 
         if (torrentFileInfo.files == null) {
-            val node = rootNode.addFile(0,
-                                        torrentFileInfo.name,
-                                        torrentFileInfo.length!!,
-                                        0,
-                                        TorrentFilesTree.Item.WantedState.Wanted,
-                                        TorrentFilesTree.Item.Priority.Normal)
+            val node = rootNode.addFile(
+                0,
+                torrentFileInfo.name,
+                torrentFileInfo.length!!,
+                0,
+                TorrentFilesTree.Item.WantedState.Wanted,
+                TorrentFilesTree.Item.Priority.Normal
+            )
             files.add(node.item)
         } else {
             val rootDirectoryNode = rootNode.addDirectory(torrentFileInfo.name)
@@ -245,12 +266,14 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
                 val pathParts = fileMap.path
                 for ((partIndex, part) in pathParts.withIndex()) {
                     if (partIndex == pathParts.lastIndex) {
-                        val node = currentNode.addFile(fileIndex,
-                                                       part,
-                                                       fileMap.length,
-                                                       0,
-                                                       TorrentFilesTree.Item.WantedState.Wanted,
-                                                       TorrentFilesTree.Item.Priority.Normal)
+                        val node = currentNode.addFile(
+                            fileIndex,
+                            part,
+                            fileMap.length,
+                            0,
+                            TorrentFilesTree.Item.WantedState.Wanted,
+                            TorrentFilesTree.Item.Priority.Normal
+                        )
                         files.add(node.item)
                     } else {
                         var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)

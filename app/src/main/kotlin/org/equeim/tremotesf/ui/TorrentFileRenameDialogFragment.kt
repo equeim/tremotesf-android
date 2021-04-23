@@ -31,14 +31,20 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
     private val args: TorrentFileRenameDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return createTextFieldDialog(requireContext(),
-                                     null,
-                                     getString(R.string.file_name),
-                                     InputType.TYPE_TEXT_VARIATION_URI,
-                                     args.fileName,
-                                     null) {
+        return createTextFieldDialog(
+            requireContext(),
+            null,
+            getString(R.string.file_name),
+            InputType.TYPE_TEXT_VARIATION_URI,
+            args.fileName,
+            null
+        ) {
             val newName = it.textField.text?.toString() ?: ""
-            (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(args.torrentId, args.filePath, newName)
+            (parentFragmentManager.primaryNavigationFragment as PrimaryFragment?)?.onRenameFile(
+                args.torrentId,
+                args.filePath,
+                newName
+            )
             activity?.actionMode?.finish()
         }
     }

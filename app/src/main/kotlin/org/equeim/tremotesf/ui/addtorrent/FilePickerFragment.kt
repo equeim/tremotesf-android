@@ -59,9 +59,11 @@ import org.equeim.tremotesf.utils.collectWhenStarted
 import java.io.File
 
 
-class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
-                                              R.string.select_file,
-                                              R.menu.file_picker_fragment_menu) {
+class FilePickerFragment : NavigationFragment(
+    R.layout.file_picker_fragment,
+    R.string.select_file,
+    R.menu.file_picker_fragment_menu
+) {
     private val binding by viewBinding(FilePickerFragmentBinding::bind)
     private var adapter: FilePickerAdapter? = null
 
@@ -88,7 +90,12 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
         binding.filesView.apply {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
@@ -126,7 +133,10 @@ class FilePickerFragment : NavigationFragment(R.layout.file_picker_fragment,
     }
 }
 
-private class FilePickerAdapter(private val fragment: FilePickerFragment, private val navigator: FilesystemNavigator) : ListAdapter<File?, RecyclerView.ViewHolder>(ItemCallback()) {
+private class FilePickerAdapter(
+    private val fragment: FilePickerFragment,
+    private val navigator: FilesystemNavigator
+) : ListAdapter<File?, RecyclerView.ViewHolder>(ItemCallback()) {
     private companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -147,13 +157,21 @@ private class FilePickerAdapter(private val fragment: FilePickerFragment, privat
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         if (viewType == TYPE_HEADER) {
-            return HeaderHolder(inflater.inflate(R.layout.up_list_item,
-                                                 parent,
-                                                 false))
+            return HeaderHolder(
+                inflater.inflate(
+                    R.layout.up_list_item,
+                    parent,
+                    false
+                )
+            )
         }
-        return ItemHolder(inflater.inflate(R.layout.file_picker_fragment_list_item,
-                                           parent,
-                                           false))
+        return ItemHolder(
+            inflater.inflate(
+                R.layout.file_picker_fragment_list_item,
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -187,11 +205,12 @@ private class FilePickerAdapter(private val fragment: FilePickerFragment, privat
     private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var file: File
         val textView = itemView as TextView
-        val iconDrawable: Drawable = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            textView.compoundDrawables.first()
-        } else {
-            textView.compoundDrawablesRelative.first()
-        }
+        val iconDrawable: Drawable =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                textView.compoundDrawables.first()
+            } else {
+                textView.compoundDrawablesRelative.first()
+            }
 
         init {
             itemView.setOnClickListener {
@@ -205,7 +224,8 @@ private class FilePickerAdapter(private val fragment: FilePickerFragment, privat
     }
 }
 
-class FilePickerFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+class FilePickerFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
+    AndroidViewModel(application) {
     @Suppress("DEPRECATION")
     val currentDirectory by savedStateFlow(savedStateHandle) { Environment.getExternalStorageDirectory() }
 

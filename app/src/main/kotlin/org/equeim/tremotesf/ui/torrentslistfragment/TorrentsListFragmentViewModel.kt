@@ -45,7 +45,8 @@ import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
-class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application), Logger {
+class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
+    AndroidViewModel(application), Logger {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
@@ -110,18 +111,30 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val directoryFilter by savedStateFlow(savedStateHandle) { Settings.torrentsDirectoryFilter }
     val nameFilter by savedStateFlow(savedStateHandle) { "" }
 
-    private val filteredTorrents = combine(Rpc.torrents, statusFilterMode, trackerFilter, directoryFilter, nameFilter) { torrents, status, tracker, directory, name ->
+    private val filteredTorrents = combine(
+        Rpc.torrents,
+        statusFilterMode,
+        trackerFilter,
+        directoryFilter,
+        nameFilter
+    ) { torrents, status, tracker, directory, name ->
         torrents.asSequence().filter(createFilterPredicate(status, tracker, directory, name))
     }
     val torrents = combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
         torrents.sortedWith(createComparator(sortMode, sortOrder)).toList()
         // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
-    }.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(500), emptyList())
+    }.stateIn(
+        viewModelScope + Dispatchers.Default,
+        SharingStarted.WhileSubscribed(500),
+        emptyList()
+    )
 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
+
     data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean)
+
     val placeholderUpdateData = combine(Rpc.status, hasTorrents, ::PlaceholderUpdateData)
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
@@ -129,17 +142,19 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     init {
         Rpc.torrentAddDuplicateEvents
-                .onEach { showAddTorrentDuplicateError.value = true }
-                .launchIn(viewModelScope)
+            .onEach { showAddTorrentDuplicateError.value = true }
+            .launchIn(viewModelScope)
         Rpc.torrentAddErrorEvents
-                .onEach { showAddTorrentError.value = true }
-                .launchIn(viewModelScope)
+            .onEach { showAddTorrentError.value = true }
+            .launchIn(viewModelScope)
     }
 
-    private fun createFilterPredicate(statusFilterMode: StatusFilterMode,
-                                      trackerFilter: String,
-                                      directoryFilter: String,
-                                      nameFilter: String): (Torrent) -> Boolean {
+    private fun createFilterPredicate(
+        statusFilterMode: StatusFilterMode,
+        trackerFilter: String,
+        directoryFilter: String,
+        nameFilter: String
+    ): (Torrent) -> Boolean {
         return { torrent: Torrent ->
             statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
                     (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&

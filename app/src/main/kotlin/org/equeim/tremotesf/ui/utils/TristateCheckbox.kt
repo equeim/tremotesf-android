@@ -19,15 +19,13 @@
 
 package org.equeim.tremotesf.ui.utils
 
-import kotlin.properties.Delegates
-
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.AttrRes
-
 import androidx.appcompat.R
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.core.widget.CompoundButtonCompat
+import kotlin.properties.Delegates
 
 class TristateCheckbox @JvmOverloads constructor(
     context: Context,

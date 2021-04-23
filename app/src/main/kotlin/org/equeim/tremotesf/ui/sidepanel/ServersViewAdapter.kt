@@ -19,17 +19,16 @@
 
 package org.equeim.tremotesf.ui.sidepanel
 
-import java.util.Comparator
-
 import android.widget.AutoCompleteTextView
-
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
+import java.util.Comparator
 
 
-class ServersViewAdapter(textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+class ServersViewAdapter(textView: AutoCompleteTextView) :
+    AutoCompleteTextViewDynamicAdapter(textView) {
     lateinit var servers: List<Server>
         private set
 

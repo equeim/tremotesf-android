@@ -99,7 +99,8 @@ object Utils : Logger {
     fun setProgressBarColor(progressBar: ProgressBar) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             progressBar.context.withStyledAttributes(attrs = intArrayOf(R.attr.colorSecondary)) {
-                progressBar.progressDrawable.colorFilter = PorterDuffColorFilter(getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
+                progressBar.progressDrawable.colorFilter =
+                    PorterDuffColorFilter(getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
             }
         }
     }

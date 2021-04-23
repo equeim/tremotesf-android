@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
@@ -33,13 +32,17 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-class TorrentFilesAdapter(private val model: TorrentFilesFragmentViewModel,
-                          private val fragment: TorrentFilesFragment) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
+class TorrentFilesAdapter(
+    private val model: TorrentFilesFragmentViewModel,
+    private val fragment: TorrentFilesFragment
+) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
-            val binding = TorrentFileListItemBinding.inflate(LayoutInflater.from(parent.context),
-                                                             parent,
-                                                             false)
+            val binding = TorrentFileListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
             Utils.setProgressBarColor(binding.progressBar)
             return ItemHolder(this, selectionTracker, binding)
         }
@@ -52,25 +55,35 @@ class TorrentFilesAdapter(private val model: TorrentFilesFragmentViewModel,
 
     override fun navigateToRenameDialog(path: String, name: String) {
         val torrent = fragment.torrent ?: return
-        fragment.findNavController().safeNavigate(TorrentPropertiesFragmentDirections
-                                                          .toTorrentFileRenameDialog(path, name, torrent.id))
+        fragment.findNavController().safeNavigate(
+            TorrentPropertiesFragmentDirections
+                .toTorrentFileRenameDialog(path, name, torrent.id)
+        )
     }
 
-    private class ItemHolder(private val adapter: TorrentFilesAdapter,
-                             selectionTracker: SelectionTracker<Int>,
-                             val binding: TorrentFileListItemBinding) : BaseItemHolder(adapter, selectionTracker, binding.root) {
+    private class ItemHolder(
+        private val adapter: TorrentFilesAdapter,
+        selectionTracker: SelectionTracker<Int>,
+        val binding: TorrentFileListItemBinding
+    ) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()
             val item = adapter.getItem(bindingAdapterPosition)!!
             with(binding) {
                 progressBar.progress = (item.progress * 100).toInt()
                 val context = progressBar.context
-                progressTextView.text = context.getString(R.string.completed_string,
-                                                          Utils.formatByteSize(context,
-                                                                               item.completedSize),
-                                                          Utils.formatByteSize(context,
-                                                                               item.size),
-                                                          DecimalFormats.generic.format(item.progress * 100))
+                progressTextView.text = context.getString(
+                    R.string.completed_string,
+                    Utils.formatByteSize(
+                        context,
+                        item.completedSize
+                    ),
+                    Utils.formatByteSize(
+                        context,
+                        item.size
+                    ),
+                    DecimalFormats.generic.format(item.progress * 100)
+                )
             }
         }
     }

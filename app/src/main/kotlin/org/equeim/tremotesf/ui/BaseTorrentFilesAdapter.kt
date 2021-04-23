@@ -36,8 +36,10 @@ import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.TristateCheckbox
 
 
-abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
-                                       private val fragment: Fragment) : StateRestoringListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
+abstract class BaseTorrentFilesAdapter(
+    private val filesTree: TorrentFilesTree,
+    private val fragment: Fragment
+) : StateRestoringListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -47,11 +49,13 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         private set
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        selectionTracker = SelectionTracker.createForIntKeys(this,
-                                                             true,
-                                                             fragment,
-                                                             ::ActionModeCallback,
-                                                             R.plurals.files_selected) {
+        selectionTracker = SelectionTracker.createForIntKeys(
+            this,
+            true,
+            fragment,
+            ::ActionModeCallback,
+            R.plurals.files_selected
+        ) {
             getItem(it)?.nodePath?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
         }
     }
@@ -66,9 +70,13 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_HEADER) {
-            return HeaderHolder(LayoutInflater.from(parent.context).inflate(R.layout.up_list_item,
-                                                                            parent,
-                                                                            false))
+            return HeaderHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.up_list_item,
+                    parent,
+                    false
+                )
+            )
         }
         throw IllegalArgumentException()
     }
@@ -90,23 +98,31 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
     }
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
-        val nodeIndexes = selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+        val nodeIndexes =
+            selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
         filesTree.setItemsWanted(nodeIndexes, wanted)
     }
 
     private fun setSelectedItemsPriority(priority: TorrentFilesTree.Item.Priority) {
-        val nodeIndexes = selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+        val nodeIndexes =
+            selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
         filesTree.setItemsPriority(nodeIndexes, priority)
     }
 
     protected abstract fun navigateToRenameDialog(path: String, name: String)
 
     private class ItemCallback : DiffUtil.ItemCallback<TorrentFilesTree.Item?>() {
-        override fun areItemsTheSame(oldItem: TorrentFilesTree.Item, newItem: TorrentFilesTree.Item): Boolean {
+        override fun areItemsTheSame(
+            oldItem: TorrentFilesTree.Item,
+            newItem: TorrentFilesTree.Item
+        ): Boolean {
             return oldItem === newItem || oldItem.nodePath.contentEquals(newItem.nodePath)
         }
 
-        override fun areContentsTheSame(oldItem: TorrentFilesTree.Item, newItem: TorrentFilesTree.Item): Boolean {
+        override fun areContentsTheSame(
+            oldItem: TorrentFilesTree.Item,
+            newItem: TorrentFilesTree.Item
+        ): Boolean {
             return oldItem == newItem
         }
     }
@@ -121,11 +137,14 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         }
     }
 
-    protected abstract class BaseItemHolder(private val adapter: BaseTorrentFilesAdapter,
-                                            selectionTracker: SelectionTracker<Int>,
-                                            itemView: View) : SelectionTracker.ViewHolder<Int>(
-            selectionTracker,
-            itemView) {
+    protected abstract class BaseItemHolder(
+        private val adapter: BaseTorrentFilesAdapter,
+        selectionTracker: SelectionTracker<Int>,
+        itemView: View
+    ) : SelectionTracker.ViewHolder<Int>(
+        selectionTracker,
+        itemView
+    ) {
 
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
         private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
@@ -135,8 +154,11 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
             checkBox.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != -1) {
-                    with (adapter) {
-                        filesTree.setItemsWanted(listOf(getItem(position)!!.nodePath.last()), checkBox.isChecked)
+                    with(adapter) {
+                        filesTree.setItemsWanted(
+                            listOf(getItem(position)!!.nodePath.last()),
+                            checkBox.isChecked
+                        )
                     }
                 }
             }
@@ -169,7 +191,8 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) : SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+        SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
@@ -210,7 +233,8 @@ abstract class BaseTorrentFilesAdapter(private val filesTree: TorrentFilesTree,
                     TorrentFilesTree.Item.Priority.High -> highPriorityItem
                     TorrentFilesTree.Item.Priority.Mixed -> mixedPriorityItem
                 }!!.isChecked = true
-                mixedPriorityItem!!.isVisible = (first.priority == TorrentFilesTree.Item.Priority.Mixed)
+                mixedPriorityItem!!.isVisible =
+                    (first.priority == TorrentFilesTree.Item.Priority.Mixed)
                 renameItem!!.isEnabled = true
             } else {
                 downloadItem!!.isEnabled = true

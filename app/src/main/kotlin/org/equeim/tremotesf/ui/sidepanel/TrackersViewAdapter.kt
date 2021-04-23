@@ -30,8 +30,10 @@ import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 
-class TrackersViewAdapter(private val context: Context,
-                          textView: AutoCompleteTextView) : AutoCompleteTextViewDynamicAdapter(textView) {
+class TrackersViewAdapter(
+    private val context: Context,
+    textView: AutoCompleteTextView
+) : AutoCompleteTextViewDynamicAdapter(textView) {
     private val trackersMap = mutableMapOf<String, Int>()
     val trackers = mutableListOf<String>()
     private val comparator = AlphanumericComparator()

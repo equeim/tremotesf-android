@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-
 import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
@@ -33,17 +32,15 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
-
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
@@ -56,9 +53,11 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 
-class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties_fragment,
-                                                     0,
-                                                     R.menu.torrent_properties_fragment_menu), TorrentFileRenameDialogFragment.PrimaryFragment {
+class TorrentPropertiesFragment : NavigationFragment(
+    R.layout.torrent_properties_fragment,
+    0,
+    R.menu.torrent_properties_fragment_menu
+), TorrentFileRenameDialogFragment.PrimaryFragment {
     val args: TorrentPropertiesFragmentArgs by navArgs()
 
     var torrent: Torrent? = null
@@ -88,7 +87,8 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
-                    findFragment<TorrentFilesFragment>()?.model?.filesTree?.navigateUp() != true) {
+                findFragment<TorrentFilesFragment>()?.model?.filesTree?.navigateUp() != true
+            ) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -156,9 +156,25 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
                 R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
-                R.id.set_location -> navigate(TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(intArrayOf(torrent.id), torrent.downloadDirectory))
-                R.id.rename -> navigate(TorrentPropertiesFragmentDirections.toTorrentFileRenameDialog(torrent.name, torrent.name, torrent.id))
-                R.id.remove -> navigate(TorrentPropertiesFragmentDirections.toRemoveTorrentDialog(intArrayOf(torrent.id), true))
+                R.id.set_location -> navigate(
+                    TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
+                        intArrayOf(torrent.id),
+                        torrent.downloadDirectory
+                    )
+                )
+                R.id.rename -> navigate(
+                    TorrentPropertiesFragmentDirections.toTorrentFileRenameDialog(
+                        torrent.name,
+                        torrent.name,
+                        torrent.id
+                    )
+                )
+                R.id.remove -> navigate(
+                    TorrentPropertiesFragmentDirections.toRemoveTorrentDialog(
+                        intArrayOf(torrent.id),
+                        true
+                    )
+                )
                 R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
                 else -> return false
             }
@@ -174,7 +190,11 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         with(binding) {
             when (status.connectionState) {
                 RpcConnectionState.Disconnected -> {
-                    snackbar = requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
+                    snackbar = requireView().showSnackbar(
+                        "",
+                        Snackbar.LENGTH_INDEFINITE,
+                        R.string.connect
+                    ) {
                         snackbar = null
                         Rpc.nativeInstance.connect()
                     }
@@ -252,9 +272,9 @@ class TorrentPropertiesFragment : NavigationFragment(R.layout.torrent_properties
         with(binding) {
             if (torrent != null) {
                 (toolbar.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
-                                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                 tabLayout.visibility = View.VISIBLE
                 pager.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE

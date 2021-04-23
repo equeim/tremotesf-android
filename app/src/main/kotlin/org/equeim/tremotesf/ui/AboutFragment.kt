@@ -143,7 +143,8 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.translators).use {
-                AboutFragmentBaseTabFragmentBinding.bind(view).textView.text = it.reader().readText()
+                AboutFragmentBaseTabFragmentBinding.bind(view).textView.text =
+                    it.reader().readText()
             }
         }
     }
@@ -152,7 +153,9 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.license).use {
-                AboutFragmentLicenseTabFragmentBinding.bind(view).webView.loadData(it.reader().readText(), "text/html", null)
+                AboutFragmentLicenseTabFragmentBinding.bind(view).webView.loadData(
+                    it.reader().readText(), "text/html", null
+                )
             }
         }
     }

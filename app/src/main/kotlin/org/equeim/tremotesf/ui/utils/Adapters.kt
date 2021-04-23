@@ -35,17 +35,21 @@ import androidx.annotation.LayoutRes
 import org.equeim.tremotesf.R
 
 
-abstract class BaseDropdownAdapter(@LayoutRes private val resource: Int = R.layout.dropdown_menu_popup_item,
-                                   @IdRes private val textViewResourceId: Int = 0) : BaseAdapter(), Filterable {
+abstract class BaseDropdownAdapter(
+    @LayoutRes private val resource: Int = R.layout.dropdown_menu_popup_item,
+    @IdRes private val textViewResourceId: Int = 0
+) : BaseAdapter(), Filterable {
     protected open fun createViewHolder(view: View): BaseViewHolder = BaseViewHolder(view)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View
         val holder: BaseViewHolder
         if (convertView == null) {
-            view = LayoutInflater.from(parent.context).inflate(resource,
-                                                               parent,
-                                                               false)
+            view = LayoutInflater.from(parent.context).inflate(
+                resource,
+                parent,
+                false
+            )
             holder = createViewHolder(view)
             view.tag = holder
         } else {
@@ -81,7 +85,8 @@ class ArrayDropdownAdapter(private val objects: List<String>) : BaseDropdownAdap
     override fun getItem(position: Int) = objects[position]
 }
 
-abstract class AutoCompleteTextViewDynamicAdapter(private val textView: AutoCompleteTextView) : BaseDropdownAdapter() {
+abstract class AutoCompleteTextViewDynamicAdapter(private val textView: AutoCompleteTextView) :
+    BaseDropdownAdapter() {
     protected abstract fun getCurrentItem(): CharSequence
 
     override fun notifyDataSetChanged() {

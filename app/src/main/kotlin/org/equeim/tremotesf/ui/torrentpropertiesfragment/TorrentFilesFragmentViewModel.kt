@@ -38,7 +38,10 @@ import org.equeim.tremotesf.data.rpc.Torrent
 import java.util.LinkedHashSet
 import kotlin.properties.Delegates
 
-class TorrentFilesFragmentViewModel(torrent: Torrent?, private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class TorrentFilesFragmentViewModel(
+    torrent: Torrent?,
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
     enum class State {
         None,
         Loading,
@@ -109,7 +112,8 @@ class TorrentFilesFragmentViewModel(torrent: Torrent?, private val savedStateHan
                     }
                 }
                 State.Loading -> createTree(changedFiles)
-                else -> {}
+                else -> {
+                }
             }
         }
     }
@@ -120,13 +124,18 @@ class TorrentFilesFragmentViewModel(torrent: Torrent?, private val savedStateHan
     }
 }
 
-class RpcTorrentFilesTree(private val model: TorrentFilesFragmentViewModel, parentScope: CoroutineScope) : TorrentFilesTree(parentScope) {
+class RpcTorrentFilesTree(
+    private val model: TorrentFilesFragmentViewModel,
+    parentScope: CoroutineScope
+) : TorrentFilesTree(parentScope) {
     companion object {
         private fun Item.updatedFrom(rpcFile: TorrentFile): Item {
-            return copy(name = name,
-                        completedSize = rpcFile.completedSize,
-                        wantedState = Item.WantedState.fromBoolean(rpcFile.wanted),
-                        priority = fromTorrentFilePriority(rpcFile.priority))
+            return copy(
+                name = name,
+                completedSize = rpcFile.completedSize,
+                wantedState = Item.WantedState.fromBoolean(rpcFile.wanted),
+                priority = fromTorrentFilePriority(rpcFile.priority)
+            )
         }
 
         private fun fromTorrentFilePriority(priority: Int): Item.Priority {
@@ -174,12 +183,14 @@ class RpcTorrentFilesTree(private val model: TorrentFilesFragmentViewModel, pare
 
             for ((partIndex, part: String) in path.withIndex()) {
                 if (partIndex == lastPartIndex) {
-                    val node = currentNode.addFile(fileIndex,
-                                                   part,
-                                                   rpcFile.size,
-                                                   rpcFile.completedSize,
-                                                   Item.WantedState.fromBoolean(rpcFile.wanted),
-                                                   fromTorrentFilePriority(rpcFile.priority))
+                    val node = currentNode.addFile(
+                        fileIndex,
+                        part,
+                        rpcFile.size,
+                        rpcFile.completedSize,
+                        Item.WantedState.fromBoolean(rpcFile.wanted),
+                        fromTorrentFilePriority(rpcFile.priority)
+                    )
                     files.add(node)
                 } else {
                     var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)

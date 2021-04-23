@@ -110,19 +110,31 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             }
         }
 
-        fun addFile(id: Int,
-                    name: String,
-                    size: Long,
-                    completedSize: Long,
-                    wantedState: Item.WantedState,
-                    priority: Item.Priority): Node {
+        fun addFile(
+            id: Int,
+            name: String,
+            size: Long,
+            completedSize: Long,
+            wantedState: Item.WantedState,
+            priority: Item.Priority
+        ): Node {
             val path = this.path + children.size
             return addChild(Item(id, name, size, completedSize, wantedState, priority, path), path)
         }
 
         fun addDirectory(name: String = ""): Node {
             val path = this.path + children.size
-            return addChild(Item(-1, name, 0, 0, Item.WantedState.Wanted, Item.Priority.Normal, path), path)
+            return addChild(
+                Item(
+                    -1,
+                    name,
+                    0,
+                    0,
+                    Item.WantedState.Wanted,
+                    Item.Priority.Normal,
+                    path
+                ), path
+            )
         }
 
         private fun addChild(childItem: Item, path: IntArray): Node {
@@ -136,13 +148,15 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
     }
 
-    data class Item(val fileId: Int = -1,
-                    val name: String = "",
-                    var size: Long = 0,
-                    var completedSize: Long = 0,
-                    var wantedState: WantedState = WantedState.Wanted,
-                    var priority: Priority = Priority.Normal,
-                    val nodePath: IntArray = intArrayOf()) {
+    data class Item(
+        val fileId: Int = -1,
+        val name: String = "",
+        var size: Long = 0,
+        var completedSize: Long = 0,
+        var wantedState: WantedState = WantedState.Wanted,
+        var priority: Priority = Priority.Normal,
+        val nodePath: IntArray = intArrayOf()
+    ) {
         val isDirectory: Boolean
             get() = (fileId == -1)
 
@@ -234,8 +248,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @Volatile
     var rootNode = Node.createRootNode()
         private set
+
     @Volatile
     private var inited = false
+
     @Volatile
     protected var currentNode = rootNode
         private set
@@ -290,9 +306,11 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         _items.value = items
     }
 
-    private inline fun setItemsWantedOrPriority(nodeIndexes: List<Int>,
-                                                crossinline nodeAction: Node.(MutableList<Int>) -> Unit,
-                                                crossinline fileIdsAction: (IntArray) -> Unit) {
+    private inline fun setItemsWantedOrPriority(
+        nodeIndexes: List<Int>,
+        crossinline nodeAction: Node.(MutableList<Int>) -> Unit,
+        crossinline fileIdsAction: (IntArray) -> Unit
+    ) {
         if (!inited) return
         scope.launch {
             val ids = mutableListOf<Int>()
@@ -322,11 +340,17 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     }
 
     fun setItemsWanted(nodeIndexes: List<Int>, wanted: Boolean) {
-        setItemsWantedOrPriority(nodeIndexes, { setItemWantedRecursively(wanted, it) }, { onSetFilesWanted(it, wanted) })
+        setItemsWantedOrPriority(
+            nodeIndexes,
+            { setItemWantedRecursively(wanted, it) },
+            { onSetFilesWanted(it, wanted) })
     }
 
     fun setItemsPriority(nodeIndexes: List<Int>, priority: Item.Priority) = scope.launch {
-        setItemsWantedOrPriority(nodeIndexes, { setItemPriorityRecursively(priority, it) }, { onSetFilesPriority(it, priority) })
+        setItemsWantedOrPriority(
+            nodeIndexes,
+            { setItemPriorityRecursively(priority, it) },
+            { onSetFilesPriority(it, priority) })
     }
 
     fun getItemPath(item: Item): String? {
@@ -368,7 +392,11 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     protected open fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) = Unit
 
     @MainThread
-    fun init(rootNode: Node, savedStateHandle: SavedStateHandle, savedStateKey: String = SAVED_STATE_KEY) {
+    fun init(
+        rootNode: Node,
+        savedStateHandle: SavedStateHandle,
+        savedStateKey: String = SAVED_STATE_KEY
+    ) {
         this.rootNode = rootNode
         currentNode = rootNode
         inited = true
@@ -379,7 +407,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     }
 
     @MainThread
-    private fun restoreInstanceState(savedStateHandle: SavedStateHandle, savedStateKey: String): Boolean {
+    private fun restoreInstanceState(
+        savedStateHandle: SavedStateHandle,
+        savedStateKey: String
+    ): Boolean {
         val path = savedStateHandle.get<Bundle>(savedStateKey)?.getIntArray("") ?: return false
         val node: Node? = findNodeByPath(path.asSequence())
         navigateTo(node ?: rootNode)

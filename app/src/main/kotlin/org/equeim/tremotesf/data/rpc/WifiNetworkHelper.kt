@@ -214,7 +214,8 @@ object WifiNetworkHelper : Logger {
             val receiver = ConnectivityReceiver(channel)
             context.registerReceiver(
                 receiver,
-                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
             awaitClose {
                 info("observeActiveWifiNetworkV16: unregister receiver")
                 context.unregisterReceiver(receiver)
@@ -222,7 +223,8 @@ object WifiNetworkHelper : Logger {
         }.buffer(Channel.CONFLATED)
     }
 
-    private class ConnectivityReceiver(private val channel: SendChannel<Unit>) : BroadcastReceiver(), Logger {
+    private class ConnectivityReceiver(private val channel: SendChannel<Unit>) :
+        BroadcastReceiver(), Logger {
         override fun onReceive(context: Context, intent: Intent) {
             val networkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
