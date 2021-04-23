@@ -334,6 +334,8 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
+        private fun locationNeedsToBeEnabled() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
         private fun canRequestBackgroundLocationPermission() =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
     }
@@ -361,6 +363,8 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
     val locationEnabled: StateFlow<Boolean> by ::_locationEnabled
 
     private fun isLocationEnabled(): Boolean {
+        if (!locationNeedsToBeEnabled()) return true
+
         val locationManager = getApplication<Application>().getSystemService<LocationManager>()
         if (locationManager == null) {
             error("isLocationEnabled: LocationManager is null")
