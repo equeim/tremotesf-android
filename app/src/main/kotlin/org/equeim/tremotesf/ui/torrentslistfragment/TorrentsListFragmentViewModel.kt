@@ -111,16 +111,16 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val nameFilter by savedStateFlow(savedStateHandle) { "" }
 
     private val filteredTorrents = combine(Rpc.torrents, statusFilterMode, trackerFilter, directoryFilter, nameFilter) { torrents, status, tracker, directory, name ->
-        torrents.filter(createFilterPredicate(status, tracker, directory, name))
+        torrents.asSequence().filter(createFilterPredicate(status, tracker, directory, name))
     }
     val torrents = combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
-        torrents.sortedWith(createComparator(sortMode, sortOrder))
+        torrents.sortedWith(createComparator(sortMode, sortOrder)).toList()
         // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
     }.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(500), emptyList())
 
     val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
 
-    private val hasTorrents = filteredTorrents.map { it.isNotEmpty() }.distinctUntilChanged()
+    private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
     data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean)
     val placeholderUpdateData = combine(Rpc.status, hasTorrents, ::PlaceholderUpdateData)
 
