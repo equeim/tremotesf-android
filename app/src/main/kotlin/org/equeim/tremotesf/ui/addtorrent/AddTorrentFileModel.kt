@@ -47,6 +47,7 @@ import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.utils.Logger
+import java.util.concurrent.atomic.AtomicReference
 
 
 interface AddTorrentFileModel {
@@ -122,7 +123,16 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
     }
 
     override fun onCleared() {
-        fd?.close()
+        fd?.closeQuietly()
+    }
+
+    private fun AssetFileDescriptor.closeQuietly() {
+        try {
+            info("closeQuietly: closing file descriptor")
+            close()
+        } catch (e: Exception) {
+            error("closeQuietly: failed to close file descriptor", e)
+        }
     }
 
     private fun load() {
@@ -136,7 +146,8 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
     }
 
     override fun detachFd(): Int {
-        return fd!!.parcelFileDescriptor.detachFd().also {
+        info("detachFd() called")
+        return checkNotNull(fd).parcelFileDescriptor.detachFd().also {
             fd = null
         }
     }
@@ -164,41 +175,38 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
                                                   highPriorityFiles)
     }
 
-    private suspend fun doLoad(uri: Uri, context: Context) {
-        @Suppress("BlockingMethodInNonBlockingContext")
-        withContext(Dispatchers.IO) {
-            val fd = try {
-                context.contentResolver.openAssetFileDescriptor(uri, "r")
-            } catch (error: Exception) {
-                error("Failed to open file descriptor", error)
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
-                return@withContext
-            }
-            if (fd == null) {
-                error("File descriptor is null")
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
-                return@withContext
-            }
+    private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
+        val fd = try {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            context.contentResolver.openAssetFileDescriptor(uri, "r")
+        } catch (error: Exception) {
+            error("Failed to open file descriptor", error)
+            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            return@withContext
+        }
+        if (fd == null) {
+            error("File descriptor is null")
+            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            return@withContext
+        }
 
+        val fdAtomic = AtomicReference(fd)
+        try {
             val torrentFile = try {
                 TorrentFileParser.parse(fd.fileDescriptor)
             } catch (error: FileReadException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
-                fd.close()
                 return@withContext
             } catch (error: FileIsTooLargeException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
-                fd.close()
                 return@withContext
             } catch (error: FileParseException) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                fd.close()
                 return@withContext
             }
 
             if (torrentFile.info.files == null && torrentFile.info.length == null) {
                 parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                fd.close()
                 return@withContext
             }
 
@@ -206,11 +214,14 @@ class AddTorrentFileModelImpl(application: Application, private val savedStateHa
                 val (rootNode, files) = createTree(torrentFile.info)
                 withContext(Dispatchers.Main) {
                     this@AddTorrentFileModelImpl.fd = fd
+                    fdAtomic.set(null)
                     this@AddTorrentFileModelImpl.files = files
                     filesTree.init(rootNode, savedStateHandle)
                     parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
                 }
             }
+        } finally {
+            fdAtomic.get()?.closeQuietly()
         }
     }
 
