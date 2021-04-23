@@ -337,6 +337,8 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
         }
 
         private fun needLocationPermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        private fun needFineLocationPermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
         private fun locationNeedsToBeEnabled() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
         private fun canRequestBackgroundLocationPermission() =
@@ -350,7 +352,11 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
 
     val locationPermissionHelper = if (needLocationPermission()) {
         RuntimePermissionHelper(
-            Manifest.permission.ACCESS_FINE_LOCATION,
+            if (needFineLocationPermission()) {
+                Manifest.permission.ACCESS_FINE_LOCATION
+            } else {
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            },
             R.string.location_permission_rationale
         )
     } else {
