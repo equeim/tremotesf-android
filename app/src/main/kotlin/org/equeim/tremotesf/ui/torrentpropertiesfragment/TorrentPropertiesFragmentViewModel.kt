@@ -19,9 +19,9 @@
 
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
-import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.createViewModelLazy
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -36,10 +36,13 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.viewModelFactory
+import org.equeim.tremotesf.ui.utils.savedState
+import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
 import org.equeim.tremotesf.utils.Logger
 
-class TorrentPropertiesFragmentViewModel(val hashString: String) : ViewModel(), Logger {
+class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandle: SavedStateHandle) : ViewModel(), Logger {
+    var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
+
     private val _torrent = MutableStateFlow<Torrent?>(null)
     val torrent: StateFlow<Torrent?> by ::_torrent
 
@@ -84,9 +87,9 @@ class TorrentPropertiesFragmentViewModel(val hashString: String) : ViewModel(), 
         }
 
         private fun Fragment.factory(entry: NavBackStackEntry): ViewModelProvider.Factory {
-            return viewModelFactory {
+            return savedStateViewModelFactory { _, savedStateHandle ->
                 val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
-                TorrentPropertiesFragmentViewModel(args.hash)
+                TorrentPropertiesFragmentViewModel(args.hash, savedStateHandle)
             }
         }
 

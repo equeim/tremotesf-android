@@ -139,6 +139,15 @@ class TorrentPropertiesFragment : NavigationFragment(
         model.torrent.collectWhenStarted(viewLifecycleOwner, ::onTorrentChanged)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        with(binding.pager) {
+            if (isVisible) {
+                model.rememberedPagerItem = currentItem
+            }
+        }
+    }
+
     override fun onDestroyView() {
         menu = null
         startMenuItem = null
@@ -257,6 +266,11 @@ class TorrentPropertiesFragment : NavigationFragment(
                 tabLayout.visibility = View.VISIBLE
                 pager.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
+
+                if (model.rememberedPagerItem != -1) {
+                    pager.setCurrentItem(model.rememberedPagerItem, false)
+                    model.rememberedPagerItem = -1
+                }
             } else {
                 (toolbar.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags = 0
                 tabLayout.visibility = View.GONE
