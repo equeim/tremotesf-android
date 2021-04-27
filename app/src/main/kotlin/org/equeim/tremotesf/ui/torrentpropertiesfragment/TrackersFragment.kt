@@ -21,15 +21,15 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.view.View
-
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment) {
@@ -69,7 +69,8 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
             })
         }
 
-        update()
+        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+        propertiesFragmentModel.torrent.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     override fun onDestroyView() {
@@ -77,9 +78,8 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         super.onDestroyView()
     }
 
-    override fun update() {
+    private fun update(torrent: Torrent?) {
         trackersAdapter?.let { adapter ->
-            val torrent = torrentPropertiesFragment.torrent
             adapter.update(torrent)
             binding.placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
                 View.VISIBLE

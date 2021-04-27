@@ -64,7 +64,9 @@ class TorrentLimitsFragment :
         )
     }
 
-    private var torrent: Torrent? = null
+    private val propertiesFragmentModel by TorrentPropertiesFragmentViewModel.getLazy(this)
+    private val torrent: Torrent?
+        get() = propertiesFragmentModel.torrent.value
 
     private lateinit var priorityItemValues: Array<String>
     private lateinit var ratioLimitModeItemValues: Array<String>
@@ -155,14 +157,7 @@ class TorrentLimitsFragment :
         }
     }
 
-    override fun update() {
-        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent
-        this.torrent = torrent
-    }
-
     private fun updateView(restored: Boolean) {
-        update()
-
         val torrent = this.torrent ?: return
         val data = torrent.data
 

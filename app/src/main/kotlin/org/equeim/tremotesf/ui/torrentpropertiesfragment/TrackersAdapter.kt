@@ -30,7 +30,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.Tracker
@@ -271,14 +270,14 @@ class TrackersAdapter(
 }
 
 class EditTrackerDialogFragment : NavigationDialogFragment() {
-    private val args: EditTrackerDialogFragmentArgs by navArgs()
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val args = EditTrackerDialogFragmentArgs.fromBundle(requireArguments())
+
         val addingTrackers = (args.trackerId == -1)
 
         val onAccepted = { textField: TextView ->
-            val torrent =
-                (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent
+            val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+            val torrent = propertiesFragmentModel.torrent.value
             if (torrent != null) {
                 textField.text?.let { text ->
                     if (addingTrackers) {
@@ -319,9 +318,8 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
 }
 
 class RemoveTrackerDialogFragment : NavigationDialogFragment() {
-    private val args: RemoveTrackerDialogFragmentArgs by navArgs()
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val args = RemoveTrackerDialogFragmentArgs.fromBundle(requireArguments())
         return MaterialAlertDialogBuilder(requireContext())
             .setMessage(
                 resources.getQuantityString(
@@ -332,9 +330,9 @@ class RemoveTrackerDialogFragment : NavigationDialogFragment() {
             )
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
-                (parentFragmentManager.primaryNavigationFragment as? TorrentPropertiesFragment)?.torrent?.removeTrackers(
-                    args.ids
-                )
+                val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+                val torrent = propertiesFragmentModel.torrent.value
+                torrent?.removeTrackers(args.ids)
                 requiredActivity.actionMode?.finish()
             }
             .create()

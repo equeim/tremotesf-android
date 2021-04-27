@@ -78,7 +78,7 @@ import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.collectWhenStarted
 
 
-class NavigationActivity : AppCompatActivity(), Logger {
+class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
@@ -105,8 +105,7 @@ class NavigationActivity : AppCompatActivity(), Logger {
     var actionMode: ActionMode? = null
         private set
 
-    lateinit var navController: NavController
-        private set
+    override lateinit var navController: NavController
 
     lateinit var appBarConfiguration: AppBarConfiguration
         private set
@@ -339,10 +338,6 @@ class NavigationActivity : AppCompatActivity(), Logger {
     // destinationId must not refer to NavGraph
     fun isTopLevelDestination(@IdRes destinationId: Int): Boolean {
         return appBarConfiguration.topLevelDestinations.contains(destinationId)
-    }
-
-    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
-        navController.safeNavigate(directions, navOptions)
     }
 }
 

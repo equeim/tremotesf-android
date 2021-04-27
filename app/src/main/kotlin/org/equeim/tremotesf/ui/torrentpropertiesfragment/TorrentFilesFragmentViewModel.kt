@@ -24,9 +24,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,30 +38,19 @@ import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
+import org.equeim.tremotesf.utils.Logger
 import java.util.LinkedHashSet
-import kotlin.properties.Delegates
 
 class TorrentFilesFragmentViewModel(
-    torrent: Torrent?,
+    val torrent: StateFlow<Torrent?>,
     private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : ViewModel(), Logger {
     enum class State {
         None,
         Loading,
         CreatingTree,
         TreeCreated
-    }
-
-    var torrent by Delegates.observable<Torrent?>(null) { _, oldTorrent, torrent ->
-        if (torrent != oldTorrent) {
-            if (torrent == null) {
-                oldTorrent?.filesEnabled = false
-                reset()
-            } else if (oldTorrent == null) {
-                torrent.filesEnabled = true
-                _state.value = State.Loading
-            }
-        }
     }
 
     private val _state = MutableStateFlow(State.None)
@@ -67,11 +59,25 @@ class TorrentFilesFragmentViewModel(
     val filesTree = RpcTorrentFilesTree(this, viewModelScope)
 
     init {
-        this.torrent = torrent
+        info("constructor called")
+
+        torrent.hasTorrent().onEach {
+            if (it) {
+                info("Torrent appeared, setting filesEnabled to true")
+                torrent.value?.run {
+                    filesEnabled = true
+                    _state.value = State.Loading
+                }
+            } else {
+                info("Torrent disappeared, resetting")
+                reset()
+            }
+        }.launchIn(viewModelScope)
+
         viewModelScope.launch { Rpc.torrentFilesUpdatedEvents.collect(::onTorrentFilesUpdated) }
         viewModelScope.launch {
             Rpc.torrentFileRenamedEvents.collect { (torrentId, filePath, newName) ->
-                if (torrentId == torrent?.id) {
+                if (torrentId == torrent.value?.id) {
                     filesTree.renameFile(filePath, newName)
                 }
             }
@@ -92,7 +98,21 @@ class TorrentFilesFragmentViewModel(
         _state.value = State.TreeCreated
     }
 
+    override fun onCleared() {
+        info("onCleared() called")
+        destroy()
+    }
+
+    fun destroy() {
+        info("destroy() called")
+        viewModelScope.cancel()
+        reset()
+        filesTree.dispatcher.close()
+    }
+
     private fun reset() {
+        info("reset() called")
+        torrent.value?.filesEnabled = false
         if (state.value != State.None) {
             filesTree.reset()
             _state.value = State.None
@@ -101,7 +121,7 @@ class TorrentFilesFragmentViewModel(
 
     private fun onTorrentFilesUpdated(data: Rpc.TorrentFilesUpdatedData) {
         val (torrentId, changedFiles) = data
-        if (torrentId == torrent?.id) {
+        if (torrentId == torrent.value?.id) {
             when (state.value) {
                 State.TreeCreated -> {
                     if (filesTree.isEmpty && changedFiles.isNotEmpty()) {
@@ -116,11 +136,6 @@ class TorrentFilesFragmentViewModel(
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        torrent = null
-        filesTree.dispatcher.close()
     }
 }
 
@@ -164,11 +179,11 @@ class RpcTorrentFilesTree(
         get() = files.isEmpty()
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        model.torrent?.setFilesWanted(ids, wanted)
+        model.torrent.value?.setFilesWanted(ids, wanted)
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        model.torrent?.setFilesPriority(ids, priority.toTorrentFilePriority())
+        model.torrent.value?.setFilesPriority(ids, priority.toTorrentFilePriority())
     }
 
     fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {

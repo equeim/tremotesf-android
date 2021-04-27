@@ -65,14 +65,13 @@ open class NavigationFragment(
     @LayoutRes contentLayoutId: Int,
     @StringRes private val titleRes: Int = 0,
     @MenuRes private val toolbarMenuRes: Int = 0
-) : Fragment(contentLayoutId) {
+) : Fragment(contentLayoutId), NavControllerProvider {
     val activity: NavigationActivity?
         get() = super.getActivity() as NavigationActivity?
     val requiredActivity: NavigationActivity
         get() = super.requireActivity() as NavigationActivity
 
-    lateinit var navController: NavController
-        private set
+    override lateinit var navController: NavController
 
     @IdRes
     var destinationId = 0
@@ -201,10 +200,6 @@ open class NavigationFragment(
         toolbar = null
         navController.removeOnDestinationChangedListener(destinationListener)
         super.onDestroyView()
-    }
-
-    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
-        navController.safeNavigate(directions, navOptions)
     }
 
     fun showOverflowMenu(): Boolean {

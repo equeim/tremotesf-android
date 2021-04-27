@@ -22,31 +22,35 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.view.View
-
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.utils.collectWhenStarted
 
 
 class TorrentDetailsFragment :
     TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment) {
+
     private var firstUpdate = true
 
     private val binding by viewBinding(TorrentDetailsFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.hashTextView.text = (requireParentFragment() as TorrentPropertiesFragment).args.hash
+
+        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+
+        binding.hashTextView.text = propertiesFragmentModel.hashString
         firstUpdate = true
-        update()
+
+        propertiesFragmentModel.torrent.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    override fun update() {
-        view ?: return
-
-        val torrent = (requireParentFragment() as TorrentPropertiesFragment).torrent ?: return
+    private fun update(torrent: Torrent?) {
+        if (torrent == null) return
 
         if (!torrent.isChanged && !firstUpdate) return
 

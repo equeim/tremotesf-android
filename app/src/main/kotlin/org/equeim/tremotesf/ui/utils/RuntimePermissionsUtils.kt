@@ -32,6 +32,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.navArgs
@@ -42,7 +43,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationDialogFragment
-import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
 
@@ -56,7 +57,7 @@ class RuntimePermissionHelper(
     private val _permissionRequestResult = MutableEventFlow<Boolean>()
     val permissionRequestResult: Flow<Boolean> by ::_permissionRequestResult
 
-    fun registerWithFragment(fragment: NavigationFragment): ActivityResultLauncher<String> {
+    fun registerWithFragment(fragment: Fragment): ActivityResultLauncher<String> {
         val launcher =
             fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
                 _permissionGranted.value = granted
@@ -97,7 +98,7 @@ class RuntimePermissionHelper(
     }
 
     fun requestPermission(
-        fragment: NavigationFragment,
+        fragment: Fragment,
         launcher: ActivityResultLauncher<String>
     ) {
         if (checkPermission(fragment.requireContext())) {

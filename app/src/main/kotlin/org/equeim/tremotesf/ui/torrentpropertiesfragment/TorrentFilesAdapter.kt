@@ -21,15 +21,14 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
+import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 class TorrentFilesAdapter(
@@ -54,8 +53,8 @@ class TorrentFilesAdapter(
     }
 
     override fun navigateToRenameDialog(path: String, name: String) {
-        val torrent = fragment.torrent ?: return
-        fragment.findNavController().safeNavigate(
+        val torrent = fragment.model.torrent.value ?: return
+        fragment.navigate(
             TorrentPropertiesFragmentDirections
                 .toTorrentFileRenameDialog(path, name, torrent.id)
         )

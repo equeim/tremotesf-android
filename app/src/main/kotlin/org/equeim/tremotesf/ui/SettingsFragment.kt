@@ -26,7 +26,6 @@ import android.view.View
 
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -34,7 +33,6 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 class SettingsFragment : NavigationFragment(
@@ -51,7 +49,7 @@ class SettingsFragment : NavigationFragment(
             preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
             findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
-                    findNavController().safeNavigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
+                    navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
                     false
                 } else {
                     true

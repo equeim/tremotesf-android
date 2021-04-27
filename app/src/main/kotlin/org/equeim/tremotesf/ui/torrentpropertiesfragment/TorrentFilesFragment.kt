@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.ui.utils.savedStateViewModels
 import org.equeim.tremotesf.ui.utils.viewBinding
@@ -35,26 +34,16 @@ import org.equeim.tremotesf.utils.collectWhenStarted
 
 class TorrentFilesFragment :
     TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
-    private val torrentPropertiesFragment: TorrentPropertiesFragment
-        get() = requireParentFragment() as TorrentPropertiesFragment
 
     val model by savedStateViewModels { _, handle ->
         TorrentFilesFragmentViewModel(
-            torrentPropertiesFragment.torrent,
+            TorrentPropertiesFragmentViewModel.get(this).torrent,
             handle
         )
     }
 
-    var torrent: Torrent? = null
-        private set
-
     private val binding by viewBinding(TorrentFilesFragmentBinding::bind)
     private var adapter: TorrentFilesAdapter? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        torrent = model.torrent
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,7 +71,7 @@ class TorrentFilesFragment :
         model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
 
         Rpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
-            if (torrentId == torrent?.id) {
+            if (torrentId == model.torrent.value?.id) {
                 model.filesTree.renameFile(filePath, newName)
             }
         }
@@ -93,15 +82,8 @@ class TorrentFilesFragment :
         super.onDestroyView()
     }
 
-    override fun update() {
-        torrent = torrentPropertiesFragment.torrent
-        model.torrent = torrent
-    }
-
-    override fun onNavigatedFrom() {
-        with(model) {
-            torrent = null
-        }
+    override fun onNavigatedFromParent() {
+        model.destroy()
     }
 
     private fun updatePlaceholder(modelState: TorrentFilesFragmentViewModel.State) {

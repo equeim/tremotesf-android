@@ -29,21 +29,16 @@ import androidx.navigation.fragment.findNavController
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
-open class NavigationDialogFragment : AppCompatDialogFragment() {
+open class NavigationDialogFragment : AppCompatDialogFragment(), NavControllerProvider {
     val activity: NavigationActivity?
         get() = super.getActivity() as NavigationActivity?
     val requiredActivity: NavigationActivity
         get() = super.requireActivity() as NavigationActivity
 
-    lateinit var navController: NavController
-        private set
+    override lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navController = findNavController()
-    }
-
-    fun navigate(directions: NavDirections, navOptions: NavOptions? = null) {
-        navController.safeNavigate(directions, navOptions)
     }
 }

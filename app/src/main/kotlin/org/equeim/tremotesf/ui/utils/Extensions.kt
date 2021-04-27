@@ -45,6 +45,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
@@ -65,25 +66,29 @@ fun View.showSnackbar(
     message: CharSequence,
     length: Int,
     @StringRes actionText: Int = 0,
-    action: ((View) -> Unit)? = null
-): Snackbar {
-    val snackbar = Snackbar.make(this, message, length)
-    if (actionText == 0) {
-        snackbar.setAction("", action)
-    } else {
-        snackbar.setAction(actionText, action)
+    action: (() -> Unit)? = null,
+    onDismissed: (() -> Unit)? = null
+) = Snackbar.make(this, message, length).apply {
+    if (actionText != 8 && action != null) {
+        setAction(actionText) { action() }
     }
-    snackbar.show()
-    return snackbar
+    if (onDismissed != null) {
+        addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                onDismissed()
+            }
+        })
+    }
+    show()
 }
 
 fun View.showSnackbar(
     @StringRes message: Int,
     length: Int,
     @StringRes actionText: Int = 0,
-    action: ((View) -> Unit)? = null
-) =
-    showSnackbar(resources.getString(message), length, actionText, action)
+    action: (() -> Unit)? = null,
+    onDismissed: (() -> Unit)? = null
+) = showSnackbar(resources.getString(message), length, actionText, action, onDismissed)
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {

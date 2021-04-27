@@ -79,11 +79,13 @@ class ServerSettingsFragment : NavigationFragment(
     private fun updateView(status: Rpc.Status) {
         when (status.connectionState) {
             RpcConnectionState.Disconnected -> {
-                snackbar =
-                    requireView().showSnackbar("", Snackbar.LENGTH_INDEFINITE, R.string.connect) {
-                        snackbar = null
-                        Rpc.nativeInstance.connect()
-                    }
+                snackbar = requireView().showSnackbar(
+                    "",
+                    Snackbar.LENGTH_INDEFINITE,
+                    R.string.connect,
+                    action = { Rpc.nativeInstance.connect() },
+                    onDismissed = { snackbar = null }
+                )
                 binding.placeholder.text = status.statusString
 
                 hideKeyboard()
