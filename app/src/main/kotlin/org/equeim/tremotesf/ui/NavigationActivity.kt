@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -90,11 +91,13 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
             }
         }
 
-        fun finishAllActivities() {
-            for (activity in createdActivities) {
-                activity.finish()
+        fun finishAllActivities() = createdActivities.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                forEach(Activity::finishAndRemoveTask)
+            } else {
+                forEach(Activity::finishAffinity)
             }
-            createdActivities.clear()
+            clear()
         }
     }
 
