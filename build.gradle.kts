@@ -6,7 +6,7 @@ plugins {
 }
 
 val compileSdk: Int by extra(30)
-val ndk: String by extra("22.0.7026061")
+val ndk: String by extra("22.1.7171670")
 val minSdk: Int by extra(16)
 val targetSdk: Int by extra(compileSdk)
 
