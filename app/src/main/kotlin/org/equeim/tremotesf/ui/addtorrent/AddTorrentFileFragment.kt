@@ -74,7 +74,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
     R.layout.add_torrent_file_fragment,
     R.string.add_torrent_file,
     R.menu.add_torrent_fragment_menu
-), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
+), Logger {
     companion object {
         val SCHEMES = arrayOf(ContentResolver.SCHEME_FILE, ContentResolver.SCHEME_CONTENT)
 
@@ -174,6 +174,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 }
             }
         }
+
+        TorrentFileRenameDialogFragment.setFragmentResultListener(this) { (_, filePath, newName) ->
+            model.renamedFiles[filePath] = newName
+            model.filesTree.renameFile(filePath, newName)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -263,11 +268,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
             return true
         }
         return false
-    }
-
-    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
-        model.renamedFiles[filePath] = newName
-        model.filesTree.renameFile(filePath, newName)
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {

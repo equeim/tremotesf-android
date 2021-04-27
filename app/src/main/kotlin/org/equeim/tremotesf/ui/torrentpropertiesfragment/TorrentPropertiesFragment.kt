@@ -61,7 +61,7 @@ class TorrentPropertiesFragment : NavigationFragment(
     R.layout.torrent_properties_fragment,
     0,
     R.menu.torrent_properties_fragment_menu
-), TorrentFileRenameDialogFragment.PrimaryFragment {
+) {
     private val args: TorrentPropertiesFragmentArgs by navArgs()
 
     private val model by TorrentPropertiesFragmentViewModel.getLazy(this)
@@ -75,6 +75,11 @@ class TorrentPropertiesFragment : NavigationFragment(
     private var snackbar: Snackbar? = null
 
     private var pagerAdapter: PagerAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -191,10 +196,6 @@ class TorrentPropertiesFragment : NavigationFragment(
             else -> return false
         }
         return true
-    }
-
-    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
-        Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
     private fun showTorrentRemovedMessage() {

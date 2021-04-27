@@ -62,7 +62,7 @@ class TorrentsListFragment : NavigationFragment(
     R.layout.torrents_list_fragment,
     0,
     R.menu.torrents_list_fragment_menu
-), TorrentFileRenameDialogFragment.PrimaryFragment, Logger {
+), Logger {
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 
@@ -81,6 +81,8 @@ class TorrentsListFragment : NavigationFragment(
                     navigate(TorrentsListFragmentDirections.toAddTorrentFileFragment(it))
                 }
             }
+
+        TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -197,10 +199,6 @@ class TorrentsListFragment : NavigationFragment(
         torrentsAdapter = null
 
         super.onDestroyView()
-    }
-
-    override fun onRenameFile(torrentId: Int, filePath: String, newName: String) {
-        Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
     }
 
     private fun setupMenuItems() {
