@@ -94,6 +94,7 @@ namespace libtremotesf
                             bool start);
 
         void startTorrents(const QVariantList& ids);
+        void startTorrentsNow(const QVariantList& ids);
         void pauseTorrents(const QVariantList& ids);
         void removeTorrents(const QVariantList& ids, bool deleteFiles);
         void checkTorrents(const QVariantList& ids);

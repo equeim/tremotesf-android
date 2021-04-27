@@ -66,15 +66,10 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     private val model by TorrentPropertiesFragmentViewModel.getLazy(this)
 
-    val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)
-
     private var menu: Menu? = null
-    private var startMenuItem: MenuItem? = null
-    private var pauseMenuItem: MenuItem? = null
-
-    private var snackbar: Snackbar? = null
-
+    val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)
     private var pagerAdapter: PagerAdapter? = null
+    private var snackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,8 +78,10 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar?.title = args.name
-        setupToolbarMenu()
+        toolbar?.let {
+            it.title = args.name
+            menu = it.menu
+        }
 
         val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
@@ -150,12 +147,8 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     override fun onDestroyView() {
         menu = null
-        startMenuItem = null
-        pauseMenuItem = null
-        snackbar = null
-
         pagerAdapter = null
-
+        snackbar = null
         super.onDestroyView()
     }
 
@@ -167,20 +160,13 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
     }
 
-    private fun setupToolbarMenu() {
-        toolbar?.menu?.let { menu ->
-            this.menu = menu
-            startMenuItem = menu.findItem(R.id.start)
-            pauseMenuItem = menu.findItem(R.id.pause)
-        }
-    }
-
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         val torrent = model.torrent.value ?: return false
         when (menuItem.itemId) {
             R.id.start -> Rpc.nativeInstance.startTorrents(intArrayOf(torrent.id))
             R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
             R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
+            R.id.start_now -> Rpc.nativeInstance.startTorrentsNow(intArrayOf(torrent.id))
             R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
             R.id.set_location -> navigate(
                 TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
@@ -300,11 +286,12 @@ class TorrentPropertiesFragment : NavigationFragment(
                 TorrentData.Status.Errored -> true
                 else -> false
             }
+
             if (paused) {
-                pauseMenuItem
+                intArrayOf(R.id.pause)
             } else {
-                startMenuItem
-            }?.isVisible = false
+                intArrayOf(R.id.start, R.id.start_now)
+            }.forEach { menu.findItem(it).isVisible = false }
         }
     }
 

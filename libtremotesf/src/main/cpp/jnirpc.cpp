@@ -550,6 +550,11 @@ namespace libtremotesf
         runOnThread([=] { mRpc->startTorrents(ids); });
     }
 
+    void JniRpc::startTorrentsNow(const QVariantList& ids)
+    {
+        runOnThread([=] { mRpc->startTorrentsNow(ids); });
+    }
+
     void JniRpc::pauseTorrents(const QVariantList& ids)
     {
         runOnThread([=] { mRpc->pauseTorrents(ids); });

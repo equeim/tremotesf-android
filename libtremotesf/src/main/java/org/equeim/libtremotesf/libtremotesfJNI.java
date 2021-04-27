@@ -327,6 +327,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_addTorrentFile(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, int[] jarg4, int[] jarg5, int[] jarg6, long jarg7, StringMap jarg7_, int jarg8, boolean jarg9);
   public final static native void JniRpc_addTorrentLink(long jarg1, JniRpc jarg1_, String jarg2, String jarg3, int jarg4, boolean jarg5);
   public final static native void JniRpc_startTorrents(long jarg1, JniRpc jarg1_, int[] jarg2);
+  public final static native void JniRpc_startTorrentsNow(long jarg1, JniRpc jarg1_, int[] jarg2);
   public final static native void JniRpc_pauseTorrents(long jarg1, JniRpc jarg1_, int[] jarg2);
   public final static native void JniRpc_removeTorrents(long jarg1, JniRpc jarg1_, int[] jarg2, boolean jarg3);
   public final static native void JniRpc_checkTorrents(long jarg1, JniRpc jarg1_, int[] jarg2);

@@ -248,19 +248,9 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
 
     private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
-        private inner class MenuItems(
-            val startItem: MenuItem,
-            val pauseItem: MenuItem
-        )
-
-        private var menuItems: MenuItems? = null
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
-            menuItems = MenuItems(
-                menu.findItem(R.id.start),
-                menu.findItem(R.id.pause)
-            )
             return true
         }
 
@@ -273,15 +263,12 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                     TorrentData.Status.Errored -> true
                     else -> false
                 }
-                menuItems?.apply {
-                    startItem.isEnabled = startEnabled
-                    pauseItem.isEnabled = !startEnabled
+                for (id in intArrayOf(R.id.start, R.id.start_now)) {
+                    menu.findItem(id).isEnabled = startEnabled
                 }
+                menu.findItem(R.id.pause).isEnabled = !startEnabled
             } else {
-                menuItems?.apply {
-                    startItem.isEnabled = true
-                    pauseItem.isEnabled = true
-                }
+                menu.setGroupEnabled(0, true)
             }
 
             return true
@@ -300,6 +287,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 R.id.start -> Rpc.nativeInstance.startTorrents(getTorrentIds())
                 R.id.pause -> Rpc.nativeInstance.pauseTorrents(getTorrentIds())
                 R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
+                R.id.start_now -> Rpc.nativeInstance.startTorrentsNow(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
                     fragment.navigate(
@@ -334,11 +322,6 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             }
 
             return true
-        }
-
-        override fun onDestroyActionMode(mode: ActionMode) {
-            menuItems = null
-            super.onDestroyActionMode(mode)
         }
 
         private fun getFirstSelectedTorrent(): Torrent {

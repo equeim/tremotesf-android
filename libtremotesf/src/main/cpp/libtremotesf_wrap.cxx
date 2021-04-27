@@ -164,18 +164,6 @@ template <typename T> T SwigValueInit() {
 #endif
 
 
-/* Fix for jlong on some versions of gcc on Windows */
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
-  typedef long long __int64;
-#endif
-
-/* Fix for jlong on 64-bit x86 Solaris */
-#if defined(__x86_64)
-# ifdef _LP64
-#   undef _LP64
-# endif
-#endif
-
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6935,6 +6923,36 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1sta
   jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
   
   (arg1)->startTorrents((QVariantList const &)*arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1startTorrentsNow(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+  libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
+  QVariantList *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::JniRpc **)&jarg1; 
+  
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+    return ;
+  }
+  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
+  if (!arg2_pstr) return ;
+  jsize arg2_len = jenv->GetArrayLength(jarg2);
+  QVariantList arg2_str;
+  if (arg2_len) {
+    arg2_str.reserve(arg2_len);
+    for (jsize i = 0; i < arg2_len; ++i) {
+      arg2_str.push_back(arg2_pstr[i]);
+    }
+  }
+  arg2 = &arg2_str;
+  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
+  
+  (arg1)->startTorrentsNow((QVariantList const &)*arg2);
 }
 
 

@@ -87,6 +87,10 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_startTorrents(swigCPtr, this, ids);
   }
 
+  public void startTorrentsNow(int[] ids) {
+    libtremotesfJNI.JniRpc_startTorrentsNow(swigCPtr, this, ids);
+  }
+
   public void pauseTorrents(int[] ids) {
     libtremotesfJNI.JniRpc_pauseTorrents(swigCPtr, this, ids);
   }

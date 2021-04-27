@@ -15,6 +15,11 @@
         android:title="@string/share" />
 
     <item
+        android:id="@+id/start_now"
+        android:icon="@drawable/ic_fast_forward_24"
+        android:title="@string/start_now"/>
+
+    <item
         android:id="@+id/check"
         android:icon="@drawable/ic_find_in_page_24dp"
         android:title="@string/check_local_data"/>

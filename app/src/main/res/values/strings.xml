@@ -319,6 +319,7 @@
     </plurals>
 
     <string name="start">Start</string>
+    <string name="start_now">Start now</string>
     <string name="pause">Pause</string>
 
     <plurals name="remove_torrents_message">
