@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
