@@ -1,14 +1,20 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Automatic connection to servers when connecting to Wi-Fi networks
+- New menu item for torrents to force start them ("Start now" feature)
+
 ### Changed
 - Disabled APK ABI splitting
-- Supported OpenSSL version is fixed to 1.1.1j
-- Supported Qt versions are fixed to 5.15.2 and 5.12.10
+- OpenSSL and Qt are now set up as Git submodules
+- Use KDE's Qt 5.15 branch
+- NDK requirements: NDK r22b and CMake 3.18
 
 ### Fixed
 - Fixed opening file:// URIs on Android 10
 - Fixed setting alternative speed limits
+- Memory leaks
 
 ## [2.3.2] - 2021-02-06
 ### Fixed
