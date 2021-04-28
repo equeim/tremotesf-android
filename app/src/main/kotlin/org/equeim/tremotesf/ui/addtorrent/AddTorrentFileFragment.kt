@@ -191,7 +191,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (done ||
                 binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !model.filesTree.navigateUp()
             ) {

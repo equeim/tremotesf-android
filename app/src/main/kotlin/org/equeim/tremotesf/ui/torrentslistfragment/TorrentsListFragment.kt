@@ -221,7 +221,7 @@ class TorrentsListFragment : NavigationFragment(
             }
         })
 
-        requiredActivity.onBackPressedDispatcher.addCallback(this) {
+        requiredActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (searchMenuItem.isActionViewExpanded) {
                 searchMenuItem.collapseActionView()
             } else {

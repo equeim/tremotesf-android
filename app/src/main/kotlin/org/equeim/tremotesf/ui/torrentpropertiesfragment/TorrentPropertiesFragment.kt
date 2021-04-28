@@ -90,7 +90,7 @@ class TorrentPropertiesFragment : NavigationFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
                 findFragment<TorrentFilesFragment>()?.model?.filesTree?.navigateUp() != true
             ) {
