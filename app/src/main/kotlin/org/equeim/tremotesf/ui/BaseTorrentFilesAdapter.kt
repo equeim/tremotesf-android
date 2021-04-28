@@ -34,6 +34,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.TristateCheckbox
+import java.lang.ref.WeakReference
 
 
 abstract class BaseTorrentFilesAdapter(
@@ -53,7 +54,7 @@ abstract class BaseTorrentFilesAdapter(
             this,
             true,
             fragment,
-            ::ActionModeCallback,
+            { ActionModeCallback(this, it) },
             R.plurals.files_selected
         ) {
             getItem(it)?.nodePath?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
@@ -191,8 +192,11 @@ abstract class BaseTorrentFilesAdapter(
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+    private class ActionModeCallback(adapter: BaseTorrentFilesAdapter, selectionTracker: SelectionTracker<Int>) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+
+        private val adapter = WeakReference(adapter)
+
         private var downloadItem: MenuItem? = null
         private var notDownloadItem: MenuItem? = null
         private var lowPriorityItem: MenuItem? = null
@@ -216,14 +220,15 @@ abstract class BaseTorrentFilesAdapter(
         }
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            if (!selectionTracker.hasSelection) {
+            val selectionTracker = this.selectionTracker
+            if (selectionTracker?.hasSelection != true) {
                 return super.onPrepareActionMode(mode, menu)
             }
 
             super.onPrepareActionMode(mode, menu)
 
             if (selectionTracker.selectedCount == 1) {
-                val first = getItem(selectionTracker.getFirstSelectedPosition())!!
+                val first = adapter.get()?.getItem(selectionTracker.getFirstSelectedPosition())!!
                 val wanted = (first.wantedState == TorrentFilesTree.Item.WantedState.Wanted)
                 downloadItem!!.isEnabled = !wanted
                 notDownloadItem!!.isEnabled = wanted
@@ -263,20 +268,22 @@ abstract class BaseTorrentFilesAdapter(
                 return true
             }
 
-            when (item.itemId) {
-                R.id.download -> setSelectedItemsWanted(true)
-                R.id.not_download -> setSelectedItemsWanted(false)
-                R.id.high_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.High)
-                R.id.normal_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Normal)
-                R.id.low_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Low)
-                R.id.rename -> {
-                    val i = getItem(selectionTracker.getFirstSelectedPosition())!!
-                    filesTree.getItemPath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
+            return adapter.get()?.run {
+                var ret = true
+                when (item.itemId) {
+                    R.id.download -> setSelectedItemsWanted(true)
+                    R.id.not_download -> setSelectedItemsWanted(false)
+                    R.id.high_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.High)
+                    R.id.normal_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Normal)
+                    R.id.low_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Low)
+                    R.id.rename -> {
+                        val i = getItem(selectionTracker.getFirstSelectedPosition())!!
+                        filesTree.getItemPath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
+                    }
+                    else -> ret = false
                 }
-                else -> return false
-            }
-
-            return true
+                ret
+            } ?: false
         }
     }
 }

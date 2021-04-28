@@ -40,6 +40,7 @@ import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
+import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
@@ -91,8 +92,7 @@ data class TrackersAdapterItem(
 }
 
 class TrackersAdapter(
-    private val torrentPropertiesFragment: TorrentPropertiesFragment,
-    trackersFragment: TrackersFragment
+    private val fragment: TrackersFragment
 ) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
 
@@ -105,12 +105,12 @@ class TrackersAdapter(
             )
     }
 
-    private val context = trackersFragment.requireContext()
+    private val context = fragment.requireContext()
 
     private val selectionTracker = SelectionTracker.createForIntKeys(
         this,
         true,
-        trackersFragment,
+        fragment,
         ::ActionModeCallback,
         R.plurals.trackers_selected
     ) { getItem(it).id }
@@ -176,7 +176,7 @@ class TrackersAdapter(
     ) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
             val tracker = getItem(bindingAdapterPosition)
-            torrentPropertiesFragment.navigate(
+            fragment.navigate(
                 TorrentPropertiesFragmentDirections.toEditTrackerDialog(
                     tracker.id,
                     tracker.announce
@@ -243,8 +243,9 @@ class TrackersAdapter(
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+    private class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.trackers_context_menu, menu)
             return true
@@ -255,8 +256,10 @@ class TrackersAdapter(
                 return true
             }
 
+            val selectionTracker = this.selectionTracker ?: return false
+
             if (item.itemId == R.id.remove) {
-                torrentPropertiesFragment.navigate(
+                activity.navigate(
                     TorrentPropertiesFragmentDirections.toRemoveTrackerDialog(
                         selectionTracker.selectedKeys.toIntArray()
                     )

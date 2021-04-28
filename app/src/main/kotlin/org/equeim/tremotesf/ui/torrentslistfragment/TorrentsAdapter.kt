@@ -43,6 +43,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
+import java.lang.ref.WeakReference
 
 
 class TorrentsAdapter(private val fragment: TorrentsListFragment) :
@@ -51,7 +52,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         this,
         true,
         fragment,
-        ::ActionModeCallback,
+        { ActionModeCallback(this, it) },
         R.plurals.torrents_selected
     ) {
         getItem(it).id
@@ -246,8 +247,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         }
     }
 
-    private inner class ActionModeCallback(selectionTracker: SelectionTracker<Int>) :
+    private class ActionModeCallback(adapter: TorrentsAdapter, selectionTracker: SelectionTracker<Int>) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
+
+        private val adapter = WeakReference(adapter)
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             mode.menuInflater.inflate(R.menu.torrents_context_menu, menu)
@@ -257,8 +260,8 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             super.onPrepareActionMode(mode, menu)
 
-            if (selectionTracker.selectedCount == 1) {
-                val startEnabled = when (getFirstSelectedTorrent().status) {
+            if (selectionTracker?.selectedCount == 1) {
+                val startEnabled = when (adapter.get()?.getFirstSelectedTorrent()?.status) {
                     TorrentData.Status.Paused,
                     TorrentData.Status.Errored -> true
                     else -> false
@@ -279,6 +282,9 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 return true
             }
 
+            val selectionTracker = this.selectionTracker ?: return false
+            val adapter = this.adapter.get() ?: return false
+
             val getTorrentIds = {
                 selectionTracker.selectedKeys.toIntArray()
             }
@@ -290,16 +296,16 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 R.id.start_now -> Rpc.nativeInstance.startTorrentsNow(getTorrentIds())
                 R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
-                    fragment.navigate(
+                    activity.navigate(
                         TorrentsListFragmentDirections.toTorrentSetLocationDialog(
                             getTorrentIds(),
-                            getFirstSelectedTorrent().downloadDirectory
+                            adapter.getFirstSelectedTorrent().downloadDirectory
                         )
                     )
                 }
                 R.id.rename -> {
-                    val torrent = getFirstSelectedTorrent()
-                    fragment.navigate(
+                    val torrent = adapter.getFirstSelectedTorrent()
+                    activity.navigate(
                         TorrentsListFragmentDirections.toTorrentFileRenameDialog(
                             torrent.name,
                             torrent.name,
@@ -307,16 +313,16 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                         )
                     )
                 }
-                R.id.remove -> fragment.navigate(
+                R.id.remove -> activity.navigate(
                     TorrentsListFragmentDirections.toRemoveTorrentDialog(
                         getTorrentIds()
                     )
                 )
                 R.id.share -> {
                     val magnetLinks =
-                        currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
+                        adapter.currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
                             .map { it.data.magnetLink }
-                    Utils.shareTorrents(magnetLinks, fragment.requireContext())
+                    Utils.shareTorrents(magnetLinks, activity)
                 }
                 else -> return false
             }
@@ -324,7 +330,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             return true
         }
 
-        private fun getFirstSelectedTorrent(): Torrent {
+        private fun TorrentsAdapter.getFirstSelectedTorrent(): Torrent {
             return getItem(selectionTracker.getFirstSelectedPosition())
         }
     }

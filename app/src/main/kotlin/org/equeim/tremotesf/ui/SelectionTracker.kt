@@ -313,8 +313,12 @@ class SelectionTracker<K : Any> private constructor(
         }
     }
 
-    abstract class ActionModeCallback<K : Any>(protected val selectionTracker: SelectionTracker<K>) :
+    abstract class ActionModeCallback<K : Any>(selectionTracker: SelectionTracker<K>) :
         ActionMode.Callback {
+
+        private val _selectionTracker = WeakReference(selectionTracker)
+        protected val selectionTracker: SelectionTracker<K>?
+            get() = _selectionTracker.get()
         protected val activity = selectionTracker.activity
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
@@ -322,12 +326,12 @@ class SelectionTracker<K : Any> private constructor(
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
-            selectionTracker.clearSelection(false)
+            selectionTracker?.clearSelection(false)
         }
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
             if (item.itemId == R.id.select_all) {
-                selectionTracker.selectAll()
+                selectionTracker?.selectAll()
                 return true
             }
             return false

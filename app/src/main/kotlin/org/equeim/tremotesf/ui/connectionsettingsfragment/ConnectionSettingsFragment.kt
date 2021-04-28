@@ -177,6 +177,7 @@ class ConnectionSettingsFragment : NavigationFragment(
 
         private class ActionModeCallback(selectionTracker: SelectionTracker<String>) :
             SelectionTracker.ActionModeCallback<String>(selectionTracker) {
+
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
                 mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
                 return true
@@ -187,7 +188,7 @@ class ConnectionSettingsFragment : NavigationFragment(
                     return true
                 }
 
-                if (selectionTracker.hasSelection && item.itemId == R.id.remove) {
+                if (selectionTracker?.hasSelection == true && item.itemId == R.id.remove) {
                     activity.navigate(ConnectionSettingsFragmentDirections.toRemoveServerDialog())
                     return true
                 }
