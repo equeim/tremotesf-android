@@ -218,10 +218,6 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
     }
 
-    private companion object {
-        private val SAVED_STATE_KEY = TorrentFilesTree::class.simpleName!!
-    }
-
     protected val comparator = object : Comparator<Item?> {
         private val nameComparator = AlphanumericComparator()
 
@@ -244,6 +240,8 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return 1
         }
     }
+
+    private val savedStateKey = this::class.qualifiedName ?: TorrentFilesTree::class.qualifiedName!!
 
     @Volatile
     var rootNode = Node.createRootNode()
@@ -394,23 +392,19 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @MainThread
     fun init(
         rootNode: Node,
-        savedStateHandle: SavedStateHandle,
-        savedStateKey: String = SAVED_STATE_KEY
+        savedStateHandle: SavedStateHandle
     ) {
         this.rootNode = rootNode
         currentNode = rootNode
         inited = true
-        if (!restoreInstanceState(savedStateHandle, savedStateKey)) {
+        if (!restoreInstanceState(savedStateHandle)) {
             navigateTo(rootNode)
         }
         savedStateHandle.setSavedStateProvider(savedStateKey, ::saveInstanceState)
     }
 
     @MainThread
-    private fun restoreInstanceState(
-        savedStateHandle: SavedStateHandle,
-        savedStateKey: String
-    ): Boolean {
+    private fun restoreInstanceState(savedStateHandle: SavedStateHandle): Boolean {
         val path = savedStateHandle.get<Bundle>(savedStateKey)?.getIntArray("") ?: return false
         val node: Node? = findNodeByPath(path.asSequence())
         navigateTo(node ?: rootNode)
@@ -423,7 +417,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     }
 
     @MainThread
-    fun reset() {
+    open fun reset() {
         scope.coroutineContext.cancelChildren()
         rootNode = Node.createRootNode()
         currentNode = rootNode

@@ -93,8 +93,8 @@ class TorrentFilesFragmentViewModel(
         }
     }
 
-    fun treeCreated(rootNode: TorrentFilesTree.Node) {
-        filesTree.init(rootNode, savedStateHandle)
+    fun treeCreated(rootNode: TorrentFilesTree.Node, files: List<TorrentFilesTree.Node>) {
+        filesTree.init(rootNode, files, savedStateHandle)
         _state.value = State.TreeCreated
     }
 
@@ -186,6 +186,16 @@ class RpcTorrentFilesTree(
         model.torrent.value?.setFilesPriority(ids, priority.toTorrentFilePriority())
     }
 
+    @MainThread
+    fun init(
+        rootNode: Node,
+        files: List<Node>,
+        savedStateHandle: SavedStateHandle
+    ) {
+        init(rootNode, savedStateHandle)
+        this.files = files
+    }
+
     fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {
         val rootNode = Node.createRootNode()
         val files = mutableListOf<Node>()
@@ -221,21 +231,21 @@ class RpcTorrentFilesTree(
 
         rootNode.initiallyCalculateFromChildrenRecursively()
 
-        this@RpcTorrentFilesTree.files = files
         withContext(Dispatchers.Main) {
-            model.treeCreated(rootNode)
+            model.treeCreated(rootNode, files)
         }
     }
 
     fun updateTree(changedFiles: List<TorrentFile>) = scope.launch {
         if (changedFiles.isEmpty()) return@launch
 
+        val files = this@RpcTorrentFilesTree.files
         val recalculateNodes = LinkedHashSet<Node>()
 
         for (rpcFile in changedFiles) {
             if (!isActive) return@launch
 
-            val node = files[rpcFile.id]
+            val node = files.getOrNull(rpcFile.id) ?: continue
             node.item = node.item.updatedFrom(rpcFile)
 
             var n = rootNode
@@ -257,5 +267,10 @@ class RpcTorrentFilesTree(
         if (updateItems) {
             updateItemsWithSorting()
         }
+    }
+
+    override fun reset() {
+        super.reset()
+        files = emptyList()
     }
 }
