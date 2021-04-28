@@ -62,17 +62,17 @@ fun createTextFieldDialog(
 }
 
 
-inline fun <reified Binding : ViewBinding> createTextFieldDialog(
+fun <Binding : ViewBinding> createTextFieldDialog(
     context: Context,
     @StringRes title: Int?,
-    crossinline viewBindingFactory: ((LayoutInflater) -> Binding),
+    viewBindingFactory: ((LayoutInflater) -> Binding),
     @IdRes textFieldId: Int,
     @IdRes textFieldLayoutId: Int,
     hint: String,
     inputType: Int,
     defaultText: String?,
-    noinline onInflatedView: ((Binding) -> Unit)?,
-    noinline onAccepted: ((Binding) -> Unit)?
+    onInflatedView: ((Binding) -> Unit)?,
+    onAccepted: ((Binding) -> Unit)?
 ): AlertDialog {
     val builder = MaterialAlertDialogBuilder(context)
 

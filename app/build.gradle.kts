@@ -79,7 +79,7 @@ android {
     }
 
     buildTypes.named("release") {
-        isShrinkResources = false
+        isShrinkResources = true
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
 
@@ -100,7 +100,7 @@ android {
         }
     }
 
-    kotlinOptions{
+    kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
         useIR = true
     }
