@@ -25,12 +25,16 @@ Android remote GUI for transmission-daemon.
 - Client certificate authentication
 
 ## Build
-1. Download and install Android Studio 3.6. Download and install Android NDK (r19c or newer).
-2. [Download](https://www.openssl.org/source) latest OpenSSL 1.1.1 and unpack it to 3rdparty/openssl/openssl (removing version from directory name).
-3. [Download](http://download.qt.io/official_releases/qt/) Qt's qtbase submodule (5.12 or newer) and unpack it to 3rdparty/qt/qtbase.
-5. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK.
-6. Execute build-native.sh script from project root directory.
-7. Build APK in Android Studio.
+1. Clone Git repository:
+```sh
+git clone https://github.com/equeim/tremotesf-android.git
+cd tremotesf-android
+git submodule update --init
+```
+2. Download and install Android Studio 4.2. Download and install Android NDK (r19c or newer).
+3. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK.
+4. Execute build-native.sh script from project root directory (you can specify `-j` flag to pass to `make`). 
+5. Build APK in Android Studio.
 
 ## Translations
 Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
