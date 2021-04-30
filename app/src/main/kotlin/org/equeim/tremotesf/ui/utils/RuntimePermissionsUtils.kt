@@ -129,7 +129,7 @@ class RuntimePermissionHelper(
 
 class RuntimePermissionRationaleDialog : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val args by navArgs<RuntimePermissionRationaleDialogArgs>()
+        val args = RuntimePermissionRationaleDialogArgs.fromBundle(requireArguments())
         return MaterialAlertDialogBuilder(requireContext())
             .setMessage(args.permissionRationaleStringId)
             .setNegativeButton(android.R.string.cancel, null)
