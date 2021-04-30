@@ -444,4 +444,5 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
-</resources>
+
+    </resources>

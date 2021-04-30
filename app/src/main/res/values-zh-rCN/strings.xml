@@ -390,4 +390,5 @@
     <string-array name="proxy_type_items">
         <item>默认</item>
     </string-array>
-</resources>
+
+    </resources>

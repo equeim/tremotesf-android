@@ -307,6 +307,7 @@
     </plurals>
 
     <string name="start">Запустить</string>
+    <string name="start_now">Запустить сейчас</string>
     <string name="pause">Приостановить</string>
 
     <plurals name="remove_torrents_message">
@@ -469,4 +470,26 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
+
+    <string name="auto_connect_on_wifi_network">Автоматически подключаться к этому серверу при подключении к сети Wi-Fi</string>
+    <string name="wifi_ssid_hint">SSID Wi-Fi сети</string>
+    <string name="wifi_ssid_set_from_current">Установить из текущей Wi-Fi сети</string>
+    <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к местоположению</string>
+    <string name="request_location_permission">Запросить разрешение на доступ к местоположению</string>
+    <string name="background_wifi_networks_explanation_fdroid">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения либо предоставьте разрешение на фоновый доступ к местоположению</string>
+    <string name="background_wifi_networks_explanation_google">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
+    <string name="background_location_permission_rationale">Для получения информации о SSID Wi-Fi сети когда приложение находится в фоне, требуется разрешение на фоновый доступ к местоположению</string>
+    <string name="request_background_location_permission">Запросить разрешение на фоновый доступ к местоположению</string>
+    <string name="background_location_permission_granted">Разрешение на фоновый доступ к местоположению предоставлено</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">Пожалуйста, предоставьте разрешение из системных настроек</string>
+    <string name="go_to_settings">Перейти в настройки</string>
+
+    <string name="current_ssid_error">Не удалось получить SSID текущей Wi-Fi сети</string>
+
+    <string name="request_enable_location">Пожалуйста, включите определение местоположения в системных настройках</string>
+    <string name="enable_location">Включить местоположение</string>
+
+    <string name="storage_permission_rationale_torrent">Для открытия этого торрент-файла требуется разрешение на доступ к памяти</string>
+    <string name="storage_permission_rationale_file_picker">Для получения списка файлов требуется разрешение на доступ к памяти</string>
 </resources>

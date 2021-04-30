@@ -328,4 +328,5 @@
     <string-array name="proxy_type_items">
         <item>Mặc định</item>
     </string-array>
-</resources>
+
+    </resources>

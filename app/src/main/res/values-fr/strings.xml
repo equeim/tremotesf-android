@@ -446,4 +446,13 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
-</resources>
+
+    <string name="auto_connect_on_wifi_network">Se connecter automatiquement à ce serveur lors de la connexion au réseau Wi-Fi</string>
+    <string name="wifi_ssid_hint">SSID du réseau Wi-Fi</string>
+    <string name="wifi_ssid_set_from_current">Définir à partir du réseau Wi-Fi actuel</string>
+    <string name="background_wifi_networks_explanation_google">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, activez la notification persistante dans les paramètres de l\'application</string>
+    <string name="go_to_settings">Aller aux paramètres</string>
+
+    <string name="current_ssid_error">Le SSID du réseau Wi-Fi est inconnu</string>
+
+    </resources>
