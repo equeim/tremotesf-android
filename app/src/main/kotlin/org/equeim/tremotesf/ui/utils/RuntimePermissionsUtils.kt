@@ -146,16 +146,9 @@ class RuntimePermissionRationaleDialog : NavigationDialogFragment() {
 
 class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment(), Logger {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val args = RuntimePermissionRationaleDialogArgs.fromBundle(requireArguments())
         return MaterialAlertDialogBuilder(requireContext())
-            .apply {
-                val args by navArgs<RuntimePermissionRationaleDialogArgs>()
-                var msg =
-                    "${getText(args.permissionRationaleStringId)}\n\n${getText(R.string.runtime_permission_go_to_settings_rationale)}"
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    msg += "\n\n${requireContext().packageManager.backgroundPermissionOptionLabel}"
-                }
-                setMessage(msg)
-            }
+            .setMessage("${getText(args.permissionRationaleStringId)}\n\n${getText(R.string.runtime_permission_go_to_settings_rationale)}")
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.go_to_settings) { _, _ -> goToPermissionSettings() }
             .create()
