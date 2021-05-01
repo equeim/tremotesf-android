@@ -1,90 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/horizontal_edge_padding"
-    android:paddingVertical="@dimen/vertical_edge_padding">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/donations_description"/>
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:paddingHorizontal="@dimen/horizontal_edge_padding"
+        android:paddingVertical="@dimen/vertical_edge_padding">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/donations_paypal_title"
-                android:textAppearance="?textAppearanceSubtitle1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/donations_paypal_description" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/paypal_donate_button"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/horizontal_edge_padding"
-            android:layout_marginStart="@dimen/horizontal_edge_padding"
-            android:layout_gravity="center_vertical"
-            android:text="@string/donations_donate"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-        android:orientation="horizontal">
+            android:text="@string/donations_description"/>
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/donations_paypal_title"
+                    android:textAppearance="?textAppearanceSubtitle1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/donations_paypal_description" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/paypal_donate_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/donations_yandex_title"
-                android:textAppearance="?textAppearanceSubtitle1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/donations_paypal_description" />
+                android:layout_marginLeft="@dimen/horizontal_edge_padding"
+                android:layout_marginStart="@dimen/horizontal_edge_padding"
+                android:layout_gravity="center_vertical"
+                android:text="@string/donations_donate"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/yandex_donate_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/horizontal_edge_padding"
-            android:layout_marginStart="@dimen/horizontal_edge_padding"
-            android:layout_gravity="center_vertical"
-            android:text="@string/donations_donate"/>
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/donations_yandex_title"
+                    android:textAppearance="?textAppearanceSubtitle1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/donations_paypal_description" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/yandex_donate_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/horizontal_edge_padding"
+                android:layout_marginStart="@dimen/horizontal_edge_padding"
+                android:layout_gravity="center_vertical"
+                android:text="@string/donations_donate"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
