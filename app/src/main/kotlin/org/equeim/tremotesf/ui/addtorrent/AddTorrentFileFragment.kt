@@ -332,23 +332,17 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 placeholder.visibility = View.VISIBLE
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                    when (rpcStatus.connectionState) {
-                        RpcConnectionState.Disconnected -> {
-                            snackbar = requireView().showSnackbar(
-                                "",
-                                Snackbar.LENGTH_INDEFINITE,
-                                R.string.connect
-                            ) {
-                                snackbar = null
-                                Rpc.nativeInstance.connect()
-                            }
-                        }
-                        RpcConnectionState.Connecting -> {
-                            snackbar?.dismiss()
+                    if (rpcStatus.connectionState == RpcConnectionState.Disconnected) {
+                        snackbar = coordinatorLayout.showSnackbar(
+                            "",
+                            Snackbar.LENGTH_INDEFINITE,
+                            R.string.connect,
+                            Rpc.nativeInstance::connect,
+                        ) {
                             snackbar = null
                         }
-                        else -> {
-                        }
+                    } else {
+                        snackbar?.dismiss()
                     }
                 }
             }

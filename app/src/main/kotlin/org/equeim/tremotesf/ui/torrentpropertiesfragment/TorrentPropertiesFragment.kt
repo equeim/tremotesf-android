@@ -207,11 +207,10 @@ class TorrentPropertiesFragment : NavigationFragment(
                 "",
                 Snackbar.LENGTH_INDEFINITE,
                 R.string.connect,
-                action = { Rpc.nativeInstance.connect() },
-                onDismissed = { snackbar = null }
-            )
-        } else {
-            snackbar = null
+                Rpc.nativeInstance::connect
+            ) {
+                snackbar = null
+            }
         }
 
         binding.progressBar.isVisible = connectionState == RpcConnectionState.Connecting
