@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.4.0] - 2021-05-02
 ### Added
 - Automatic connection to servers when connecting to Wi-Fi networks
 - New menu item for torrents to force start them ("Start now" feature)
