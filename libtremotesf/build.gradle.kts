@@ -1,15 +1,9 @@
+import org.equeim.tremotesf.Versions
+
 plugins {
+    id("org.equeim.tremotesf")
     id("com.android.library")
 }
-
-class Versions(rootProject: Project) {
-    val compileSdk: Int by rootProject.extra
-    val ndk: String by rootProject.extra
-    val minSdk: Int by rootProject.extra
-    val targetSdk: Int by rootProject.extra
-}
-val vers = Versions(rootProject)
-
 
 class QtInfo(rootProject: Project) {
     val dir = rootProject.file("3rdparty/qt")
@@ -17,7 +11,7 @@ class QtInfo(rootProject: Project) {
     val hasAbiSuffix: Boolean
 
     init {
-        val jarDirNew = dir.resolve("install-api${vers.minSdk}/jar")
+        val jarDirNew = dir.resolve("install-api${Versions.minSdk}/jar")
         if (jarDirNew.isDirectory) {
             jarDir = jarDirNew
             hasAbiSuffix = true
@@ -30,12 +24,12 @@ class QtInfo(rootProject: Project) {
 val qtInfo = QtInfo(rootProject)
 
 android {
-    compileSdk = vers.compileSdk
-    ndkVersion = vers.ndk
+    compileSdk = Versions.compileSdk
+    ndkVersion = Versions.ndk
 
     defaultConfig {
-        minSdk = vers.minSdk
-        targetSdk = vers.targetSdk
+        minSdk = Versions.minSdk
+        targetSdk = Versions.targetSdk
         consumerProguardFile("consumer-rules.pro")
         externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_DIR=${qtInfo.dir}", "-DQT_HAS_ABI_SUFFIX=${qtInfo.hasAbiSuffix}")
         buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "${qtInfo.hasAbiSuffix}")

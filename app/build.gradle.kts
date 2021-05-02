@@ -1,7 +1,9 @@
 import java.util.Properties
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.equeim.tremotesf.Versions
 
 plugins {
+    id("org.equeim.tremotesf")
     id("com.android.application")
     kotlin("android")
     kotlin("plugin.parcelize")
@@ -9,38 +11,6 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("com.github.ben-manes.versions")
 }
-
-class Versions(rootProject: Project) {
-    val compileSdk: Int by rootProject.extra
-    val ndk: String by rootProject.extra
-    val minSdk: Int by rootProject.extra
-    val targetSdk: Int by rootProject.extra
-
-    val kotlinxCoroutines = "1.4.3"
-    val kotlinxSerialization = "1.1.0"
-
-    class AndroidX(gradle: Gradle) {
-        val appcompat = "1.2.0"
-        val concurrentFutures = "1.1.0"
-        val core = "1.3.2"
-        val coordinatorlayout = "1.1.0"
-        val drawerlayout = "1.1.1"
-        val fragment = "1.3.3"
-        val gridlayout = "1.0.0"
-        val lifecycle = "2.3.1"
-        val navigation: String by (gradle as ExtensionAware).extra
-        val recyclerview = "1.2.0"
-        val preference = "1.1.1"
-        val viewpager2 = "1.0.0"
-        val work = "2.5.0"
-    }
-    val androidX = AndroidX(rootProject.gradle)
-
-    val material = "1.3.0"
-    val fastscroll = "2.0.1"
-    val billing = "3.0.3"
-}
-val vers = Versions(rootProject)
 
 class KeystoreProperties(rootProject: Project) {
     private val properties = Properties().apply {
@@ -58,13 +28,13 @@ val keystoreProperties = try {
 }
 
 android {
-    compileSdk = vers.compileSdk
-    ndkVersion = vers.ndk
+    compileSdk = Versions.compileSdk
+    ndkVersion = Versions.ndk
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
-        minSdk = vers.minSdk
-        targetSdk = vers.targetSdk
+        minSdk = Versions.minSdk
+        targetSdk = Versions.targetSdk
         versionCode = 4041
         versionName = "2.4.2"
     }
@@ -139,35 +109,35 @@ dependencies {
     implementation(project(":libtremotesf"))
     implementation("org.equeim:kotlinx-serialization-bencode")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${vers.kotlinxCoroutines}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${vers.kotlinxSerialization}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
-    implementation("androidx.appcompat:appcompat:${vers.androidX.appcompat}")
-    implementation("androidx.concurrent:concurrent-futures:${vers.androidX.concurrentFutures}")
-    implementation("androidx.core:core:${vers.androidX.core}")
-    implementation("androidx.core:core-ktx:${vers.androidX.core}")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:${vers.androidX.coordinatorlayout}")
-    implementation("androidx.drawerlayout:drawerlayout:${vers.androidX.drawerlayout}")
-    implementation("androidx.fragment:fragment:${vers.androidX.fragment}")
-    implementation("androidx.fragment:fragment-ktx:${vers.androidX.fragment}")
-    implementation("androidx.gridlayout:gridlayout:${vers.androidX.gridlayout}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${vers.androidX.lifecycle}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${vers.androidX.lifecycle}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${vers.androidX.lifecycle}")
-    implementation("androidx.lifecycle:lifecycle-service:${vers.androidX.lifecycle}")
-    implementation("androidx.lifecycle:lifecycle-common-java8:${vers.androidX.lifecycle}")
-    implementation("androidx.navigation:navigation-fragment-ktx:${vers.androidX.navigation}")
-    implementation("androidx.navigation:navigation-ui-ktx:${vers.androidX.navigation}")
-    implementation("androidx.recyclerview:recyclerview:${vers.androidX.recyclerview}")
-    implementation("androidx.preference:preference:${vers.androidX.preference}")
-    implementation("androidx.viewpager2:viewpager2:${vers.androidX.viewpager2}")
-    implementation("androidx.work:work-runtime:${vers.androidX.work}")
+    implementation("androidx.appcompat:appcompat:${Versions.AndroidX.appcompat}")
+    implementation("androidx.concurrent:concurrent-futures:${Versions.AndroidX.concurrentFutures}")
+    implementation("androidx.core:core:${Versions.AndroidX.core}")
+    implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:${Versions.AndroidX.coordinatorlayout}")
+    implementation("androidx.drawerlayout:drawerlayout:${Versions.AndroidX.drawerlayout}")
+    implementation("androidx.fragment:fragment:${Versions.AndroidX.fragment}")
+    implementation("androidx.fragment:fragment-ktx:${Versions.AndroidX.fragment}")
+    implementation("androidx.gridlayout:gridlayout:${Versions.AndroidX.gridlayout}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${Versions.AndroidX.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.AndroidX.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.AndroidX.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-service:${Versions.AndroidX.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-common-java8:${Versions.AndroidX.lifecycle}")
+    implementation("androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigation}")
+    implementation("androidx.navigation:navigation-ui-ktx:${Versions.AndroidX.navigation}")
+    implementation("androidx.recyclerview:recyclerview:${Versions.AndroidX.recyclerview}")
+    implementation("androidx.preference:preference:${Versions.AndroidX.preference}")
+    implementation("androidx.viewpager2:viewpager2:${Versions.AndroidX.viewpager2}")
+    implementation("androidx.work:work-runtime:${Versions.AndroidX.work}")
 
-    implementation("com.google.android.material:material:${vers.material}")
+    implementation("com.google.android.material:material:${Versions.material}")
 
-    implementation("com.l4digital.fastscroll:fastscroll:${vers.fastscroll}")
+    implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
-    "googleImplementation"("com.android.billingclient:billing-ktx:${vers.billing}")
+    "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
 }
 
 object DependencyVersionChecker {

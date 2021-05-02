@@ -14,3 +14,4 @@
 /3rdparty/openssl/install
 /3rdparty/qt/build-*
 /3rdparty/qt/install-*
+/gradle-plugin/build
