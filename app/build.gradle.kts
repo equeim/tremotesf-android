@@ -137,7 +137,7 @@ repositories {
 
 dependencies {
     implementation(project(":libtremotesf"))
-    implementation(project(":bencode"))
+    implementation("org.equeim:kotlinx-serialization-bencode")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${vers.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${vers.kotlinxSerialization}")

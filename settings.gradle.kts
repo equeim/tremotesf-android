@@ -8,7 +8,6 @@ pluginManagement {
         kotlin("android") version(kotlin)
         kotlin("plugin.parcelize") version(kotlin)
         kotlin("plugin.serialization") version(kotlin)
-        kotlin("multiplatform") version(kotlin)
         id("com.github.ben-manes.versions") version(versions)
     }
     resolutionStrategy {
@@ -25,4 +24,5 @@ pluginManagement {
     }
 }
 
-include(":app", ":libtremotesf", ":bencode")
+includeBuild("bencode")
+include(":app", ":libtremotesf")
