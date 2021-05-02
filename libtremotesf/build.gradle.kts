@@ -57,5 +57,5 @@ repositories {
 }
 
 dependencies {
-    api(files(qtInfo.jarDir.resolve("QtAndroid.jar")))
+    implementation(files(qtInfo.jarDir.resolve("QtAndroid.jar")))
 }
