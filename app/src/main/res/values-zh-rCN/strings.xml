@@ -389,6 +389,8 @@
 
     <string-array name="proxy_type_items">
         <item>默认</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
     </string-array>
 
     </resources>

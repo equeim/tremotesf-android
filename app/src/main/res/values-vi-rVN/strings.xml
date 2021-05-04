@@ -101,11 +101,13 @@
     <string-array name="ratio_limit_mode">
         <item>Sử dụng cài đặt chung</item>
         <item>Seed bất kể tỉ lệ</item>
+        <item>@string/stop_seeding_at_ratio</item>
     </string-array>
 
     <string-array name="idle_seeding_mode">
         <item>Sử dụng cài đặt chung</item>
         <item>Seed bất kể tỉ lệ</item>
+        <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
     <string name="maximum_peers">Số lượng peer tối đa</string>
@@ -188,6 +190,7 @@
     <string name="encryption">Mã hóa</string>
     <string-array name="encryption_items">
         <item>Cho phép</item>
+        <item>Prefer</item>
         <item>Bắt buộc</item>
     </string-array>
     <string name="enable_utp">Kích hoạt µTP</string>
@@ -312,6 +315,7 @@
     <string name="theme_auto_q">Mặc định của hệ thống</string>
 
     <string-array name="prefs_theme_entries">
+        <item translatable="false">@string/theme_auto</item>
         <item>Tối</item>
         <item>Sáng</item>
     </string-array>
@@ -327,6 +331,8 @@
 
     <string-array name="proxy_type_items">
         <item>Mặc định</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
     </string-array>
 
     </resources>
