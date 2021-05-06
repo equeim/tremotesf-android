@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
-import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.AppForegroundTracker
@@ -22,7 +22,7 @@ import org.equeim.tremotesf.utils.Logger
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
-object GlobalServers : Servers(Application.instance) {
+object GlobalServers : Servers(TremotesfApplication.instance) {
     private val saveData = AtomicReference<SaveData>()
 
     override fun setRpc(rpc: Rpc) {

@@ -26,7 +26,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
-import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.utils.enumFromInt
@@ -41,7 +41,7 @@ private const val DONATE_DIALOG_SHOWN = "donateDialogShown"
 
 @SuppressLint("StaticFieldLeak")
 object Settings {
-    private val context = Application.instance
+    private val context = TremotesfApplication.instance
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 

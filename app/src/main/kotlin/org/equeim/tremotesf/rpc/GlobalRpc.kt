@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.TorrentData
-import org.equeim.tremotesf.Application
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
 object GlobalRpc : Rpc(GlobalServers) {
-    private val context = Application.instance
+    private val context = TremotesfApplication.instance
 
     private val updateWorkerCompleter =
         AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
@@ -247,44 +247,50 @@ object GlobalRpc : Rpc(GlobalServers) {
 }
 
 val Rpc.Status.statusString: String
-    get() = when (connectionState) {
-        RpcConnectionState.Disconnected -> when (error.error) {
-            RpcError.NoError -> Application.instance.getString(R.string.disconnected)
-            RpcError.TimedOut -> Application.instance.getString(R.string.timed_out)
-            RpcError.ConnectionError -> Application.instance.getString(R.string.connection_error)
-            RpcError.AuthenticationError -> Application.instance.getString(R.string.authentication_error)
-            RpcError.ParseError -> Application.instance.getString(R.string.parsing_error)
-            RpcError.ServerIsTooNew -> Application.instance.getString(R.string.server_is_too_new)
-            RpcError.ServerIsTooOld -> Application.instance.getString(R.string.server_is_too_old)
-            else -> Application.instance.getString(R.string.disconnected)
+    get() {
+        val context = TremotesfApplication.instance
+        return when (connectionState) {
+            RpcConnectionState.Disconnected -> when (error.error) {
+                RpcError.NoError -> context.getString(R.string.disconnected)
+                RpcError.TimedOut -> context.getString(R.string.timed_out)
+                RpcError.ConnectionError -> context.getString(R.string.connection_error)
+                RpcError.AuthenticationError -> context.getString(R.string.authentication_error)
+                RpcError.ParseError -> context.getString(R.string.parsing_error)
+                RpcError.ServerIsTooNew -> context.getString(R.string.server_is_too_new)
+                RpcError.ServerIsTooOld -> context.getString(R.string.server_is_too_old)
+                else -> context.getString(R.string.disconnected)
+            }
+            RpcConnectionState.Connecting -> context.getString(R.string.connecting)
+            RpcConnectionState.Connected -> context.getString(R.string.connected)
+            else -> context.getString(R.string.disconnected)
         }
-        RpcConnectionState.Connecting -> Application.instance.getString(R.string.connecting)
-        RpcConnectionState.Connected -> Application.instance.getString(R.string.connected)
-        else -> Application.instance.getString(R.string.disconnected)
     }
 
 val Torrent.statusString: String
-    get() = when (status) {
-        TorrentData.Status.Paused -> Application.instance.getString(R.string.torrent_paused)
-        TorrentData.Status.Downloading -> Application.instance.resources.getQuantityString(
-            R.plurals.torrent_downloading,
-            seeders,
-            seeders
-        )
-        TorrentData.Status.StalledDownloading -> Application.instance.getString(R.string.torrent_downloading_stalled)
-        TorrentData.Status.Seeding -> Application.instance.resources.getQuantityString(
-            R.plurals.torrent_seeding,
-            leechers,
-            leechers
-        )
-        TorrentData.Status.StalledSeeding -> Application.instance.getString(R.string.torrent_seeding_stalled)
-        TorrentData.Status.QueuedForDownloading,
-        TorrentData.Status.QueuedForSeeding -> Application.instance.getString(R.string.torrent_queued)
-        TorrentData.Status.Checking -> Application.instance.getString(
-            R.string.torrent_checking,
-            DecimalFormats.generic.format(recheckProgress * 100)
-        )
-        TorrentData.Status.QueuedForChecking -> Application.instance.getString(R.string.torrent_queued_for_checking)
-        TorrentData.Status.Errored -> errorString
-        else -> ""
+    get() {
+        val context = TremotesfApplication.instance
+        return when (status) {
+            TorrentData.Status.Paused -> context.getString(R.string.torrent_paused)
+            TorrentData.Status.Downloading -> context.resources.getQuantityString(
+                R.plurals.torrent_downloading,
+                seeders,
+                seeders
+            )
+            TorrentData.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
+            TorrentData.Status.Seeding -> context.resources.getQuantityString(
+                R.plurals.torrent_seeding,
+                leechers,
+                leechers
+            )
+            TorrentData.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
+            TorrentData.Status.QueuedForDownloading,
+            TorrentData.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
+            TorrentData.Status.Checking -> context.getString(
+                R.string.torrent_checking,
+                DecimalFormats.generic.format(recheckProgress * 100)
+            )
+            TorrentData.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
+            TorrentData.Status.Errored -> errorString
+            else -> ""
+        }
     }
