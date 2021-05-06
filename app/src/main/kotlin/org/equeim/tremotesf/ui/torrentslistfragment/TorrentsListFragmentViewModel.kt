@@ -43,11 +43,10 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.savedStateFlow
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.dropTrailingPathSeparator
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
-    AndroidViewModel(application), Logger {
+    AndroidViewModel(application) {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {

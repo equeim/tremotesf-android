@@ -28,9 +28,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
-object AppForegroundTracker : Logger {
+object AppForegroundTracker {
     val hasStartedActivity = MutableStateFlow(false)
     val foregroundServiceStarted = MutableStateFlow(false)
 
@@ -43,9 +43,9 @@ object AppForegroundTracker : Logger {
         appInForeground
             .onEach { inForeground ->
                 if (inForeground) {
-                    info("App is in foreground")
+                    Timber.i("App is in foreground")
                 } else {
-                    info("App is in background")
+                    Timber.i("App is in background")
                 }
             }
             .launchIn(scope)

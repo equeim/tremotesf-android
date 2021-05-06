@@ -25,7 +25,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
@@ -35,7 +34,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,13 +42,13 @@ import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.navigate
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
+import timber.log.Timber
 
 class RuntimePermissionHelper(
     private val permission: String,
     @StringRes private val permissionRationaleStringId: Int
-) : Logger {
+) {
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
 
@@ -63,10 +61,10 @@ class RuntimePermissionHelper(
                 _permissionGranted.value = granted
                 _permissionRequestResult.tryEmit(granted)
                 if (granted) {
-                    info("Permission $permission granted")
+                    Timber.i("Permission $permission granted")
                 } else {
-                    info("Permission $permission not granted")
-                    info("Showing rationale for going to permission settings")
+                    Timber.i("Permission $permission not granted")
+                    Timber.i("Showing rationale for going to permission settings")
                     fragment.navigate(
                         NavMainDirections.toRuntimePermissionSystemSettingsDialog(
                             permissionRationaleStringId
@@ -83,17 +81,17 @@ class RuntimePermissionHelper(
     }
 
     fun checkPermission(context: Context): Boolean {
-        info("Checking permission $permission")
+        Timber.i("Checking permission $permission")
         if (ContextCompat.checkSelfPermission(
                 context,
                 permission
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            info("Permission is already granted")
+            Timber.i("Permission is already granted")
             _permissionGranted.value = true
             return true
         }
-        info("Permission is not granted")
+        Timber.i("Permission is not granted")
         return false
     }
 
@@ -106,7 +104,7 @@ class RuntimePermissionHelper(
             return
         }
         if (fragment.shouldShowRequestPermissionRationale(permission)) {
-            info("Showing rationale for requesting permission")
+            Timber.i("Showing rationale for requesting permission")
             fragment.navigate(
                 NavMainDirections.toRuntimePermissionRationaleDialog(
                     permissionRationaleStringId
@@ -118,11 +116,11 @@ class RuntimePermissionHelper(
     }
 
     private fun requestPermission(launcher: ActivityResultLauncher<String>) {
-        info("Requesting permission $permission from system")
+        Timber.i("Requesting permission $permission from system")
         try {
             launcher.launch(permission)
         } catch (e: ActivityNotFoundException) {
-            error("Failed to start activity", e)
+            Timber.e(e, "Failed to start activity")
         }
     }
 }
@@ -144,7 +142,7 @@ class RuntimePermissionRationaleDialog : NavigationDialogFragment() {
     }
 }
 
-class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment(), Logger {
+class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val args = RuntimePermissionRationaleDialogArgs.fromBundle(requireArguments())
         return MaterialAlertDialogBuilder(requireContext())
@@ -155,7 +153,7 @@ class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment(), Logger
     }
 
     private fun goToPermissionSettings() {
-        info("Going to application's permission settings activity")
+        Timber.i("Going to application's permission settings activity")
         val intent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", requireContext().packageName, null)
@@ -163,7 +161,7 @@ class RuntimePermissionSystemSettingsDialog : NavigationDialogFragment(), Logger
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            error("Failed to start activity", e)
+            Timber.e(e, "Failed to start activity")
         }
     }
 }

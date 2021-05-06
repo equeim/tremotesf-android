@@ -138,6 +138,8 @@ dependencies {
 
     implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
+    implementation("com.jakewharton.timber:timber:${Versions.timber}")
+
     "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
 }
 

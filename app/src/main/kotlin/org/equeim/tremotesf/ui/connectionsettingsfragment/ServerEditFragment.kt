@@ -61,19 +61,19 @@ import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
 class ServerEditFragment : NavigationFragment(
     R.layout.server_edit_fragment,
     0,
     R.menu.server_edit_fragment_menu
-), Logger {
+) {
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
@@ -165,7 +165,7 @@ class ServerEditFragment : NavigationFragment(
                 backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_fdroid)
 
                 backgroundLocationPermissionHelper.permissionGranted.onEach { granted ->
-                    info("background granted = $granted")
+                    Timber.i("background granted = $granted")
                     backgroundLocationPermissionButton.apply {
                         if (granted) {
                             setIconResource(R.drawable.ic_done_24dp)
@@ -236,7 +236,7 @@ class ServerEditFragment : NavigationFragment(
     }
 
     override fun onStart() {
-        info("onStart() called")
+        Timber.i("onStart() called")
         super.onStart()
         with(model) {
             locationPermissionHelper?.checkPermission(requireContext())
@@ -338,7 +338,7 @@ class ServerEditFragment : NavigationFragment(
 }
 
 class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
-    AndroidViewModel(application), Logger {
+    AndroidViewModel(application) {
     companion object {
         fun from(fragment: NavigationFragment, serverName: String?): ServerEditFragmentViewModel {
             val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
@@ -394,14 +394,14 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
 
         val locationManager = getApplication<Application>().getSystemService<LocationManager>()
         if (locationManager == null) {
-            error("isLocationEnabled: LocationManager is null")
+            Timber.e("isLocationEnabled: LocationManager is null")
             return false
         }
         if (LocationManagerCompat.isLocationEnabled(locationManager)) {
-            info("isLocationEnabled: location is enabled")
+            Timber.i("isLocationEnabled: location is enabled")
             return true
         }
-        info("isLocationEnabled: location is disabled")
+        Timber.i("isLocationEnabled: location is disabled")
         return false
     }
 
@@ -410,7 +410,7 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
     }
 }
 
-class EnableLocationDialog : NavigationDialogFragment(), Logger {
+class EnableLocationDialog : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
             .setMessage(R.string.request_enable_location)
@@ -420,11 +420,11 @@ class EnableLocationDialog : NavigationDialogFragment(), Logger {
     }
 
     private fun goToLocationSettings() {
-        info("Going to system location settings activity")
+        Timber.i("Going to system location settings activity")
         try {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
         } catch (e: ActivityNotFoundException) {
-            error("Failed to start activity", e)
+            Timber.e(e, "Failed to start activity")
         }
     }
 }

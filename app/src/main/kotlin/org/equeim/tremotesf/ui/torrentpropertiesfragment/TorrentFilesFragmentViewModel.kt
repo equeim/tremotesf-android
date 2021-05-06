@@ -41,13 +41,13 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.util.LinkedHashSet
 
 class TorrentFilesFragmentViewModel(
     val torrent: StateFlow<Torrent?>,
     private val savedStateHandle: SavedStateHandle
-) : ViewModel(), Logger {
+) : ViewModel() {
     enum class State {
         None,
         Loading,
@@ -61,17 +61,17 @@ class TorrentFilesFragmentViewModel(
     val filesTree = RpcTorrentFilesTree(this, viewModelScope)
 
     init {
-        info("constructor called")
+        Timber.i("constructor called")
 
         torrent.hasTorrent().onEach {
             if (it) {
-                info("Torrent appeared, setting filesEnabled to true")
+                Timber.i("Torrent appeared, setting filesEnabled to true")
                 torrent.value?.run {
                     filesEnabled = true
                     _state.value = State.Loading
                 }
             } else {
-                info("Torrent disappeared, resetting")
+                Timber.i("Torrent disappeared, resetting")
                 reset()
             }
         }.launchIn(viewModelScope)
@@ -101,19 +101,19 @@ class TorrentFilesFragmentViewModel(
     }
 
     override fun onCleared() {
-        info("onCleared() called")
+        Timber.i("onCleared() called")
         destroy()
     }
 
     fun destroy() {
-        info("destroy() called")
+        Timber.i("destroy() called")
         viewModelScope.cancel()
         reset()
         filesTree.dispatcher.close()
     }
 
     private fun reset() {
-        info("reset() called")
+        Timber.i("reset() called")
         torrent.value?.filesEnabled = false
         if (state.value != State.None) {
             filesTree.reset()

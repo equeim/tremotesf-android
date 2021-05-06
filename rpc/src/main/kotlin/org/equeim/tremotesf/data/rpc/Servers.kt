@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.data.rpc
 
 import android.content.Context
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +27,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
@@ -40,7 +39,7 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val context: Context) : Logger {
+abstract class Servers(protected val context: Context) {
     private var rpc: Rpc? = null
 
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
@@ -78,25 +77,25 @@ abstract class Servers(protected val context: Context) : Logger {
                 context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
             val saveData = Json.decodeFromString(SaveData.serializer(), fileData)
             for (server in saveData.servers) {
-                info("Reading server $server")
+                Timber.i("Reading server $server")
                 if (server.name.isBlank()) {
-                    error("Server's name is empty, skip")
+                    Timber.e("Server's name is empty, skip")
                     continue
                 }
                 if (server.port !in Server.portRange) {
-                    error("Server's port is not in range, set default")
+                    Timber.e("Server's port is not in range, set default")
                     server.port = Server.DEFAULT_PORT
                 }
                 if (server.apiPath.isEmpty()) {
-                    error("Server's API path can't be empty, set default")
+                    Timber.e("Server's API path can't be empty, set default")
                     server.apiPath = Server.DEFAULT_API_PATH
                 }
                 if (server.updateInterval !in Server.updateIntervalRange) {
-                    error("Server's update interval is not in range, set default")
+                    Timber.e("Server's update interval is not in range, set default")
                     server.updateInterval = Server.DEFAULT_UPDATE_INTERVAL
                 }
                 if (server.timeout !in Server.timeoutRange) {
-                    error("Server's timeout is not in range, set default")
+                    Timber.e("Server's timeout is not in range, set default")
                     server.timeout = Server.DEFAULT_TIMEOUT
                 }
                 servers.add(server)
@@ -110,23 +109,23 @@ abstract class Servers(protected val context: Context) : Logger {
                 save()
             }
         } catch (error: FileNotFoundException) {
-            info("Error opening servers file", error)
+            Timber.e(error, "Error opening servers file")
         } catch (error: IOException) {
-            error("Error reading servers file", error)
+            Timber.e(error, "Error reading servers file")
         } catch (error: SerializationException) {
-            error("Error deserializing servers file", error)
+            Timber.e(error, "Error deserializing servers file")
         }
     }
 
     @MainThread
     fun save() {
-        info("save() called")
+        Timber.i("save() called")
         val currentServer = currentServer.value
         val servers = servers.value
 
         val rpc = this.rpc
         if (rpc?.isConnected?.value == true) {
-            info("save: updating last torrents")
+            Timber.i("save: updating last torrents")
             currentServer?.lastTorrents = Server.LastTorrents(true, rpc.torrents.value.map {
                 Server.Torrent(
                     it.id,
@@ -135,9 +134,9 @@ abstract class Servers(protected val context: Context) : Logger {
                     it.isFinished
                 )
             })
-            info("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size}")
+            Timber.i("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size}")
         } else {
-            info("save: disconnected, not updating last torrents")
+            Timber.i("save: disconnected, not updating last torrents")
         }
 
         save(SaveData(
@@ -168,15 +167,15 @@ abstract class Servers(protected val context: Context) : Logger {
                     )
                 }
                 if (!temp.renameTo(context.getFileStreamPath(FILE_NAME))) {
-                    error("Failed to rename temp file")
+                    Timber.e("Failed to rename temp file")
                 }
             } catch (error: IOException) {
-                error("Failed to save servers file", error)
+                Timber.e(error, "Failed to save servers file")
             } catch (error: SerializationException) {
-                error("Failed to serialize servers", error)
+                Timber.e(error, "Failed to serialize servers")
             }
         }
-        info("doSave: elapsed time = $elapsed ms")
+        Timber.i("doSave: elapsed time = $elapsed ms")
     }
 
     fun addServer(newServer: Server) {
@@ -241,30 +240,30 @@ abstract class Servers(protected val context: Context) : Logger {
 
     @MainThread
     fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { wifiNetworkController.currentWifiSsid }): Boolean {
-        info("setCurrentServerFromWifiNetwork() called")
+        Timber.i("setCurrentServerFromWifiNetwork() called")
 
         val ssid by ssidLazy
 
         for (server in servers.value) {
             if (server.autoConnectOnWifiNetworkEnabled) {
                 if (ssid == null) {
-                    info("setCurrentServerFromWifiNetwork: SSID is null")
+                    Timber.i("setCurrentServerFromWifiNetwork: SSID is null")
                     return false
                 }
                 if (server.autoConnectOnWifiNetworkSSID == ssid) {
-                    info("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
+                    Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
                     if (server != currentServer.value) {
-                        info("setCurrentServerFromWifiNetwork: setting current server")
+                        Timber.i("setCurrentServerFromWifiNetwork: setting current server")
                         setCurrentServer(server)
                         return true
                     } else {
-                        info("setCurrentServerFromWifiNetwork: current server is already the same")
+                        Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
                         return false
                     }
                 }
             }
         }
-        info("setCurrentServerFromWifiNetwork: no matching servers found")
+        Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
         return false
     }
 }

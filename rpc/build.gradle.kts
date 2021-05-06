@@ -61,4 +61,6 @@ dependencies {
     implementation("androidx.concurrent:concurrent-futures:${Versions.AndroidX.concurrentFutures}")
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
     implementation("androidx.work:work-runtime:${Versions.AndroidX.work}")
+
+    implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }

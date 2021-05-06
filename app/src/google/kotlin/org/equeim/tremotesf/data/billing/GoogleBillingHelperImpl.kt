@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 import org.equeim.tremotesf.BuildConfig
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
+import timber.log.Timber
 
 @Suppress("FunctionName")
 fun GoogleBillingHelper(context: Context, coroutineScope: CoroutineScope): GoogleBillingHelper =
@@ -34,8 +34,7 @@ private class GoogleBillingHelperImpl(
 ) :
     GoogleBillingHelper,
     BillingClientStateListener,
-    PurchasesUpdatedListener,
-    Logger {
+    PurchasesUpdatedListener {
     companion object {
         private val skuIds = listOf(
             "tremotesf.1",
@@ -74,7 +73,7 @@ private class GoogleBillingHelperImpl(
     private var skuDetails: List<SkuDetails>? = null
 
     init {
-        info("init")
+        Timber.i("init")
         billingClient.startConnection(this)
     }
 
@@ -99,12 +98,12 @@ private class GoogleBillingHelperImpl(
     }
 
     override fun endConnection() {
-        info("endConnection")
+        Timber.i("endConnection")
         billingClient.endConnection()
     }
 
     override fun onBillingSetupFinished(result: BillingResult) {
-        info("onBillingSetupFinished result=${resultToString(result)}")
+        Timber.i("onBillingSetupFinished result=${resultToString(result)}")
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
             val consume = billingClient
                 .queryPurchases(BillingClient.SkuType.INAPP)
@@ -123,7 +122,7 @@ private class GoogleBillingHelperImpl(
     }
 
     override fun onBillingServiceDisconnected() {
-        info("onBillingServiceDisconnected")
+        Timber.i("onBillingServiceDisconnected")
         skuDetails = null
         skus = emptyList()
         isSetUp.value = false
@@ -178,9 +177,9 @@ private class GoogleBillingHelperImpl(
         }
     }
 
-    override fun debug(msg: String, tr: Throwable?) {
+    private fun debug(msg: String, tr: Throwable? = null) {
         if (BuildConfig.DEBUG) {
-            super.debug(msg, tr)
+            Timber.d(tr, msg)
         }
     }
 }

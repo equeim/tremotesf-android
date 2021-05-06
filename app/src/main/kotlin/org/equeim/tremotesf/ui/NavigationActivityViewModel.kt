@@ -28,18 +28,17 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
 import org.equeim.tremotesf.ui.utils.savedState
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) :
-    AndroidViewModel(application), Logger {
+    AndroidViewModel(application) {
     var navigatedInitially by savedState(savedStateHandle, false)
 
     data class AddTorrentDirections(@IdRes val destinationId: Int, val arguments: Bundle)
@@ -62,7 +61,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
 
     fun getInitialDeepLinkIntent(intent: Intent): Intent? {
         if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
-            warn("getInitialDeepLinkIntent: activity was launched from history, return null")
+            Timber.w("getInitialDeepLinkIntent: activity was launched from history, return null")
             return null
         }
 
@@ -81,7 +80,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                     deepLinkIntent = createDeepLinkIntent(R.id.donate_dialog, null, intent)
                 }
             } else {
-                info("getInitialDeepLinkIntent: we are not on our own task, return null")
+                Timber.i("getInitialDeepLinkIntent: we are not on our own task, return null")
             }
         }
         return deepLinkIntent
@@ -124,7 +123,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                 flags = originalIntent.flags
                 // Prevent NavController from recreating activity if its intent doesn't have FLAG_ACTIVITY_CLEAR_TASK
                 if ((flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0 && (flags and Intent.FLAG_ACTIVITY_CLEAR_TASK) == 0) {
-                    warn("createDeepLinkIntent: add FLAG_ACTIVITY_CLEAR_TASK")
+                    Timber.w("createDeepLinkIntent: add FLAG_ACTIVITY_CLEAR_TASK")
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
             }

@@ -36,15 +36,15 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
 class AddTorrentLinkFragment : AddTorrentFragment(
     R.layout.add_torrent_link_fragment,
     R.string.add_torrent_link,
     R.menu.add_torrent_fragment_menu
-), Logger {
+) {
     companion object {
         val SCHEMES = arrayOf("magnet")
     }
@@ -60,7 +60,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        info("onCreate: arguments = $arguments")
+        Timber.i("onCreate: arguments = $arguments")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

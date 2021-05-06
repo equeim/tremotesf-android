@@ -32,7 +32,7 @@ import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
@@ -57,7 +57,7 @@ object GlobalRpc : Rpc(GlobalServers) {
                     }
                     RpcConnectionState.Disconnected -> {
                         if (disconnectingAfterCurrentServerChanged.compareAndSet(true, false)) {
-                            info("Disconnected after current server changed")
+                            Timber.i("Disconnected after current server changed")
                         } else {
                             handleWorkerCompleter()
                         }
@@ -92,7 +92,7 @@ object GlobalRpc : Rpc(GlobalServers) {
 
     @MainThread
     private fun onAppForegroundStateChanged(inForeground: Boolean) {
-        info("onAppForegroundStateChanged() called with: inForeground = $inForeground")
+        Timber.i("onAppForegroundStateChanged() called with: inForeground = $inForeground")
         if (inForeground) {
             connectOnce()
             cancelUpdateWorker()
@@ -104,10 +104,10 @@ object GlobalRpc : Rpc(GlobalServers) {
 
     @MainThread
     private fun enqueueUpdateWorker() {
-        info("enqueueUpdateWorker() called")
+        Timber.i("enqueueUpdateWorker() called")
         val interval = Settings.backgroundUpdateInterval
         if (interval > 0 && notificationsController.isTorrentNotificationsEnabled(false)) {
-            info("enqueueUpdateWorker: enqueueing worker, interval = $interval minutes")
+            Timber.i("enqueueUpdateWorker: enqueueing worker, interval = $interval minutes")
             val constraints =
                 Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
             val request =
@@ -121,21 +121,21 @@ object GlobalRpc : Rpc(GlobalServers) {
                 request
             ).state.observeForever { state ->
                 if (state !is Operation.State.IN_PROGRESS) {
-                    info("enqueueUpdateWorker: enqueuing worker result = $state")
+                    Timber.i("enqueueUpdateWorker: enqueuing worker result = $state")
                 }
             }
         } else {
-            info("enqueueUpdateWorker: not enqueueing worker, disabled in settings")
+            Timber.i("enqueueUpdateWorker: not enqueueing worker, disabled in settings")
         }
     }
 
     @MainThread
     private fun cancelUpdateWorker() {
-        info("cancelUpdateWorker() called")
+        Timber.i("cancelUpdateWorker() called")
         WorkManager.getInstance(context)
             .cancelUniqueWork(UpdateWorker.UNIQUE_WORK_NAME).state.observeForever { state ->
                 if (state !is Operation.State.IN_PROGRESS) {
-                    info("cancelUpdateWorker: cancelling worker result = $state")
+                    Timber.i("cancelUpdateWorker: cancelling worker result = $state")
                 }
             }
     }
@@ -143,35 +143,35 @@ object GlobalRpc : Rpc(GlobalServers) {
     @AnyThread
     private suspend fun handleWorkerCompleter() {
         updateWorkerCompleter.getAndSet(null)?.let { completer ->
-            info("handleWorkerCompleter: completing update worker")
+            Timber.i("handleWorkerCompleter: completing update worker")
             if (isConnected.value) {
-                info("handleWorkerCompleter: save servers")
+                Timber.i("handleWorkerCompleter: save servers")
                 withContext(Dispatchers.Main) {
                     if (isConnected.value) {
                         servers.save()
                     }
                 }
             }
-            info("handleWorkerCompleter: setting worker result")
+            Timber.i("handleWorkerCompleter: setting worker result")
             completer.set(ListenableWorker.Result.success())
         }
     }
 
     @MainThread
     private fun showNotificationsSinceLastConnection() {
-        info("showNotificationsSinceLastConnection() called")
+        Timber.i("showNotificationsSinceLastConnection() called")
         val sinceLastConnection = updateWorkerCompleter.get() == null
         val notifyOnFinished = notificationsController.isNotifyOnFinishedEnabled(sinceLastConnection)
         val notifyOnAdded = notificationsController.isNotifyOnFinishedEnabled(sinceLastConnection)
 
         if (!notifyOnFinished && !notifyOnAdded) {
-            info("showNotificationsSinceLastConnection: notifications are disabled")
+            Timber.i("showNotificationsSinceLastConnection: notifications are disabled")
             return
         }
 
         val server = servers.currentServer.value
         if (server == null) {
-            error("showNotificationsSinceLastConnection: server is null")
+            Timber.e("showNotificationsSinceLastConnection: server is null")
             return
         }
 
@@ -204,26 +204,26 @@ object GlobalRpc : Rpc(GlobalServers) {
     }
 
     class UpdateWorker(context: Context, workerParameters: WorkerParameters) :
-        ListenableWorker(context, workerParameters), Logger {
+        ListenableWorker(context, workerParameters) {
         companion object {
             const val UNIQUE_WORK_NAME = "RpcUpdateWorker"
         }
 
         override fun startWork(): ListenableFuture<Result> {
-            info("startWork() called")
+            Timber.i("startWork() called")
 
             if (AppForegroundTracker.appInForeground.value) {
-                warn("startWork: app is in foreground, return")
+                Timber.w("startWork: app is in foreground, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
             if (!GlobalServers.hasServers) {
-                warn("startWork: no servers, return")
+                Timber.w("startWork: no servers, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
             if (!notificationsController.isTorrentNotificationsEnabled(false)) {
-                warn("startWork:, notifications are disabled, return")
+                Timber.w("startWork:, notifications are disabled, return")
                 return CallbackToFutureAdapter.getFuture { it.set(Result.success()) }
             }
 
@@ -241,7 +241,7 @@ object GlobalRpc : Rpc(GlobalServers) {
         }
 
         override fun onStopped() {
-            info("onStopped() called")
+            Timber.i("onStopped() called")
         }
     }
 }

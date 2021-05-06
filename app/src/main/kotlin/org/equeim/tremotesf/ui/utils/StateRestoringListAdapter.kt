@@ -22,10 +22,10 @@ package org.equeim.tremotesf.ui.utils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
 abstract class StateRestoringListAdapter<T : Any?, VH : RecyclerView.ViewHolder>(diffCallback: DiffUtil.ItemCallback<T>) :
-    ListAdapter<T, VH>(diffCallback), Logger {
+    ListAdapter<T, VH>(diffCallback) {
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
@@ -40,7 +40,7 @@ abstract class StateRestoringListAdapter<T : Any?, VH : RecyclerView.ViewHolder>
         super.submitList(list?.nullIfEmpty()) {
             commitCallback?.run()
             if (restore && stateRestorationPolicy == StateRestorationPolicy.PREVENT) {
-                info("commitCallback: restoring state")
+                Timber.i("commitCallback: restoring state")
                 stateRestorationPolicy = StateRestorationPolicy.ALLOW
                 onStateRestored()
             }

@@ -43,8 +43,8 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
 private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
@@ -54,15 +54,15 @@ private const val ACTION_DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
 private const val ACTION_SHUTDOWN_APP = "org.equeim.tremotesf.ACTION_SHUTDOWN_APP"
 
 
-class ForegroundService : LifecycleService(), Logger {
-    companion object : Logger {
+class ForegroundService : LifecycleService() {
+    companion object {
         private var startRequestInProgress = false
         private var stopRequested = false
 
         private val instances = mutableListOf<ForegroundService>()
 
         fun start(context: Context) {
-            info("start()")
+            Timber.i("start()")
             ContextCompat.startForegroundService(
                 context,
                 Intent(context, ForegroundService::class.java)
@@ -71,9 +71,9 @@ class ForegroundService : LifecycleService(), Logger {
         }
 
         fun stop(context: Context) {
-            info("stop()")
+            Timber.i("stop()")
             if (startRequestInProgress) {
-                warn("onStartCommand() haven't been called yet, set stopRequested=true")
+                Timber.w("onStartCommand() haven't been called yet, set stopRequested=true")
                 stopRequested = true
             } else {
                 instances.forEach { it.stopUpdatingNotification = true }
@@ -92,7 +92,7 @@ class ForegroundService : LifecycleService(), Logger {
 
         instances.add(this)
 
-        info("onCreate() stopRequested=$stopRequested")
+        Timber.i("onCreate() stopRequested=$stopRequested")
 
         rpc = GlobalRpc
         notificationManager = getSystemService()!!
@@ -129,7 +129,7 @@ class ForegroundService : LifecycleService(), Logger {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startForegroundV29(observingWifiNetworks: Boolean) {
-        info("startForeground() called with: observingWifiNetworks = $observingWifiNetworks")
+        Timber.i("startForeground() called with: observingWifiNetworks = $observingWifiNetworks")
         val type = if (observingWifiNetworks) {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
         } else {
@@ -143,14 +143,14 @@ class ForegroundService : LifecycleService(), Logger {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        info("onStartCommand() intent=$intent, flags=$flags, startId=$startId, state=${lifecycle.currentState}, stopRequested=$stopRequested")
+        Timber.i("onStartCommand() intent=$intent, flags=$flags, startId=$startId, state=${lifecycle.currentState}, stopRequested=$stopRequested")
 
         super.onStartCommand(intent, flags, startId)
 
         startRequestInProgress = false
 
         if (stopRequested) {
-            warn("ForegroundService.stop() was called before onStartCommand(), stop now")
+            Timber.w("ForegroundService.stop() was called before onStartCommand(), stop now")
             stopRequested = false
             stopSelfAndNotification()
             return START_NOT_STICKY
@@ -164,14 +164,14 @@ class ForegroundService : LifecycleService(), Logger {
 
         if (lifecycle.currentState == Lifecycle.State.CREATED) {
             if (intent?.action != null) {
-                warn("onStartCommand() is called for the first time, but intent action is not null, stop now")
+                Timber.w("onStartCommand() is called for the first time, but intent action is not null, stop now")
                 stopSelfAndNotification()
                 return START_NOT_STICKY
             }
 
             AppForegroundTracker.foregroundServiceStarted.value = true
 
-            info("Service started")
+            Timber.i("Service started")
         }
 
         when (intent?.action) {
@@ -183,7 +183,7 @@ class ForegroundService : LifecycleService(), Logger {
     }
 
     override fun onDestroy() {
-        info("onDestroy() ${lifecycle.currentState}")
+        Timber.i("onDestroy() ${lifecycle.currentState}")
         AppForegroundTracker.foregroundServiceStarted.value = false
         stopForeground(true)
         instances.remove(this)

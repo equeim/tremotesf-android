@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
 @Serializable
 @Parcelize
@@ -63,7 +63,7 @@ data class Server(
     @SerialName("addTorrentDialogDirectories")
     @Volatile
     var addTorrentDialogDirectories: List<String> = emptyList()
-) : Parcelable, Logger {
+) : Parcelable {
     override fun toString() = "Server(name=$name)"
 
     fun nativeProxyType(): Int {
@@ -72,7 +72,7 @@ data class Server(
             "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
             "SOCKS5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
             else -> {
-                warn("Unknown proxy type $proxyType")
+                Timber.w("Unknown proxy type $proxyType")
                 org.equeim.libtremotesf.Server.ProxyType.Default
             }
         }

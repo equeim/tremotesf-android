@@ -18,7 +18,7 @@ import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.ui.AppForegroundTracker
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
@@ -47,21 +47,21 @@ object GlobalServers : Servers(TremotesfApplication.instance) {
     }
 
     class SaveWorker(context: Context, workerParameters: WorkerParameters) :
-        Worker(context, workerParameters), Logger {
+        Worker(context, workerParameters) {
 
         override fun doWork(): Result {
-            info("doWork() called")
+            Timber.i("doWork() called")
             val data = saveData.getAndSet(null)
             if (data != null) {
                 doSave(data)
             } else {
-                warn("doWork: SaveData is null")
+                Timber.w("doWork: SaveData is null")
             }
             return Result.success()
         }
 
         override fun onStopped() {
-            info("onStopped() called")
+            Timber.i("onStopped() called")
             saveData.set(null)
         }
 

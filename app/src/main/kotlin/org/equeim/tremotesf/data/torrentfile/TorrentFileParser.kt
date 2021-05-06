@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
 
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
 import java.io.FileDescriptor
 import java.io.FileInputStream
@@ -48,7 +48,7 @@ data class TorrentFile(val info: Info) {
     data class File(val length: Long, val path: List<String>)
 }
 
-object TorrentFileParser : Logger {
+object TorrentFileParser {
     // 10 MiB
     private const val MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -56,16 +56,16 @@ object TorrentFileParser : Logger {
 
     private fun parseFile(inputStream: InputStream): TorrentFile {
         if (inputStream.available() > MAX_FILE_SIZE) {
-            error("File is too large")
+            Timber.e("File is too large")
             throw FileIsTooLargeException()
         }
         return try {
             Bencode.decode(inputStream)
         } catch (error: IOException) {
-            error("Failed to read file", error)
+            Timber.e(error, "Failed to read file")
             throw FileReadException(error)
         } catch (error: SerializationException) {
-            error("Failed to parse bencode structure", error)
+            Timber.e(error, "Failed to parse bencode structure")
             throw FileParseException(error)
         }
     }

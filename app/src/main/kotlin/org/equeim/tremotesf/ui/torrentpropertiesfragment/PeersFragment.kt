@@ -42,8 +42,8 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.viewModels
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
 data class Peer(
@@ -129,7 +129,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         }
     }
 
-    private class Model(val torrent: StateFlow<Torrent?>) : ViewModel(), Logger {
+    private class Model(val torrent: StateFlow<Torrent?>) : ViewModel() {
         private val _peers = MutableStateFlow<List<Peer>>(emptyList())
         val peers: StateFlow<List<Peer>> by ::_peers
 
@@ -137,14 +137,14 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         val loaded: StateFlow<Boolean> by ::_loaded
 
         init {
-            info("constructor called")
+            Timber.i("constructor called")
 
             torrent.hasTorrent().onEach {
                 if (it) {
-                    info("Torrent appeared, setting peersEnabled to true")
+                    Timber.i("Torrent appeared, setting peersEnabled to true")
                     torrent.value?.peersEnabled = true
                 } else {
-                    info("Torrent appeared, resetting")
+                    Timber.i("Torrent appeared, resetting")
                     reset()
                 }
             }.launchIn(viewModelScope)
@@ -153,18 +153,18 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         }
 
         override fun onCleared() {
-            info("onCleared() called")
+            Timber.i("onCleared() called")
             destroy()
         }
 
         fun destroy() {
-            info("destroy() called")
+            Timber.i("destroy() called")
             viewModelScope.cancel()
             reset()
         }
 
         private fun reset() {
-            info("reset() called")
+            Timber.i("reset() called")
             torrent.value?.peersEnabled = false
             _peers.value = emptyList()
             _loaded.value = false

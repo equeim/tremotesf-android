@@ -67,15 +67,15 @@ import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
 class AddTorrentFileFragment : AddTorrentFragment(
     R.layout.add_torrent_file_fragment,
     R.string.add_torrent_file,
     R.menu.add_torrent_fragment_menu
-), Logger {
+) {
     companion object {
         val SCHEMES = arrayOf(ContentResolver.SCHEME_FILE, ContentResolver.SCHEME_CONTENT)
 
@@ -163,7 +163,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        info("onCreate: arguments = $arguments")
+        Timber.i("onCreate: arguments = $arguments")
 
         with(model.storagePermissionHelper) {
             val launcher = registerWithFragment(this@AddTorrentFileFragment)

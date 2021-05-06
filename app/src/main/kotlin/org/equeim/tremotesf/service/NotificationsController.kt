@@ -12,14 +12,13 @@ import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
-import org.equeim.tremotesf.utils.Logger
-import kotlin.math.sin
+import timber.log.Timber
 
-class NotificationsController(private val context: Context) : Logger {
+class NotificationsController(private val context: Context) {
     private val notificationManager by lazy {
         context.getSystemService<NotificationManager>().also {
             if (it == null) {
-                error("NotificationManager is null")
+                Timber.e("NotificationManager is null")
             }
         }
     }
@@ -40,7 +39,7 @@ class NotificationsController(private val context: Context) : Logger {
                     )
                 )
             )
-            info("init: created notification channels")
+            Timber.i("init: created notification channels")
         }
     }
 
@@ -93,11 +92,11 @@ class NotificationsController(private val context: Context) : Logger {
         notificationChannel: String,
         @StringRes notificationTitle: Int
     ) {
-        info("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
+        Timber.i("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
 
         val notificationManager = this.notificationManager
         if (notificationManager == null) {
-            error("showTorrentNotification: NotificationManager is null")
+            Timber.e("showTorrentNotification: NotificationManager is null")
             return
         }
 

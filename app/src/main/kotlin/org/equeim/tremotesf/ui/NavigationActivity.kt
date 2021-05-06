@@ -73,11 +73,11 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.findChildRecursively
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.setChildrenEnabled
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import timber.log.Timber
 
 
-class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
+class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
@@ -119,8 +119,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
     lateinit var sidePanelBinding: SidePanelHeaderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        info("onCreate() called with: savedInstanceState = $savedInstanceState")
-        info("onCreate: intent = $intent")
+        Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
+        Timber.i("onCreate: intent = $intent")
 
         AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
         setTheme(Settings.theme)
@@ -188,7 +188,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
             binding.drawerLayout.setDrawerLockMode(lockMode, GravityCompat.START)
         }
 
-        info("onCreate: return")
+        Timber.i("onCreate: return")
     }
 
     private fun overrideIntentWithDeepLink() {
@@ -196,12 +196,12 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
         model.navigatedInitially = true
 
         val intent = model.getInitialDeepLinkIntent(intent) ?: return
-        info("overrideIntentWithDeepLink: intent = $intent")
+        Timber.i("overrideIntentWithDeepLink: intent = $intent")
         this.intent = intent
     }
 
     override fun onStart() {
-        info("onStart() called")
+        Timber.i("onStart() called")
         super.onStart()
         if (startedActivity == null) {
             AppForegroundTracker.hasStartedActivity.value = true
@@ -210,7 +210,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
     }
 
     override fun onStop() {
-        info("onStop() called")
+        Timber.i("onStop() called")
         if (!isChangingConfigurations) {
             if (startedActivity === this) {
                 startedActivity = null
@@ -221,13 +221,13 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
     }
 
     override fun onDestroy() {
-        info("onDestroy() called")
+        Timber.i("onDestroy() called")
         createdActivities.remove(this)
         super.onDestroy()
     }
 
     override fun onNewIntent(intent: Intent) {
-        info("onNewIntent() called with: intent = $intent")
+        Timber.i("onNewIntent() called with: intent = $intent")
         super.onNewIntent(intent)
         model.getAddTorrentDirections(intent)?.let { (destinationId, arguments) ->
             navController.navigate(
@@ -343,12 +343,22 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
 }
 
 @Keep
-class NavHostFragment : NavHostFragment(), Logger {
+class NavHostFragment : NavHostFragment() {
     override fun onCreateNavController(navController: NavController) {
         super.onCreateNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, arguments ->
-            info("Desination changed: destination = $destination, arguments = $arguments")
-        }
+        /*navController.addOnDestinationChangedListener { _, destination, arguments ->
+            Timber.i("Destination changed: destination = $destination, arguments = $arguments")
+        }*/
+        navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
+            override fun onDestinationChanged(
+                controller: NavController,
+                destination: NavDestination,
+                arguments: Bundle?
+            ) {
+                Timber.i("class = $javaClass")
+                Timber.i("Destination changed: destination = $destination, arguments = $arguments")
+            }
+        })
     }
 
     override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {

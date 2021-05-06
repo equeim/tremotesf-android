@@ -24,8 +24,6 @@ package org.equeim.tremotesf.data.rpc
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.concurrent.futures.CallbackToFutureAdapter
-import androidx.work.ListenableWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -52,10 +50,9 @@ import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.utils.MutableEventFlow
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
 
 
 typealias RpcConnectionState = org.equeim.libtremotesf.Rpc.Status
@@ -70,7 +67,7 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
-abstract class Rpc(protected val servers: Servers) : Logger {
+abstract class Rpc(protected val servers: Servers) {
     private val scope = MainScope()
 
     init {
@@ -79,12 +76,12 @@ abstract class Rpc(protected val servers: Servers) : Logger {
 
     val nativeInstance: JniRpc = object : JniRpc() {
         override fun onStatusChanged(status: Int) {
-            info("onStatusChanged() called with: status = $status")
+            Timber.i("onStatusChanged() called with: status = $status")
             _connectionState.value = status
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {
-            info("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
+            Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
             _error.value = Error(error, errorMessage)
         }
 
@@ -115,22 +112,22 @@ abstract class Rpc(protected val servers: Servers) : Logger {
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) {
-            info("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
+            Timber.i("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
             this@Rpc.onTorrentAdded(id, hashString, name)
         }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) {
-            info("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
+            Timber.i("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
             this@Rpc.onTorrentFinished(id, hashString, name)
         }
 
         override fun onTorrentAddDuplicate() {
-            info("onTorrentAddDuplicate() called")
+            Timber.i("onTorrentAddDuplicate() called")
             _torrentAddDuplicateEvents.tryEmit(Unit)
         }
 
         override fun onTorrentAddError() {
-            info("onTorrentAddError() called")
+            Timber.i("onTorrentAddError() called")
             _torrentAddErrorEvents.tryEmit(Unit)
         }
 
@@ -152,17 +149,17 @@ abstract class Rpc(protected val servers: Servers) : Logger {
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-            info("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
+            Timber.i("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
             _torrentFileRenamedEvents.tryEmit(TorrentFileRenamedData(torrentId, filePath, newName))
         }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) {
-            info("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
+            Timber.i("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
             _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
         }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-            info("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
+            Timber.i("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
             _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
         }
 
@@ -170,9 +167,9 @@ abstract class Rpc(protected val servers: Servers) : Logger {
     }
 
     init {
-        info("init: initializing native instance")
+        Timber.i("init: initializing native instance")
         nativeInstance.init()
-        info("init: initialized native instance")
+        Timber.i("init: initialized native instance")
     }
 
     @Volatile
@@ -252,7 +249,7 @@ abstract class Rpc(protected val servers: Servers) : Logger {
 
         scope.launch {
             servers.currentServer.drop(1).collect { server ->
-                info("Current server changed")
+                Timber.i("Current server changed")
 
                 if (isConnected.value) {
                     disconnectingAfterCurrentServerChanged.set(true)
@@ -267,12 +264,12 @@ abstract class Rpc(protected val servers: Servers) : Logger {
             }
         }
 
-        info("init: finished initialization")
+        Timber.i("init: finished initialization")
     }
 
     @AnyThread
     private fun setServer(server: Server) {
-        info("setServer() called for server with: name = ${server.name}, address = ${server.address}, port = ${server.port}")
+        Timber.i("setServer() called for server with: name = ${server.name}, address = ${server.address}, port = ${server.port}")
 
         val s = org.equeim.libtremotesf.Server()
         with(server) {
@@ -305,20 +302,20 @@ abstract class Rpc(protected val servers: Servers) : Logger {
 
     @MainThread
     fun connectOnce() {
-        info("connectOnce() called")
+        Timber.i("connectOnce() called")
         if (!connectedOnce) {
-            info("connectOnce: first connection")
+            Timber.i("connectOnce: first connection")
             servers.setCurrentServerFromWifiNetwork()
             nativeInstance.connect()
             connectedOnce = true
         } else {
-            info("connectOnce: already connected once")
+            Timber.i("connectOnce: already connected once")
         }
     }
 
     @MainThread
     fun disconnectOnShutdown() {
-        info("disconnectOnShutdown() called")
+        Timber.i("disconnectOnShutdown() called")
         nativeInstance.disconnect()
         connectedOnce = false
     }
@@ -398,12 +395,12 @@ abstract class Rpc(protected val servers: Servers) : Logger {
 
     @AnyThread
     private fun onAboutToDisconnect() {
-        info("onAboutToDisconnect() called")
+        Timber.i("onAboutToDisconnect() called")
         if (!disconnectingAfterCurrentServerChanged.get()) {
-            info("onAboutToDisconnect: saving servers")
+            Timber.i("onAboutToDisconnect: saving servers")
             servers.save()
         } else {
-            info("onAboutToDisconnect: current server changed, do nothing")
+            Timber.i("onAboutToDisconnect: current server changed, do nothing")
         }
     }
 }

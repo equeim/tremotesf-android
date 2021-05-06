@@ -54,7 +54,6 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.Logger
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
 
@@ -63,7 +62,7 @@ class TorrentsListFragment : NavigationFragment(
     R.layout.torrents_list_fragment,
     0,
     R.menu.torrents_list_fragment_menu
-), Logger {
+) {
     private var menu: Menu? = null
     private var searchMenuItem: MenuItem? = null
 

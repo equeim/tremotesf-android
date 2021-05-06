@@ -47,7 +47,7 @@ import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -94,7 +94,7 @@ interface AddTorrentFileModel {
 class AddTorrentFileModelImpl(
     application: Application,
     private val savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application), AddTorrentFileModel, Logger {
+) : AndroidViewModel(application), AddTorrentFileModel {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     override val uri: Uri by savedState(savedStateHandle, Uri.EMPTY)
@@ -146,15 +146,15 @@ class AddTorrentFileModelImpl(
 
     private fun AssetFileDescriptor.closeQuietly() {
         try {
-            info("closeQuietly: closing file descriptor")
+            Timber.i("closeQuietly: closing file descriptor")
             close()
         } catch (e: Exception) {
-            error("closeQuietly: failed to close file descriptor", e)
+            Timber.e(e, "closeQuietly: failed to close file descriptor")
         }
     }
 
     private fun load() {
-        info("load: loading $uri")
+        Timber.i("load: loading $uri")
         if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
             parserStatus.value = AddTorrentFileModel.ParserStatus.Loading
             viewModelScope.launch {
@@ -164,7 +164,7 @@ class AddTorrentFileModelImpl(
     }
 
     override fun detachFd(): Int {
-        info("detachFd() called")
+        Timber.i("detachFd() called")
         return checkNotNull(fd).parcelFileDescriptor.detachFd().also {
             fd = null
         }
@@ -201,12 +201,12 @@ class AddTorrentFileModelImpl(
             @Suppress("BlockingMethodInNonBlockingContext")
             context.contentResolver.openAssetFileDescriptor(uri, "r")
         } catch (error: Exception) {
-            error("Failed to open file descriptor", error)
+            Timber.e(error, "Failed to open file descriptor")
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
         }
         if (fd == null) {
-            error("File descriptor is null")
+            Timber.e("File descriptor is null")
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
         }

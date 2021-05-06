@@ -38,9 +38,9 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
-class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandle: SavedStateHandle) : ViewModel(), Logger {
+class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandle: SavedStateHandle) : ViewModel() {
     var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     private val _torrent = MutableStateFlow<Torrent?>(null)
@@ -57,9 +57,9 @@ class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandl
                     showTorrentRemovedMessage.value = true
                 }
                 if (torrent != null) {
-                    info("Torrent appeared")
+                    Timber.i("Torrent appeared")
                 } else {
-                    info("Torrent disappeared")
+                    Timber.i("Torrent disappeared")
                 }
                 _torrent.value = torrent
             }

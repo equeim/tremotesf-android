@@ -54,10 +54,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
 
-class WifiNetworkServersController(private val servers: Servers, private val context: Context) : Logger {
+class WifiNetworkServersController(private val servers: Servers, private val context: Context) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
 
@@ -72,15 +72,15 @@ class WifiNetworkServersController(private val servers: Servers, private val con
         get() = currentWifiInfo?.knownSsidOrNull
 
     init {
-        info("init")
+        Timber.i("init")
 
         val hasServerWithWifiNetwork = servers.servers.map { servers ->
             val has =
                 servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() } != null
             if (has) {
-                info("There are servers with Wi-Fi networks configured")
+                Timber.i("There are servers with Wi-Fi networks configured")
             } else {
-                info("There are no servers with Wi-Fi networks configured")
+                Timber.i("There are no servers with Wi-Fi networks configured")
             }
             has
         }
@@ -101,7 +101,7 @@ class WifiNetworkServersController(private val servers: Servers, private val con
 
     @MainThread
     private fun startObservingActiveWifiNetwork() {
-        info("startObservingActiveWifiNetwork() called")
+        Timber.i("startObservingActiveWifiNetwork() called")
 
         val scope = CoroutineScope(Dispatchers.Main).also { wifiNetworkObserverScope = it }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -111,7 +111,7 @@ class WifiNetworkServersController(private val servers: Servers, private val con
                     .onEach { onActiveWifiNetworkChanged() }
                     .launchIn(scope)
             } else {
-                error("startObservingActiveWifiNetwork: ConnectivityManager is null")
+                Timber.e("startObservingActiveWifiNetwork: ConnectivityManager is null")
             }
         } else {
             observeActiveWifiNetworkV16().onEach { onActiveWifiNetworkChanged() }.launchIn(scope)
@@ -120,7 +120,7 @@ class WifiNetworkServersController(private val servers: Servers, private val con
 
     @MainThread
     private fun stopObservingActiveWifiNetwork() {
-        info("stopObservingActiveWifiNetwork() called")
+        Timber.i("stopObservingActiveWifiNetwork() called")
         wifiNetworkObserverScope?.apply {
             cancel()
             wifiNetworkObserverScope = null
@@ -129,14 +129,14 @@ class WifiNetworkServersController(private val servers: Servers, private val con
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun observeActiveWifiNetworkV24(connectivityManager: ConnectivityManager): Flow<Unit> {
-        info("observeActiveWifiNetworkV24() called with: context = $context")
+        Timber.i("observeActiveWifiNetworkV24() called with: context = $context")
         @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow<Unit> {
-            info("observeActiveWifiNetworkV24: registering network callback")
+            Timber.i("observeActiveWifiNetworkV24: registering network callback")
             val callback = DefaultNetworkCallback(channel)
             connectivityManager.registerDefaultNetworkCallback(callback)
             awaitClose {
-                info("observeActiveWifiNetworkV24: unregister network callback")
+                Timber.i("observeActiveWifiNetworkV24: unregister network callback")
                 connectivityManager.unregisterNetworkCallback(callback)
             }
         }.buffer(Channel.CONFLATED)
@@ -145,25 +145,25 @@ class WifiNetworkServersController(private val servers: Servers, private val con
     // TODO: extract WifiInfo from NetworkCapabilities on Android S
     @RequiresApi(Build.VERSION_CODES.N)
     private class DefaultNetworkCallback(private val channel: SendChannel<Unit>) :
-        ConnectivityManager.NetworkCallback(), Logger {
+        ConnectivityManager.NetworkCallback() {
         private var waitingForCapabilities = false
 
         override fun onAvailable(network: Network) {
-            info("onAvailable() called with: network = $network")
+            Timber.i("onAvailable() called with: network = $network")
             waitingForCapabilities = true
         }
 
         override fun onLost(network: Network) {
-            info("onLost() called with: network = $network")
+            Timber.i("onLost() called with: network = $network")
             waitingForCapabilities = false
         }
 
         override fun onLosing(network: Network, maxMsToLive: Int) {
-            info("onLosing() called with: network = $network, maxMsToLive = $maxMsToLive")
+            Timber.i("onLosing() called with: network = $network, maxMsToLive = $maxMsToLive")
         }
 
         override fun onUnavailable() {
-            info("onUnavailable() called")
+            Timber.i("onUnavailable() called")
         }
 
         override fun onCapabilitiesChanged(
@@ -172,49 +172,49 @@ class WifiNetworkServersController(private val servers: Servers, private val con
         ) {
             if (!waitingForCapabilities) return
 
-            info("onCapabilitiesChanged: networkCapabilities = $networkCapabilities")
+            Timber.i("onCapabilitiesChanged: networkCapabilities = $networkCapabilities")
 
             if (!networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                info("onCapabilitiesChanged: not Wi-Fi network, ignore")
+                Timber.i("onCapabilitiesChanged: not Wi-Fi network, ignore")
                 waitingForCapabilities = false
                 return
             }
 
             if (wifiNetworkCapabilities.all { networkCapabilities.hasCapability(it) }) {
-                info("onCapabilitiesChanged: supported Wi-Fi network")
+                Timber.i("onCapabilitiesChanged: supported Wi-Fi network")
                 waitingForCapabilities = false
                 channel.offer(Unit)
             } else {
-                info("onCapabilitiesChanged: unsupported network, wait")
+                Timber.i("onCapabilitiesChanged: unsupported network, wait")
             }
         }
     }
 
     private fun observeActiveWifiNetworkV16(): Flow<Unit> {
-        info("observeActiveWifiNetworkV16() called")
+        Timber.i("observeActiveWifiNetworkV16() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow<Unit> {
-            info("observeActiveWifiNetworkV16: registering receiver")
+            Timber.i("observeActiveWifiNetworkV16: registering receiver")
             val receiver = ConnectivityReceiver(channel)
             context.registerReceiver(
                 receiver,
                 IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
             )
             awaitClose {
-                info("observeActiveWifiNetworkV16: unregister receiver")
+                Timber.i("observeActiveWifiNetworkV16: unregister receiver")
                 context.unregisterReceiver(receiver)
             }
         }.buffer(Channel.CONFLATED)
     }
 
     private class ConnectivityReceiver(private val channel: SendChannel<Unit>) :
-        BroadcastReceiver(), Logger {
+        BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val networkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-            info("onReceive: networkInfo = $networkInfo")
+            Timber.i("onReceive: networkInfo = $networkInfo")
             if (networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI) {
-                info("onReceive: Wi-Fi connected")
+                Timber.i("onReceive: Wi-Fi connected")
                 channel.offer(Unit)
             }
         }
@@ -222,17 +222,17 @@ class WifiNetworkServersController(private val servers: Servers, private val con
 
     @MainThread
     private fun onActiveWifiNetworkChanged() {
-        info("onActiveWifiNetworkChanged() called")
+        Timber.i("onActiveWifiNetworkChanged() called")
 
         val wifiInfo = currentWifiInfo
-        info("onActiveWifiNetworkChanged: current WifiInfo: $currentWifiInfo")
+        Timber.i("onActiveWifiNetworkChanged: current WifiInfo: $currentWifiInfo")
 
         val ssid = wifiInfo?.knownSsidOrNull
         if (ssid != null) {
-            info("onActiveWifiNetworkChanged: SSID = '$ssid'")
+            Timber.i("onActiveWifiNetworkChanged: SSID = '$ssid'")
             servers.setCurrentServerFromWifiNetwork(lazyOf(ssid))
         } else {
-            error("onActiveWifiNetworkChanged: SSID is null")
+            Timber.e("onActiveWifiNetworkChanged: SSID is null")
         }
     }
 
@@ -242,11 +242,11 @@ class WifiNetworkServersController(private val servers: Servers, private val con
             return if (wifiManager != null) {
                 wifiManager.connectionInfo.also {
                     if (it == null) {
-                        error("currentWifiInfo: getConnectionInfo() returned null")
+                        Timber.e("currentWifiInfo: getConnectionInfo() returned null")
                     }
                 }
             } else {
-                error("currentWifiInfo: WifiManager is null")
+                Timber.e("currentWifiInfo: WifiManager is null")
                 null
             }
         }
@@ -254,15 +254,15 @@ class WifiNetworkServersController(private val servers: Servers, private val con
     private val WifiInfo.knownSsidOrNull: String?
         get() = ssid.takeIf { ssid: String? ->
             when {
-                ssid == null -> error("knownSsidOrNull: SSID is null")
-                ssid.isEmpty() -> error("knownSsidOrNull: SSID is empty")
-                ssid == UNKNOWN_SSID -> error("knownSsidOrNull: SSID is unknown")
+                ssid == null -> Timber.e("knownSsidOrNull: SSID is null")
+                ssid.isEmpty() -> Timber.e("knownSsidOrNull: SSID is empty")
+                ssid == UNKNOWN_SSID -> Timber.e("knownSsidOrNull: SSID is unknown")
                 else -> return@takeIf true
             }
             false
         }?.removeSsidQuotes()?.takeIf {
             val notBlank = it.isNotBlank()
-            if (!notBlank) error("knownSsidOrNull: SSID = '$it' is empty or blank")
+            if (!notBlank) Timber.e("knownSsidOrNull: SSID = '$it' is empty or blank")
             notBlank
         }
 
@@ -279,7 +279,7 @@ class WifiNetworkServersController(private val servers: Servers, private val con
         return if (startsWith(quoteChar) && endsWith(quoteChar)) {
             drop(1).dropLast(1)
         } else {
-            error("removeQuotes: SSID = '$this' is not surrounded by quotation marks, unsupported")
+            Timber.e("removeQuotes: SSID = '$this' is not surrounded by quotation marks, unsupported")
             null
         }
     }

@@ -22,6 +22,9 @@
 
 -dontobfuscate
 
+# Required so that Timber's stack trace offset doesn't break
+-keep class timber.log.Timber { *; }
+
 # kotlinx.serialization
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations

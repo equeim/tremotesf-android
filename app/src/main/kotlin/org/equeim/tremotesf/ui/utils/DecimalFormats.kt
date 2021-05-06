@@ -24,10 +24,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 import java.text.DecimalFormat
 
-object DecimalFormats : Logger {
+object DecimalFormats {
     private lateinit var genericInternal: DecimalFormat
     val generic: DecimalFormat
         get() {
@@ -50,7 +50,7 @@ object DecimalFormats : Logger {
     init {
         TremotesfApplication.instance.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                info("Locale changed, resetting decimal formats")
+                Timber.i("Locale changed, resetting decimal formats")
                 reset()
             }
         }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))

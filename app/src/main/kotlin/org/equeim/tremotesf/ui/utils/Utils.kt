@@ -30,12 +30,12 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.ForegroundService
 import org.equeim.tremotesf.ui.NavigationActivity
-import org.equeim.tremotesf.utils.Logger
+import timber.log.Timber
 
 
-object Utils : Logger {
+object Utils {
     fun shutdownApp(context: Context, stopService: Boolean = true) {
-        info("Utils.shutdownApp()")
+        Timber.i("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
         GlobalRpc.disconnectOnShutdown()
         if (stopService) {
@@ -112,11 +112,11 @@ object Utils : Logger {
     }
 
     fun startActivityChooser(intent: Intent, title: CharSequence, context: Context) {
-        info("startActivityChooser() is called with: intent = $intent, title = $title, context = $context")
+        Timber.i("startActivityChooser() is called with: intent = $intent, title = $title, context = $context")
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(Intent.createChooser(intent, title))
         } else {
-            warn("startActivityChooser: failed to resolve activity")
+            Timber.w("startActivityChooser: failed to resolve activity")
         }
     }
 }
