@@ -26,6 +26,8 @@ import android.view.View
 
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -54,6 +56,10 @@ class SettingsFragment : NavigationFragment(
                 } else {
                     true
                 }
+            }
+
+            requireParentFragment().setFragmentResultListener(SettingsPersistentNotificationWarningFragment.RESULT_KEY) { _, _ ->
+                findPreference<CheckBoxPreference>(Settings.persistentNotificationKey)?.isChecked = true
             }
         }
 
@@ -90,10 +96,6 @@ class SettingsFragment : NavigationFragment(
             }
         }
 
-        fun enablePersistentNotification() {
-            findPreference<CheckBoxPreference>(Settings.persistentNotificationKey)?.isChecked = true
-        }
-
         private fun updateBackgroundUpdatePreference() {
             findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
                 ?.isEnabled =
@@ -108,11 +110,12 @@ class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment()
             .setMessage(R.string.persistent_notification_warning)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                ((parentFragmentManager.primaryNavigationFragment as? SettingsFragment)?.childFragmentManager?.findFragmentById(
-                    R.id.preference_fragment
-                ) as SettingsFragment.PreferenceFragment?)
-                    ?.enablePersistentNotification()
+                setFragmentResult(RESULT_KEY, Bundle.EMPTY)
             }
             .create()
+    }
+
+    companion object {
+        val RESULT_KEY = SettingsPersistentNotificationWarningFragment::class.qualifiedName!!
     }
 }
