@@ -21,25 +21,28 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.utils.savedStateViewModels
-import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
+import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class TorrentFilesFragment :
     TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
 
-    val model by savedStateViewModels { _, handle ->
-        TorrentFilesFragmentViewModel(
-            TorrentPropertiesFragmentViewModel.get(this).torrent,
-            handle
-        )
+    private val model by viewModels<TorrentFilesFragmentViewModel>(::requireParentFragment) {
+        savedStateViewModelFactory { _, handle ->
+            TorrentFilesFragmentViewModel(
+                TorrentPropertiesFragmentViewModel.get(this).torrent,
+                handle
+            )
+        }
     }
 
     private val binding by viewBinding(TorrentFilesFragmentBinding::bind)

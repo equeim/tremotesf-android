@@ -53,7 +53,7 @@ class TorrentFilesAdapter(
     }
 
     override fun navigateToRenameDialog(path: String, name: String) {
-        val torrent = fragment.model.torrent.value ?: return
+        val torrent = model.torrent.value ?: return
         fragment.navigate(
             TorrentPropertiesFragmentDirections
                 .toTorrentFileRenameDialog(path, name, torrent.id)

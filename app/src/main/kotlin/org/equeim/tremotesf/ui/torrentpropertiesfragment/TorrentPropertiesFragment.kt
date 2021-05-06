@@ -50,13 +50,13 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
+import org.equeim.tremotesf.ui.utils.savedStateViewModels
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -93,9 +93,10 @@ class TorrentPropertiesFragment : NavigationFragment(
         }.attach()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal ||
-                findFragment<TorrentFilesFragment>()?.model?.filesTree?.navigateUp() != true
-            ) {
+            val torrentFilesModel by savedStateViewModels { _, handle ->
+                TorrentFilesFragmentViewModel(model.torrent, handle)
+            }
+            if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !torrentFilesModel.filesTree.navigateUp()) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
