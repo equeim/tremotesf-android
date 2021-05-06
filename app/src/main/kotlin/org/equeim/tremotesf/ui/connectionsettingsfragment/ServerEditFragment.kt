@@ -52,11 +52,10 @@ import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Server
-import org.equeim.tremotesf.data.rpc.Servers
-import org.equeim.tremotesf.data.rpc.WifiNetworkHelper
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
@@ -67,7 +66,7 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class ServerEditFragment : NavigationFragment(
@@ -194,7 +193,7 @@ class ServerEditFragment : NavigationFragment(
             }
 
             setSsidFromCurrentNetworkButton.setOnClickListener {
-                val ssid = WifiNetworkHelper.currentWifiSsid
+                val ssid = GlobalServers.wifiNetworkController.currentWifiSsid
 
                 if (ssid != null) {
                     wifiAutoConnectSsidEdit.setText(ssid)
@@ -282,7 +281,7 @@ class ServerEditFragment : NavigationFragment(
                 timeoutOk
             ) {
                 if (nameEditText != model.existingServer?.name &&
-                    Servers.servers.value.find { it.name == nameEditText } != null
+                    GlobalServers.servers.value.find { it.name == nameEditText } != null
                 ) {
                     navigate(ServerEditFragmentDirections.toOverwriteDialog())
                 } else {
@@ -328,9 +327,9 @@ class ServerEditFragment : NavigationFragment(
 
         model.existingServer.let { existing ->
             if (existing == null) {
-                Servers.addServer(model.server)
+                GlobalServers.addServer(model.server)
             } else {
-                Servers.setServer(existing, model.server)
+                GlobalServers.setServer(existing, model.server)
             }
         }
 
@@ -362,7 +361,7 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
     private val serverName: String? = savedStateHandle[::serverName.name]
 
     val existingServer =
-        if (serverName != null) Servers.servers.value.find { it.name == serverName } else null
+        if (serverName != null) GlobalServers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
     val locationPermissionHelper = if (needLocationPermission()) {

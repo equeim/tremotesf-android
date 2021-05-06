@@ -44,7 +44,7 @@ import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 class DonationsFragment :
     Fragment(if (BuildConfig.GOOGLE) R.layout.donations_fragment_google else R.layout.donations_fragment_fdroid) {

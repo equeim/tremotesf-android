@@ -29,6 +29,7 @@ import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
@@ -74,7 +75,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
         }
         if (deepLinkIntent == null) {
             if ((intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
-                if (!Servers.hasServers) {
+                if (!GlobalServers.hasServers) {
                     deepLinkIntent = createDeepLinkIntent(R.id.server_edit_fragment, null, intent)
                 } else if (shouldShowDonateDialog()) {
                     deepLinkIntent = createDeepLinkIntent(R.id.donate_dialog, null, intent)

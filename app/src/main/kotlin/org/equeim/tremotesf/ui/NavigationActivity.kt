@@ -50,7 +50,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
@@ -59,10 +58,10 @@ import androidx.navigation.ui.onNavDestinationSelected
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
@@ -73,10 +72,9 @@ import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.findChildRecursively
 import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.setChildrenEnabled
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
@@ -165,7 +163,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }
-        Rpc.error.map { it.errorMessage }.collectWhenStarted(this) { error ->
+        GlobalRpc.error.map { it.errorMessage }.collectWhenStarted(this) { error ->
             if (error.isNotEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
             }
@@ -296,12 +294,12 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
             serversView.setAdapter(serversViewAdapter)
             serversView.setOnItemClickListener { _, _, position, _ ->
                 serversViewAdapter.servers[position].let {
-                    if (it != Servers.currentServer.value) {
-                        Servers.setCurrentServer(it)
+                    if (it != GlobalServers.currentServer.value) {
+                        GlobalServers.setCurrentServer(it)
                     }
                 }
             }
-            combine(Servers.servers, Servers.currentServer) { servers, _ -> servers }
+            combine(GlobalServers.servers, GlobalServers.currentServer) { servers, _ -> servers }
                 .collectWhenStarted(this@NavigationActivity) { servers ->
                     serversView.isEnabled = servers.isNotEmpty()
                     serversViewAdapter.update()
@@ -311,7 +309,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider, Logger {
                 navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
             }
 
-            Rpc.isConnected.collectWhenStarted(
+            GlobalRpc.isConnected.collectWhenStarted(
                 this@NavigationActivity,
                 listSettingsLayout::setChildrenEnabled
             )

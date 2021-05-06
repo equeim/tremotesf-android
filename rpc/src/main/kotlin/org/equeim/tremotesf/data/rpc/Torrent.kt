@@ -19,52 +19,19 @@
 
 package org.equeim.tremotesf.data.rpc
 
-import android.content.Context
-
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.Tracker
-import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.utils.DecimalFormats
 
 
-class Torrent(val data: TorrentData, private val context: Context, prevTorrent: Torrent? = null) {
+class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent? = null) {
     val id = data.id
     val hashString: String = data.hashString
 
     val name: String = data.name
 
     val status = data.status
-
-    private val errorString: String = data.errorString
-
-    val statusString: String
-        get() {
-            return when (status) {
-                TorrentData.Status.Paused -> context.getString(R.string.torrent_paused)
-                TorrentData.Status.Downloading -> context.resources.getQuantityString(
-                    R.plurals.torrent_downloading,
-                    seeders,
-                    seeders
-                )
-                TorrentData.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
-                TorrentData.Status.Seeding -> context.resources.getQuantityString(
-                    R.plurals.torrent_seeding,
-                    leechers,
-                    leechers
-                )
-                TorrentData.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
-                TorrentData.Status.QueuedForDownloading,
-                TorrentData.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
-                TorrentData.Status.Checking -> context.getString(
-                    R.string.torrent_checking,
-                    DecimalFormats.generic.format(recheckProgress * 100)
-                )
-                TorrentData.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
-                TorrentData.Status.Errored -> errorString
-                else -> ""
-            }
-        }
+    val errorString: String = data.errorString
 
     val totalSize = data.totalSize
     val completedSize = data.completedSize
@@ -96,7 +63,7 @@ class Torrent(val data: TorrentData, private val context: Context, prevTorrent: 
         @Synchronized set(value) {
             if (value != field) {
                 field = value
-                Rpc.nativeInstance.setTorrentFilesEnabled(data, value)
+                rpc.nativeInstance.setTorrentFilesEnabled(data, value)
             }
         }
 
@@ -105,7 +72,7 @@ class Torrent(val data: TorrentData, private val context: Context, prevTorrent: 
         @Synchronized set(value) {
             if (value != field) {
                 field = value
-                Rpc.nativeInstance.setTorrentPeersEnabled(data, value)
+                rpc.nativeInstance.setTorrentPeersEnabled(data, value)
             }
         }
 
@@ -121,70 +88,70 @@ class Torrent(val data: TorrentData, private val context: Context, prevTorrent: 
     }
 
     fun setDownloadSpeedLimited(limited: Boolean) {
-        Rpc.nativeInstance.setTorrentDownloadSpeedLimited(data, limited)
+        rpc.nativeInstance.setTorrentDownloadSpeedLimited(data, limited)
     }
 
     fun setDownloadSpeedLimit(limit: Int) {
-        Rpc.nativeInstance.setTorrentDownloadSpeedLimit(data, limit)
+        rpc.nativeInstance.setTorrentDownloadSpeedLimit(data, limit)
     }
 
     fun setUploadSpeedLimited(limited: Boolean) {
-        Rpc.nativeInstance.setTorrentUploadSpeedLimited(data, limited)
+        rpc.nativeInstance.setTorrentUploadSpeedLimited(data, limited)
     }
 
     fun setUploadSpeedLimit(limit: Int) {
-        Rpc.nativeInstance.setTorrentUploadSpeedLimit(data, limit)
+        rpc.nativeInstance.setTorrentUploadSpeedLimit(data, limit)
     }
 
     fun setRatioLimitMode(mode: Int) {
-        Rpc.nativeInstance.setTorrentRatioLimitMode(data, mode)
+        rpc.nativeInstance.setTorrentRatioLimitMode(data, mode)
     }
 
     fun setRatioLimit(limit: Double) {
-        Rpc.nativeInstance.setTorrentRatioLimit(data, limit)
+        rpc.nativeInstance.setTorrentRatioLimit(data, limit)
     }
 
     fun setPeersLimit(limit: Int) {
-        Rpc.nativeInstance.setTorrentPeersLimit(data, limit)
+        rpc.nativeInstance.setTorrentPeersLimit(data, limit)
     }
 
     fun setHonorSessionLimits(honor: Boolean) {
-        Rpc.nativeInstance.setTorrentHonorSessionLimits(data, honor)
+        rpc.nativeInstance.setTorrentHonorSessionLimits(data, honor)
     }
 
     fun setBandwidthPriority(priority: Int) {
-        Rpc.nativeInstance.setTorrentBandwidthPriority(data, priority)
+        rpc.nativeInstance.setTorrentBandwidthPriority(data, priority)
     }
 
     fun setIdleSeedingLimitMode(mode: Int) {
-        Rpc.nativeInstance.setTorrentIdleSeedingLimitMode(data, mode)
+        rpc.nativeInstance.setTorrentIdleSeedingLimitMode(data, mode)
     }
 
     fun setIdleSeedingLimit(limit: Int) {
-        Rpc.nativeInstance.setTorrentIdleSeedingLimit(data, limit)
+        rpc.nativeInstance.setTorrentIdleSeedingLimit(data, limit)
     }
 
     fun setFilesWanted(files: IntArray, wanted: Boolean) {
-        Rpc.nativeInstance.setTorrentFilesWanted(data, files, wanted)
+        rpc.nativeInstance.setTorrentFilesWanted(data, files, wanted)
     }
 
     fun setFilesPriority(files: IntArray, priority: Int) {
-        Rpc.nativeInstance.setTorrentFilesPriority(data, files, priority)
+        rpc.nativeInstance.setTorrentFilesPriority(data, files, priority)
     }
 
     fun addTrackers(announceUrls: List<String>) {
         val vector = StringsVector()
         vector.reserve(announceUrls.size.toLong())
         vector.addAll(announceUrls)
-        Rpc.nativeInstance.torrentAddTrackers(data, vector)
+        rpc.nativeInstance.torrentAddTrackers(data, vector)
         vector.delete()
     }
 
     fun setTracker(trackerId: Int, announce: String) {
-        Rpc.nativeInstance.torrentSetTracker(data, trackerId, announce)
+        rpc.nativeInstance.torrentSetTracker(data, trackerId, announce)
     }
 
     fun removeTrackers(ids: IntArray) {
-        Rpc.nativeInstance.torrentRemoveTrackers(data, ids)
+        rpc.nativeInstance.torrentRemoveTrackers(data, ids)
     }
 }

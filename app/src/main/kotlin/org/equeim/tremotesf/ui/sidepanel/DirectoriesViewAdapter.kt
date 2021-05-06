@@ -21,10 +21,9 @@ package org.equeim.tremotesf.ui.sidepanel
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
@@ -42,7 +41,7 @@ class DirectoriesViewAdapter(
 
     override fun getItem(position: Int): String {
         if (position == 0) {
-            return context.getString(R.string.torrents_all, Rpc.torrents.value.size)
+            return context.getString(R.string.torrents_all, GlobalRpc.torrents.value.size)
         }
         val directory = directories[position - 1]
         val torrents = directoriesMap[directory]

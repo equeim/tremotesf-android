@@ -25,11 +25,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.savedStateViewModels
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class TorrentFilesFragment :
@@ -70,7 +70,7 @@ class TorrentFilesFragment :
 
         model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
 
-        Rpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
+        GlobalRpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == model.torrent.value?.id) {
                 model.filesTree.renameFile(filePath, newName)
             }

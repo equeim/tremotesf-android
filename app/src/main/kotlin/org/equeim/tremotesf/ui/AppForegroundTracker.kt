@@ -21,11 +21,9 @@ package org.equeim.tremotesf.ui
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -40,8 +38,6 @@ object AppForegroundTracker : Logger {
 
     val appInForeground = combine(hasStartedActivity, foregroundServiceStarted, Boolean::or)
         .stateIn(scope, SharingStarted.Eagerly, false)
-
-    fun Flow<Boolean>.dropUntilInForeground() = dropWhile { !it }
 
     init {
         appInForeground

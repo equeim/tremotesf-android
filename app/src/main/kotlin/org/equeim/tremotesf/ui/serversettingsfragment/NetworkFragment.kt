@@ -21,11 +21,10 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
 import android.view.View
-
 import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsNetworkFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
@@ -51,58 +50,58 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             peerPortEdit.filters = arrayOf(IntFilter(0..65535))
-            peerPortEdit.setText(Rpc.serverSettings.peerPort.toString())
+            peerPortEdit.setText(GlobalRpc.serverSettings.peerPort.toString())
             peerPortEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.peerPort = it.toString().toInt()
+                GlobalRpc.serverSettings.peerPort = it.toString().toInt()
             }
 
-            randomPortCheckBox.isChecked = Rpc.serverSettings.randomPortEnabled
+            randomPortCheckBox.isChecked = GlobalRpc.serverSettings.randomPortEnabled
             randomPortCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.randomPortEnabled = checked
+                GlobalRpc.serverSettings.randomPortEnabled = checked
             }
 
-            portForwardingCheckBox.isChecked = Rpc.serverSettings.portForwardingEnabled
+            portForwardingCheckBox.isChecked = GlobalRpc.serverSettings.portForwardingEnabled
             portForwardingCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.portForwardingEnabled = checked
+                GlobalRpc.serverSettings.portForwardingEnabled = checked
             }
 
             val encryptionItemValues = resources.getStringArray(R.array.encryption_items)
             encryptionView.setAdapter(ArrayDropdownAdapter(encryptionItemValues))
-            encryptionView.setText(encryptionItemValues[encryptionItems.indexOf(Rpc.serverSettings.encryptionMode)])
+            encryptionView.setText(encryptionItemValues[encryptionItems.indexOf(GlobalRpc.serverSettings.encryptionMode)])
             encryptionView.setOnItemClickListener { _, _, position, _ ->
-                Rpc.serverSettings.encryptionMode = encryptionItems[position]
+                GlobalRpc.serverSettings.encryptionMode = encryptionItems[position]
             }
 
-            utpCheckBox.isChecked = Rpc.serverSettings.utpEnabled
+            utpCheckBox.isChecked = GlobalRpc.serverSettings.utpEnabled
             utpCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.utpEnabled = checked
+                GlobalRpc.serverSettings.utpEnabled = checked
             }
 
-            pexCheckBox.isChecked = Rpc.serverSettings.pexEnabled
+            pexCheckBox.isChecked = GlobalRpc.serverSettings.pexEnabled
             pexCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.pexEnabled = checked
+                GlobalRpc.serverSettings.pexEnabled = checked
             }
 
-            dhtCheckBox.isChecked = Rpc.serverSettings.dhtEnabled
+            dhtCheckBox.isChecked = GlobalRpc.serverSettings.dhtEnabled
             dhtCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.dhtEnabled = checked
+                GlobalRpc.serverSettings.dhtEnabled = checked
             }
 
-            lpdCheckBox.isChecked = Rpc.serverSettings.lpdEnabled
+            lpdCheckBox.isChecked = GlobalRpc.serverSettings.lpdEnabled
             lpdCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.lpdEnabled = checked
+                GlobalRpc.serverSettings.lpdEnabled = checked
             }
 
             peersPerTorrentEdit.filters = arrayOf(IntFilter(0..10000))
-            peersPerTorrentEdit.setText(Rpc.serverSettings.maximumPeersPerTorrent.toString())
+            peersPerTorrentEdit.setText(GlobalRpc.serverSettings.maximumPeersPerTorrent.toString())
             peersPerTorrentEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
+                GlobalRpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
             }
 
             peersGloballyEdit.filters = arrayOf(IntFilter(0..10000))
-            peersGloballyEdit.setText(Rpc.serverSettings.maximumPeersGlobally.toString())
+            peersGloballyEdit.setText(GlobalRpc.serverSettings.maximumPeersGlobally.toString())
             peersGloballyEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
+                GlobalRpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
             }
         }
     }

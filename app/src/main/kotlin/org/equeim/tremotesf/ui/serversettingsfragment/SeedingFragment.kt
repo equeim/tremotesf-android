@@ -21,10 +21,9 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
 import android.view.View
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsSeedingFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
@@ -41,27 +40,27 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            ratioLimitCheckBox.isChecked = Rpc.serverSettings.ratioLimited
+            ratioLimitCheckBox.isChecked = GlobalRpc.serverSettings.ratioLimited
             ratioLimitCheckBox.setDependentViews(ratioLimitLayout) { checked ->
-                Rpc.serverSettings.ratioLimited = checked
+                GlobalRpc.serverSettings.ratioLimited = checked
             }
 
             val doubleFilter = DoubleFilter(0.0..10000.0)
             ratioLimitEdit.filters = arrayOf(doubleFilter)
-            ratioLimitEdit.setText(DecimalFormats.ratio.format(Rpc.serverSettings.ratioLimit))
+            ratioLimitEdit.setText(DecimalFormats.ratio.format(GlobalRpc.serverSettings.ratioLimit))
             ratioLimitEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.ratioLimit = doubleFilter.parse(it.toString())!!
+                GlobalRpc.serverSettings.ratioLimit = doubleFilter.parse(it.toString())!!
             }
 
-            idleSeedingCheckBox.isChecked = Rpc.serverSettings.idleSeedingLimited
+            idleSeedingCheckBox.isChecked = GlobalRpc.serverSettings.idleSeedingLimited
             idleSeedingCheckBox.setDependentViews(idleSeedingLimitLayout) { checked ->
-                Rpc.serverSettings.idleSeedingLimited = checked
+                GlobalRpc.serverSettings.idleSeedingLimited = checked
             }
 
             idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..10000))
-            idleSeedingLimitEdit.setText(Rpc.serverSettings.idleSeedingLimit.toString())
+            idleSeedingLimitEdit.setText(GlobalRpc.serverSettings.idleSeedingLimit.toString())
             idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.idleSeedingLimit = it.toString().toInt()
+                GlobalRpc.serverSettings.idleSeedingLimit = it.toString().toInt()
             }
         }
     }

@@ -39,6 +39,7 @@ import kotlinx.coroutines.plus
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.savedStateFlow
@@ -112,7 +113,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val nameFilter by savedStateFlow(savedStateHandle) { "" }
 
     private val filteredTorrents = combine(
-        Rpc.torrents,
+        GlobalRpc.torrents,
         statusFilterMode,
         trackerFilter,
         directoryFilter,
@@ -129,22 +130,22 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         emptyList()
     )
 
-    val subtitleUpdateData = Rpc.serverStats.combine(Rpc.isConnected, ::Pair)
+    val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
 
     data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean)
 
-    val placeholderUpdateData = combine(Rpc.status, hasTorrents, ::PlaceholderUpdateData)
+    val placeholderUpdateData = combine(GlobalRpc.status, hasTorrents, ::PlaceholderUpdateData)
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)
 
     init {
-        Rpc.torrentAddDuplicateEvents
+        GlobalRpc.torrentAddDuplicateEvents
             .onEach { showAddTorrentDuplicateError.value = true }
             .launchIn(viewModelScope)
-        Rpc.torrentAddErrorEvents
+        GlobalRpc.torrentAddErrorEvents
             .onEach { showAddTorrentError.value = true }
             .launchIn(viewModelScope)
     }

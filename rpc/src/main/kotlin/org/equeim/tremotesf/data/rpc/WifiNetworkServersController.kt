@@ -54,14 +54,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
-import org.equeim.tremotesf.Application
-import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.utils.Logger
 
-object WifiNetworkHelper : Logger {
-    private val context = Application.instance
+
+class WifiNetworkServersController(private val servers: Servers, private val context: Context) : Logger {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
+
+    val enabled = MutableStateFlow(false)
 
     private val _observingActiveWifiNetwork = MutableStateFlow(false)
     val observingActiveWifiNetwork: StateFlow<Boolean> by ::_observingActiveWifiNetwork
@@ -71,10 +71,10 @@ object WifiNetworkHelper : Logger {
     val currentWifiSsid: String?
         get() = currentWifiInfo?.knownSsidOrNull
 
-    fun subscribeToForegroundTracker() {
-        info("subscribeToForegroundTracker() called")
+    init {
+        info("init")
 
-        val hasServerWithWifiNetwork = Servers.servers.map { servers ->
+        val hasServerWithWifiNetwork = servers.servers.map { servers ->
             val has =
                 servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() } != null
             if (has) {
@@ -85,7 +85,7 @@ object WifiNetworkHelper : Logger {
             has
         }
 
-        combine(hasServerWithWifiNetwork, AppForegroundTracker.appInForeground, Boolean::and)
+        combine(hasServerWithWifiNetwork, enabled, Boolean::and)
             .distinctUntilChanged()
             .dropWhile { !it }
             .onEach { shouldObserveWifiNetworks ->
@@ -105,7 +105,7 @@ object WifiNetworkHelper : Logger {
 
         val scope = CoroutineScope(Dispatchers.Main).also { wifiNetworkObserverScope = it }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val connectivityManager = this.connectivityManager
+            val connectivityManager = connectivityManager
             if (connectivityManager != null) {
                 observeActiveWifiNetworkV24(connectivityManager)
                     .onEach { onActiveWifiNetworkChanged() }
@@ -190,24 +190,8 @@ object WifiNetworkHelper : Logger {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private val wifiNetworkCapabilities = arrayOf(
-        NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED,
-        NetworkCapabilities.NET_CAPABILITY_TRUSTED,
-        NetworkCapabilities.NET_CAPABILITY_NOT_VPN
-    ).let {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            it + arrayOf(
-                NetworkCapabilities.NET_CAPABILITY_FOREGROUND,
-                NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED
-            )
-        } else {
-            it
-        }
-    }
-
     private fun observeActiveWifiNetworkV16(): Flow<Unit> {
-        info("observeActiveWifiNetworkV16() called with: context = $context")
+        info("observeActiveWifiNetworkV16() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow<Unit> {
             info("observeActiveWifiNetworkV16: registering receiver")
@@ -246,7 +230,7 @@ object WifiNetworkHelper : Logger {
         val ssid = wifiInfo?.knownSsidOrNull
         if (ssid != null) {
             info("onActiveWifiNetworkChanged: SSID = '$ssid'")
-            Servers.setCurrentServerFromWifiNetwork(lazyOf(ssid))
+            servers.setCurrentServerFromWifiNetwork(lazyOf(ssid))
         } else {
             error("onActiveWifiNetworkChanged: SSID is null")
         }
@@ -254,7 +238,7 @@ object WifiNetworkHelper : Logger {
 
     private val currentWifiInfo: WifiInfo?
         get() {
-            val wifiManager = this.wifiManager
+            val wifiManager = wifiManager
             return if (wifiManager != null) {
                 wifiManager.connectionInfo.also {
                     if (it == null) {
@@ -288,7 +272,6 @@ object WifiNetworkHelper : Logger {
         "<unknown ssid>"
     }
 
-    private const val quoteChar = '"'
     private fun String.removeSsidQuotes(): String? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return this
@@ -298,6 +281,26 @@ object WifiNetworkHelper : Logger {
         } else {
             error("removeQuotes: SSID = '$this' is not surrounded by quotation marks, unsupported")
             null
+        }
+    }
+
+    private companion object {
+        const val quoteChar = '"'
+
+        @RequiresApi(Build.VERSION_CODES.N)
+        val wifiNetworkCapabilities = arrayOf(
+            NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED,
+            NetworkCapabilities.NET_CAPABILITY_TRUSTED,
+            NetworkCapabilities.NET_CAPABILITY_NOT_VPN
+        ).let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                it + arrayOf(
+                    NetworkCapabilities.NET_CAPABILITY_FOREGROUND,
+                    NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED
+                )
+            } else {
+                it
+            }
         }
     }
 }

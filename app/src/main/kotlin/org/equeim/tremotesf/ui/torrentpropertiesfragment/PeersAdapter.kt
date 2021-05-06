@@ -24,8 +24,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.PeerListItemBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
@@ -58,7 +58,7 @@ class PeersAdapter : StateRestoringListAdapter<Peer, PeersAdapter.ViewHolder>(Ca
     }
 
     override fun allowStateRestoring(): Boolean {
-        return Rpc.isConnected.value
+        return GlobalRpc.isConnected.value
     }
 
     class ViewHolder(private val binding: PeerListItemBinding) :

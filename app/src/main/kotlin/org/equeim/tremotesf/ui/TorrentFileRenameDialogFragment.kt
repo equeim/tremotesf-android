@@ -31,7 +31,7 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.parcelize.Parcelize
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
 class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
@@ -74,7 +74,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
 
         fun setFragmentResultListenerForRpc(fragment: Fragment) =
             setFragmentResultListener(fragment) { (torrentId, filePath, newName) ->
-                Rpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
+                GlobalRpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
             }
 
         fun setFragmentResultListener(fragment: Fragment, listener: (FileRenameRequest) -> Unit) {

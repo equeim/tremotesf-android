@@ -36,16 +36,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Server
-import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import java.util.Comparator
 
 
@@ -89,7 +89,7 @@ class ConnectionSettingsFragment : NavigationFragment(
             })
         }
 
-        Servers.servers.collectWhenStarted(viewLifecycleOwner, ::update)
+        GlobalServers.servers.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     fun update(servers: List<Server>) {
@@ -153,8 +153,8 @@ class ConnectionSettingsFragment : NavigationFragment(
             init {
                 binding.radioButton.setOnClickListener {
                     val server = adapter.servers[bindingAdapterPosition]
-                    if (server.name != Servers.currentServer.value?.name) {
-                        Servers.setCurrentServer(server)
+                    if (server.name != GlobalServers.currentServer.value?.name) {
+                        GlobalServers.setCurrentServer(server)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
                     }
                 }
@@ -164,7 +164,7 @@ class ConnectionSettingsFragment : NavigationFragment(
                 super.update()
                 val server = adapter.servers[bindingAdapterPosition]
                 with(binding) {
-                    radioButton.isChecked = (server.name == Servers.currentServer.value?.name)
+                    radioButton.isChecked = (server.name == GlobalServers.currentServer.value?.name)
                     textView.text = server.name
                 }
             }
@@ -216,7 +216,7 @@ class RemoveServerDialogFragment : NavigationDialogFragment() {
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
                 selectionTracker?.apply {
-                    Servers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
+                    GlobalServers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
                     clearSelection()
                 }
             }

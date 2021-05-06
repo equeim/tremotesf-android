@@ -25,13 +25,13 @@ import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.ServerStats
 import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class ServerStatsDialogFragment : NavigationDialogFragment() {
@@ -39,7 +39,7 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Rpc.isConnected.combine(Rpc.serverStats, ::Pair).collectWhenStarted(this, ::update)
+        GlobalRpc.isConnected.combine(GlobalRpc.serverStats, ::Pair).collectWhenStarted(this, ::update)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

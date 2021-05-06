@@ -43,6 +43,8 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
@@ -53,8 +55,8 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
-import org.equeim.tremotesf.utils.handleAndReset
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.handleAndReset
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -125,9 +127,9 @@ class TorrentPropertiesFragment : NavigationFragment(
         model.showTorrentRemovedMessage.handleAndReset(::showTorrentRemovedMessage)
             .collectWhenStarted(viewLifecycleOwner)
 
-        Rpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onConnectionStateChanged)
+        GlobalRpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onConnectionStateChanged)
 
-        combine(Rpc.status, model.torrent, ::Pair)
+        combine(GlobalRpc.status, model.torrent, ::Pair)
             .collectWhenStarted(viewLifecycleOwner) { (status, torrent) ->
                 updatePlaceholderText(status, torrent)
             }
@@ -163,11 +165,11 @@ class TorrentPropertiesFragment : NavigationFragment(
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         val torrent = model.torrent.value ?: return false
         when (menuItem.itemId) {
-            R.id.start -> Rpc.nativeInstance.startTorrents(intArrayOf(torrent.id))
-            R.id.pause -> Rpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
-            R.id.check -> Rpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
-            R.id.start_now -> Rpc.nativeInstance.startTorrentsNow(intArrayOf(torrent.id))
-            R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
+            R.id.start -> GlobalRpc.nativeInstance.startTorrents(intArrayOf(torrent.id))
+            R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
+            R.id.check -> GlobalRpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
+            R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(intArrayOf(torrent.id))
+            R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
             R.id.set_location -> navigate(
                 TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
                     intArrayOf(torrent.id),
@@ -207,7 +209,7 @@ class TorrentPropertiesFragment : NavigationFragment(
                 "",
                 Snackbar.LENGTH_INDEFINITE,
                 R.string.connect,
-                Rpc.nativeInstance::connect
+                GlobalRpc.nativeInstance::connect
             ) {
                 snackbar = null
             }

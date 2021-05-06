@@ -21,7 +21,7 @@ package org.equeim.tremotesf.ui.sidepanel
 
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.data.rpc.Server
-import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 import java.util.Comparator
@@ -42,11 +42,11 @@ class ServersViewAdapter(textView: AutoCompleteTextView) :
     override fun getCount() = servers.size
 
     override fun getCurrentItem(): CharSequence {
-        return Servers.currentServer.value?.name ?: ""
+        return GlobalServers.currentServer.value?.name ?: ""
     }
 
     fun update() {
-        servers = Servers.servers.value.sortedWith(comparator)
+        servers = GlobalServers.servers.value.sortedWith(comparator)
         notifyDataSetChanged()
     }
 }

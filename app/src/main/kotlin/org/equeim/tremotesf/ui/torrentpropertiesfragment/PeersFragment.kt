@@ -38,11 +38,12 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.viewModels
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 data class Peer(
@@ -148,7 +149,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
                 }
             }.launchIn(viewModelScope)
 
-            viewModelScope.launch { Rpc.torrentPeersUpdatedEvents.collect(::onTorrentPeersUpdated) }
+            viewModelScope.launch { GlobalRpc.torrentPeersUpdatedEvents.collect(::onTorrentPeersUpdated) }
         }
 
         override fun onCleared() {

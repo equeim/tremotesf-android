@@ -29,13 +29,15 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class AddTorrentLinkFragment : AddTorrentFragment(
@@ -70,7 +72,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             priorityView.setText(R.string.normal_priority)
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
 
-            startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+            startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
         }
 
         doneMenuItem = toolbar?.menu?.findItem(R.id.done)
@@ -81,7 +83,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             savedInstanceState
         )
 
-        Rpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
+        GlobalRpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -123,7 +125,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                     return false
                 }
 
-                Rpc.nativeInstance.addTorrentLink(
+                GlobalRpc.nativeInstance.addTorrentLink(
                     torrentLinkEdit.text?.toString() ?: "",
                     downloadDirectoryEdit.text.toString(),
                     priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
@@ -152,7 +154,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                         R.string.connect
                     ) {
                         snackbar = null
-                        Rpc.nativeInstance.connect()
+                        GlobalRpc.nativeInstance.connect()
                     }
                     placeholder.text = status.statusString
 
@@ -167,8 +169,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
             if (status.isConnected) {
                 if (scrollView.visibility != View.VISIBLE) {
-                    downloadDirectoryLayout.downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
-                    startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+                    downloadDirectoryLayout.downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
+                    startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
                     scrollView.visibility = View.VISIBLE
                 }
                 placeholderLayout.visibility = View.GONE

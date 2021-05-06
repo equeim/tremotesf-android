@@ -21,10 +21,9 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
 import android.view.View
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
@@ -39,30 +38,30 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
+            downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
             downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.downloadDirectory = it.toString()
+                GlobalRpc.serverSettings.downloadDirectory = it.toString()
             }
 
-            startTorrentsCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+            startTorrentsCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
             startTorrentsCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.startAddedTorrents = checked
+                GlobalRpc.serverSettings.startAddedTorrents = checked
             }
 
-            renameIncompleteFilesCheckBox.isChecked = Rpc.serverSettings.renameIncompleteFiles
+            renameIncompleteFilesCheckBox.isChecked = GlobalRpc.serverSettings.renameIncompleteFiles
             renameIncompleteFilesCheckBox.setOnCheckedChangeListener { _, checked ->
-                Rpc.serverSettings.renameIncompleteFiles = checked
+                GlobalRpc.serverSettings.renameIncompleteFiles = checked
             }
 
             incompleteFilesDirectoryCheckBox.isChecked =
-                Rpc.serverSettings.incompleteDirectoryEnabled
+                GlobalRpc.serverSettings.incompleteDirectoryEnabled
             incompleteFilesDirectoryCheckBox.setDependentViews(incompleteFilesDirectoryLayout) { checked ->
-                Rpc.serverSettings.incompleteDirectoryEnabled = checked
+                GlobalRpc.serverSettings.incompleteDirectoryEnabled = checked
             }
 
-            incompleteFilesDirectoryEdit.setText(Rpc.serverSettings.incompleteDirectory)
+            incompleteFilesDirectoryEdit.setText(GlobalRpc.serverSettings.incompleteDirectory)
             incompleteFilesDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.incompleteDirectory = it.toString()
+                GlobalRpc.serverSettings.incompleteDirectory = it.toString()
             }
         }
     }

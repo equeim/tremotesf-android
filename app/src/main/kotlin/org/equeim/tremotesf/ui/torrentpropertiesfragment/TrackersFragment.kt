@@ -29,7 +29,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment) {

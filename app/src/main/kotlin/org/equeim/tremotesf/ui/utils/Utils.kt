@@ -25,11 +25,9 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.widget.ProgressBar
-
 import androidx.core.content.withStyledAttributes
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.ForegroundService
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.utils.Logger
@@ -39,7 +37,7 @@ object Utils : Logger {
     fun shutdownApp(context: Context, stopService: Boolean = true) {
         info("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
-        Rpc.disconnectOnShutdown()
+        GlobalRpc.disconnectOnShutdown()
         if (stopService) {
             ForegroundService.stop(context)
         }

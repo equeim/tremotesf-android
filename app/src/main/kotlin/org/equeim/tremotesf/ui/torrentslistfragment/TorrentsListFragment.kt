@@ -36,13 +36,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.data.rpc.ServerStats
-import org.equeim.tremotesf.data.rpc.Servers
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
@@ -54,8 +55,8 @@ import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
-import org.equeim.tremotesf.utils.handleAndReset
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.handleAndReset
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -108,13 +109,13 @@ class TorrentsListFragment : NavigationFragment(
 
         model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
 
-        Rpc.torrents.collectWhenStarted(viewLifecycleOwner, ::onTorrentsUpdated)
+        GlobalRpc.torrents.collectWhenStarted(viewLifecycleOwner, ::onTorrentsUpdated)
 
-        Rpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectionStateChanged)
+        GlobalRpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectionStateChanged)
 
         model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
-        Servers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
+        GlobalServers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
         model.subtitleUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         model.showAddTorrentDuplicateError.handleAndReset {
@@ -131,7 +132,7 @@ class TorrentsListFragment : NavigationFragment(
             sortView.setOnItemClickListener { _, _, position, _ ->
                 model.apply {
                     sortMode.value = TorrentsListFragmentViewModel.SortMode.values()[position]
-                    if (Rpc.isConnected.value) {
+                    if (GlobalRpc.isConnected.value) {
                         Settings.torrentsSortMode = sortMode.value
                     }
                 }
@@ -150,7 +151,7 @@ class TorrentsListFragment : NavigationFragment(
                 model.apply {
                     statusFilterMode.value =
                         TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
-                    if (Rpc.isConnected.value) {
+                    if (GlobalRpc.isConnected.value) {
                         Settings.torrentsStatusFilter = statusFilterMode.value
                     }
                 }
@@ -160,7 +161,7 @@ class TorrentsListFragment : NavigationFragment(
                 model.apply {
                     trackerFilter.value =
                         (trackersView.adapter as TrackersViewAdapter).getTrackerFilter(position)
-                    if (Rpc.isConnected.value) {
+                    if (GlobalRpc.isConnected.value) {
                         Settings.torrentsTrackerFilter = trackerFilter.value
                     }
                 }
@@ -172,7 +173,7 @@ class TorrentsListFragment : NavigationFragment(
                         (directoriesView.adapter as DirectoriesViewAdapter).getDirectoryFilter(
                             position
                         )
-                    if (Rpc.isConnected.value) {
+                    if (GlobalRpc.isConnected.value) {
                         Settings.torrentsDirectoryFilter = directoryFilter.value
                     }
                 }
@@ -234,16 +235,16 @@ class TorrentsListFragment : NavigationFragment(
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.connect -> {
-                if (Rpc.connectionState.value == RpcConnectionState.Disconnected) {
-                    Rpc.nativeInstance.connect()
+                if (GlobalRpc.connectionState.value == RpcConnectionState.Disconnected) {
+                    GlobalRpc.nativeInstance.connect()
                 } else {
-                    Rpc.nativeInstance.disconnect()
+                    GlobalRpc.nativeInstance.disconnect()
                 }
             }
             R.id.add_torrent_file -> startFilePickerActivity()
             R.id.alternative_speed_limits -> {
                 menuItem.isChecked = !menuItem.isChecked
-                Rpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked
+                GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked
             }
             else -> return menuItem.onNavDestinationSelected(navController)
         }
@@ -254,7 +255,7 @@ class TorrentsListFragment : NavigationFragment(
         if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
             if (connectionState == RpcConnectionState.Connected) {
                 menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-                    Rpc.serverSettings.alternativeSpeedLimitsEnabled
+                    GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
                 requiredActivity.actionMode?.finish()
                 searchMenuItem?.collapseActionView()
@@ -275,7 +276,7 @@ class TorrentsListFragment : NavigationFragment(
         }
 
         menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-            if (Rpc.isConnected.value) Rpc.serverSettings.alternativeSpeedLimitsEnabled else false
+            if (GlobalRpc.isConnected.value) GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled else false
     }
 
     private fun updateTitle(currentServer: Server?) {
@@ -307,7 +308,7 @@ class TorrentsListFragment : NavigationFragment(
         val menu = this.menu ?: return
 
         val connectMenuItem = menu.findItem(R.id.connect)
-        connectMenuItem.isEnabled = Servers.hasServers
+        connectMenuItem.isEnabled = GlobalServers.hasServers
         connectMenuItem.title = when (connectionState) {
             RpcConnectionState.Disconnected -> getString(R.string.connect)
             RpcConnectionState.Connecting,

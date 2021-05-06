@@ -21,10 +21,9 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
 import android.view.View
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsQueueFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
@@ -40,37 +39,37 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            downloadQueueCheckBox.isChecked = Rpc.serverSettings.downloadQueueEnabled
+            downloadQueueCheckBox.isChecked = GlobalRpc.serverSettings.downloadQueueEnabled
             downloadQueueCheckBox.setDependentViews(downloadQueueLayout) { checked ->
-                Rpc.serverSettings.downloadQueueEnabled = checked
+                GlobalRpc.serverSettings.downloadQueueEnabled = checked
             }
 
             downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            downloadQueueEdit.setText(Rpc.serverSettings.downloadQueueSize.toString())
+            downloadQueueEdit.setText(GlobalRpc.serverSettings.downloadQueueSize.toString())
             downloadQueueEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.downloadQueueSize = it.toString().toInt()
+                GlobalRpc.serverSettings.downloadQueueSize = it.toString().toInt()
             }
 
-            seedQueueCheckBox.isChecked = Rpc.serverSettings.seedQueueEnabled
+            seedQueueCheckBox.isChecked = GlobalRpc.serverSettings.seedQueueEnabled
             seedQueueCheckBox.setDependentViews(seedQueueLayout) { checked ->
-                Rpc.serverSettings.seedQueueEnabled = checked
+                GlobalRpc.serverSettings.seedQueueEnabled = checked
             }
 
             seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            seedQueueEdit.setText(Rpc.serverSettings.seedQueueSize.toString())
+            seedQueueEdit.setText(GlobalRpc.serverSettings.seedQueueSize.toString())
             seedQueueEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.seedQueueSize = it.toString().toInt()
+                GlobalRpc.serverSettings.seedQueueSize = it.toString().toInt()
             }
 
-            idleQueueCheckBox.isChecked = Rpc.serverSettings.idleQueueLimited
+            idleQueueCheckBox.isChecked = GlobalRpc.serverSettings.idleQueueLimited
             idleQueueCheckBox.setDependentViews(idleQueueLayout) { checked ->
-                Rpc.serverSettings.idleQueueLimited = checked
+                GlobalRpc.serverSettings.idleQueueLimited = checked
             }
 
             idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            idleQueueEdit.setText(Rpc.serverSettings.idleQueueLimit.toString())
+            idleQueueEdit.setText(GlobalRpc.serverSettings.idleQueueLimit.toString())
             idleQueueEdit.doAfterTextChangedAndNotEmpty {
-                Rpc.serverSettings.idleQueueLimit = it.toString().toInt()
+                GlobalRpc.serverSettings.idleQueueLimit = it.toString().toInt()
             }
         }
     }

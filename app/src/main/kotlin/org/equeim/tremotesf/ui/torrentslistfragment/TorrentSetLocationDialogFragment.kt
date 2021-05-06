@@ -24,8 +24,8 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.navigation.fragment.navArgs
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
@@ -50,7 +50,7 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
                 }
             },
             {
-                Rpc.nativeInstance.setTorrentsLocation(
+                GlobalRpc.nativeInstance.setTorrentsLocation(
                     args.torrentIds,
                     it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                     it.moveFilesCheckBox.isChecked

@@ -48,13 +48,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
@@ -67,7 +68,7 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class AddTorrentFileFragment : AddTorrentFragment(
@@ -91,11 +92,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     path.isNullOrEmpty() -> {
                         downloadDirectoryLayout.helperText = null
                     }
-                    Rpc.serverSettings.canShowFreeSpaceForPath() -> {
-                        Rpc.nativeInstance.getFreeSpaceForPath(path.toString())
+                    GlobalRpc.serverSettings.canShowFreeSpaceForPath() -> {
+                        GlobalRpc.nativeInstance.getFreeSpaceForPath(path.toString())
                     }
-                    Rpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
-                        Rpc.nativeInstance.getDownloadDirFreeSpace()
+                    GlobalRpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
+                        GlobalRpc.nativeInstance.getDownloadDirFreeSpace()
                     }
                     else -> {
                         downloadDirectoryLayout.helperText = null
@@ -104,16 +105,16 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             if (savedInstanceState == null) {
-                downloadDirectoryEdit.setText(Rpc.serverSettings.downloadDirectory)
+                downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
             }
 
             val directoriesAdapter =
                 AddTorrentDirectoriesAdapter(downloadDirectoryEdit, savedInstanceState)
             downloadDirectoryEdit.setAdapter(directoriesAdapter)
 
-            Rpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
+            GlobalRpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
                 val text = downloadDirectoryEdit.text?.trim()
-                if (!text.isNullOrEmpty() && Rpc.serverSettings.downloadDirectory?.contentEquals(
+                if (!text.isNullOrEmpty() && GlobalRpc.serverSettings.downloadDirectory?.contentEquals(
                         text
                     ) == true
                 ) {
@@ -124,7 +125,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 }
             }
 
-            Rpc.gotFreeSpaceForPathEvents.collectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
+            GlobalRpc.gotFreeSpaceForPathEvents.collectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
                 val text = downloadDirectoryEdit.text?.trim()
                 if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     downloadDirectoryLayout.helperText = if (success) {
@@ -252,7 +253,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         val infoFragment = findFragment<InfoFragment>()
         if (infoFragment?.check() == true) {
             val priorities = model.getFilePriorities()
-            Rpc.nativeInstance.addTorrentFile(
+            GlobalRpc.nativeInstance.addTorrentFile(
                 model.detachFd(),
                 infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                 priorities.unwantedFiles.toIntArray(),
@@ -337,7 +338,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                             "",
                             Snackbar.LENGTH_INDEFINITE,
                             R.string.connect,
-                            Rpc.nativeInstance::connect,
+                            GlobalRpc.nativeInstance::connect,
                         ) {
                             snackbar = null
                         }
@@ -392,7 +393,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     savedInstanceState
                 )
 
-                startDownloadingCheckBox.isChecked = Rpc.serverSettings.startAddedTorrents
+                startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
             }
         }
 

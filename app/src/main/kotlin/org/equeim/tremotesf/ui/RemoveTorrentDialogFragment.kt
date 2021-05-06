@@ -27,8 +27,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 
 class RemoveTorrentDialogFragment : NavigationDialogFragment() {
     private val args: RemoveTorrentDialogFragmentArgs by navArgs()
@@ -51,7 +51,7 @@ class RemoveTorrentDialogFragment : NavigationDialogFragment() {
             .setView(binding.root)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
-                Rpc.nativeInstance.removeTorrents(
+                GlobalRpc.nativeInstance.removeTorrents(
                     args.torrentIds,
                     binding.deleteFilesCheckBox.isChecked
                 )

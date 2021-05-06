@@ -21,10 +21,9 @@ package org.equeim.tremotesf.ui.sidepanel
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.Companion.statusFilterAcceptsTorrent
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.StatusFilterMode
@@ -44,7 +43,7 @@ class StatusFilterViewAdapter(
 
     override fun getItem(position: Int): String {
         return when (position) {
-            0 -> context.getString(R.string.torrents_all, Rpc.torrents.value.size)
+            0 -> context.getString(R.string.torrents_all, GlobalRpc.torrents.value.size)
             1 -> context.getString(R.string.torrents_active, activeTorrents)
             2 -> context.getString(R.string.torrents_downloading, downloadingTorrents)
             3 -> context.getString(R.string.torrents_seeding, seedingTorrents)

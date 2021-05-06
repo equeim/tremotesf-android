@@ -19,39 +19,20 @@
 
 package org.equeim.tremotesf.data.rpc
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Parcelable
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import androidx.work.Worker
-import androidx.work.WorkerParameters
-import kotlinx.coroutines.MainScope
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-
-import org.equeim.tremotesf.Application
-import org.equeim.tremotesf.ui.AppForegroundTracker
-import org.equeim.tremotesf.ui.AppForegroundTracker.dropUntilInForeground
 import org.equeim.tremotesf.utils.Logger
-
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.system.measureTimeMillis
 
 
@@ -59,130 +40,8 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-private const val MINIMUM_PORT = 0
-private const val MAXIMUM_PORT = 65535
-private const val DEFAULT_PORT = 9091
-private const val DEFAULT_API_PATH = "/transmission/rpc"
-private const val MINIMUM_UPDATE_INTERVAL = 1
-private const val MAXIMUM_UPDATE_INTERVAL = 3600
-private const val DEFAULT_UPDATE_INTERVAL = 5
-private const val MINIMUM_TIMEOUT = 5
-private const val MAXIMUM_TIMEOUT = 60
-private const val DEFAULT_TIMEOUT = 30
-
-@Serializable
-@Parcelize
-data class Server(
-    @SerialName("name")
-    var name: String = "",
-    @SerialName("address")
-    var address: String = "",
-    @SerialName("port")
-    var port: Int = DEFAULT_PORT,
-    @SerialName("apiPath")
-    var apiPath: String = DEFAULT_API_PATH,
-
-    @SerialName("proxyType")
-    var proxyType: String = "",
-    @SerialName("proxyHostname")
-    var proxyHostname: String = "",
-    @SerialName("proxyPort")
-    var proxyPort: Int = 0,
-    @SerialName("proxyUser")
-    var proxyUser: String = "",
-    @SerialName("proxyPassword")
-    var proxyPassword: String = "",
-
-    @SerialName("httpsEnabled")
-    var httpsEnabled: Boolean = false,
-    @SerialName("selfSignedCertificateEnabled")
-    var selfSignedCertificateEnabled: Boolean = false,
-    @SerialName("selfSignedCertificate")
-    var selfSignedCertificate: String = "",
-    @SerialName("clientCertificateEnabled")
-    var clientCertificateEnabled: Boolean = false,
-    @SerialName("clientCertificate")
-    var clientCertificate: String = "",
-
-    @SerialName("authentication")
-    var authentication: Boolean = false,
-    @SerialName("username")
-    var username: String = "",
-    @SerialName("password")
-    var password: String = "",
-
-    @SerialName("updateIntervar")
-    var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
-    @SerialName("timeout")
-    var timeout: Int = DEFAULT_TIMEOUT,
-
-    @SerialName("autoConnectOnWifiNetworkEnabled")
-    var autoConnectOnWifiNetworkEnabled: Boolean = false,
-    @SerialName("autoConnectOnWifiNetworkSSID")
-    var autoConnectOnWifiNetworkSSID: String = "",
-
-    @SerialName("lastTorrents")
-    @Volatile
-    var lastTorrents: LastTorrents = LastTorrents(),
-    @SerialName("addTorrentDialogDirectories")
-    @Volatile
-    var addTorrentDialogDirectories: List<String> = emptyList()
-) : Parcelable, Logger {
-    companion object {
-        val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
-        val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
-        val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
-
-        fun fromNativeProxyType(type: Int): String {
-            return when (type) {
-                org.equeim.libtremotesf.Server.ProxyType.Default -> "Default"
-                org.equeim.libtremotesf.Server.ProxyType.Http -> "HTTP"
-                org.equeim.libtremotesf.Server.ProxyType.Socks5 -> "SOCKS5"
-                else -> "Default"
-            }
-        }
-    }
-
-    override fun toString() = "Server(name=$name)"
-
-    fun nativeProxyType(): Int {
-        return when (proxyType) {
-            "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
-            "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
-            "SOCKS5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
-            else -> {
-                warn("Unknown proxy type $proxyType")
-                org.equeim.libtremotesf.Server.ProxyType.Default
-            }
-        }
-    }
-
-    @Serializable
-    @Parcelize
-    data class Torrent(
-        val id: Int,
-        val hashString: String,
-        val name: String,
-        val finished: Boolean
-    ) : Parcelable
-
-    @Serializable
-    @Parcelize
-    data class LastTorrents(
-        val saved: Boolean = false,
-        val torrents: List<Torrent> = emptyList()
-    ) : Parcelable
-}
-
-@Serializable
-data class SaveData(
-    @SerialName("current") val currentServerName: String?,
-    @SerialName("servers") val servers: List<Server>
-)
-
-@SuppressLint("StaticFieldLeak")
-object Servers : Logger {
-    private val context = Application.instance
+abstract class Servers(protected val context: Context) : Logger {
+    private var rpc: Rpc? = null
 
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
@@ -196,15 +55,14 @@ object Servers : Logger {
     private val _currentServer = MutableStateFlow<Server?>(null)
     val currentServer: StateFlow<Server?> by ::_currentServer
 
+    val wifiNetworkController = WifiNetworkServersController(this, context)
+
     init {
         load()
+    }
 
-        AppForegroundTracker.appInForeground
-            .dropUntilInForeground()
-            .onEach { inForeground ->
-                if (!inForeground && Rpc.isConnected.value) save()
-            }
-            .launchIn(MainScope())
+    open fun setRpc(rpc: Rpc) {
+        this.rpc = rpc
     }
 
     fun setCurrentServer(server: Server?) {
@@ -227,19 +85,19 @@ object Servers : Logger {
                 }
                 if (server.port !in Server.portRange) {
                     error("Server's port is not in range, set default")
-                    server.port = DEFAULT_PORT
+                    server.port = Server.DEFAULT_PORT
                 }
                 if (server.apiPath.isEmpty()) {
                     error("Server's API path can't be empty, set default")
-                    server.apiPath = DEFAULT_API_PATH
+                    server.apiPath = Server.DEFAULT_API_PATH
                 }
                 if (server.updateInterval !in Server.updateIntervalRange) {
                     error("Server's update interval is not in range, set default")
-                    server.updateInterval = DEFAULT_UPDATE_INTERVAL
+                    server.updateInterval = Server.DEFAULT_UPDATE_INTERVAL
                 }
                 if (server.timeout !in Server.timeoutRange) {
                     error("Server's timeout is not in range, set default")
-                    server.timeout = DEFAULT_TIMEOUT
+                    server.timeout = Server.DEFAULT_TIMEOUT
                 }
                 servers.add(server)
             }
@@ -260,15 +118,16 @@ object Servers : Logger {
         }
     }
 
-    @AnyThread
+    @MainThread
     fun save() {
         info("save() called")
         val currentServer = currentServer.value
         val servers = servers.value
 
-        if (Rpc.isConnected.value) {
+        val rpc = this.rpc
+        if (rpc?.isConnected?.value == true) {
             info("save: updating last torrents")
-            currentServer?.lastTorrents = Server.LastTorrents(true, Rpc.torrents.value.map {
+            currentServer?.lastTorrents = Server.LastTorrents(true, rpc.torrents.value.map {
                 Server.Torrent(
                     it.id,
                     it.hashString,
@@ -281,16 +140,43 @@ object Servers : Logger {
             info("save: disconnected, not updating last torrents")
         }
 
-        SaveWorker.saveData.set(SaveData(
+        save(SaveData(
             currentServer?.name,
             servers.map { it.copy(lastTorrents = it.lastTorrents.copy()) }
         ))
+    }
 
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            SaveWorker.UNIQUE_WORK_NAME,
-            ExistingWorkPolicy.APPEND,
-            OneTimeWorkRequest.from(SaveWorker::class.java)
-        )
+    @Serializable
+    protected data class SaveData(
+        @SerialName("current") val currentServerName: String?,
+        @SerialName("servers") val servers: List<Server>
+    )
+
+    @MainThread
+    protected abstract fun save(saveData: SaveData)
+
+    protected fun doSave(data: SaveData) {
+        val elapsed = measureTimeMillis {
+            try {
+                val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
+                temp.bufferedWriter().use {
+                    it.write(
+                        Json { prettyPrint = true }.encodeToString(
+                            SaveData.serializer(),
+                            data
+                        )
+                    )
+                }
+                if (!temp.renameTo(context.getFileStreamPath(FILE_NAME))) {
+                    error("Failed to rename temp file")
+                }
+            } catch (error: IOException) {
+                error("Failed to save servers file", error)
+            } catch (error: SerializationException) {
+                error("Failed to serialize servers", error)
+            }
+        }
+        info("doSave: elapsed time = $elapsed ms")
     }
 
     fun addServer(newServer: Server) {
@@ -354,7 +240,7 @@ object Servers : Logger {
     }
 
     @MainThread
-    fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { WifiNetworkHelper.currentWifiSsid }): Boolean {
+    fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { wifiNetworkController.currentWifiSsid }): Boolean {
         info("setCurrentServerFromWifiNetwork() called")
 
         val ssid by ssidLazy
@@ -380,46 +266,5 @@ object Servers : Logger {
         }
         info("setCurrentServerFromWifiNetwork: no matching servers found")
         return false
-    }
-}
-
-class SaveWorker(context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters), Logger {
-    companion object {
-        const val UNIQUE_WORK_NAME = "ServersSaveWorker"
-        val saveData = AtomicReference<SaveData>()
-    }
-
-    override fun doWork(): Result {
-        val data = saveData.getAndSet(null)
-        info("SaveWorker.doWork(), saveData=$data")
-        val elapsed = measureTimeMillis {
-            if (data != null) {
-                try {
-                    val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
-                    temp.bufferedWriter().use {
-                        it.write(
-                            Json { prettyPrint = true }.encodeToString(
-                                SaveData.serializer(),
-                                data
-                            )
-                        )
-                    }
-                    if (!temp.renameTo(Application.instance.getFileStreamPath(FILE_NAME))) {
-                        error("Failed to rename temp file")
-                    }
-                } catch (error: IOException) {
-                    error("Failed to save servers file", error)
-                } catch (error: SerializationException) {
-                    error("Failed to serialize servers", error)
-                }
-            }
-        }
-        info("SaveWorker.doWork() return, elapsed time: $elapsed ms")
-        return Result.success()
-    }
-
-    override fun onStopped() {
-        saveData.set(null)
     }
 }

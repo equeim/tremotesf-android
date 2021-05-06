@@ -29,11 +29,13 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class ServerSettingsFragment : NavigationFragment(
@@ -68,7 +70,7 @@ class ServerSettingsFragment : NavigationFragment(
             }
         }
 
-        Rpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
+        GlobalRpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onDestroyView() {
@@ -84,7 +86,7 @@ class ServerSettingsFragment : NavigationFragment(
                     "",
                     Snackbar.LENGTH_INDEFINITE,
                     R.string.connect,
-                    Rpc.nativeInstance::connect
+                    GlobalRpc.nativeInstance::connect
                 ) {
                     snackbar = null
                 }
@@ -119,7 +121,7 @@ class ServerSettingsFragment : NavigationFragment(
     ) : NavigationFragment(contentLayoutId, titleRes) {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            Rpc.isConnected.collectWhenStarted(viewLifecycleOwner) {
+            GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner) {
                 if (!it) {
                     navController.popBackStack()
                 }

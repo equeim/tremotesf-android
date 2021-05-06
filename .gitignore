@@ -15,3 +15,5 @@
 /3rdparty/qt/build-*
 /3rdparty/qt/install-*
 /gradle-plugin/build
+/common/build
+/rpc/build

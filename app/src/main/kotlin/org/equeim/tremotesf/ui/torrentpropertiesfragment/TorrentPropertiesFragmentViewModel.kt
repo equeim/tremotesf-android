@@ -33,8 +33,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
@@ -49,11 +49,11 @@ class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandl
     val showTorrentRemovedMessage = MutableStateFlow(false)
 
     init {
-        Rpc.torrents
+        GlobalRpc.torrents
             .map { torrents -> torrents.find { it.hashString == hashString } }
             .distinctUntilChanged()
             .onEach { torrent ->
-                if (torrent == null && _torrent.value != null && Rpc.isConnected.value) {
+                if (torrent == null && _torrent.value != null && GlobalRpc.isConnected.value) {
                     showTorrentRemovedMessage.value = true
                 }
                 if (torrent != null) {

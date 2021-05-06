@@ -27,7 +27,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
-
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -35,18 +34,17 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import androidx.navigation.NavDeepLinkBuilder
-
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
-
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
-import org.equeim.tremotesf.data.rpc.Servers
-import org.equeim.tremotesf.data.rpc.WifiNetworkHelper
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.utils.Logger
-import org.equeim.tremotesf.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 private const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
@@ -84,6 +82,7 @@ class ForegroundService : LifecycleService(), Logger {
         }
     }
 
+    private lateinit var rpc: Rpc
     private lateinit var notificationManager: NotificationManager
 
     var stopUpdatingNotification = false
@@ -95,6 +94,7 @@ class ForegroundService : LifecycleService(), Logger {
 
         info("onCreate() stopRequested=$stopRequested")
 
+        rpc = GlobalRpc
         notificationManager = getSystemService()!!
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -109,20 +109,20 @@ class ForegroundService : LifecycleService(), Logger {
             }
         }
 
-        combine(Rpc.status, Rpc.serverStats, Servers.currentServer) { status, _, _ -> status }.drop(
+        combine(rpc.status, rpc.serverStats, GlobalServers.servers) { status, _, _ -> status }.drop(
             1
         )
             .collectWhenStarted(this) { updatePersistentNotification(it) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            WifiNetworkHelper.observingActiveWifiNetwork.collectWhenStarted(
+            GlobalServers.wifiNetworkController.observingActiveWifiNetwork.collectWhenStarted(
                 this,
                 ::startForegroundV29
             )
         } else {
             startForeground(
                 PERSISTENT_NOTIFICATION_ID,
-                buildPersistentNotification(Rpc.status.value)
+                buildPersistentNotification(rpc.status.value)
             )
         }
     }
@@ -137,7 +137,7 @@ class ForegroundService : LifecycleService(), Logger {
         }
         startForeground(
             PERSISTENT_NOTIFICATION_ID,
-            buildPersistentNotification(Rpc.status.value),
+            buildPersistentNotification(rpc.status.value),
             type
         )
     }
@@ -175,8 +175,8 @@ class ForegroundService : LifecycleService(), Logger {
         }
 
         when (intent?.action) {
-            ACTION_CONNECT -> Rpc.nativeInstance.connect()
-            ACTION_DISCONNECT -> Rpc.nativeInstance.disconnect()
+            ACTION_CONNECT -> rpc.nativeInstance.connect()
+            ACTION_DISCONNECT -> rpc.nativeInstance.disconnect()
         }
 
         return START_STICKY
@@ -215,7 +215,7 @@ class ForegroundService : LifecycleService(), Logger {
                         .createPendingIntent()
                 )
 
-        val currentServer = Servers.currentServer.value
+        val currentServer = GlobalServers.currentServer.value
         if (currentServer != null) {
             notificationBuilder.setContentTitle(
                 getString(
@@ -235,7 +235,7 @@ class ForegroundService : LifecycleService(), Logger {
         }
 
         if (status.isConnected) {
-            val stats = Rpc.serverStats.value
+            val stats = rpc.serverStats.value
             notificationBuilder.setContentText(
                 getString(
                     R.string.main_activity_subtitle,

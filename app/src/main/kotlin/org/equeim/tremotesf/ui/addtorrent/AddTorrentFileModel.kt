@@ -44,6 +44,7 @@ import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
 import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.utils.Logger
@@ -108,7 +109,7 @@ class AddTorrentFileModelImpl(
 
     override val viewUpdateData = combine(
         parserStatus,
-        Rpc.status,
+        GlobalRpc.status,
         storagePermissionHelper.permissionGranted
     ) { parserStatus, rpcStatus, hasPermission ->
         AddTorrentFileModel.ViewUpdateData(

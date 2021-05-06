@@ -23,10 +23,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Servers
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 
@@ -56,12 +55,12 @@ class AddTorrentDirectoriesAdapter(
         } else {
             val comparator = AlphanumericComparator()
             val sorted =
-                Servers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator)
+                GlobalServers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator)
                     ?: sortedSetOf(comparator)
-            for (torrent in Rpc.torrents.value) {
+            for (torrent in GlobalRpc.torrents.value) {
                 sorted.add(dropTrailingSeparator(torrent.downloadDirectory))
             }
-            sorted.add(dropTrailingSeparator(Rpc.serverSettings.downloadDirectory))
+            sorted.add(dropTrailingSeparator(GlobalRpc.serverSettings.downloadDirectory))
             ArrayList(sorted)
         }
     }
@@ -88,8 +87,8 @@ class AddTorrentDirectoriesAdapter(
         if (!saved.contains(trimmed)) {
             saved.add(trimmed)
         }
-        Servers.currentServer.value?.addTorrentDialogDirectories = saved
-        Servers.save()
+        GlobalServers.currentServer.value?.addTorrentDialogDirectories = saved
+        GlobalServers.save()
     }
 
     fun saveInstanceState(outState: Bundle) {

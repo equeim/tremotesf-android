@@ -106,7 +106,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":libtremotesf"))
+    implementation(project(":common"))
+    implementation(project(":rpc"))
     implementation("org.equeim:kotlinx-serialization-bencode")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")

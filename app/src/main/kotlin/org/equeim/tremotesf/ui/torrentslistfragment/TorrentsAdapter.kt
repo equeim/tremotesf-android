@@ -34,10 +34,11 @@ import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
@@ -93,7 +94,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
     }
 
     override fun allowStateRestoring(): Boolean {
-        return Rpc.isConnected.value
+        return GlobalRpc.isConnected.value
     }
 
     override fun onStateRestored() {
@@ -290,11 +291,11 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             }
 
             when (item.itemId) {
-                R.id.start -> Rpc.nativeInstance.startTorrents(getTorrentIds())
-                R.id.pause -> Rpc.nativeInstance.pauseTorrents(getTorrentIds())
-                R.id.check -> Rpc.nativeInstance.checkTorrents(getTorrentIds())
-                R.id.start_now -> Rpc.nativeInstance.startTorrentsNow(getTorrentIds())
-                R.id.reannounce -> Rpc.nativeInstance.reannounceTorrents(getTorrentIds())
+                R.id.start -> GlobalRpc.nativeInstance.startTorrents(getTorrentIds())
+                R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(getTorrentIds())
+                R.id.check -> GlobalRpc.nativeInstance.checkTorrents(getTorrentIds())
+                R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(getTorrentIds())
+                R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(getTorrentIds())
                 R.id.set_location -> {
                     activity.navigate(
                         TorrentsListFragmentDirections.toTorrentSetLocationDialog(

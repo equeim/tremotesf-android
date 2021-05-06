@@ -39,6 +39,7 @@ import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.utils.Logger
 import java.util.LinkedHashSet
@@ -75,9 +76,9 @@ class TorrentFilesFragmentViewModel(
             }
         }.launchIn(viewModelScope)
 
-        viewModelScope.launch { Rpc.torrentFilesUpdatedEvents.collect(::onTorrentFilesUpdated) }
+        viewModelScope.launch { GlobalRpc.torrentFilesUpdatedEvents.collect(::onTorrentFilesUpdated) }
         viewModelScope.launch {
-            Rpc.torrentFileRenamedEvents.collect { (torrentId, filePath, newName) ->
+            GlobalRpc.torrentFileRenamedEvents.collect { (torrentId, filePath, newName) ->
                 if (torrentId == torrent.value?.id) {
                     filesTree.renameFile(filePath, newName)
                 }
