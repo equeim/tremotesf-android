@@ -19,9 +19,15 @@
 
 package org.equeim.tremotesf.ui.utils
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import org.equeim.tremotesf.TremotesfApplication
+import org.equeim.tremotesf.utils.Logger
 import java.text.DecimalFormat
 
-object DecimalFormats {
+object DecimalFormats : Logger {
     private lateinit var genericInternal: DecimalFormat
     val generic: DecimalFormat
         get() {
@@ -41,6 +47,15 @@ object DecimalFormats {
             return ratioInternal
         }
 
+    init {
+        TremotesfApplication.instance.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                info("Locale changed, resetting decimal formats")
+                reset()
+            }
+        }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
+    }
+
     private fun resetGeneric() {
         genericInternal = DecimalFormat("0.#")
     }
@@ -49,7 +64,7 @@ object DecimalFormats {
         ratioInternal = DecimalFormat("0.00")
     }
 
-    fun reset() {
+    private fun reset() {
         if (::genericInternal.isInitialized) {
             resetGeneric()
         }
