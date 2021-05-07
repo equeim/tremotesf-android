@@ -30,21 +30,15 @@ public class LibTremotesf {
         System.loadLibrary("c++_shared");
         QtNative.setClassLoader(classLoader);
 
-        if (BuildConfig.QT_HAS_ABI_SUFFIX) {
-            final String suffix;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                suffix = Build.CPU_ABI;
-            } else {
-                suffix = Build.SUPPORTED_ABIS[0];
-            }
-            System.loadLibrary("Qt5Core_" + suffix);
-            System.loadLibrary("Qt5Network_" + suffix);
-            System.loadLibrary("tremotesf_" + suffix);
+        final String suffix;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            suffix = Build.CPU_ABI;
         } else {
-            System.loadLibrary("Qt5Core");
-            System.loadLibrary("Qt5Network");
-            System.loadLibrary("tremotesf");
+            suffix = Build.SUPPORTED_ABIS[0];
         }
+        System.loadLibrary("Qt5Core_" + suffix);
+        System.loadLibrary("Qt5Network_" + suffix);
+        System.loadLibrary("tremotesf_" + suffix);
 
         Timber.d("init: loaded native libraries");
     }

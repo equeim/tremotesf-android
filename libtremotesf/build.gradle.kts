@@ -5,23 +5,7 @@ plugins {
     id("com.android.library")
 }
 
-class QtInfo(rootProject: Project) {
-    val dir = rootProject.file("3rdparty/qt")
-    val jarDir: File
-    val hasAbiSuffix: Boolean
-
-    init {
-        val jarDirNew = dir.resolve("install-api${Versions.minSdk}/jar")
-        if (jarDirNew.isDirectory) {
-            jarDir = jarDirNew
-            hasAbiSuffix = true
-        } else {
-            jarDir = dir.resolve("install-armeabi-v7a/jar")
-            hasAbiSuffix = false
-        }
-    }
-}
-val qtInfo = QtInfo(rootProject)
+val qtDir = rootProject.file("3rdparty/qt")
 
 android {
     compileSdk = Versions.compileSdk
@@ -31,9 +15,10 @@ android {
         minSdk = Versions.minSdk
         targetSdk = Versions.targetSdk
         consumerProguardFile("consumer-rules.pro")
-        externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_DIR=${qtInfo.dir}", "-DQT_HAS_ABI_SUFFIX=${qtInfo.hasAbiSuffix}")
-        buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "${qtInfo.hasAbiSuffix}")
+        externalNativeBuild.cmake.arguments("-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=true", "-DQT_DIR=$qtDir")
     }
+
+    buildFeatures.buildConfig = false
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
@@ -47,6 +32,6 @@ repositories {
 }
 
 dependencies {
-    implementation(files(qtInfo.jarDir.resolve("QtAndroid.jar")))
+    implementation(files(qtDir.resolve("install-api${Versions.minSdk}/jar/QtAndroid.jar")))
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
