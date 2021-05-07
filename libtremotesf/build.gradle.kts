@@ -35,11 +35,6 @@ android {
         buildConfigField("boolean", "QT_HAS_ABI_SUFFIX", "${qtInfo.hasAbiSuffix}")
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
         version = "3.18.1"

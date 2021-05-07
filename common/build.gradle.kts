@@ -27,11 +27,6 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
         useIR = true
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
 }
 
 repositories {
