@@ -43,8 +43,10 @@ android {
 
 repositories {
     google()
+    mavenCentral()
 }
 
 dependencies {
     implementation(files(qtInfo.jarDir.resolve("QtAndroid.jar")))
+    implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
