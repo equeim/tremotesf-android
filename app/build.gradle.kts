@@ -9,7 +9,6 @@ plugins {
     kotlin("plugin.parcelize")
     kotlin("plugin.serialization")
     id("androidx.navigation.safeargs.kotlin")
-    id("com.github.ben-manes.versions")
 }
 
 class KeystoreProperties(rootProject: Project) {
@@ -135,21 +134,4 @@ dependencies {
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 
     "googleImplementation"("com.android.billingclient:billing-ktx:${Versions.billing}")
-}
-
-object DependencyVersionChecker {
-    private val stableKeywords = listOf("RELEASE", "FINAL", "GA")
-    private val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-
-    fun isNonStable(version: String): Boolean {
-        val hasStableKeyword = stableKeywords.any { version.toUpperCase().contains(it) }
-        val isStable = hasStableKeyword || regex.matches(version)
-        return isStable.not()
-    }
-}
-
-tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
-    rejectVersionIf {
-        DependencyVersionChecker.isNonStable(candidate.version)
-    }
 }

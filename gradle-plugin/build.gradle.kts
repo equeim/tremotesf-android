@@ -14,6 +14,11 @@ gradlePlugin {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation("com.github.ben-manes:gradle-versions-plugin:0.38.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
