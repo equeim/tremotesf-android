@@ -36,10 +36,6 @@ inline fun <reified T : ViewModel> Fragment.viewModelFactory(crossinline viewMod
     }
 }
 
-inline fun <reified T : ViewModel> Fragment.viewModels(crossinline viewModelProducer: (Application) -> T): Lazy<T> {
-    return viewModels { viewModelFactory(viewModelProducer) }
-}
-
 inline fun <reified T : ViewModel> Fragment.savedStateViewModelFactory(crossinline viewModelProducer: (Application, SavedStateHandle) -> T): ViewModelProvider.Factory {
     return object : AbstractSavedStateViewModelFactory(this, arguments) {
         override fun <T : ViewModel> create(
@@ -51,8 +47,4 @@ inline fun <reified T : ViewModel> Fragment.savedStateViewModelFactory(crossinli
             return viewModelProducer(requireContext().application, handle) as T
         }
     }
-}
-
-inline fun <reified T : ViewModel> Fragment.savedStateViewModels(crossinline viewModelProducer: (Application, SavedStateHandle) -> T): Lazy<T> {
-    return viewModels { savedStateViewModelFactory(viewModelProducer) }
 }

@@ -28,6 +28,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
@@ -56,7 +57,7 @@ import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
-import org.equeim.tremotesf.ui.utils.savedStateViewModels
+import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -92,10 +93,12 @@ class TorrentPropertiesFragment : NavigationFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            val torrentFilesModel by savedStateViewModels { _, handle ->
+        val torrentFilesModel: TorrentFilesFragmentViewModel by viewModels {
+            savedStateViewModelFactory { _, handle ->
                 TorrentFilesFragmentViewModel(model.torrent, handle)
             }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !torrentFilesModel.filesTree.navigateUp()) {
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
