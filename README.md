@@ -25,15 +25,14 @@ Android remote GUI for transmission-daemon.
 - Client certificate authentication
 
 ## Build
+0. GNU/Linux is required for building Tremotesf.
 1. Clone Git repository:
 ```sh
 git clone https://github.com/equeim/tremotesf-android.git
 cd tremotesf-android
 git submodule update --init
 ```
-2. Download and install Android Studio 4.2. Download and install Android NDK (r19c or newer).
-3. Set ANDROID_SDK_ROOT environment variable to the root directory of Android SDK and ANDROID_NDK_ROOT environment variable to the root directory of Android NDK.
-4. Execute build-native.sh script from project root directory (you can specify `-j` flag to pass to `make`). 
+2. Download and install Android Studio 4.2.
 5. Build APK in Android Studio.
 
 ## Translations
