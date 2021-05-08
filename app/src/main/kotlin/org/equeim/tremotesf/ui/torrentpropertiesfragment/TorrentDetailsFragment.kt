@@ -26,7 +26,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
@@ -57,25 +57,25 @@ class TorrentDetailsFragment :
         firstUpdate = false
 
         with(binding) {
-            completedTextView.text = Utils.formatByteSize(requireContext(), torrent.completedSize)
-            downloadedTextView.text = Utils.formatByteSize(
+            completedTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.completedSize)
+            downloadedTextView.text = FormatUtils.formatByteSize(
                 requireContext(),
                 torrent.totalDownloaded
             )
-            uploadedTextView.text = Utils.formatByteSize(requireContext(), torrent.totalUploaded)
+            uploadedTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalUploaded)
 
             ratioTextView.text = DecimalFormats.ratio.format(torrent.ratio)
 
             downloadSpeedTextView.text =
-                Utils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
-            uploadSpeedTextView.text = Utils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
-            etaTextView.text = Utils.formatDuration(requireContext(), torrent.eta)
+                FormatUtils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
+            uploadSpeedTextView.text = FormatUtils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
+            etaTextView.text = FormatUtils.formatDuration(requireContext(), torrent.eta)
             seedersTextView.text = torrent.seeders.toString()
             leechersTextView.text = torrent.leechers.toString()
             lastActivityTextView.text =
                 DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
 
-            totalSizeTextView.text = Utils.formatByteSize(requireContext(), torrent.totalSize)
+            totalSizeTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalSize)
 
             val dir = torrent.downloadDirectory
             if (!dir.contentEquals(locationTextView.text)) {

@@ -42,8 +42,10 @@ import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.fixPreLollipopColor
 import java.lang.ref.WeakReference
 
 
@@ -106,7 +108,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         private val binding: TorrentListItemBinding
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         init {
-            Utils.setProgressBarColor(binding.progressBar)
+            binding.progressBar.fixPreLollipopColor()
         }
 
         override fun update() {
@@ -116,30 +118,30 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 sizeTextView.text = if (torrent.isFinished) {
                     context.getString(
                         R.string.uploaded_string,
-                        Utils.formatByteSize(context, torrent.sizeWhenDone),
-                        Utils.formatByteSize(context, torrent.totalUploaded)
+                        FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
+                        FormatUtils.formatByteSize(context, torrent.totalUploaded)
                     )
                 } else {
                     context.getString(
                         R.string.completed_string,
-                        Utils.formatByteSize(context, torrent.completedSize),
-                        Utils.formatByteSize(context, torrent.sizeWhenDone),
+                        FormatUtils.formatByteSize(context, torrent.completedSize),
+                        FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
                         DecimalFormats.generic.format(torrent.percentDone * 100)
                     )
                 }
-                etaTextView.text = Utils.formatDuration(context, torrent.eta)
+                etaTextView.text = FormatUtils.formatDuration(context, torrent.eta)
 
                 progressBar.progress = (torrent.percentDone * 100).toInt()
                 downloadSpeedTextView.text = context.getString(
                     R.string.download_speed_string,
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         torrent.downloadSpeed
                     )
                 )
                 uploadSpeedTextView.text = context.getString(
                     R.string.upload_speed_string,
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         torrent.uploadSpeed
                     )
@@ -162,7 +164,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             } else {
                 context.getString(
                     R.string.download_speed_string,
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         torrent.downloadSpeed
                     )
@@ -174,7 +176,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             } else {
                 context.getString(
                     R.string.upload_speed_string,
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         torrent.uploadSpeed
                     )

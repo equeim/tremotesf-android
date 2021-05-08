@@ -28,7 +28,8 @@ import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.fixPreLollipopColor
 
 
 class TorrentFilesAdapter(
@@ -42,7 +43,7 @@ class TorrentFilesAdapter(
                 parent,
                 false
             )
-            Utils.setProgressBarColor(binding.progressBar)
+            binding.progressBar.fixPreLollipopColor()
             return ItemHolder(this, selectionTracker, binding)
         }
         return super.onCreateViewHolder(parent, viewType)
@@ -73,11 +74,11 @@ class TorrentFilesAdapter(
                 val context = progressBar.context
                 progressTextView.text = context.getString(
                     R.string.completed_string,
-                    Utils.formatByteSize(
+                    FormatUtils.formatByteSize(
                         context,
                         item.completedSize
                     ),
-                    Utils.formatByteSize(
+                    FormatUtils.formatByteSize(
                         context,
                         item.size
                     ),

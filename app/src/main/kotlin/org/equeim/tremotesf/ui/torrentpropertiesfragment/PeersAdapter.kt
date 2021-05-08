@@ -28,8 +28,8 @@ import org.equeim.tremotesf.databinding.PeerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import org.equeim.tremotesf.ui.utils.Utils
 import java.util.Comparator
 
 
@@ -76,11 +76,11 @@ class PeersAdapter : StateRestoringListAdapter<Peer, PeersAdapter.ViewHolder>(Ca
                 }
                 downloadSpeedTextView.text = context.getString(
                     R.string.download_speed_string,
-                    Utils.formatByteSpeed(context, peer.downloadSpeed)
+                    FormatUtils.formatByteSpeed(context, peer.downloadSpeed)
                 )
                 uploadSpeedTextView.text = context.getString(
                     R.string.upload_speed_string,
-                    Utils.formatByteSpeed(context, peer.uploadSpeed)
+                    FormatUtils.formatByteSpeed(context, peer.uploadSpeed)
                 )
                 progressTextView.text = context.getString(
                     R.string.progress_string,

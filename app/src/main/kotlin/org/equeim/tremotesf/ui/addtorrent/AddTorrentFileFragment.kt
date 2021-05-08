@@ -61,7 +61,7 @@ import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.application
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -120,7 +120,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 ) {
                     downloadDirectoryLayout.helperText = fragment.getString(
                         R.string.free_space,
-                        Utils.formatByteSize(fragment.requireContext(), bytes)
+                        FormatUtils.formatByteSize(fragment.requireContext(), bytes)
                     )
                 }
             }
@@ -131,7 +131,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     downloadDirectoryLayout.helperText = if (success) {
                         fragment.getString(
                             R.string.free_space,
-                            Utils.formatByteSize(fragment.requireContext(), bytes)
+                            FormatUtils.formatByteSize(fragment.requireContext(), bytes)
                         )
                     } else {
                         fragment.getString(R.string.free_space_error)
@@ -497,7 +497,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     super.update()
                     val context = binding.sizeTextView.context
                     binding.sizeTextView.text =
-                        Utils.formatByteSize(
+                        FormatUtils.formatByteSize(
                             context,
                             adapter.getItem(bindingAdapterPosition)!!.size
                         )

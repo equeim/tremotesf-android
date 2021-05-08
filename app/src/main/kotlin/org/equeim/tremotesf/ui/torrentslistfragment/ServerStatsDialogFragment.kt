@@ -30,7 +30,7 @@ import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
@@ -65,11 +65,11 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
 
         binding?.apply {
             val sessionStats = serverStats.currentSession
-            sessionDownloadedTextView.text = Utils.formatByteSize(
+            sessionDownloadedTextView.text = FormatUtils.formatByteSize(
                 requireContext(),
                 sessionStats.downloaded()
             )
-            sessionUploadedTextView.text = Utils.formatByteSize(
+            sessionUploadedTextView.text = FormatUtils.formatByteSize(
                 requireContext(),
                 sessionStats.uploaded()
             )
@@ -78,7 +78,7 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
                         sessionStats.downloaded().toDouble()
             )
             sessionDurationTextView.text =
-                Utils.formatDuration(requireContext(), sessionStats.duration())
+                FormatUtils.formatDuration(requireContext(), sessionStats.duration())
 
             val totalStats = serverStats.total
             val sessionCount = totalStats.sessionCount()
@@ -88,15 +88,15 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
                 sessionCount
             )
             totalDownloadedTextView.text =
-                Utils.formatByteSize(requireContext(), totalStats.downloaded())
+                FormatUtils.formatByteSize(requireContext(), totalStats.downloaded())
             totalUploadedTextView.text =
-                Utils.formatByteSize(requireContext(), totalStats.uploaded())
+                FormatUtils.formatByteSize(requireContext(), totalStats.uploaded())
             totalRatioTextView.text = DecimalFormats.ratio.format(
                 totalStats.uploaded().toDouble() /
                         totalStats.downloaded().toDouble()
             )
             totalDurationTextView.text =
-                Utils.formatDuration(requireContext(), totalStats.duration())
+                FormatUtils.formatDuration(requireContext(), totalStats.duration())
         }
     }
 }

@@ -16,7 +16,7 @@ import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import timber.log.Timber
 
 class NotificationsController(private val context: Context) {
@@ -161,11 +161,11 @@ class NotificationsController(private val context: Context) {
             notificationBuilder.setContentText(
                 context.getString(
                     R.string.main_activity_subtitle,
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         stats.downloadSpeed
                     ),
-                    Utils.formatByteSpeed(
+                    FormatUtils.formatByteSpeed(
                         context,
                         stats.uploadSpeed
                     )

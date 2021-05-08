@@ -20,23 +20,22 @@
 
 package org.equeim.tremotesf.ui.utils
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.os.Build
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
-import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
-
-import androidx.annotation.StringRes
-import androidx.core.content.getSystemService
+import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
-import androidx.core.view.postDelayed
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -44,10 +43,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
-
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import org.equeim.tremotesf.R
 
 
 val Context.application: Application
@@ -62,33 +59,26 @@ val Context.application: Application
         throw IllegalStateException()
     }
 
-fun View.showSnackbar(
-    message: CharSequence,
-    length: Int,
-    @StringRes actionText: Int = 0,
-    action: (() -> Unit)? = null,
-    onDismissed: (() -> Unit)? = null
-) = Snackbar.make(this, message, length).apply {
-    if (actionText != 8 && action != null) {
-        setAction(actionText) { action() }
-    }
-    if (onDismissed != null) {
-        addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                onDismissed()
-            }
-        })
-    }
-    show()
+inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
+    return fragments.find { it is T } as T?
 }
 
-fun View.showSnackbar(
-    @StringRes message: Int,
-    length: Int,
-    @StringRes actionText: Int = 0,
-    action: (() -> Unit)? = null,
-    onDismissed: (() -> Unit)? = null
-) = showSnackbar(resources.getString(message), length, actionText, action, onDismissed)
+inline fun <reified T : Fragment> Fragment.findFragment(): T? {
+    return childFragmentManager.findFragment()
+}
+
+fun NavController.safeNavigate(directions: NavDirections, navOptions: NavOptions? = null) {
+    try {
+        navigate(directions, navOptions)
+    } catch (ignore: IllegalArgumentException) {
+    }
+}
+
+fun NavController.popDialog() {
+    if (currentDestination is DialogFragmentNavigator.Destination) {
+        popBackStack()
+    }
+}
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     for (i in 0 until childCount) {
@@ -143,48 +133,11 @@ val EditText.textInputLayout: TextInputLayout
         throw IllegalArgumentException("$this is not a child of TextInputLayout")
     }
 
-fun Activity.hideKeyboard() {
-    currentFocus?.let { focus ->
-        getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(focus.windowToken, 0)
-    }
-}
-
-fun Fragment.hideKeyboard() {
-    activity?.hideKeyboard()
-}
-
-fun EditText.showKeyboard() {
-    context.getSystemService<InputMethodManager>()?.let { imm ->
-        if (requestFocus()) {
-            // If you call showSoftInput() right after requestFocus()
-            // it may sometimes fail. So add a 50ms delay
-            postDelayed(50) {
-                // Check if we are still focused
-                if (isFocused) {
-                    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-                }
-            }
+fun ProgressBar.fixPreLollipopColor() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        context.withStyledAttributes(attrs = intArrayOf(R.attr.colorSecondary)) {
+            progressDrawable.colorFilter =
+                PorterDuffColorFilter(getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
         }
-    }
-}
-
-inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
-    return fragments.find { it is T } as T?
-}
-
-inline fun <reified T : Fragment> Fragment.findFragment(): T? {
-    return childFragmentManager.findFragment()
-}
-
-fun NavController.safeNavigate(directions: NavDirections, navOptions: NavOptions? = null) {
-    try {
-        navigate(directions, navOptions)
-    } catch (ignore: IllegalArgumentException) {
-    }
-}
-
-fun NavController.popDialog() {
-    if (currentDestination is DialogFragmentNavigator.Destination) {
-        popBackStack()
     }
 }

@@ -50,7 +50,7 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
-import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
@@ -295,8 +295,8 @@ class TorrentsListFragment : NavigationFragment(
         toolbar?.subtitle = if (isConnected) {
             getString(
                 R.string.main_activity_subtitle,
-                Utils.formatByteSpeed(requireContext(), stats.downloadSpeed),
-                Utils.formatByteSpeed(requireContext(), stats.uploadSpeed)
+                FormatUtils.formatByteSpeed(requireContext(), stats.downloadSpeed),
+                FormatUtils.formatByteSpeed(requireContext(), stats.uploadSpeed)
             )
         } else {
             null
