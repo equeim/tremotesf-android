@@ -169,7 +169,7 @@
                     android:layout_marginLeft="24dp"
                     android:layout_marginStart="24dp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-                    <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
+                    <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                         android:id="@+id/days_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

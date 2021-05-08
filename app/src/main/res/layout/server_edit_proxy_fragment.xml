@@ -28,7 +28,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:hint="@string/proxy_type">
 
-                <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
+                <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                     android:id="@+id/proxy_type_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

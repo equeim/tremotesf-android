@@ -79,7 +79,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/priority">
 
-            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                 android:id="@+id/priority_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/ratio_limit">
 
-            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                 android:id="@+id/ratio_limit_mode_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="@string/idle_seeding">
 
-            <org.equeim.tremotesf.ui.utils.NonFilteringAutoCompleteTextView
+            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                 android:id="@+id/idle_seeding_mode_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

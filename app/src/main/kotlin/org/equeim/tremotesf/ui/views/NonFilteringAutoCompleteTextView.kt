@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.utils
+package org.equeim.tremotesf.ui.views
 
 import android.content.Context
 import android.text.InputType
