@@ -79,6 +79,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ui.ForegroundService" android:foregroundServiceType="dataSync|location" />
+        <service android:name=".service.ForegroundService" android:foregroundServiceType="dataSync|location" />
     </application>
 </manifest>

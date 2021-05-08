@@ -43,7 +43,7 @@ object GlobalRpc : Rpc(GlobalServers) {
     private val updateWorkerCompleter =
         AtomicReference<CallbackToFutureAdapter.Completer<ListenableWorker.Result>>()
 
-    private val notificationsController = NotificationsController(context)
+    val notificationsController = NotificationsController(context)
 
     init {
         connectionState

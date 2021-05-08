@@ -35,6 +35,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.service.ForegroundService
 
 
 class SettingsFragment : NavigationFragment(

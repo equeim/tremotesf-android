@@ -10,16 +10,19 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.data.rpc.RpcConnectionState
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
+import org.equeim.tremotesf.ui.utils.Utils
 import timber.log.Timber
 
 class NotificationsController(private val context: Context) {
-    private val notificationManager by lazy {
-        context.getSystemService<NotificationManager>().also {
-            if (it == null) {
-                Timber.e("NotificationManager is null")
-            }
+    private val notificationManager = context.getSystemService<NotificationManager>().also {
+        if (it == null) {
+            Timber.e("NotificationManager is null")
         }
     }
 
@@ -36,6 +39,11 @@ class NotificationsController(private val context: Context) {
                         ADDED_NOTIFICATION_CHANNEL_ID,
                         context.getText(R.string.added_torrents_channel_name),
                         NotificationManager.IMPORTANCE_DEFAULT
+                    ),
+                    NotificationChannel(
+                        PERSISTENT_NOTIFICATION_CHANNEL_ID,
+                        context.getText(R.string.persistent_notification_channel_name),
+                        NotificationManager.IMPORTANCE_LOW
                     )
                 )
             )
@@ -94,7 +102,6 @@ class NotificationsController(private val context: Context) {
     ) {
         Timber.i("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
 
-        val notificationManager = this.notificationManager
         if (notificationManager == null) {
             Timber.e("showTorrentNotification: NotificationManager is null")
             return
@@ -119,8 +126,97 @@ class NotificationsController(private val context: Context) {
         )
     }
 
-    private companion object {
-        const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
-        const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
+    fun buildPersistentNotification(rpc: Rpc, status: Rpc.Status = rpc.status.value): Notification {
+        val notificationBuilder =
+            NotificationCompat.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentIntent(
+                    NavDeepLinkBuilder(context)
+                        .setGraph(R.navigation.nav_main)
+                        .setDestination(R.id.torrents_list_fragment)
+                        .createPendingIntent()
+                )
+
+        val currentServer = GlobalServers.currentServer.value
+        if (currentServer != null) {
+            notificationBuilder.setContentTitle(
+                context.getString(
+                    R.string.current_server_string,
+                    currentServer.name,
+                    currentServer.address
+                )
+            )
+        } else {
+            notificationBuilder.setContentTitle(context.getText(R.string.no_servers))
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setWhen(0)
+        } else {
+            notificationBuilder.setShowWhen(false)
+        }
+
+        if (status.isConnected) {
+            val stats = rpc.serverStats.value
+            notificationBuilder.setContentText(
+                context.getString(
+                    R.string.main_activity_subtitle,
+                    Utils.formatByteSpeed(
+                        context,
+                        stats.downloadSpeed
+                    ),
+                    Utils.formatByteSpeed(
+                        context,
+                        stats.uploadSpeed
+                    )
+                )
+            )
+        } else {
+            notificationBuilder.setContentText(status.statusString)
+        }
+
+        if (status.connectionState == RpcConnectionState.Disconnected) {
+            notificationBuilder.addAction(
+                R.drawable.notification_connect,
+                context.getText(R.string.connect),
+                ForegroundService.getPendingIntent(context, PersistentNotificationActions.CONNECT)
+            )
+        } else {
+            notificationBuilder.addAction(
+                R.drawable.notification_disconnect,
+                context.getText(R.string.disconnect),
+                ForegroundService.getPendingIntent(context, PersistentNotificationActions.DISCONNECT)
+            )
+        }
+
+        notificationBuilder.addAction(
+            R.drawable.notification_quit,
+            context.getText(R.string.quit),
+            ForegroundService.getPendingIntent(context, PersistentNotificationActions.SHUTDOWN_APP)
+        )
+
+        return notificationBuilder.build()
+    }
+
+    fun updatePersistentNotification(rpc: Rpc, status: Rpc.Status) {
+        if (notificationManager != null) {
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(rpc, status))
+        } else {
+            Timber.e("updatePersistentNotification: NotificationManager is null")
+        }
+    }
+
+    companion object {
+        private const val FINISHED_NOTIFICATION_CHANNEL_ID = "finished"
+        private const val ADDED_NOTIFICATION_CHANNEL_ID = "added"
+
+        private const val PERSISTENT_NOTIFICATION_CHANNEL_ID = "persistent"
+        const val PERSISTENT_NOTIFICATION_ID = Int.MAX_VALUE
+    }
+
+    object PersistentNotificationActions {
+        const val CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
+        const val DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
+        const val SHUTDOWN_APP = "org.equeim.tremotesf.ACTION_SHUTDOWN_APP"
     }
 }

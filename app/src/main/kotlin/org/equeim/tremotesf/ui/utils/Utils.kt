@@ -28,7 +28,7 @@ import android.widget.ProgressBar
 import androidx.core.content.withStyledAttributes
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.ForegroundService
+import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.NavigationActivity
 import timber.log.Timber
 

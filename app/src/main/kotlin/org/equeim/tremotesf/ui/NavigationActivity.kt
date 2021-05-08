@@ -62,6 +62,7 @@ import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
