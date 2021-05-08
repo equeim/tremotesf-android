@@ -49,12 +49,11 @@ dependencies {
     implementation(project(":common"))
     api(project(":libtremotesf"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
-    implementation("androidx.concurrent:concurrent-futures:${Versions.AndroidX.concurrentFutures}")
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
-    implementation("androidx.work:work-runtime:${Versions.AndroidX.work}")
 
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
