@@ -17,3 +17,4 @@
 /gradle-plugin/build
 /common/build
 /rpc/build
+/billing/build

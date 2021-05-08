@@ -9,7 +9,6 @@ plugins {
 
 android {
     compileSdk = Versions.compileSdk
-    ndkVersion = Versions.ndk
 
     defaultConfig {
         minSdk = Versions.minSdk

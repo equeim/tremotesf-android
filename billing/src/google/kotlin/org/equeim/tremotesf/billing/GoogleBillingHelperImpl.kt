@@ -1,4 +1,4 @@
-package org.equeim.tremotesf.data.billing
+package org.equeim.tremotesf.billing
 
 import android.app.Activity
 import android.content.Context
@@ -19,9 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-
-import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.utils.MutableEventFlow
+
 import timber.log.Timber
 
 @Suppress("FunctionName")

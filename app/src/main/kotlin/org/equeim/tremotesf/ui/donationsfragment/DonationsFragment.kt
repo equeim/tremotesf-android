@@ -36,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar
 
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.billing.GoogleBillingHelper
+import org.equeim.tremotesf.billing.GoogleBillingHelper
 import org.equeim.tremotesf.databinding.DonationsFragmentFdroidBinding
 import org.equeim.tremotesf.databinding.DonationsFragmentGoogleBinding
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding

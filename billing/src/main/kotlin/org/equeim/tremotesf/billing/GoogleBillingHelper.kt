@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.data.billing
+package org.equeim.tremotesf.billing
 
 import android.app.Activity
 

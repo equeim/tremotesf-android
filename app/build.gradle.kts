@@ -57,16 +57,8 @@ android {
 
     buildFeatures.viewBinding = true
 
-    sourceSets {
-        named("main") {
-            java.srcDirs("src/main/kotlin")
-        }
-        register("google") {
-            java.srcDirs("src/google/kotlin")
-        }
-        register("fdroid") {
-            java.srcDirs("src/fdroid/kotlin")
-        }
+    sourceSets.named("main") {
+        java.srcDirs("src/main/kotlin")
     }
 
     kotlinOptions {
@@ -100,6 +92,7 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":billing"))
     implementation(project(":rpc"))
     implementation("org.equeim:kotlinx-serialization-bencode")
 
