@@ -347,19 +347,9 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 class NavHostFragment : NavHostFragment() {
     override fun onCreateNavController(navController: NavController) {
         super.onCreateNavController(navController)
-        /*navController.addOnDestinationChangedListener { _, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
             Timber.i("Destination changed: destination = $destination, arguments = $arguments")
-        }*/
-        navController.addOnDestinationChangedListener(object : NavController.OnDestinationChangedListener {
-            override fun onDestinationChanged(
-                controller: NavController,
-                destination: NavDestination,
-                arguments: Bundle?
-            ) {
-                Timber.i("class = $javaClass")
-                Timber.i("Destination changed: destination = $destination, arguments = $arguments")
-            }
-        })
+        }
     }
 
     override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
