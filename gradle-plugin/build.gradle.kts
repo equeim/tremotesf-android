@@ -7,7 +7,7 @@ gradlePlugin {
     plugins {
         create("plugin") {
             id = "org.equeim.tremotesf"
-            implementationClass = "org.equeim.tremotesf.GradlePlugin"
+            implementationClass = "org.equeim.tremotesf.gradle.GradlePlugin"
         }
     }
 }

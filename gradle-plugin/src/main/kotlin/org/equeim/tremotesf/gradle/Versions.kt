@@ -1,4 +1,4 @@
-package org.equeim.tremotesf
+package org.equeim.tremotesf.gradle
 
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.ExtensionAware

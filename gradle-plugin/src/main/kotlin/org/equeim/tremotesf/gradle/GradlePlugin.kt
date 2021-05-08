@@ -1,4 +1,4 @@
-package org.equeim.tremotesf
+package org.equeim.tremotesf.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

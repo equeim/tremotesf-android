@@ -1,6 +1,6 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.equeim.tremotesf.Versions
+import org.equeim.tremotesf.gradle.Versions
 
 object NativeAbis {
     val apisToAbis = mapOf(

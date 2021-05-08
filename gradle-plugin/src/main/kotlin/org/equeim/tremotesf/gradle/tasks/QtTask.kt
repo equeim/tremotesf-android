@@ -1,6 +1,6 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.equeim.tremotesf.Versions
+import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.defaultMakeArguments
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec

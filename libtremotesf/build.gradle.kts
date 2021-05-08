@@ -1,4 +1,4 @@
-import org.equeim.tremotesf.Versions
+import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask
 import org.equeim.tremotesf.gradle.tasks.QtTask

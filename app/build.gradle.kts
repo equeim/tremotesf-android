@@ -1,6 +1,6 @@
 import java.util.Properties
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.equeim.tremotesf.Versions
+import org.equeim.tremotesf.gradle.Versions
 
 plugins {
     id("org.equeim.tremotesf")
