@@ -322,8 +322,8 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             val nodes = ArrayList<Node>(currentNode.path.size)
             var node = rootNode
             for (index in currentNode.path) {
-                nodes.add(node)
                 node = node.children.getOrNull(index) ?: break
+                nodes.add(node)
             }
             nodes.reverse()
             for (n in nodes) {
