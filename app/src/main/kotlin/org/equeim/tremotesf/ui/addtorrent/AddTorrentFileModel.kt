@@ -126,7 +126,7 @@ class AddTorrentFileModelImpl(
 
     override val renamedFiles = mutableMapOf<String, String>()
 
-    private lateinit var files: List<TorrentFilesTree.Item>
+    private lateinit var files: List<TorrentFilesTree.Node>
 
     init {
         if (needStoragePermission) {
@@ -175,11 +175,12 @@ class AddTorrentFileModelImpl(
         val highPriorityFiles = mutableListOf<Int>()
 
         for (file in files) {
-            val id = file.fileId
-            if (file.wantedState == TorrentFilesTree.Item.WantedState.Unwanted) {
+            val item = file.item
+            val id = item.fileId
+            if (item.wantedState == TorrentFilesTree.Item.WantedState.Unwanted) {
                 unwantedFiles.add(id)
             }
-            when (file.priority) {
+            when (item.priority) {
                 TorrentFilesTree.Item.Priority.Low -> lowPriorityFiles.add(id)
                 TorrentFilesTree.Item.Priority.High -> highPriorityFiles.add(id)
                 else -> {
@@ -244,9 +245,9 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<TorrentFilesTree.Node, List<TorrentFilesTree.Item>> {
+    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<TorrentFilesTree.Node, List<TorrentFilesTree.Node>> {
         val rootNode = TorrentFilesTree.Node.createRootNode()
-        val files = mutableListOf<TorrentFilesTree.Item>()
+        val files = mutableListOf<TorrentFilesTree.Node>()
 
         if (torrentFileInfo.files == null) {
             val node = rootNode.addFile(
@@ -257,7 +258,7 @@ class AddTorrentFileModelImpl(
                 TorrentFilesTree.Item.WantedState.Wanted,
                 TorrentFilesTree.Item.Priority.Normal
             )
-            files.add(node.item)
+            files.add(node)
         } else {
             val rootDirectoryNode = rootNode.addDirectory(torrentFileInfo.name)
             for ((fileIndex, fileMap) in torrentFileInfo.files.withIndex()) {
@@ -274,7 +275,7 @@ class AddTorrentFileModelImpl(
                             TorrentFilesTree.Item.WantedState.Wanted,
                             TorrentFilesTree.Item.Priority.Normal
                         )
-                        files.add(node.item)
+                        files.add(node)
                     } else {
                         var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
                         if (childDirectoryNode == null) {
