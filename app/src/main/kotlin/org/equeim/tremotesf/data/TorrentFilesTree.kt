@@ -63,14 +63,12 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
 
         fun initiallyCalculateFromChildrenRecursively() {
-            if (!item.isDirectory) throw UnsupportedOperationException()
-            for (child in children) {
-                val childItem = child.item
-                if (childItem.isDirectory) {
-                    child.initiallyCalculateFromChildrenRecursively()
+            item.apply {
+                if (isDirectory) {
+                    children.forEach(Node::initiallyCalculateFromChildrenRecursively)
+                    calculateFromChildren(children)
                 }
             }
-            item.calculateFromChildren(children)
         }
 
         fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
