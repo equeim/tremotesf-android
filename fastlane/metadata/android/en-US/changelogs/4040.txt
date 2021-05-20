@@ -1,0 +1,2 @@
+- Fixed selection of files and their priorities when adding torrents
+- Fixed files wrongly displayed as selected when they are not 

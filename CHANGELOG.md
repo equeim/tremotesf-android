@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.1] - 2021-05-21
+### Fixed
+- Fixed selection of files and their priorities when adding torrents
+- Fixed files wrongly displayed as selected when they are not
+
 ## [2.4.0] - 2021-05-02
 ### Added
 - Automatic connection to servers when connecting to Wi-Fi networks
