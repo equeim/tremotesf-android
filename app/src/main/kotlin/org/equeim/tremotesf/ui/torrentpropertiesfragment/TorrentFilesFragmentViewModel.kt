@@ -173,7 +173,6 @@ class RpcTorrentFilesTree(
         }
     }
 
-    @Volatile
     private var files: List<Node> = emptyList()
 
     val isEmpty: Boolean
@@ -270,6 +269,7 @@ class RpcTorrentFilesTree(
         }
     }
 
+    @MainThread
     override fun reset() {
         super.reset()
         files = emptyList()
