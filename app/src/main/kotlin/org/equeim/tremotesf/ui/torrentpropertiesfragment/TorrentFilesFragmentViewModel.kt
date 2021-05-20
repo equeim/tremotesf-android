@@ -229,7 +229,7 @@ class RpcTorrentFilesTree(
             path.delete()
         }
 
-        rootNode.initiallyCalculateFromChildrenRecursively()
+        rootNode.children.forEach { it.initiallyCalculateFromChildrenRecursively() }
 
         withContext(Dispatchers.Main) {
             model.treeCreated(rootNode, files)
