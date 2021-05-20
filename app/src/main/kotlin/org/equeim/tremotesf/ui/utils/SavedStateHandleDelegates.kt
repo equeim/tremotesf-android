@@ -19,13 +19,17 @@
 
 package org.equeim.tremotesf.ui.utils
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -80,13 +84,29 @@ private class ViewModelSavedStatePropertyFlow<T : Any>(
 
     override fun getValue(thisRef: ViewModel, property: KProperty<*>): MutableStateFlow<T> {
         if (!::flow.isInitialized) {
-            flow = MutableStateFlow(savedStateHandle[property.name]
-                ?: initialValueProducer().also { savedStateHandle[property.name] = it })
-            flow
-                .drop(1)
-                .onEach { savedStateHandle[property.name] = it }
-                .launchIn(thisRef.viewModelScope)
+            flow = savedStateHandle.getLiveData<T>(property.name).apply {
+                if (value == null) {
+                    value = initialValueProducer()
+                }
+            }.asStateFlow(thisRef.viewModelScope)
         }
         return flow
     }
+}
+
+private fun <T : Any> MutableLiveData<T>.asStateFlow(scope: CoroutineScope): MutableStateFlow<T> {
+    val flow = MutableStateFlow(requireNotNull(value))
+
+    val observer = Observer<T> { flow.value = it }
+    observeForever(observer)
+
+    scope.launch(Dispatchers.Main.immediate) {
+        flow.onCompletion {
+            removeObserver(observer)
+        }.collect {
+            value = it
+        }
+    }
+
+    return flow
 }
