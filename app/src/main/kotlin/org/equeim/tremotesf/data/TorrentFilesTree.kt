@@ -56,29 +56,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
 
         fun getChildByItemNameOrNull(name: String) = childrenMap[name]
 
-        private fun calculateFromChildren(item: Item) = with(item) {
-            size = 0L
-            completedSize = 0L
-            wantedState = children.first().item.wantedState
-            priority = children.first().item.priority
-
-            for (child in children) {
-                val childItem = child.item
-                size += childItem.size
-                completedSize += childItem.completedSize
-                if (wantedState != Item.WantedState.Mixed && childItem.wantedState != wantedState) {
-                    wantedState = Item.WantedState.Mixed
-                }
-                if (priority != Item.Priority.Mixed && childItem.priority != priority) {
-                    priority = Item.Priority.Mixed
-                }
-            }
-        }
-
         fun recalculateFromChildren() {
             val item = item
             if (!item.isDirectory) throw UnsupportedOperationException()
-            this.item = item.copy().apply { calculateFromChildren(this) }
+            this.item = item.recalculatedFromChildren(children)
         }
 
         fun initiallyCalculateFromChildrenRecursively() {
@@ -86,10 +67,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             for (child in children) {
                 val childItem = child.item
                 if (childItem.isDirectory) {
-                    child.calculateFromChildren(childItem)
+                    child.initiallyCalculateFromChildrenRecursively()
                 }
             }
-            calculateFromChildren(item)
+            item.calculateFromChildren(children)
         }
 
         fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
@@ -215,6 +196,27 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             result = 31 * result + priority.hashCode()
             result = 31 * result + nodePath.contentHashCode()
             return result
+        }
+
+        fun recalculatedFromChildren(children: List<Node>): Item = copy().apply { calculateFromChildren(children) }
+
+        fun calculateFromChildren(children: List<Node>) {
+            size = 0L
+            completedSize = 0L
+            wantedState = children.first().item.wantedState
+            priority = children.first().item.priority
+
+            for (child in children) {
+                val childItem = child.item
+                size += childItem.size
+                completedSize += childItem.completedSize
+                if (wantedState != WantedState.Mixed && childItem.wantedState != wantedState) {
+                    wantedState = WantedState.Mixed
+                }
+                if (priority != Priority.Mixed && childItem.priority != priority) {
+                    priority = Priority.Mixed
+                }
+            }
         }
     }
 
