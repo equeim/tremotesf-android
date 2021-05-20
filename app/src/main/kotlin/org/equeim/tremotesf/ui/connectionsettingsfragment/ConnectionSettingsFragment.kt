@@ -42,7 +42,7 @@ import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted

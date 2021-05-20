@@ -262,7 +262,7 @@ class AddTorrentFileModelImpl(
             files.add(node)
         } else {
             val rootDirectoryNode = rootNode.addDirectory(torrentFileInfo.name)
-            for ((fileIndex, fileMap) in torrentFileInfo.files.withIndex()) {
+            for ((fileIndex, fileMap) in checkNotNull(torrentFileInfo.files).withIndex()) {
                 var currentNode = rootDirectoryNode
 
                 val pathParts = fileMap.path

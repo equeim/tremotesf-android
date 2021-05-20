@@ -41,7 +41,7 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
-import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 import java.util.Comparator

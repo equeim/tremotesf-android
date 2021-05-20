@@ -18,7 +18,7 @@
  */
 
 
-package org.equeim.tremotesf.ui.utils
+package org.equeim.tremotesf.utils
 
 import java.text.Collator
 

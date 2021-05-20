@@ -25,7 +25,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 

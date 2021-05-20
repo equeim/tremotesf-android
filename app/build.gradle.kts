@@ -7,7 +7,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("plugin.parcelize")
-    kotlin("plugin.serialization")
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -93,8 +92,8 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":billing"))
+    implementation(project(":data"))
     implementation(project(":rpc"))
-    implementation("org.equeim:kotlinx-serialization-bencode")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")

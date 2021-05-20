@@ -26,7 +26,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import org.equeim.tremotesf.ui.utils.AlphanumericComparator
+import org.equeim.tremotesf.utils.AlphanumericComparator
 import java.io.File
 import java.io.FileFilter
 import java.util.Comparator

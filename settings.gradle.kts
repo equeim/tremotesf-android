@@ -24,4 +24,4 @@ pluginManagement {
 
 includeBuild("gradle-plugin")
 includeBuild("bencode")
-include(":common", ":libtremotesf", ":rpc", ":billing", ":app")
+include(":common", ":libtremotesf", ":rpc", ":billing", ":data", ":app")
