@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.4.2] - 2021-05-21
+### Fixed
+- Fixed crash with single-file torrents
+
 ## [2.4.1] - 2021-05-21
 ### Fixed
 - Fixed selection of files and their priorities when adding torrents

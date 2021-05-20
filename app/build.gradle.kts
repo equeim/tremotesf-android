@@ -65,8 +65,8 @@ android {
         applicationId = "org.equeim.tremotesf"
         minSdk = vers.minSdk
         targetSdk = vers.targetSdk
-        versionCode = 4040
-        versionName = "2.4.1"
+        versionCode = 4041
+        versionName = "2.4.2"
     }
 
     if (keystoreProperties != null) {
