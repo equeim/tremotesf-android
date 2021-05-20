@@ -203,8 +203,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         fun calculateFromChildren(children: List<Node>) {
             size = 0L
             completedSize = 0L
-            wantedState = children.first().item.wantedState
-            priority = children.first().item.priority
+            children.first().item.let {
+                wantedState = it.wantedState
+                priority = it.priority
+            }
 
             for (child in children) {
                 val childItem = child.item
