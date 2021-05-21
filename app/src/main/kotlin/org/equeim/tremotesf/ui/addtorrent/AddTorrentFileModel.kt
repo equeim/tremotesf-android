@@ -42,7 +42,6 @@ import org.equeim.tremotesf.data.rpc.Rpc
 import org.equeim.tremotesf.data.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.data.torrentfile.FileParseException
 import org.equeim.tremotesf.data.torrentfile.FileReadException
-import org.equeim.tremotesf.data.torrentfile.TorrentFile
 import org.equeim.tremotesf.data.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
@@ -213,83 +212,25 @@ class AddTorrentFileModelImpl(
 
         val fdAtomic = AtomicReference(fd)
         try {
-            val torrentFile = try {
-                TorrentFileParser.parse(fd.fileDescriptor)
-            } catch (error: FileReadException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
-                return@withContext
-            } catch (error: FileIsTooLargeException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
-                return@withContext
-            } catch (error: FileParseException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                return@withContext
+            val (rootNode, files) = TorrentFileParser.createFilesTree(fd.fileDescriptor)
+            withContext(Dispatchers.Main) {
+                this@AddTorrentFileModelImpl.fd = fd
+                fdAtomic.set(null)
+                this@AddTorrentFileModelImpl.files = files
+                filesTree.init(rootNode, savedStateHandle)
+                parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
             }
-
-            if (torrentFile.info.files == null && torrentFile.info.length == null) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-                return@withContext
-            }
-
-            withContext(Dispatchers.Default) {
-                val (rootNode, files) = createTree(torrentFile.info)
-                withContext(Dispatchers.Main) {
-                    this@AddTorrentFileModelImpl.fd = fd
-                    fdAtomic.set(null)
-                    this@AddTorrentFileModelImpl.files = files
-                    filesTree.init(rootNode, savedStateHandle)
-                    parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
-                }
-            }
+        } catch (error: FileReadException) {
+            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            return@withContext
+        } catch (error: FileIsTooLargeException) {
+            parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
+            return@withContext
+        } catch (error: FileParseException) {
+            parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+            return@withContext
         } finally {
             fdAtomic.get()?.closeQuietly()
         }
-    }
-
-    private fun createTree(torrentFileInfo: TorrentFile.Info): Pair<TorrentFilesTree.Node, List<TorrentFilesTree.Node>> {
-        val rootNode = TorrentFilesTree.Node.createRootNode()
-        val files = mutableListOf<TorrentFilesTree.Node>()
-
-        if (torrentFileInfo.files == null) {
-            val node = rootNode.addFile(
-                0,
-                torrentFileInfo.name,
-                torrentFileInfo.length!!,
-                0,
-                TorrentFilesTree.Item.WantedState.Wanted,
-                TorrentFilesTree.Item.Priority.Normal
-            )
-            files.add(node)
-        } else {
-            val rootDirectoryNode = rootNode.addDirectory(torrentFileInfo.name)
-            for ((fileIndex, fileMap) in checkNotNull(torrentFileInfo.files).withIndex()) {
-                var currentNode = rootDirectoryNode
-
-                val pathParts = fileMap.path
-                for ((partIndex, part) in pathParts.withIndex()) {
-                    if (partIndex == pathParts.lastIndex) {
-                        val node = currentNode.addFile(
-                            fileIndex,
-                            part,
-                            fileMap.length,
-                            0,
-                            TorrentFilesTree.Item.WantedState.Wanted,
-                            TorrentFilesTree.Item.Priority.Normal
-                        )
-                        files.add(node)
-                    } else {
-                        var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
-                        if (childDirectoryNode == null) {
-                            childDirectoryNode = currentNode.addDirectory(part)
-                        }
-                        currentNode = childDirectoryNode
-                    }
-                }
-            }
-
-            rootDirectoryNode.initiallyCalculateFromChildrenRecursively()
-        }
-
-        return Pair(rootNode, files)
     }
 }
