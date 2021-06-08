@@ -81,27 +81,27 @@ namespace libtremotesf
 
         void addTorrentFile(int fd,
                             const QString& downloadDirectory,
-                            const QVariantList& unwantedFiles,
-                            const QVariantList& highPriorityFiles,
-                            const QVariantList& lowPriorityFiles,
+                            const std::vector<int>& unwantedFiles,
+                            const std::vector<int>& highPriorityFiles,
+                            const std::vector<int>& lowPriorityFiles,
                             const std::unordered_map<QString, QString>& renamedFiles,
-                            int bandwidthPriority,
+                            TorrentData::Priority bandwidthPriority,
                             bool start);
 
         void addTorrentLink(const QString& link,
                             const QString& downloadDirectory,
-                            int bandwidthPriority,
+                            TorrentData::Priority bandwidthPriority,
                             bool start);
 
-        void startTorrents(const QVariantList& ids);
-        void startTorrentsNow(const QVariantList& ids);
-        void pauseTorrents(const QVariantList& ids);
-        void removeTorrents(const QVariantList& ids, bool deleteFiles);
-        void checkTorrents(const QVariantList& ids);
+        void startTorrents(const std::vector<int>& ids);
+        void startTorrentsNow(const std::vector<int>& ids);
+        void pauseTorrents(const std::vector<int>& ids);
+        void removeTorrents(const std::vector<int>& ids, bool deleteFiles);
+        void checkTorrents(const std::vector<int>& ids);
 
-        void reannounceTorrents(const QVariantList& ids);
+        void reannounceTorrents(const std::vector<int>& ids);
 
-        void setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles);
+        void setTorrentsLocation(const std::vector<int>& ids, const QString& location, bool moveFiles);
 
         void renameTorrentFile(int torrentId,
                                const QString& filePath,
@@ -114,34 +114,34 @@ namespace libtremotesf
         void setTorrentDownloadSpeedLimit(TorrentData& data, int limit);
         void setTorrentUploadSpeedLimited(TorrentData& data, bool limited);
         void setTorrentUploadSpeedLimit(TorrentData& data, int limit);
-        void setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode);
+        void setTorrentRatioLimitMode(TorrentData& data, TorrentData::RatioLimitMode mode);
         void setTorrentRatioLimit(TorrentData& data, double limit);
         void setTorrentPeersLimit(TorrentData& data, int limit);
         void setTorrentHonorSessionLimits(TorrentData& data, bool honor);
-        void setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority);
-        void setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode);
+        void setTorrentBandwidthPriority(TorrentData& data, TorrentData::Priority priority);
+        void setTorrentIdleSeedingLimitMode(TorrentData& data, TorrentData::IdleSeedingLimitMode mode);
         void setTorrentIdleSeedingLimit(TorrentData& data, int limit);
         void setTorrentFilesEnabled(TorrentData& data, bool enabled);
-        void setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted);
-        void setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority);
+        void setTorrentFilesWanted(TorrentData& data, const std::vector<int>& files, bool wanted);
+        void setTorrentFilesPriority(TorrentData& data, const std::vector<int>& files, TorrentFile::Priority priority);
         void torrentAddTrackers(TorrentData& data, const std::vector<QString>& announceUrls);
         void torrentSetTracker(TorrentData& data, int trackerId, const QString& announce);
-        void torrentRemoveTrackers(TorrentData& data, const QVariantList& ids);
+        void torrentRemoveTrackers(TorrentData& data, const std::vector<int>& ids);
         void setTorrentPeersEnabled(TorrentData& data, bool enabled);
 
         void updateData();
 
     protected:
         virtual void onAboutToDisconnect() = 0;
-        virtual void onStatusChanged(Rpc::Status status) = 0;
-        virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
+        virtual void onConnectionStateChanged(RpcConnectionState state) = 0;
+        virtual void onErrorChanged(RpcError error, const QString& errorMessage) = 0;
 
         virtual void onServerSettingsChanged(JniServerSettingsData data) = 0;
 
-        virtual void onTorrentsUpdated(const std::vector<int>& removed, const std::vector<TorrentData*>& changed, const std::vector<TorrentData*>& added) = 0;
+        virtual void onTorrentsUpdated(std::vector<int> removed, std::vector<TorrentData>& changed, std::vector<TorrentData>& added) = 0;
 
-        virtual void onTorrentFilesUpdated(int torrentId, const std::vector<TorrentFile*>& changed) = 0;
-        virtual void onTorrentPeersUpdated(int torrentId, const std::vector<int>& removed, const std::vector<Peer*>& changed, const std::vector<Peer*>& added) = 0;
+        virtual void onTorrentFilesUpdated(int torrentId, std::vector<TorrentFile>& changed) = 0;
+        virtual void onTorrentPeersUpdated(int torrentId, std::vector<int> removed, std::vector<Peer>& changed, std::vector<Peer>& added) = 0;
 
         virtual void onServerStatsUpdated(long long downloadSpeed, long long uploadSpeed, SessionStats currentSession, SessionStats total) = 0;
 

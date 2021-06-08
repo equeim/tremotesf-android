@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.equeim.libtremotesf.StringsVector
+import org.equeim.libtremotesf.StringVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.tremotesf.data.TorrentFilesTree
 import org.equeim.tremotesf.data.rpc.Rpc
@@ -155,7 +155,7 @@ class RpcTorrentFilesTree(
             )
         }
 
-        private fun fromTorrentFilePriority(priority: Int): Item.Priority {
+        private fun fromTorrentFilePriority(priority: TorrentFile.Priority): Item.Priority {
             return when (priority) {
                 TorrentFile.Priority.LowPriority -> Item.Priority.Low
                 TorrentFile.Priority.NormalPriority -> Item.Priority.Normal
@@ -164,7 +164,7 @@ class RpcTorrentFilesTree(
             }
         }
 
-        private fun Item.Priority.toTorrentFilePriority(): Int {
+        private fun Item.Priority.toTorrentFilePriority(): TorrentFile.Priority {
             return when (this) {
                 Item.Priority.Low -> TorrentFile.Priority.LowPriority
                 Item.Priority.Normal -> TorrentFile.Priority.NormalPriority
@@ -204,10 +204,11 @@ class RpcTorrentFilesTree(
         for ((fileIndex, rpcFile: TorrentFile) in rpcFiles.withIndex()) {
             var currentNode = rootNode
 
-            val path: StringsVector = rpcFile.path
-            val lastPartIndex = (path.size - 1)
+            val path: StringVector = rpcFile.path
+            val lastPartIndex = (path.size() - 1)
 
-            for ((partIndex, part: String) in path.withIndex()) {
+            for(partIndex in 0..lastPartIndex) {
+                val part = path[partIndex]
                 if (partIndex == lastPartIndex) {
                     val node = currentNode.addFile(
                         fileIndex,
@@ -226,8 +227,6 @@ class RpcTorrentFilesTree(
                     currentNode = childDirectoryNode
                 }
             }
-
-            path.delete()
         }
 
         rootNode.children.forEach { it.initiallyCalculateFromChildrenRecursively() }

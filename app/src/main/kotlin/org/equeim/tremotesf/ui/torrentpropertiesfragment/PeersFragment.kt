@@ -55,7 +55,7 @@ data class Peer(
     var progress: Double
 ) {
     constructor(peer: org.equeim.libtremotesf.Peer) : this(
-        peer.address,
+        peer._address,
         peer.client,
         peer.downloadSpeed,
         peer.uploadSpeed,
@@ -189,7 +189,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             if (changed.isNotEmpty()) {
                 val changedIter = changed.iterator()
                 var changedPeer = changedIter.next()
-                var changedPeerAddress = changedPeer.address
+                var changedPeerAddress = changedPeer._address
                 val peersIter = peers.listIterator()
                 while (peersIter.hasNext()) {
                     val peer = peersIter.next()
@@ -197,7 +197,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
                         peersIter.set(peer.updatedFrom(changedPeer))
                         if (changedIter.hasNext()) {
                             changedPeer = changedIter.next()
-                            changedPeerAddress = changedPeer.address
+                            changedPeerAddress = changedPeer._address
                         } else {
                             break
                         }

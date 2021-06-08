@@ -39,24 +39,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.equeim.libtremotesf.IntVector
+import org.bytedeco.javacpp.Pointer
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
 import org.equeim.libtremotesf.LibTremotesf
+import org.equeim.libtremotesf.LibTremotesfLoader
 import org.equeim.libtremotesf.Peer
+import org.equeim.libtremotesf.PeerVector
 import org.equeim.libtremotesf.SessionStats
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
-import org.equeim.libtremotesf.TorrentFilesVector
-import org.equeim.libtremotesf.TorrentPeersVector
+import org.equeim.libtremotesf.TorrentFileVector
 import org.equeim.tremotesf.utils.MutableEventFlow
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
-
-typealias RpcConnectionState = org.equeim.libtremotesf.Rpc.Status
-typealias RpcError = org.equeim.libtremotesf.Rpc.Error
+typealias RpcConnectionState = LibTremotesf.RpcConnectionState
+typealias RpcError = LibTremotesf.RpcError
 
 data class ServerStats(
     var downloadSpeed: Long,
@@ -67,20 +67,47 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
+inline fun <T : Pointer> T.forEach(crossinline action: (T) -> Unit) {
+    for (i in 0 until limit()) {
+        action(position(i))
+    }
+    position<T>(0)
+}
+
 abstract class Rpc(protected val servers: Servers) {
     private val scope = MainScope()
 
     init {
-        LibTremotesf.init(javaClass.classLoader)
+        LibTremotesfLoader.init(javaClass.classLoader)
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
-        override fun onStatusChanged(status: Int) {
-            Timber.i("onStatusChanged() called with: status = $status")
-            _connectionState.value = status
+        private inline fun <VectorOfT : Pointer, T : Pointer> VectorOfT.vectorToList(crossinline size: VectorOfT.() -> Long,
+                                                                                     crossinline get: VectorOfT.(Long) -> T,
+                                                                                     crossinline moveConstruct: (T) -> T): List<T> {
+            val vectorSize = size()
+            val list = ArrayList<T>(vectorSize.toInt())
+            for (i in 0 until vectorSize) {
+                list.add(moveConstruct(get(i)))
+            }
+            return list
         }
 
-        override fun onErrorChanged(error: Int, errorMessage: String) {
+        private fun TorrentDataVector.vectorToList(): List<TorrentData> =
+            vectorToList(TorrentDataVector::size, TorrentDataVector::get, LibTremotesf::moveConstructTorrentData)
+
+        private fun TorrentFileVector.vectorToList(): List<TorrentFile> =
+            vectorToList(TorrentFileVector::size, TorrentFileVector::get, LibTremotesf::moveConstructTorrentFile)
+
+        private fun PeerVector.vectorToList(): List<Peer> =
+            vectorToList(PeerVector::size, PeerVector::get, LibTremotesf::moveConstructPeer)
+
+        override fun onConnectionStateChanged(state: RpcConnectionState) {
+            Timber.i("onConnectionStateChanged() called with: state = $state")
+            _connectionState.value = state
+        }
+
+        override fun onErrorChanged(error: RpcError, errorMessage: String) {
             Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
             _error.value = Error(error, errorMessage)
         }
@@ -88,18 +115,19 @@ abstract class Rpc(protected val servers: Servers) {
         override fun onServerSettingsChanged(data: JniServerSettingsData) {
             val old = serverSettings
             serverSettings = data
-            old.delete()
+            old.deallocate()
         }
 
         override fun onTorrentsUpdated(
-            removed: IntVector,
+            removed: IntArray?,
             changed: TorrentDataVector,
             added: TorrentDataVector
         ) {
-            this@Rpc.onTorrentsUpdated(removed, changed, added)
-            removed.delete()
-            changed.delete()
-            added.delete()
+            onTorrentsUpdated(
+                removed ?: intArrayOf(),
+                changed.vectorToList(),
+                added.vectorToList()
+            )
         }
 
         override fun onServerStatsUpdated(
@@ -131,21 +159,17 @@ abstract class Rpc(protected val servers: Servers) {
             _torrentAddErrorEvents.tryEmit(Unit)
         }
 
-        override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
-            onTorrentFilesUpdated(torrentId, files.toList())
-            files.delete()
+        override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFileVector) {
+            onTorrentFilesUpdated(torrentId, files.vectorToList())
         }
 
         override fun onTorrentPeersUpdated(
             torrentId: Int,
-            removed: IntVector,
-            changed: TorrentPeersVector,
-            added: TorrentPeersVector
+            removed: IntArray?,
+            changed: PeerVector,
+            added: PeerVector
         ) {
-            onTorrentPeersUpdated(torrentId, removed.toList(), changed.toList(), added.toList())
-            removed.delete()
-            changed.delete()
-            added.delete()
+            onTorrentPeersUpdated(torrentId, removed ?: intArrayOf(), changed.vectorToList(), added.vectorToList())
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
@@ -180,20 +204,20 @@ abstract class Rpc(protected val servers: Servers) {
     val serverStats: StateFlow<ServerStats> by ::_serverStats
 
     private val _connectionState = MutableStateFlow(RpcConnectionState.Disconnected)
-    val connectionState: StateFlow<Int> by ::_connectionState
+    val connectionState: StateFlow<RpcConnectionState> by ::_connectionState
 
     val isConnected: StateFlow<Boolean> = connectionState
         .map { it == RpcConnectionState.Connected }
         .distinctUntilChanged()
         .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
-    data class Error(val error: Int, val errorMessage: String)
+    data class Error(val error: RpcError, val errorMessage: String)
 
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
     data class Status(
-        val connectionState: Int = RpcConnectionState.Disconnected,
+        val connectionState: RpcConnectionState = RpcConnectionState.Disconnected,
         val error: Error = Error(RpcError.NoError, "")
     ) {
         val isConnected: Boolean
@@ -274,7 +298,7 @@ abstract class Rpc(protected val servers: Servers) {
         val s = org.equeim.libtremotesf.Server()
         with(server) {
             s.name = name
-            s.address = address
+            s._address = address
             s.port = port
             s.apiPath = apiPath
 
@@ -322,7 +346,7 @@ abstract class Rpc(protected val servers: Servers) {
 
     @WorkerThread
     protected open fun onTorrentsUpdated(
-        removed: List<Int>,
+        removed: IntArray,
         changed: List<TorrentData>,
         added: List<TorrentData>
     ) {
@@ -375,7 +399,7 @@ abstract class Rpc(protected val servers: Servers) {
     @AnyThread
     private fun onTorrentPeersUpdated(
         torrentId: Int,
-        removed: List<Int>,
+        removed: IntArray,
         changed: List<Peer>,
         added: List<Peer>
     ) {
@@ -384,7 +408,7 @@ abstract class Rpc(protected val servers: Servers) {
                 _torrentPeersUpdatedEvents.tryEmit(
                     TorrentPeersUpdatedData(
                         torrentId,
-                        removed,
+                        removed.asList(),
                         changed,
                         added
                     )

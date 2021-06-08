@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.equeim.libtremotesf.Server
 import timber.log.Timber
 
 @Serializable
@@ -66,14 +67,14 @@ data class Server(
 ) : Parcelable {
     override fun toString() = "Server(name=$name)"
 
-    fun nativeProxyType(): Int {
+    fun nativeProxyType(): Server.ProxyType {
         return when (proxyType) {
-            "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
-            "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
-            "SOCKS5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
+            "", "Default" -> Server.ProxyType.Default
+            "HTTP" -> Server.ProxyType.Http
+            "SOCKS5" -> Server.ProxyType.Socks5
             else -> {
                 Timber.w("Unknown proxy type $proxyType")
-                org.equeim.libtremotesf.Server.ProxyType.Default
+                Server.ProxyType.Default
             }
         }
     }
@@ -112,11 +113,11 @@ data class Server(
         const val DEFAULT_TIMEOUT = 30
         val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
 
-        fun fromNativeProxyType(type: Int): String {
+        fun fromNativeProxyType(type: Server.ProxyType): String {
             return when (type) {
-                org.equeim.libtremotesf.Server.ProxyType.Default -> "Default"
-                org.equeim.libtremotesf.Server.ProxyType.Http -> "HTTP"
-                org.equeim.libtremotesf.Server.ProxyType.Socks5 -> "SOCKS5"
+                Server.ProxyType.Default -> "Default"
+                Server.ProxyType.Http -> "HTTP"
+                Server.ProxyType.Socks5 -> "SOCKS5"
                 else -> "Default"
             }
         }

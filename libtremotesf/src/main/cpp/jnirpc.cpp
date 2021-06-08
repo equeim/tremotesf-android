@@ -20,36 +20,49 @@ namespace libtremotesf
         constexpr int threadStartTimeoutMs = 5000;
         constexpr const char* logTag = "LibTremotesf";
 
-        template<typename I, typename O, typename IndexIterator, typename Functor>
-        std::vector<O*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end, Functor&& transform)
+        template<typename I, typename O, typename Transform>
+        std::vector<O> slice(const std::vector<I>& items, const std::vector<int>& indexes, Transform&& transform)
         {
-            std::vector<O*> v;
-            v.reserve(end - begin);
-            for (auto i = begin; i != end; ++i) {
-                v.push_back(new O(transform(items[static_cast<size_t>(*i)])));
+            std::vector<O> v;
+            v.reserve(indexes.size());
+            for (int index : indexes) {
+                v.push_back(transform(items[static_cast<size_t>(index)]));
             }
             return v;
         }
 
-        template<typename I, typename IndexIterator>
-        std::vector<I*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end)
+        template<typename T>
+        std::vector<T> slice(const std::vector<T>& items, const std::vector<int>& indexes)
         {
-            return toNewPointers<I, I>(items, begin, end, [](const I& i) -> const I& { return i; });
+            return slice<T, T>(items, indexes, [](const T& item) { return item; });
         }
 
-        template<typename IndexIterator>
-        std::vector<TorrentData*> toNewPointers(const std::vector<std::shared_ptr<Torrent>>& items, IndexIterator&& begin, IndexIterator&& end)
+        template<typename I, typename O, typename Transform>
+        std::vector<O> slice(const typename std::vector<I>::const_iterator& begin, const typename std::vector<I>::const_iterator& end, Transform&& transform)
         {
-            return toNewPointers<std::shared_ptr<Torrent>, TorrentData>(items, begin, end, [](const std::shared_ptr<Torrent>& i) { return i->data(); });
+            std::vector<O> v;
+            v.reserve(static_cast<size_t>(end - begin));
+            for (auto i = begin; i != end; ++i) {
+                v.push_back(transform(*i));
+            }
+            return v;
         }
 
-        struct IndexIterator
+        template<typename T>
+        std::vector<T> slice(const typename std::vector<T>::const_iterator& begin, const typename std::vector<T>::const_iterator& end)
         {
-            size_t value;
-            operator size_t() { return value; }
-            size_t operator*() { return value; }
-            IndexIterator& operator++() { ++value; return *this; }
-        };
+            return std::vector(begin, end);
+        }
+
+        inline QVariantList toVariantList(const std::vector<int>& vector)
+        {
+            QVariantList list;
+            list.reserve(static_cast<int>(vector.size()));
+            for (int value : vector) {
+                list.push_back(value);
+            }
+            return list;
+        }
     }
 
     JniServerSettingsData::JniServerSettingsData(ServerSettings* settings)
@@ -437,7 +450,7 @@ namespace libtremotesf
         mRpc->setUpdateDisabled(true);
 
         QObject::connect(mRpc, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
-        QObject::connect(mRpc, &Rpc::statusChanged, [=]() { onStatusChanged(mRpc->status()); });
+        QObject::connect(mRpc, &Rpc::connectionStateChanged, [=]() { onConnectionStateChanged(mRpc->connectionState()); });
         QObject::connect(mRpc, &Rpc::errorChanged, [=]() { onErrorChanged(mRpc->error(), mRpc->errorMessage()); });
 
         QObject::connect(mRpc->serverSettings(), &ServerSettings::changed, mRpc, [this] {
@@ -446,20 +459,21 @@ namespace libtremotesf
 
         QObject::connect(mRpc, &Rpc::torrentsUpdated, [=](const std::vector<int>& removed, const std::vector<int>& changed, int added) {
             const auto& t = mRpc->torrents();
-            onTorrentsUpdated(removed,
-                              toNewPointers(t, changed.begin(), changed.end()),
-                              toNewPointers(t, IndexIterator{t.size() - added}, IndexIterator{t.size()}));
+            const auto transform = [](const std::shared_ptr<Torrent>& torrent) { return torrent->data(); };
+            auto c = slice<std::shared_ptr<Torrent>, TorrentData>(t, changed, transform);
+            auto a = slice<std::shared_ptr<Torrent>, TorrentData>(t.cend() - added, t.cend(), transform);
+            onTorrentsUpdated(removed, c, a);
         });
 
         QObject::connect(mRpc, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changed) {
-            onTorrentFilesUpdated(torrent->id(), toNewPointers(torrent->files(), changed.begin(), changed.end()));
+            auto c = slice(torrent->files(), changed);
+            onTorrentFilesUpdated(torrent->id(), c);
         });
         QObject::connect(mRpc, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<int>& removed, const std::vector<int>& changed, int added) {
             const auto& p = torrent->peers();
-            onTorrentPeersUpdated(torrent->id(),
-                                  removed,
-                                  toNewPointers(p, changed.begin(), changed.end()),
-                                  toNewPointers(p, IndexIterator{p.size() - added}, IndexIterator{p.size()}));
+            auto c = slice(p, changed);
+            auto r = slice<Peer>(p.end() - added, p.end());
+            onTorrentPeersUpdated(torrent->id(), removed, c, r);
         });
 
         QObject::connect(mRpc, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {
@@ -513,7 +527,7 @@ namespace libtremotesf
         runOnThread([=] { mRpc->setUpdateDisabled(disabled); });
     }
 
-    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const std::vector<int>& unwantedFiles, const std::vector<int>& highPriorityFiles, const std::vector<int>& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, TorrentData::Priority bandwidthPriority, bool start)
     {
         auto file(std::make_shared<QFile>());
         if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
@@ -529,55 +543,55 @@ namespace libtremotesf
             mRpc->addTorrentFile(
                     std::move(file),
                     downloadDirectory,
-                    unwantedFiles,
-                    highPriorityFiles,
-                    lowPriorityFiles,
+                    toVariantList(unwantedFiles),
+                    toVariantList(highPriorityFiles),
+                    toVariantList(lowPriorityFiles),
                     renamed,
                     bandwidthPriority,
                     start);
         });
     }
 
-    void JniRpc::addTorrentLink(const QString& link, const QString& downloadDirectory, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentLink(const QString& link, const QString& downloadDirectory, TorrentData::Priority bandwidthPriority, bool start)
     {
         runOnThread([=] {
             mRpc->addTorrentLink(link, downloadDirectory, bandwidthPriority, start);
         });
     }
 
-    void JniRpc::startTorrents(const QVariantList& ids)
+    void JniRpc::startTorrents(const std::vector<int>& ids)
     {
-        runOnThread([=] { mRpc->startTorrents(ids); });
+        runOnThread([=] { mRpc->startTorrents(toVariantList(ids)); });
     }
 
-    void JniRpc::startTorrentsNow(const QVariantList& ids)
+    void JniRpc::startTorrentsNow(const std::vector<int>& ids)
     {
-        runOnThread([=] { mRpc->startTorrentsNow(ids); });
+        runOnThread([=] { mRpc->startTorrentsNow(toVariantList(ids)); });
     }
 
-    void JniRpc::pauseTorrents(const QVariantList& ids)
+    void JniRpc::pauseTorrents(const std::vector<int>& ids)
     {
-        runOnThread([=] { mRpc->pauseTorrents(ids); });
+        runOnThread([=] { mRpc->pauseTorrents(toVariantList(ids)); });
     }
 
-    void JniRpc::removeTorrents(const QVariantList& ids, bool deleteFiles)
+    void JniRpc::removeTorrents(const std::vector<int>& ids, bool deleteFiles)
     {
-        runOnThread([=] { mRpc->removeTorrents(ids, deleteFiles); });
+        runOnThread([=] { mRpc->removeTorrents(toVariantList(ids), deleteFiles); });
     }
 
-    void JniRpc::checkTorrents(const QVariantList& ids)
+    void JniRpc::checkTorrents(const std::vector<int>& ids)
     {
-        runOnThread([=] { mRpc->checkTorrents(ids); });
+        runOnThread([=] { mRpc->checkTorrents(toVariantList(ids)); });
     }
 
-    void JniRpc::reannounceTorrents(const QVariantList& ids)
+    void JniRpc::reannounceTorrents(const std::vector<int>& ids)
     {
-        runOnThread([=] { mRpc->reannounceTorrents(ids); });
+        runOnThread([=] { mRpc->reannounceTorrents(toVariantList(ids)); });
     }
 
-    void JniRpc::setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles)
+    void JniRpc::setTorrentsLocation(const std::vector<int>& ids, const QString& location, bool moveFiles)
     {
-        runOnThread([=] { mRpc->setTorrentsLocation(ids, location, moveFiles); });
+        runOnThread([=] { mRpc->setTorrentsLocation(toVariantList(ids), location, moveFiles); });
     }
 
     void JniRpc::renameTorrentFile(int torrentId, const QString& filePath, const QString& newName)
@@ -627,7 +641,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode)
+    void JniRpc::setTorrentRatioLimitMode(TorrentData& data, TorrentData::RatioLimitMode mode)
     {
         data.ratioLimitMode = mode;
         runOnTorrent(data.id, [=](Torrent* torrent) {
@@ -659,7 +673,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority)
+    void JniRpc::setTorrentBandwidthPriority(TorrentData& data, TorrentData::Priority priority)
     {
         data.bandwidthPriority = priority;
         runOnTorrent(data.id, [=](Torrent* torrent) {
@@ -667,7 +681,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode)
+    void JniRpc::setTorrentIdleSeedingLimitMode(TorrentData& data, TorrentData::IdleSeedingLimitMode mode)
     {
         data.idleSeedingLimitMode = mode;
         runOnTorrent(data.id, [=](Torrent* torrent) {
@@ -690,17 +704,17 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted)
+    void JniRpc::setTorrentFilesWanted(TorrentData& data, const std::vector<int>& files, bool wanted)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->setFilesWanted(files, wanted);
+            torrent->setFilesWanted(toVariantList(files), wanted);
         });
     }
 
-    void JniRpc::setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority)
+    void JniRpc::setTorrentFilesPriority(TorrentData& data, const std::vector<int>& files, TorrentFile::Priority priority)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->setFilesPriority(files, priority);
+            torrent->setFilesPriority(toVariantList(files), priority);
         });
     }
 
@@ -723,10 +737,10 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::torrentRemoveTrackers(TorrentData& data, const QVariantList& ids)
+    void JniRpc::torrentRemoveTrackers(TorrentData& data, const std::vector<int>& ids)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->removeTrackers(ids);
+            torrent->removeTrackers(toVariantList(ids));
         });
     }
 
@@ -758,9 +772,4 @@ namespace libtremotesf
             }
         });
     }
-}
-
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM*, void*)
-{
-    return JNI_VERSION_1_2;
 }

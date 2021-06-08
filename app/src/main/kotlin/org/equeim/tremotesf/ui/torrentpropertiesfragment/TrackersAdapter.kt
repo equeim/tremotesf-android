@@ -35,6 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.data.rpc.forEach
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -50,7 +51,7 @@ import java.util.Comparator
 data class TrackersAdapterItem(
     val id: Int,
     var announce: String,
-    var status: Int,
+    var status: Tracker.Status,
     var errorMessage: String,
     var peers: Int,
     private var nextUpdateTime: Long
@@ -150,7 +151,8 @@ class TrackersAdapter(
 
         val newTrackers = mutableListOf<TrackersAdapterItem>()
         val rpcTrackers = torrent.trackers
-        for (rpcTracker: Tracker in rpcTrackers) {
+
+        rpcTrackers?.forEach { rpcTracker ->
             val id = rpcTracker.id()
             var tracker = trackers.find { it.id == id }
             tracker = tracker?.updatedFrom(rpcTracker) ?: TrackersAdapterItem(rpcTracker)

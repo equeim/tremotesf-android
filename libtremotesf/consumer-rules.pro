@@ -1,2 +1,3 @@
 -keep class org.qtproject.qt5.android.QtNative { *; }
--keep class org.equeim.libtremotesf.libtremotesfJNI { *; }
+-keep class org.bytedeco.javacpp.** { *; }
+-keep class org.equeim.libtremotesf.** { *; }

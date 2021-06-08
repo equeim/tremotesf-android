@@ -250,7 +250,7 @@ class TorrentsListFragment : NavigationFragment(
         return true
     }
 
-    private fun onRpcConnectionStateChanged(connectionState: Int) {
+    private fun onRpcConnectionStateChanged(connectionState: RpcConnectionState) {
         if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
             if (connectionState == RpcConnectionState.Connected) {
                 menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
@@ -303,7 +303,7 @@ class TorrentsListFragment : NavigationFragment(
         }
     }
 
-    private fun updateMenuItems(connectionState: Int) {
+    private fun updateMenuItems(connectionState: RpcConnectionState) {
         val menu = this.menu ?: return
 
         val connectMenuItem = menu.findItem(R.id.connect)

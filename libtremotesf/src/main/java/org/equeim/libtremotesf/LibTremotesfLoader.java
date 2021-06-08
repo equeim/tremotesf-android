@@ -24,7 +24,7 @@ import android.os.Build;
 import org.qtproject.qt5.android.QtNative;
 import timber.log.Timber;
 
-public class LibTremotesf {
+public class LibTremotesfLoader {
     public static void init(ClassLoader classLoader) {
         Timber.d("init() called with: classLoader = [" + classLoader + "]");
         System.loadLibrary("c++_shared");
@@ -39,6 +39,8 @@ public class LibTremotesf {
         System.loadLibrary("Qt5Core_" + suffix);
         System.loadLibrary("Qt5Network_" + suffix);
         System.loadLibrary("tremotesf_" + suffix);
+
+        System.setProperty("org.bytedeco.javacpp.loadlibraries", "false");
 
         Timber.d("init: loaded native libraries");
     }

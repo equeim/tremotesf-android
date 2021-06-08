@@ -46,7 +46,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
-import org.equeim.libtremotesf.StringMap
+import org.equeim.libtremotesf.StringStringMap
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.data.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
@@ -259,7 +259,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 priorities.unwantedFiles.toIntArray(),
                 priorities.highPriorityFiles.toIntArray(),
                 priorities.lowPriorityFiles.toIntArray(),
-                StringMap().apply { putAll(model.renamedFiles) },
+                StringStringMap().apply { model.renamedFiles.forEach { (k, v) -> put(k, v) } },
                 priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())],
                 infoFragment.binding.startDownloadingCheckBox.isChecked
             )
