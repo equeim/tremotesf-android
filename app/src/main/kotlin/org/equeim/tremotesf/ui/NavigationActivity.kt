@@ -42,6 +42,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
@@ -147,12 +148,12 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             }
 
             ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-                val systemWindow = insets.systemWindowInsets
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
                 view.apply {
-                    if (marginLeft != systemWindow.left || marginRight != systemWindow.right) {
+                    if (marginLeft != systemBars.left || marginRight != systemBars.right) {
                         updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            leftMargin = systemWindow.left
-                            rightMargin = systemWindow.right
+                            leftMargin = systemBars.left
+                            rightMargin = systemBars.right
                         }
                     }
                 }
@@ -273,7 +274,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     private fun setupDrawer() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel) { view, insets ->
-                view.updatePadding(top = insets.systemWindowInsetTop)
+                view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
                 insets
             }
         }

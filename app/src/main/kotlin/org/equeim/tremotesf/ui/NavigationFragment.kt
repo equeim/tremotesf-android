@@ -35,6 +35,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -42,9 +43,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
@@ -58,7 +57,6 @@ import com.google.android.material.shape.MaterialShapeUtils
 
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.findChildRecursively
-import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 open class NavigationFragment(
@@ -177,14 +175,14 @@ open class NavigationFragment(
                 }
                 ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
                     view.updateLayoutParams {
-                        height = insets.systemWindowInsetTop
+                        height = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                     }
                     insets
                 }
                 container.addView(placeholder, 0)
             } else {
                 ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
-                    view.updatePadding(top = insets.systemWindowInsetTop)
+                    view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
                     insets
                 }
             }
@@ -239,7 +237,7 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) 
         if (scrollView != null) {
             scrollView.clipToPadding = false
             ViewCompat.setOnApplyWindowInsetsListener(scrollView) { view, insets ->
-                view.updatePadding(bottom = insets.systemWindowInsetBottom)
+                view.updatePadding(bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom)
                 insets
             }
         }
@@ -249,10 +247,10 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) 
         if (fab != null) {
             val initialMargin = fab.marginBottom
             ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
-                val systemWindow = insets.systemWindowInsets
-                if (view.marginBottom != (initialMargin + systemWindow.bottom)) {
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                if (view.marginBottom != (initialMargin + systemBars.bottom)) {
                     view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = initialMargin + systemWindow.bottom
+                        bottomMargin = initialMargin + systemBars.bottom
                     }
                 }
                 insets
