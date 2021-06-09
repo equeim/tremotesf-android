@@ -14,6 +14,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.dropWhile
@@ -37,7 +38,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
-object GlobalRpc : Rpc(GlobalServers) {
+object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) GlobalScope) {
     private val context = TremotesfApplication.instance
 
     private val updateWorkerCompleter =
@@ -64,7 +65,7 @@ object GlobalRpc : Rpc(GlobalServers) {
                     }
                 }
             }
-            .launchIn(GlobalScope + Dispatchers.Unconfined)
+            .launchIn(scope + Dispatchers.Unconfined)
 
         torrents
             .onEach {
@@ -72,12 +73,12 @@ object GlobalRpc : Rpc(GlobalServers) {
                     handleWorkerCompleter()
                 }
             }
-            .launchIn(GlobalScope + Dispatchers.Main)
+            .launchIn(scope + Dispatchers.Main)
 
         AppForegroundTracker.appInForeground
             .dropWhile { !it }
             .onEach(::onAppForegroundStateChanged)
-            .launchIn(GlobalScope + Dispatchers.Main)
+            .launchIn(scope + Dispatchers.Main)
 
         servers.setRpc(this)
     }

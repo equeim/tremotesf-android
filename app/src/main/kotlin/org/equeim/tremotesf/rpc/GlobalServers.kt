@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.dropWhile
@@ -33,7 +34,7 @@ object GlobalServers : Servers(TremotesfApplication.instance) {
                 if (!inForeground && rpc.isConnected.value) save()
                 wifiNetworkController.enabled.value = inForeground
             }
-            .launchIn(GlobalScope + Dispatchers.Main)
+            .launchIn(@OptIn(DelicateCoroutinesApi::class) GlobalScope + Dispatchers.Main)
     }
 
     @MainThread

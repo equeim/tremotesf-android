@@ -24,9 +24,8 @@ package org.equeim.tremotesf.data.rpc
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -67,9 +66,7 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
-abstract class Rpc(protected val servers: Servers) {
-    private val scope = MainScope()
-
+abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope) {
     init {
         LibTremotesf.init(javaClass.classLoader)
     }
@@ -185,7 +182,7 @@ abstract class Rpc(protected val servers: Servers) {
     val isConnected: StateFlow<Boolean> = connectionState
         .map { it == RpcConnectionState.Connected }
         .distinctUntilChanged()
-        .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
+        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     data class Error(val error: Int, val errorMessage: String)
 
@@ -200,8 +197,9 @@ abstract class Rpc(protected val servers: Servers) {
             get() = connectionState == RpcConnectionState.Connected
     }
 
+
     val status = combine(connectionState, error, Rpc::Status)
-        .stateIn(GlobalScope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
+        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
     val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents

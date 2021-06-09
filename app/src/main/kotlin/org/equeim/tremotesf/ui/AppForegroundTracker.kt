@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui
 
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,7 @@ object AppForegroundTracker {
     val hasStartedActivity = MutableStateFlow(false)
     val foregroundServiceStarted = MutableStateFlow(false)
 
+    @OptIn(DelicateCoroutinesApi::class)
     private val scope = GlobalScope + Dispatchers.Unconfined
 
     val appInForeground = combine(hasStartedActivity, foregroundServiceStarted, Boolean::or)
