@@ -15,17 +15,17 @@ object Versions {
     const val kotlinxSerialization = "1.2.1"
 
     object AndroidX {
-        const val appcompat = "1.2.0"
+        const val appcompat = "1.3.0"
         const val concurrentFutures = "1.1.0"
-        const val core = "1.3.2"
+        const val core = "1.5.0"
         const val coordinatorlayout = "1.1.0"
         const val drawerlayout = "1.1.1"
-        const val fragment = "1.3.3"
+        const val fragment = "1.3.4"
         const val gridlayout = "1.0.0"
         const val lifecycle = "2.3.1"
         lateinit var navigation: String
             private set
-        const val recyclerview = "1.2.0"
+        const val recyclerview = "1.2.1"
         const val preference = "1.1.1"
         const val viewpager2 = "1.0.0"
         const val work = "2.5.0"
