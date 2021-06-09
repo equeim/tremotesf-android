@@ -13,6 +13,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
 import com.android.billingclient.api.consumePurchase
+import com.android.billingclient.api.queryPurchasesAsync
 import com.android.billingclient.api.querySkuDetails
 
 import kotlinx.coroutines.CoroutineScope
@@ -104,17 +105,14 @@ private class GoogleBillingHelperImpl(
     override fun onBillingSetupFinished(result: BillingResult) {
         Timber.i("onBillingSetupFinished result=${resultToString(result)}")
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-            val consume = billingClient
-                .queryPurchases(BillingClient.SkuType.INAPP)
-                .purchasesList
-                ?.filterNot(Purchase::isAcknowledged)
-            if (consume?.isNotEmpty() == true) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    consumePurchases(consume, false)
-                }
-            }
-
             coroutineScope.launch(Dispatchers.IO) {
+                val consume = billingClient
+                    .queryPurchasesAsync(BillingClient.SkuType.INAPP)
+                    .purchasesList
+                    .filterNot(Purchase::isAcknowledged)
+                if (consume.isNotEmpty()) {
+                    launch(Dispatchers.IO) { consumePurchases(consume, false) }
+                }
                 querySkuDetails()
             }
         }
