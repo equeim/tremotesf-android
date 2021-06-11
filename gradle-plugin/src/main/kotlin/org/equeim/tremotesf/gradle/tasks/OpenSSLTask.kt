@@ -1,5 +1,6 @@
 package org.equeim.tremotesf.gradle.tasks
 
+import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
 import org.gradle.api.DefaultTask
@@ -25,31 +26,29 @@ abstract class OpenSSLTask @Inject constructor(
 
     @get:InputDirectory
     val sourceDir: Provider<File> by lazy {
-        opensslDir.map { it.resolve(SOURCE_DIR) }
+        opensslDir.map { sourceDir(it) }
     }
 
     @get:OutputDirectory
     val installDir: Provider<File> by lazy {
-        opensslDir.map { it.resolve(INSTALL_DIR) }
+        opensslDir.map { installDir(it) }
     }
 
     @TaskAction
     fun buildOpenSSL() {
-        for ((api, abis) in NativeAbis.apisToAbis) {
-            for (abi in abis) {
-                buildOpenSSL(api, abi)
-            }
+        for (abi in NativeAbis.abis) {
+            buildOpenSSL(abi)
         }
     }
 
-    private fun buildOpenSSL(api: Int, abi: String) {
-        logger.info("Building OpenSSL for api = $api, abi = $abi")
+    private fun buildOpenSSL(abi: String) {
+        logger.info("Building OpenSSL for abi = $abi")
 
         val buildDir = buildDir(opensslDir.get(), abi)
         Files.createDirectories(buildDir.toPath())
 
         val cflags = COMMON_CFLAGS.toMutableList()
-        cflags.add("-D__ANDROID_API__=$api")
+        cflags.add("-D__ANDROID_API__=${Versions.minSdk}")
         val target = when (abi) {
             "armeabi-v7a" -> {
                 cflags.add("-mfpu=neon")
@@ -93,12 +92,10 @@ abstract class OpenSSLTask @Inject constructor(
             "-flto=thin"
         )
 
-        const val SOURCE_DIR = "openssl"
-        const val PATCHES_DIR = "patches"
-
+        fun sourceDir(opensslDir: File) = opensslDir.resolve("openssl")
+        fun patchesDir(opensslDir: File) = opensslDir.resolve("patches")
         fun buildDir(opensslDir: File, abi: String) = opensslDir.resolve("build-$abi")
-        fun buildDirs(opensslDir: File) = NativeAbis.apisToAbis.values.flatMap { abis -> abis.map { abi -> buildDir(opensslDir, abi) } }
-
-        const val INSTALL_DIR = "install"
+        fun buildDirs(opensslDir: File) = NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
+        fun installDir(opensslDir: File) = opensslDir.resolve("install")
     }
 }

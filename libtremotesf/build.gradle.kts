@@ -22,7 +22,7 @@ android {
         externalNativeBuild.cmake.arguments(
             "-DANDROID_STL=c++_shared",
             "-DANDROID_ARM_NEON=true",
-            "-DQT_DIR=$qtDir"
+            "-DCMAKE_FIND_ROOT_PATH=${QtTask.installDir(qtDir)}"
         )
     }
 
@@ -44,8 +44,8 @@ dependencies {
 }
 
 val openSSLPatches by tasks.registering(PatchTask::class) {
-    sourceDir.set(opensslDir.resolve(OpenSSLTask.SOURCE_DIR))
-    patchesDir.set(opensslDir.resolve(OpenSSLTask.PATCHES_DIR))
+    sourceDir.set(OpenSSLTask.sourceDir(opensslDir))
+    patchesDir.set(OpenSSLTask.patchesDir(opensslDir))
 }
 
 val openSSL by tasks.registering(OpenSSLTask::class) {
@@ -55,8 +55,8 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
 }
 
 val qtPatches by tasks.registering(PatchTask::class) {
-    sourceDir.set(rootProject.file(qtDir.resolve(QtTask.SOURCE_DIR)))
-    patchesDir.set(rootProject.file(qtDir.resolve(QtTask.PATCHES_DIR)))
+    sourceDir.set(QtTask.sourceDir(qtDir))
+    patchesDir.set(QtTask.patchesDir(qtDir))
 }
 
 val qt by tasks.registering(QtTask::class) {
@@ -72,6 +72,6 @@ dependencies {
 }
 
 val clean3rdparty by tasks.registering(Delete::class) {
-    delete(OpenSSLTask.buildDirs(opensslDir), opensslDir.resolve(OpenSSLTask.INSTALL_DIR))
-    delete(QtTask.buildDirs(qtDir), QtTask.installPrefixes(qtDir))
+    delete(OpenSSLTask.buildDirs(opensslDir), OpenSSLTask.installDir(opensslDir))
+    delete(QtTask.buildDir(qtDir), QtTask.installDir(qtDir))
 }

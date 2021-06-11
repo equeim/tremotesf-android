@@ -12,8 +12,8 @@
 /libtremotesf/build
 /3rdparty/openssl/build-*
 /3rdparty/openssl/install
-/3rdparty/qt/build-*
-/3rdparty/qt/install-*
+/3rdparty/qt/build
+/3rdparty/qt/install
 /gradle-plugin/build
 /common/build
 /rpc/build

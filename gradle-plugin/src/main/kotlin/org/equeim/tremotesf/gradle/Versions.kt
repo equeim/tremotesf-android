@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 object Versions {
     const val compileSdk = 30
-    const val minSdk = 16
+    const val minSdk = 21
     const val targetSdk = compileSdk
     const val ndk = "22.1.7171670"
 

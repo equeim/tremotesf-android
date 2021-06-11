@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project(tremotesf CXX)
 
-list(APPEND CMAKE_FIND_ROOT_PATH "${QT_DIR}/install-api${ANDROID_PLATFORM_LEVEL}")
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 

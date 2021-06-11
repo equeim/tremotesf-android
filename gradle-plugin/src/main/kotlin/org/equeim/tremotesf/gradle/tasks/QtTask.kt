@@ -10,7 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.internal.ExecActionFactory
 import java.io.File
@@ -34,16 +34,19 @@ abstract class QtTask @Inject constructor(
     abstract val ndkDir: Property<File>
 
     @get:InputDirectory
-    val sourceDir: Provider<File> by lazy {
-        qtDir.map { it.resolve(SOURCE_DIR) }
-    }
+    val sourceDir: Provider<File> by lazy { qtDir.map { sourceDir(it) } }
 
-    @get:OutputDirectories
-    val installDirs: Provider<Iterable<File>> by lazy { qtDir.map { installPrefixes(it) } }
+    @get:OutputDirectory
+    val installDir: Provider<File> by lazy { qtDir.map { installDir(it) } }
 
     @TaskAction
     fun buildQt() {
-        val commonConfigureFlags = listOf(
+        logger.info("Configuring Qt")
+
+        val buildDir = buildDir(qtDir.get())
+        Files.createDirectories(buildDir.toPath())
+
+        val configureFlags = listOf(
             "-v",
             "-confirm-license",
             "-opensource",
@@ -52,6 +55,9 @@ abstract class QtTask @Inject constructor(
             "-android-ndk", ndkDir.get().toString(),
             "-android-sdk", sdkDir.get().toString(),
             "-android-ndk-host", "linux-x86_64",
+            "-android-abis", NativeAbis.abis.joinToString(separator = ","),
+            "-android-ndk-platform", "android-${Versions.minSdk}",
+            "-prefix", installDir.get().toString(),
             "-linker", "lld",
             "-ltcg",
             "-no-use-gold-linker",
@@ -95,22 +101,7 @@ abstract class QtTask @Inject constructor(
             "-L${opensslInstallDir.get().resolve("lib")}"
         )
 
-        NativeAbis.apisToAbis.forEach { (api, abis) -> buildQt(api, abis, commonConfigureFlags) }
-    }
-
-    private fun buildQt(api: Int, abis: List<String>, commonConfigureFlags: List<String>) {
-        logger.info("Building Qt for api = $api, abis = $abis")
-
-        val buildDir = buildDir(qtDir.get(), api)
-        Files.createDirectories(buildDir.toPath())
-
-        val configureFlags = commonConfigureFlags + listOf(
-            "-prefix", installPrefix(qtDir.get(), api).toString(),
-            "-android-abis", abis.joinToString(separator = ","),
-            "-android-ndk-platform", "android-$api"
-        )
-        val firstAbi = abis.first()
-        logger.info("Configuring Qt")
+        val firstAbi = NativeAbis.abis.first()
         exec(
             execActionFactory,
             sourceDir.get().resolve("configure").toString(),
@@ -121,20 +112,16 @@ abstract class QtTask @Inject constructor(
 
         logger.info("Building Qt")
         exec(execActionFactory, MAKE, defaultMakeArguments(gradle), buildDir)
+
         logger.info("Installing Qt")
         exec(execActionFactory, MAKE, listOf("install"), buildDir)
     }
 
     companion object {
-        const val SOURCE_DIR = "qtbase"
-        const val PATCHES_DIR = "patches"
-
-        fun buildDir(qtDir: File, api: Int) = qtDir.resolve("build-api$api")
-        fun buildDirs(qtDir: File) = NativeAbis.apisToAbis.keys.map { buildDir(qtDir, it) }
-
-        fun installPrefix(qtDir: File, api: Int) = qtDir.resolve("install-api$api")
-        fun installPrefixes(qtDir: File) = NativeAbis.apisToAbis.keys.map { installPrefix(qtDir, it) }
-
-        fun jar(qtDir: File) = installPrefix(qtDir, Versions.minSdk).resolve("jar/QtAndroid.jar")
+        fun sourceDir(qtDir: File) = qtDir.resolve("qtbase")
+        fun patchesDir(qtDir: File) = qtDir.resolve("patches")
+        fun buildDir(qtDir: File) = qtDir.resolve("build")
+        fun installDir(qtDir: File) = qtDir.resolve("install")
+        fun jar(qtDir: File) = installDir(qtDir).resolve("jar/QtAndroid.jar")
     }
 }
