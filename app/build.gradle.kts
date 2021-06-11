@@ -83,7 +83,11 @@ android {
 repositories {
     mavenCentral()
     google()
-    maven("https://jitpack.io")
+    jcenter {
+        content {
+            includeModule("com.l4digital.fastscroll", "fastscroll")
+        }
+    }
 }
 
 dependencies {
@@ -118,7 +122,7 @@ dependencies {
 
     implementation("com.google.android.material:material:${Versions.material}")
 
-    implementation("com.github.L4Digital:FastScroll:${Versions.fastscroll}")
+    implementation("com.l4digital.fastscroll:fastscroll:${Versions.fastscroll}")
 
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 
