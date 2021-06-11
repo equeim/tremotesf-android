@@ -3,7 +3,7 @@ package org.equeim.tremotesf.gradle
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.provideDelegate
+import java.util.concurrent.atomic.AtomicReference
 
 object Versions {
     const val compileSdk = 30
@@ -23,22 +23,18 @@ object Versions {
         const val fragment = "1.3.4"
         const val gridlayout = "1.0.0"
         const val lifecycle = "2.3.1"
-        lateinit var navigation: String
-            private set
+
+        private val _navigation = AtomicReference<String>()
+        val navigation: String
+            get() = checkNotNull(_navigation.get())
+
         const val recyclerview = "1.2.1"
         const val preference = "1.1.1"
         const val viewpager2 = "1.0.0"
         const val work = "2.5.0"
 
-        internal lateinit var gradle: Gradle
-            @Synchronized get
-
-        @Synchronized
         internal fun init(gradle: Gradle) {
-            if (!::navigation.isInitialized) {
-                val navigation: String by (gradle as ExtensionAware).extra
-                this.navigation = navigation
-            }
+            _navigation.updateAndGet { it ?: (gradle as ExtensionAware).extra["navigation"] as String }
         }
     }
 
