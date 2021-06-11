@@ -14,6 +14,7 @@ import org.gradle.process.internal.ExecActionFactory
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
+import kotlin.system.measureNanoTime
 
 abstract class OpenSSLTask @Inject constructor(
     private val execActionFactory: ExecActionFactory
@@ -42,7 +43,7 @@ abstract class OpenSSLTask @Inject constructor(
     }
 
     private fun buildOpenSSL(abi: String) {
-        logger.info("Building OpenSSL for abi = $abi")
+        logger.lifecycle("Building OpenSSL for abi = {}", abi)
 
         val buildDir = buildDir(opensslDir.get(), abi)
         Files.createDirectories(buildDir.toPath())
@@ -65,15 +66,27 @@ abstract class OpenSSLTask @Inject constructor(
             add("--prefix=${installDir.get()}")
             addAll(cflags)
         }
-        logger.info("Configuring OpenSSL")
-        exec(execActionFactory, sourceDir.get().resolve("Configure").toString(), configureArgs, buildDir, mapOf("ANDROID_NDK" to ndkDir.get()))
+        logger.lifecycle("Configuring OpenSSL")
+        measureNanoTime {
+            exec(execActionFactory, sourceDir.get().resolve("Configure").toString(), configureArgs, buildDir, mapOf("ANDROID_NDK" to ndkDir.get()))
+        }.also {
+            logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
 
-        logger.info("Building OpenSSL")
-        exec(execActionFactory, MAKE, listOf("build_libs", "-j16"), buildDir)
-        logger.info("Installing OpenSSL")
-        exec(execActionFactory, MAKE, listOf("install_dev"), buildDir)
+        logger.lifecycle("Building OpenSSL")
+        measureNanoTime {
+            exec(execActionFactory, MAKE, listOf("build_libs", "-j16"), buildDir)
+        }.also {
+            logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
+        logger.lifecycle("Installing OpenSSL")
+        measureNanoTime {
+            exec(execActionFactory, MAKE, listOf("install_dev"), buildDir)
+        }.also {
+            logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
 
-        logger.info("Renaming static libraries to add ABI suffix")
+        logger.lifecycle("Renaming static libraries to add ABI suffix")
         val libDir = installDir.get().resolve("lib")
         if (!libDir.resolve("libcrypto.a").renameTo(libDir.resolve("libcrypto_$abi.a"))) {
             throw RuntimeException("Failed to remove libcrypto.a")

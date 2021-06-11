@@ -7,6 +7,8 @@ import org.gradle.kotlin.dsl.support.listFilesOrdered
 import org.gradle.process.ExecResult
 import org.gradle.process.internal.ExecActionFactory
 import java.io.File
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 internal object ExecUtils {
     const val MAKE = "make"
@@ -37,4 +39,8 @@ internal object ExecUtils {
             throw e
         }
     }
+}
+
+internal fun nanosToSecondsString(nanoseconds: Long): String {
+    return "%.2f".format(Locale.ROOT, nanoseconds.toDouble() / TimeUnit.SECONDS.toNanos(1).toDouble())
 }

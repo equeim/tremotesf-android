@@ -4,7 +4,6 @@ import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 import org.gradle.process.internal.ExecActionFactory
@@ -24,7 +23,7 @@ abstract class PatchTask @Inject constructor(private val execActionFactory: Exec
     }
 
     private fun applyPatch(patch: File) {
-        logger.info("Applying patch $patch")
+        logger.lifecycle("Applying patch {}", patch)
         val result = exec(
             execActionFactory,
             PATCH,
@@ -33,7 +32,7 @@ abstract class PatchTask @Inject constructor(private val execActionFactory: Exec
             ignoreExitValue = true
         )
         if (result.exitValue == 0) {
-            logger.info("Already applied")
+            logger.lifecycle("Already applied")
         } else {
             exec(
                 execActionFactory,

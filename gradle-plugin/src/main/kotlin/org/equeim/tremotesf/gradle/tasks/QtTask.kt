@@ -16,6 +16,7 @@ import org.gradle.process.internal.ExecActionFactory
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
+import kotlin.system.measureNanoTime
 
 abstract class QtTask @Inject constructor(
     private val execActionFactory: ExecActionFactory,
@@ -41,7 +42,7 @@ abstract class QtTask @Inject constructor(
 
     @TaskAction
     fun buildQt() {
-        logger.info("Configuring Qt")
+        logger.lifecycle("Configuring Qt")
 
         val buildDir = buildDir(qtDir.get())
         Files.createDirectories(buildDir.toPath())
@@ -102,19 +103,32 @@ abstract class QtTask @Inject constructor(
         )
 
         val firstAbi = NativeAbis.abis.first()
-        exec(
-            execActionFactory,
-            sourceDir.get().resolve("configure").toString(),
-            configureFlags,
-            buildDir,
-            mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi")
-        )
+        measureNanoTime {
+            exec(
+                execActionFactory,
+                sourceDir.get().resolve("configure").toString(),
+                configureFlags,
+                buildDir,
+                mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi")
+            )
+        }.also {
+            logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
 
-        logger.info("Building Qt")
-        exec(execActionFactory, MAKE, defaultMakeArguments(gradle), buildDir)
+        logger.lifecycle("Building Qt")
 
-        logger.info("Installing Qt")
-        exec(execActionFactory, MAKE, listOf("install"), buildDir)
+        measureNanoTime {
+            exec(execActionFactory, MAKE, defaultMakeArguments(gradle), buildDir)
+        }.also {
+            logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
+
+        logger.lifecycle("Installing Qt")
+        measureNanoTime {
+            exec(execActionFactory, MAKE, listOf("install"), buildDir)
+        }.also {
+            logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
     }
 
     companion object {
