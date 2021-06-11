@@ -381,7 +381,8 @@ namespace libtremotesf
 
     void JniRpc::init()
     {
-        __android_log_print(ANDROID_LOG_INFO, logTag, "Starting thread and waiting for QCoreApplication creation");
+        __android_log_print(ANDROID_LOG_INFO, logTag, "init() called");
+        __android_log_print(ANDROID_LOG_INFO, logTag, "init: starting Qt thread and waiting for QCoreApplication creation");
 
         auto args = std::make_shared<ThreadStartArgs>();
 
@@ -400,10 +401,10 @@ namespace libtremotesf
         }
         const auto elapsed = timer.nsecsElapsed() / 1000000.0;
         if (!createdApplication) {
-            __android_log_print(ANDROID_LOG_FATAL, logTag, "Failed to create QCoreApplication, elapsed time = %f ms", elapsed);
+            __android_log_print(ANDROID_LOG_FATAL, logTag, "init: timed out waiting for QCoreApplication creation, elapsed time = %f ms", elapsed);
             std::terminate();
         }
-        qInfo("Created QCoreApplication, elapsed time = %f ms", elapsed);
+        qInfo("init: created QCoreApplication, elapsed time = %f ms", elapsed);
     }
 
     void JniRpc::exec(std::shared_ptr<ThreadStartArgs> args)
@@ -412,9 +413,13 @@ namespace libtremotesf
         char argv0[] {'\0'};
         char* argv[] {argv0, nullptr};
 
+        __android_log_print(ANDROID_LOG_INFO, logTag, "exec() called");
+        __android_log_print(ANDROID_LOG_INFO, logTag, "exec: started Qt thread, creating QCoreApplication");
+
         new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationName(QLatin1String(logTag));
-        qInfo("Created QCoreApplication");
+
+        qInfo("exec: created QCoreApplication");
 
         {
             std::unique_lock<std::mutex> lock(args->mutex);
@@ -425,6 +430,7 @@ namespace libtremotesf
 
         initRpc();
 
+        qInfo("exec: calling QCoreApplication::exec");
         QCoreApplication::exec();
     }
 
