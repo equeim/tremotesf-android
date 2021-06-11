@@ -14,7 +14,7 @@ class GradlePlugin : Plugin<Project> {
 
     private fun Project.configureVersionsPlugin() {
         if (pluginManager.hasPlugin(VERSIONS_PLUGIN_ID)) return
-        pluginManager.apply("com.github.ben-manes.versions")
+        pluginManager.apply(VERSIONS_PLUGIN_ID)
         tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
             val checker = DependencyVersionChecker()
             rejectVersionIf {
