@@ -28,8 +28,6 @@
         <item name="android:windowBackground">@color/color_background</item>
 
         <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
-
-        <item name="wtf">@dimen/wtf</item>
     </style>
 
     <style name="AppTheme.Old">

@@ -15,6 +15,4 @@
     <dimen name="linear_layout_vertical_spacing_double">16dp</dimen>
 
     <integer name="config_navAnimTime">300</integer>
-
-    <dimen name="wtf">0.54</dimen>
 </resources>
