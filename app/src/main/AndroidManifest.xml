@@ -32,9 +32,7 @@
         android:name=".TremotesfApplication"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Splash"
-        android:extractNativeLibs="false"
-        android:requestLegacyExternalStorage="true"
-        tools:targetApi="m">
+        android:requestLegacyExternalStorage="true">
 
         <activity
             android:name=".ui.NavigationActivity"

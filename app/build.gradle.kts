@@ -80,6 +80,8 @@ android {
             buildConfigField("boolean", "GOOGLE", "false")
         }
     }
+
+    packagingOptions.jniLibs.useLegacyPackaging = false
 }
 
 repositories {
