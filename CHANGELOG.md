@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Added fast scroll support in torrents list
+
+### Removed
+- Dropped support of Android 4.x
+
 ## [2.4.2] - 2021-05-21
 ### Fixed
 - Fixed crash with single-file torrents
