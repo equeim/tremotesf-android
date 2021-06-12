@@ -14,4 +14,10 @@
     <color name="color_background_dark">#ff202020</color>
 
     <color name="color_primary_old">#008577</color>
+
+    <color name="icon_color_enabled">#89000000</color>
+    <color name="icon_color_disabled">#42000000</color>
+
+    <color name="icon_color_enabled_night">#FFFFFF</color>
+    <color name="icon_color_disabled_night">#4DFFFFFF</color>
 </resources>

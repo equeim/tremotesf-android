@@ -35,6 +35,8 @@ android {
         targetSdk = Versions.targetSdk
         versionCode = 4041
         versionName = "2.4.2"
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     if (keystoreProperties != null) {

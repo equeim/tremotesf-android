@@ -9,4 +9,6 @@
     </declare-styleable>
 
     <attr name="timePickerItemStyle" format="reference"/>
+
+    <attr name="wtf" format="dimension"/>
 </resources>

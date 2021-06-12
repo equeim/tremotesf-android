@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_play_arrow_enabled_24dp" android:state_enabled="true" />
-    <item android:drawable="@drawable/ic_play_arrow_disabled_24dp" android:state_enabled="false" />
-</selector>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24.0"
+    android:viewportWidth="24.0">
+    <path
+        android:fillColor="@color/icon_color"
+        android:pathData="M8,5v14l11,-7z" />
+</vector>
