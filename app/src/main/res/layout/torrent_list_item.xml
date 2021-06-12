@@ -18,9 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:textAppearance="?attr/textAppearanceListItemSmall"
-            app:drawableLeftCompat="@drawable/torrent_icon"
-            app:drawableStartCompat="@drawable/torrent_icon" />
+            android:textAppearance="?attr/textAppearanceListItemSmall" />
 
         <TextView
             android:id="@+id/size_text_view"

@@ -26,6 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
@@ -148,6 +149,7 @@ abstract class BaseTorrentFilesAdapter(
     ) {
 
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
+        @DrawableRes private var iconResId = 0
         private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
         private val checkBox: TristateCheckbox = itemView.findViewById(R.id.check_box)
 
@@ -179,7 +181,11 @@ abstract class BaseTorrentFilesAdapter(
 
             val item = adapter.getItem(bindingAdapterPosition)!!
 
-            iconView.setImageLevel(if (item.isDirectory) 0 else 1)
+            val resId = if (item.isDirectory) R.drawable.ic_folder_24dp else R.drawable.ic_insert_drive_file_24dp
+            if (resId != iconResId) {
+                iconView.setImageResource(resId)
+                iconResId = resId
+            }
 
             nameTextView.text = item.name
 

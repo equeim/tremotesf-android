@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui.addtorrent
 
 import android.Manifest
 import android.app.Application
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -30,6 +29,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
@@ -52,9 +52,9 @@ import org.equeim.tremotesf.data.FilesystemNavigator
 import org.equeim.tremotesf.databinding.FilePickerFragmentBinding
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import java.io.File
 
 
@@ -181,7 +181,12 @@ private class FilePickerAdapter(
 
             holder.file = file
             holder.textView.text = file.name
-            holder.iconDrawable.level = if (file.isDirectory) 0 else 1
+
+            val resId = if (file.isDirectory) R.drawable.ic_folder_24dp else R.drawable.ic_insert_drive_file_24dp
+            if (resId != holder.iconResId) {
+                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(resId, 0, 0, 0)
+                holder.iconResId = resId
+            }
         }
     }
 
@@ -204,7 +209,7 @@ private class FilePickerAdapter(
     private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var file: File
         val textView = itemView as TextView
-        val iconDrawable: Drawable = textView.compoundDrawablesRelative.first()
+        @DrawableRes var iconResId: Int = 0
 
         init {
             itemView.setOnClickListener {

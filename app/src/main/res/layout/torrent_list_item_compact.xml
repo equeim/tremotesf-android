@@ -21,9 +21,7 @@
             android:layout_gravity="center_vertical"
             android:drawablePadding="8dp"
             android:textAppearance="?attr/textAppearanceListItemSmall"
-            android:layout_marginVertical="4dp"
-            app:drawableLeftCompat="@drawable/torrent_icon"
-            app:drawableStartCompat="@drawable/torrent_icon" />
+            android:layout_marginVertical="4dp" />
 
         <TextView
             android:id="@+id/download_speed_text_view"

@@ -24,7 +24,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Checkable
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,11 +50,11 @@ import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.handleAndReset
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -138,12 +137,16 @@ class TorrentsListFragment : NavigationFragment(
             }
 
             sortViewLayout.setStartIconOnClickListener {
-                model.apply {
+                with(model) {
                     sortOrder.value = sortOrder.value.inverted()
                     Settings.torrentsSortOrder = sortOrder.value
+                    val resId = if (sortOrder.value == TorrentsListFragmentViewModel.SortOrder.Descending) {
+                        R.drawable.sort_descending
+                    } else {
+                        R.drawable.sort_ascending
+                    }
+                    sortViewLayout.setStartIconDrawable(resId)
                 }
-                (it as Checkable).isChecked =
-                    Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
             }
 
             statusView.setOnItemClickListener { _, _, position, _ ->

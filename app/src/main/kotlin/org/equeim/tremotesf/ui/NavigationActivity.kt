@@ -28,8 +28,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Checkable
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
@@ -72,10 +70,9 @@ import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentDirectio
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.findChildRecursively
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.setChildrenEnabled
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import timber.log.Timber
 
 
@@ -310,12 +307,12 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
             sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
             sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
-            val startIconDrawable = sortViewLayout.startIconDrawable
-            sortViewLayout.findChildRecursively { it is ImageView && it.drawable === startIconDrawable }
-                ?.let {
-                    (it as Checkable).isChecked =
-                        Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending
-                }
+            val resId = if (Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending) {
+                R.drawable.sort_descending
+            } else {
+                R.drawable.sort_ascending
+            }
+            sortViewLayout.setStartIconDrawable(resId)
 
             statusView.setAdapter(StatusFilterViewAdapter(this@NavigationActivity, statusView))
             trackersView.setAdapter(TrackersViewAdapter(this@NavigationActivity, trackersView))

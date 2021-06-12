@@ -52,8 +52,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            app:startIconDrawable="@drawable/sort_icon"
-            app:startIconCheckable="true"
             android:hint="@string/sort">
 
             <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView

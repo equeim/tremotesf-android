@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
@@ -29,6 +28,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
 import org.equeim.libtremotesf.TorrentData
@@ -194,7 +194,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
-        private val statusIconDrawable: Drawable = nameTextView.compoundDrawablesRelative.first()
+        @DrawableRes private var iconResId = 0
         protected val downloadSpeedTextView =
             itemView.findViewById<TextView>(R.id.download_speed_text_view)!!
         protected val uploadSpeedTextView =
@@ -214,18 +214,22 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
             torrent = getItem(bindingAdapterPosition)
 
             nameTextView.text = torrent.name
-            statusIconDrawable.level = when (torrent.status) {
-                TorrentData.Status.Paused -> 0
+            val resId = when (torrent.status) {
+                TorrentData.Status.Paused -> R.drawable.ic_pause_24dp
                 TorrentData.Status.Downloading,
                 TorrentData.Status.StalledDownloading,
-                TorrentData.Status.QueuedForDownloading -> 1
+                TorrentData.Status.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
                 TorrentData.Status.Seeding,
                 TorrentData.Status.StalledSeeding,
-                TorrentData.Status.QueuedForSeeding -> 2
+                TorrentData.Status.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
                 TorrentData.Status.Checking,
-                TorrentData.Status.QueuedForChecking -> 3
-                TorrentData.Status.Errored -> 4
+                TorrentData.Status.QueuedForChecking -> R.drawable.ic_refresh_24dp
+                TorrentData.Status.Errored -> R.drawable.ic_error_24dp
                 else -> 0
+            }
+            if (resId != iconResId) {
+                nameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(resId, 0, 0, 0)
+                iconResId = resId
             }
         }
 
