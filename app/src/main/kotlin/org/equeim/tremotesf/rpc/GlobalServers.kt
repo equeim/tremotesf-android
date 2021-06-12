@@ -23,7 +23,7 @@ import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
-object GlobalServers : Servers(TremotesfApplication.instance) {
+object GlobalServers : Servers(TremotesfApplication.instance, @OptIn(DelicateCoroutinesApi::class) GlobalScope) {
     private val saveData = AtomicReference<SaveData>()
 
     override fun setRpc(rpc: Rpc) {

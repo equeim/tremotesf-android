@@ -21,6 +21,7 @@ package org.equeim.tremotesf.data.rpc
 
 import android.content.Context
 import androidx.annotation.MainThread
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.SerialName
@@ -39,7 +40,7 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val context: Context) {
+abstract class Servers(protected val context: Context, private val scope: CoroutineScope) {
     private var rpc: Rpc? = null
 
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
@@ -54,7 +55,8 @@ abstract class Servers(protected val context: Context) {
     private val _currentServer = MutableStateFlow<Server?>(null)
     val currentServer: StateFlow<Server?> by ::_currentServer
 
-    val wifiNetworkController = WifiNetworkServersController(this, context)
+    lateinit var wifiNetworkController: WifiNetworkServersController
+        private set
 
     init {
         load()
@@ -62,6 +64,7 @@ abstract class Servers(protected val context: Context) {
 
     open fun setRpc(rpc: Rpc) {
         this.rpc = rpc
+        wifiNetworkController = WifiNetworkServersController(this, scope, context)
     }
 
     fun setCurrentServer(server: Server?) {

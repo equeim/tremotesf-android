@@ -57,7 +57,7 @@ import kotlinx.coroutines.plus
 import timber.log.Timber
 
 
-class WifiNetworkServersController(private val servers: Servers, private val context: Context) {
+class WifiNetworkServersController(private val servers: Servers, scope: CoroutineScope, private val context: Context) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
 
@@ -96,7 +96,7 @@ class WifiNetworkServersController(private val servers: Servers, private val con
                     stopObservingActiveWifiNetwork()
                 }
             }
-            .launchIn(GlobalScope + Dispatchers.Main)
+            .launchIn(scope + Dispatchers.Main)
     }
 
     @MainThread
