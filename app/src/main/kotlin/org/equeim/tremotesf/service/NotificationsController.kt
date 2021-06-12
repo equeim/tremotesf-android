@@ -136,6 +136,7 @@ class NotificationsController(private val context: Context) {
                         .setDestination(R.id.torrents_list_fragment)
                         .createPendingIntent()
                 )
+                .setShowWhen(false)
 
         val currentServer = GlobalServers.currentServer.value
         if (currentServer != null) {
@@ -148,12 +149,6 @@ class NotificationsController(private val context: Context) {
             )
         } else {
             notificationBuilder.setContentTitle(context.getText(R.string.no_servers))
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            notificationBuilder.setWhen(0)
-        } else {
-            notificationBuilder.setShowWhen(false)
         }
 
         if (status.isConnected) {

@@ -23,7 +23,6 @@ import android.Manifest
 import android.app.Application
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
@@ -205,12 +204,7 @@ private class FilePickerAdapter(
     private inner class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var file: File
         val textView = itemView as TextView
-        val iconDrawable: Drawable =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                textView.compoundDrawables.first()
-            } else {
-                textView.compoundDrawablesRelative.first()
-            }
+        val iconDrawable: Drawable = textView.compoundDrawablesRelative.first()
 
         init {
             itemView.setOnClickListener {

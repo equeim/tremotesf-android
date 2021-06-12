@@ -273,9 +273,6 @@ class WifiNetworkServersController(private val servers: Servers, private val con
     }
 
     private fun String.removeSsidQuotes(): String? {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return this
-        }
         return if (startsWith(quoteChar) && endsWith(quoteChar)) {
             drop(1).dropLast(1)
         } else {

@@ -92,11 +92,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         }
 
         fun finishAllActivities() = createdActivities.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                forEach(Activity::finishAndRemoveTask)
-            } else {
-                forEach(Activity::finishAffinity)
-            }
+            forEach(Activity::finishAndRemoveTask)
             clear()
         }
     }
@@ -135,30 +131,28 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         setContentView(binding.root)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                window.setDecorFitsSystemWindows(false)
-            } else {
-                @Suppress("DEPRECATION")
-                window.decorView.systemUiVisibility = (
-                        window.decorView.systemUiVisibility or
-                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                    window.decorView.systemUiVisibility or
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        }
 
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                view.apply {
-                    if (marginLeft != systemBars.left || marginRight != systemBars.right) {
-                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            leftMargin = systemBars.left
-                            rightMargin = systemBars.right
-                        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.apply {
+                if (marginLeft != systemBars.left || marginRight != systemBars.right) {
+                    updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        leftMargin = systemBars.left
+                        rightMargin = systemBars.right
                     }
                 }
-                insets
             }
+            insets
         }
 
         createdActivities.add(this)
@@ -272,11 +266,9 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     }
 
     private fun setupDrawer() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel) { view, insets ->
-                view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
-                insets
-            }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel) { view, insets ->
+            view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+            insets
         }
 
         binding.sidePanel.setNavigationItemSelectedListener { menuItem ->

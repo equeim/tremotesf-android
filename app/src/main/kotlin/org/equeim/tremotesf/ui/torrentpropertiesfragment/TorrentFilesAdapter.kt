@@ -29,7 +29,6 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.fixPreLollipopColor
 
 
 class TorrentFilesAdapter(
@@ -43,7 +42,6 @@ class TorrentFilesAdapter(
                 parent,
                 false
             )
-            binding.progressBar.fixPreLollipopColor()
             return ItemHolder(this, selectionTracker, binding)
         }
         return super.onCreateViewHolder(parent, viewType)

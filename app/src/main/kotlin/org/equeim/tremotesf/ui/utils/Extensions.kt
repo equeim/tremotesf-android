@@ -23,18 +23,13 @@ package org.equeim.tremotesf.ui.utils
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.os.Build
 import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -44,7 +39,6 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 import com.google.android.material.textfield.TextInputLayout
-import org.equeim.tremotesf.R
 
 
 val Context.application: Application
@@ -132,12 +126,3 @@ val EditText.textInputLayout: TextInputLayout
         }
         throw IllegalArgumentException("$this is not a child of TextInputLayout")
     }
-
-fun ProgressBar.fixPreLollipopColor() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-        context.withStyledAttributes(attrs = intArrayOf(R.attr.colorSecondary)) {
-            progressDrawable.colorFilter =
-                PorterDuffColorFilter(getColor(0, 0), PorterDuff.Mode.SRC_ATOP)
-        }
-    }
-}

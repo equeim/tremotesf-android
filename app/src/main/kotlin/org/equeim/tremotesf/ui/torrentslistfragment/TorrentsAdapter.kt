@@ -22,7 +22,6 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
@@ -45,7 +44,6 @@ import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.fixPreLollipopColor
 import java.lang.ref.WeakReference
 
 
@@ -107,10 +105,6 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         multilineName: Boolean,
         private val binding: TorrentListItemBinding
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
-        init {
-            binding.progressBar.fixPreLollipopColor()
-        }
-
         override fun update() {
             super.update()
 
@@ -200,12 +194,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
-        private val statusIconDrawable: Drawable =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                nameTextView.compoundDrawables.first()
-            } else {
-                nameTextView.compoundDrawablesRelative.first()
-            }
+        private val statusIconDrawable: Drawable = nameTextView.compoundDrawablesRelative.first()
         protected val downloadSpeedTextView =
             itemView.findViewById<TextView>(R.id.download_speed_text_view)!!
         protected val uploadSpeedTextView =
