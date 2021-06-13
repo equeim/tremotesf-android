@@ -28,16 +28,15 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import androidx.core.net.ConnectivityManagerCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
@@ -103,19 +102,18 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
     private fun startObservingActiveWifiNetwork() {
         Timber.i("startObservingActiveWifiNetwork() called")
 
+        val connectivityManager = connectivityManager
+        if (connectivityManager == null) {
+            Timber.e("startObservingActiveWifiNetwork: ConnectivityManager is null")
+            return
+        }
+
         val scope = CoroutineScope(Dispatchers.Main).also { wifiNetworkObserverScope = it }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val connectivityManager = connectivityManager
-            if (connectivityManager != null) {
-                observeActiveWifiNetworkV24(connectivityManager)
-                    .onEach { onActiveWifiNetworkChanged() }
-                    .launchIn(scope)
-            } else {
-                Timber.e("startObservingActiveWifiNetwork: ConnectivityManager is null")
-            }
+            observeActiveWifiNetworkV24(connectivityManager)
         } else {
-            observeActiveWifiNetworkV16().onEach { onActiveWifiNetworkChanged() }.launchIn(scope)
-        }
+            observeActiveWifiNetworkV16(connectivityManager)
+        }.onEach { onActiveWifiNetworkChanged() }.launchIn(scope)
     }
 
     @MainThread
@@ -190,12 +188,12 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         }
     }
 
-    private fun observeActiveWifiNetworkV16(): Flow<Unit> {
+    private fun observeActiveWifiNetworkV16(connectivityManager: ConnectivityManager): Flow<Unit> {
         Timber.i("observeActiveWifiNetworkV16() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow<Unit> {
             Timber.i("observeActiveWifiNetworkV16: registering receiver")
-            val receiver = ConnectivityReceiver(channel)
+            val receiver = ConnectivityReceiver(connectivityManager, channel)
             context.registerReceiver(
                 receiver,
                 IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -207,11 +205,10 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         }.buffer(Channel.CONFLATED)
     }
 
-    private class ConnectivityReceiver(private val channel: SendChannel<Unit>) :
+    private class ConnectivityReceiver(private val connectivityManager: ConnectivityManager, private val channel: SendChannel<Unit>) :
         BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val networkInfo =
-                intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
+            val networkInfo = ConnectivityManagerCompat.getNetworkInfoFromBroadcast(connectivityManager, intent)
             Timber.i("onReceive: networkInfo = $networkInfo")
             if (networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI) {
                 Timber.i("onReceive: Wi-Fi connected")
