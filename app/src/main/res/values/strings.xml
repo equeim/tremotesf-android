@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name" translatable="false">Tremotesf</string>
 
+    <string name="add_navigation_bar_padding" translatable="false">add_navigation_bar_padding</string>
+    <string name="add_navigation_bar_margin" translatable="false">add_navigation_bar_margin</string>
+
     <string name="disconnected">Disconnected</string>
     <string name="connecting">Connecting\u2026</string>
     <string name="connected">Connected</string>

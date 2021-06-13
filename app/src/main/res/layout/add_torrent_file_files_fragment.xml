@@ -5,9 +5,10 @@
              android:layout_height="match_parent">
     <com.l4digital.fastscroll.FastScrollRecyclerView
         android:id="@+id/files_view"
+        android:tag="@string/add_navigation_bar_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         app:handleColor="?attr/colorControlNormal"
-        app:bubbleColor="?attr/colorControlActivated"/>
+        app:bubbleColor="?attr/colorControlActivated" />
 </FrameLayout>

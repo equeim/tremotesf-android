@@ -24,6 +24,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.ScrollView
 
 import androidx.annotation.CallSuper
@@ -50,12 +51,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.MaterialShapeUtils
 
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.utils.findChildRecursively
 
 
 open class NavigationFragment(
@@ -209,49 +208,51 @@ open class NavigationFragment(
     protected open fun onNavigatedFrom() = Unit
 }
 
-fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false) {
-    val rootView = requireView() as? ViewGroup ?: return
-    // Find scroll view
-    val isScrollView = { v: View ->
-        v.id != View.NO_ID && when (v) {
-            is ScrollView, is NestedScrollView -> true
-            is RecyclerView -> {
-                (v.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
-            }
+fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, forceViewForPadding: View? = null) {
+    val findView: (View) -> View? = { rootView ->
+        val asIs = when (rootView) {
+            is ScrollView, is NestedScrollView, is ListView -> true
+            is RecyclerView -> (rootView.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
             else -> false
         }
-    }
-    val scrollView = if (isScrollView(rootView)) {
-        rootView
-    } else {
-        rootView.findChildRecursively(isScrollView) as ViewGroup?
+        if (asIs) {
+            rootView
+        } else {
+            rootView.findViewWithTag(getText(R.string.add_navigation_bar_padding))
+        }
     }
 
+    val rootView = requireView()
+    val viewForPadding = forceViewForPadding ?: findView(rootView)
+
     // Set padding for scroll view is system gestures are enabled, or reset it to zero
-    if (scrollView != null) {
-        scrollView.clipToPadding = false
-        ViewCompat.setOnApplyWindowInsetsListener(scrollView) { view, insets ->
-            view.updatePadding(bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom)
+    if (viewForPadding != null) {
+        (viewForPadding as? ViewGroup)?.clipToPadding = false
+        val initialPadding = viewForPadding.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(viewForPadding) { v, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            if (v.paddingBottom != (initialPadding + bottomInset)) {
+                v.updatePadding(bottom = initialPadding + bottomInset)
+            }
             insets
         }
     }
 
-    // Set margin for FAB if system gestures are enabled, or reset it to its initial margin
-    val fab = rootView.findChildRecursively { it is FloatingActionButton }
-    if (fab != null) {
-        val initialMargin = fab.marginBottom
-        ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            if (view.marginBottom != (initialMargin + systemBars.bottom)) {
-                view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    bottomMargin = initialMargin + systemBars.bottom
+    val viewForMargin = requireView().findViewWithTag<View>(getText(R.string.add_navigation_bar_margin))
+    if (viewForMargin != null) {
+        val initialMargin = viewForMargin.marginBottom
+        ViewCompat.setOnApplyWindowInsetsListener(viewForMargin) { v, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            if (v.marginBottom != (initialMargin + bottomInset)) {
+                v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    bottomMargin = initialMargin + bottomInset
                 }
             }
             insets
         }
     }
 
-    if (requestApplyInsets && (scrollView != null || fab != null)) {
+    if (requestApplyInsets && (viewForPadding != null || viewForMargin != null)) {
         rootView.requestApplyInsets()
     }
 }
