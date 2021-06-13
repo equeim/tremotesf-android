@@ -263,9 +263,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     }
 
     private fun setupDrawer() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel.getHeaderView(0)) { view, insets ->
+            view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
             insets
         }
 
