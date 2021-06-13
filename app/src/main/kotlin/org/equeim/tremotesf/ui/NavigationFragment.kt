@@ -51,8 +51,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.MaterialShapeUtils
+import com.google.android.material.elevation.ElevationOverlayProvider
 
 import org.equeim.tremotesf.R
 
@@ -143,19 +142,6 @@ open class NavigationFragment(
                 inflateMenu(toolbarMenuRes)
                 setOnMenuItemClickListener(::onToolbarMenuItemClicked)
             }
-
-            val parent = parent as View
-            if (parent is AppBarLayout) {
-                MaterialShapeUtils.setElevation(
-                    parent,
-                    resources.getDimension(R.dimen.action_bar_elevation)
-                )
-            } else {
-                parent.background = MaterialShapeDrawable.createWithElevationOverlay(
-                    requireContext(),
-                    resources.getDimension(R.dimen.action_bar_elevation)
-                )
-            }
         }
     }
 
@@ -166,7 +152,7 @@ open class NavigationFragment(
             container = (container.parent as CoordinatorLayout).parent as LinearLayout
             val placeholder = View(context).apply {
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                background = (toolbar.parent as View).background
+                setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
             }
             ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
                 view.updateLayoutParams {
@@ -176,6 +162,7 @@ open class NavigationFragment(
             }
             container.addView(placeholder, 0)
         } else {
+            container.setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
             ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
                 view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
                 insets
