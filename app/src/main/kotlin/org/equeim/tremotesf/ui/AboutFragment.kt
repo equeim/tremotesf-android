@@ -19,13 +19,12 @@
 
 package org.equeim.tremotesf.ui
 
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.view.View
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -111,12 +110,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             super.onViewCreated(view, savedInstanceState)
             resources.openRawResource(R.raw.about).use { inputStream ->
                 with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
-                    textView.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        Html.fromHtml(inputStream.reader().readText(), 0)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        Html.fromHtml(inputStream.reader().readText())
-                    }
+                    textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
                 }
             }
         }
@@ -128,12 +122,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
             resources.openRawResource(R.raw.authors).use { inputStream ->
                 with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
-                    textView.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        Html.fromHtml(inputStream.reader().readText(), 0)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        Html.fromHtml(inputStream.reader().readText())
-                    }
+                    textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
                 }
             }
         }
