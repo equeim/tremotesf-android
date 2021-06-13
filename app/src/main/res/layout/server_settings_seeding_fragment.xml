@@ -33,7 +33,6 @@
                 android:id="@+id/ratio_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
 
@@ -58,7 +57,6 @@
                 android:id="@+id/idle_seeding_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                 android:hint="@string/min">

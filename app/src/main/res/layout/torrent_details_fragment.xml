@@ -29,7 +29,6 @@
         <TextView
             android:id="@+id/completed_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -46,7 +45,6 @@
         <TextView
             android:id="@+id/downloaded_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -63,7 +61,6 @@
         <TextView
             android:id="@+id/uploaded_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -80,7 +77,6 @@
         <TextView
             android:id="@+id/ratio_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -97,7 +93,6 @@
         <TextView
             android:id="@+id/download_speed_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -114,7 +109,6 @@
         <TextView
             android:id="@+id/upload_speed_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -131,7 +125,6 @@
         <TextView
             android:id="@+id/eta_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -148,7 +141,6 @@
         <TextView
             android:id="@+id/seeders_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -165,7 +157,6 @@
         <TextView
             android:id="@+id/leechers_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -182,7 +173,6 @@
         <TextView
             android:id="@+id/last_activity_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -206,7 +196,6 @@
         <TextView
             android:id="@+id/total_size_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -223,7 +212,6 @@
         <TextView
             android:id="@+id/location_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -241,7 +229,6 @@
         <TextView
             android:id="@+id/hash_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -259,7 +246,6 @@
         <TextView
             android:id="@+id/creator_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -276,7 +262,6 @@
         <TextView
             android:id="@+id/creation_date_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -293,7 +278,6 @@
         <TextView
             android:id="@+id/added_date_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
@@ -310,7 +294,6 @@
         <TextView
             android:id="@+id/comment_text_view"
             android:layout_width="0dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:autoLink="web"
