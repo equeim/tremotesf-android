@@ -80,21 +80,6 @@ fun ViewGroup.setChildrenEnabled(enabled: Boolean) {
     }
 }
 
-fun ViewGroup.findChildRecursively(predicate: (View) -> Boolean): View? {
-    for (child in children) {
-        if (predicate(child)) {
-            return child
-        }
-        if (child is ViewGroup) {
-            val found = child.findChildRecursively(predicate)
-            if (found != null) {
-                return found
-            }
-        }
-    }
-    return null
-}
-
 inline fun CheckBox.setDependentViews(
     vararg views: View,
     crossinline onCheckedChanged: (Boolean) -> Unit = {}
