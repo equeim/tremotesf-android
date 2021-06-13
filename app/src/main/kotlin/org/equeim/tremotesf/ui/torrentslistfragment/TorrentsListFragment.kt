@@ -55,6 +55,7 @@ import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
+import timber.log.Timber
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -346,8 +347,8 @@ class TorrentsListFragment : NavigationFragment(
     private fun startFilePickerActivity() {
         try {
             getContentActivityLauncher.launch("application/x-bittorrent")
-        } catch (error: ActivityNotFoundException) {
-            navigate(TorrentsListFragmentDirections.toFilePickerFragment())
+        } catch (e: ActivityNotFoundException) {
+            Timber.e(e, "Failed to start activity")
         }
     }
 }
