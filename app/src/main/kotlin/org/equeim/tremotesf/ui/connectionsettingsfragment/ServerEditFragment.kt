@@ -162,7 +162,11 @@ class ServerEditFragment : NavigationFragment(
 
             val backgroundLocationPermissionHelper = model.backgroundLocationPermissionHelper
             if (backgroundLocationPermissionHelper != null) {
-                backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_fdroid)
+                backgroundWifiNetworksExplanation.apply {
+                    setText(R.string.background_wifi_networks_explanation_fdroid)
+                    isVisible = true
+                }
+                backgroundLocationPermissionButton.isVisible = true
 
                 backgroundLocationPermissionHelper.permissionGranted.onEach { granted ->
                     Timber.i("background granted = $granted")
@@ -183,13 +187,11 @@ class ServerEditFragment : NavigationFragment(
                         checkNotNull(requestBackgroundLocationPermissionLauncher)
                     )
                 }
-            } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    backgroundWifiNetworksExplanation.setText(R.string.background_wifi_networks_explanation_google)
-                } else {
-                    backgroundWifiNetworksExplanation.isVisible = false
+            } else if (ServerEditFragmentViewModel.canRequestBackgroundLocationPermission()) {
+                backgroundWifiNetworksExplanation.apply {
+                    setText(R.string.background_wifi_networks_explanation_google)
+                    isVisible = true
                 }
-                backgroundLocationPermissionButton.isVisible = false
             }
 
             setSsidFromCurrentNetworkButton.setOnClickListener {
@@ -354,8 +356,9 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
 
         private fun locationNeedsToBeEnabled() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
-        private fun canRequestBackgroundLocationPermission() =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !BuildConfig.GOOGLE
+        fun canRequestBackgroundLocationPermission() =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        private fun allowedToRequestBackgroundLocationPermission() = !BuildConfig.GOOGLE
     }
 
     private val serverName: String? = savedStateHandle[::serverName.name]
@@ -377,7 +380,7 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
         null
     }
 
-    val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission()) {
+    val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission() && allowedToRequestBackgroundLocationPermission()) {
         RuntimePermissionHelper(
             Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             R.string.background_location_permission_rationale
