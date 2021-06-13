@@ -281,8 +281,6 @@ class SelectionTracker<K : Any> private constructor(
         protected val selectionTracker: SelectionTracker<K>,
         itemView: View
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-        private val selectedBackground: View = itemView.findViewById(R.id.selected_background_view)
-
         init {
             itemView.setOnClickListener {
                 if (selectionTracker.hasSelection && getSelectionKey() != selectionTracker.unselectableKey) {
@@ -296,7 +294,7 @@ class SelectionTracker<K : Any> private constructor(
 
         @CallSuper
         open fun update() {
-            selectedBackground.isActivated = selectionTracker.isSelected(getSelectionKey())
+            itemView.isActivated = selectionTracker.isSelected(getSelectionKey())
         }
 
         final override fun onLongClick(view: View): Boolean {

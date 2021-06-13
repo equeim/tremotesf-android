@@ -1,83 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/list_item_selectable_background"
+    android:paddingHorizontal="@dimen/horizontal_edge_padding"
+    android:paddingVertical="8dp">
 
-    <RelativeLayout
-        android:id="@+id/selected_background_view"
+    <TextView
+        android:id="@+id/name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:textAppearance="?attr/textAppearanceListItemSmall"
+        tools:drawableStart="@drawable/ic_arrow_downward_24dp"
+        tools:text="Name" />
+
+    <TextView
+        android:id="@+id/size_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name_text_view"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="42 GiB" />
+
+    <TextView
+        android:id="@+id/eta_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/name_text_view"
+        android:layout_gravity="end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="666 s" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selected_background"
-        android:paddingHorizontal="@dimen/horizontal_edge_padding"
-        android:paddingVertical="8dp">
+        android:layout_below="@id/size_text_view"
+        tools:progress="33" />
+
+    <LinearLayout
+        android:id="@+id/speed_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progress_bar"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/name_text_view"
+            android:id="@+id/download_speed_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
-            android:textAppearance="?attr/textAppearanceListItemSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="69 KiB/s" />
 
         <TextView
-            android:id="@+id/size_text_view"
+            android:id="@+id/upload_speed_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/name_text_view"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="69 KiB/s" />
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/eta_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/name_text_view"
-            android:layout_gravity="end"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/size_text_view" />
-
-        <LinearLayout
-            android:id="@+id/speed_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/progress_bar"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/download_speed_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/upload_speed_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/status_text_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/progress_bar"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@id/speed_layout"
-            android:layout_toRightOf="@id/speed_layout"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:maxLines="2"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </RelativeLayout>
-</FrameLayout>
+    <TextView
+        android:id="@+id/status_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/progress_bar"
+        android:layout_toEndOf="@id/speed_layout"
+        android:layout_marginStart="24dp"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="2"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="Nope" />
+</RelativeLayout>
