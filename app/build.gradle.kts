@@ -92,7 +92,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":billing"))
-    implementation(project(":data"))
+    implementation(project(":torrentfile"))
     implementation(project(":rpc"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
