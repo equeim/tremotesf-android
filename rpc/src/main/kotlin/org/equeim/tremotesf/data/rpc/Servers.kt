@@ -122,7 +122,7 @@ abstract class Servers(protected val context: Context) {
                 currentServer.lastTorrents = it
                 Timber.i("save: updated last torrents")
             }
-            Timber.i("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size ?: 0}")
+            Timber.i("save: last torrents count = ${currentServer.lastTorrents.torrents.size}")
         }
 
         save(SaveData(
