@@ -20,7 +20,7 @@ object Versions {
         const val core = "1.5.0"
         const val coordinatorlayout = "1.1.0"
         const val drawerlayout = "1.1.1"
-        const val fragment = "1.3.4"
+        const val fragment = "1.3.5"
         const val gridlayout = "1.0.0"
         const val lifecycle = "2.3.1"
 
