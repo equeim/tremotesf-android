@@ -50,7 +50,8 @@ dependencies {
     api(project(":libtremotesf"))
 
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
+
+    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinxSerialization}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")

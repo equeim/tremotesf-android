@@ -96,7 +96,6 @@ dependencies {
     implementation(project(":rpc"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
     implementation("androidx.appcompat:appcompat:${Versions.AndroidX.appcompat}")
     implementation("androidx.concurrent:concurrent-futures:${Versions.AndroidX.concurrentFutures}")
