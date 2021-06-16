@@ -37,8 +37,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
 
 import org.equeim.libtremotesf.TorrentData
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.utils.AlphanumericComparator

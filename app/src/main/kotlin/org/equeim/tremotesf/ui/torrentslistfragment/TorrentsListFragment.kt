@@ -35,10 +35,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.RpcConnectionState
-import org.equeim.tremotesf.data.rpc.Server
-import org.equeim.tremotesf.data.rpc.ServerStats
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
+import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.ServerStats
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers

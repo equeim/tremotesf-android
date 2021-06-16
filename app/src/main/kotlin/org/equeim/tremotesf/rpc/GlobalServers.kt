@@ -8,7 +8,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -18,9 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Servers
-import org.equeim.tremotesf.data.rpc.WifiNetworkServersController
+import org.equeim.tremotesf.torrentfile.rpc.Servers
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference

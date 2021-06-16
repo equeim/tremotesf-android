@@ -19,7 +19,7 @@
 
 @file:Suppress("ObjectPropertyName")
 
-package org.equeim.tremotesf.data.rpc
+package org.equeim.tremotesf.torrentfile.rpc
 
 import android.content.Context
 import androidx.annotation.AnyThread

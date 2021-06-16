@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding

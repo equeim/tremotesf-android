@@ -19,7 +19,7 @@
 
 @file:Suppress("DEPRECATION")
 
-package org.equeim.tremotesf.data.rpc
+package org.equeim.tremotesf.torrentfile.rpc
 
 import android.content.BroadcastReceiver
 import android.content.Context

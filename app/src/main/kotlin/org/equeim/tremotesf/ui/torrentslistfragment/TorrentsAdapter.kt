@@ -33,7 +33,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.rpc.GlobalRpc

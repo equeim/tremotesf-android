@@ -22,7 +22,7 @@ package org.equeim.tremotesf.ui.sidepanel
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.Companion.statusFilterAcceptsTorrent

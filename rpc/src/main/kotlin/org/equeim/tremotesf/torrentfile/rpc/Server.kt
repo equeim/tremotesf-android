@@ -1,4 +1,4 @@
-package org.equeim.tremotesf.data.rpc
+package org.equeim.tremotesf.torrentfile.rpc
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

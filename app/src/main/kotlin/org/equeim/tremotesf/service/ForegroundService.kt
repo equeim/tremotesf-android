@@ -30,7 +30,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
-import org.equeim.tremotesf.data.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.AppForegroundTracker

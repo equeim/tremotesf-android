@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.data.torrentfile
+package org.equeim.tremotesf.torrentfile.torrentfile
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
-import org.equeim.tremotesf.data.TorrentFilesTree
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 
 import timber.log.Timber
 

@@ -48,7 +48,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.RpcConnectionState
+import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding

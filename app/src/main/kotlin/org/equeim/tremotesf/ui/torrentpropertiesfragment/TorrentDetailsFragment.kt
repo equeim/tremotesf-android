@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.view.View
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.data
+package org.equeim.tremotesf.torrentfile
 
 import android.os.Bundle
 import androidx.annotation.MainThread

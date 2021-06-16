@@ -36,9 +36,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
-import org.equeim.tremotesf.data.TorrentFilesTree
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import timber.log.Timber

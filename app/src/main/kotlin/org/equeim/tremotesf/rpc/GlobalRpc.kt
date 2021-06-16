@@ -25,10 +25,10 @@ import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcConnectionState
-import org.equeim.tremotesf.data.rpc.RpcError
-import org.equeim.tremotesf.data.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
+import org.equeim.tremotesf.torrentfile.rpc.RpcError
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings

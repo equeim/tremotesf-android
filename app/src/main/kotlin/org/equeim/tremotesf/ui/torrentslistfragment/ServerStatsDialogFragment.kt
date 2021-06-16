@@ -25,7 +25,7 @@ import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.ServerStats
+import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment

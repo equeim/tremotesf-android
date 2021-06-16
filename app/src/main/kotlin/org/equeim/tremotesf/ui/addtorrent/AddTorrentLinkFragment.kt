@@ -26,8 +26,8 @@ import androidx.core.text.trimmedLength
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.rpc.Rpc
-import org.equeim.tremotesf.data.rpc.RpcConnectionState
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString

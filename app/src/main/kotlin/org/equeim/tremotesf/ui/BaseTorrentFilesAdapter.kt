@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.data.TorrentFilesTree
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.views.TristateCheckbox
 import java.lang.ref.WeakReference
