@@ -41,9 +41,9 @@ import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.savedStateFlow
-import org.equeim.tremotesf.utils.dropTrailingPathSeparator
+import org.equeim.tremotesf.common.dropTrailingPathSeparator
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {

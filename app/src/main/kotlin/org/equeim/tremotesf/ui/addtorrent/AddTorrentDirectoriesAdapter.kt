@@ -26,7 +26,7 @@ import android.widget.EditText
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 
 

@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import org.equeim.tremotesf.utils.MutableEventFlow
+import org.equeim.tremotesf.common.MutableEventFlow
 
 import timber.log.Timber
 

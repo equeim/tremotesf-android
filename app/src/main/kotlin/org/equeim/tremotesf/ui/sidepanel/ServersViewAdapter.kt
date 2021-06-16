@@ -22,7 +22,7 @@ package org.equeim.tremotesf.ui.sidepanel
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 import java.util.Comparator
 

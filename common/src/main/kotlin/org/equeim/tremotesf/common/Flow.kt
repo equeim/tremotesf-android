@@ -17,15 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.utils
+package org.equeim.tremotesf.common
 
-inline fun <reified T : Enum<T>> enumFromInt(value: Int): T {
-    val values = enumValues<T>()
-    return values.getOrNull(value) ?: values.first()
-}
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
-fun String.dropTrailingPathSeparator(): String = if (endsWith('/')) {
-    dropLast(1)
-} else {
-    this
+@Suppress("FunctionName")
+fun <T> MutableEventFlow(): MutableSharedFlow<T> {
+    return MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 }

@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.common.AlphanumericComparator
 import java.util.Comparator
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext

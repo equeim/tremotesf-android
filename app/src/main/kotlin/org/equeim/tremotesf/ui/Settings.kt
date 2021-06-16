@@ -29,7 +29,7 @@ import androidx.preference.PreferenceManager
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
-import org.equeim.tremotesf.utils.enumFromInt
+import org.equeim.tremotesf.common.enumFromInt
 
 
 private const val TORRENTS_SORT_MODE = "torrentsSortMode"

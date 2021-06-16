@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PeerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.utils.AlphanumericComparator
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter

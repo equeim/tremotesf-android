@@ -50,7 +50,7 @@ import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
-import org.equeim.tremotesf.utils.MutableEventFlow
+import org.equeim.tremotesf.common.MutableEventFlow
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 

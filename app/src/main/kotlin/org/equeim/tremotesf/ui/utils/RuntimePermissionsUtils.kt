@@ -42,7 +42,7 @@ import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.navigate
-import org.equeim.tremotesf.utils.MutableEventFlow
+import org.equeim.tremotesf.common.MutableEventFlow
 import timber.log.Timber
 
 class RuntimePermissionHelper(
