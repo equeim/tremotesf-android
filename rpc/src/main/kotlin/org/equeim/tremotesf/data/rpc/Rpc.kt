@@ -21,6 +21,7 @@
 
 package org.equeim.tremotesf.data.rpc
 
+import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -66,7 +67,7 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
-abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope) {
+abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope, context: Context) {
     init {
         LibTremotesf.init(javaClass.classLoader)
     }
@@ -242,7 +243,24 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
     private var connectedOnce = false
 
+    val wifiNetworkController = WifiNetworkServersController(servers, scope, context)
+
     init {
+        servers.lastTorrentsProvider = Servers.LastTorrentsProvider {
+            if (isConnected.value) {
+                Server.LastTorrents(true, torrents.value.map {
+                    Server.Torrent(
+                        it.id,
+                        it.hashString,
+                        it.name,
+                        it.isFinished
+                    )
+                })
+            } else {
+                null
+            }
+        }
+
         servers.currentServer.value?.let(::setServer)
 
         scope.launch {
@@ -303,7 +321,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         Timber.i("connectOnce() called")
         if (!connectedOnce) {
             Timber.i("connectOnce: first connection")
-            servers.setCurrentServerFromWifiNetwork()
+            wifiNetworkController.setCurrentServerFromWifiNetwork()
             nativeInstance.connect()
             connectedOnce = true
         } else {

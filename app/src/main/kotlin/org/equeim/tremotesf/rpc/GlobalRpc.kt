@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
-object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) GlobalScope) {
+object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) GlobalScope, TremotesfApplication.instance) {
     private val context = TremotesfApplication.instance
 
     private val updateWorkerCompleter =
@@ -79,8 +79,6 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             .dropWhile { !it }
             .onEach(::onAppForegroundStateChanged)
             .launchIn(scope + Dispatchers.Main)
-
-        servers.setRpc(this)
     }
 
     override fun onTorrentFinished(id: Int, hashString: String, name: String) {
@@ -100,6 +98,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
         } else {
             enqueueUpdateWorker()
         }
+        wifiNetworkController.enabled.value = inForeground
         nativeInstance.setUpdateDisabled(!inForeground)
     }
 
@@ -230,7 +229,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
 
             return CallbackToFutureAdapter.getFuture { completer ->
                 updateWorkerCompleter.getAndSet(completer)?.set(Result.success())
-                if (!GlobalServers.setCurrentServerFromWifiNetwork()) {
+                if (!wifiNetworkController.setCurrentServerFromWifiNetwork()) {
                     if (connectionState.value == RpcConnectionState.Disconnected) {
                         nativeInstance.connect()
                     } else {

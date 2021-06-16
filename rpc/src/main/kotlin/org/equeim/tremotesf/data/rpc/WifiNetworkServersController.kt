@@ -227,10 +227,40 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         val ssid = wifiInfo?.knownSsidOrNull
         if (ssid != null) {
             Timber.i("onActiveWifiNetworkChanged: SSID = '$ssid'")
-            servers.setCurrentServerFromWifiNetwork(lazyOf(ssid))
+            setCurrentServerFromWifiNetwork(lazyOf(ssid))
         } else {
             Timber.e("onActiveWifiNetworkChanged: SSID is null")
         }
+    }
+
+    @MainThread
+    fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { currentWifiSsid }): Boolean {
+        Timber.i("setCurrentServerFromWifiNetwork() called")
+
+        val ssid by ssidLazy
+
+        val currentServer = servers.currentServer.value
+        for (server in servers.servers.value) {
+            if (server.autoConnectOnWifiNetworkEnabled) {
+                if (ssid == null) {
+                    Timber.i("setCurrentServerFromWifiNetwork: SSID is null")
+                    return false
+                }
+                if (server.autoConnectOnWifiNetworkSSID == ssid) {
+                    Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
+                    if (server != currentServer) {
+                        Timber.i("setCurrentServerFromWifiNetwork: setting current server")
+                        servers.setCurrentServer(server)
+                        return true
+                    } else {
+                        Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
+                        return false
+                    }
+                }
+            }
+        }
+        Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
+        return false
     }
 
     private val currentWifiInfo: WifiInfo?

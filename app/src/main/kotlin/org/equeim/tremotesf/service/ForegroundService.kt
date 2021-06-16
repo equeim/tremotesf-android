@@ -105,7 +105,7 @@ class ForegroundService : LifecycleService() {
         ).collectWhenStarted(this) { updatePersistentNotification(it) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            GlobalServers.wifiNetworkController.observingActiveWifiNetwork.collectWhenStarted(
+            GlobalRpc.wifiNetworkController.observingActiveWifiNetwork.collectWhenStarted(
                 this,
                 ::startForegroundV29
             )

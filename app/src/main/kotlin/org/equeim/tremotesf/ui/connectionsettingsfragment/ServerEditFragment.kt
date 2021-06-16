@@ -55,6 +55,7 @@ import org.equeim.tremotesf.data.rpc.Server
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
@@ -195,7 +196,7 @@ class ServerEditFragment : NavigationFragment(
             }
 
             setSsidFromCurrentNetworkButton.setOnClickListener {
-                val ssid = GlobalServers.wifiNetworkController.currentWifiSsid
+                val ssid = GlobalRpc.wifiNetworkController.currentWifiSsid
 
                 if (ssid != null) {
                     wifiAutoConnectSsidEdit.setText(ssid)

@@ -21,7 +21,6 @@ package org.equeim.tremotesf.data.rpc
 
 import android.content.Context
 import androidx.annotation.MainThread
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.SerialName
@@ -40,9 +39,7 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val context: Context, private val scope: CoroutineScope) {
-    private var rpc: Rpc? = null
-
+abstract class Servers(protected val context: Context) {
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
 
@@ -55,16 +52,10 @@ abstract class Servers(protected val context: Context, private val scope: Corout
     private val _currentServer = MutableStateFlow<Server?>(null)
     val currentServer: StateFlow<Server?> by ::_currentServer
 
-    lateinit var wifiNetworkController: WifiNetworkServersController
-        private set
+    internal var lastTorrentsProvider: LastTorrentsProvider? = null
 
     init {
         load()
-    }
-
-    open fun setRpc(rpc: Rpc) {
-        this.rpc = rpc
-        wifiNetworkController = WifiNetworkServersController(this, scope, context)
     }
 
     fun setCurrentServer(server: Server?) {
@@ -126,20 +117,12 @@ abstract class Servers(protected val context: Context, private val scope: Corout
         val currentServer = currentServer.value
         val servers = servers.value
 
-        val rpc = this.rpc
-        if (rpc?.isConnected?.value == true) {
-            Timber.i("save: updating last torrents")
-            currentServer?.lastTorrents = Server.LastTorrents(true, rpc.torrents.value.map {
-                Server.Torrent(
-                    it.id,
-                    it.hashString,
-                    it.name,
-                    it.isFinished
-                )
-            })
-            Timber.i("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size}")
-        } else {
-            Timber.i("save: disconnected, not updating last torrents")
+        if (currentServer != null) {
+            lastTorrentsProvider?.lastTorrentsForCurrentServer()?.let {
+                currentServer.lastTorrents = it
+                Timber.i("save: updated last torrents")
+            }
+            Timber.i("save: last torrents count = ${currentServer?.lastTorrents?.torrents?.size ?: 0}")
         }
 
         save(SaveData(
@@ -241,32 +224,7 @@ abstract class Servers(protected val context: Context, private val scope: Corout
         save()
     }
 
-    @MainThread
-    fun setCurrentServerFromWifiNetwork(ssidLazy: Lazy<String?> = lazy { wifiNetworkController.currentWifiSsid }): Boolean {
-        Timber.i("setCurrentServerFromWifiNetwork() called")
-
-        val ssid by ssidLazy
-
-        for (server in servers.value) {
-            if (server.autoConnectOnWifiNetworkEnabled) {
-                if (ssid == null) {
-                    Timber.i("setCurrentServerFromWifiNetwork: SSID is null")
-                    return false
-                }
-                if (server.autoConnectOnWifiNetworkSSID == ssid) {
-                    Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
-                    if (server != currentServer.value) {
-                        Timber.i("setCurrentServerFromWifiNetwork: setting current server")
-                        setCurrentServer(server)
-                        return true
-                    } else {
-                        Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
-                        return false
-                    }
-                }
-            }
-        }
-        Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
-        return false
+    internal fun interface LastTorrentsProvider {
+        fun lastTorrentsForCurrentServer(): Server.LastTorrents?
     }
 }
