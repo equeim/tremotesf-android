@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.torrentfile.torrentfile
+package org.equeim.tremotesf.torrentfile
 
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.withContext
@@ -26,7 +26,6 @@ import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
-import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 
 import timber.log.Timber
 

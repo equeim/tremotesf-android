@@ -39,10 +39,10 @@ import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.torrentfile.FileIsTooLargeException
-import org.equeim.tremotesf.torrentfile.torrentfile.FileParseException
-import org.equeim.tremotesf.torrentfile.torrentfile.FileReadException
-import org.equeim.tremotesf.torrentfile.torrentfile.TorrentFileParser
+import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
+import org.equeim.tremotesf.torrentfile.FileParseException
+import org.equeim.tremotesf.torrentfile.FileReadException
+import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
