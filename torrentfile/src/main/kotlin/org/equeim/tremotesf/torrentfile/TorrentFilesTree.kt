@@ -54,6 +54,22 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         val children: List<Node> by ::_children
         private val childrenMap = mutableMapOf<String, Node>()
 
+        override fun equals(other: Any?): Boolean {
+            return other is Node &&
+                    other.item == item &&
+                    other.path.contentEquals(path) &&
+                    other.children == children &&
+                    other.childrenMap == childrenMap
+        }
+
+        override fun hashCode(): Int {
+            var result = item.hashCode()
+            result = 31 * result + path.contentHashCode()
+            result = 31 * result + children.hashCode()
+            result = 31 * result + childrenMap.hashCode()
+            return result
+        }
+
         fun getChildByItemNameOrNull(name: String) = childrenMap[name]
 
         fun recalculateFromChildren() {

@@ -17,8 +17,13 @@ android {
         consumerProguardFile("consumer-rules.pro")
     }
 
-    sourceSets.named("main") {
-        java.srcDirs("src/main/kotlin")
+    sourceSets {
+        named("main") {
+            java.srcDirs("src/main/kotlin")
+        }
+        named("test") {
+            java.srcDirs("src/test/kotlin")
+        }
     }
 
     buildFeatures.buildConfig = false
@@ -40,4 +45,6 @@ dependencies {
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.AndroidX.lifecycle}")
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
+    testImplementation("junit:junit:${Versions.junit}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinxCoroutines}")
 }

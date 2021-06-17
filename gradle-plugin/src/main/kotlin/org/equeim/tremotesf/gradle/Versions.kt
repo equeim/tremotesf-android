@@ -43,4 +43,6 @@ object Versions {
     const val billing = "4.0.0"
 
     const val timber = "4.7.1"
+
+    const val junit = "4.13.2"
 }

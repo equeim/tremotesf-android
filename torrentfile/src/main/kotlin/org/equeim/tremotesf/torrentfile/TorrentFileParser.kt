@@ -19,11 +19,13 @@
 
 package org.equeim.tremotesf.torrentfile.torrentfile
 
-import kotlinx.coroutines.Dispatchers
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
+import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
+import org.equeim.tremotesf.common.TremotesfDispatchers
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 
 import timber.log.Timber
@@ -51,8 +53,9 @@ object TorrentFileParser {
         return createFilesTree(parseFd(fd))
     }
 
-    private suspend fun createFilesTree(torrentFile: TorrentFile): FilesTreeResult =
-        withContext(Dispatchers.Default) {
+    @VisibleForTesting
+    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): FilesTreeResult =
+        withContext(dispatchers.Default) {
             val rootNode = TorrentFilesTree.Node.createRootNode()
             val files = mutableListOf<TorrentFilesTree.Node>()
 
@@ -103,7 +106,8 @@ object TorrentFileParser {
         }
 
     @Serializable
-    private data class TorrentFile(val info: Info) {
+    @VisibleForTesting
+    internal data class TorrentFile(val info: Info) {
         @Serializable
         data class Info(
             val files: List<File>? = null,
@@ -118,8 +122,9 @@ object TorrentFileParser {
     private suspend fun parseFd(fd: FileDescriptor): TorrentFile =
         parseFile(FileInputStream(fd).buffered())
 
-    private suspend fun parseFile(inputStream: InputStream): TorrentFile =
-        withContext(Dispatchers.IO) {
+    @VisibleForTesting
+    internal suspend fun parseFile(inputStream: InputStream, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): TorrentFile =
+        withContext(dispatchers.IO) {
             @Suppress("BlockingMethodInNonBlockingContext")
             if (inputStream.available() > MAX_FILE_SIZE) {
                 Timber.e("File is too large")
