@@ -12,6 +12,7 @@
     <color name="color_on_primary">#ffffff</color>
     <color name="color_background">#ffffff</color>
     <color name="color_background_dark">#ff202020</color>
+    <color name="color_downloaded_torrents">#50af50</color>
 
     <color name="color_primary_old">#008577</color>
 

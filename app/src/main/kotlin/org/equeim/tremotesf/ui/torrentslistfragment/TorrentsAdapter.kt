@@ -21,6 +21,8 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.os.Build
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.Menu
@@ -125,7 +127,16 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 }
                 etaTextView.text = FormatUtils.formatDuration(context, torrent.eta)
 
-                progressBar.progress = (torrent.percentDone * 100).toInt()
+                val progress = (torrent.percentDone * 100).toInt()
+                progressBar.progress = progress
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    progressBar.progressTintList = if (progress == 100) {
+                        ColorStateList.valueOf(context.getColor(R.color.color_downloaded_torrents))
+                    } else {
+                        ColorStateList.valueOf(context.getColor(R.color.color_primary))
+                    }
+                }
+
                 downloadSpeedTextView.text = context.getString(
                     R.string.download_speed_string,
                     FormatUtils.formatByteSpeed(
