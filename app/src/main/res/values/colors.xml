@@ -11,6 +11,8 @@
     <color name="color_primary">#b71c1c</color>
     <color name="color_on_primary">#ffffff</color>
     <color name="color_background">#ffffff</color>
+<!--Must be kept in sync with behavior of ElevationOverlayProvider-->
+    <color name="color_background_elevated_4dp">@color/color_background</color>
     <color name="color_background_dark">#ff202020</color>
 
     <color name="color_primary_old">#008577</color>
@@ -22,4 +24,8 @@
     <color name="icon_color_enabled_focused_night">#FFFFFF</color>
     <color name="icon_color_enabled_unfocused_night">#B3FFFFFF</color>
     <color name="icon_color_disabled_night">#80FFFFFF</color>
+
+<!--Override colors in appcompat library (ActionMode status bar background)-->
+    <color name="abc_decor_view_status_guard">@color/color_background_elevated_4dp</color>
+    <color name="abc_decor_view_status_guard_light">@color/color_background_elevated_4dp</color>
 </resources>

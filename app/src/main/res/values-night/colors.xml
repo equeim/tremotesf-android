@@ -8,6 +8,8 @@
     <color name="color_primary">#ef5350</color>
     <color name="color_on_primary">#ffffff</color>
     <color name="color_background">@color/color_background_dark</color>
+    <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
+    <color name="color_background_elevated_4dp">#343434</color>
 
     <color name="color_primary_old">#80cbc4</color>
 
