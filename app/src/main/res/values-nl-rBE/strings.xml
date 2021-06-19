@@ -260,9 +260,6 @@
     <string name="torrent_link">Torrentkoppeling</string>
     <string name="add_torrent_link">Torrentkoppeling toevoegen</string>
 
-    <string name="select_file">Bestand selecteren</string>
-    <string name="primary_storage">Primairen opslag</string>
-
     <string name="current_session">Huidige sessie</string>
     <string name="total">Totaal</string>
     <string name="duration">Looptijd</string>

@@ -206,9 +206,6 @@
     <string name="torrent_link">Liên kết của torrent</string>
     <string name="add_torrent_link">Thêm liên kết của torrent</string>
 
-    <string name="select_file">Chọn tệp</string>
-    <string name="primary_storage">Bộ lưu trữ chính</string>
-
     <string name="current_session">Phiên hiện tại</string>
     <string name="total">Tổng</string>
     <string name="duration">Thời gian</string>

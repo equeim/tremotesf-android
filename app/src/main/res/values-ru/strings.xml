@@ -278,9 +278,6 @@
     <string name="torrent_link">Ссылка на торрент</string>
     <string name="add_torrent_link">Добавить ссылку на торрент</string>
 
-    <string name="select_file">Выбрать файл</string>
-    <string name="primary_storage">Главное хранилище</string>
-
     <string name="current_session">Текущая сессия</string>
     <string name="total">Всего</string>
     <string name="duration">Продолжительность</string>
@@ -491,5 +488,4 @@
     <string name="enable_location">Включить местоположение</string>
 
     <string name="storage_permission_rationale_torrent">Для открытия этого торрент-файла требуется разрешение на доступ к памяти</string>
-    <string name="storage_permission_rationale_file_picker">Для получения списка файлов требуется разрешение на доступ к памяти</string>
 </resources>

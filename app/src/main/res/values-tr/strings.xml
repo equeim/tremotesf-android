@@ -266,9 +266,6 @@
     <string name="torrent_link">Torrent bağlantısı</string>
     <string name="add_torrent_link">Torrent bağlantısını ekle</string>
 
-    <string name="select_file">Dosya seç</string>
-    <string name="primary_storage">Birincil depolama</string>
-
     <string name="current_session">Mevcut oturum</string>
     <string name="total">Toplam</string>
     <string name="duration">Süre</string>

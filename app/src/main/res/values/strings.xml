@@ -295,9 +295,6 @@
     <string name="torrent_link">Torrent link</string>
     <string name="add_torrent_link">Add torrent link</string>
 
-    <string name="select_file">Select file</string>
-    <string name="primary_storage">Primary storage</string>
-
     <string name="current_session">Current session</string>
     <string name="total">Total</string>
     <string name="duration">Duration</string>
@@ -500,5 +497,4 @@
     <string name="enable_location">Enable location</string>
 
     <string name="storage_permission_rationale_torrent">Tremotesf requires access to storage permission to open this torrent file</string>
-    <string name="storage_permission_rationale_file_picker">Tremotesf requires access to storage permission to list files on device</string>
 </resources>

@@ -242,9 +242,6 @@
     <string name="torrent_link">磁力链</string>
     <string name="add_torrent_link">添加磁力链接</string>
 
-    <string name="select_file">选择文件</string>
-    <string name="primary_storage">主要存储</string>
-
     <string name="current_session">当前会话</string>
     <string name="total">总计</string>
     <string name="duration">持续时间</string>

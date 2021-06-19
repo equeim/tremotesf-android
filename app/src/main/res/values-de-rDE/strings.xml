@@ -266,9 +266,6 @@
     <string name="torrent_link">Torrent Link</string>
     <string name="add_torrent_link">Füge Torrent Link hinzu</string>
 
-    <string name="select_file">Wähle Datei aus</string>
-    <string name="primary_storage">Hauptspeicher</string>
-
     <string name="current_session">Aktuelle Sitzung</string>
     <string name="total">Gesamt</string>
     <string name="duration">Dauer</string>
