@@ -110,7 +110,7 @@ abstract class QtTask @Inject constructor(
                 sourceDir.get().resolve("configure").toString(),
                 configureFlags,
                 buildDir,
-                mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi")
+                mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi", "MAKEOPTS" to defaultMakeArguments(gradle).joinToString(" "))
             ) { isNdkEnvironmentVariable(it) }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
