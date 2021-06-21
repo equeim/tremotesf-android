@@ -3,6 +3,7 @@ package org.equeim.tremotesf.gradle.tasks
 import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
+import org.equeim.tremotesf.gradle.tasks.ExecUtils.isNdkEnvironmentVariable
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -68,7 +69,13 @@ abstract class OpenSSLTask @Inject constructor(
         }
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
-            exec(execOperations, sourceDir.get().resolve("Configure").toString(), configureArgs, buildDir, mapOf("ANDROID_NDK" to ndkDir.get()))
+            exec(
+                execOperations,
+                sourceDir.get().resolve("Configure").toString(),
+                configureArgs,
+                buildDir,
+                mapOf("ANDROID_NDK" to ndkDir.get())
+            ) { isNdkEnvironmentVariable(it) }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }

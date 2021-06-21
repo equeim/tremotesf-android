@@ -18,8 +18,9 @@ internal object ExecUtils {
         executable: String,
         args: List<String>,
         workingDir: File,
-        environment: Map<String, Any> = emptyMap(),
-        ignoreExitValue: Boolean = false
+        environmentVariables: Map<String, Any> = emptyMap(),
+        ignoreExitValue: Boolean = false,
+        dropEnvironmentVariables: ((String) -> Boolean)? = null
     ): ExecResult {
         var commandLine: List<String>? = null
         val outputStream = ByteArrayOutputStream()
@@ -29,7 +30,17 @@ internal object ExecUtils {
                     this.executable = executable
                     this.args = args
                     this.workingDir = workingDir
-                    this.environment(environment)
+
+                    if (dropEnvironmentVariables != null) {
+                        val iter = environment.iterator()
+                        while (iter.hasNext()) {
+                            if (dropEnvironmentVariables(iter.next().key)) {
+                                iter.remove()
+                            }
+                        }
+                    }
+                    environment(environmentVariables)
+
                     isIgnoreExitValue = ignoreExitValue
 
                     standardOutput = bufferedOutputStream
@@ -45,6 +56,8 @@ internal object ExecUtils {
             throw e
         }
     }
+
+    fun isNdkEnvironmentVariable(name: String) = name.startsWith("ANDROID_NDK")
 }
 
 internal fun nanosToSecondsString(nanoseconds: Long): String {

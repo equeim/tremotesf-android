@@ -4,6 +4,7 @@ import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.defaultMakeArguments
 import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
+import org.equeim.tremotesf.gradle.tasks.ExecUtils.isNdkEnvironmentVariable
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
@@ -110,7 +111,7 @@ abstract class QtTask @Inject constructor(
                 configureFlags,
                 buildDir,
                 mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi")
-            )
+            ) { isNdkEnvironmentVariable(it) }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }
@@ -118,7 +119,7 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt")
 
         measureNanoTime {
-            exec(execOperations, MAKE, defaultMakeArguments(gradle), buildDir)
+            exec(execOperations, MAKE, defaultMakeArguments(gradle), buildDir) { isNdkEnvironmentVariable(it) }
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
