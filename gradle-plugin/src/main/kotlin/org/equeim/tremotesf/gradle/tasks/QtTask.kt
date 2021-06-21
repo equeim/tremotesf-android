@@ -12,14 +12,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.internal.ExecActionFactory
+import org.gradle.process.ExecOperations
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
 import kotlin.system.measureNanoTime
 
 abstract class QtTask @Inject constructor(
-    private val execActionFactory: ExecActionFactory,
+    private val execOperations: ExecOperations,
     private val gradle: Gradle
 ) : DefaultTask() {
     @get:Input
@@ -105,7 +105,7 @@ abstract class QtTask @Inject constructor(
         val firstAbi = NativeAbis.abis.first()
         measureNanoTime {
             exec(
-                execActionFactory,
+                execOperations,
                 sourceDir.get().resolve("configure").toString(),
                 configureFlags,
                 buildDir,
@@ -118,14 +118,14 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt")
 
         measureNanoTime {
-            exec(execActionFactory, MAKE, defaultMakeArguments(gradle), buildDir)
+            exec(execOperations, MAKE, defaultMakeArguments(gradle), buildDir)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            exec(execActionFactory, MAKE, listOf("install"), buildDir)
+            exec(execOperations, MAKE, listOf("install"), buildDir)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }

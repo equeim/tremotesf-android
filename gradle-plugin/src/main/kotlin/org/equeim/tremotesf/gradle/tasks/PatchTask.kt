@@ -6,11 +6,11 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.support.listFilesOrdered
-import org.gradle.process.internal.ExecActionFactory
+import org.gradle.process.ExecOperations
 import java.io.File
 import javax.inject.Inject
 
-abstract class PatchTask @Inject constructor(private val execActionFactory: ExecActionFactory) : DefaultTask() {
+abstract class PatchTask @Inject constructor(private val execOperations: ExecOperations) : DefaultTask() {
     @get:Input
     abstract val sourceDir: Property<File>
 
@@ -25,7 +25,7 @@ abstract class PatchTask @Inject constructor(private val execActionFactory: Exec
     private fun applyPatch(patch: File) {
         logger.lifecycle("Applying patch {}", patch)
         val result = exec(
-            execActionFactory,
+            execOperations,
             PATCH,
             listOf("-p1", "-R", "--dry-run", "--force", "--fuzz=0", "--input=$patch"),
             sourceDir.get(),
@@ -35,7 +35,7 @@ abstract class PatchTask @Inject constructor(private val execActionFactory: Exec
             logger.lifecycle("Already applied")
         } else {
             exec(
-                execActionFactory,
+                execOperations,
                 PATCH,
                 listOf("-p1", "--fuzz=0", "--input=$patch"),
                 sourceDir.get()

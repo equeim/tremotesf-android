@@ -2,10 +2,9 @@ package org.equeim.tremotesf.gradle.tasks
 
 import org.gradle.api.Task
 import org.gradle.api.invocation.Gradle
-import org.gradle.internal.io.StreamByteBuffer
-import org.gradle.kotlin.dsl.support.listFilesOrdered
+import org.gradle.process.ExecOperations
 import org.gradle.process.ExecResult
-import org.gradle.process.internal.ExecActionFactory
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -15,26 +14,33 @@ internal object ExecUtils {
     fun defaultMakeArguments(gradle: Gradle) = listOf("-j${gradle.startParameter.maxWorkerCount}")
 
     fun Task.exec(
-        execActionFactory: ExecActionFactory,
+        execOperations: ExecOperations,
         executable: String,
         args: List<String>,
         workingDir: File,
         environment: Map<String, Any> = emptyMap(),
         ignoreExitValue: Boolean = false
-    ): ExecResult = execActionFactory.newExecAction().run {
-        this.executable = executable
-        this.args = args
-        this.workingDir = workingDir
-        this.environment(environment)
-        isIgnoreExitValue = ignoreExitValue
+    ): ExecResult {
+        var commandLine: List<String>? = null
+        val outputStream = ByteArrayOutputStream()
+        return try {
+            outputStream.buffered().use { bufferedOutputStream ->
+                execOperations.exec {
+                    this.executable = executable
+                    this.args = args
+                    this.workingDir = workingDir
+                    this.environment(environment)
+                    isIgnoreExitValue = ignoreExitValue
 
-        val outputStream = StreamByteBuffer()
-        standardOutput = outputStream.outputStream
-        errorOutput = outputStream.outputStream
-        try {
-            execute()
+                    standardOutput = bufferedOutputStream
+                    errorOutput = bufferedOutputStream
+
+                    commandLine = this.commandLine
+                }.rethrowFailure()
+            }
         } catch (e: Exception) {
-            logger.error("Failed to execute ${this.commandLine}, output:")
+            logger.error("Failed to execute $commandLine: $e")
+            logger.error("Output:")
             outputStream.writeTo(System.err)
             throw e
         }

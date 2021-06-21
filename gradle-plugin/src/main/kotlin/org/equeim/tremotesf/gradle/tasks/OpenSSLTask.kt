@@ -10,14 +10,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.internal.ExecActionFactory
+import org.gradle.process.ExecOperations
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
 import kotlin.system.measureNanoTime
 
 abstract class OpenSSLTask @Inject constructor(
-    private val execActionFactory: ExecActionFactory
+    private val execOperations: ExecOperations
 ) : DefaultTask() {
     @get:Input
     abstract val opensslDir: Property<File>
@@ -68,20 +68,20 @@ abstract class OpenSSLTask @Inject constructor(
         }
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
-            exec(execActionFactory, sourceDir.get().resolve("Configure").toString(), configureArgs, buildDir, mapOf("ANDROID_NDK" to ndkDir.get()))
+            exec(execOperations, sourceDir.get().resolve("Configure").toString(), configureArgs, buildDir, mapOf("ANDROID_NDK" to ndkDir.get()))
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
         logger.lifecycle("Building OpenSSL")
         measureNanoTime {
-            exec(execActionFactory, MAKE, listOf("build_libs", "-j16"), buildDir)
+            exec(execOperations, MAKE, listOf("build_libs", "-j16"), buildDir)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
         logger.lifecycle("Installing OpenSSL")
         measureNanoTime {
-            exec(execActionFactory, MAKE, listOf("install_dev"), buildDir)
+            exec(execOperations, MAKE, listOf("install_dev"), buildDir)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
