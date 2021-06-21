@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 @SuppressLint("StaticFieldLeak")
-object GlobalServers : Servers(TremotesfApplication.instance) {
+object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope, TremotesfApplication.instance) {
     private val saveData = AtomicReference<SaveData>()
 
     init {
@@ -32,7 +32,7 @@ object GlobalServers : Servers(TremotesfApplication.instance) {
             .dropWhile { !it }
             .filterNot { it }
             .onEach { save() }
-            .launchIn(@OptIn(DelicateCoroutinesApi::class) GlobalScope + Dispatchers.Main)
+            .launchIn(scope)
     }
 
     @MainThread

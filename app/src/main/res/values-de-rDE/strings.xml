@@ -427,7 +427,7 @@
     <string name="donations_donate">Spenden</string>
     <string name="donations_amount">Höhe der Spende</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google behält eine Gebühr von 30% ein</string>
+    <string name="donations_google_description">Google behält eine Gebühr von 30%% ein</string>
     <string name="donations_paypal_title">Paypal</string>
     <string name="donations_paypal_description">Sie können nach dem Klick auf den Button auswählen wie viel Sie spenden möchten</string>
     <string name="donations_yandex_title">Yandex.Money</string>

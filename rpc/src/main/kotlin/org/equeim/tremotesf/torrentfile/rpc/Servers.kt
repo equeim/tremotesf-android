@@ -20,9 +20,13 @@
 package org.equeim.tremotesf.torrentfile.rpc
 
 import android.content.Context
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -39,7 +43,7 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val context: Context) {
+abstract class Servers(protected val scope: CoroutineScope, protected val context: Context) {
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
 
@@ -111,7 +115,7 @@ abstract class Servers(protected val context: Context) {
         }
     }
 
-    @MainThread
+    @AnyThread
     fun save() {
         Timber.i("save() called")
         val currentServer = currentServer.value
@@ -125,10 +129,11 @@ abstract class Servers(protected val context: Context) {
             Timber.i("save: last torrents count = ${currentServer.lastTorrents.torrents.size}")
         }
 
-        save(SaveData(
+        val saveData = SaveData(
             currentServer?.name,
             servers.map { it.copy(lastTorrents = it.lastTorrents.copy()) }
-        ))
+        )
+        scope.launch(Dispatchers.Main) { save(saveData) }
     }
 
     @Serializable
