@@ -1,6 +1,5 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -24,22 +23,20 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
 
     private fun applyPatch(patch: File) {
         logger.lifecycle("Applying patch {}", patch)
-        val result = exec(
-            execOperations,
-            PATCH,
-            listOf("-p1", "-R", "--dry-run", "--force", "--fuzz=0", "--input=$patch"),
-            sourceDir.get(),
-            ignoreExitValue = true
-        )
+        val result = execOperations.exec(logger) {
+            executable = PATCH
+            args("-p1", "-R", "--dry-run", "--force", "--fuzz=0", "--input=$patch")
+            workingDir(sourceDir)
+            isIgnoreExitValue = true
+        }
         if (result.exitValue == 0) {
             logger.lifecycle("Already applied")
         } else {
-            exec(
-                execOperations,
-                PATCH,
-                listOf("-p1", "--fuzz=0", "--input=$patch"),
-                sourceDir.get()
-            )
+            execOperations.exec(logger) {
+                executable = PATCH
+                args("-p1", "--fuzz=0", "--input=$patch")
+                workingDir(sourceDir)
+            }
         }
     }
 

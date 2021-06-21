@@ -1,63 +1,57 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.gradle.api.Task
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.logging.Logger
 import org.gradle.process.ExecOperations
 import org.gradle.process.ExecResult
+import org.gradle.process.ExecSpec
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.OutputStream
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-internal object ExecUtils {
-    const val MAKE = "make"
-    fun defaultMakeArguments(gradle: Gradle) = listOf("-j${gradle.startParameter.maxWorkerCount}")
+internal fun ExecOperations.exec(logger: Logger, configure: ExecSpec.() -> Unit): ExecResult {
+    var commandLine: List<String>? = null
+    val outputStream = ByteArrayOutputStream()
+    return try {
+        outputStream.buffered().use { bufferedOutputStream ->
+            exec {
+                configure()
+                commandLine = this.commandLine
+                standardOutput = bufferedOutputStream
+                errorOutput = bufferedOutputStream
+            }.rethrowFailure()
+        }
+    } catch (e: Exception) {
+        logger.error("Failed to execute $commandLine: $e")
+        logger.error("Output:")
+        outputStream.writeTo(System.err)
+        throw e
+    }
+}
 
-    fun Task.exec(
-        execOperations: ExecOperations,
-        executable: String,
-        args: List<String>,
-        workingDir: File,
-        environmentVariables: Map<String, Any> = emptyMap(),
-        ignoreExitValue: Boolean = false,
-        dropEnvironmentVariables: ((String) -> Boolean)? = null
-    ): ExecResult {
-        var commandLine: List<String>? = null
-        val outputStream = ByteArrayOutputStream()
-        return try {
-            outputStream.buffered().use { bufferedOutputStream ->
-                execOperations.exec {
-                    this.executable = executable
-                    this.args = args
-                    this.workingDir = workingDir
+internal fun ExecOperations.make(target: String?, workingDir: File, logger: Logger, gradle: Gradle) = exec(logger) {
+    executable = MAKE
+    args(defaultMakeArguments(gradle))
+    if (target != null) {
+        args(target)
+    }
+    this.workingDir = workingDir
+}
 
-                    if (dropEnvironmentVariables != null) {
-                        val iter = environment.iterator()
-                        while (iter.hasNext()) {
-                            if (dropEnvironmentVariables(iter.next().key)) {
-                                iter.remove()
-                            }
-                        }
-                    }
-                    environment(environmentVariables)
+internal fun ExecOperations.make(workingDir: File, logger: Logger, gradle: Gradle) = make(null, workingDir, logger, gradle)
 
-                    isIgnoreExitValue = ignoreExitValue
+private const val MAKE = "make"
+internal fun defaultMakeArguments(gradle: Gradle) = listOf("-j${gradle.startParameter.maxWorkerCount}")
 
-                    standardOutput = bufferedOutputStream
-                    errorOutput = bufferedOutputStream
-
-                    commandLine = this.commandLine
-                }.rethrowFailure()
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to execute $commandLine: $e")
-            logger.error("Output:")
-            outputStream.writeTo(System.err)
-            throw e
+internal fun ExecSpec.dropNdkEnvironmentVariables() {
+    val iter = environment.iterator()
+    while (iter.hasNext()) {
+        if (iter.next().key.startsWith("ANDROID_NDK")) {
+            iter.remove()
         }
     }
-
-    fun isNdkEnvironmentVariable(name: String) = name.startsWith("ANDROID_NDK")
 }
 
 internal fun nanosToSecondsString(nanoseconds: Long): String {

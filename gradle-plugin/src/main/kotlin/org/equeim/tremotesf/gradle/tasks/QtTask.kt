@@ -1,10 +1,6 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.equeim.tremotesf.gradle.Versions
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.defaultMakeArguments
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.isNdkEnvironmentVariable
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
@@ -13,6 +9,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.environment
 import org.gradle.process.ExecOperations
 import java.io.File
 import java.nio.file.Files
@@ -105,13 +102,16 @@ abstract class QtTask @Inject constructor(
 
         val firstAbi = NativeAbis.abis.first()
         measureNanoTime {
-            exec(
-                execOperations,
-                sourceDir.get().resolve("configure").toString(),
-                configureFlags,
-                buildDir,
-                mapOf("OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi", "MAKEOPTS" to defaultMakeArguments(gradle).joinToString(" "))
-            ) { isNdkEnvironmentVariable(it) }
+            execOperations.exec(logger) {
+                executable(sourceDir.get().resolve("configure"))
+                args = configureFlags
+                workingDir = buildDir
+                dropNdkEnvironmentVariables()
+                environment(
+                    "OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi",
+                    "MAKEOPTS" to defaultMakeArguments(gradle).joinToString(" ")
+                )
+            }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }
@@ -119,14 +119,14 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt")
 
         measureNanoTime {
-            exec(execOperations, MAKE, defaultMakeArguments(gradle), buildDir) { isNdkEnvironmentVariable(it) }
+            execOperations.make(buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            exec(execOperations, MAKE, listOf("install"), buildDir)
+            execOperations.make("install", buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }

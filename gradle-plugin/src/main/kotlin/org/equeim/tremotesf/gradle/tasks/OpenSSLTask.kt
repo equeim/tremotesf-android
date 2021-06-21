@@ -1,10 +1,8 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.equeim.tremotesf.gradle.Versions
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.MAKE
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.exec
-import org.equeim.tremotesf.gradle.tasks.ExecUtils.isNdkEnvironmentVariable
 import org.gradle.api.DefaultTask
+import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -18,7 +16,8 @@ import javax.inject.Inject
 import kotlin.system.measureNanoTime
 
 abstract class OpenSSLTask @Inject constructor(
-    private val execOperations: ExecOperations
+    private val execOperations: ExecOperations,
+    private val gradle: Gradle
 ) : DefaultTask() {
     @get:Input
     abstract val opensslDir: Property<File>
@@ -69,26 +68,26 @@ abstract class OpenSSLTask @Inject constructor(
         }
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
-            exec(
-                execOperations,
-                sourceDir.get().resolve("Configure").toString(),
-                configureArgs,
-                buildDir,
-                mapOf("ANDROID_NDK" to ndkDir.get())
-            ) { isNdkEnvironmentVariable(it) }
+            execOperations.exec(logger) {
+                executable(sourceDir.get().resolve("Configure"))
+                args = configureArgs
+                workingDir = buildDir
+                dropNdkEnvironmentVariables()
+                environment("ANDROID_NDK", ndkDir.get())
+            }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
         logger.lifecycle("Building OpenSSL")
         measureNanoTime {
-            exec(execOperations, MAKE, listOf("build_libs", "-j16"), buildDir)
+            execOperations.make("build_libs", buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
         logger.lifecycle("Installing OpenSSL")
         measureNanoTime {
-            exec(execOperations, MAKE, listOf("install_dev"), buildDir)
+            execOperations.make("install_dev", buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
