@@ -6,6 +6,7 @@
 *.log
 .cxx
 /keystore.properties
+/build
 /app/build
 /app/fdroid
 /app/google
