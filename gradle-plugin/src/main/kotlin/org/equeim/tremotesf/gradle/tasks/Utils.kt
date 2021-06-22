@@ -7,7 +7,6 @@ import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.OutputStream
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
