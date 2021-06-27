@@ -38,12 +38,21 @@ abstract class QtTask @Inject constructor(
     @get:OutputDirectory
     val installDir: Provider<File> by lazy { qtDir.map { installDir(it) } }
 
+    @get:Input
+    abstract val ccache: Property<Boolean>
+
     @TaskAction
     fun buildQt() {
+        logger.lifecycle("Start building Qt, make jobs count = {}", makeJobsCount(gradle))
+
         logger.lifecycle("Configuring Qt")
 
         val buildDir = buildDir(qtDir.get())
         Files.createDirectories(buildDir.toPath())
+
+        if (ccache.get()) {
+            execOperations.zeroCcacheStatistics(logger)
+        }
 
         val configureFlags = listOf(
             "-v",
@@ -58,8 +67,13 @@ abstract class QtTask @Inject constructor(
             "-android-ndk-platform", "android-${Versions.minSdk}",
             "-prefix", installDir.get().toString(),
             "-linker", "lld",
-            "-ltcg",
-            "-no-use-gold-linker",
+            if (ccache.get()) "-ccache" else "-no-ccache",
+            // Precombiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
+            if (ccache.get()) "-no-pch" else "-pch",
+            // Ccache can't cache when linking and with LTCG/LTO a lot of time-consuming operations happen there,
+            // which makes ccache not very effective. Just disable LTCG
+            if (ccache.get()) "-no-ltcg" else "-ltcg",
+
             "-nomake", "examples",
             "-nomake", "tests",
             "-no-dbus",
@@ -106,7 +120,6 @@ abstract class QtTask @Inject constructor(
                 executable(sourceDir.get().resolve("configure"))
                 args = configureFlags
                 workingDir = buildDir
-                dropNdkEnvironmentVariables()
                 environment(
                     "OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi",
                     "MAKEOPTS" to defaultMakeArguments(gradle).joinToString(" ")
@@ -122,6 +135,10 @@ abstract class QtTask @Inject constructor(
             execOperations.make(buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
+        }
+
+        if (ccache.get()) {
+            execOperations.showCcacheStatistics(logger)
         }
 
         logger.lifecycle("Installing Qt")

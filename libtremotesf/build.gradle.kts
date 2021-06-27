@@ -43,6 +43,8 @@ dependencies {
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
 
+val useCcache = (property("org.equeim.tremotesf.ccache") as String).toBoolean()
+
 val openSSLPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(OpenSSLTask.sourceDir(opensslDir))
     patchesDir.set(OpenSSLTask.patchesDir(opensslDir))
@@ -52,6 +54,7 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
     dependsOn(openSSLPatches)
     opensslDir.set(this@Build_gradle.opensslDir)
     ndkDir.set(android.ndkDirectory)
+    ccache.set(useCcache)
 }
 
 val qtPatches by tasks.registering(PatchTask::class) {
@@ -65,6 +68,7 @@ val qt by tasks.registering(QtTask::class) {
     opensslInstallDir.set(openSSL.map { it.installDir.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
+    ccache.set(useCcache)
 }
 
 dependencies {

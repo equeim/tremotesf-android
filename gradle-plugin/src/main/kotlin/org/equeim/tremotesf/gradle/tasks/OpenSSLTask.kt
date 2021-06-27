@@ -35,10 +35,20 @@ abstract class OpenSSLTask @Inject constructor(
         opensslDir.map { installDir(it) }
     }
 
+    @get:Input
+    abstract val ccache: Property<Boolean>
+
     @TaskAction
     fun buildOpenSSL() {
+        logger.lifecycle("Start builiding OpenSSL, make jobs count = {}", makeJobsCount(gradle))
+        if (ccache.get()) {
+            execOperations.zeroCcacheStatistics(logger)
+        }
         for (abi in NativeAbis.abis) {
             buildOpenSSL(abi)
+        }
+        if (ccache.get()) {
+            execOperations.showCcacheStatistics(logger)
         }
     }
 
@@ -49,6 +59,10 @@ abstract class OpenSSLTask @Inject constructor(
         Files.createDirectories(buildDir.toPath())
 
         val cflags = COMMON_CFLAGS.toMutableList()
+        if (!ccache.get()) {
+            /** Enable LTO only when not using ccache. See [QtTask] for explanation */
+            cflags.add("-flto=thin")
+        }
         cflags.add("-D__ANDROID_API__=${Versions.minSdk}")
         val target = when (abi) {
             "armeabi-v7a" -> {
@@ -72,8 +86,10 @@ abstract class OpenSSLTask @Inject constructor(
                 executable(sourceDir.get().resolve("Configure"))
                 args = configureArgs
                 workingDir = buildDir
-                dropNdkEnvironmentVariables()
                 environment("ANDROID_NDK", ndkDir.get())
+                if (ccache.get()) {
+                    environment("CC", "ccache ${ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin/clang")}")
+                }
             }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
@@ -107,8 +123,7 @@ abstract class OpenSSLTask @Inject constructor(
         private val COMMON_CFLAGS = listOf(
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
-            "-O2",
-            "-flto=thin"
+            "-O2"
         )
 
         fun sourceDir(opensslDir: File) = opensslDir.resolve("openssl")
