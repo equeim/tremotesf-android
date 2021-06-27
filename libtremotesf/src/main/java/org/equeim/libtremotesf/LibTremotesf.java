@@ -27,15 +27,12 @@ import timber.log.Timber;
 public class LibTremotesf {
     public static void init(ClassLoader classLoader) {
         Timber.d("init() called with: classLoader = [" + classLoader + "]");
+
         System.loadLibrary("c++_shared");
+
         QtNative.setClassLoader(classLoader);
 
-        final String suffix;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            suffix = Build.CPU_ABI;
-        } else {
-            suffix = Build.SUPPORTED_ABIS[0];
-        }
+        final String suffix = Build.SUPPORTED_ABIS[0];
         System.loadLibrary("Qt5Core_" + suffix);
         System.loadLibrary("Qt5Network_" + suffix);
         System.loadLibrary("tremotesf_" + suffix);
