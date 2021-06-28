@@ -57,11 +57,15 @@ class TorrentFileParserTest {
     }
 
     @Test
-    fun `Creating tree for multiple file torrent with subdirectories`() = dispatcher.runBlockingTest {
-        val actual =
-            TorrentFileParser.createFilesTree(multipleFileTorrentWithSubdirectoriesParsed, dispatchers)
-        assertEquals(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
-    }
+    fun `Creating tree for multiple file torrent with subdirectories`() =
+        dispatcher.runBlockingTest {
+            val actual =
+                TorrentFileParser.createFilesTree(
+                    multipleFileTorrentWithSubdirectoriesParsed,
+                    dispatchers
+                )
+            assertEquals(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
+        }
 
     @Test
     fun `Parsing torrent that is too big`() = dispatcher.runBlockingTest {
@@ -85,20 +89,16 @@ class TorrentFileParserTest {
             )
         }
         val singleFileTorrentTreeResult by lazy {
-            val files = mutableListOf<TorrentFilesTree.Node>()
-            val rootNode = TorrentFilesTree.Node.createRootNode().apply {
-                files.add(
-                    addFile(
-                        0,
-                        "debian-10.9.0-amd64-netinst.iso",
-                        353370112,
-                        0,
-                        TorrentFilesTree.Item.WantedState.Wanted,
-                        TorrentFilesTree.Item.Priority.Normal
-                    )
+            buildTorrentFilesTree {
+                addFile(
+                    0,
+                    listOf("debian-10.9.0-amd64-netinst.iso"),
+                    353370112,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
                 )
             }
-            TorrentFileParser.FilesTreeResult(rootNode, files)
         }
 
         const val multipleFileTorrent = "Fedora-Workstation-Live-x86_64-34.torrent"
@@ -121,33 +121,30 @@ class TorrentFileParserTest {
             )
         }
         val multipleFileTorrentTreeResult by lazy {
-            val files = mutableListOf<TorrentFilesTree.Node>()
-            val rootNode = TorrentFilesTree.Node.createRootNode().apply {
-                addDirectory("Fedora-Workstation-Live-x86_64-34").apply {
-                    files.add(
-                        addFile(
-                            0,
-                            "Fedora-Workstation-34-1.2-x86_64-CHECKSUM",
-                            1062,
-                            0,
-                            TorrentFilesTree.Item.WantedState.Wanted,
-                            TorrentFilesTree.Item.Priority.Normal
-                        )
-                    )
-                    files.add(
-                        addFile(
-                            1,
-                            "Fedora-Workstation-Live-x86_64-34-1.2.iso",
-                            2007367680,
-                            0,
-                            TorrentFilesTree.Item.WantedState.Wanted,
-                            TorrentFilesTree.Item.Priority.Normal
-                        )
-                    )
-                    initiallyCalculateFromChildrenRecursively()
-                }
+            buildTorrentFilesTree {
+                addFile(
+                    0,
+                    listOf(
+                        "Fedora-Workstation-Live-x86_64-34",
+                        "Fedora-Workstation-34-1.2-x86_64-CHECKSUM"
+                    ),
+                    1062,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    1,
+                    listOf(
+                        "Fedora-Workstation-Live-x86_64-34",
+                        "Fedora-Workstation-Live-x86_64-34-1.2.iso"
+                    ),
+                    2007367680,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
-            TorrentFileParser.FilesTreeResult(rootNode, files)
         }
 
         const val multipleFileTorrentWithSubdirectories = "with_subdirectories.torrent"
@@ -170,37 +167,24 @@ class TorrentFileParserTest {
             )
         }
         val multipleFileTorrentWithSubdirectoriesTreeResult by lazy {
-            val files = mutableListOf<TorrentFilesTree.Node>()
-            val rootNode = TorrentFilesTree.Node.createRootNode().apply {
-                addDirectory("foo").apply {
-                    addDirectory("fedora").apply {
-                        files.add(
-                            addFile(
-                                0,
-                                "Fedora-Workstation-Live-x86_64-34.torrent",
-                                153488,
-                                0,
-                                TorrentFilesTree.Item.WantedState.Wanted,
-                                TorrentFilesTree.Item.Priority.Normal
-                            )
-                        )
-                    }
-                    addDirectory("debian").apply {
-                        files.add(
-                            addFile(
-                                1,
-                                "debian-10.9.0-amd64-netinst.iso.torrent",
-                                27506,
-                                0,
-                                TorrentFilesTree.Item.WantedState.Wanted,
-                                TorrentFilesTree.Item.Priority.Normal
-                            )
-                        )
-                    }
-                    initiallyCalculateFromChildrenRecursively()
-                }
+            buildTorrentFilesTree {
+                addFile(
+                    0,
+                    listOf("foo", "fedora", "Fedora-Workstation-Live-x86_64-34.torrent"),
+                    153488,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    1,
+                    listOf("foo", "debian", "debian-10.9.0-amd64-netinst.iso.torrent"),
+                    27506,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
-            TorrentFileParser.FilesTreeResult(rootNode, files)
         }
 
         const val bigTorrent = "big.torrent"

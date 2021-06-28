@@ -40,13 +40,12 @@ import java.util.Comparator
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
 
-
 open class TorrentFilesTree(parentScope: CoroutineScope) {
     val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
 
     class Node private constructor(@Volatile var item: Item, val path: IntArray) {
-        companion object {
+        internal companion object {
             fun createRootNode() = Node(Item(), intArrayOf())
         }
 
@@ -70,6 +69,8 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return result
         }
 
+        override fun toString() = "Node(item=$item)"
+
         fun getChildByItemNameOrNull(name: String) = childrenMap[name]
 
         fun recalculateFromChildren() {
@@ -78,7 +79,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             this.item = item.recalculatedFromChildren(children)
         }
 
-        fun initiallyCalculateFromChildrenRecursively() {
+        internal fun initiallyCalculateFromChildrenRecursively() {
             item.apply {
                 if (isDirectory) {
                     children.forEach(Node::initiallyCalculateFromChildrenRecursively)
@@ -105,7 +106,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             }
         }
 
-        fun addFile(
+        internal fun addFile(
             id: Int,
             name: String,
             size: Long,
@@ -117,7 +118,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return addChild(Item(id, name, size, completedSize, wantedState, priority, path), path)
         }
 
-        fun addDirectory(name: String = ""): Node {
+        internal fun addDirectory(name: String = ""): Node {
             val path = this.path + children.size
             return addChild(
                 Item(
@@ -212,9 +213,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return result
         }
 
-        fun recalculatedFromChildren(children: List<Node>): Item = copy().apply { calculateFromChildren(children) }
+        internal fun recalculatedFromChildren(children: List<Node>): Item =
+            copy().apply { calculateFromChildren(children) }
 
-        fun calculateFromChildren(children: List<Node>) {
+        internal fun calculateFromChildren(children: List<Node>) {
             size = 0L
             completedSize = 0L
             children.first().item.let {
@@ -450,4 +452,63 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
         return node
     }
+}
+
+interface TorrentFilesTreeBuilderScope {
+    fun addFile(
+        fileId: Int,
+        path: List<String>,
+        size: Long,
+        completedSize: Long,
+        wantedState: TorrentFilesTree.Item.WantedState,
+        priority: TorrentFilesTree.Item.Priority
+    )
+}
+
+data class TorrentFilesTreeBuildResult(
+    val rootNode: TorrentFilesTree.Node,
+    val files: List<TorrentFilesTree.Node>
+)
+
+fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): TorrentFilesTreeBuildResult {
+    val rootNode = TorrentFilesTree.Node.createRootNode()
+    val files = mutableListOf<TorrentFilesTree.Node>()
+
+    val scope = object : TorrentFilesTreeBuilderScope {
+        override fun addFile(
+            fileId: Int,
+            path: List<String>,
+            size: Long,
+            completedSize: Long,
+            wantedState: TorrentFilesTree.Item.WantedState,
+            priority: TorrentFilesTree.Item.Priority
+        ) {
+            var currentNode = rootNode
+
+            val lastPartIndex = (path.size - 1)
+
+            for ((partIndex, part: String) in path.withIndex()) {
+                if (partIndex == lastPartIndex) {
+                    val node = currentNode.addFile(
+                        fileId,
+                        part,
+                        size,
+                        completedSize,
+                        wantedState,
+                        priority
+                    )
+                    files.add(node)
+                } else {
+                    var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
+                    if (childDirectoryNode == null) {
+                        childDirectoryNode = currentNode.addDirectory(part)
+                    }
+                    currentNode = childDirectoryNode
+                }
+            }
+        }
+    }
+    scope.block()
+    rootNode.children.forEach { it.initiallyCalculateFromChildrenRecursively() }
+    return TorrentFilesTreeBuildResult(rootNode, files)
 }

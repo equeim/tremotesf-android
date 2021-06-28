@@ -34,12 +34,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentFile
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
+import org.equeim.tremotesf.torrentfile.buildTorrentFilesTree
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import timber.log.Timber
 import java.util.LinkedHashSet
@@ -151,12 +151,12 @@ class RpcTorrentFilesTree(
                 name = name,
                 completedSize = rpcFile.completedSize,
                 wantedState = Item.WantedState.fromBoolean(rpcFile.wanted),
-                priority = fromTorrentFilePriority(rpcFile.priority)
+                priority = rpcFile.priority.toTreeItemPriority()
             )
         }
 
-        private fun fromTorrentFilePriority(priority: Int): Item.Priority {
-            return when (priority) {
+        private fun Int.toTreeItemPriority(): Item.Priority {
+            return when (this) {
                 TorrentFile.Priority.LowPriority -> Item.Priority.Low
                 TorrentFile.Priority.NormalPriority -> Item.Priority.Normal
                 TorrentFile.Priority.HighPriority -> Item.Priority.High
@@ -198,40 +198,20 @@ class RpcTorrentFilesTree(
     }
 
     fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {
-        val rootNode = Node.createRootNode()
-        val files = mutableListOf<Node>()
-
-        for ((fileIndex, rpcFile: TorrentFile) in rpcFiles.withIndex()) {
-            var currentNode = rootNode
-
-            val path: StringsVector = rpcFile.path
-            val lastPartIndex = (path.size - 1)
-
-            for ((partIndex, part: String) in path.withIndex()) {
-                if (partIndex == lastPartIndex) {
-                    val node = currentNode.addFile(
-                        fileIndex,
-                        part,
-                        rpcFile.size,
-                        rpcFile.completedSize,
-                        Item.WantedState.fromBoolean(rpcFile.wanted),
-                        fromTorrentFilePriority(rpcFile.priority)
-                    )
-                    files.add(node)
-                } else {
-                    var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
-                    if (childDirectoryNode == null) {
-                        childDirectoryNode = currentNode.addDirectory(part)
-                    }
-                    currentNode = childDirectoryNode
-                }
+        val (rootNode, files) = buildTorrentFilesTree {
+            rpcFiles.forEach { rpcFile ->
+                val path = rpcFile.path
+                addFile(
+                    rpcFile.id,
+                    path,
+                    rpcFile.size,
+                    rpcFile.completedSize,
+                    Item.WantedState.fromBoolean(rpcFile.wanted),
+                    rpcFile.priority.toTreeItemPriority()
+                )
+                path.delete()
             }
-
-            path.delete()
         }
-
-        rootNode.children.forEach { it.initiallyCalculateFromChildrenRecursively() }
-
         withContext(Dispatchers.Main) {
             model.treeCreated(rootNode, files)
         }

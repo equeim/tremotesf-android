@@ -43,65 +43,40 @@ class FileParseException : Exception {
 }
 
 object TorrentFileParser {
-    data class FilesTreeResult(
-        val rootNode: TorrentFilesTree.Node,
-        val files: List<TorrentFilesTree.Node>
-    )
-
-    suspend fun createFilesTree(fd: FileDescriptor): FilesTreeResult {
+    suspend fun createFilesTree(fd: FileDescriptor): TorrentFilesTreeBuildResult {
         return createFilesTree(parseFd(fd))
     }
 
     @VisibleForTesting
-    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): FilesTreeResult =
+    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) =
         withContext(dispatchers.Default) {
-            val rootNode = TorrentFilesTree.Node.createRootNode()
-            val files = mutableListOf<TorrentFilesTree.Node>()
-
-            val info = torrentFile.info
-
-            if (info.files == null) {
-                val node = rootNode.addFile(
-                    0,
-                    info.name,
-                    info.length
-                        ?: throw FileParseException("Field 'length' must not be null for single-file torrent"),
-                    0,
-                    TorrentFilesTree.Item.WantedState.Wanted,
-                    TorrentFilesTree.Item.Priority.Normal
-                )
-                files.add(node)
-            } else {
-                val rootDirectoryNode = rootNode.addDirectory(info.name)
-                for ((fileIndex, fileMap) in checkNotNull(info.files).withIndex()) {
-                    var currentNode = rootDirectoryNode
-
-                    val pathParts = fileMap.path
-                    for ((partIndex, part) in pathParts.withIndex()) {
-                        if (partIndex == pathParts.lastIndex) {
-                            val node = currentNode.addFile(
-                                fileIndex,
-                                part,
-                                fileMap.length,
-                                0,
-                                TorrentFilesTree.Item.WantedState.Wanted,
-                                TorrentFilesTree.Item.Priority.Normal
-                            )
-                            files.add(node)
-                        } else {
-                            var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
-                            if (childDirectoryNode == null) {
-                                childDirectoryNode = currentNode.addDirectory(part)
-                            }
-                            currentNode = childDirectoryNode
-                        }
+            buildTorrentFilesTree {
+                val info = torrentFile.info
+                if (info.files == null) {
+                    addFile(
+                        0,
+                        listOf(info.name),
+                        info.length ?: throw FileParseException("Field 'length' must not be null for single-file torrent"),
+                        0,
+                        TorrentFilesTree.Item.WantedState.Wanted,
+                        TorrentFilesTree.Item.Priority.Normal
+                    )
+                } else {
+                    val fullPath = mutableListOf(info.name)
+                    info.files.forEachIndexed { index, file ->
+                        if (fullPath.size > 1) fullPath.subList(1, fullPath.size).clear()
+                        fullPath.addAll(file.path)
+                        addFile(
+                            index,
+                            fullPath,
+                            file.length,
+                            0,
+                            TorrentFilesTree.Item.WantedState.Wanted,
+                            TorrentFilesTree.Item.Priority.Normal
+                        )
                     }
                 }
-
-                rootDirectoryNode.initiallyCalculateFromChildrenRecursively()
             }
-
-            FilesTreeResult(rootNode, files)
         }
 
     @Serializable
