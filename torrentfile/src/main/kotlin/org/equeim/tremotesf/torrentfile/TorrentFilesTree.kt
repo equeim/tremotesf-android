@@ -22,6 +22,7 @@ package org.equeim.tremotesf.torrentfile
 import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import androidx.collection.SimpleArrayMap
 import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
@@ -50,8 +51,9 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
 
         private val _children = mutableListOf<Node>()
-        val children: List<Node> by ::_children
-        private val childrenMap = mutableMapOf<String, Node>()
+        val children: List<Node>
+            get() = _children
+        private val childrenMap = SimpleArrayMap<String, Node>()
 
         override fun equals(other: Any?): Boolean {
             return other is Node &&
@@ -138,7 +140,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
 
             val node = Node(childItem, path)
             _children.add(node)
-            childrenMap[childItem.name] = node
+            childrenMap.put(childItem.name, node)
 
             return node
         }
