@@ -59,15 +59,13 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return other is Node &&
                     other.item == item &&
                     other.path.contentEquals(path) &&
-                    other.children == children &&
-                    other.childrenMap == childrenMap
+                    other.children == children
         }
 
         override fun hashCode(): Int {
             var result = item.hashCode()
             result = 31 * result + path.contentHashCode()
             result = 31 * result + children.hashCode()
-            result = 31 * result + childrenMap.hashCode()
             return result
         }
 
