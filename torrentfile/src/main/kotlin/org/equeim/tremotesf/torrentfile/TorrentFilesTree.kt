@@ -366,16 +366,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
                 children[index].nodeAction(ids)
             }
 
-            val nodes = ArrayList<DirectoryNode>(currentNode.path.size)
-            var node: DirectoryNode = rootNode
-            for (index in currentNode.path) {
-                node = (node.children.getOrNull(index) as? DirectoryNode) ?: break
-                nodes.add(node)
-            }
-            nodes.reverse()
-            for (n in nodes) {
-                n.recalculateFromChildren()
-            }
+            recalculateNodeAndItsParents(currentNode)
 
             updateItemsWithoutSorting()
             withContext(Dispatchers.Main) {
@@ -396,6 +387,31 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             nodeIndexes,
             { setItemPriorityRecursively(priority, it) },
             { onSetFilesPriority(it, priority) })
+    }
+
+    @WorkerThread
+    fun recalculateNodeAndItsParents(node: Node) = recalculateNodesAndTheirParents(sequenceOf(node))
+
+    @WorkerThread
+    fun recalculateNodesAndTheirParents(nodes: Sequence<Node>): Set<Node> {
+        val recalculateNodes = LinkedHashSet<DirectoryNode>()
+        nodes.forEach { recalculateParentNodesAddToSet(it, recalculateNodes) }
+        for (node in recalculateNodes.reversed()) {
+            node.recalculateFromChildren()
+        }
+        return recalculateNodes
+    }
+
+    @WorkerThread
+    private fun recalculateParentNodesAddToSet(node: Node, recalculateNodes: LinkedHashSet<DirectoryNode>) {
+        if (node === rootNode) return
+        val path = node.path
+        var n: DirectoryNode = rootNode
+        for (index in path) {
+            // Node itself may be a FileNode and in that case we don't need to recalculate it
+            n = (n.children.getOrNull(index) as? DirectoryNode) ?: break
+            recalculateNodes.add(n)
+        }
     }
 
     fun getItemPath(item: Item): String? {

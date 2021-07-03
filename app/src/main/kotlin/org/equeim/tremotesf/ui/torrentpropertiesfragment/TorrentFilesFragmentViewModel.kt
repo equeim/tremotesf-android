@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.TorrentFile
@@ -43,7 +42,6 @@ import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import timber.log.Timber
-import java.util.LinkedHashSet
 
 class TorrentFilesFragmentViewModel(
     val torrent: StateFlow<Torrent?>,
@@ -220,36 +218,19 @@ class RpcTorrentFilesTree(
         }
     }
 
-    fun updateTree(changedFiles: List<TorrentFile>) = scope.launch {
-        if (changedFiles.isEmpty()) return@launch
-
-        val files = this@RpcTorrentFilesTree.files
-        val recalculateNodes = LinkedHashSet<DirectoryNode>()
-
-        for (rpcFile in changedFiles) {
-            if (!isActive) return@launch
-
-            val node = files.getOrNull(rpcFile.id) ?: continue
-            node.item = node.item.updatedFrom(rpcFile)
-
-            var n: Node = rootNode
-            for (index in node.path) {
-                recalculateNodes.add(n as DirectoryNode)
-                n = (n as DirectoryNode).children[index]
+    fun updateTree(changedFiles: List<TorrentFile>) {
+        if (changedFiles.isEmpty()) return
+        scope.launch {
+            val files = this@RpcTorrentFilesTree.files
+            val recalculated = recalculateNodesAndTheirParents(changedFiles.asSequence().mapNotNull { rpcFile ->
+                ensureActive()
+                files.getOrNull(rpcFile.id)?.apply {
+                    item = item.updatedFrom(rpcFile)
+                }
+            })
+            if (recalculated.contains(currentNode)) {
+                updateItemsWithSorting()
             }
-        }
-
-        var updateItems = false
-
-        for (node in recalculateNodes.reversed()) {
-            node.recalculateFromChildren()
-            if (node === currentNode) {
-                updateItems = true
-            }
-        }
-
-        if (updateItems) {
-            updateItemsWithSorting()
         }
     }
 
