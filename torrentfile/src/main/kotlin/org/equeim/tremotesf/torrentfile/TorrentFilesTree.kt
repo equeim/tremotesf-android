@@ -302,6 +302,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     private val _items = MutableStateFlow(emptyList<Item?>())
     val items: StateFlow<List<Item?>> by ::_items
 
+    @MainThread
     fun navigateUp(): Boolean {
         if (!inited) return false
         if (currentNode == rootNode) {
@@ -313,6 +314,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         return true
     }
 
+    @MainThread
     fun navigateDown(item: Item) {
         if (!inited) return
         if (!item.isDirectory) return
@@ -321,6 +323,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         navigateTo(node)
     }
 
+    @MainThread
     private fun navigateTo(node: DirectoryNode) {
         scope.launch {
             updateItemsWithSorting(node)
@@ -351,6 +354,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         _items.value = items
     }
 
+    @WorkerThread
     private inline fun setItemsWantedOrPriority(
         nodeIndexes: List<Int>,
         crossinline nodeAction: Node.(MutableList<Int>) -> Unit,
@@ -375,13 +379,15 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
     }
 
-    fun setItemsWanted(nodeIndexes: List<Int>, wanted: Boolean) {
+    @MainThread
+    fun setItemsWanted(nodeIndexes: List<Int>, wanted: Boolean) = scope.launch {
         setItemsWantedOrPriority(
             nodeIndexes,
             { setItemWantedRecursively(wanted, it) },
             { onSetFilesWanted(it, wanted) })
     }
 
+    @MainThread
     fun setItemsPriority(nodeIndexes: List<Int>, priority: Item.Priority) = scope.launch {
         setItemsWantedOrPriority(
             nodeIndexes,
