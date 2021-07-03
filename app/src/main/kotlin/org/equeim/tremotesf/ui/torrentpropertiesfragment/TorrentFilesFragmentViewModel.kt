@@ -95,7 +95,7 @@ class TorrentFilesFragmentViewModel(
         }
     }
 
-    fun treeCreated(rootNode: TorrentFilesTree.Node, files: List<TorrentFilesTree.Node>) {
+    fun treeCreated(rootNode: TorrentFilesTree.DirectoryNode, files: List<TorrentFilesTree.Node>) {
         filesTree.init(rootNode, files, savedStateHandle)
         _state.value = State.TreeCreated
     }
@@ -189,7 +189,7 @@ class RpcTorrentFilesTree(
 
     @MainThread
     fun init(
-        rootNode: Node,
+        rootNode: DirectoryNode,
         files: List<Node>,
         savedStateHandle: SavedStateHandle
     ) {
@@ -221,7 +221,7 @@ class RpcTorrentFilesTree(
         if (changedFiles.isEmpty()) return@launch
 
         val files = this@RpcTorrentFilesTree.files
-        val recalculateNodes = LinkedHashSet<Node>()
+        val recalculateNodes = LinkedHashSet<DirectoryNode>()
 
         for (rpcFile in changedFiles) {
             if (!isActive) return@launch
@@ -229,10 +229,10 @@ class RpcTorrentFilesTree(
             val node = files.getOrNull(rpcFile.id) ?: continue
             node.item = node.item.updatedFrom(rpcFile)
 
-            var n = rootNode
+            var n: Node = rootNode
             for (index in node.path) {
-                recalculateNodes.add(n)
-                n = n.children[index]
+                recalculateNodes.add(n as DirectoryNode)
+                n = (n as DirectoryNode).children[index]
             }
         }
 

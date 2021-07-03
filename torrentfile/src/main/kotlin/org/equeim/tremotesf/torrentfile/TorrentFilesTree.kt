@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.torrentfile
 
 import android.os.Bundle
+import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.collection.SimpleArrayMap
@@ -45,65 +46,83 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
 
-    class Node private constructor(@Volatile var item: Item, val path: IntArray) {
-        internal companion object {
-            fun createRootNode() = Node(Item(), intArrayOf())
+    sealed class Node(@Volatile var item: Item, val path: IntArray) {
+        @CallSuper
+        override fun equals(other: Any?): Boolean {
+            return other is Node &&
+                    other.item == item &&
+                    other.path.contentEquals(path)
         }
 
+        @CallSuper
+        override fun hashCode(): Int {
+            var result = item.hashCode()
+            result = 31 * result + path.contentHashCode()
+            return result
+        }
+
+        override fun toString() = "Node(item=$item)"
+
+        @CallSuper
+        open fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
+            item = item.copy(wantedState = Item.WantedState.fromBoolean(wanted))
+        }
+
+        @CallSuper
+        open fun setItemPriorityRecursively(priority: Item.Priority, ids: MutableList<Int>) {
+            item = item.copy(priority = priority)
+        }
+    }
+
+    class FileNode(item: Item, path: IntArray) : Node(item, path) {
+        override fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
+            super.setItemWantedRecursively(wanted, ids)
+            ids.add(item.fileId)
+        }
+
+        override fun setItemPriorityRecursively(priority: Item.Priority, ids: MutableList<Int>) {
+            super.setItemPriorityRecursively(priority, ids)
+            ids.add(item.fileId)
+        }
+    }
+
+    class DirectoryNode private constructor(item: Item, path: IntArray) : Node(item, path) {
         private val _children = mutableListOf<Node>()
         val children: List<Node>
             get() = _children
         private val childrenMap = SimpleArrayMap<String, Node>()
 
         override fun equals(other: Any?): Boolean {
-            return other is Node &&
-                    other.item == item &&
-                    other.path.contentEquals(path) &&
+            return super.equals(other) &&
+                    other is DirectoryNode &&
                     other.children == children
         }
 
         override fun hashCode(): Int {
-            var result = item.hashCode()
-            result = 31 * result + path.contentHashCode()
+            var result = super.hashCode()
             result = 31 * result + children.hashCode()
             return result
         }
 
-        override fun toString() = "Node(item=$item)"
-
         fun getChildByItemNameOrNull(name: String) = childrenMap[name]
 
         fun recalculateFromChildren() {
-            val item = item
-            if (!item.isDirectory) throw UnsupportedOperationException()
-            this.item = item.recalculatedFromChildren(children)
+            item = item.recalculatedFromChildren(children)
         }
 
         internal fun initiallyCalculateFromChildrenRecursively() {
-            item.apply {
-                if (isDirectory) {
-                    children.forEach(Node::initiallyCalculateFromChildrenRecursively)
-                    calculateFromChildren(children)
-                }
-            }
+            children.forEach { (it as? DirectoryNode)?.initiallyCalculateFromChildrenRecursively() }
+            item.calculateFromChildren(children)
         }
 
-        fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
-            item = item.copy(wantedState = Item.WantedState.fromBoolean(wanted))
-            if (item.isDirectory) {
-                children.forEach { it.setItemWantedRecursively(wanted, ids) }
-            } else {
-                ids.add(item.fileId)
-            }
+        override fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
+            super.setItemWantedRecursively(wanted, ids)
+            children.forEach { it.setItemWantedRecursively(wanted, ids) }
         }
 
-        fun setItemPriorityRecursively(priority: Item.Priority, ids: MutableList<Int>) {
-            item = item.copy(priority = priority)
-            if (item.isDirectory) {
-                children.forEach { it.setItemPriorityRecursively(priority, ids) }
-            } else {
-                ids.add(item.fileId)
-            }
+        override fun setItemPriorityRecursively(priority: Item.Priority, ids: MutableList<Int>) {
+            super.setItemPriorityRecursively(priority, ids)
+            children.forEach { it.setItemPriorityRecursively(priority, ids) }
         }
 
         internal fun addFile(
@@ -113,14 +132,19 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             completedSize: Long,
             wantedState: Item.WantedState,
             priority: Item.Priority
-        ): Node {
+        ): FileNode {
+            if (id < 0) throw IllegalArgumentException("fileId can't be less than zero")
             val path = this.path + children.size
-            return addChild(Item(id, name, size, completedSize, wantedState, priority, path), path)
+            val node = FileNode(
+                Item(id, name, size, completedSize, wantedState, priority, path), path
+            )
+            addChild(name, node)
+            return node
         }
 
-        internal fun addDirectory(name: String = ""): Node {
+        internal fun addDirectory(name: String): DirectoryNode {
             val path = this.path + children.size
-            return addChild(
+            val node = DirectoryNode(
                 Item(
                     -1,
                     name,
@@ -131,16 +155,17 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
                     path
                 ), path
             )
+            addChild(name, node)
+            return node
         }
 
-        private fun addChild(childItem: Item, path: IntArray): Node {
-            if (!item.isDirectory) throw UnsupportedOperationException()
-
-            val node = Node(childItem, path)
+        private fun addChild(name: String, node: Node) {
             _children.add(node)
-            childrenMap.put(childItem.name, node)
+            childrenMap.put(name, node)
+        }
 
-            return node
+        companion object {
+            fun createRootNode() = DirectoryNode(Item(), intArrayOf())
         }
     }
 
@@ -264,14 +289,14 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     private val savedStateKey = this::class.qualifiedName ?: TorrentFilesTree::class.qualifiedName!!
 
     @Volatile
-    var rootNode = Node.createRootNode()
+    var rootNode = DirectoryNode.createRootNode()
         private set
 
     @Volatile
     private var inited = false
 
     @Volatile
-    protected var currentNode = rootNode
+    protected var currentNode: DirectoryNode = rootNode
         private set
 
     private val _items = MutableStateFlow(emptyList<Item?>())
@@ -283,6 +308,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return false
         }
         val parent = findNodeByPath(currentNode.path.dropLast(1).asSequence()) ?: return false
+        if (parent !is DirectoryNode) return false
         navigateTo(parent)
         return true
     }
@@ -291,10 +317,11 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         if (!inited) return
         if (!item.isDirectory) return
         val node = findNodeByPath(item.nodePath.asSequence()) ?: return
+        if (node !is DirectoryNode) return
         navigateTo(node)
     }
 
-    private fun navigateTo(node: Node) {
+    private fun navigateTo(node: DirectoryNode) {
         scope.launch {
             updateItemsWithSorting(node)
             currentNode = node
@@ -302,7 +329,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     }
 
     @WorkerThread
-    protected suspend fun updateItemsWithSorting(parentNode: Node = currentNode) {
+    protected suspend fun updateItemsWithSorting(parentNode: DirectoryNode = currentNode) {
         val items = if (parentNode == rootNode) {
             ArrayList(parentNode.children.size)
         } else {
@@ -339,10 +366,10 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
                 children[index].nodeAction(ids)
             }
 
-            val nodes = ArrayList<Node>(currentNode.path.size)
-            var node = rootNode
+            val nodes = ArrayList<DirectoryNode>(currentNode.path.size)
+            var node: DirectoryNode = rootNode
             for (index in currentNode.path) {
-                node = node.children.getOrNull(index) ?: break
+                node = (node.children.getOrNull(index) as? DirectoryNode) ?: break
                 nodes.add(node)
             }
             nodes.reverse()
@@ -375,7 +402,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         val pathParts = mutableListOf<String>()
         var node: Node = rootNode
         for (index in item.nodePath) {
-            node = node.children[index]
+            node = (node as? DirectoryNode)?.children?.get(index) ?: break
             pathParts.add(node.item.name)
         }
         return if (pathParts.isEmpty()) null
@@ -390,7 +417,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             if (node == currentNode) {
                 updateItems = true
             }
-            node = node?.getChildByItemNameOrNull(part)
+            node = (node as? DirectoryNode)?.getChildByItemNameOrNull(part)
             if (node == null) {
                 break
             }
@@ -411,7 +438,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
 
     @MainThread
     fun init(
-        rootNode: Node,
+        rootNode: DirectoryNode,
         savedStateHandle: SavedStateHandle
     ) {
         this.rootNode = rootNode
@@ -426,7 +453,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @MainThread
     private fun restoreInstanceState(savedStateHandle: SavedStateHandle): Boolean {
         val path = savedStateHandle.get<Bundle>(savedStateKey)?.getIntArray("") ?: return false
-        val node: Node? = findNodeByPath(path.asSequence())
+        val node = findNodeByPath(path.asSequence()) as? DirectoryNode
         navigateTo(node ?: rootNode)
         return true
     }
@@ -439,16 +466,16 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @MainThread
     open fun reset() {
         scope.coroutineContext.cancelChildren()
-        rootNode = Node.createRootNode()
+        rootNode = DirectoryNode.createRootNode()
         currentNode = rootNode
         _items.value = emptyList()
         inited = false
     }
 
     private fun findNodeByPath(path: Sequence<Int>): Node? {
-        var node = rootNode
+        var node: Node = rootNode
         for (index in path) {
-            node = node.children.getOrNull(index) ?: return null
+            node = (node as? DirectoryNode)?.children?.getOrNull(index) ?: return null
         }
         return node
     }
@@ -466,12 +493,12 @@ interface TorrentFilesTreeBuilderScope {
 }
 
 data class TorrentFilesTreeBuildResult(
-    val rootNode: TorrentFilesTree.Node,
+    val rootNode: TorrentFilesTree.DirectoryNode,
     val files: List<TorrentFilesTree.Node>
 )
 
 fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): TorrentFilesTreeBuildResult {
-    val rootNode = TorrentFilesTree.Node.createRootNode()
+    val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
     val files = mutableListOf<TorrentFilesTree.Node>()
 
     val scope = object : TorrentFilesTreeBuilderScope {
@@ -499,7 +526,7 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
                     )
                     files.add(node)
                 } else {
-                    var childDirectoryNode = currentNode.getChildByItemNameOrNull(part)
+                    var childDirectoryNode = currentNode.getChildByItemNameOrNull(part) as TorrentFilesTree.DirectoryNode?
                     if (childDirectoryNode == null) {
                         childDirectoryNode = currentNode.addDirectory(part)
                     }
@@ -509,6 +536,8 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
         }
     }
     scope.block()
-    rootNode.children.forEach { it.initiallyCalculateFromChildrenRecursively() }
+    rootNode.children.forEach {
+        (it as? TorrentFilesTree.DirectoryNode)?.initiallyCalculateFromChildrenRecursively()
+    }
     return TorrentFilesTreeBuildResult(rootNode, files)
 }
