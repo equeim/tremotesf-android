@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.torrentfile
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -64,6 +65,8 @@ object TorrentFileParser {
                 } else {
                     val fullPath = mutableListOf(info.name)
                     info.files.forEachIndexed { index, file ->
+                        ensureActive()
+
                         if (fullPath.size > 1) fullPath.subList(1, fullPath.size).clear()
                         fullPath.addAll(file.path)
                         addFile(

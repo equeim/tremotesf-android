@@ -26,6 +26,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -200,6 +201,8 @@ class RpcTorrentFilesTree(
     fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {
         val (rootNode, files) = buildTorrentFilesTree {
             rpcFiles.forEach { rpcFile ->
+                ensureActive()
+
                 val path = rpcFile.path
                 addFile(
                     rpcFile.id,
