@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.torrentfile
 
 import android.os.Bundle
+import androidx.annotation.AnyThread
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -308,7 +309,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         if (currentNode == rootNode) {
             return false
         }
-        val parent = findNodeByPath(currentNode.path.dropLast(1).asSequence()) ?: return false
+        val parent = findNodeByIndexPath(currentNode.path.dropLast(1).asSequence()) ?: return false
         if (parent !is DirectoryNode) return false
         navigateTo(parent)
         return true
@@ -318,7 +319,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     fun navigateDown(item: Item) {
         if (!inited) return
         if (!item.isDirectory) return
-        val node = findNodeByPath(item.nodePath.asSequence()) ?: return
+        val node = findNodeByIndexPath(item.nodePath.asSequence()) ?: return
         if (node !is DirectoryNode) return
         navigateTo(node)
     }
@@ -420,17 +421,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         }
     }
 
-    fun getItemPath(item: Item): String? {
-        val pathParts = mutableListOf<String>()
-        var node: Node = rootNode
-        for (index in item.nodePath) {
-            node = (node as? DirectoryNode)?.children?.get(index) ?: break
-            pathParts.add(node.item.name)
-        }
-        return if (pathParts.isEmpty()) null
-        else pathParts.joinToString("/")
-    }
-
+    @MainThread
     fun renameFile(path: String, newName: String) = scope.launch {
         val pathParts = path.split('/').filter(String::isNotEmpty)
         var node: Node? = rootNode
@@ -475,7 +466,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @MainThread
     private fun restoreInstanceState(savedStateHandle: SavedStateHandle): Boolean {
         val path = savedStateHandle.get<Bundle>(savedStateKey)?.getIntArray("") ?: return false
-        val node = findNodeByPath(path.asSequence()) as? DirectoryNode
+        val node = findNodeByIndexPath(path.asSequence()) as? DirectoryNode
         navigateTo(node ?: rootNode)
         return true
     }
@@ -494,12 +485,26 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         inited = false
     }
 
-    private fun findNodeByPath(path: Sequence<Int>): Node? {
+    @AnyThread
+    private fun findNodeByIndexPath(path: Sequence<Int>): Node? {
         var node: Node = rootNode
         for (index in path) {
             node = (node as? DirectoryNode)?.children?.getOrNull(index) ?: return null
         }
         return node
+    }
+
+    @AnyThread
+    fun getItemNamePath(item: Item): String? {
+        if (item.nodePath.isEmpty()) return null
+        val pathParts = ArrayList<String>()
+        pathParts.ensureCapacity(item.nodePath.size)
+        var node: Node = rootNode
+        for (index in item.nodePath) {
+            node = (node as? DirectoryNode)?.children?.getOrNull(index) ?: return null
+            pathParts.add(node.item.name)
+        }
+        return pathParts.joinToString("/")
     }
 }
 

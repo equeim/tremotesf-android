@@ -284,7 +284,7 @@ abstract class BaseTorrentFilesAdapter(
                     R.id.low_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Low)
                     R.id.rename -> {
                         val i = getItem(selectionTracker.getFirstSelectedPosition())!!
-                        filesTree.getItemPath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
+                        filesTree.getItemNamePath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
                     }
                     else -> ret = false
                 }
