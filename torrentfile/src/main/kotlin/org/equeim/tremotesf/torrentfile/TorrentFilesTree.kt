@@ -49,20 +49,6 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
 
     sealed class Node(@Volatile var item: Item, val path: IntArray) {
         @CallSuper
-        override fun equals(other: Any?): Boolean {
-            return other is Node &&
-                    other.item == item &&
-                    other.path.contentEquals(path)
-        }
-
-        @CallSuper
-        override fun hashCode(): Int {
-            var result = item.hashCode()
-            result = 31 * result + path.contentHashCode()
-            return result
-        }
-
-        @CallSuper
         open fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
             item = item.copy(wantedState = Item.WantedState.fromBoolean(wanted))
         }
@@ -92,18 +78,6 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
         val children: List<Node>
             get() = _children
         private val childrenMap = SimpleArrayMap<String, Node>()
-
-        override fun equals(other: Any?): Boolean {
-            return super.equals(other) &&
-                    other is DirectoryNode &&
-                    other.children == children
-        }
-
-        override fun hashCode(): Int {
-            var result = super.hashCode()
-            result = 31 * result + children.hashCode()
-            return result
-        }
 
         override fun toString() = "DirectoryNode(item=$item)"
 

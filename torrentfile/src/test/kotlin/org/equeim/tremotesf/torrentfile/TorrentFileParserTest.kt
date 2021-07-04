@@ -31,7 +31,7 @@ class TorrentFileParserTest {
     fun `Creating tree for single file torrent`() = dispatcher.runBlockingTest {
         val actual =
             TorrentFileParser.createFilesTree(singleFileTorrentParsed, dispatchers)
-        assertEquals(singleFileTorrentTreeResult, actual)
+        assertTreeResultsAreSimilar(singleFileTorrentTreeResult, actual)
     }
 
     @Test
@@ -44,7 +44,7 @@ class TorrentFileParserTest {
     fun `Creating tree for multiple file torrent`() = dispatcher.runBlockingTest {
         val actual =
             TorrentFileParser.createFilesTree(multipleFileTorrentParsed, dispatchers)
-        assertEquals(multipleFileTorrentTreeResult, actual)
+        assertTreeResultsAreSimilar(multipleFileTorrentTreeResult, actual)
     }
 
     @Test
@@ -64,7 +64,7 @@ class TorrentFileParserTest {
                     multipleFileTorrentWithSubdirectoriesParsed,
                     dispatchers
                 )
-            assertEquals(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
+            assertTreeResultsAreSimilar(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
         }
 
     @Test
@@ -75,6 +75,11 @@ class TorrentFileParserTest {
             return@runBlockingTest
         }
         throw AssertionError("FileIsTooLargeException exception is not thrown")
+    }
+
+    fun assertTreeResultsAreSimilar(expected: TorrentFilesTreeBuildResult, actual: TorrentFilesTreeBuildResult) {
+        assertNodesAreSimilar(expected.rootNode, actual.rootNode)
+        assertNodesAreSimilar(expected.files, actual.files)
     }
 
     private companion object {
