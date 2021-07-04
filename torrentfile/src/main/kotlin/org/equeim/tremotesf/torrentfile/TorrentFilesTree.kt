@@ -62,8 +62,6 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             return result
         }
 
-        override fun toString() = "Node(item=$item)"
-
         @CallSuper
         open fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
             item = item.copy(wantedState = Item.WantedState.fromBoolean(wanted))
@@ -76,6 +74,8 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     }
 
     class FileNode(item: Item, path: IntArray) : Node(item, path) {
+        override fun toString() = "FileNode(item=$item)"
+
         override fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
             super.setItemWantedRecursively(wanted, ids)
             ids.add(item.fileId)
@@ -104,6 +104,8 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             result = 31 * result + children.hashCode()
             return result
         }
+
+        override fun toString() = "DirectoryNode(item=$item)"
 
         fun getChildByItemNameOrNull(name: String) = childrenMap[name]
 
