@@ -4,6 +4,9 @@
 ### Added
 - Added fast scroll support in torrents list
 
+### Changed
+- Optimized opening of torrent files with large number of files
+
 ### Removed
 - Dropped support of Android 4.x
 
