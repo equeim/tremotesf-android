@@ -108,7 +108,7 @@ class TorrentFilesFragmentViewModel(
         Timber.i("destroy() called")
         viewModelScope.cancel()
         reset()
-        filesTree.dispatcher.close()
+        filesTree.destroy()
     }
 
     private fun reset() {

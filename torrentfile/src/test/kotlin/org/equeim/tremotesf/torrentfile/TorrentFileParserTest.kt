@@ -10,12 +10,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class TorrentFileParserTest {
     private val dispatcher = TestCoroutineDispatcher()
-
-    private val dispatchers = object : TremotesfDispatchers {
-        override val Default = dispatcher
-        override val IO = dispatcher
-        override val Main = dispatcher
-    }
+    private val dispatchers = TestDispatchers(dispatcher)
 
     private fun getResource(name: String) = requireNotNull(javaClass.getResourceAsStream(name)) {
         "Resource $name not found"

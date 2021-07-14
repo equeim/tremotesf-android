@@ -68,14 +68,6 @@ class NodeTest {
         assertArrayEquals(expectedItem.nodePath, lastChild.path)
     }
 
-    private fun expectedFileItem(fileId: Int, nodePath: IntArray): TorrentFilesTree.Item {
-        return TorrentFilesTree.Item(fileId, "42", 666, 7, TorrentFilesTree.Item.WantedState.Unwanted, TorrentFilesTree.Item.Priority.High, nodePath)
-    }
-
-    private fun expectedDirectoryItem(nodePath: IntArray): TorrentFilesTree.Item {
-        return TorrentFilesTree.Item(name = "42", nodePath = nodePath)
-    }
-
     @Test
     fun `Recalculating from children`() {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
@@ -135,8 +127,8 @@ class NodeTest {
     @Test
     fun `Set wanted state recursively`() {
        checkSetWantedStateOrPriority(
-           operation = { setItemWantedRecursively(true, it) },
-           itemAssert = { assertEquals(TorrentFilesTree.Item.WantedState.Wanted, wantedState) }
+           operation = { setItemWantedRecursively(false, it) },
+           itemAssert = { assertEquals(TorrentFilesTree.Item.WantedState.Unwanted, wantedState) }
        )
     }
 

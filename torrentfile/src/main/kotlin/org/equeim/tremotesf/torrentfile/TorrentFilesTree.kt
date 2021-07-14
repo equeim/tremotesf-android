@@ -27,10 +27,12 @@ import androidx.annotation.WorkerThread
 import androidx.collection.SimpleArrayMap
 import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,12 +41,17 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
+import org.equeim.tremotesf.common.TremotesfDispatchers
 import java.util.Comparator
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
 
-open class TorrentFilesTree(parentScope: CoroutineScope) {
-    val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+open class TorrentFilesTree(
+    parentScope: CoroutineScope,
+    val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
+    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
+) {
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
 
     sealed class Node(@Volatile var item: Item, val path: IntArray) {
@@ -279,6 +286,11 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     private val _items = MutableStateFlow(emptyList<Item?>())
     val items: StateFlow<List<Item?>> by ::_items
 
+    fun destroy() {
+        scope.cancel()
+        (dispatcher as? ExecutorCoroutineDispatcher)?.close()
+    }
+
     @MainThread
     fun navigateUp(): Boolean {
         if (!inited) return false
@@ -303,13 +315,15 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
     @MainThread
     private fun navigateTo(node: DirectoryNode) {
         scope.launch {
-            updateItemsWithSorting(node)
             currentNode = node
+            updateItemsWithSorting()
         }
     }
 
     @WorkerThread
-    protected suspend fun updateItemsWithSorting(parentNode: DirectoryNode = currentNode) {
+    protected suspend fun updateItemsWithSorting() {
+        val parentNode = currentNode
+
         val items = if (parentNode == rootNode) {
             ArrayList(parentNode.children.size)
         } else {
@@ -350,7 +364,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             recalculateNodeAndItsParents(currentNode)
 
             updateItemsWithoutSorting()
-            withContext(Dispatchers.Main) {
+            withContext(dispatchers.Main) {
                 fileIdsAction(ids.toIntArray())
             }
         }
@@ -417,7 +431,7 @@ open class TorrentFilesTree(parentScope: CoroutineScope) {
             node.item = node.item.copy(name = newName)
 
             if (updateItems) {
-                updateItemsWithSorting(currentNode)
+                updateItemsWithSorting()
             }
         }
     }
