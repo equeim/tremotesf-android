@@ -511,12 +511,12 @@ interface TorrentFilesTreeBuilderScope {
 
 data class TorrentFilesTreeBuildResult(
     val rootNode: TorrentFilesTree.DirectoryNode,
-    val files: List<TorrentFilesTree.Node>
+    val files: List<TorrentFilesTree.FileNode>
 )
 
 fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): TorrentFilesTreeBuildResult {
     val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
-    val files = mutableListOf<TorrentFilesTree.Node>()
+    val files = mutableListOf<TorrentFilesTree.FileNode>()
 
     val scope = object : TorrentFilesTreeBuilderScope {
         override fun addFile(

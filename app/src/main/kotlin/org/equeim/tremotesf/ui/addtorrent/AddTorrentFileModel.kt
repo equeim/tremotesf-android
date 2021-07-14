@@ -126,7 +126,7 @@ class AddTorrentFileModelImpl(
 
     override val renamedFiles = mutableMapOf<String, String>()
 
-    private lateinit var files: List<TorrentFilesTree.Node>
+    private lateinit var files: List<TorrentFilesTree.FileNode>
 
     init {
         if (needStoragePermission) {

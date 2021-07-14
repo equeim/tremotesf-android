@@ -94,7 +94,7 @@ class TorrentFilesFragmentViewModel(
         }
     }
 
-    fun treeCreated(rootNode: TorrentFilesTree.DirectoryNode, files: List<TorrentFilesTree.Node>) {
+    fun treeCreated(rootNode: TorrentFilesTree.DirectoryNode, files: List<TorrentFilesTree.FileNode>) {
         filesTree.init(rootNode, files, savedStateHandle)
         _state.value = State.TreeCreated
     }
@@ -173,7 +173,7 @@ class RpcTorrentFilesTree(
         }
     }
 
-    private var files: List<Node> = emptyList()
+    private var files: List<FileNode> = emptyList()
 
     val isEmpty: Boolean
         get() = files.isEmpty()
@@ -189,7 +189,7 @@ class RpcTorrentFilesTree(
     @MainThread
     fun init(
         rootNode: DirectoryNode,
-        files: List<Node>,
+        files: List<FileNode>,
         savedStateHandle: SavedStateHandle
     ) {
         init(rootNode, savedStateHandle)
