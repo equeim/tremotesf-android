@@ -536,6 +536,9 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
 
             for ((partIndex, part: String) in path.withIndex()) {
                 if (partIndex == lastPartIndex) {
+                    if (partIndex == 0 && currentNode.children.isNotEmpty()) {
+                        throw IllegalArgumentException("There can be only one top-level node in a tree")
+                    }
                     val node = currentNode.addFile(
                         fileId,
                         part,
@@ -546,11 +549,19 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
                     )
                     files.add(node)
                 } else {
-                    var childDirectoryNode = currentNode.getChildByItemNameOrNull(part) as TorrentFilesTree.DirectoryNode?
-                    if (childDirectoryNode == null) {
-                        childDirectoryNode = currentNode.addDirectory(part)
+                    val childNode = currentNode.getChildByItemNameOrNull(part)
+                    currentNode = when (childNode) {
+                        null -> {
+                            if (partIndex == 0 && currentNode.children.isNotEmpty()) {
+                                throw IllegalArgumentException("There can be only one top-level node in a tree")
+                            }
+                            currentNode.addDirectory(part)
+                        }
+                        !is TorrentFilesTree.DirectoryNode -> {
+                            throw IllegalArgumentException("Node that is expected to be directory was already added as file")
+                        }
+                        else -> childNode
                     }
-                    currentNode = childDirectoryNode
                 }
             }
         }
