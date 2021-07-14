@@ -144,8 +144,11 @@ open class TorrentFilesTree(
         }
 
         private fun addChild(name: String, node: Node) {
+            val put = childrenMap.putIfAbsent(name, node)
+            if (put != null && put !== node) {
+                throw IllegalArgumentException("Child with this name already exists")
+            }
             _children.add(node)
-            childrenMap.put(name, node)
         }
 
         companion object {

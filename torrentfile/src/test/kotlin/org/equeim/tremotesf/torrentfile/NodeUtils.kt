@@ -24,11 +24,11 @@ fun assertNodesAreSimilar(expected: List<TorrentFilesTree.Node>, actual: List<To
 }
 
 fun expectedFileItem(fileId: Int, nodePath: IntArray): TorrentFilesTree.Item {
-    return TorrentFilesTree.Item(fileId, "42", 666, 7, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal, nodePath)
+    return TorrentFilesTree.Item(fileId, fileId.toString(), 666, 7, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal, nodePath)
 }
 
 fun expectedDirectoryItem(nodePath: IntArray): TorrentFilesTree.Item {
-    return TorrentFilesTree.Item(name = "42", nodePath = nodePath)
+    return TorrentFilesTree.Item(name = "42${nodePath.contentToString()}", nodePath = nodePath)
 }
 
 fun TorrentFilesTree.Node.getAllNodes(): Sequence<TorrentFilesTree.Node> {

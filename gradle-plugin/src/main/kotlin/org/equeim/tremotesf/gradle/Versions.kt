@@ -16,6 +16,7 @@ object Versions {
 
     object AndroidX {
         const val appcompat = "1.3.0"
+        const val collection = "1.1.0"
         const val concurrentFutures = "1.1.0"
         const val core = "1.5.0"
         const val coordinatorlayout = "1.1.0"

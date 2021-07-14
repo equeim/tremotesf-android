@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":common"))
     implementation("org.equeim:kotlinx-serialization-bencode")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}")
+    implementation("androidx.collection:collection-ktx:${Versions.AndroidX.collection}")
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.AndroidX.lifecycle}")
     implementation("com.jakewharton.timber:timber:${Versions.timber}")

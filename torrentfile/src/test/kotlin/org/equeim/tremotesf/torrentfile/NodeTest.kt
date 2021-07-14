@@ -73,7 +73,7 @@ class NodeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("0").apply {
             addFile(98, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-            addFile(99, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
+            addFile(99, "bar", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
             addDirectory("1")
                 .addFile(100, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
         }
@@ -170,11 +170,11 @@ class NodeTest {
 
         val directory = rootNode.addDirectory("0").apply {
             addFile(98, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-            addFile(99, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
+            addFile(99, "bar", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
         }
         val nestedDirectory = directory.addDirectory("1").apply {
             addFile(100, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
-            addFile(101, "foo", 1, 666, TorrentFilesTree.Item.WantedState.Unwanted, TorrentFilesTree.Item.Priority.Low)
+            addFile(101, "bar", 1, 666, TorrentFilesTree.Item.WantedState.Unwanted, TorrentFilesTree.Item.Priority.Low)
         }
         return directory to nestedDirectory
     }
