@@ -133,8 +133,8 @@ namespace libtremotesf
 
     protected:
         virtual void onAboutToDisconnect() = 0;
-        virtual void onStatusChanged(Rpc::Status status) = 0;
-        virtual void onErrorChanged(Rpc::Error error, const QString& errorMessage) = 0;
+        virtual void onConnectionStateChanged(RpcConnectionState status) = 0;
+        virtual void onErrorChanged(RpcError error, const QString& errorMessage) = 0;
 
         virtual void onServerSettingsChanged(JniServerSettingsData data) = 0;
 

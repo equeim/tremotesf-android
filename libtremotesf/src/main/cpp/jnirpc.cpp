@@ -443,7 +443,7 @@ namespace libtremotesf
         mRpc->setUpdateDisabled(true);
 
         QObject::connect(mRpc, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
-        QObject::connect(mRpc, &Rpc::statusChanged, [=]() { onStatusChanged(mRpc->status()); });
+        QObject::connect(mRpc, &Rpc::connectionStateChanged, [=]() { onConnectionStateChanged(mRpc->connectionState()); });
         QObject::connect(mRpc, &Rpc::errorChanged, [=]() { onErrorChanged(mRpc->error(), mRpc->errorMessage()); });
 
         QObject::connect(mRpc->serverSettings(), &ServerSettings::changed, mRpc, [this] {

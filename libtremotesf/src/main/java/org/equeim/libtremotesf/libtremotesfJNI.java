@@ -356,7 +356,7 @@ public class libtremotesfJNI {
   public final static native void JniRpc_setTorrentPeersEnabled(long jarg1, JniRpc jarg1_, long jarg2, TorrentData jarg2_, boolean jarg3);
   public final static native void JniRpc_updateData(long jarg1, JniRpc jarg1_);
   public final static native void JniRpc_onAboutToDisconnect(long jarg1, JniRpc jarg1_);
-  public final static native void JniRpc_onStatusChanged(long jarg1, JniRpc jarg1_, int jarg2);
+  public final static native void JniRpc_onConnectionStateChanged(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onErrorChanged(long jarg1, JniRpc jarg1_, int jarg2, String jarg3);
   public final static native void JniRpc_onServerSettingsChanged(long jarg1, JniRpc jarg1_, long jarg2, JniServerSettingsData jarg2_);
   public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, IntVector jarg2_, long jarg3, TorrentDataVector jarg3_, long jarg4, TorrentDataVector jarg4_);
@@ -377,8 +377,8 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {
     jself.onAboutToDisconnect();
   }
-  public static void SwigDirector_JniRpc_onStatusChanged(JniRpc jself, int status) {
-    jself.onStatusChanged(status);
+  public static void SwigDirector_JniRpc_onConnectionStateChanged(JniRpc jself, int status) {
+    jself.onConnectionStateChanged(status);
   }
   public static void SwigDirector_JniRpc_onErrorChanged(JniRpc jself, int error, String errorMessage) {
     jself.onErrorChanged(error, errorMessage);

@@ -18,8 +18,8 @@ public:
     SwigDirector_JniRpc(JNIEnv *jenv);
     virtual ~SwigDirector_JniRpc();
     virtual void onAboutToDisconnect();
-    virtual void onStatusChanged(libtremotesf::Rpc::Status status);
-    virtual void onErrorChanged(libtremotesf::Rpc::Error error,QString const &errorMessage);
+    virtual void onConnectionStateChanged(libtremotesf::RpcConnectionState status);
+    virtual void onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage);
     virtual void onServerSettingsChanged(libtremotesf::JniServerSettingsData data);
     virtual void onTorrentsUpdated(std::vector< int > const &removed,std::vector< libtremotesf::TorrentData * > const &changed,std::vector< libtremotesf::TorrentData * > const &added);
     virtual void onTorrentFilesUpdated(int torrentId,std::vector< libtremotesf::TorrentFile * > const &changed);

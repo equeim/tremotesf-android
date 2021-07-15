@@ -204,16 +204,16 @@ public class ServerSettingsData {
   }
 
   public final static class AlternativeSpeedLimitsDays {
-    public final static int Sunday = (1 << 0);
-    public final static int Monday = (1 << 1);
-    public final static int Tuesday = (1 << 2);
-    public final static int Wednesday = (1 << 3);
-    public final static int Thursday = (1 << 4);
-    public final static int Friday = (1 << 5);
-    public final static int Saturday = (1 << 6);
-    public final static int Weekdays = (Monday|Tuesday|Wednesday|Thursday|Friday);
-    public final static int Weekends = (Sunday|Saturday);
-    public final static int All = (Weekdays|Weekends);
+    public final static int Sunday = 1;
+    public final static int Monday = 2;
+    public final static int Tuesday = 4;
+    public final static int Wednesday = 8;
+    public final static int Thursday = 16;
+    public final static int Friday = 32;
+    public final static int Saturday = 64;
+    public final static int Weekdays = 62;
+    public final static int Weekends = 65;
+    public final static int All = 127;
   }
 
   public final static class EncryptionMode {

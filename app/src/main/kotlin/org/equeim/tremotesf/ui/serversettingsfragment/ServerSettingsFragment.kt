@@ -25,9 +25,9 @@ import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
+import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString

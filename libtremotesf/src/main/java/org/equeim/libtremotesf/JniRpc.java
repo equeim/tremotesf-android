@@ -203,8 +203,8 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_onAboutToDisconnect(swigCPtr, this);
   }
 
-  protected void onStatusChanged(int status) {
-    libtremotesfJNI.JniRpc_onStatusChanged(swigCPtr, this, status);
+  protected void onConnectionStateChanged(int status) {
+    libtremotesfJNI.JniRpc_onConnectionStateChanged(swigCPtr, this, status);
   }
 
   protected void onErrorChanged(int error, String errorMessage) {

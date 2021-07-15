@@ -44,6 +44,8 @@ import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
 import org.equeim.libtremotesf.LibTremotesf
 import org.equeim.libtremotesf.Peer
+import org.equeim.libtremotesf.RpcConnectionState
+import org.equeim.libtremotesf.RpcError
 import org.equeim.libtremotesf.SessionStats
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentDataVector
@@ -53,10 +55,6 @@ import org.equeim.libtremotesf.TorrentPeersVector
 import org.equeim.tremotesf.common.MutableEventFlow
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
-
-
-typealias RpcConnectionState = org.equeim.libtremotesf.Rpc.Status
-typealias RpcError = org.equeim.libtremotesf.Rpc.Error
 
 data class ServerStats(
     var downloadSpeed: Long,
@@ -73,9 +71,9 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
-        override fun onStatusChanged(status: Int) {
-            Timber.i("onStatusChanged() called with: status = $status")
-            _connectionState.value = status
+        override fun onConnectionStateChanged(connectionState: Int) {
+            Timber.i("onConnectionStateChanged() called with: connectionState = $connectionState")
+            _connectionState.value = connectionState
         }
 
         override fun onErrorChanged(error: Int, errorMessage: String) {

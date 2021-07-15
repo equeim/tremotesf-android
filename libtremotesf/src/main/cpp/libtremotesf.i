@@ -19,9 +19,15 @@
 %include "qvariantlist.i"
 %include "qtime.i"
 
+%ignore QT_VERSION;
+
+#define QT_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
+#define QT_VERSION QT_VERSION_CHECK(5, 15, 3)
+#define Q_NAMESPACE
 #define Q_OBJECT
 #define Q_GADGET
 #define Q_ENUM(T)
+#define Q_ENUM_NS(T)
 #define Q_PROPERTY(T)
 #define Q_INVOKABLE
 #define signals private
@@ -30,7 +36,7 @@
 
 namespace libtremotesf
 {
-    %rename($ignore, regextarget=1, fullname=1, %$not %$isenum, %$not %$isenumitem) "Rpc::.*$";
+    %ignore Rpc;
     %typemap(javafinalize) JniRpc ""
 
     %ignore Torrent;
@@ -87,6 +93,7 @@ namespace libtremotesf
 %include "libtremotesf/torrent.h"
 
 %mutable;
+%include "libtremotesf/qtsupport.h"
 %include "libtremotesf/rpc.h"
 %immutable;
 

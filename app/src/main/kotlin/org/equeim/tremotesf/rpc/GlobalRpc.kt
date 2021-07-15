@@ -22,12 +22,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
+import org.equeim.libtremotesf.RpcConnectionState
+import org.equeim.libtremotesf.RpcError
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.RpcConnectionState
-import org.equeim.tremotesf.torrentfile.rpc.RpcError
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.ui.AppForegroundTracker
