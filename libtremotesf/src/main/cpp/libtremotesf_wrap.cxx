@@ -1592,8 +1592,8 @@ void SwigDirector_JniRpc::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
   if (!baseclass) return;
   static SwigDirectorMethod methods[] = {
     SwigDirectorMethod(jenv, baseclass, "onAboutToDisconnect", "()V"),
-    SwigDirectorMethod(jenv, baseclass, "onConnectionStateChanged", "(I)V"),
-    SwigDirectorMethod(jenv, baseclass, "onErrorChanged", "(ILjava/lang/String;)V"),
+    SwigDirectorMethod(jenv, baseclass, "onConnectionStateChanged", "(Lorg/equeim/libtremotesf/RpcConnectionState;)V"),
+    SwigDirectorMethod(jenv, baseclass, "onErrorChanged", "(Lorg/equeim/libtremotesf/RpcError;Ljava/lang/String;)V"),
     SwigDirectorMethod(jenv, baseclass, "onServerSettingsChanged", "(Lorg/equeim/libtremotesf/JniServerSettingsData;)V"),
     SwigDirectorMethod(jenv, baseclass, "onTorrentsUpdated", "(Lorg/equeim/libtremotesf/IntVector;Lorg/equeim/libtremotesf/TorrentDataVector;Lorg/equeim/libtremotesf/TorrentDataVector;)V"),
     SwigDirectorMethod(jenv, baseclass, "onTorrentFilesUpdated", "(ILorg/equeim/libtremotesf/TorrentFilesVector;)V"),

@@ -378,10 +378,10 @@ public class libtremotesfJNI {
     jself.onAboutToDisconnect();
   }
   public static void SwigDirector_JniRpc_onConnectionStateChanged(JniRpc jself, int status) {
-    jself.onConnectionStateChanged(status);
+    jself.onConnectionStateChanged(RpcConnectionState.swigToEnum(status));
   }
   public static void SwigDirector_JniRpc_onErrorChanged(JniRpc jself, int error, String errorMessage) {
-    jself.onErrorChanged(error, errorMessage);
+    jself.onErrorChanged(RpcError.swigToEnum(error), errorMessage);
   }
   public static void SwigDirector_JniRpc_onServerSettingsChanged(JniRpc jself, long data) {
     jself.onServerSettingsChanged(new JniServerSettingsData(data, true));

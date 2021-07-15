@@ -66,7 +66,7 @@ data class Server(
 ) : Parcelable {
     override fun toString() = "Server(name=$name)"
 
-    fun nativeProxyType(): Int {
+    fun nativeProxyType(): org.equeim.libtremotesf.Server.ProxyType {
         return when (proxyType) {
             "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
             "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
@@ -112,7 +112,7 @@ data class Server(
         const val DEFAULT_TIMEOUT = 30
         val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
 
-        fun fromNativeProxyType(type: Int): String {
+        fun fromNativeProxyType(type: org.equeim.libtremotesf.Server.ProxyType): String {
             return when (type) {
                 org.equeim.libtremotesf.Server.ProxyType.Default -> "Default"
                 org.equeim.libtremotesf.Server.ProxyType.Http -> "HTTP"

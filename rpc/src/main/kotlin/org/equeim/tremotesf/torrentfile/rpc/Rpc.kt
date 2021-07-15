@@ -71,12 +71,12 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
-        override fun onConnectionStateChanged(connectionState: Int) {
+        override fun onConnectionStateChanged(connectionState: RpcConnectionState) {
             Timber.i("onConnectionStateChanged() called with: connectionState = $connectionState")
             _connectionState.value = connectionState
         }
 
-        override fun onErrorChanged(error: Int, errorMessage: String) {
+        override fun onErrorChanged(error: RpcError, errorMessage: String) {
             Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
             _error.value = Error(error, errorMessage)
         }
@@ -176,20 +176,20 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     val serverStats: StateFlow<ServerStats> by ::_serverStats
 
     private val _connectionState = MutableStateFlow(RpcConnectionState.Disconnected)
-    val connectionState: StateFlow<Int> by ::_connectionState
+    val connectionState: StateFlow<RpcConnectionState> by ::_connectionState
 
     val isConnected: StateFlow<Boolean> = connectionState
         .map { it == RpcConnectionState.Connected }
         .distinctUntilChanged()
         .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
-    data class Error(val error: Int, val errorMessage: String)
+    data class Error(val error: RpcError, val errorMessage: String)
 
     private val _error = MutableStateFlow(Error(RpcError.NoError, ""))
     val error: StateFlow<Error> by ::_error
 
     data class Status(
-        val connectionState: Int = RpcConnectionState.Disconnected,
+        val connectionState: RpcConnectionState = RpcConnectionState.Disconnected,
         val error: Error = Error(RpcError.NoError, "")
     ) {
         val isConnected: Boolean

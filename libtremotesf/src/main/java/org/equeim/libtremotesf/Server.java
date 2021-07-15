@@ -68,12 +68,12 @@ public class Server {
     return libtremotesfJNI.Server_apiPath_get(swigCPtr, this);
 }
 
-  public void setProxyType(int value) {
-    libtremotesfJNI.Server_proxyType_set(swigCPtr, this, value);
+  public void setProxyType(Server.ProxyType value) {
+    libtremotesfJNI.Server_proxyType_set(swigCPtr, this, value.swigValue());
   }
 
-  public int getProxyType() {
-    return libtremotesfJNI.Server_proxyType_get(swigCPtr, this);
+  public Server.ProxyType getProxyType() {
+    return Server.ProxyType.swigToEnum(libtremotesfJNI.Server_proxyType_get(swigCPtr, this));
   }
 
   public void setProxyHostname(String value) {
@@ -200,10 +200,47 @@ public class Server {
     this(libtremotesfJNI.new_Server(), true);
   }
 
-  public final static class ProxyType {
-    public final static int Default = 0;
-    public final static int Http = Default + 1;
-    public final static int Socks5 = Http + 1;
+  public enum ProxyType {
+    Default,
+    Http,
+    Socks5;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static ProxyType swigToEnum(int swigValue) {
+      ProxyType[] swigValues = ProxyType.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (ProxyType swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + ProxyType.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private ProxyType() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private ProxyType(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private ProxyType(ProxyType swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
 }

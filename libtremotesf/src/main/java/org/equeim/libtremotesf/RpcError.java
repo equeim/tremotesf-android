@@ -8,13 +8,50 @@
 
 package org.equeim.libtremotesf;
 
-public final class RpcError {
-  public final static int NoError = 0;
-  public final static int TimedOut = NoError + 1;
-  public final static int ConnectionError = TimedOut + 1;
-  public final static int AuthenticationError = ConnectionError + 1;
-  public final static int ParseError = AuthenticationError + 1;
-  public final static int ServerIsTooNew = ParseError + 1;
-  public final static int ServerIsTooOld = ServerIsTooNew + 1;
+public enum RpcError {
+  NoError,
+  TimedOut,
+  ConnectionError,
+  AuthenticationError,
+  ParseError,
+  ServerIsTooNew,
+  ServerIsTooOld;
+
+  public final int swigValue() {
+    return swigValue;
+  }
+
+  public static RpcError swigToEnum(int swigValue) {
+    RpcError[] swigValues = RpcError.class.getEnumConstants();
+    if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+      return swigValues[swigValue];
+    for (RpcError swigEnum : swigValues)
+      if (swigEnum.swigValue == swigValue)
+        return swigEnum;
+    throw new IllegalArgumentException("No enum " + RpcError.class + " with value " + swigValue);
+  }
+
+  @SuppressWarnings("unused")
+  private RpcError() {
+    this.swigValue = SwigNext.next++;
+  }
+
+  @SuppressWarnings("unused")
+  private RpcError(int swigValue) {
+    this.swigValue = swigValue;
+    SwigNext.next = swigValue+1;
+  }
+
+  @SuppressWarnings("unused")
+  private RpcError(RpcError swigEnum) {
+    this.swigValue = swigEnum.swigValue;
+    SwigNext.next = this.swigValue+1;
+  }
+
+  private final int swigValue;
+
+  private static class SwigNext {
+    private static int next = 0;
+  }
 }
 

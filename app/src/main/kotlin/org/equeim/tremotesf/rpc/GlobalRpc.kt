@@ -63,6 +63,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                             handleWorkerCompleter()
                         }
                     }
+                    RpcConnectionState.Connecting -> {}
                 }
             }
             .launchIn(scope + Dispatchers.Unconfined)

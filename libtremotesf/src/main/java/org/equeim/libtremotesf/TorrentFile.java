@@ -53,18 +53,55 @@ public class TorrentFile {
     return libtremotesfJNI.TorrentFile_completedSize_get(swigCPtr, this);
   }
 
-  public int getPriority() {
-    return libtremotesfJNI.TorrentFile_priority_get(swigCPtr, this);
+  public TorrentFile.Priority getPriority() {
+    return TorrentFile.Priority.swigToEnum(libtremotesfJNI.TorrentFile_priority_get(swigCPtr, this));
   }
 
   public boolean getWanted() {
     return libtremotesfJNI.TorrentFile_wanted_get(swigCPtr, this);
   }
 
-  public final static class Priority {
-    public final static int LowPriority = -1;
-    public final static int NormalPriority = LowPriority + 1;
-    public final static int HighPriority = NormalPriority + 1;
+  public enum Priority {
+    LowPriority(-1),
+    NormalPriority,
+    HighPriority;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static Priority swigToEnum(int swigValue) {
+      Priority[] swigValues = Priority.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (Priority swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + Priority.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private Priority() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private Priority(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private Priority(Priority swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
 }

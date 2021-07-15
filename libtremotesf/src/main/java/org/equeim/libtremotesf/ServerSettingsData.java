@@ -155,8 +155,8 @@ public class ServerSettingsData {
     return libtremotesfJNI.ServerSettingsData_alternativeSpeedLimitsEndTime_get(swigCPtr, this);
 }
 
-  public int getAlternativeSpeedLimitsDays() {
-    return libtremotesfJNI.ServerSettingsData_alternativeSpeedLimitsDays_get(swigCPtr, this);
+  public ServerSettingsData.AlternativeSpeedLimitsDays getAlternativeSpeedLimitsDays() {
+    return ServerSettingsData.AlternativeSpeedLimitsDays.swigToEnum(libtremotesfJNI.ServerSettingsData_alternativeSpeedLimitsDays_get(swigCPtr, this));
   }
 
   public int getPeerPort() {
@@ -171,8 +171,8 @@ public class ServerSettingsData {
     return libtremotesfJNI.ServerSettingsData_portForwardingEnabled_get(swigCPtr, this);
   }
 
-  public int getEncryptionMode() {
-    return libtremotesfJNI.ServerSettingsData_encryptionMode_get(swigCPtr, this);
+  public ServerSettingsData.EncryptionMode getEncryptionMode() {
+    return ServerSettingsData.EncryptionMode.swigToEnum(libtremotesfJNI.ServerSettingsData_encryptionMode_get(swigCPtr, this));
   }
 
   public boolean getUtpEnabled() {
@@ -203,23 +203,97 @@ public class ServerSettingsData {
     this(libtremotesfJNI.new_ServerSettingsData(), true);
   }
 
-  public final static class AlternativeSpeedLimitsDays {
-    public final static int Sunday = 1;
-    public final static int Monday = 2;
-    public final static int Tuesday = 4;
-    public final static int Wednesday = 8;
-    public final static int Thursday = 16;
-    public final static int Friday = 32;
-    public final static int Saturday = 64;
-    public final static int Weekdays = 62;
-    public final static int Weekends = 65;
-    public final static int All = 127;
+  public enum AlternativeSpeedLimitsDays {
+    Sunday(1),
+    Monday(2),
+    Tuesday(4),
+    Wednesday(8),
+    Thursday(16),
+    Friday(32),
+    Saturday(64),
+    Weekdays(62),
+    Weekends(65),
+    All(127);
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static AlternativeSpeedLimitsDays swigToEnum(int swigValue) {
+      AlternativeSpeedLimitsDays[] swigValues = AlternativeSpeedLimitsDays.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (AlternativeSpeedLimitsDays swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + AlternativeSpeedLimitsDays.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private AlternativeSpeedLimitsDays() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private AlternativeSpeedLimitsDays(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private AlternativeSpeedLimitsDays(AlternativeSpeedLimitsDays swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
-  public final static class EncryptionMode {
-    public final static int AllowedEncryption = 0;
-    public final static int PreferredEncryption = AllowedEncryption + 1;
-    public final static int RequiredEncryption = PreferredEncryption + 1;
+  public enum EncryptionMode {
+    AllowedEncryption,
+    PreferredEncryption,
+    RequiredEncryption;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static EncryptionMode swigToEnum(int swigValue) {
+      EncryptionMode[] swigValues = EncryptionMode.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (EncryptionMode swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + EncryptionMode.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private EncryptionMode() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private EncryptionMode(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private EncryptionMode(EncryptionMode swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
 }

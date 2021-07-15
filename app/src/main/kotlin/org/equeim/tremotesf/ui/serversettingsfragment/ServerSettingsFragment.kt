@@ -96,6 +96,7 @@ class ServerSettingsFragment : NavigationFragment(
             RpcConnectionState.Connecting -> {
                 binding.placeholder.text = getString(R.string.connecting)
             }
+            RpcConnectionState.Connected -> {}
         }
 
         with(binding) {

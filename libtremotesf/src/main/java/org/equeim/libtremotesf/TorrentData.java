@@ -56,8 +56,8 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_errorString_get(swigCPtr, this);
 }
 
-  public int getStatus() {
-    return libtremotesfJNI.TorrentData_status_get(swigCPtr, this);
+  public TorrentData.Status getStatus() {
+    return TorrentData.Status.swigToEnum(libtremotesfJNI.TorrentData_status_get(swigCPtr, this));
   }
 
   public int getQueuePosition() {
@@ -136,8 +136,8 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_ratioLimit_get(swigCPtr, this);
   }
 
-  public int getRatioLimitMode() {
-    return libtremotesfJNI.TorrentData_ratioLimitMode_get(swigCPtr, this);
+  public TorrentData.RatioLimitMode getRatioLimitMode() {
+    return TorrentData.RatioLimitMode.swigToEnum(libtremotesfJNI.TorrentData_ratioLimitMode_get(swigCPtr, this));
   }
 
   public int getSeeders() {
@@ -164,8 +164,8 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_doneDateTime_get(swigCPtr, this);
   }
 
-  public int getIdleSeedingLimitMode() {
-    return libtremotesfJNI.TorrentData_idleSeedingLimitMode_get(swigCPtr, this);
+  public TorrentData.IdleSeedingLimitMode getIdleSeedingLimitMode() {
+    return TorrentData.IdleSeedingLimitMode.swigToEnum(libtremotesfJNI.TorrentData_idleSeedingLimitMode_get(swigCPtr, this));
   }
 
   public int getIdleSeedingLimit() {
@@ -188,8 +188,8 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_creationDateTime_get(swigCPtr, this);
   }
 
-  public int getBandwidthPriority() {
-    return libtremotesfJNI.TorrentData_bandwidthPriority_get(swigCPtr, this);
+  public TorrentData.Priority getBandwidthPriority() {
+    return TorrentData.Priority.swigToEnum(libtremotesfJNI.TorrentData_bandwidthPriority_get(swigCPtr, this));
   }
 
   public boolean getHonorSessionLimits() {
@@ -213,35 +213,183 @@ public class TorrentData {
     this(libtremotesfJNI.new_TorrentData(), true);
   }
 
-  public final static class Status {
-    public final static int Paused = 0;
-    public final static int Downloading = Paused + 1;
-    public final static int Seeding = Downloading + 1;
-    public final static int StalledDownloading = Seeding + 1;
-    public final static int StalledSeeding = StalledDownloading + 1;
-    public final static int QueuedForDownloading = StalledSeeding + 1;
-    public final static int QueuedForSeeding = QueuedForDownloading + 1;
-    public final static int Checking = QueuedForSeeding + 1;
-    public final static int QueuedForChecking = Checking + 1;
-    public final static int Errored = QueuedForChecking + 1;
+  public enum Status {
+    Paused,
+    Downloading,
+    Seeding,
+    StalledDownloading,
+    StalledSeeding,
+    QueuedForDownloading,
+    QueuedForSeeding,
+    Checking,
+    QueuedForChecking,
+    Errored;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static Status swigToEnum(int swigValue) {
+      Status[] swigValues = Status.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (Status swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + Status.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private Status() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private Status(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private Status(Status swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
-  public final static class Priority {
-    public final static int LowPriority = -1;
-    public final static int NormalPriority = LowPriority + 1;
-    public final static int HighPriority = NormalPriority + 1;
+  public enum Priority {
+    LowPriority(-1),
+    NormalPriority,
+    HighPriority;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static Priority swigToEnum(int swigValue) {
+      Priority[] swigValues = Priority.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (Priority swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + Priority.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private Priority() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private Priority(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private Priority(Priority swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
-  public final static class RatioLimitMode {
-    public final static int GlobalRatioLimit = 0;
-    public final static int SingleRatioLimit = GlobalRatioLimit + 1;
-    public final static int UnlimitedRatio = SingleRatioLimit + 1;
+  public enum RatioLimitMode {
+    GlobalRatioLimit,
+    SingleRatioLimit,
+    UnlimitedRatio;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static RatioLimitMode swigToEnum(int swigValue) {
+      RatioLimitMode[] swigValues = RatioLimitMode.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (RatioLimitMode swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + RatioLimitMode.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private RatioLimitMode() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private RatioLimitMode(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private RatioLimitMode(RatioLimitMode swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
-  public final static class IdleSeedingLimitMode {
-    public final static int GlobalIdleSeedingLimit = 0;
-    public final static int SingleIdleSeedingLimit = GlobalIdleSeedingLimit + 1;
-    public final static int UnlimitedIdleSeeding = SingleIdleSeedingLimit + 1;
+  public enum IdleSeedingLimitMode {
+    GlobalIdleSeedingLimit,
+    SingleIdleSeedingLimit,
+    UnlimitedIdleSeeding;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static IdleSeedingLimitMode swigToEnum(int swigValue) {
+      IdleSeedingLimitMode[] swigValues = IdleSeedingLimitMode.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (IdleSeedingLimitMode swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + IdleSeedingLimitMode.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private IdleSeedingLimitMode() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private IdleSeedingLimitMode(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private IdleSeedingLimitMode(IdleSeedingLimitMode swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
 }

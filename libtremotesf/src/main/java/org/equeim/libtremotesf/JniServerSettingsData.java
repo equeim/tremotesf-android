@@ -139,8 +139,8 @@ public class JniServerSettingsData extends ServerSettingsData {
     libtremotesfJNI.JniServerSettingsData_setAlternativeSpeedLimitsEndTime(swigCPtr, this, time);
   }
 
-  public void setAlternativeSpeedLimitsDays(int days) {
-    libtremotesfJNI.JniServerSettingsData_setAlternativeSpeedLimitsDays(swigCPtr, this, days);
+  public void setAlternativeSpeedLimitsDays(ServerSettingsData.AlternativeSpeedLimitsDays days) {
+    libtremotesfJNI.JniServerSettingsData_setAlternativeSpeedLimitsDays(swigCPtr, this, days.swigValue());
   }
 
   public void setPeerPort(int port) {
@@ -155,8 +155,8 @@ public class JniServerSettingsData extends ServerSettingsData {
     libtremotesfJNI.JniServerSettingsData_setPortForwardingEnabled(swigCPtr, this, enabled);
   }
 
-  public void setEncryptionMode(int mode) {
-    libtremotesfJNI.JniServerSettingsData_setEncryptionMode(swigCPtr, this, mode);
+  public void setEncryptionMode(ServerSettingsData.EncryptionMode mode) {
+    libtremotesfJNI.JniServerSettingsData_setEncryptionMode(swigCPtr, this, mode.swigValue());
   }
 
   public void setUtpEnabled(boolean enabled) {

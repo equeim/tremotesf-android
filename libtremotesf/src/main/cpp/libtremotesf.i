@@ -8,7 +8,7 @@
 #include "jnirpc.h"
 %}
 
-%include "enumtypeunsafe.swg"
+%include "enums.swg"
 %javaconst(1);
 
 %include <std_vector.i>

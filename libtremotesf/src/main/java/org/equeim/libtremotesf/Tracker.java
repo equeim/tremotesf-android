@@ -48,8 +48,8 @@ public class Tracker {
     return libtremotesfJNI.Tracker_site(swigCPtr, this);
 }
 
-  public int status() {
-    return libtremotesfJNI.Tracker_status(swigCPtr, this);
+  public Tracker.Status status() {
+    return Tracker.Status.swigToEnum(libtremotesfJNI.Tracker_status(swigCPtr, this));
   }
 
   public String errorMessage() {
@@ -68,12 +68,49 @@ public class Tracker {
     return libtremotesfJNI.Tracker_nextUpdateEta(swigCPtr, this);
   }
 
-  public final static class Status {
-    public final static int Inactive = 0;
-    public final static int Active = Inactive + 1;
-    public final static int Queued = Active + 1;
-    public final static int Updating = Queued + 1;
-    public final static int Error = Updating + 1;
+  public enum Status {
+    Inactive,
+    Active,
+    Queued,
+    Updating,
+    Error;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static Status swigToEnum(int swigValue) {
+      Status[] swigValues = Status.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (Status swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + Status.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private Status() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private Status(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private Status(Status swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
   }
 
 }

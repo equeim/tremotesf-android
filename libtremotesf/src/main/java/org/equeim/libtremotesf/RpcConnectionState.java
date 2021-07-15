@@ -8,9 +8,46 @@
 
 package org.equeim.libtremotesf;
 
-public final class RpcConnectionState {
-  public final static int Disconnected = 0;
-  public final static int Connecting = Disconnected + 1;
-  public final static int Connected = Connecting + 1;
+public enum RpcConnectionState {
+  Disconnected,
+  Connecting,
+  Connected;
+
+  public final int swigValue() {
+    return swigValue;
+  }
+
+  public static RpcConnectionState swigToEnum(int swigValue) {
+    RpcConnectionState[] swigValues = RpcConnectionState.class.getEnumConstants();
+    if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+      return swigValues[swigValue];
+    for (RpcConnectionState swigEnum : swigValues)
+      if (swigEnum.swigValue == swigValue)
+        return swigEnum;
+    throw new IllegalArgumentException("No enum " + RpcConnectionState.class + " with value " + swigValue);
+  }
+
+  @SuppressWarnings("unused")
+  private RpcConnectionState() {
+    this.swigValue = SwigNext.next++;
+  }
+
+  @SuppressWarnings("unused")
+  private RpcConnectionState(int swigValue) {
+    this.swigValue = swigValue;
+    SwigNext.next = swigValue+1;
+  }
+
+  @SuppressWarnings("unused")
+  private RpcConnectionState(RpcConnectionState swigEnum) {
+    this.swigValue = swigEnum.swigValue;
+    SwigNext.next = this.swigValue+1;
+  }
+
+  private final int swigValue;
+
+  private static class SwigNext {
+    private static int next = 0;
+  }
 }
 

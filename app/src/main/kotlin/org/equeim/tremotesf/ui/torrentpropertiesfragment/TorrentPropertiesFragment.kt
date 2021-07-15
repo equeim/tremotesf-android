@@ -206,7 +206,7 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
     }
 
-    private fun onConnectionStateChanged(connectionState: Int) {
+    private fun onConnectionStateChanged(connectionState: RpcConnectionState) {
         snackbar?.dismiss()
         if (connectionState == RpcConnectionState.Disconnected) {
             snackbar = binding.coordinatorLayout.showSnackbar(

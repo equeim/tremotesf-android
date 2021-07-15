@@ -21,6 +21,7 @@ package org.equeim.tremotesf.torrentfile.rpc
 
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
+import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.Tracker
 
 
@@ -103,7 +104,7 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
         rpc.nativeInstance.setTorrentUploadSpeedLimit(data, limit)
     }
 
-    fun setRatioLimitMode(mode: Int) {
+    fun setRatioLimitMode(mode: TorrentData.RatioLimitMode) {
         rpc.nativeInstance.setTorrentRatioLimitMode(data, mode)
     }
 
@@ -119,11 +120,11 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
         rpc.nativeInstance.setTorrentHonorSessionLimits(data, honor)
     }
 
-    fun setBandwidthPriority(priority: Int) {
+    fun setBandwidthPriority(priority: TorrentData.Priority) {
         rpc.nativeInstance.setTorrentBandwidthPriority(data, priority)
     }
 
-    fun setIdleSeedingLimitMode(mode: Int) {
+    fun setIdleSeedingLimitMode(mode: TorrentData.IdleSeedingLimitMode) {
         rpc.nativeInstance.setTorrentIdleSeedingLimitMode(data, mode)
     }
 
@@ -135,7 +136,7 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
         rpc.nativeInstance.setTorrentFilesWanted(data, files, wanted)
     }
 
-    fun setFilesPriority(files: IntArray, priority: Int) {
+    fun setFilesPriority(files: IntArray, priority: TorrentFile.Priority) {
         rpc.nativeInstance.setTorrentFilesPriority(data, files, priority)
     }
 

@@ -50,7 +50,7 @@ import java.util.Comparator
 data class TrackersAdapterItem(
     val id: Int,
     var announce: String,
-    var status: Int,
+    var status: Tracker.Status,
     var errorMessage: String,
     var peers: Int,
     private var nextUpdateTime: Long
