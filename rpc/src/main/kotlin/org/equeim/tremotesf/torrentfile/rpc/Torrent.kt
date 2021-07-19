@@ -81,7 +81,7 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
     var isChanged = true
 
     init {
-        trackerSites = if (prevTorrent != null && !data.trackersAddedOrRemoved) {
+        trackerSites = if (prevTorrent != null && !data.trackersAnnounceUrlsChanged) {
             prevTorrent.trackerSites
         } else {
             trackers.map(Tracker::site)

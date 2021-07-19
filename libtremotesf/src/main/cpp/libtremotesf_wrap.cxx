@@ -4405,6 +4405,21 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
 }
 
 
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1webSeeders_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->webSeeders);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1leechers_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
@@ -4621,7 +4636,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackersAddedOrRemoved_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackersAnnounceUrlsChanged_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   bool result;
@@ -4630,7 +4645,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
   (void)jcls;
   (void)jarg1_;
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (bool) ((arg1)->trackersAddedOrRemoved);
+  result = (bool) ((arg1)->trackersAnnounceUrlsChanged);
   jresult = (jboolean)result; 
   return jresult;
 }

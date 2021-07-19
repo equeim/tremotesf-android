@@ -53,6 +53,7 @@ namespace libtremotesf
     %ignore Peer::addressKey;
 
     %ignore Tracker::Tracker;
+    %ignore Tracker::UpdateResult;
     %ignore Tracker::update;
 
     %ignore ServerStats;
