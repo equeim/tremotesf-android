@@ -1,14 +1,11 @@
---- a/src/network/ssl/qsslcertificate.cpp     2020-05-11 11:15:08.000000000 +0300
-+++ b/src/network/ssl/qsslcertificate.cpp 2020-06-23 23:07:24.945885046 +0300
-@@ -578,9 +578,10 @@
+--- a/src/network/ssl/qsslcertificate.cpp
++++ b/src/network/ssl/qsslcertificate.cpp
+@@ -667,7 +667,7 @@ QList<QSslCertificate> QSslCertificate::fromPath(const QString &path,
      else if (syntax == PatternSyntax::RegularExpression)
          pos = sourcePath.indexOf(QRegularExpression(QLatin1String("[\\$\\(\\)\\*\\+\\.\\?\\[\\]\\^\\{\\}\\|]")));
  #else
 -    if (syntax == PatternSyntax::Wildcard || syntax == PatternSyntax::RegExp)
-+    if (syntax == PatternSyntax::Wildcard || syntax == PatternSyntax::RegularExpression) {
++    if (syntax == PatternSyntax::Wildcard || syntax == PatternSyntax::RegularExpression)
          qWarning("Regular expression support is disabled in this build. Only fixed string can be searched");
          return QList<QSslCertificate>();
-+    }
  #endif
- 
-     if (pos != -1) {

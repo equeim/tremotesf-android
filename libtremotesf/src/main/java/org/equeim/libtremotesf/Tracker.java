@@ -44,10 +44,6 @@ public class Tracker {
     return libtremotesfJNI.Tracker_announce(swigCPtr, this);
 }
 
-  public String site() {
-    return libtremotesfJNI.Tracker_site(swigCPtr, this);
-}
-
   public Tracker.Status status() {
     return Tracker.Status.swigToEnum(libtremotesfJNI.Tracker_status(swigCPtr, this));
   }

@@ -133,7 +133,6 @@ public class libtremotesfJNI {
   public final static native void delete_TorrentFile(long jarg1);
   public final static native int Tracker_id(long jarg1, Tracker jarg1_);
   public final static native String Tracker_announce(long jarg1, Tracker jarg1_);
-  public final static native String Tracker_site(long jarg1, Tracker jarg1_);
   public final static native int Tracker_status(long jarg1, Tracker jarg1_);
   public final static native String Tracker_errorMessage(long jarg1, Tracker jarg1_);
   public final static native int Tracker_peers(long jarg1, Tracker jarg1_);

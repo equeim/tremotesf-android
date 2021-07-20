@@ -3,13 +3,14 @@ package org.equeim.tremotesf.gradle.tasks
 import org.equeim.tremotesf.gradle.Versions
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.environment
 import org.gradle.process.ExecOperations
 import java.io.File
 import java.nio.file.Files
@@ -23,8 +24,8 @@ abstract class QtTask @Inject constructor(
     @get:Input
     abstract val qtDir: Property<File>
 
-    @get:InputDirectory
-    abstract val opensslInstallDir: Property<File>
+    @get:InputFiles
+    abstract val opensslInstallDirs: ListProperty<File>
 
     @get:Input
     abstract val sdkDir: Property<File>
@@ -35,8 +36,8 @@ abstract class QtTask @Inject constructor(
     @get:InputDirectory
     val sourceDir: Provider<File> by lazy { qtDir.map { sourceDir(it) } }
 
-    @get:OutputDirectory
-    val installDir: Provider<File> by lazy { qtDir.map { installDir(it) } }
+    @get:OutputDirectories
+    val installDirs: Provider<List<File>> by lazy { qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) } }
 
     @get:Input
     abstract val ccache: Property<Boolean>
@@ -45,28 +46,93 @@ abstract class QtTask @Inject constructor(
     fun buildQt() {
         logger.lifecycle("Start building Qt, make jobs count = {}", makeJobsCount(gradle))
 
-        logger.lifecycle("Configuring Qt")
-
-        val buildDir = buildDir(qtDir.get())
-        Files.createDirectories(buildDir.toPath())
+        execOperations.printCMakeInfo(logger)
 
         if (ccache.get()) {
             execOperations.zeroCcacheStatistics(logger)
         }
 
+        buildHostQt()
+        for (abi in NativeAbis.abis) {
+            buildQt(abi)
+        }
+
+        if (ccache.get()) {
+            execOperations.showCcacheStatistics(logger)
+        }
+    }
+
+    private fun buildHostQt() {
+        logger.lifecycle("Building host Qt, ccache = ${ccache.get()}")
+
+        val buildDir = hostBuildDir(qtDir.get())
+
         val configureFlags = listOf(
-            "-v",
-            "-confirm-license",
-            "-opensource",
-            "-xplatform", "android-clang",
-            "-c++std", "c++1z",
-            "-android-ndk", ndkDir.get().toString(),
+            "-release",
+
+            "-prefix", hostInstallDir(qtDir.get()).toString(),
+
+            if (ccache.get()) "-ccache" else "-no-ccache",
+            // Precombiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
+            if (ccache.get()) "-no-pch" else "-pch",
+
+            "-nomake", "examples",
+
+            "-no-feature-concurrent",
+            "-no-feature-dbus",
+            "-no-feature-gui",
+            "-no-feature-network",
+            "-no-feature-sql",
+            "-no-feature-testlib",
+
+            "-no-feature-animation",
+            "-no-feature-cborstreamwriter",
+            "-no-feature-concatenatetablesproxymodel",
+            "-no-feature-datetimeparser",
+            "-no-feature-easingcurve",
+            "-no-feature-filesystemiterator",
+            "-no-feature-filesystemwatcher",
+            "-no-feature-gestures",
+            "-no-feature-hijricalendar",
+            "-no-feature-identityproxymodel",
+            "-no-feature-islamiccivilcalendar",
+            "-no-feature-jalalicalendar",
+            "-no-feature-mimetype",
+            "-no-feature-process",
+            "-no-feature-processenvironment",
+            "-no-feature-proxymodel",
+            "-no-feature-relocatable",
+            "-no-feature-settings",
+            "-no-feature-sharedmemory",
+            "-no-feature-shortcut",
+            "-no-feature-sortfilterproxymodel",
+            "-no-feature-stringlistmodel",
+            "-no-feature-systemsemaphore",
+            "-no-feature-temporaryfile",
+            "-no-feature-translation",
+            "-no-feature-transposeproxymodel"
+        )
+
+        buildQt(buildDir, configureFlags, false)
+    }
+
+    private fun buildQt(abi: String) {
+        logger.lifecycle("Building Qt for abi = {}", abi)
+
+        val buildDir = buildDir(qtDir.get(), abi)
+
+        val configureFlags = listOf(
+            "-release",
+
+            "-prefix", installDir(qtDir.get(), abi).toString(),
+
+            "-platform", "android-clang",
+            "-qt-host-path", hostInstallDir(qtDir.get()).toString(),
             "-android-sdk", sdkDir.get().toString(),
-            "-android-ndk-host", "linux-x86_64",
-            "-android-abis", NativeAbis.abis.joinToString(separator = ","),
+            "-android-ndk", ndkDir.get().toString(),
             "-android-ndk-platform", "android-${Versions.minSdk}",
-            "-prefix", installDir.get().toString(),
-            "-linker", "lld",
+            "-android-abis", abi,
+
             if (ccache.get()) "-ccache" else "-no-ccache",
             // Precombiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
             if (ccache.get()) "-no-pch" else "-pch",
@@ -75,7 +141,6 @@ abstract class QtTask @Inject constructor(
             if (ccache.get()) "-no-ltcg" else "-ltcg",
 
             "-nomake", "examples",
-            "-nomake", "tests",
 
             "-no-feature-dbus",
             "-no-feature-gui",
@@ -84,26 +149,20 @@ abstract class QtTask @Inject constructor(
             "-no-feature-xml",
 
             "-no-feature-animation",
-            "-no-feature-bearermanagement",
-            "-no-feature-big_codecs",
-            "-no-feature-codecs",
+            "-no-feature-cborstreamwriter",
             "-no-feature-commandlineparser",
             "-no-feature-concatenatetablesproxymodel",
-            "-no-feature-cursor",
             "-no-feature-datetimeparser",
             "-no-feature-dnslookup",
             "-no-feature-dtls",
             "-no-feature-easingcurve",
             "-no-feature-filesystemiterator",
             "-no-feature-filesystemwatcher",
-            "-no-feature-ftp",
             "-no-feature-gestures",
             "-no-feature-gssapi",
             "-no-feature-hijricalendar",
-            "-no-feature-iconv",
             "-no-feature-identityproxymodel",
             "-no-feature-islamiccivilcalendar",
-            "-no-feature-itemmodel",
             "-no-feature-jalalicalendar",
             "-no-feature-localserver",
             "-no-feature-mimetype",
@@ -111,17 +170,16 @@ abstract class QtTask @Inject constructor(
             "-no-feature-process",
             "-no-feature-processenvironment",
             "-no-feature-proxymodel",
-            "-no-feature-regularexpression",
+            "-no-feature-relocatable",
             "-no-feature-settings",
             "-no-feature-sharedmemory",
             "-no-feature-shortcut",
             "-no-feature-sortfilterproxymodel",
             "-no-feature-sspi",
-            "-no-feature-statemachine",
             "-no-feature-stringlistmodel",
             "-no-feature-systemsemaphore",
             "-no-feature-temporaryfile",
-            "-no-feature-textcodec",
+            "-no-feature-topleveldomain",
             "-no-feature-translation",
             "-no-feature-transposeproxymodel",
             "-no-feature-udpsocket",
@@ -129,20 +187,23 @@ abstract class QtTask @Inject constructor(
             "-no-feature-xmlstreamreader",
             "-no-feature-xmlstreamwriter",
             "-openssl-linked",
-            "-I${opensslInstallDir.get().resolve("include")}",
-            "-L${opensslInstallDir.get().resolve("lib")}"
+            "--",
+            "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}"
         )
 
-        val firstAbi = NativeAbis.abis.first()
+        buildQt(buildDir, configureFlags, true)
+    }
+
+    private fun buildQt(buildDir: File, configureFlags: List<String>, crossCompiling: Boolean) {
+        logger.lifecycle("Configuring Qt")
+
+        Files.createDirectories(buildDir.toPath())
+
         measureNanoTime {
             execOperations.exec(logger) {
                 executable(sourceDir.get().resolve("configure"))
                 args = configureFlags
                 workingDir = buildDir
-                environment(
-                    "OPENSSL_LIBS" to "-lssl_$firstAbi -lcrypto_$firstAbi",
-                    "MAKEOPTS" to defaultMakeArguments(gradle).joinToString(" ")
-                )
             }
         }.also {
             logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
@@ -150,19 +211,28 @@ abstract class QtTask @Inject constructor(
 
         logger.lifecycle("Building Qt")
 
+        if (crossCompiling) {
+            // Workaround for CMake bug that forces use of gold linker when LTCG is enabled
+            // https://gitlab.kitware.com/cmake/cmake/-/issues/21772
+            // https://github.com/android/ndk/issues/1444
+            // Should be unnecessary with NDK r23 or newer + CMake 3.20 or newer, but there is no
+            // point in trying to check it
+            execOperations.exec(logger) {
+                commandLine("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja"))
+            }
+        }
+
         measureNanoTime {
-            execOperations.make(buildDir, logger, gradle)
+            val result = execOperations.cmake(CMakeMode.Build, qtDir.get(), buildDir, logger, gradle)
+            println("Exit code = ${result.success}")
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
-        if (ccache.get()) {
-            execOperations.showCcacheStatistics(logger)
-        }
-
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            execOperations.make("install", buildDir, logger, gradle)
+            val mode = if (crossCompiling) CMakeMode.InstallAndStrip else CMakeMode.Install
+            execOperations.cmake(mode, qtDir.get(), buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
@@ -171,8 +241,19 @@ abstract class QtTask @Inject constructor(
     companion object {
         fun sourceDir(qtDir: File) = qtDir.resolve("qtbase")
         fun patchesDir(qtDir: File) = qtDir.resolve("patches")
-        fun buildDir(qtDir: File) = qtDir.resolve("build")
-        fun installDir(qtDir: File) = qtDir.resolve("install")
-        fun jar(qtDir: File) = installDir(qtDir).resolve("jar/QtAndroid.jar")
+
+        private fun hostBuildDir(qtDir: File) = qtDir.resolve("build-host")
+        private fun hostInstallDir(qtDir: File) = qtDir.resolve("install-host")
+
+        private fun buildDir(qtDir: File, abi: String) = qtDir.resolve("build-$abi")
+        private fun buildDirs(qtDir: File) = NativeAbis.abis.map { buildDir(qtDir, it) }
+
+        private fun installDir(qtDir: File, abi: String) = qtDir.resolve("install-$abi")
+        private fun installDirs(qtDir: File) = NativeAbis.abis.map { installDir(qtDir, it) }
+
+        fun dirsToClean(qtDir: File) = listOf(hostBuildDir(qtDir), hostInstallDir(qtDir)) + buildDirs(qtDir) + installDirs(qtDir)
+
+        fun jar(qtDir: File) = installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
+        fun coreToolsDir(qtDir: File) = hostInstallDir(qtDir).resolve("lib/cmake/Qt6CoreTools")
     }
 }

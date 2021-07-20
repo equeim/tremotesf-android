@@ -3888,23 +3888,6 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1site(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;
-  QString *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::Tracker **)&jarg1; 
-  result = (QString *) &((libtremotesf::Tracker const *)arg1)->site();
-  
-  jresult = jenv->NewString(result->utf16(), result->size());
-  
-  return jresult;
-}
-
-
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1status(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;

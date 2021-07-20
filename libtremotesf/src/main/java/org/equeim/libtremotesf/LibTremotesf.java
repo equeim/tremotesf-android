@@ -21,7 +21,7 @@ package org.equeim.libtremotesf;
 
 import android.os.Build;
 
-import org.qtproject.qt5.android.QtNative;
+import org.qtproject.qt.android.QtNative;
 import timber.log.Timber;
 
 public class LibTremotesf {
@@ -35,7 +35,7 @@ public class LibTremotesf {
         final String suffix = Build.SUPPORTED_ABIS[0];
         System.loadLibrary("Qt5Core_" + suffix);
         System.loadLibrary("Qt5Network_" + suffix);
-        System.loadLibrary("tremotesf_" + suffix);
+        System.loadLibrary("tremotesf");
 
         Timber.d("init: loaded native libraries");
     }

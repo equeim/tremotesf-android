@@ -1,0 +1,11 @@
+--- a/src/network/ssl/qtlsbackend_openssl.cpp
++++ b/src/network/ssl/qtlsbackend_openssl.cpp
+@@ -221,7 +221,7 @@ void QTlsBackendOpenSSL::ensureCiphersAndCertsLoaded() const
+     //load symbols needed to receive certificates from system store
+ #if defined(Q_OS_QNX)
+     QSslSocketPrivate::setRootCertOnDemandLoadingSupported(true);
+-#elif defined(Q_OS_UNIX) && !defined(Q_OS_DARWIN)
++#elif defined(Q_OS_UNIX) && !defined(Q_OS_DARWIN) && !defined(Q_OS_ANDROID)
+     // check whether we can enable on-demand root-cert loading (i.e. check whether the sym links are there)
+     QList<QByteArray> dirs = QSslSocketPrivate::unixRootCertDirectories();
+     QStringList symLinkFilter;

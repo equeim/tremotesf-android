@@ -7,7 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import java.io.File
@@ -30,9 +30,9 @@ abstract class OpenSSLTask @Inject constructor(
         opensslDir.map { sourceDir(it) }
     }
 
-    @get:OutputDirectory
-    val installDir: Provider<File> by lazy {
-        opensslDir.map { installDir(it) }
+    @get:OutputDirectories
+    val installDirs: Provider<List<File>> by lazy {
+        opensslDir.map { installDirs(it) }
     }
 
     @get:Input
@@ -77,7 +77,7 @@ abstract class OpenSSLTask @Inject constructor(
         val configureArgs = mutableListOf<String>().apply {
             add(target)
             addAll(COMMON_ARGUMENTS)
-            add("--prefix=${installDir.get()}")
+            add("--prefix=${installDir(opensslDir.get(), abi)}")
             addAll(cflags)
         }
         logger.lifecycle("Configuring OpenSSL")
@@ -101,20 +101,12 @@ abstract class OpenSSLTask @Inject constructor(
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
+
         logger.lifecycle("Installing OpenSSL")
         measureNanoTime {
             execOperations.make("install_dev", buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
-        }
-
-        logger.lifecycle("Renaming static libraries to add ABI suffix")
-        val libDir = installDir.get().resolve("lib")
-        if (!libDir.resolve("libcrypto.a").renameTo(libDir.resolve("libcrypto_$abi.a"))) {
-            throw RuntimeException("Failed to remove libcrypto.a")
-        }
-        if (!libDir.resolve("libssl.a").renameTo(libDir.resolve("libssl_$abi.a"))) {
-            throw RuntimeException("Failed to remove libssl.a")
         }
     }
 
@@ -128,8 +120,13 @@ abstract class OpenSSLTask @Inject constructor(
 
         fun sourceDir(opensslDir: File) = opensslDir.resolve("openssl")
         fun patchesDir(opensslDir: File) = opensslDir.resolve("patches")
-        fun buildDir(opensslDir: File, abi: String) = opensslDir.resolve("build-$abi")
-        fun buildDirs(opensslDir: File) = NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
-        fun installDir(opensslDir: File) = opensslDir.resolve("install")
+
+        private fun buildDir(opensslDir: File, abi: String) = opensslDir.resolve("build-$abi")
+        private fun buildDirs(opensslDir: File) = NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
+
+        private fun installDir(opensslDir: File, abi: String) = opensslDir.resolve("install-$abi")
+        private fun installDirs(opensslDir: File) = NativeAbis.abis.map { abi -> installDir(opensslDir, abi) }
+
+        fun dirsToClean(opensslDir: File) = buildDirs(opensslDir) + installDirs(opensslDir)
     }
 }

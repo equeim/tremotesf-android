@@ -22,7 +22,8 @@ android {
         externalNativeBuild.cmake.arguments(
             "-DANDROID_STL=c++_shared",
             "-DANDROID_ARM_NEON=true",
-            "-DCMAKE_FIND_ROOT_PATH=${QtTask.installDir(qtDir)}"
+            "-DQT_DIR=$qtDir",
+            "-DQt6CoreTools_DIR=${QtTask.coreToolsDir(qtDir)}"
         )
     }
 
@@ -65,7 +66,7 @@ val qtPatches by tasks.registering(PatchTask::class) {
 val qt by tasks.registering(QtTask::class) {
     dependsOn(qtPatches)
     qtDir.set(this@Build_gradle.qtDir)
-    opensslInstallDir.set(openSSL.map { it.installDir.get() })
+    opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
     ccache.set(useCcache)
@@ -76,6 +77,5 @@ dependencies {
 }
 
 val clean3rdparty by tasks.registering(Delete::class) {
-    delete(OpenSSLTask.buildDirs(opensslDir), OpenSSLTask.installDir(opensslDir))
-    delete(QtTask.buildDir(qtDir), QtTask.installDir(qtDir))
+    delete(OpenSSLTask.dirsToClean(opensslDir), QtTask.dirsToClean(qtDir))
 }

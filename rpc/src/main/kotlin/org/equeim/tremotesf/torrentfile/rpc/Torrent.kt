@@ -84,7 +84,8 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
         trackerSites = if (prevTorrent != null && !data.trackersAnnounceUrlsChanged) {
             prevTorrent.trackerSites
         } else {
-            trackers.map(Tracker::site)
+            // FIXME: add support of extracion of registrable domain part from URL via Public Suffix List
+            trackers.map(Tracker::announce)
         }
     }
 

@@ -29,7 +29,7 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
             workingDir(sourceDir)
             isIgnoreExitValue = true
         }
-        if (result.exitValue == 0) {
+        if (result.success) {
             logger.lifecycle("Already applied")
         } else {
             execOperations.exec(logger) {

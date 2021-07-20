@@ -6,8 +6,7 @@
 	url = https://github.com/equeim/kotlinx-serialization-bencode.git
 [submodule "3rdparty/qt/qtbase"]
 	path = 3rdparty/qt/qtbase
-	url = https://invent.kde.org/qt/qt/qtbase.git
-	branch = kde/5.15
+	url = https://github.com/qt/qtbase.git
 [submodule "3rdparty/openssl/openssl"]
 	path = 3rdparty/openssl/openssl
 	url = git://git.openssl.org/openssl.git

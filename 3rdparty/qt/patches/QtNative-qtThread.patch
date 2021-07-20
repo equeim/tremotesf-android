@@ -1,6 +1,6 @@
---- a/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
-+++ b/src/android/jar/src/org/qtproject/qt5/android/QtNative.java
-@@ -111,7 +111,7 @@
+--- a/src/android/jar/src/org/qtproject/qt/android/QtNative.java
++++ b/src/android/jar/src/org/qtproject/qt/android/QtNative.java
+@@ -113,7 +113,7 @@ public class QtNative
      private static Method m_checkSelfPermissionMethod = null;
      private static Boolean m_tabletEventSupported = null;
      private static boolean m_usePrimaryClip = false;
