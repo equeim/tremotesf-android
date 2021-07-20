@@ -9,4 +9,4 @@
 	url = https://github.com/qt/qtbase.git
 [submodule "3rdparty/openssl/openssl"]
 	path = 3rdparty/openssl/openssl
-	url = git://git.openssl.org/openssl.git
+	url = https://github.com/openssl/openssl.git
