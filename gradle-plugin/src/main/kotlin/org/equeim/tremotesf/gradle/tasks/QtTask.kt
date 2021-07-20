@@ -110,7 +110,8 @@ abstract class QtTask @Inject constructor(
             "-no-feature-systemsemaphore",
             "-no-feature-temporaryfile",
             "-no-feature-translation",
-            "-no-feature-transposeproxymodel"
+            "-no-feature-transposeproxymodel",
+            "--", "-G", "Ninja"
         )
 
         buildQt(buildDir, configureFlags, false)
@@ -188,7 +189,8 @@ abstract class QtTask @Inject constructor(
             "-no-feature-xmlstreamwriter",
             "-openssl-linked",
             "--",
-            "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}"
+            "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
+            "-G", "Ninja"
         )
 
         buildQt(buildDir, configureFlags, true)
