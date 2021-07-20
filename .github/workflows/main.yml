@@ -26,10 +26,10 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Install ccache
+      - name: Install host dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install ccache
+          sudo apt-get install -y build-essential ccache cmake ninja-build zlib1g-dev libdouble-conversion-dev libb2-dev libpcre2-dev
 
       - name: Cache ccache directory
         uses: actions/cache@v2
