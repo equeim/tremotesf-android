@@ -4,9 +4,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches: [actions]
   pull_request:
-    branches: [master]
+    branches: [actions]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,16 +20,26 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Install host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache cmake ninja-build zlib1g-dev libdouble-conversion-dev libb2-dev libpcre2-dev
+
+      - run: dpkg-query -S /usr/local/bin/cmake
+        continue-on-error: true
+      - run: apt search cmake
+        continue-on-error: true
+      - run: cat /etc/apt/sources.list
+        continue-on-error: true
+      - run: cat /etc/apt/sources.list.d/*
+        continue-on-error: true
+      - run: false
+
       - name: Check out the code
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 0
-
-      - name: Install host dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ccache cmake ninja-build zlib1g-dev libdouble-conversion-dev libb2-dev libpcre2-dev
 
       - name: Cache ccache directory
         uses: actions/cache@v2
