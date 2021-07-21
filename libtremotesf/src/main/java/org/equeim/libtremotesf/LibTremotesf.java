@@ -33,8 +33,8 @@ public class LibTremotesf {
         QtNative.setClassLoader(classLoader);
 
         final String suffix = Build.SUPPORTED_ABIS[0];
-        System.loadLibrary("Qt5Core_" + suffix);
-        System.loadLibrary("Qt5Network_" + suffix);
+        System.loadLibrary("Qt6Core_" + suffix);
+        System.loadLibrary("Qt6Network_" + suffix);
         System.loadLibrary("tremotesf");
 
         Timber.d("init: loaded native libraries");
