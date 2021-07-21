@@ -36,7 +36,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.core.net.ConnectivityManagerCompat
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
@@ -53,10 +52,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.plus
+import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
+import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 
 
-class WifiNetworkServersController(private val servers: Servers, scope: CoroutineScope, private val context: Context) {
+class WifiNetworkServersController(private val servers: Servers, scope: CoroutineScope, private val context: Context, private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
 
@@ -95,7 +96,7 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
                     stopObservingActiveWifiNetwork()
                 }
             }
-            .launchIn(scope + Dispatchers.Main)
+            .launchIn(scope + dispatchers.Main)
     }
 
     @MainThread
@@ -108,7 +109,7 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
             return
         }
 
-        val scope = CoroutineScope(Dispatchers.Main).also { wifiNetworkObserverScope = it }
+        val scope = CoroutineScope(dispatchers.Main).also { wifiNetworkObserverScope = it }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             observeActiveWifiNetworkV24(connectivityManager)
         } else {

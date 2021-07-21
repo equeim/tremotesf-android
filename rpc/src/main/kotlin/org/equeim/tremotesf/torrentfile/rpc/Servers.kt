@@ -23,7 +23,6 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +30,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
+import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -43,7 +44,7 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val scope: CoroutineScope, protected val context: Context) {
+abstract class Servers(protected val scope: CoroutineScope, protected val context: Context, private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
 
@@ -133,7 +134,7 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
             currentServer?.name,
             servers.map { it.copy(lastTorrents = it.lastTorrents.copy()) }
         )
-        scope.launch(Dispatchers.Main) { save(saveData) }
+        scope.launch(dispatchers.Main) { save(saveData) }
     }
 
     @Serializable

@@ -26,7 +26,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -52,7 +51,9 @@ import org.equeim.libtremotesf.TorrentDataVector
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.TorrentFilesVector
 import org.equeim.libtremotesf.TorrentPeersVector
+import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.MutableEventFlow
+import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -65,7 +66,7 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
-abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope, context: Context) {
+abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope, context: Context, protected val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
     init {
         LibTremotesf.init(javaClass.classLoader)
     }
@@ -181,7 +182,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     val isConnected: StateFlow<Boolean> = connectionState
         .map { it == RpcConnectionState.Connected }
         .distinctUntilChanged()
-        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
+        .stateIn(scope + dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     data class Error(val error: RpcError, val errorMessage: String)
 
@@ -198,7 +199,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
 
     val status = combine(connectionState, error, Rpc::Status)
-        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, Status())
+        .stateIn(scope + dispatchers.Unconfined, SharingStarted.Eagerly, Status())
 
     private val _torrentAddDuplicateEvents = MutableEventFlow<Unit>()
     val torrentAddDuplicateEvents: Flow<Unit> by ::_torrentAddDuplicateEvents

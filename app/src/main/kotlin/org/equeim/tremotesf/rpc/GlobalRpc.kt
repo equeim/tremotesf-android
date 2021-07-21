@@ -15,7 +15,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.launchIn
@@ -51,7 +50,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             .onEach { connectionState ->
                 when (connectionState) {
                     RpcConnectionState.Connected -> {
-                        withContext(Dispatchers.Main) {
+                        withContext(dispatchers.Main) {
                             showNotificationsSinceLastConnection()
                         }
                         handleWorkerCompleter()
@@ -66,7 +65,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                     RpcConnectionState.Connecting -> {}
                 }
             }
-            .launchIn(scope + Dispatchers.Unconfined)
+            .launchIn(scope + dispatchers.Unconfined)
 
         torrents
             .onEach {
@@ -74,12 +73,12 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                     handleWorkerCompleter()
                 }
             }
-            .launchIn(scope + Dispatchers.Main)
+            .launchIn(scope + dispatchers.Main)
 
         AppForegroundTracker.appInForeground
             .dropWhile { !it }
             .onEach(::onAppForegroundStateChanged)
-            .launchIn(scope + Dispatchers.Main)
+            .launchIn(scope + dispatchers.Main)
     }
 
     override fun onTorrentFinished(id: Int, hashString: String, name: String) {
@@ -147,7 +146,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             Timber.i("handleWorkerCompleter: completing update worker")
             if (isConnected.value) {
                 Timber.i("handleWorkerCompleter: save servers")
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.Main) {
                     if (isConnected.value) {
                         servers.save()
                     }
