@@ -43,6 +43,7 @@ android {
 repositories {
     mavenCentral()
     google()
+    maven("https://maven.mozilla.org/maven2")
 }
 
 dependencies {
@@ -55,6 +56,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
 
     implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
+
+    implementation("org.mozilla.components:lib-publicsuffixlist:${Versions.publicsuffixlist}")
 
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }

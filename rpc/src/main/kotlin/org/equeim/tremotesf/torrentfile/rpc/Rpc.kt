@@ -38,6 +38,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.runBlocking
+import mozilla.components.lib.publicsuffixlist.PublicSuffixList
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
 import org.equeim.libtremotesf.JniServerSettingsData
@@ -93,7 +95,12 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             changed: TorrentDataVector,
             added: TorrentDataVector
         ) {
-            this@Rpc.onTorrentsUpdated(removed, changed, added)
+            // We need call Rpc.onTorrentsUpdated() in blocking fashion to prevent state
+            // inconsistency when other callbacks are called
+            // Run in Unconfined to reduce thread jumping when using PublicSuffixList
+            runBlocking(dispatchers.Unconfined) {
+                this@Rpc.onTorrentsUpdated(removed, changed, added)
+            }
             removed.delete()
             changed.delete()
             added.delete()
@@ -238,6 +245,8 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     private val _torrents = MutableStateFlow<List<Torrent>>(emptyList())
     val torrents: StateFlow<List<Torrent>> by ::_torrents
 
+    private val publicSuffixList = PublicSuffixList(context)
+
     protected val disconnectingAfterCurrentServerChanged = AtomicBoolean(false)
 
     private var connectedOnce = false
@@ -336,7 +345,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     }
 
     @WorkerThread
-    protected open fun onTorrentsUpdated(
+    private suspend fun onTorrentsUpdated(
         removed: List<Int>,
         changed: List<TorrentData>,
         added: List<TorrentData>
@@ -347,6 +356,8 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             newTorrents.removeAt(index)
         }
 
+        val trackerSitesCache = mutableMapOf<String, String?>()
+
         if (changed.isNotEmpty()) {
             val changedIter = changed.iterator()
             var changedTorrentData = changedIter.next()
@@ -355,7 +366,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             while (torrentsIter.hasNext()) {
                 val torrent = torrentsIter.next()
                 if (torrent.id == changedId) {
-                    torrentsIter.set(Torrent(changedTorrentData, this, torrent))
+                    torrentsIter.set(Torrent.create(changedTorrentData, this, torrent, publicSuffixList, trackerSitesCache))
                     if (changedIter.hasNext()) {
                         changedTorrentData = changedIter.next()
                         changedId = changedTorrentData.id
@@ -369,7 +380,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         }
 
         for (torrentData in added) {
-            newTorrents.add(Torrent(torrentData, this))
+            newTorrents.add(Torrent.create(torrentData, this, null, publicSuffixList, trackerSitesCache))
         }
 
         _torrents.value = newTorrents

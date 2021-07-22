@@ -19,13 +19,18 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
+import mozilla.components.lib.publicsuffixlist.PublicSuffixList
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.Tracker
 
-
-class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent? = null) {
+class Torrent private constructor(
+    val data: TorrentData,
+    val trackerSites: List<String>,
+    private val rpc: Rpc,
+    prevTorrent: Torrent?
+) {
     val id = data.id
     val hashString: String = data.hashString
 
@@ -57,7 +62,6 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
     val downloadDirectory: String = data.downloadDirectory
 
     val trackers: List<Tracker> = data.trackers
-    val trackerSites: List<String>
 
     var filesEnabled: Boolean = prevTorrent?.filesEnabled ?: false
         @Synchronized get
@@ -79,15 +83,6 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
 
     @Volatile
     var isChanged = true
-
-    init {
-        trackerSites = if (prevTorrent != null && !data.trackersAnnounceUrlsChanged) {
-            prevTorrent.trackerSites
-        } else {
-            // FIXME: add support of extracion of registrable domain part from URL via Public Suffix List
-            trackers.map(Tracker::announce)
-        }
-    }
 
     fun setDownloadSpeedLimited(limited: Boolean) {
         rpc.nativeInstance.setTorrentDownloadSpeedLimited(data, limited)
@@ -155,5 +150,26 @@ class Torrent(val data: TorrentData, private val rpc: Rpc, prevTorrent: Torrent?
 
     fun removeTrackers(ids: IntArray) {
         rpc.nativeInstance.torrentRemoveTrackers(data, ids)
+    }
+
+    internal companion object {
+        suspend fun create(data: TorrentData, rpc: Rpc, prevTorrent: Torrent?, publicSuffixList: PublicSuffixList, trackerSitesCache: MutableMap<String, String?>): Torrent {
+            val trackerSites = if (prevTorrent != null && !data.trackersAnnounceUrlsChanged) {
+                prevTorrent.trackerSites
+            } else {
+                data.trackers.mapNotNull {
+                    val hostInfo = it.announceHostInfo()
+                    val host = hostInfo.host
+                    trackerSitesCache.getOrPut(host) {
+                        when {
+                            host.isEmpty() -> null
+                            hostInfo.isIpAddress -> host
+                            else -> publicSuffixList.getPublicSuffixPlusOne(host).await()
+                        }
+                    }
+                }
+            }
+            return Torrent(data, trackerSites, rpc, prevTorrent)
+        }
     }
 }

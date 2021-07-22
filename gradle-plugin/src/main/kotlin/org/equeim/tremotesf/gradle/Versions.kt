@@ -46,4 +46,6 @@ object Versions {
     const val timber = "4.7.1"
 
     const val junit = "4.13.2"
+
+    const val publicsuffixlist = "91.0.5"
 }
