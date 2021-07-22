@@ -3888,6 +3888,75 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_
 }
 
 
+SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1AnnounceHostInfo_1host_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  libtremotesf::Tracker::AnnounceHostInfo *arg1 = (libtremotesf::Tracker::AnnounceHostInfo *) 0 ;
+  QString *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Tracker::AnnounceHostInfo **)&jarg1; 
+  result = (QString *) & ((arg1)->host);
+  
+  jresult = jenv->NewString(result->utf16(), result->size());
+  
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1AnnounceHostInfo_1isIpAddress_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Tracker::AnnounceHostInfo *arg1 = (libtremotesf::Tracker::AnnounceHostInfo *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Tracker::AnnounceHostInfo **)&jarg1; 
+  result = (bool) ((arg1)->isIpAddress);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1Tracker_1AnnounceHostInfo(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  libtremotesf::Tracker::AnnounceHostInfo *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (libtremotesf::Tracker::AnnounceHostInfo *)new libtremotesf::Tracker::AnnounceHostInfo();
+  *(libtremotesf::Tracker::AnnounceHostInfo **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Tracker_1AnnounceHostInfo(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  libtremotesf::Tracker::AnnounceHostInfo *arg1 = (libtremotesf::Tracker::AnnounceHostInfo *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(libtremotesf::Tracker::AnnounceHostInfo **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1announceHostInfo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;
+  libtremotesf::Tracker::AnnounceHostInfo result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Tracker **)&jarg1; 
+  result = ((libtremotesf::Tracker const *)arg1)->announceHostInfo();
+  *(libtremotesf::Tracker::AnnounceHostInfo **)&jresult = new libtremotesf::Tracker::AnnounceHostInfo(std::move(result)); 
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_1status(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::Tracker *arg1 = (libtremotesf::Tracker *) 0 ;

@@ -44,6 +44,52 @@ public class Tracker {
     return libtremotesfJNI.Tracker_announce(swigCPtr, this);
 }
 
+  static public class AnnounceHostInfo {
+    private transient long swigCPtr;
+    protected transient boolean swigCMemOwn;
+  
+    protected AnnounceHostInfo(long cPtr, boolean cMemoryOwn) {
+      swigCMemOwn = cMemoryOwn;
+      swigCPtr = cPtr;
+    }
+  
+    protected static long getCPtr(AnnounceHostInfo obj) {
+      return (obj == null) ? 0 : obj.swigCPtr;
+    }
+  
+    @SuppressWarnings("deprecation")
+    protected void finalize() {
+      delete();
+    }
+  
+    public synchronized void delete() {
+      if (swigCPtr != 0) {
+        if (swigCMemOwn) {
+          swigCMemOwn = false;
+          libtremotesfJNI.delete_Tracker_AnnounceHostInfo(swigCPtr);
+        }
+        swigCPtr = 0;
+      }
+    }
+  
+    public String getHost() {
+      return libtremotesfJNI.Tracker_AnnounceHostInfo_host_get(swigCPtr, this);
+  }
+  
+    public boolean getIsIpAddress() {
+      return libtremotesfJNI.Tracker_AnnounceHostInfo_isIpAddress_get(swigCPtr, this);
+    }
+  
+    public AnnounceHostInfo() {
+      this(libtremotesfJNI.new_Tracker_AnnounceHostInfo(), true);
+    }
+  
+  }
+
+  public Tracker.AnnounceHostInfo announceHostInfo() {
+    return new Tracker.AnnounceHostInfo(libtremotesfJNI.Tracker_announceHostInfo(swigCPtr, this), true);
+  }
+
   public Tracker.Status status() {
     return Tracker.Status.swigToEnum(libtremotesfJNI.Tracker_status(swigCPtr, this));
   }
