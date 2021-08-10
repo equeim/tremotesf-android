@@ -11,17 +11,17 @@ object Versions {
     const val targetSdk = compileSdk
     const val ndk = "22.1.7171670"
 
-    const val kotlinxCoroutines = "1.5.0"
-    const val kotlinxSerialization = "1.2.1"
+    const val kotlinxCoroutines = "1.5.1"
+    const val kotlinxSerialization = "1.2.2"
 
     object AndroidX {
-        const val appcompat = "1.3.0"
+        const val appcompat = "1.3.1"
         const val collection = "1.1.0"
         const val concurrentFutures = "1.1.0"
-        const val core = "1.5.0"
+        const val core = "1.6.0"
         const val coordinatorlayout = "1.1.0"
         const val drawerlayout = "1.1.1"
-        const val fragment = "1.3.5"
+        const val fragment = "1.3.6"
         const val gridlayout = "1.0.0"
         const val lifecycle = "2.3.1"
 
@@ -39,13 +39,13 @@ object Versions {
         }
     }
 
-    const val material = "1.3.0"
+    const val material = "1.4.0"
     const val fastscroll = "2.0.1"
     const val billing = "4.0.0"
 
-    const val timber = "4.7.1"
+    const val timber = "5.0.0"
 
     const val junit = "4.13.2"
 
-    const val publicsuffixlist = "91.0.5"
+    const val publicsuffixlist = "92.0.0"
 }
