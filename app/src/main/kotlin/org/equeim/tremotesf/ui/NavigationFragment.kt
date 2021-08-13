@@ -54,6 +54,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
 
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.BottomPaddingDecoration
 
 
 open class NavigationFragment(
@@ -214,14 +215,30 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, 
 
     // Set padding for scroll view is system gestures are enabled, or reset it to zero
     if (viewForPadding != null) {
-        (viewForPadding as? ViewGroup)?.clipToPadding = false
-        val initialPadding = viewForPadding.paddingBottom
-        ViewCompat.setOnApplyWindowInsetsListener(viewForPadding) { v, insets ->
-            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            if (v.paddingBottom != (initialPadding + bottomInset)) {
-                v.updatePadding(bottom = initialPadding + bottomInset)
+        if (viewForPadding is RecyclerView) {
+            var decoration: BottomPaddingDecoration? = null
+            for (i in 0 until viewForPadding.itemDecorationCount) {
+                val d = viewForPadding.getItemDecorationAt(i)
+                if (d is BottomPaddingDecoration) {
+                    decoration = d
+                    break
+                }
             }
-            insets
+            if (decoration == null) {
+                decoration = BottomPaddingDecoration(viewForPadding, null)
+                viewForPadding.addItemDecoration(decoration)
+            }
+            decoration.handleBottomInset()
+        } else {
+            (viewForPadding as? ViewGroup)?.clipToPadding = false
+            val initialPadding = viewForPadding.paddingBottom
+            ViewCompat.setOnApplyWindowInsetsListener(viewForPadding) { v, insets ->
+                val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                if (v.paddingBottom != (initialPadding + bottomInset)) {
+                    v.updatePadding(bottom = initialPadding + bottomInset)
+                }
+                insets
+            }
         }
     }
 
