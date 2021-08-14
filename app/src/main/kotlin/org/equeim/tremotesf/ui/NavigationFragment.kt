@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.ScrollView
 
@@ -37,6 +36,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
@@ -150,22 +150,33 @@ open class NavigationFragment(
         val toolbar = checkNotNull(toolbar)
         var container = toolbar.parent as View
         if (container is AppBarLayout) {
-            container = (container.parent as CoordinatorLayout).parent as LinearLayout
+            val appBarLayout = container
+            container = (container.parent as CoordinatorLayout)
             val placeholder = View(context).apply {
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
+                layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+                elevation = resources.getDimension(R.dimen.action_bar_elevation)
+                setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(elevation))
             }
             ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
-                view.updateLayoutParams {
-                    height = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                if (appBarLayout.marginTop != topInset) {
+                    appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = topInset }
+                }
+                if (view.layoutParams.height != topInset) {
+                    view.updateLayoutParams {
+                        height = topInset
+                    }
                 }
                 insets
             }
-            container.addView(placeholder, 0)
+            container.addView(placeholder)
         } else {
             container.setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
             ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
-                view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+                val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                if (view.paddingTop != topInset) {
+                    view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+                }
                 insets
             }
         }
