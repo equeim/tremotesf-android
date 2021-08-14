@@ -211,52 +211,59 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, 
     }
 
     val rootView = requireView()
-    val viewForPadding = forceViewForPadding ?: findView(rootView)
 
-    // Set padding for scroll view is system gestures are enabled, or reset it to zero
+    val viewForPadding = forceViewForPadding ?: findView(rootView)
     if (viewForPadding != null) {
-        if (viewForPadding is RecyclerView) {
-            var decoration: BottomPaddingDecoration? = null
-            for (i in 0 until viewForPadding.itemDecorationCount) {
-                val d = viewForPadding.getItemDecorationAt(i)
-                if (d is BottomPaddingDecoration) {
-                    decoration = d
-                    break
-                }
-            }
-            if (decoration == null) {
-                decoration = BottomPaddingDecoration(viewForPadding, null)
-                viewForPadding.addItemDecoration(decoration)
-            }
-            decoration.handleBottomInset()
-        } else {
-            (viewForPadding as? ViewGroup)?.clipToPadding = false
-            val initialPadding = viewForPadding.paddingBottom
-            ViewCompat.setOnApplyWindowInsetsListener(viewForPadding) { v, insets ->
-                val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-                if (v.paddingBottom != (initialPadding + bottomInset)) {
-                    v.updatePadding(bottom = initialPadding + bottomInset)
-                }
-                insets
-            }
-        }
+        handleBottomInsetWithPadding(viewForPadding)
     }
 
     val viewForMargin = requireView().findViewWithTag<View>(getText(R.string.add_navigation_bar_margin))
     if (viewForMargin != null) {
-        val initialMargin = viewForMargin.marginBottom
-        ViewCompat.setOnApplyWindowInsetsListener(viewForMargin) { v, insets ->
-            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            if (v.marginBottom != (initialMargin + bottomInset)) {
-                v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    bottomMargin = initialMargin + bottomInset
-                }
-            }
-            insets
-        }
+        handleBottomInsetWithMargin(viewForMargin)
     }
 
     if (requestApplyInsets && (viewForPadding != null || viewForMargin != null)) {
         rootView.requestApplyInsets()
+    }
+}
+
+private fun handleBottomInsetWithPadding(view: View) {
+    if (view is RecyclerView) {
+        var decoration: BottomPaddingDecoration? = null
+        for (i in 0 until view.itemDecorationCount) {
+            val d = view.getItemDecorationAt(i)
+            if (d is BottomPaddingDecoration) {
+                decoration = d
+                break
+            }
+        }
+        if (decoration == null) {
+            decoration = BottomPaddingDecoration(view, null)
+            view.addItemDecoration(decoration)
+        }
+        decoration.handleBottomInset()
+    } else {
+        (view as? ViewGroup)?.clipToPadding = false
+        val initialPadding = view.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            if (v.paddingBottom != (initialPadding + bottomInset)) {
+                v.updatePadding(bottom = initialPadding + bottomInset)
+            }
+            insets
+        }
+    }
+}
+
+private fun handleBottomInsetWithMargin(view: View) {
+    val initialMargin = view.marginBottom
+    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+        if (v.marginBottom != (initialMargin + bottomInset)) {
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = initialMargin + bottomInset
+            }
+        }
+        insets
     }
 }
