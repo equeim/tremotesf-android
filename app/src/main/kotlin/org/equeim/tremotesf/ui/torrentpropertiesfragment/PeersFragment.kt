@@ -25,7 +25,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +40,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
+import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewModelFactory
@@ -86,12 +86,7 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         binding.peersView.apply {
             adapter = peersAdapter
             layoutManager = LinearLayoutManager(activity)
-            addItemDecoration(
-                DividerItemDecoration(
-                    activity,
-                    DividerItemDecoration.VERTICAL
-                )
-            )
+            addItemDecoration(VerticalDividerItemDecoration(requireContext()))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 

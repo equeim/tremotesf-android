@@ -38,7 +38,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -62,6 +61,7 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.application
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -435,12 +435,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
                 this.adapter = adapter
                 layoutManager = LinearLayoutManager(activity)
-                addItemDecoration(
-                    DividerItemDecoration(
-                        activity,
-                        DividerItemDecoration.VERTICAL
-                    )
-                )
+                addItemDecoration(VerticalDividerItemDecoration(requireContext()))
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
