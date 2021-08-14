@@ -4,12 +4,17 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.DimenRes
 import androidx.core.content.res.use
 import androidx.core.graphics.withSave
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
+import org.equeim.tremotesf.R
 import kotlin.math.roundToInt
 
 class VerticalDividerItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
@@ -62,6 +67,13 @@ class BottomPaddingDecoration(private val recyclerView: RecyclerView, @DimenRes 
     private val bottomPadding = bottomPaddingRes?.let { recyclerView.context.resources.getDimensionPixelSize(it) } ?: 0
     private var bottomInset = 0
 
+    private val fastScroller: View? by lazy(LazyThreadSafetyMode.NONE) { (recyclerView.parent as View).findViewById(R.id.fast_scroller) }
+    private val fastScrollerMarginBottom by lazy(LazyThreadSafetyMode.NONE) { recyclerView.context.resources.getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_bottom) }
+
+    init {
+        recyclerView.doOnAttach { updateFastScrollerMargin() }
+    }
+
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
@@ -75,13 +87,23 @@ class BottomPaddingDecoration(private val recyclerView: RecyclerView, @DimenRes 
     }
 
     fun handleBottomInset() {
-        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             if (bottomInset != this.bottomInset) {
                 this.bottomInset = bottomInset
                 recyclerView.invalidateItemDecorations()
             }
+            updateFastScrollerMargin()
             insets
+        }
+    }
+
+    private fun updateFastScrollerMargin() {
+        fastScroller?.apply {
+            val marginBottom = fastScrollerMarginBottom + bottomPadding + bottomInset
+            if (marginBottom != this.marginBottom) {
+                updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = marginBottom }
+            }
         }
     }
 }
