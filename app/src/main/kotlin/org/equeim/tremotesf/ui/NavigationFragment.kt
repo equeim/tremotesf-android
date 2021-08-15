@@ -214,32 +214,46 @@ open class NavigationFragment(
 }
 
 fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, forceViewForPadding: View? = null) {
-    val findView: (View) -> View? = { rootView ->
-        val asIs = when (rootView) {
-            is ScrollView, is NestedScrollView, is ListView -> true
-            is RecyclerView -> (rootView.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
-            else -> false
+    fun findViewsWithTagRecursively(view: View, tag: Any, block: (View) -> Unit) {
+        if (view.tag == tag) {
+            block(view)
         }
-        if (asIs) {
-            rootView
-        } else {
-            rootView.findViewWithTag(getText(R.string.add_navigation_bar_padding))
+        if (view is ViewGroup) {
+            for (child in view.children) {
+                findViewsWithTagRecursively(child, tag, block)
+            }
         }
     }
 
     val rootView = requireView()
+    var foundViews = false
 
-    val viewForPadding = forceViewForPadding ?: findView(rootView)
-    if (viewForPadding != null) {
-        handleBottomInsetWithPadding(viewForPadding)
+    if (forceViewForPadding != null) {
+        handleBottomInsetWithPadding(forceViewForPadding)
+        foundViews = true
     }
 
-    val viewForMargin = requireView().findViewWithTag<View>(getText(R.string.add_navigation_bar_margin))
-    if (viewForMargin != null) {
-        handleBottomInsetWithMargin(viewForMargin)
+    val setPaddingForRootView = when (rootView) {
+        is ScrollView, is NestedScrollView, is ListView -> true
+        is RecyclerView -> (rootView.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
+        else -> false
+    }
+    if (setPaddingForRootView) {
+        handleBottomInsetWithPadding(rootView)
+        foundViews = true
     }
 
-    if (requestApplyInsets && (viewForPadding != null || viewForMargin != null)) {
+    findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_padding)) {
+        handleBottomInsetWithPadding(it)
+        foundViews = true
+    }
+
+    findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_margin)) {
+        handleBottomInsetWithMargin(it)
+        foundViews = true
+    }
+
+    if (requestApplyInsets && foundViews) {
         rootView.requestApplyInsets()
     }
 }
