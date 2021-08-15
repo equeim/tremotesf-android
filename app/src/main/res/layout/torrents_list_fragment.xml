@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <include layout="@layout/toolbar"/>
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -23,7 +19,7 @@
                 android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal" />
 
             <TextView
                 android:id="@+id/placeholder"
@@ -33,16 +29,36 @@
                 android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/PlaceholderTextAppearance"/>
+                android:textAppearance="@style/PlaceholderTextAppearance" />
         </LinearLayout>
 
         <com.l4digital.fastscroll.FastScrollRecyclerView
             android:id="@+id/torrents_view"
-            android:tag="@string/add_navigation_bar_padding"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
-            app:handleColor="?attr/colorControlNormal"
-            app:bubbleColor="?attr/colorControlActivated" />
+            android:tag="@string/add_navigation_bar_padding"
+            app:bubbleColor="?attr/colorControlActivated"
+            app:handleColor="?attr/colorControlNormal" />
     </FrameLayout>
-</LinearLayout>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|snap|enterAlways" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:hideOnScroll="true"
+        app:menu="@menu/torrents_list_fragment_menu" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

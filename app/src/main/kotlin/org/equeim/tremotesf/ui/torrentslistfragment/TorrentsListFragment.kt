@@ -48,6 +48,7 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
+import org.equeim.tremotesf.ui.utils.BottomPaddingDecoration
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
@@ -98,6 +99,7 @@ class TorrentsListFragment : NavigationFragment(
             adapter = torrentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(VerticalDividerItemDecoration(requireContext()))
+            addItemDecoration(BottomPaddingDecoration(this, R.dimen.mtrl_bottomappbar_height))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
