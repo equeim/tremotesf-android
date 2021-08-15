@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.ScrollView
 
@@ -175,7 +176,7 @@ open class NavigationFragment(
                 insets
             }
             container.addView(placeholder)
-        } else {
+        } else if (container.id == R.id.toolbar_container && container is FrameLayout && container.childCount == 1) {
             container.setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
             ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
