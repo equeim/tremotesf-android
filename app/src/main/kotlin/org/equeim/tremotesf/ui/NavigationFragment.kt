@@ -35,6 +35,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
@@ -152,6 +153,7 @@ open class NavigationFragment(
         if (container is AppBarLayout) {
             val appBarLayout = container
             container = (container.parent as CoordinatorLayout)
+            val scrollingView = container.children.find { (it.layoutParams as CoordinatorLayout.LayoutParams).behavior is AppBarLayout.ScrollingViewBehavior }
             val placeholder = View(context).apply {
                 layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
                 elevation = resources.getDimension(R.dimen.action_bar_elevation)
@@ -161,6 +163,9 @@ open class NavigationFragment(
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                 if (appBarLayout.marginTop != topInset) {
                     appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = topInset }
+                }
+                if (scrollingView != null && scrollingView.marginBottom != topInset) {
+                    scrollingView.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = topInset }
                 }
                 if (view.layoutParams.height != topInset) {
                     view.updateLayoutParams {
