@@ -69,6 +69,9 @@
         <action
             android:id="@+id/to_server_stats_dialog"
             app:destination="@id/server_stats_dialog" />
+        <action
+            android:id="@+id/to_torrents_filters_dialog_fragment"
+            app:destination="@id/torrents_filters_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -400,4 +403,8 @@
     <dialog
         android:id="@+id/enable_location_dialog"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.EnableLocationDialog"/>
+    <dialog
+        android:id="@+id/torrents_filters_dialog_fragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsFiltersDialogFragment">
+    </dialog>
 </navigation>

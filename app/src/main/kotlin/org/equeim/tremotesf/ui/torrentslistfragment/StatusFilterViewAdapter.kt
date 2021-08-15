@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.sidepanel
+package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.Companion.statusFilterAcceptsTorrent
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.StatusFilterMode
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
@@ -32,6 +31,7 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 class StatusFilterViewAdapter(
     private val context: Context,
+    private val model: TorrentsListFragmentViewModel,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private var activeTorrents = 0
@@ -59,7 +59,7 @@ class StatusFilterViewAdapter(
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(Settings.torrentsStatusFilter.ordinal)
+        return getItem(model.statusFilterMode.value.ordinal)
     }
 
     fun update(torrents: List<Torrent>) {

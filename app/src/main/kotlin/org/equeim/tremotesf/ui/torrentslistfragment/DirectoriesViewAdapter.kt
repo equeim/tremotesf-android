@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.sidepanel
+package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 import org.equeim.tremotesf.common.dropTrailingPathSeparator
@@ -32,6 +31,7 @@ import org.equeim.tremotesf.common.dropTrailingPathSeparator
 
 class DirectoriesViewAdapter(
     private val context: Context,
+    private val model: TorrentsListFragmentViewModel,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private val directoriesMap = mutableMapOf<String, Int>()
@@ -53,7 +53,7 @@ class DirectoriesViewAdapter(
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(directories.indexOf(Settings.torrentsDirectoryFilter) + 1)
+        return getItem(directories.indexOf(model.directoryFilter.value) + 1)
     }
 
     fun getDirectoryFilter(position: Int): String {

@@ -19,4 +19,6 @@
     <dimen name="fastscroll_handle_width" tools:ignore="UnusedResources">6dp</dimen>
     <dimen name="fastscroll_handle_radius" tools:ignore="UnusedResources">3dp</dimen>
     <dimen name="fastscroll_scrollbar_padding_end" tools:ignore="UnusedResources">4dp</dimen>
+
+    <dimen name="bottom_sheet_corner_size">16dp</dimen>
 </resources>

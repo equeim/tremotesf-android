@@ -497,4 +497,6 @@
     <string name="enable_location">Enable location</string>
 
     <string name="storage_permission_rationale_torrent">Tremotesf requires access to storage permission to open this torrent file</string>
+
+    <string name="torrents_filters">Filters</string>
 </resources>

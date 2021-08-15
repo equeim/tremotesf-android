@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.sidepanel
+package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 
 class TrackersViewAdapter(
     private val context: Context,
+    private val model: TorrentsListFragmentViewModel,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private val trackersMap = mutableMapOf<String, Int>()
@@ -51,7 +51,7 @@ class TrackersViewAdapter(
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(trackers.indexOf(Settings.torrentsTrackerFilter) + 1)
+        return getItem(trackers.indexOf(model.trackerFilter.value) + 1)
     }
 
     fun getTrackerFilter(position: Int): String {

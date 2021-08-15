@@ -22,11 +22,9 @@ package org.equeim.tremotesf.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -63,17 +61,11 @@ import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.ui.sidepanel.DirectoriesViewAdapter
 import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
-import org.equeim.tremotesf.ui.sidepanel.StatusFilterViewAdapter
-import org.equeim.tremotesf.ui.sidepanel.TrackersViewAdapter
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentDirections
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.setChildrenEnabled
 import timber.log.Timber
 
 
@@ -112,7 +104,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     lateinit var upNavigationIcon: DrawerArrowDrawable
         private set
 
-    lateinit var sidePanelBinding: SidePanelHeaderBinding
+    private lateinit var sidePanelBinding: SidePanelHeaderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
@@ -290,29 +282,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             connectionSettingsButton.setOnClickListener {
                 navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
             }
-
-            GlobalRpc.isConnected.collectWhenStarted(
-                this@NavigationActivity,
-                listSettingsLayout::setChildrenEnabled
-            )
-
-            sortView.setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
-            sortView.setText(sortView.adapter.getItem(Settings.torrentsSortMode.ordinal) as String)
-            val resId = if (Settings.torrentsSortOrder == TorrentsListFragmentViewModel.SortOrder.Descending) {
-                R.drawable.sort_descending
-            } else {
-                R.drawable.sort_ascending
-            }
-            sortViewLayout.setStartIconDrawable(resId)
-
-            statusView.setAdapter(StatusFilterViewAdapter(this@NavigationActivity, statusView))
-            trackersView.setAdapter(TrackersViewAdapter(this@NavigationActivity, trackersView))
-            directoriesView.setAdapter(
-                DirectoriesViewAdapter(
-                    this@NavigationActivity,
-                    directoriesView
-                )
-            )
 
             sidePanelBinding = this
         }

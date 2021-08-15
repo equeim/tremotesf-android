@@ -30,6 +30,8 @@
         <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
 
         <item name="actionModeBackground">@drawable/action_mode_background</item>
+
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
     </style>
 
     <style name="AppTheme.Old">
@@ -54,5 +56,17 @@
 
     <style name="Widget.Tremotesf.TimePickerItem" parent="android:Widget">
         <item name="android:background">?selectableItemBackground</item>
+    </style>
+
+    <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Tremotesf.BottomSheet</item>
+    </style>
+
+    <style name="Widget.Tremotesf.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Tremotesf.BottomSheet</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">
+        <item name="cornerSizeTopLeft">@dimen/bottom_sheet_corner_size</item>
+        <item name="cornerSizeTopRight">@dimen/bottom_sheet_corner_size</item>
     </style>
 </resources>

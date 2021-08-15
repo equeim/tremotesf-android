@@ -59,6 +59,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:hideOnScroll="true"
-        app:menu="@menu/torrents_list_fragment_menu" />
+        app:hideOnScroll="true">
+
+        <androidx.appcompat.widget.ActionMenuView
+            android:id="@+id/bottom_toolbar_left_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/mtrl_bottomappbar_height" />
+    </com.google.android.material.bottomappbar.BottomAppBar>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
