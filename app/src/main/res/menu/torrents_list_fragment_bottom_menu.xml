@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="AlwaysShowAction">
 
     <item
-        android:id="@+id/torrents_filters"
-        android:icon="@drawable/ic_baseline_filter_list_24"
-        android:title="@string/torrents_filters"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search_24dp"
+        android:title="@android:string/search_go"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="collapseActionView|always" />
+
+    <group android:id="@+id/bottom_menu_hideable_items">
+        <item
+            android:id="@+id/torrents_filters"
+            android:icon="@drawable/ic_baseline_filter_list_24"
+            android:title="@string/torrents_filters"
+            app:showAsAction="always" />
+    </group>
 </menu>

@@ -60,7 +60,6 @@ class TorrentsListFragment : NavigationFragment(
     R.menu.torrents_list_fragment_menu
 ) {
     private var menu: Menu? = null
-    private var searchMenuItem: MenuItem? = null
     private var bottomMenu: Menu? = null
 
     val binding by viewBinding(TorrentsListFragmentBinding::bind)
@@ -119,7 +118,6 @@ class TorrentsListFragment : NavigationFragment(
 
     override fun onDestroyView() {
         menu = null
-        searchMenuItem = null
         bottomMenu = null
 
         torrentsAdapter = null
@@ -130,13 +128,13 @@ class TorrentsListFragment : NavigationFragment(
     private fun setupMenuItems() {
         val toolbar = this.toolbar ?: return
 
-        val menu = toolbar.menu!!
-        this.menu = menu
+        menu = toolbar.menu
+        val bottomMenu: Menu = binding.bottomToolbar.menu
+        this.bottomMenu = bottomMenu
 
-        val searchMenuItem = menu.findItem(R.id.search)
-        this.searchMenuItem = searchMenuItem
-        val searchView = searchMenuItem.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        val searchMenuItem = checkNotNull(bottomMenu.findItem(R.id.search))
+
+        (searchMenuItem.actionView as SearchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 model.nameFilter.value = newText.trim()
                 return true
@@ -144,6 +142,18 @@ class TorrentsListFragment : NavigationFragment(
 
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
+            }
+        })
+
+        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, false)
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, true)
+                return true
             }
         })
 
@@ -156,16 +166,12 @@ class TorrentsListFragment : NavigationFragment(
             }
         }
 
-        with(binding.bottomToolbarLeftMenu) {
-            requireActivity().menuInflater.inflate(R.menu.torrents_list_fragment_bottom_menu, this.menu)
-            bottomMenu = this.menu
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
-                    else -> return@setOnMenuItemClickListener false
-                }
-                true
+        binding.bottomToolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
+                else -> return@setOnMenuItemClickListener false
             }
+            true
         }
     }
 
@@ -195,7 +201,7 @@ class TorrentsListFragment : NavigationFragment(
                     GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
             } else {
                 requiredActivity.actionMode?.finish()
-                searchMenuItem?.collapseActionView()
+                bottomMenu?.findItem(R.id.search)?.collapseActionView()
                 if (navController.currentDestination?.id != R.id.donate_dialog) {
                     navController.popDialog()
                 }
@@ -239,26 +245,30 @@ class TorrentsListFragment : NavigationFragment(
         val menu = this.menu ?: return
         val bottomMenu = this.bottomMenu ?: return
 
-        val connectMenuItem = menu.findItem(R.id.connect)
-        connectMenuItem.isEnabled = GlobalServers.hasServers
-        connectMenuItem.title = when (connectionState) {
-            RpcConnectionState.Disconnected -> getString(R.string.connect)
-            RpcConnectionState.Connecting,
-            RpcConnectionState.Connected -> getString(R.string.disconnect)
-            else -> ""
+        menu.findItem(R.id.connect)?.apply {
+            isEnabled = GlobalServers.hasServers
+            title = when (connectionState) {
+                RpcConnectionState.Disconnected -> getString(R.string.connect)
+                RpcConnectionState.Connecting,
+                RpcConnectionState.Connected -> getString(R.string.disconnect)
+                else -> ""
+            }
         }
 
         val connected = (connectionState == RpcConnectionState.Connected)
-        searchMenuItem?.isVisible = connected
-        val ids = listOf(
+
+        listOf(
             R.id.add_torrent_file,
             R.id.to_add_torrent_link_fragment,
             R.id.to_server_settings_fragment,
             R.id.alternative_speed_limits,
             R.id.to_server_stats_dialog
-        )
-        ids.forEach { menu.findItem(it)?.isEnabled = connected }
-        bottomMenu.findItem(R.id.torrents_filters)?.isEnabled = connected
+        ).forEach { menu.findItem(it)?.isEnabled = connected }
+
+        listOf(
+            R.id.search,
+            R.id.torrents_filters
+        ).forEach { bottomMenu.findItem(it).isEnabled = connected }
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
