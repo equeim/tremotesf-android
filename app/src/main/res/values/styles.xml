@@ -66,6 +66,7 @@
         <!-- A hack to disable corners animation (see NavigationBottomSheetDialogFragment) -->
         <item name="shapeAppearance">@null</item>
         <item name="shapeAppearanceOverlay">@null</item>
+        <item name="behavior_skipCollapsed">true</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">

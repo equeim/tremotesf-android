@@ -34,7 +34,9 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
         return (super.onCreateDialog(savedInstanceState) as BottomSheetDialog).apply {
             // Disable 'peeking' when opening bottom sheet
             setOnShowListener {
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                requireView().post {
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
             }
         }
     }
