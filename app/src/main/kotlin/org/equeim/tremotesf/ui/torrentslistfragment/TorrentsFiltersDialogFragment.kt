@@ -1,34 +1,25 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.navGraphViewModels
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.filter
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsFiltersDialogFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding
 
-class TorrentsFiltersDialogFragment : BottomSheetDialogFragment() {
+class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layout.torrents_filters_dialog_fragment) {
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
     private val binding by viewBinding(TorrentsFiltersDialogFragmentBinding::bind)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.torrents_filters_dialog_fragment, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         with (binding) {
             sortView.apply {
                 setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))

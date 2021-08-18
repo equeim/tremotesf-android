@@ -59,12 +59,15 @@
     </style>
 
     <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/Widget.Tremotesf.BottomSheet</item>
+        <item name="bottomSheetStyle">@style/Widget.Tremotesf.BottomSheet.Modal</item>
     </style>
 
-    <style name="Widget.Tremotesf.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Tremotesf.BottomSheet</item>
+    <style name="Widget.Tremotesf.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <!-- A hack to disable corners animation (see NavigationBottomSheetDialogFragment) -->
+        <item name="shapeAppearance">@null</item>
+        <item name="shapeAppearanceOverlay">@null</item>
     </style>
+
     <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">
         <item name="cornerSizeTopLeft">@dimen/bottom_sheet_corner_size</item>
         <item name="cornerSizeTopRight">@dimen/bottom_sheet_corner_size</item>
