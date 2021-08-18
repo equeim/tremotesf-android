@@ -19,14 +19,11 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.addCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.onNavDestinationSelected
@@ -35,12 +32,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.BottomPaddingDecoration
@@ -51,7 +48,6 @@ import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import timber.log.Timber
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -67,17 +63,8 @@ class TorrentsListFragment : NavigationFragment(
 
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
 
-    private lateinit var getContentActivityLauncher: ActivityResultLauncher<String>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getContentActivityLauncher =
-            registerForActivityResult(ActivityResultContracts.GetContent()) {
-                if (it != null) {
-                    navigate(TorrentsListFragmentDirections.toAddTorrentFileFragment(it))
-                }
-            }
-
         TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
     }
 
@@ -148,11 +135,13 @@ class TorrentsListFragment : NavigationFragment(
         searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, false)
+                binding.addTorrentButton.hide()
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, true)
+                binding.addTorrentButton.show()
                 return true
             }
         })
@@ -173,6 +162,10 @@ class TorrentsListFragment : NavigationFragment(
             }
             true
         }
+
+        binding.addTorrentButton.setOnClickListener {
+            navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
+        }
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
@@ -184,7 +177,6 @@ class TorrentsListFragment : NavigationFragment(
                     GlobalRpc.nativeInstance.disconnect()
                 }
             }
-            R.id.add_torrent_file -> startFilePickerActivity()
             R.id.alternative_speed_limits -> {
                 menuItem.isChecked = !menuItem.isChecked
                 GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked
@@ -269,6 +261,8 @@ class TorrentsListFragment : NavigationFragment(
             R.id.search,
             R.id.torrents_filters
         ).forEach { bottomMenu.findItem(it).isEnabled = connected }
+
+        binding.addTorrentButton.isEnabled = connected
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
@@ -285,13 +279,5 @@ class TorrentsListFragment : NavigationFragment(
             } else {
                 View.GONE
             }
-    }
-
-    private fun startFilePickerActivity() {
-        try {
-            getContentActivityLauncher.launch("application/x-bittorrent")
-        } catch (e: ActivityNotFoundException) {
-            Timber.e(e, "Failed to start activity")
-        }
     }
 }

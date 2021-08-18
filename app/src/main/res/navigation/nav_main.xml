@@ -36,21 +36,6 @@
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/to_add_torrent_file_fragment"
-            app:destination="@id/add_torrent_file_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/torrents_list_fragment" />
-        <action
-            android:id="@+id/to_add_torrent_link_fragment"
-            app:destination="@id/add_torrent_link_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-        <action
             android:id="@+id/to_server_settings_fragment"
             app:destination="@id/server_settings_fragment"
             app:enterAnim="@animator/nav_default_enter_anim"
@@ -72,6 +57,9 @@
         <action
             android:id="@+id/to_torrents_filters_dialog_fragment"
             app:destination="@id/torrents_filters_dialog_fragment" />
+        <action
+            android:id="@+id/to_add_torrent_menu_fragment"
+            app:destination="@id/add_torrent_menu_fragment" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -150,23 +138,6 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
-    <action
-        android:id="@+id/to_add_torrent_file_fragment"
-        app:destination="@id/add_torrent_file_fragment"
-        app:enterAnim="@animator/nav_default_enter_anim"
-        app:exitAnim="@animator/nav_default_exit_anim"
-        app:popUpTo="@id/torrents_list_fragment"
-        app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-        app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-
-    <action
-        android:id="@+id/to_add_torrent_link_fragment"
-        app:destination="@id/add_torrent_link_fragment"
-        app:enterAnim="@animator/nav_default_enter_anim"
-        app:exitAnim="@animator/nav_default_exit_anim"
-        app:popUpTo="@id/torrents_list_fragment"
-        app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-        app:popExitAnim="@animator/nav_default_pop_exit_anim" />
 
     <action
         android:id="@+id/to_server_edit_fragment"
@@ -402,9 +373,30 @@
 
     <dialog
         android:id="@+id/enable_location_dialog"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.EnableLocationDialog"/>
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.EnableLocationDialog" />
+
     <dialog
         android:id="@+id/torrents_filters_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsFiltersDialogFragment">
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsFiltersDialogFragment" />
+
+    <dialog
+        android:id="@+id/add_torrent_menu_fragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.AddTorrentMenuFragment">
+
+        <action
+            android:id="@+id/to_add_torrent_file_fragment"
+            app:destination="@id/add_torrent_file_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/torrents_list_fragment" />
+        <action
+            android:id="@+id/to_add_torrent_link_fragment"
+            app:destination="@id/add_torrent_link_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </dialog>
 </navigation>

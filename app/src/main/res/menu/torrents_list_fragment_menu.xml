@@ -7,16 +7,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/add_torrent_file"
-        android:title="@string/add_torrent_file"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@id/to_add_torrent_link_fragment"
-        android:title="@string/add_torrent_link"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@id/to_server_settings_fragment"
         android:title="@string/server_settings"
         app:showAsAction="never"/>

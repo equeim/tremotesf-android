@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="@dimen/vertical_edge_padding">
+
+    <TextView
+        android:id="@+id/add_torrent_file"
+        android:layout_width="match_parent"
+        android:layout_height="?listPreferredItemHeightSmall"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/horizontal_edge_padding"
+        android:text="@string/add_torrent_file"
+        android:textAppearance="?textAppearanceBody1" />
+
+    <TextView
+        android:id="@+id/add_torrent_link"
+        android:layout_width="match_parent"
+        android:layout_height="?listPreferredItemHeightSmall"
+        android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/horizontal_edge_padding"
+        android:text="@string/add_torrent_link"
+        android:textAppearance="?textAppearanceBody1" />
+</LinearLayout>
