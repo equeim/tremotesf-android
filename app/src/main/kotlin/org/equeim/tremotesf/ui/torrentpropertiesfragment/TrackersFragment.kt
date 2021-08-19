@@ -22,12 +22,12 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
-import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
@@ -48,7 +48,7 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         binding.trackersView.apply {
             adapter = trackersAdapter
             layoutManager = LinearLayoutManager(activity)
-            addItemDecoration(VerticalDividerItemDecoration(requireContext()))
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {

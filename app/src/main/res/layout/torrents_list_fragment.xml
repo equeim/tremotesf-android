@@ -32,11 +32,12 @@
                 android:textAppearance="@style/PlaceholderTextAppearance" />
         </LinearLayout>
 
-        <com.l4digital.fastscroll.FastScrollRecyclerView
+        <org.equeim.tremotesf.ui.views.FastScrollRecyclerView
             android:id="@+id/torrents_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
+            android:paddingBottom="@dimen/mtrl_bottomappbar_height"
             android:tag="@string/add_navigation_bar_padding"
             app:bubbleColor="?attr/colorControlActivated"
             app:handleColor="?attr/colorControlNormal" />

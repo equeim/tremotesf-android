@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <com.l4digital.fastscroll.FastScrollRecyclerView
+    <org.equeim.tremotesf.ui.views.FastScrollRecyclerView
         android:id="@+id/files_view"
         android:tag="@string/add_navigation_bar_padding"
         android:layout_width="match_parent"

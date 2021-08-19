@@ -23,11 +23,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
 import org.equeim.tremotesf.ui.utils.viewBinding
@@ -57,7 +57,7 @@ class TorrentFilesFragment :
         binding.filesView.apply {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(VerticalDividerItemDecoration(requireContext()))
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 

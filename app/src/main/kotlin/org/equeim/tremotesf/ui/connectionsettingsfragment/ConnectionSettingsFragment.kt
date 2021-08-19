@@ -30,6 +30,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,7 +43,6 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
@@ -66,7 +66,7 @@ class ConnectionSettingsFragment : NavigationFragment(
         with(binding) {
             serversView.adapter = adapter
             serversView.layoutManager = LinearLayoutManager(requireContext())
-            serversView.addItemDecoration(VerticalDividerItemDecoration(requireContext()))
+            serversView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             fab.setOnClickListener {

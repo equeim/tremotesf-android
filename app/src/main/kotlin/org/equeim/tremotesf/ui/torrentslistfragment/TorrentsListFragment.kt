@@ -28,6 +28,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.libtremotesf.RpcConnectionState
@@ -40,9 +41,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.utils.BottomPaddingDecoration
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.VerticalDividerItemDecoration
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
@@ -78,8 +77,7 @@ class TorrentsListFragment : NavigationFragment(
         binding.torrentsView.apply {
             adapter = torrentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(VerticalDividerItemDecoration(requireContext()))
-            addItemDecoration(BottomPaddingDecoration(this, R.dimen.mtrl_bottomappbar_height))
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 

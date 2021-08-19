@@ -26,7 +26,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.ScrollView
-
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -51,12 +50,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.utils.BottomPaddingDecoration
 
 
 open class NavigationFragment(
@@ -259,30 +255,14 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, 
 }
 
 private fun handleBottomInsetWithPadding(view: View) {
-    if (view is RecyclerView) {
-        var decoration: BottomPaddingDecoration? = null
-        for (i in 0 until view.itemDecorationCount) {
-            val d = view.getItemDecorationAt(i)
-            if (d is BottomPaddingDecoration) {
-                decoration = d
-                break
-            }
+    (view as? ViewGroup)?.clipToPadding = false
+    val initialPadding = view.paddingBottom
+    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+        if (v.paddingBottom != (initialPadding + bottomInset)) {
+            v.updatePadding(bottom = initialPadding + bottomInset)
         }
-        if (decoration == null) {
-            decoration = BottomPaddingDecoration(view, null)
-            view.addItemDecoration(decoration)
-        }
-        decoration.handleBottomInset()
-    } else {
-        (view as? ViewGroup)?.clipToPadding = false
-        val initialPadding = view.paddingBottom
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            if (v.paddingBottom != (initialPadding + bottomInset)) {
-                v.updatePadding(bottom = initialPadding + bottomInset)
-            }
-            insets
-        }
+        insets
     }
 }
 
