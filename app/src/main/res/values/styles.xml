@@ -60,6 +60,7 @@
 
     <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.Tremotesf.BottomSheet.Modal</item>
+        <item name="android:listDivider">@color/bottom_sheet_list_divider_color</item>
     </style>
 
     <style name="Widget.Tremotesf.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
@@ -72,5 +73,13 @@
     <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">
         <item name="cornerSizeTopLeft">@dimen/bottom_sheet_corner_size</item>
         <item name="cornerSizeTopRight">@dimen/bottom_sheet_corner_size</item>
+    </style>
+
+    <style name="Widget.Tremotesf.BottomSheetMenuItem" parent="Widget.MaterialComponents.TextView">
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">?textAppearanceBody1</item>
     </style>
 </resources>

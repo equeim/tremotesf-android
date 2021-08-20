@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.equeim.tremotesf.ui.sidepanel
+package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.torrentfile.rpc.Server

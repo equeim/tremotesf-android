@@ -36,15 +36,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -52,18 +49,11 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
-import org.equeim.tremotesf.databinding.SidePanelHeaderBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.ui.sidepanel.ServersViewAdapter
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentDirections
-import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import timber.log.Timber
@@ -99,12 +89,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     lateinit var appBarConfiguration: AppBarConfiguration
         private set
 
-    lateinit var drawerNavigationIcon: DrawerArrowDrawable
-        private set
     lateinit var upNavigationIcon: DrawerArrowDrawable
         private set
-
-    private lateinit var sidePanelBinding: SidePanelHeaderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
@@ -145,24 +131,15 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             }
         }
 
-        drawerNavigationIcon = DrawerArrowDrawable(this)
-        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
-
         navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
-        appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
-
-        setupDrawer()
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             hideKeyboard()
-            val lockMode = if (isTopLevelDestination(destination.id)) {
-                DrawerLayout.LOCK_MODE_UNLOCKED
-            } else {
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-            }
-            binding.drawerLayout.setDrawerLockMode(lockMode, GravityCompat.START)
         }
+
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
 
         Timber.i("onCreate: return")
     }
@@ -216,16 +193,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         }
     }
 
-    override fun onBackPressed() {
-        binding.drawerLayout.apply {
-            if (isDrawerOpen(GravityCompat.START)) {
-                closeDrawer(GravityCompat.START)
-            } else {
-                super.onBackPressed()
-            }
-        }
-    }
-
     override fun onSupportActionModeStarted(mode: ActionMode) {
         super.onSupportActionModeStarted(mode)
         actionMode = mode
@@ -243,53 +210,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             }
         }
         return super.onKeyUp(keyCode, event)
-    }
-
-    private fun setupDrawer() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.sidePanel.getHeaderView(0)) { view, insets ->
-            view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
-            insets
-        }
-
-        binding.sidePanel.setNavigationItemSelectedListener { menuItem ->
-            return@setNavigationItemSelectedListener when (menuItem.itemId) {
-                R.id.quit -> {
-                    Utils.shutdownApp(this)
-                    true
-                }
-                else -> menuItem.onNavDestinationSelected(navController)
-            }
-        }
-
-        val sidePanelHeader = binding.sidePanel.getHeaderView(0)
-
-        with(SidePanelHeaderBinding.bind(sidePanelHeader)) {
-            val serversViewAdapter = ServersViewAdapter(serversView)
-            serversView.setAdapter(serversViewAdapter)
-            serversView.setOnItemClickListener { _, _, position, _ ->
-                serversViewAdapter.servers[position].let {
-                    if (it != GlobalServers.currentServer.value) {
-                        GlobalServers.setCurrentServer(it)
-                    }
-                }
-            }
-            combine(GlobalServers.servers, GlobalServers.currentServer) { servers, _ -> servers }
-                .collectWhenStarted(this@NavigationActivity) { servers ->
-                    serversView.isEnabled = servers.isNotEmpty()
-                    serversViewAdapter.update()
-                }
-
-            connectionSettingsButton.setOnClickListener {
-                navigate(TorrentsListFragmentDirections.toConnectionSettingsFragment())
-            }
-
-            sidePanelBinding = this
-        }
-    }
-
-    // destinationId must not refer to NavGraph
-    fun isTopLevelDestination(@IdRes destinationId: Int): Boolean {
-        return appBarConfiguration.topLevelDestinations.contains(destinationId)
     }
 }
 

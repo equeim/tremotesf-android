@@ -499,4 +499,5 @@
     <string name="storage_permission_rationale_torrent">Tremotesf requires access to storage permission to open this torrent file</string>
 
     <string name="torrents_filters">Filters</string>
+    <string name="transmission_settings">Transmission settings</string>
 </resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="@dimen/vertical_edge_padding">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:gravity="center_horizontal"
+            android:text="@string/transmission_settings"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <Button
+            android:id="@+id/connect_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/connect" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/servers_view_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/server">
+
+            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
+                android:id="@+id/servers_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/connection_settings"
+            style="@style/Widget.Tremotesf.BottomSheetMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:paddingHorizontal="@dimen/horizontal_edge_padding"
+            android:text="@string/connection_settings" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:background="?android:listDivider" />
+
+        <TextView
+            android:id="@+id/server_settings"
+            style="@style/Widget.Tremotesf.BottomSheetMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:paddingHorizontal="@dimen/horizontal_edge_padding"
+            android:text="@string/server_settings" />
+
+        <FrameLayout
+            android:id="@+id/alternative_limits_clickable"
+            android:layout_width="match_parent"
+            android:layout_height="?listPreferredItemHeightSmall"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingHorizontal="@dimen/horizontal_edge_padding">
+
+            <CheckedTextView
+                android:id="@+id/alternative_limits_check_box"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:checkMark="?android:listChoiceIndicatorMultiple"
+                android:gravity="center_vertical"
+                android:textAppearance="?textAppearanceBody1"
+                android:text="@string/alternative_speed_limits" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/server_stats"
+            style="@style/Widget.Tremotesf.BottomSheetMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="?listPreferredItemHeightSmall"
+            android:paddingHorizontal="@dimen/horizontal_edge_padding"
+            android:text="@string/server_stats" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

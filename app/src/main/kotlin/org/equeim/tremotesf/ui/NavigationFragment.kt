@@ -122,12 +122,9 @@ open class NavigationFragment(
     }
 
     private fun setupToolbar() {
-        val activity = requiredActivity
         toolbar = requireView().findViewById<Toolbar>(R.id.toolbar).apply {
-            if (requiredActivity.isTopLevelDestination(destinationId)) {
-                navigationIcon = activity.drawerNavigationIcon
-                setNavigationContentDescription(R.string.nav_app_bar_open_drawer_description)
-            } else {
+            val activity = requiredActivity
+            if (!activity.appBarConfiguration.topLevelDestinations.contains(destinationId)) {
                 navigationIcon = activity.upNavigationIcon
                 setNavigationContentDescription(R.string.nav_app_bar_navigate_up_description)
             }

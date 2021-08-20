@@ -29,20 +29,6 @@
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/to_connection_settings_fragment"
-            app:destination="@id/connection_settings_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-        <action
-            android:id="@+id/to_server_settings_fragment"
-            app:destination="@id/server_settings_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-        <action
             android:id="@+id/to_torrent_file_rename_dialog"
             app:destination="@id/torrent_file_rename_dialog" />
         <action
@@ -52,14 +38,14 @@
             android:id="@+id/to_torrent_set_location_dialog"
             app:destination="@id/torrent_set_location_dialog" />
         <action
-            android:id="@+id/to_server_stats_dialog"
-            app:destination="@id/server_stats_dialog" />
-        <action
             android:id="@+id/to_torrents_filters_dialog_fragment"
             app:destination="@id/torrents_filters_dialog_fragment" />
         <action
             android:id="@+id/to_add_torrent_menu_fragment"
             app:destination="@id/add_torrent_menu_fragment" />
+        <action
+            android:id="@+id/to_transmission_settings_dialog_fragment"
+            app:destination="@id/transmission_settings_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -398,5 +384,30 @@
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/transmission_settings_dialog_fragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TransmissionSettingsDialogFragment">
+
+        <action
+            android:id="@+id/to_connection_settings_fragment"
+            app:destination="@id/connection_settings_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+
+        <action
+            android:id="@+id/to_server_settings_fragment"
+            app:destination="@id/server_settings_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+
+        <action
+            android:id="@+id/to_server_stats_dialog"
+            app:destination="@id/server_stats_dialog" />
     </dialog>
 </navigation>

@@ -42,6 +42,7 @@ import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
@@ -54,7 +55,6 @@ class TorrentsListFragment : NavigationFragment(
     0,
     R.menu.torrents_list_fragment_menu
 ) {
-    private var menu: Menu? = null
     private var bottomMenu: Menu? = null
 
     val binding by viewBinding(TorrentsListFragmentBinding::bind)
@@ -83,9 +83,7 @@ class TorrentsListFragment : NavigationFragment(
 
         model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
 
-        GlobalRpc.torrents.collectWhenStarted(viewLifecycleOwner) { onTorrentsUpdated() }
-
-        GlobalRpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectionStateChanged)
+        GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
 
         model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
@@ -102,18 +100,12 @@ class TorrentsListFragment : NavigationFragment(
     }
 
     override fun onDestroyView() {
-        menu = null
         bottomMenu = null
-
         torrentsAdapter = null
-
         super.onDestroyView()
     }
 
     private fun setupMenuItems() {
-        val toolbar = this.toolbar ?: return
-
-        menu = toolbar.menu
         val bottomMenu: Menu = binding.bottomToolbar.menu
         this.bottomMenu = bottomMenu
 
@@ -156,6 +148,7 @@ class TorrentsListFragment : NavigationFragment(
         binding.bottomToolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
+                R.id.transmission_settings -> navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment())
                 else -> return@setOnMenuItemClickListener false
             }
             true
@@ -168,42 +161,29 @@ class TorrentsListFragment : NavigationFragment(
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.connect -> {
-                if (GlobalRpc.connectionState.value == RpcConnectionState.Disconnected) {
-                    GlobalRpc.nativeInstance.connect()
-                } else {
-                    GlobalRpc.nativeInstance.disconnect()
-                }
-            }
-            R.id.alternative_speed_limits -> {
-                menuItem.isChecked = !menuItem.isChecked
-                GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled = menuItem.isChecked
-            }
-            else -> return menuItem.onNavDestinationSelected(navController)
+            R.id.settings -> navigate(TorrentsListFragmentDirections.toSettingsFragment())
+            R.id.about -> navigate(TorrentsListFragmentDirections.toAboutFragment())
+            R.id.quit -> Utils.shutdownApp(requireContext())
+            else -> return false
         }
         return true
     }
 
-    private fun onRpcConnectionStateChanged(connectionState: RpcConnectionState) {
-        if (connectionState == RpcConnectionState.Disconnected || connectionState == RpcConnectionState.Connected) {
-            if (connectionState == RpcConnectionState.Connected) {
-                menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
-            } else {
-                requiredActivity.actionMode?.finish()
-                bottomMenu?.findItem(R.id.search)?.collapseActionView()
-                if (navController.currentDestination?.id != R.id.donate_dialog) {
-                    navController.popDialog()
-                }
+    private fun onRpcConnectedChanged(connected: Boolean) {
+        if (!connected) {
+            requiredActivity.actionMode?.finish()
+            bottomMenu?.findItem(R.id.search)?.collapseActionView()
+            when (navController.currentDestination?.id) {
+                R.id.donate_dialog, R.id.transmission_settings_dialog_fragment -> Unit
+                else -> navController.popDialog()
             }
         }
-
-        updateMenuItems(connectionState)
-    }
-
-    private fun onTorrentsUpdated() {
-        menu?.findItem(R.id.alternative_speed_limits)?.isChecked =
-            if (GlobalRpc.isConnected.value) GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled else false
+        binding.addTorrentButton.isEnabled = connected
+        val bottomMenu = this.bottomMenu ?: return
+        listOf(
+            R.id.search,
+            R.id.torrents_filters
+        ).forEach { bottomMenu.findItem(it).isEnabled = connected }
     }
 
     private fun updateTitle(currentServer: Server?) {
@@ -229,38 +209,6 @@ class TorrentsListFragment : NavigationFragment(
         } else {
             null
         }
-    }
-
-    private fun updateMenuItems(connectionState: RpcConnectionState) {
-        val menu = this.menu ?: return
-        val bottomMenu = this.bottomMenu ?: return
-
-        menu.findItem(R.id.connect)?.apply {
-            isEnabled = GlobalServers.hasServers
-            title = when (connectionState) {
-                RpcConnectionState.Disconnected -> getString(R.string.connect)
-                RpcConnectionState.Connecting,
-                RpcConnectionState.Connected -> getString(R.string.disconnect)
-                else -> ""
-            }
-        }
-
-        val connected = (connectionState == RpcConnectionState.Connected)
-
-        listOf(
-            R.id.add_torrent_file,
-            R.id.to_add_torrent_link_fragment,
-            R.id.to_server_settings_fragment,
-            R.id.alternative_speed_limits,
-            R.id.to_server_stats_dialog
-        ).forEach { menu.findItem(it)?.isEnabled = connected }
-
-        listOf(
-            R.id.search,
-            R.id.torrents_filters
-        ).forEach { bottomMenu.findItem(it).isEnabled = connected }
-
-        binding.addTorrentButton.isEnabled = connected
     }
 
     private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {

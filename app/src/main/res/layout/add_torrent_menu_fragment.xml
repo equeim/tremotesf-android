@@ -8,26 +8,18 @@
 
     <TextView
         android:id="@+id/add_torrent_file"
+        style="@style/Widget.Tremotesf.BottomSheetMenuItem"
         android:layout_width="match_parent"
         android:layout_height="?listPreferredItemHeightSmall"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/horizontal_edge_padding"
-        android:text="@string/add_torrent_file"
-        android:textAppearance="?textAppearanceBody1" />
+        android:text="@string/add_torrent_file" />
 
     <TextView
         android:id="@+id/add_torrent_link"
+        style="@style/Widget.Tremotesf.BottomSheetMenuItem"
         android:layout_width="match_parent"
         android:layout_height="?listPreferredItemHeightSmall"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/horizontal_edge_padding"
-        android:text="@string/add_torrent_link"
-        android:textAppearance="?textAppearanceBody1" />
+        android:text="@string/add_torrent_link" />
 </LinearLayout>

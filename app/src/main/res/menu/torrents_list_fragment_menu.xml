@@ -1,24 +1,13 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"/>
 
     <item
-        android:id="@+id/connect"
-        android:title="@string/connect"
-        app:showAsAction="never"/>
+        android:id="@+id/about"
+        android:title="@string/about"/>
 
     <item
-        android:id="@id/to_server_settings_fragment"
-        android:title="@string/server_settings"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/alternative_speed_limits"
-        android:checkable="true"
-        android:title="@string/alternative_speed_limits"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@id/to_server_stats_dialog"
-        android:title="@string/server_stats"
-        app:showAsAction="never"/>
+        android:id="@+id/quit"
+        android:title="@string/quit"/>
 </menu>
