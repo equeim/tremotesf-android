@@ -40,6 +40,7 @@ import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
@@ -77,7 +78,9 @@ class TorrentsListFragment : NavigationFragment(
         binding.torrentsView.apply {
             adapter = torrentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            if (Settings.torrentCompactView) {
+                addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            }
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 

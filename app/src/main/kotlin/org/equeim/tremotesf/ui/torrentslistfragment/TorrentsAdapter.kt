@@ -144,6 +144,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 statusTextView.text = torrent.statusString
             }
         }
+
+        override fun updateSelectionState(isSelected: Boolean) {
+            binding.root.isChecked = isSelected
+        }
     }
 
     inner class TorrentsViewHolderCompact(

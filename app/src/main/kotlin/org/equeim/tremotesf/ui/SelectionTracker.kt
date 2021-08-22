@@ -294,7 +294,11 @@ class SelectionTracker<K : Any> private constructor(
 
         @CallSuper
         open fun update() {
-            itemView.isActivated = selectionTracker.isSelected(getSelectionKey())
+            updateSelectionState(selectionTracker.isSelected(getSelectionKey()))
+        }
+
+        open fun updateSelectionState(isSelected: Boolean) {
+            itemView.isActivated = isSelected
         }
 
         final override fun onLongClick(view: View): Boolean {

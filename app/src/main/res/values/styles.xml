@@ -32,6 +32,7 @@
         <item name="actionModeBackground">@drawable/action_mode_background</item>
 
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
+        <item name="materialCardViewStyle">@style/Widget.Tremotesf.CardView</item>
     </style>
 
     <style name="AppTheme.Old">
@@ -81,5 +82,10 @@
         <item name="android:focusable">true</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textAppearance">?textAppearanceBody1</item>
+    </style>
+
+    <style name="Widget.Tremotesf.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
     </style>
 </resources>

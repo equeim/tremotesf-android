@@ -1,4 +1,5 @@
 <resources>
     <dimen name="horizontal_edge_padding">24dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="card_margins">16dp</dimen>
 </resources>

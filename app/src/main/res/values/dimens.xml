@@ -21,4 +21,9 @@
     <dimen name="fastscroll_scrollbar_padding_end" tools:ignore="UnusedResources">4dp</dimen>
 
     <dimen name="bottom_sheet_corner_size">16dp</dimen>
+
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margins">8dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
 </resources>
