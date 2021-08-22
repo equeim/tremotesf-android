@@ -44,6 +44,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.savedStateFlow
 import org.equeim.tremotesf.common.dropTrailingPathSeparator
+import org.equeim.tremotesf.rpc.GlobalServers
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
@@ -132,10 +133,9 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
-
-    data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean)
-
-    val placeholderUpdateData = combine(GlobalRpc.status, hasTorrents, ::PlaceholderUpdateData)
+    private val hasServers = GlobalServers.servers.map { it.isNotEmpty() }
+    data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean, val hasServers: Boolean)
+    val placeholderUpdateData = combine(GlobalRpc.status, hasTorrents, hasServers, ::PlaceholderUpdateData)
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)

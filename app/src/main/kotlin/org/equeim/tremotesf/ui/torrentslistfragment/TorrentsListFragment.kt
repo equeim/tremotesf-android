@@ -26,6 +26,8 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -227,19 +229,37 @@ class TorrentsListFragment : NavigationFragment(
         }
     }
 
-    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) {
-        val (status, hasTorrents) = data
-        binding.placeholder.text = when {
-            hasTorrents -> null
-            (status.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
-            else -> status.statusString
-        }
+    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) = with(binding) {
+        val (status, hasTorrents, hasServers) = data
 
-        binding.progressBar.visibility =
-            if (status.connectionState == RpcConnectionState.Connecting && !hasTorrents) {
-                View.VISIBLE
-            } else {
-                View.GONE
+        progressBar.isVisible = status.connectionState == RpcConnectionState.Connecting && !hasTorrents
+        placeholderText.apply {
+            text = when {
+                hasTorrents -> null
+                (status.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
+                else -> status.statusString
             }
+            isVisible = !text.isNullOrEmpty()
+        }
+        actionButton.apply {
+            text = when {
+                !hasServers -> {
+                    setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
+                    getText(R.string.add_server)
+                }
+                status.connectionState == RpcConnectionState.Disconnected -> {
+                    setOnClickListener { GlobalRpc.nativeInstance.connect() }
+                    getText(R.string.connect)
+                }
+                else -> {
+                    setOnClickListener(null)
+                    null
+                }
+            }
+            isVisible = !text.isNullOrEmpty()
+        }
+        placeholderView.apply {
+            isVisible = children.any { it.isVisible }
+        }
     }
 }

@@ -29,6 +29,13 @@
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
+            android:id="@+id/to_server_edit_fragment"
+            app:destination="@id/server_edit_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+        <action
             android:id="@+id/to_torrent_file_rename_dialog"
             app:destination="@id/torrent_file_rename_dialog" />
         <action
@@ -124,10 +131,6 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
-
-    <action
-        android:id="@+id/to_server_edit_fragment"
-        app:destination="@id/server_edit_fragment" />
 
     <action
         android:id="@+id/to_donate_dialog"
