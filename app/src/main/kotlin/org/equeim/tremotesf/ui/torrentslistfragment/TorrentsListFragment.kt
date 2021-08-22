@@ -25,11 +25,12 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.navigation.navGraphViewModels
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
@@ -181,12 +182,24 @@ class TorrentsListFragment : NavigationFragment(
                 else -> navController.popDialog()
             }
         }
-        binding.addTorrentButton.isEnabled = connected
+
         val bottomMenu = this.bottomMenu ?: return
         listOf(
             R.id.search,
             R.id.torrents_filters
         ).forEach { bottomMenu.findItem(it).isEnabled = connected }
+
+        binding.bottomToolbar.apply {
+            hideOnScroll = connected
+            if (!connected) performShow()
+        }
+
+        binding.addTorrentButton.apply {
+            isEnabled = connected
+            if (!connected) {
+                ((layoutParams as CoordinatorLayout.LayoutParams).behavior as HideBottomViewOnScrollBehavior).slideUp(this)
+            }
+        }
     }
 
     private fun updateTitle(currentServer: Server?) {
