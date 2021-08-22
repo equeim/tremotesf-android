@@ -74,5 +74,6 @@
         android:layout_height="wrap_content"
         app:layout_anchor="@id/bottom_toolbar"
         android:contentDescription="@string/add_torrent"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
         app:srcCompat="@drawable/ic_add_24dp_night" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
