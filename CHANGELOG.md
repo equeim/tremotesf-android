@@ -6,6 +6,8 @@
 
 ### Changed
 - Optimized opening of torrent files with large number of files
+- Migrated to Qt 6
+- Redesigned main screen
 
 ### Removed
 - Dropped support of Android 4.x
