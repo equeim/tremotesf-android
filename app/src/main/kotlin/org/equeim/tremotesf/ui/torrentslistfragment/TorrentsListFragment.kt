@@ -59,8 +59,6 @@ class TorrentsListFragment : NavigationFragment(
     0,
     R.menu.torrents_list_fragment_menu
 ) {
-    private var bottomMenu: Menu? = null
-
     val binding by viewBinding(TorrentsListFragmentBinding::bind)
     private var torrentsAdapter: TorrentsAdapter? = null
 
@@ -106,15 +104,20 @@ class TorrentsListFragment : NavigationFragment(
     }
 
     override fun onDestroyView() {
-        bottomMenu = null
         torrentsAdapter = null
         super.onDestroyView()
     }
 
     private fun setupBottomBar() {
         requireActivity().menuInflater.inflate(R.menu.torrents_list_fragment_bottom_menu, binding.bottomMenuView.menu)
-        val bottomMenu: Menu = binding.bottomMenuView.menu
-        this.bottomMenu = bottomMenu
+        binding.bottomMenuView.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
+                R.id.transmission_settings -> navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment())
+                else -> return@setOnMenuItemClickListener false
+            }
+            true
+        }
 
         binding.searchView.apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -146,15 +149,6 @@ class TorrentsListFragment : NavigationFragment(
             }
         }
 
-        binding.bottomMenuView.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
-                R.id.transmission_settings -> navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment())
-                else -> return@setOnMenuItemClickListener false
-            }
-            true
-        }
-
         binding.addTorrentButton.setOnClickListener {
             navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
         }
@@ -173,25 +167,29 @@ class TorrentsListFragment : NavigationFragment(
     private fun onRpcConnectedChanged(connected: Boolean) {
         if (!connected) {
             requiredActivity.actionMode?.finish()
-            binding.searchView.collapse()
             when (navController.currentDestination?.id) {
                 R.id.donate_dialog, R.id.transmission_settings_dialog_fragment -> Unit
                 else -> navController.popDialog()
             }
         }
 
-        bottomMenu?.findItem(R.id.torrents_filters)?.isEnabled = connected
-        binding.searchView.findViewById<View>(R.id.search_button).isEnabled = connected
+        with(binding) {
+            bottomToolbar.apply {
+                hideOnScroll = connected
+                if (!connected) performShow()
+            }
 
-        binding.bottomToolbar.apply {
-            hideOnScroll = connected
-            if (!connected) performShow()
-        }
+            bottomMenuView.menu.findItem(R.id.torrents_filters).isVisible = connected
 
-        binding.addTorrentButton.apply {
-            isEnabled = connected
-            if (!connected) {
-                ((layoutParams as CoordinatorLayout.LayoutParams).behavior as HideBottomViewOnScrollBehavior).slideUp(this)
+            searchView.apply {
+                if (!connected) {
+                    collapse()
+                }
+                isVisible = connected
+            }
+
+            addTorrentButton.apply {
+                if (connected) show() else hide()
             }
         }
     }
