@@ -20,20 +20,18 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.map
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
@@ -88,6 +86,8 @@ class TorrentsListFragment : NavigationFragment(
         model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
 
         GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
+        GlobalServers.servers.map { it.isNotEmpty() }
+            .collectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
 
         model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
@@ -192,6 +192,10 @@ class TorrentsListFragment : NavigationFragment(
                 if (connected) show() else hide()
             }
         }
+    }
+
+    private fun updateTransmissionSettingsMenuItem(hasServers: Boolean) {
+        binding.bottomMenuView.menu.findItem(R.id.transmission_settings).isVisible = hasServers
     }
 
     private fun updateTitle(currentServer: Server?) {
