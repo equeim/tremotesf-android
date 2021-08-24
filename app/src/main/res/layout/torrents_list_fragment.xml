@@ -74,8 +74,23 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:fabAlignmentMode="end"
-        app:menu="@menu/torrents_list_fragment_bottom_menu"
         app:hideOnScroll="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/mtrl_bottomappbar_height">
+
+            <androidx.appcompat.widget.ActionMenuView
+                android:id="@+id/bottom_menu_view"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="match_parent" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -73,7 +73,7 @@ class TorrentsListFragment : NavigationFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupMenuItems()
+        setupBottomBar()
 
         val torrentsAdapter = TorrentsAdapter(this)
         this.torrentsAdapter = torrentsAdapter
@@ -111,47 +111,42 @@ class TorrentsListFragment : NavigationFragment(
         super.onDestroyView()
     }
 
-    private fun setupMenuItems() {
-        val bottomMenu: Menu = binding.bottomToolbar.menu
+    private fun setupBottomBar() {
+        requireActivity().menuInflater.inflate(R.menu.torrents_list_fragment_bottom_menu, binding.bottomMenuView.menu)
+        val bottomMenu: Menu = binding.bottomMenuView.menu
         this.bottomMenu = bottomMenu
 
-        val searchMenuItem = checkNotNull(bottomMenu.findItem(R.id.search))
+        binding.searchView.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String): Boolean {
+                    model.nameFilter.value = newText.trim()
+                    return true
+                }
 
-        (searchMenuItem.actionView as SearchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                model.nameFilter.value = newText.trim()
-                return true
-            }
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    return false
+                }
+            })
 
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return false
-            }
-        })
-
-        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, false)
+            setOnSearchClickListener {
+                binding.bottomMenuView.isVisible = false
                 binding.addTorrentButton.hide()
-                return true
             }
-
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                bottomMenu.setGroupVisible(R.id.bottom_menu_hideable_items, true)
+            setOnCloseListener {
+                binding.bottomMenuView.isVisible = true
                 binding.addTorrentButton.show()
-                return true
+                false
             }
-        })
+        }
 
         requiredActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (searchMenuItem.isActionViewExpanded) {
-                searchMenuItem.collapseActionView()
-            } else {
+            if (!binding.searchView.collapse()) {
                 isEnabled = false
                 requiredActivity.onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        binding.bottomToolbar.setOnMenuItemClickListener {
+        binding.bottomMenuView.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
                 R.id.transmission_settings -> navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment())
@@ -178,18 +173,15 @@ class TorrentsListFragment : NavigationFragment(
     private fun onRpcConnectedChanged(connected: Boolean) {
         if (!connected) {
             requiredActivity.actionMode?.finish()
-            bottomMenu?.findItem(R.id.search)?.collapseActionView()
+            binding.searchView.collapse()
             when (navController.currentDestination?.id) {
                 R.id.donate_dialog, R.id.transmission_settings_dialog_fragment -> Unit
                 else -> navController.popDialog()
             }
         }
 
-        val bottomMenu = this.bottomMenu ?: return
-        listOf(
-            R.id.search,
-            R.id.torrents_filters
-        ).forEach { bottomMenu.findItem(it).isEnabled = connected }
+        bottomMenu?.findItem(R.id.torrents_filters)?.isEnabled = connected
+        binding.searchView.findViewById<View>(R.id.search_button).isEnabled = connected
 
         binding.bottomToolbar.apply {
             hideOnScroll = connected
@@ -261,5 +253,16 @@ class TorrentsListFragment : NavigationFragment(
         placeholderView.apply {
             isVisible = children.any { it.isVisible }
         }
+    }
+}
+
+private fun SearchView.collapse(): Boolean {
+    return if (!isIconified) {
+        // Doing it once only clears text
+        isIconified = true
+        isIconified = true
+        true
+    } else {
+        false
     }
 }

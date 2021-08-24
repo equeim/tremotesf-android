@@ -17,7 +17,7 @@
         <item name="android:colorBackground">@color/color_background</item>
         <item name="colorSurface">@color/color_background</item>
 
-        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
+        <item name="searchViewStyle">@style/Widget.Tremotesf.SearchView</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
@@ -87,5 +87,9 @@
     <style name="Widget.Tremotesf.CardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardElevation">@dimen/card_elevation</item>
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+    </style>
+
+    <style name="Widget.Tremotesf.SearchView" parent="Widget.AppCompat.SearchView.ActionBar">
+        <item name="searchIcon">@drawable/ic_search_24dp</item>
     </style>
 </resources>

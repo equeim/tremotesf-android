@@ -5,23 +5,14 @@
     tools:ignore="AlwaysShowAction">
 
     <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search_24dp"
-        android:title="@android:string/search_go"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="collapseActionView|always" />
+        android:id="@+id/transmission_settings"
+        android:icon="@drawable/ic_transmission_settings_24dp"
+        android:title="@string/transmission_settings"
+        app:showAsAction="always" />
 
-    <group android:id="@+id/bottom_menu_hideable_items">
-        <item
-            android:id="@+id/torrents_filters"
-            android:icon="@drawable/ic_baseline_filter_list_24"
-            android:title="@string/torrents_filters"
-            app:showAsAction="always" />
-
-        <item
-            android:id="@+id/transmission_settings"
-            android:icon="@drawable/ic_transmission_settings_24dp"
-            android:title="@string/transmission_settings"
-            app:showAsAction="always" />
-    </group>
+    <item
+        android:id="@+id/torrents_filters"
+        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:title="@string/torrents_filters"
+        app:showAsAction="always" />
 </menu>
