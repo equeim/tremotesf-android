@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -14,8 +14,8 @@
             android:id="@+id/torrents_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
             android:paddingBottom="@dimen/mtrl_bottomappbar_height"
+            android:scrollbars="none"
             android:tag="@string/add_navigation_bar_padding"
             app:bubbleColor="?attr/colorControlActivated"
             app:handleColor="?attr/colorControlNormal" />
@@ -43,14 +43,6 @@
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/PlaceholderTextAppearance" />
-
-            <Button
-                android:id="@+id/action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-                tools:text="@string/connect" />
         </LinearLayout>
     </FrameLayout>
 
@@ -64,8 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|snap|enterAlways"
-            app:titleCentered="true"
-            app:subtitleCentered="true" />
+            app:subtitleCentered="true"
+            app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
@@ -83,8 +75,8 @@
             <androidx.appcompat.widget.ActionMenuView
                 android:id="@+id/bottom_menu_view"
                 android:layout_width="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal" />
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/searchView"
@@ -97,8 +89,21 @@
         android:id="@+id/add_torrent_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/bottom_toolbar"
         android:contentDescription="@string/add_torrent"
+        app:layout_anchor="@id/bottom_toolbar"
         app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
         app:srcCompat="@drawable/ic_add_24dp_night" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/horizontal_edge_padding"
+        android:paddingStart="@dimen/horizontal_edge_padding"
+        android:paddingEnd="@dimen/horizontal_edge_padding"
+        android:text="@string/add_server"
+        android:textAlignment="center"
+        app:layout_anchor="@id/bottom_toolbar"
+        app:layout_anchorGravity="end"
+        tools:text="@string/connect" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

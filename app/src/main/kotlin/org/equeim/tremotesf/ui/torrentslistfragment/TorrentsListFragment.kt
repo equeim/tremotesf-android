@@ -231,8 +231,12 @@ class TorrentsListFragment : NavigationFragment(
             }
             isVisible = !text.isNullOrEmpty()
         }
+        placeholderView.apply {
+            isVisible = children.any { it.isVisible }
+        }
+
         actionButton.apply {
-            text = when {
+            val text = when {
                 !hasServers -> {
                     setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
                     getText(R.string.add_server)
@@ -246,10 +250,12 @@ class TorrentsListFragment : NavigationFragment(
                     null
                 }
             }
-            isVisible = !text.isNullOrEmpty()
-        }
-        placeholderView.apply {
-            isVisible = children.any { it.isVisible }
+            if (text == null) {
+                hide()
+            } else {
+                this.text = text
+                show()
+            }
         }
     }
 }
