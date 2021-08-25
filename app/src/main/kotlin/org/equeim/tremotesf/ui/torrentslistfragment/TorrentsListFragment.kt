@@ -89,6 +89,12 @@ class TorrentsListFragment : NavigationFragment(
         GlobalServers.servers.map { it.isNotEmpty() }
             .collectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
 
+        model.showAddTorrentButton.collectWhenStarted(viewLifecycleOwner) {
+            binding.addTorrentButton.apply {
+                if (it) show() else hide()
+            }
+        }
+
         model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
         GlobalServers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
@@ -132,12 +138,10 @@ class TorrentsListFragment : NavigationFragment(
             })
 
             setOnSearchClickListener {
-                binding.bottomMenuView.isVisible = false
-                binding.addTorrentButton.hide()
+                model.searchViewIsIconified.value = false
             }
             setOnCloseListener {
-                binding.bottomMenuView.isVisible = true
-                binding.addTorrentButton.show()
+                model.searchViewIsIconified.value = true
                 false
             }
         }
@@ -147,6 +151,10 @@ class TorrentsListFragment : NavigationFragment(
                 isEnabled = false
                 requiredActivity.onBackPressedDispatcher.onBackPressed()
             }
+        }
+
+        model.searchViewIsIconified.collectWhenStarted(viewLifecycleOwner) {
+            binding.bottomMenuView.isVisible = it
         }
 
         binding.addTorrentButton.setOnClickListener {
@@ -186,10 +194,6 @@ class TorrentsListFragment : NavigationFragment(
                     collapse()
                 }
                 isVisible = connected
-            }
-
-            addTorrentButton.apply {
-                if (connected) show() else hide()
             }
         }
     }
@@ -266,8 +270,8 @@ class TorrentsListFragment : NavigationFragment(
 
 private fun SearchView.collapse(): Boolean {
     return if (!isIconified) {
-        // Doing it once only clears text
-        isIconified = true
+        // We need to clear query before calling setIconified(true)
+        setQuery(null, false)
         isIconified = true
         true
     } else {

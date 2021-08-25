@@ -132,6 +132,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
+    val searchViewIsIconified by savedStateFlow(savedStateHandle) { true }
+
+    val showAddTorrentButton = combine(GlobalRpc.isConnected, searchViewIsIconified, Boolean::and)
+
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
     private val hasServers = GlobalServers.servers.map { it.isNotEmpty() }
     data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean, val hasServers: Boolean)
