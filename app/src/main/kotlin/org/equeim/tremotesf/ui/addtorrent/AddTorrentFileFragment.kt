@@ -28,7 +28,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
@@ -62,12 +61,13 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.addCustomCallback
 import org.equeim.tremotesf.ui.utils.application
+import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import timber.log.Timber
 
 
@@ -192,13 +192,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (done ||
-                binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !model.filesTree.navigateUp()
-            ) {
-                isEnabled = false
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
+        requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
+            !done &&
+                    binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal &&
+                    model.filesTree.navigateUp()
         }
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {

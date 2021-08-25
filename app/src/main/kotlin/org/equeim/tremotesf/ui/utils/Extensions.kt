@@ -30,10 +30,12 @@ import android.view.ViewParent
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.view.children
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
@@ -72,6 +74,19 @@ fun NavController.popDialog() {
     if (currentDestination is DialogFragmentNavigator.Destination) {
         popBackStack()
     }
+}
+
+fun OnBackPressedDispatcher.addCustomCallback(owner: LifecycleOwner, onBackPressed: () -> Boolean) {
+    val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (!onBackPressed()) {
+                isEnabled = false
+                this@addCustomCallback.onBackPressed()
+                isEnabled = true
+            }
+        }
+    }
+    addCallback(owner, callback)
 }
 
 fun ViewGroup.setChildrenEnabled(enabled: Boolean) {

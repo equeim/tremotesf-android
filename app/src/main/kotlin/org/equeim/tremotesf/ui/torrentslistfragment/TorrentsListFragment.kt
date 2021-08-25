@@ -22,7 +22,6 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -45,6 +44,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.addCustomCallback
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
@@ -146,11 +146,8 @@ class TorrentsListFragment : NavigationFragment(
             }
         }
 
-        requiredActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (!binding.searchView.collapse()) {
-                isEnabled = false
-                requiredActivity.onBackPressedDispatcher.onBackPressed()
-            }
+        requiredActivity.onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
+            binding.searchView.collapse()
         }
 
         model.searchViewIsIconified.collectWhenStarted(viewLifecycleOwner) {

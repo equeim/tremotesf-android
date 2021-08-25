@@ -23,7 +23,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -51,13 +50,14 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.popDialog
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.addCustomCallback
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
+import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
+import org.equeim.tremotesf.ui.utils.showSnackbar
+import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -98,11 +98,9 @@ class TorrentPropertiesFragment : NavigationFragment(
                 TorrentFilesFragmentViewModel(model.torrent, handle)
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.pager.currentItem != PagerAdapter.Tab.Files.ordinal || !torrentFilesModel.filesTree.navigateUp()) {
-                isEnabled = false
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
+        requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
+            binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal &&
+                    torrentFilesModel.filesTree.navigateUp()
         }
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
