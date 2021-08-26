@@ -1,221 +1,29 @@
 --- a/Configurations/15-android.conf
 +++ b/Configurations/15-android.conf
-@@ -8,12 +8,10 @@
- 
-     my $android_ndk = {};
-     my %triplet = (
--        arm    => "arm-linux-androideabi",
--        arm64  => "aarch64-linux-android",
--        mips   => "mipsel-linux-android",
--        mips64 => "mips64el-linux-android",
--        x86    => "i686-linux-android",
--        x86_64 => "x86_64-linux-android",
-+        "android-arm"    => "armv7a-linux-androideabi",
-+        "android-arm64"  => "aarch64-linux-android",
-+        "android-x86"    => "i686-linux-android",
-+        "android-x86_64" => "x86_64-linux-android",
-     );
- 
-     sub android_ndk {
-@@ -30,119 +28,39 @@
-                 last if defined $ndk;
-             }
-             die "\$ANDROID_NDK_HOME is not defined"  if (!$ndk);
--            if (!-d "$ndk/platforms" && !-f "$ndk/AndroidVersion.txt") {
--                # $ndk/platforms is traditional "all-inclusive" NDK, while
--                # $ndk/AndroidVersion.txt is so-called standalone toolchain
--                # tailored for specific target down to API level.
--                die "\$ANDROID_NDK_HOME=$ndk is invalid";
--            }
-             $ndk = canonpath($ndk);
- 
--            my $ndkver = undef;
--
--            if (open my $fh, "<$ndk/source.properties") {
--                local $_;
--                while(<$fh>) {
--                    if (m|Pkg\.Revision\s*=\s*([0-9]+)|) {
--                        $ndkver = $1;
--                        last;
--                    }
-+            my $api;
-+            foreach (@{$useradd{CPPDEFINES}}, @{$user{CPPFLAGS}}) {
-+                if (m|__ANDROID_API__=([0-9]+)|) {
-+                    $api = $1;
-+                    last;
+@@ -115,7 +115,11 @@
+                             .  "/$tritools-4.9/prebuilt/$host";
+                     $user{CC} = "clang" if ($user{CC} !~ m|clang|);
+                 } else {
+-                    $user{CC} = "$tridefault$api-clang";
++                    if ($user{CC} !~ m|clang|) {
++                        $user{CC} = "$tridefault$api-clang";
++                    } else {
++                        $cflags .= " --target=$tridefault$api"
++                    }
                  }
--                close $fh;
+                 $user{CROSS_COMPILE} = undef;
+                 if (which("llvm-ar") =~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
+@@ -145,6 +149,13 @@
+                 $user{CROSS_COMPILE} = "$triarch-";
              }
  
--            my ($sysroot, $api, $arch);
--
--            $config{target} =~ m|[^-]+-([^-]+)$|;	# split on dash
--            $arch = $1;
--
--            if ($sysroot = $ENV{CROSS_SYSROOT}) {
--                $sysroot =~ m|/android-([0-9]+)/arch-(\w+)/?$|;
--                ($api, $arch) = ($1, $2);
--            } elsif (-f "$ndk/AndroidVersion.txt") {
--                $sysroot = "$ndk/sysroot";
--            } else {
--                $api = "*";
--
--                # see if user passed -D__ANDROID_API__=N
--                foreach (@{$useradd{CPPDEFINES}}, @{$user{CPPFLAGS}}) {
--                    if (m|__ANDROID_API__=([0-9]+)|) {
--                        $api = $1;
--                        last;
--                    }
--                }
--
--                # list available platforms (numerically)
--                my @platforms = sort { $a =~ m/-([0-9]+)$/; my $aa = $1;
--                                       $b =~ m/-([0-9]+)$/; $aa <=> $1;
--                                     } glob("$ndk/platforms/android-$api");
--                die "no $ndk/platforms/android-$api" if ($#platforms < 0);
-+            my $bin = "$ndk/toolchains/llvm/prebuilt/linux-x86_64/bin";
- 
--                $sysroot = "@platforms[$#platforms]/arch-$arch";
--                $sysroot =~ m|/android-([0-9]+)/arch-$arch|;
--                $api = $1;
--            }
--            die "no sysroot=$sysroot"   if (!-d $sysroot);
-+            my $cc = "$bin/clang";
-+            $user{CROSS_COMPILE} = undef;
-+            $user{AR} = "$bin/llvm-ar";
-+            $user{ARFLAGS} = [ "r" ];
-+            $user{RANLIB} = "$bin/llvm-ranlib";
- 
--            my $triarch = $triplet{$arch};
--            my $cflags;
--            my $cppflags;
-+            my $triarch = $triplet{$config{target}};
-+            my $cflags .= " --target=$triarch$api -fstack-protector-strong -D_FORTIFY_SOURCE=2";
- 
--            # see if there is NDK clang on $PATH, "universal" or "standalone"
--            if (which("clang") =~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
--                my $host=$1;
--                # harmonize with gcc default
--                my $arm = $ndkver > 16 ? "armv7a" : "armv5te";
--                (my $tridefault = $triarch) =~ s/^arm-/$arm-/;
--                (my $tritools   = $triarch) =~ s/(?:x|i6)86(_64)?-.*/x86$1/;
--                $cflags .= " -target $tridefault "
--                        .  "-gcc-toolchain \$($ndk_var)/toolchains"
--                        .  "/$tritools-4.9/prebuilt/$host";
--                $user{CC} = "clang" if ($user{CC} !~ m|clang|);
--                $user{CROSS_COMPILE} = undef;
--                if (which("llvm-ar") =~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
--                    $user{AR} = "llvm-ar";
--                    $user{ARFLAGS} = [ "rs" ];
--                    $user{RANLIB} = ":";
--                }
--            } elsif (-f "$ndk/AndroidVersion.txt") {    #"standalone toolchain"
--                my $cc = $user{CC} // "clang";
--                # One can probably argue that both clang and gcc should be
--                # probed, but support for "standalone toolchain" was added
--                # *after* announcement that gcc is being phased out, so
--                # favouring clang is considered adequate. Those who insist
--                # have option to enforce test for gcc with CC=gcc.
--                if (which("$triarch-$cc") !~ m|^$ndk|) {
--                    die "no NDK $triarch-$cc on \$PATH";
--                }
--                $user{CC} = $cc;
--                $user{CROSS_COMPILE} = "$triarch-";
--            } elsif ($user{CC} eq "clang") {
--                die "no NDK clang on \$PATH";
--            } else {
--                if (which("$triarch-gcc") !~ m|^$ndk/.*/prebuilt/([^/]+)/|) {
--                    die "no NDK $triarch-gcc on \$PATH";
--                }
--                $cflags .= " -mandroid";
--                $user{CROSS_COMPILE} = "$triarch-";
-+            if ($config{target} eq "android-arm") {
++            if ($arch eq "arm") {
 +                $cflags .= " -mthumb";
-+            } elsif ($config{target} eq "android-x86") {
++            } elsif ($arch eq "x86") {
 +                $cflags .= " -mstackrealign";
-             }
- 
--            if (!-d "$sysroot/usr/include") {
--                my $incroot = "$ndk/sysroot/usr/include";
--                die "no $incroot"          if (!-d $incroot);
--                die "no $incroot/$triarch" if (!-d "$incroot/$triarch");
--                $incroot =~ s|^$ndk/||;
--                $cppflags  = "-D__ANDROID_API__=$api";
--                $cppflags .= " -isystem \$($ndk_var)/$incroot/$triarch";
--                $cppflags .= " -isystem \$($ndk_var)/$incroot";
--            }
--
--            $sysroot =~ s|^$ndk/||;
-             $android_ndk = {
--                cflags   => "$cflags --sysroot=\$($ndk_var)/$sysroot",
--                cppflags => $cppflags,
--                bn_ops   => $arch =~ m/64$/ ? "SIXTY_FOUR_BIT_LONG"
--                                            : "BN_LLONG",
-+                CC       => $cc,
-+                cflags   => $cflags,
-+                cppflags => $cflags,
-+                bn_ops   => $config{target} =~ m/64$/ ? "SIXTY_FOUR_BIT_LONG"
-+                                                      : "BN_LLONG",
-             };
-         }
- 
-@@ -164,6 +82,7 @@ my %targets = (
-         # systems are perfectly capable of executing binaries targeting
-         # Froyo. Keep in mind that in the nutshell Android builds are
-         # about JNI, i.e. shared libraries, not applications.
-+        CC               => sub { android_ndk()->{CC} },
-         cflags           => add(sub { android_ndk()->{cflags} }),
-         cppflags         => add(sub { android_ndk()->{cppflags} }),
-         cxxflags         => add(sub { android_ndk()->{cflags} }),
-@@ -207,27 +126,6 @@ my %targets = (
-         bn_ops           => add("RC4_CHAR"),
-         perlasm_scheme   => "linux64",
-     },
--
--    "android-mips" => {
--        inherit_from     => [ "android", asm("mips32_asm") ],
--        bn_ops           => add("RC4_CHAR"),
--        perlasm_scheme   => "o32",
--    },
--    "android-mips64" => {
--        ################################################################
--        # You are more than likely have to specify target processor
--        # on ./Configure command line. Trouble is that toolchain's
--        # default is MIPS64r6 (at least in r10d), but there are no
--        # such processors around (or they are too rare to spot one).
--        # Actual problem is that MIPS64r6 is binary incompatible
--        # with previous MIPS ISA versions, in sense that unlike
--        # prior versions original MIPS binary code will fail.
--        #
--        inherit_from     => [ "android", asm("mips64_asm") ],
--        bn_ops           => add("RC4_CHAR"),
--        perlasm_scheme   => "64",
--    },
--
-     "android-x86" => {
-         inherit_from     => [ "android", asm("x86_asm") ],
-         CFLAGS           => add(picker(release => "-fomit-frame-pointer")),
-@@ -239,23 +137,4 @@ my %targets = (
-         bn_ops           => add("RC4_INT"),
-         perlasm_scheme   => "elf",
-     },
--
--    ####################################################################
--    # Backward compatible targets, (might) require $CROSS_SYSROOT
--    #
--    "android-armeabi" => {
--        inherit_from     => [ "android-arm" ],
--    },
--    "android64" => {
--        inherit_from     => [ "android" ],
--    },
--    "android64-aarch64" => {
--        inherit_from     => [ "android-arm64" ],
--    },
--    "android64-x86_64" => {
--        inherit_from     => [ "android-x86_64" ],
--    },
--    "android64-mips64" => {
--        inherit_from     => [ "android-mips64" ],
--    },
- );
++            }
++            $cflags .= " -fstack-protector-strong -D_FORTIFY_SOURCE=2";
++
+             if (length $sysroot) {
+                 if (!-d "$sysroot/usr/include") {
+                     my $incroot = "$ndk/sysroot/usr/include";
