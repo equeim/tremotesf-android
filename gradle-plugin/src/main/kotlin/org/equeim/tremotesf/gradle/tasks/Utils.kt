@@ -78,13 +78,14 @@ private fun ExecSpec.dropNdkEnvironmentVariables(logger: Logger) {
     }
 }
 
-internal fun ExecOperations.make(target: String, workingDir: File, logger: Logger, gradle: Gradle) =
+internal fun ExecOperations.make(target: String, workingDir: File, logger: Logger, gradle: Gradle, configure: ExecSpec.() -> Unit = {}) =
     exec(logger) {
         executable = MAKE
         args(defaultMakeArguments(gradle))
         args("--trace")
         args(target)
         this.workingDir = workingDir
+        configure()
     }
 
 private const val MAKE = "make"

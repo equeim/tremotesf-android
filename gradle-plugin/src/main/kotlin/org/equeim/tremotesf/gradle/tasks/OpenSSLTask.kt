@@ -64,6 +64,7 @@ abstract class OpenSSLTask @Inject constructor(
             cflags.add("-flto=thin")
         }
         cflags.add("-D__ANDROID_API__=${Versions.minSdk}")
+
         val target = when (abi) {
             "armeabi-v7a" -> {
                 cflags.add("-mfpu=neon")
@@ -74,12 +75,16 @@ abstract class OpenSSLTask @Inject constructor(
             "x86_64" -> "android-x86_64"
             else -> throw IllegalStateException("Unknown ABI")
         }
+
         val configureArgs = mutableListOf<String>().apply {
             add(target)
             addAll(COMMON_ARGUMENTS)
             add("--prefix=${installDir(opensslDir.get(), abi)}")
             addAll(cflags)
         }
+
+        val binDir = ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin")
+
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
             execOperations.exec(logger) {
@@ -88,13 +93,8 @@ abstract class OpenSSLTask @Inject constructor(
                 workingDir = buildDir
                 environment("ANDROID_NDK", ndkDir.get())
 
-                val binDir = ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin")
                 environment.compute("PATH") { _, value ->
-                    if (value == null) {
-                        binDir
-                    } else {
-                        "$binDir:$value"
-                    }
+                    if (value == null) binDir else "$binDir:$value"
                 }
                 if (ccache.get()) {
                     environment("CC", "ccache ${binDir.resolve("clang")}")
@@ -106,7 +106,11 @@ abstract class OpenSSLTask @Inject constructor(
 
         logger.lifecycle("Building OpenSSL")
         measureNanoTime {
-            execOperations.make("build_libs", buildDir, logger, gradle)
+            execOperations.make("build_libs", buildDir, logger, gradle) {
+                environment.compute("PATH") { _, value ->
+                    if (value == null) binDir else "$binDir:$value"
+                }
+            }
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
