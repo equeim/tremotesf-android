@@ -87,8 +87,17 @@ abstract class OpenSSLTask @Inject constructor(
                 args = configureArgs
                 workingDir = buildDir
                 environment("ANDROID_NDK", ndkDir.get())
+
+                val binDir = ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin")
+                environment.compute("PATH") { _, value ->
+                    if (value == null) {
+                        binDir
+                    } else {
+                        "$binDir:$value"
+                    }
+                }
                 if (ccache.get()) {
-                    environment("CC", "ccache ${ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin/clang")}")
+                    environment("CC", "ccache ${binDir.resolve("clang")}")
                 }
             }
         }.also {
