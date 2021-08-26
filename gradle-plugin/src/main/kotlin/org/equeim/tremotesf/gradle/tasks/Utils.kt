@@ -82,7 +82,6 @@ internal fun ExecOperations.make(target: String, workingDir: File, logger: Logge
     exec(logger) {
         executable = MAKE
         args(defaultMakeArguments(gradle))
-        args("--trace")
         args(target)
         this.workingDir = workingDir
         configure()
