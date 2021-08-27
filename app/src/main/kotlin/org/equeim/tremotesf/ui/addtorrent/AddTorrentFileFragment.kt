@@ -59,6 +59,7 @@ import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.addCustomCallback
@@ -392,6 +393,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
                 startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
             }
+
+            addNavigationBarBottomPadding(true)
         }
 
         override fun onSaveInstanceState(outState: Bundle) {
@@ -437,6 +440,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
+
+            addNavigationBarBottomPadding(true)
         }
 
         override fun onDestroyView() {
