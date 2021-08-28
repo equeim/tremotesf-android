@@ -342,7 +342,7 @@ class TorrentPropertiesFragment : NavigationFragment(
 
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-            addNavigationBarBottomPadding(true)
+            addNavigationBarBottomPadding()
         }
     }
 }

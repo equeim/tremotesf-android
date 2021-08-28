@@ -396,7 +396,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
             }
 
-            addNavigationBarBottomPadding(true)
+            addNavigationBarBottomPadding()
         }
 
         override fun onSaveInstanceState(outState: Bundle) {
@@ -443,7 +443,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
             model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
 
-            addNavigationBarBottomPadding(true)
+            addNavigationBarBottomPadding()
         }
 
         override fun onDestroyView() {

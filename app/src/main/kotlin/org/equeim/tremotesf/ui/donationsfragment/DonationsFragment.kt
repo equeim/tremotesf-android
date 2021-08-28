@@ -72,7 +72,7 @@ class DonationsFragment :
             }
         }
 
-        addNavigationBarBottomPadding(true)
+        addNavigationBarBottomPadding()
     }
 
     private fun onBillingSetup(isSetUp: Boolean) {

@@ -22,7 +22,6 @@ package org.equeim.tremotesf.ui
 import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
 
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate

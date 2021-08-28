@@ -26,7 +26,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.ScrollView
-import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
@@ -203,7 +202,7 @@ open class NavigationFragment(
     protected open fun onNavigatedFrom() = Unit
 }
 
-fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, forceViewForPadding: View? = null) {
+fun Fragment.addNavigationBarBottomPadding(forceViewForPadding: View? = null) {
     fun findViewsWithTagRecursively(view: View, tag: Any, block: (View) -> Unit) {
         if (view.tag == tag) {
             block(view)
@@ -216,11 +215,9 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, 
     }
 
     val rootView = requireView()
-    var foundViews = false
 
     if (forceViewForPadding != null) {
         handleBottomInsetWithPadding(forceViewForPadding)
-        foundViews = true
     }
 
     val setPaddingForRootView = when (rootView) {
@@ -230,21 +227,14 @@ fun Fragment.addNavigationBarBottomPadding(requestApplyInsets: Boolean = false, 
     }
     if (setPaddingForRootView) {
         handleBottomInsetWithPadding(rootView)
-        foundViews = true
     }
 
     findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_padding)) {
         handleBottomInsetWithPadding(it)
-        foundViews = true
     }
 
     findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_margin)) {
         handleBottomInsetWithMargin(it)
-        foundViews = true
-    }
-
-    if (requestApplyInsets && foundViews) {
-        rootView.requestApplyInsets()
     }
 }
 
