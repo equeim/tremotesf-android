@@ -28,8 +28,6 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -70,11 +68,7 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 import timber.log.Timber
 
 
-class ServerEditFragment : NavigationFragment(
-    R.layout.server_edit_fragment,
-    0,
-    R.menu.server_edit_fragment_menu
-) {
+class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) {
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
@@ -217,7 +211,18 @@ class ServerEditFragment : NavigationFragment(
                 }.collectWhenStarted(viewLifecycleOwner)
         }
 
-        setupToolbar()
+        toolbar?.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
+
+        binding.saveButton.apply {
+            if (model.existingServer == null) {
+                setText(R.string.add)
+                setIconResource(R.drawable.ic_add_24dp_night)
+            } else {
+                setText(R.string.save)
+                setIconResource(R.drawable.ic_done_24dp_night)
+            }
+            setOnClickListener { onDone() }
+        }
 
         if (savedInstanceState == null) {
             with(binding) {
@@ -248,11 +253,7 @@ class ServerEditFragment : NavigationFragment(
         }
     }
 
-    override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId != R.id.done) {
-            return false
-        }
-
+    private fun onDone(): Boolean {
         val error = getString(R.string.empty_field_error)
         val checkLength: (EditText) -> Boolean = { edit ->
             val ret: Boolean
@@ -294,19 +295,6 @@ class ServerEditFragment : NavigationFragment(
         }
 
         return true
-    }
-
-    private fun setupToolbar() {
-        toolbar?.apply {
-            setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
-            menu.findItem(R.id.done).setTitle(
-                if (model.existingServer == null) {
-                    R.string.add
-                } else {
-                    R.string.save
-                }
-            )
-        }
     }
 
     fun save() {
