@@ -48,8 +48,8 @@ class TorrentFilesFragment :
     private val binding by viewBinding(TorrentFilesFragmentBinding::bind)
     private var adapter: TorrentFilesAdapter? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val adapter = TorrentFilesAdapter(model, this)
         this.adapter = adapter

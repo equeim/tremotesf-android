@@ -64,8 +64,8 @@ class SettingsFragment : NavigationFragment(
             }
         }
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             addNavigationBarBottomPadding(forceViewForPadding = listView)
         }
 

@@ -79,8 +79,8 @@ class TorrentPropertiesFragment : NavigationFragment(
         TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         toolbar?.let {
             it.title = args.name
             menu = it.menu

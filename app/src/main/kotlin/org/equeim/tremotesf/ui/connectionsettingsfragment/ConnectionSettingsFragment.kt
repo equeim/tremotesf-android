@@ -57,8 +57,8 @@ class ConnectionSettingsFragment : NavigationFragment(
     var adapter: ServersAdapter? = null
         private set
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val adapter = ServersAdapter(this)
         this.adapter = adapter

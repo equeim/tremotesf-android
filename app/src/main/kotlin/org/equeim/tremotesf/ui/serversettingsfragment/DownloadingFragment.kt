@@ -20,24 +20,20 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
-import android.view.View
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class DownloadingFragment : ServerSettingsFragment.BaseFragment(
     R.layout.server_settings_downloading_fragment,
     R.string.server_settings_downloading
 ) {
-    private val binding by viewBinding(ServerSettingsDownloadingFragmentBinding::bind)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        with(ServerSettingsDownloadingFragmentBinding.bind(requireView())) {
             downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
             downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
                 GlobalRpc.serverSettings.downloadDirectory = it.toString()

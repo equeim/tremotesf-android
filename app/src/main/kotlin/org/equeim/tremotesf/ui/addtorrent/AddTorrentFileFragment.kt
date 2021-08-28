@@ -183,8 +183,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val pagerAdapter = PagerAdapter(this)
         this.pagerAdapter = pagerAdapter
@@ -380,7 +380,9 @@ class AddTorrentFileFragment : AddTorrentFragment(
         val binding by viewBinding(AddTorrentFileInfoFragmentBinding::bind)
         var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
+
             with(binding) {
                 priorityView.setText(R.string.normal_priority)
                 priorityView.setAdapter(ArrayDropdownAdapter((requireParentFragment() as AddTorrentFileFragment).priorityItems))
@@ -424,15 +426,15 @@ class AddTorrentFileFragment : AddTorrentFragment(
         var adapter: Adapter? = null
             private set
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
 
             val model = mainFragment.model
 
             val adapter = Adapter(model, this, requireActivity() as NavigationActivity)
             this.adapter = adapter
 
-            AddTorrentFileFilesFragmentBinding.bind(view).filesView.apply {
+            AddTorrentFileFilesFragmentBinding.bind(requireView()).filesView.apply {
                 this.adapter = adapter
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))

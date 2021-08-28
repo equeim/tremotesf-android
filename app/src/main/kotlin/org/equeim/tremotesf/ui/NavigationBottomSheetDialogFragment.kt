@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.core.content.withStyledAttributes
-import androidx.core.view.doOnLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -17,10 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import kotlinx.coroutines.delay
 import org.equeim.tremotesf.R
-import timber.log.Timber
-import kotlin.math.abs
 
 open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLayoutId: Int) : BottomSheetDialogFragment(), NavControllerProvider {
     override lateinit var navController: NavController
@@ -47,8 +41,8 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
         savedInstanceState: Bundle?
     ): View = inflater.inflate(contentLayoutId, container, false)
 
-    @CallSuper
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         // Workaround to disable corners animation when expanding bottom sheet
         // If we don't specify shapeAppearance in bottomSheetStyle (see styles.xml)
         // then BottomSheetBehavior won't create MaterialShapeDrawable background
@@ -73,7 +67,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                     shapeAppearanceOverlayResId
                 ).build()
 
-            (view.parent as View).background = background
+            (requireView().parent as View).background = background
         }
     }
 }

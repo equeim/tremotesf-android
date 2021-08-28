@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
-import android.view.View
 import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsNetworkFragmentBinding
@@ -28,7 +27,6 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
-import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class NetworkFragment : ServerSettingsFragment.BaseFragment(
@@ -44,11 +42,9 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(
         )
     }
 
-    private val binding by viewBinding(ServerSettingsNetworkFragmentBinding::bind)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        with(ServerSettingsNetworkFragmentBinding.bind(requireView())) {
             peerPortEdit.filters = arrayOf(IntFilter(0..65535))
             peerPortEdit.setText(GlobalRpc.serverSettings.peerPort.toString())
             peerPortEdit.doAfterTextChangedAndNotEmpty {

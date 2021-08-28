@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import android.view.View
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
@@ -84,7 +83,9 @@ class TorrentLimitsFragment :
         doubleFilter = DoubleFilter(0.0..MAX_RATIO_LIMIT)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
         with(binding) {
             scrollView.isEnabled = false
 
@@ -101,13 +102,7 @@ class TorrentLimitsFragment :
             idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..MAX_IDLE_SEEDING_LIMIT))
 
             maximumPeersEdit.filters = arrayOf(IntFilter(0..MAX_PEERS))
-        }
-    }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        with(binding) {
             updateView(restored = priorityView.text.isNotEmpty())
 
             globalLimitsCheckBox.setOnCheckedChangeListener { _, checked ->

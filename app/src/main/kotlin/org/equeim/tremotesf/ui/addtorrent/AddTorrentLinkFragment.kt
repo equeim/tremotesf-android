@@ -63,8 +63,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         Timber.i("onCreate: arguments = $arguments")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         with(binding) {
             args.uri?.let { torrentLinkEdit.setText(it.toString()) }

@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui
 
 import android.os.Bundle
-import android.view.View
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
@@ -43,13 +42,13 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     private val args: AboutFragmentArgs by navArgs()
     private var pagerAdapter: PagerAdapter? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         toolbar?.title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
         pagerAdapter = PagerAdapter(this)
 
-        with(AboutFragmentBinding.bind(view)) {
+        with(AboutFragmentBinding.bind(requireView())) {
             pager.adapter = pagerAdapter
             TabLayoutMediator(tabLayout, pager) { tab, position ->
                 tab.setText(PagerAdapter.getTitle(position))
@@ -106,10 +105,10 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     }
 
     class MainTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             resources.openRawResource(R.raw.about).use { inputStream ->
-                with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
+                with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
                     textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
                 }
             }
@@ -117,11 +116,11 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     }
 
     class AuthorsTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
 
             resources.openRawResource(R.raw.authors).use { inputStream ->
-                with(AboutFragmentBaseTabFragmentBinding.bind(view)) {
+                with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
                     textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
                 }
             }
@@ -129,20 +128,20 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     }
 
     class TranslatorsTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             resources.openRawResource(R.raw.translators).use {
-                AboutFragmentBaseTabFragmentBinding.bind(view).textView.text =
+                AboutFragmentBaseTabFragmentBinding.bind(requireView()).textView.text =
                     it.reader().readText()
             }
         }
     }
 
     class LicenseTabFragment : PagerFragment(R.layout.about_fragment_license_tab_fragment) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             resources.openRawResource(R.raw.license).use {
-                AboutFragmentLicenseTabFragmentBinding.bind(view).webView.loadData(
+                AboutFragmentLicenseTabFragmentBinding.bind(requireView()).webView.loadData(
                     it.reader().readText(), "text/html", null
                 )
             }

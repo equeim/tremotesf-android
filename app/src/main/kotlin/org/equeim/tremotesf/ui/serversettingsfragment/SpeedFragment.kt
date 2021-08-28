@@ -25,7 +25,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TimePicker
 import androidx.annotation.AttrRes
@@ -104,8 +103,8 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 

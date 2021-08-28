@@ -39,8 +39,8 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
     private val binding by viewBinding(TrackersFragmentBinding::bind)
     private var trackersAdapter: TrackersAdapter? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val trackersAdapter = TrackersAdapter(this)
         this.trackersAdapter = trackersAdapter

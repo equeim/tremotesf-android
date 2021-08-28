@@ -114,10 +114,12 @@ open class NavigationFragment(
         return false
     }
 
-    @CallSuper
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
         setupToolbar()
         createStatusBarPlaceholder()
+        addNavigationBarBottomPadding()
         navController.addOnDestinationChangedListener(destinationListener)
     }
 
@@ -179,11 +181,6 @@ open class NavigationFragment(
                 insets
             }
         }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        addNavigationBarBottomPadding()
     }
 
     override fun onDestroyView() {

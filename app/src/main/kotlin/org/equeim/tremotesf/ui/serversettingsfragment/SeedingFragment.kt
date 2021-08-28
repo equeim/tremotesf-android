@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
-import android.view.View
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSeedingFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -29,17 +28,14 @@ import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.viewBinding
 
 class SeedingFragment : ServerSettingsFragment.BaseFragment(
     R.layout.server_settings_seeding_fragment,
     R.string.server_settings_seeding
 ) {
-    private val binding by viewBinding(ServerSettingsSeedingFragmentBinding::bind)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        with(ServerSettingsSeedingFragmentBinding.bind(requireView())) {
             ratioLimitCheckBox.isChecked = GlobalRpc.serverSettings.ratioLimited
             ratioLimitCheckBox.setDependentViews(ratioLimitLayout) { checked ->
                 GlobalRpc.serverSettings.ratioLimited = checked

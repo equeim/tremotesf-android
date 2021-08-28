@@ -2,18 +2,15 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentMenuFragmentBinding
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
-import org.equeim.tremotesf.ui.utils.viewBinding
 import timber.log.Timber
 
 class AddTorrentMenuFragment : NavigationBottomSheetDialogFragment(R.layout.add_torrent_menu_fragment) {
     private lateinit var getContentActivityLauncher: ActivityResultLauncher<String>
-    private val binding by viewBinding(AddTorrentMenuFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +24,9 @@ class AddTorrentMenuFragment : NavigationBottomSheetDialogFragment(R.layout.add_
             }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        val binding = AddTorrentMenuFragmentBinding.bind(requireView())
         binding.addTorrentFile.setOnClickListener {
             startFilePickerActivity()
         }

@@ -45,8 +45,8 @@ class ServerSettingsFragment : NavigationFragment(
     private val binding by viewBinding(ServerSettingsFragmentBinding::bind)
     private var snackbar: Snackbar? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         binding.listView.apply {
             adapter = ArrayAdapter(
                 requireContext(),
@@ -120,8 +120,8 @@ class ServerSettingsFragment : NavigationFragment(
         @LayoutRes contentLayoutId: Int,
         @StringRes titleRes: Int
     ) : NavigationFragment(contentLayoutId, titleRes) {
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
             GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner) {
                 if (!it) {
                     navController.popBackStack()

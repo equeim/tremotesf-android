@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.os.Bundle
-import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
@@ -45,8 +44,8 @@ abstract class AddTorrentFragment(
         priorityItems = resources.getStringArray(R.array.priority_items)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         toolbar?.setNavigationOnClickListener {
             if (!requireActivity().isTaskRoot) {
                 // FIXME: https://issuetracker.google.com/issues/145231159

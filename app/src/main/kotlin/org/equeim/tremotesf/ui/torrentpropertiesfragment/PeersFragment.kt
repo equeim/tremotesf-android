@@ -77,8 +77,8 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
     private val model: Model by viewModels { viewModelFactory { Model(TorrentPropertiesFragmentViewModel.get(this).torrent) } }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         val peersAdapter = PeersAdapter()
         this.peersAdapter = peersAdapter

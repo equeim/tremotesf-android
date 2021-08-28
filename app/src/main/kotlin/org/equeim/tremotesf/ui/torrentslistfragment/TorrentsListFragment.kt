@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -57,7 +56,7 @@ class TorrentsListFragment : NavigationFragment(
     0,
     R.menu.torrents_list_fragment_menu
 ) {
-    val binding by viewBinding(TorrentsListFragmentBinding::bind)
+    private val binding by viewBinding(TorrentsListFragmentBinding::bind)
     private var torrentsAdapter: TorrentsAdapter? = null
 
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
@@ -67,8 +66,8 @@ class TorrentsListFragment : NavigationFragment(
         TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         setupBottomBar()
 
         val torrentsAdapter = TorrentsAdapter(this)
@@ -101,11 +100,11 @@ class TorrentsListFragment : NavigationFragment(
         model.subtitleUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         model.showAddTorrentDuplicateError.handleAndReset {
-            view.showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
+            requireView().showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
         }.collectWhenStarted(viewLifecycleOwner)
 
         model.showAddTorrentError.handleAndReset {
-            view.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
+            requireView().showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }.collectWhenStarted(viewLifecycleOwner)
     }
 

@@ -16,10 +16,11 @@ import org.equeim.tremotesf.ui.utils.setChildrenEnabled
 
 class TransmissionSettingsDialogFragment :
     NavigationBottomSheetDialogFragment(R.layout.transmission_settings_dialog_fragment) {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        val binding = TransmissionSettingsDialogFragmentBinding.bind(view)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        val binding = TransmissionSettingsDialogFragmentBinding.bind(requireView())
 
         with(binding) {
             connectButton.setOnClickListener {

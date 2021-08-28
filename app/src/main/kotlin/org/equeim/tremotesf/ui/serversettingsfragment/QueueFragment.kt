@@ -20,25 +20,21 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
-import android.view.View
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsQueueFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class QueueFragment : ServerSettingsFragment.BaseFragment(
     R.layout.server_settings_queue_fragment,
     R.string.server_settings_queue
 ) {
-    private val binding by viewBinding(ServerSettingsQueueFragmentBinding::bind)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        with(ServerSettingsQueueFragmentBinding.bind(requireView())) {
             downloadQueueCheckBox.isChecked = GlobalRpc.serverSettings.downloadQueueEnabled
             downloadQueueCheckBox.setDependentViews(downloadQueueLayout) { checked ->
                 GlobalRpc.serverSettings.downloadQueueEnabled = checked

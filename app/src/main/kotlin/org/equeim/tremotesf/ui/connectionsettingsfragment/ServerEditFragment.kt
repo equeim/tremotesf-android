@@ -94,8 +94,8 @@ class ServerEditFragment : NavigationFragment(
             model.backgroundLocationPermissionHelper?.registerWithFragment(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         with(binding) {
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
@@ -454,8 +454,8 @@ class ServerCertificatesFragment : NavigationFragment(
 
     private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         model = ServerEditFragmentViewModel.from(this, args.server)
 
@@ -510,8 +510,8 @@ class ServerProxySettingsFragment : NavigationFragment(
         proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {

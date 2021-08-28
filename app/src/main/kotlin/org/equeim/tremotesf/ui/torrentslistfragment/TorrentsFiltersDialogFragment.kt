@@ -1,7 +1,6 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
-import android.view.View
 import androidx.navigation.navGraphViewModels
 import kotlinx.coroutines.flow.filter
 import org.equeim.tremotesf.R
@@ -17,8 +16,8 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
     private val binding by viewBinding(TorrentsFiltersDialogFragmentBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
 
         with (binding) {
             sortView.apply {
