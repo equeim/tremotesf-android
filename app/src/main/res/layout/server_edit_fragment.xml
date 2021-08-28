@@ -237,7 +237,7 @@
             android:paddingStart="@dimen/horizontal_edge_padding"
             android:paddingEnd="@dimen/horizontal_edge_padding"
             android:tag="@string/add_navigation_bar_margin"
-            tools:icon="@drawable/ic_add_24dp_night"
+            app:icon="@drawable/ic_done_24dp_night"
             tools:text="@string/add" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

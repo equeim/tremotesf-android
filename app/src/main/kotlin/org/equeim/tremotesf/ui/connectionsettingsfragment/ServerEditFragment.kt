@@ -214,13 +214,12 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
         toolbar?.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
 
         binding.saveButton.apply {
-            if (model.existingServer == null) {
-                setText(R.string.add)
-                setIconResource(R.drawable.ic_add_24dp_night)
+            setText(if (model.existingServer == null) {
+                R.string.add
             } else {
-                setText(R.string.save)
-                setIconResource(R.drawable.ic_done_24dp_night)
-            }
+                R.string.save
+            })
+            isExtended = true
             setOnClickListener { onDone() }
         }
 
