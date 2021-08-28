@@ -69,19 +69,9 @@ class ConnectionSettingsFragment : NavigationFragment(
             serversView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
-            fab.setOnClickListener {
+            addServerButton.setOnClickListener {
                 navigate(ConnectionSettingsFragmentDirections.toServerEditFragment(null))
             }
-
-            serversView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0) {
-                        fab.hide()
-                    } else if (dy < 0) {
-                        fab.show()
-                    }
-                }
-            })
         }
 
         GlobalServers.servers.collectWhenStarted(viewLifecycleOwner, ::update)

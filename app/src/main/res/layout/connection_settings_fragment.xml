@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar_container"
-        layout="@layout/toolbar"/>
+        layout="@layout/toolbar" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -22,24 +21,24 @@
             android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
             android:gravity="center_horizontal"
             android:text="@string/no_servers"
-            android:textAppearance="@style/PlaceholderTextAppearance"/>
+            android:textAppearance="@style/PlaceholderTextAppearance" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/servers_view"
-            android:tag="@string/add_navigation_bar_padding"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:paddingBottom="64dp"
+            android:tag="@string/add_navigation_bar_padding" />
     </FrameLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:tag="@string/add_navigation_bar_margin"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_server_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_add_24dp_night"
-        app:fabSize="normal"/>
+        android:tag="@string/add_navigation_bar_margin"
+        android:text="@string/add_server"
+        app:icon="@drawable/ic_add_24dp_night" />
 </RelativeLayout>
