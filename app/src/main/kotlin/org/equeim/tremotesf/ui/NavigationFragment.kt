@@ -202,7 +202,7 @@ open class NavigationFragment(
     protected open fun onNavigatedFrom() = Unit
 }
 
-fun Fragment.addNavigationBarBottomPadding(forceViewForPadding: View? = null) {
+fun Fragment.addNavigationBarBottomPadding() {
     fun findViewsWithTagRecursively(view: View, tag: Any, block: (View) -> Unit) {
         if (view.tag == tag) {
             block(view)
@@ -215,10 +215,6 @@ fun Fragment.addNavigationBarBottomPadding(forceViewForPadding: View? = null) {
     }
 
     val rootView = requireView()
-
-    if (forceViewForPadding != null) {
-        handleBottomInsetWithPadding(forceViewForPadding)
-    }
 
     val setPaddingForRootView = when (rootView) {
         is ScrollView, is NestedScrollView, is ListView -> true
