@@ -69,7 +69,7 @@
         app:hideOnScroll="true">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/mtrl_bottomappbar_height">
 
             <androidx.appcompat.widget.ActionMenuView
@@ -80,7 +80,8 @@
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/searchView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="match_parent" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
