@@ -21,7 +21,6 @@ package org.equeim.tremotesf.ui.utils
 
 import android.app.Application
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

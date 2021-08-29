@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import androidx.core.text.trimmedLength
 import androidx.navigation.fragment.navArgs

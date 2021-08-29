@@ -22,11 +22,7 @@ package org.equeim.tremotesf.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-
-import org.equeim.tremotesf.ui.utils.safeNavigate
 
 
 open class NavigationDialogFragment : AppCompatDialogFragment(), NavControllerProvider {

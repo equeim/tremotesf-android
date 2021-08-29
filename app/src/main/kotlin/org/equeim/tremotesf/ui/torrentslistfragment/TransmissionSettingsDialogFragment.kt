@@ -1,9 +1,7 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
-import android.view.View
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
 import kotlinx.coroutines.flow.combine
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
@@ -12,7 +10,6 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.setChildrenEnabled
 
 class TransmissionSettingsDialogFragment :
     NavigationBottomSheetDialogFragment(R.layout.transmission_settings_dialog_fragment) {

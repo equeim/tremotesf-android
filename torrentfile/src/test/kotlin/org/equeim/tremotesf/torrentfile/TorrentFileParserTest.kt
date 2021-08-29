@@ -3,7 +3,6 @@ package org.equeim.tremotesf.torrentfile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
-import org.equeim.tremotesf.common.TremotesfDispatchers
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
