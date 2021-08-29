@@ -5,46 +5,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <org.equeim.tremotesf.ui.views.FastScrollRecyclerView
-            android:id="@+id/torrents_view"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/mtrl_bottomappbar_height"
-            android:scrollbars="none"
-            android:tag="@string/add_navigation_bar_padding"
-            app:bubbleColor="?attr/colorControlActivated"
-            app:handleColor="?attr/colorControlNormal" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/placeholder_view"
+            <org.equeim.tremotesf.ui.views.FastScrollRecyclerView
+                android:id="@+id/torrents_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/mtrl_bottomappbar_height"
+                android:scrollbars="none"
+                android:tag="@string/add_navigation_bar_padding"
+                app:bubbleColor="?attr/colorControlActivated"
+                app:handleColor="?attr/colorControlNormal" />
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/placeholder_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"
-            android:orientation="vertical">
+            android:layout_gravity="center_horizontal" />
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
-
-            <TextView
-                android:id="@+id/placeholder_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:gravity="center_horizontal"
-                android:textAppearance="@style/PlaceholderTextAppearance" />
-        </LinearLayout>
-    </FrameLayout>
+        <TextView
+            android:id="@+id/placeholder_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/PlaceholderTextAppearance" />
+    </LinearLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"

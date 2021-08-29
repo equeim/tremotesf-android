@@ -70,6 +70,13 @@ class TorrentsListFragment : NavigationFragment(
         super.onViewStateRestored(savedInstanceState)
         setupBottomBar()
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            GlobalRpc.nativeInstance.updateData()
+        }
+        GlobalRpc.torrentsUpdatedEvent.collectWhenStarted(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
         val torrentsAdapter = TorrentsAdapter(this)
         this.torrentsAdapter = torrentsAdapter
 
@@ -178,6 +185,8 @@ class TorrentsListFragment : NavigationFragment(
         }
 
         with(binding) {
+            swipeRefreshLayout.isRefreshing = false
+
             bottomToolbar.apply {
                 hideOnScroll = connected
                 if (!connected) performShow()

@@ -118,6 +118,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:${Versions.AndroidX.navigation}")
     implementation("androidx.recyclerview:recyclerview:${Versions.AndroidX.recyclerview}")
     implementation("androidx.preference:preference:${Versions.AndroidX.preference}")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:${Versions.AndroidX.swipeRefreshLayout}")
     implementation("androidx.viewpager2:viewpager2:${Versions.AndroidX.viewpager2}")
     implementation("androidx.work:work-runtime:${Versions.AndroidX.work}")
 

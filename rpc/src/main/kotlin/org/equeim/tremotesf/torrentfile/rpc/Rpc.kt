@@ -242,6 +242,9 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     private val _gotFreeSpaceForPathEvents = MutableEventFlow<GotFreeSpaceForPathData>()
     val gotFreeSpaceForPathEvents: Flow<GotFreeSpaceForPathData> by ::_gotFreeSpaceForPathEvents
 
+    private val _torrentsUpdatedEvent = MutableEventFlow<Unit>()
+    val torrentsUpdatedEvent: Flow<Unit> by ::_torrentsUpdatedEvent
+
     private val _torrents = MutableStateFlow<List<Torrent>>(emptyList())
     val torrents: StateFlow<List<Torrent>> by ::_torrents
 
@@ -384,6 +387,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         }
 
         _torrents.value = newTorrents
+        _torrentsUpdatedEvent.tryEmit(Unit)
     }
 
     protected open fun onTorrentFinished(id: Int, hashString: String, name: String) = Unit

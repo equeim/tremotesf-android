@@ -31,6 +31,7 @@ object Versions {
 
         const val recyclerview = "1.2.1"
         const val preference = "1.1.1"
+        const val swipeRefreshLayout = "1.1.0"
         const val viewpager2 = "1.0.0"
         const val work = "2.5.0"
 
