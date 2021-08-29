@@ -5,6 +5,7 @@
 - Fast scroll support in torrents list
 - PEM certificate can now be loaded from a file
 - Swipe to refresh feature
+- Quick scroll to top by tapping on top toolbar on main screen, files list and peers list
 
 ### Changed
 - Optimized opening of torrent files with large number of files

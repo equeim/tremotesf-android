@@ -46,6 +46,7 @@ import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
@@ -81,9 +82,20 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        toolbar?.let {
-            it.title = args.name
-            menu = it.menu
+        toolbar?.let { toolbar ->
+            toolbar.title = args.name
+            menu = toolbar.menu
+
+            if (Settings.quickReturn) {
+                toolbar.setOnClickListener {
+                    val tab = PagerAdapter.tabs[binding.pager.currentItem]
+                    childFragmentManager.fragments
+                        .asSequence()
+                        .filterIsInstance<PagerFragment>()
+                        .find { it.tab == tab }
+                        ?.onToolbarClicked()
+                }
+            }
         }
 
         val pagerAdapter = PagerAdapter(this)
@@ -300,7 +312,7 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            private val tabs = Tab.values()
+            val tabs = Tab.values()
 
             @StringRes
             fun getTitle(position: Int): Int {
@@ -337,8 +349,9 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
     }
 
-    abstract class PagerFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
+    abstract class PagerFragment(@LayoutRes contentLayoutId: Int, val tab: PagerAdapter.Tab) : Fragment(contentLayoutId) {
         open fun onNavigatedFromParent() = Unit
+        open fun onToolbarClicked() = Unit
 
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)

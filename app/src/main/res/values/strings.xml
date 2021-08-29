@@ -407,7 +407,11 @@
     <string name="added_torrents_channel_name">Added torrents</string>
 
     <string name="appearance">Appearance</string>
+    <string name="behaviour">Behaviour</string>
     <string name="torrents">Torrents</string>
+
+    <string name="quick_return_title">Quick return</string>
+    <string name="quick_return_summary">Tap the top toolbar to return to the top</string>
 
     <string name="prefs_delete_files_title">Delete files on the hard disk when removing torrent</string>
 

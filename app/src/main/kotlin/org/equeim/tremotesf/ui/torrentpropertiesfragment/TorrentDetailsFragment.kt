@@ -32,7 +32,7 @@ import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
 class TorrentDetailsFragment :
-    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment) {
+    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_details_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Details) {
 
     private var firstUpdate = true
 

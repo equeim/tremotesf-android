@@ -34,7 +34,7 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 
 
 class TorrentFilesFragment :
-    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment) {
+    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Files) {
 
     private val model by viewModels<TorrentFilesFragmentViewModel>(::requireParentFragment) {
         savedStateViewModelFactory { _, handle ->
@@ -73,6 +73,10 @@ class TorrentFilesFragment :
                 model.filesTree.renameFile(filePath, newName)
             }
         }
+    }
+
+    override fun onToolbarClicked() {
+        binding.filesView.scrollToPosition(0)
     }
 
     override fun onDestroyView() {

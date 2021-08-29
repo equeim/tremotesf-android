@@ -27,4 +27,6 @@
         <item>dark</item>
         <item>light</item>
     </string-array>
+
+    <string name="prefs_quick_return" translatable="false">quickReturn</string>
 </resources>

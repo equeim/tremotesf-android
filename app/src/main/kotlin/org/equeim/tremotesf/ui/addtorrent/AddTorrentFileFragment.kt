@@ -58,6 +58,7 @@ import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
+import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
@@ -211,6 +212,18 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
         })
 
+        if (Settings.quickReturn) {
+            toolbar?.setOnClickListener {
+                Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.tabs[binding.pager.currentItem]}")
+                if (PagerAdapter.tabs[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
+                    childFragmentManager.fragments
+                        .filterIsInstance<FilesFragment>()
+                        .singleOrNull()
+                        ?.onToolbarClicked()
+                }
+            }
+        }
+
         model.viewUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
@@ -350,7 +363,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            private val tabs = Tab.values()
+            val tabs = Tab.values()
 
             @StringRes
             fun getTitle(position: Int): Int {
@@ -423,6 +436,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         private val mainFragment: AddTorrentFileFragment
             get() = requireParentFragment() as AddTorrentFileFragment
 
+        private val binding by viewBinding(AddTorrentFileFilesFragmentBinding::bind)
         var adapter: Adapter? = null
             private set
 
@@ -434,7 +448,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             val adapter = Adapter(model, this, requireActivity() as NavigationActivity)
             this.adapter = adapter
 
-            AddTorrentFileFilesFragmentBinding.bind(requireView()).filesView.apply {
+            binding.filesView.apply {
                 this.adapter = adapter
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
@@ -444,6 +458,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
             model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
 
             addNavigationBarBottomPadding()
+        }
+
+        fun onToolbarClicked() {
+            binding.filesView.scrollToPosition(0)
         }
 
         override fun onDestroyView() {

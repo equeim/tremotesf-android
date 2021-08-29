@@ -27,6 +27,15 @@
             app:singleLineTitle="false"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/behaviour">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/prefs_quick_return"
+            app:title="@string/quick_return_title"
+            app:singleLineTitle="false"
+            app:summary="@string/quick_return_summary" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/torrents">
         <CheckBoxPreference
             android:defaultValue="false"

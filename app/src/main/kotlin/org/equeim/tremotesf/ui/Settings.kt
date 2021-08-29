@@ -51,6 +51,9 @@ object Settings {
     private val torrentCompactViewKey = context.getString(R.string.prefs_torrent_compact_view_key)
     private val torrentNameMultilineKey =
         context.getString(R.string.prefs_torrent_name_multiline_key)
+
+    private val quickReturnKey = context.getString(R.string.prefs_quick_return)
+
     val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
     val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
     val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
@@ -111,6 +114,11 @@ object Settings {
     val torrentNameMultiline: Boolean
         get() {
             return preferences.getBoolean(torrentNameMultilineKey, false)
+        }
+
+    val quickReturn: Boolean
+        get() {
+            return preferences.getBoolean(quickReturnKey, false)
         }
 
     val showPersistentNotification: Boolean

@@ -68,6 +68,13 @@ class TorrentsListFragment : NavigationFragment(
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+
+        if (Settings.quickReturn) {
+            toolbar?.setOnClickListener {
+                binding.torrentsView.scrollToPosition(0)
+            }
+        }
+
         setupBottomBar()
 
         binding.swipeRefreshLayout.setOnRefreshListener {

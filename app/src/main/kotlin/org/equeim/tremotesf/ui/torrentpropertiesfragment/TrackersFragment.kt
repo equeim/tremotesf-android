@@ -32,7 +32,7 @@ import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.collectWhenStarted
 
 
-class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment) {
+class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Trackers) {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 

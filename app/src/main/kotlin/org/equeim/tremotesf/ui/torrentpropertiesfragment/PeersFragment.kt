@@ -71,7 +71,7 @@ data class Peer(
     }
 }
 
-class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment) {
+class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Peers) {
     private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 
@@ -96,6 +96,10 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             .collectWhenStarted(viewLifecycleOwner) { (torrent, peers, loaded) ->
                 updatePlaceholder(torrent, peers, loaded)
             }
+    }
+
+    override fun onToolbarClicked() {
+        binding.peersView.scrollToPosition(0)
     }
 
     override fun onDestroyView() {
