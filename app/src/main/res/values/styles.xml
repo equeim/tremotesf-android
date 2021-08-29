@@ -7,6 +7,8 @@
         <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/light_system_bars</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+<!--       Android removes background from our icon on splash screen. Override windowSplashScreenIconBackgroundColor to fix it -->
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/ic_launcher_background</item>
 
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">?colorPrimary</item>

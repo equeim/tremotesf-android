@@ -6,9 +6,9 @@ import org.gradle.kotlin.dsl.extra
 import java.util.concurrent.atomic.AtomicReference
 
 object Versions {
-    const val compileSdk = 30
+    const val compileSdk = 31
     const val minSdk = 21
-    const val targetSdk = compileSdk
+    const val targetSdk = 30
     const val ndk = "22.1.7171670"
 
     const val kotlinxCoroutines = "1.5.1"
