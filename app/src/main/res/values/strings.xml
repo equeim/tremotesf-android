@@ -506,4 +506,6 @@
     <string name="transmission_settings">Transmission settings</string>
 
     <string name="load_from_file">Load from file</string>
+
+    <string name="free_space_in_download_directory">Free space in download directory</string>
 </resources>

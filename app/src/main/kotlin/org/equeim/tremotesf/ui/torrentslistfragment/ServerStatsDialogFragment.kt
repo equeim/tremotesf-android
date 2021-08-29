@@ -40,6 +40,9 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GlobalRpc.isConnected.combine(GlobalRpc.serverStats, ::Pair).collectWhenStarted(this, ::update)
+        GlobalRpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(this) {
+            binding?.freeSpaceInDownloadDirectoryTextView?.text = FormatUtils.formatByteSize(requireContext(), it)
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -97,6 +100,8 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
             )
             totalDurationTextView.text =
                 FormatUtils.formatDuration(requireContext(), totalStats.duration())
+
+            GlobalRpc.nativeInstance.getDownloadDirFreeSpace()
         }
     }
 }

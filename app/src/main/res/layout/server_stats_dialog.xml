@@ -157,5 +157,20 @@
             android:ellipsize="end"
             android:maxLines="2"
             app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/free_space_in_download_directory"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/free_space_in_download_directory_text_view"
+            android:layout_width="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
     </androidx.gridlayout.widget.GridLayout>
 </ScrollView>

@@ -6,6 +6,7 @@
 - PEM certificate can now be loaded from a file
 - Swipe to refresh feature
 - Quick scroll to top by tapping on top toolbar on main screen, files list and peers list
+- Server stats dialog now shows free space in download directory
 
 ### Changed
 - Optimized opening of torrent files with large number of files
