@@ -44,6 +44,14 @@
                     android:scrollbars="vertical"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <Button
+                android:id="@+id/self_signed_certificate_load_from_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/load_from_file" />
+
             <CheckBox
                 android:id="@+id/client_certificate_check_box"
                 android:layout_width="match_parent"
@@ -66,6 +74,14 @@
                     android:inputType="textMultiLine|textUri"
                     android:scrollbars="vertical"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/client_certificate_load_from_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/load_from_file" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

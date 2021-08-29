@@ -500,4 +500,6 @@
 
     <string name="torrents_filters">Filters</string>
     <string name="transmission_settings">Transmission settings</string>
+
+    <string name="load_from_file">Load from file</string>
 </resources>

@@ -2,7 +2,8 @@
 
 ## [Unreleased]
 ### Added
-- Added fast scroll support in torrents list
+- Fast scroll support in torrents list
+- PEM certificate can now be loaded from a file
 
 ### Changed
 - Optimized opening of torrent files with large number of files

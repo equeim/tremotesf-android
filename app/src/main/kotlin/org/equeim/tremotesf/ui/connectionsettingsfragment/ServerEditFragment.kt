@@ -20,17 +20,23 @@
 package org.equeim.tremotesf.ui.connectionsettingsfragment
 
 import android.Manifest
+import android.app.Activity
 import android.app.Application
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.launch
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.os.bundleOf
@@ -40,13 +46,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Server
@@ -436,10 +446,43 @@ class ServerCertificatesFragment : NavigationFragment(
     R.layout.server_edit_certificates_fragment,
     R.string.certificates
 ) {
+    private lateinit var getServerCertificateLauncher: ActivityResultLauncher<Unit>
+    private lateinit var getClientCertificateLauncher: ActivityResultLauncher<Unit>
+
     private val args: ServerCertificatesFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
     private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val handleCertificateResult = { uri: Uri, view: TextView ->
+            Timber.d("handleCertificateResult() called with: uri = $uri, view = $view")
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val stream = requireContext().contentResolver.openInputStream(uri)
+                    if (stream != null) {
+                        val text = stream.reader().readText()
+                        withContext(Dispatchers.Main) {
+                            view.text = text
+                        }
+                    } else {
+                        Timber.e("handleCertificateResult: InputStream is null")
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "handleCertificateResult: failed to read content")
+                }
+            }
+        }
+
+        getServerCertificateLauncher = registerForActivityResult(GetPemFileContract()) {
+            if (it != null) handleCertificateResult(it, binding.selfSignedCertificateEdit)
+        }
+        getClientCertificateLauncher = registerForActivityResult(GetPemFileContract()) {
+            if (it != null) handleCertificateResult(it, binding.clientCertificateEdit)
+        }
+    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -447,14 +490,29 @@ class ServerCertificatesFragment : NavigationFragment(
         model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {
-            selfSignedCertificateCheckBox.setDependentViews(selfSignedCertificateLayout)
-            clientCertificateCheckBox.setDependentViews(clientCertificateLayout)
+            selfSignedCertificateCheckBox.setDependentViews(selfSignedCertificateLayout, selfSignedCertificateLoadFromFile)
+            clientCertificateCheckBox.setDependentViews(clientCertificateLayout, clientCertificateLoadFromFile)
 
             with(model.server) {
                 selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
                 selfSignedCertificateEdit.setText(selfSignedCertificate)
                 clientCertificateCheckBox.isChecked = clientCertificateEnabled
                 clientCertificateEdit.setText(clientCertificate)
+            }
+
+            selfSignedCertificateLoadFromFile.setOnClickListener {
+                try {
+                    getServerCertificateLauncher.launch()
+                } catch (e: ActivityNotFoundException) {
+                    Timber.e(e, "Failed to start activity")
+                }
+            }
+            clientCertificateLoadFromFile.setOnClickListener {
+                try {
+                    getClientCertificateLauncher.launch()
+                } catch (e: ActivityNotFoundException) {
+                    Timber.e(e, "Failed to start activity")
+                }
             }
         }
     }
@@ -469,6 +527,19 @@ class ServerCertificatesFragment : NavigationFragment(
                     clientCertificate = clientCertificateEdit.text?.toString() ?: ""
                 }
             }
+        }
+    }
+
+    private class GetPemFileContract : ActivityResultContract<Unit, Uri?>() {
+        override fun createIntent(context: Context, input: Unit?): Intent {
+            return Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("*/*")
+                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-pem-file", "text/plain"))
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+            return if (intent == null || resultCode != Activity.RESULT_OK) null else intent.data
         }
     }
 }
