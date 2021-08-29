@@ -44,7 +44,7 @@ object Versions {
     const val fastscroll = "2.0.1"
     const val billing = "4.0.0"
 
-    const val timber = "5.0.0"
+    const val timber = "5.0.1"
 
     const val junit = "4.13.2"
 
