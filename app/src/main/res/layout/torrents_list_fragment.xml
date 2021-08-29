@@ -92,7 +92,7 @@
         android:contentDescription="@string/add_torrent"
         app:layout_anchor="@id/bottom_toolbar"
         app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
-        app:srcCompat="@drawable/ic_add_24dp_night" />
+        app:srcCompat="@drawable/ic_add_24dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/action_button"

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/icon_color_enabled_focused_night" android:state_enabled="true" android:state_focused="true" />
-    <item android:color="@color/icon_color_enabled_unfocused_night" android:state_enabled="true" android:state_focused="false" />
-    <item android:color="@color/icon_color_disabled_night" />
-</selector>

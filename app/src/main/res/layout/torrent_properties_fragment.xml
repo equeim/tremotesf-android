@@ -70,5 +70,5 @@
         android:visibility="invisible"
         app:fabSize="normal"
         app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
-        app:srcCompat="@drawable/ic_add_24dp_night" />
+        app:srcCompat="@drawable/ic_add_24dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

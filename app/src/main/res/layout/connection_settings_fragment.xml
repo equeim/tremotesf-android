@@ -40,5 +40,5 @@
         android:layout_marginBottom="@dimen/fab_margin"
         android:tag="@string/add_navigation_bar_margin"
         android:text="@string/add_server"
-        app:icon="@drawable/ic_add_24dp_night" />
+        app:icon="@drawable/ic_add_24dp" />
 </RelativeLayout>
