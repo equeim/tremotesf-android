@@ -43,7 +43,7 @@ import timber.log.Timber
 class AddTorrentLinkFragment : AddTorrentFragment(
     R.layout.add_torrent_link_fragment,
     R.string.add_torrent_link,
-    R.menu.add_torrent_fragment_menu
+    0
 ) {
     companion object {
         val SCHEMES = arrayOf("magnet")
@@ -53,7 +53,6 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private val binding by viewBinding(AddTorrentLinkFragmentBinding::bind)
 
-    private var doneMenuItem: MenuItem? = null
     private var snackbar: Snackbar? = null
 
     private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
@@ -73,9 +72,9 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
 
             startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
-        }
 
-        doneMenuItem = toolbar?.menu?.findItem(R.id.done)
+            addButton.setOnClickListener { addTorrentLink() }
+        }
 
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(
             binding.downloadDirectoryLayout,
@@ -91,60 +90,50 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     }
 
     override fun onDestroyView() {
-        doneMenuItem = null
         snackbar = null
         directoriesAdapter = null
         super.onDestroyView()
     }
 
-    override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.done) {
-            with(binding) {
-                var error = false
+    private fun addTorrentLink(): Unit = with(binding) {
+        var error = false
 
-                torrentLinkEdit.textInputLayout.error =
-                    if (torrentLinkEdit.text?.trimmedLength() == 0) {
-                        error = true
-                        getString(R.string.empty_field_error)
-                    } else {
-                        null
-                    }
-
-                val downloadDirectoryEdit = downloadDirectoryLayout.downloadDirectoryEdit
-                val downloadDirectoryLayout = downloadDirectoryLayout.downloadDirectoryLayout
-
-                downloadDirectoryLayout.error =
-                    if (downloadDirectoryEdit.text?.trimmedLength() == 0) {
-                        error = true
-                        getString(R.string.empty_field_error)
-                    } else {
-                        null
-                    }
-
-                if (error) {
-                    return false
-                }
-
-                GlobalRpc.nativeInstance.addTorrentLink(
-                    torrentLinkEdit.text?.toString() ?: "",
-                    downloadDirectoryEdit.text.toString(),
-                    priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())].swigValue(),
-                    startDownloadingCheckBox.isChecked
-                )
-
-                directoriesAdapter?.save()
-
-                activity?.onBackPressed()
+        torrentLinkEdit.textInputLayout.error =
+            if (torrentLinkEdit.text?.trimmedLength() == 0) {
+                error = true
+                getString(R.string.empty_field_error)
+            } else {
+                null
             }
-            return true
+
+        val downloadDirectoryEdit = downloadDirectoryLayout.downloadDirectoryEdit
+        val downloadDirectoryLayout = downloadDirectoryLayout.downloadDirectoryLayout
+
+        downloadDirectoryLayout.error =
+            if (downloadDirectoryEdit.text?.trimmedLength() == 0) {
+                error = true
+                getString(R.string.empty_field_error)
+            } else {
+                null
+            }
+
+        if (error) {
+            return
         }
 
-        return false
+        GlobalRpc.nativeInstance.addTorrentLink(
+            torrentLinkEdit.text?.toString() ?: "",
+            downloadDirectoryEdit.text.toString(),
+            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())].swigValue(),
+            startDownloadingCheckBox.isChecked
+        )
+
+        directoriesAdapter?.save()
+
+        activity?.onBackPressed()
     }
 
     private fun updateView(status: Rpc.Status) {
-        doneMenuItem?.isVisible = status.isConnected
-
         with(binding) {
             when (status.connectionState) {
                 RpcConnectionState.Disconnected -> {
@@ -175,9 +164,11 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                     scrollView.visibility = View.VISIBLE
                 }
                 placeholderLayout.visibility = View.GONE
+                addButton.show()
             } else {
                 placeholderLayout.visibility = View.VISIBLE
                 scrollView.visibility = View.GONE
+                addButton.hide()
             }
 
             progressBar.visibility = if (status.connectionState == RpcConnectionState.Connecting) {

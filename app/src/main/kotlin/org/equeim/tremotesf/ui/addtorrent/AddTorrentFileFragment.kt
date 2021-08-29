@@ -22,9 +22,6 @@ package org.equeim.tremotesf.ui.addtorrent
 import android.content.ContentResolver
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
@@ -76,7 +73,7 @@ import timber.log.Timber
 class AddTorrentFileFragment : AddTorrentFragment(
     R.layout.add_torrent_file_fragment,
     R.string.add_torrent_file,
-    R.menu.add_torrent_fragment_menu
+    0
 ) {
     companion object {
         val SCHEMES = arrayOf(ContentResolver.SCHEME_FILE, ContentResolver.SCHEME_CONTENT)
@@ -156,7 +153,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
-    private var doneMenuItem: MenuItem? = null
     private var pagerAdapter: PagerAdapter? = null
     private var backPressedCallback: OnBackPressedCallback? = null
     private var snackbar: Snackbar? = null
@@ -193,6 +189,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
+
+        binding.addButton.setOnClickListener { addTorrentFile() }
 
         requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
             !done &&
@@ -246,21 +244,13 @@ class AddTorrentFileFragment : AddTorrentFragment(
     }
 
     override fun onDestroyView() {
-        doneMenuItem = null
         pagerAdapter = null
         backPressedCallback = null
         snackbar = null
         super.onDestroyView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_torrent_fragment_menu, menu)
-    }
-
-    override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId != R.id.done) {
-            return false
-        }
+    private fun addTorrentFile() {
         val infoFragment = findFragment<InfoFragment>()
         if (infoFragment?.check() == true) {
             val priorities = model.getFilePriorities()
@@ -277,9 +267,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             infoFragment.directoriesAdapter?.save()
             done = true
             activity?.onBackPressed()
-            return true
         }
-        return false
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
@@ -294,12 +282,13 @@ class AddTorrentFileFragment : AddTorrentFragment(
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                     subtitle = model.torrentName
                 }
-                doneMenuItem?.isVisible = true
 
                 tabLayout.visibility = View.VISIBLE
                 pager.visibility = View.VISIBLE
 
                 placeholderLayout.visibility = View.GONE
+
+                addButton.show()
 
                 if (model.rememberedPagerItem != -1) {
                     pager.setCurrentItem(model.rememberedPagerItem, false)
@@ -330,11 +319,12 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
                 placeholderLayout.visibility = View.VISIBLE
 
+                addButton.hide()
+
                 this@AddTorrentFileFragment.toolbar?.apply {
                     (layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
                     subtitle = null
                 }
-                doneMenuItem?.isVisible = false
 
                 hideKeyboard()
 

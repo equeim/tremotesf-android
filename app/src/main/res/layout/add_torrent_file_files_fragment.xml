@@ -10,5 +10,6 @@
         android:layout_height="match_parent"
         android:scrollbars="none"
         app:handleColor="?attr/colorControlNormal"
-        app:bubbleColor="?attr/colorControlActivated" />
+        app:bubbleColor="?attr/colorControlActivated"
+        android:paddingBottom="@dimen/extended_fab_content_padding" />
 </FrameLayout>

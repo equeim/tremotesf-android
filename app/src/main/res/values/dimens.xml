@@ -10,6 +10,7 @@
     <dimen name="text_size_smaller">12sp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="extended_fab_content_padding">72dp</dimen>
 
     <dimen name="linear_layout_vertical_spacing">8dp</dimen>
     <dimen name="linear_layout_vertical_spacing_double">16dp</dimen>

@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            android:paddingBottom="64dp"
+            android:paddingBottom="@dimen/extended_fab_content_padding"
             android:tag="@string/add_navigation_bar_padding">
 
             <LinearLayout

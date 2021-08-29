@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
         android:orientation="vertical"
-        android:paddingVertical="@dimen/vertical_edge_padding">
+        android:layout_marginTop="@dimen/vertical_edge_padding"
+        android:layout_marginBottom="@dimen/extended_fab_content_padding">
 
         <include layout="@layout/download_directory_edit" android:id="@+id/download_directory_layout"/>
 
