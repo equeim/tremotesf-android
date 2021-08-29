@@ -94,6 +94,7 @@ class TorrentsListFragment : NavigationFragment(
                 addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             }
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
         }
 
         model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)

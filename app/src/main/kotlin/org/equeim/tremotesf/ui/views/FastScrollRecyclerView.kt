@@ -16,8 +16,9 @@ class FastScrollRecyclerView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
+
     @SuppressLint("ResourceType")
-    private val fastScroller = FastScroller(context).apply {
+    val fastScroller = FastScroller(context).apply {
         context.withStyledAttributes(
             attrs = intArrayOf(
                 R.attr.colorControlActivated,
