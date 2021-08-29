@@ -36,7 +36,7 @@ class Torrent private constructor(
 
     val name: String = data.name
 
-    val status = data.status
+    val status: TorrentData.Status = data.status
     val errorString: String = data.errorString
 
     val totalSize = data.totalSize
