@@ -266,9 +266,6 @@
     <string name="torrent_link">Torrent Link</string>
     <string name="add_torrent_link">Füge Torrent Link hinzu</string>
 
-    <string name="select_file">Wähle Datei aus</string>
-    <string name="primary_storage">Hauptspeicher</string>
-
     <string name="current_session">Aktuelle Sitzung</string>
     <string name="total">Gesamt</string>
     <string name="duration">Dauer</string>
@@ -469,5 +466,4 @@
     <string name="enable_location">Standort aktivieren</string>
 
     <string name="storage_permission_rationale_torrent">Tremotesf erforder Zugriff auf die Berechtigung für den Speicher, damit diese Torrentdatei geöffnet werden kann</string>
-    <string name="storage_permission_rationale_file_picker">Tremotesf erfordert Zugriff auf die Berechtigung für den Speicher, damit Dateien auf diesem Gerät angezeigt werden können</string>
 </resources>
