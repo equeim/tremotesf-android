@@ -78,7 +78,11 @@ class TorrentsListFragment : NavigationFragment(
         setupBottomBar()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            GlobalRpc.nativeInstance.updateData()
+            if (GlobalRpc.isConnected.value) {
+                GlobalRpc.nativeInstance.updateData()
+            } else {
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
         }
         GlobalRpc.torrentsUpdatedEvent.collectWhenStarted(viewLifecycleOwner) {
             binding.swipeRefreshLayout.isRefreshing = false
@@ -193,7 +197,10 @@ class TorrentsListFragment : NavigationFragment(
         }
 
         with(binding) {
-            swipeRefreshLayout.isRefreshing = false
+            swipeRefreshLayout.apply {
+                isRefreshing = false
+                isEnabled = connected
+            }
 
             bottomToolbar.apply {
                 hideOnScroll = connected
