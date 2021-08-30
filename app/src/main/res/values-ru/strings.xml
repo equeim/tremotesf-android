@@ -450,7 +450,7 @@
     <string name="donations_donate">Пожертвовать</string>
     <string name="donations_amount">Размер пожертвования</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google взимает 30% комиссии с каждого пожертвования</string>
+    <string name="donations_google_description" formatted="false">Google взимает 30% комиссии с каждого пожертвования</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">После нажатия на кнопку вы можете выбрать сколько хотите пожертвовать</string>
     <string name="donations_yandex_title">Яндекс.Деньги</string>

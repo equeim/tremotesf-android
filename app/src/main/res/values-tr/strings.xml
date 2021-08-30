@@ -427,7 +427,7 @@
     <string name="donations_donate">Bağış</string>
     <string name="donations_amount">Bağış miktarı</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google ücretin %30\\\'unu talep ediyor</string>
+    <string name="donations_google_description" formatted="false">Google ücretin %30\\\'unu talep ediyor</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">Düğmeye bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
     <string name="donations_yandex_title">Yandex.Money</string>

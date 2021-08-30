@@ -427,7 +427,7 @@
     <string name="donations_donate">Dona</string>
     <string name="donations_amount">Ammontare da donare</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google addebita una commissione del 30%</string>
+    <string name="donations_google_description" formatted="false">Google addebita una commissione del 30%</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">Puoi scegliere quanto donare dopo aver premuto il pulsante</string>
     <string name="donations_yandex_title">Yandex.Money</string>

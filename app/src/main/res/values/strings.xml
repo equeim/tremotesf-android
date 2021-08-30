@@ -463,7 +463,7 @@
     <string name="donations_donate">Donate</string>
     <string name="donations_amount">Donation amount</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google charges a fee of 30%</string>
+    <string name="donations_google_description" formatted="false">Google charges a fee of 30%</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">You can choose how much you want to donate after clicking the button</string>
     <string name="donations_yandex_title">Yandex.Money</string>
