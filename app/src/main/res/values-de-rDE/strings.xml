@@ -266,6 +266,9 @@
     <string name="torrent_link">Torrent Link</string>
     <string name="add_torrent_link">Füge Torrent Link hinzu</string>
 
+    <string name="select_file">Wähle Datei aus</string>
+    <string name="primary_storage">Hauptspeicher</string>
+
     <string name="current_session">Aktuelle Sitzung</string>
     <string name="total">Gesamt</string>
     <string name="duration">Dauer</string>
@@ -290,6 +293,7 @@
     </plurals>
 
     <string name="start">Start</string>
+    <string name="start_now">Jetzt starten</string>
     <string name="pause">Pause</string>
 
     <plurals name="remove_torrents_message">
@@ -427,7 +431,7 @@
     <string name="donations_donate">Spenden</string>
     <string name="donations_amount">Höhe der Spende</string>
     <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description">Google behält eine Gebühr von 30%% ein</string>
+    <string name="donations_google_description">Google behält eine Gebühr von 30% ein</string>
     <string name="donations_paypal_title">Paypal</string>
     <string name="donations_paypal_description">Sie können nach dem Klick auf den Button auswählen wie viel Sie spenden möchten</string>
     <string name="donations_yandex_title">Yandex.Money</string>
@@ -445,4 +449,25 @@
         <item>SOCKS5</item>
     </string-array>
 
-    </resources>
+    <string name="auto_connect_on_wifi_network">Automatisch mit diesem Server verbinden, wenn mit Wi-Fi-Netzwerk verbunden</string>
+    <string name="wifi_ssid_hint">Wi-Fi-Netzwerk-SSID</string>
+    <string name="wifi_ssid_set_from_current">Aus aktuellem Wi-Fi-Netzwerk eingestellt</string>
+    <string name="location_permission_rationale">Tremotesf erfordert Zugriff auf die Berechtigung für den Standort, um Informationen über die Wi-Fi SSID zu erhalten</string>
+    <string name="request_location_permission">Berechtigung für Standort anfordern</string>
+    <string name="background_wifi_networks_explanation_fdroid">Um diese Funktion nutzen zu können während sich die App im Hintergrund befindet, aktivieren Sie bitte die dauerhaften Benachrichtigung in den App-Einstellungen oder gewähren die Berechtigung für den Standort im Hintergrund </string>
+    <string name="background_wifi_networks_explanation_google">Um diese Funktion nutzen zu können während sich die App im Hintergrund befindet, aktivieren Sie bitte die dauerhaften Benachrichtigung in den App-Einstellungen</string>
+    <string name="background_location_permission_rationale">Tremotesf erfordert Zugriff auf die Berechtigung für den Standort im Hintergrund, um Informationen über die Wi-Fi SSID im Hintergrund, ohne dauerhafte Benachrichtigung, zu erhalten</string>
+    <string name="request_background_location_permission">Berechtigung für Standort im Hintergrund anfordern</string>
+    <string name="background_location_permission_granted">Berechtigung für Standort im Hintergrund gewährt</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">Bitte erlauben Sie die Berechtigung über die Systemeinstellungen</string>
+    <string name="go_to_settings">Zu den Einstellungen gehen</string>
+
+    <string name="current_ssid_error">SSID des aktuellen Wi-Fi-Netzwerks ist unbekannt</string>
+
+    <string name="request_enable_location">Bitte aktivieren Sie den Standort in den Systemeinstellungen</string>
+    <string name="enable_location">Standort aktivieren</string>
+
+    <string name="storage_permission_rationale_torrent">Tremotesf erforder Zugriff auf die Berechtigung für den Speicher, damit diese Torrentdatei geöffnet werden kann</string>
+    <string name="storage_permission_rationale_file_picker">Tremotesf erfordert Zugriff auf die Berechtigung für den Speicher, damit Dateien auf diesem Gerät angezeigt werden können</string>
+</resources>
