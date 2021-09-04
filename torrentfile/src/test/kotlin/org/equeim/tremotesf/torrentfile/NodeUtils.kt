@@ -39,10 +39,6 @@ fun TorrentFilesTree.Node.getAllNodes(): Sequence<TorrentFilesTree.Node> {
     }
 }
 
-fun TorrentFilesTree.Node.getAllItems(): Sequence<TorrentFilesTree.Item> {
-    return getAllNodes().map { it.item }
-}
-
 class NodesThatMustChangeHelper(val nodes: List<TorrentFilesTree.Node>) {
     constructor(nodes: Sequence<TorrentFilesTree.Node>) : this(nodes.toList())
     constructor(vararg nodes: TorrentFilesTree.Node) : this(nodes.toList())
@@ -61,7 +57,6 @@ class NodesThatMustNotChangeHelper(val nodes: List<TorrentFilesTree.Node>) {
     constructor(vararg nodes: TorrentFilesTree.Node) : this(nodes.toList())
 
     private val oldItems = nodes.map { it.item }
-    private val oldItemCopies = oldItems.map { it.copy() }
 
     fun assertThatItemsAreNotChanged() = nodes.asSequence().zip(oldItems.asSequence()).forEach { (node, oldItem) ->
         assertSame(oldItem, node.item)
