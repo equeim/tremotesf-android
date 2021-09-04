@@ -67,7 +67,7 @@
     </style>
 
     <style name="Widget.Tremotesf.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
-        <!-- A hack to disable corners animation (see NavigationBottomSheetDialogFragment) -->
+        <!-- A hack to set our own corners animation (see NavigationBottomSheetDialogFragment) -->
         <item name="shapeAppearance">@null</item>
         <item name="shapeAppearanceOverlay">@null</item>
         <item name="behavior_skipCollapsed">true</item>
