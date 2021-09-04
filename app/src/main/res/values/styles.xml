@@ -71,6 +71,8 @@
         <item name="shapeAppearance">@null</item>
         <item name="shapeAppearanceOverlay">@null</item>
         <item name="behavior_skipCollapsed">true</item>
+        <item name="paddingRightSystemWindowInsets">false</item>
+        <item name="paddingLeftSystemWindowInsets">false</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">

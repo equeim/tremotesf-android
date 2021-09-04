@@ -7,6 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.content.withStyledAttributes
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.updateLayoutParams
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -43,6 +48,20 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+
+        ViewCompat.setOnApplyWindowInsetsListener(requireDialog().findViewById(android.R.id.content)) { view, insets ->
+            view.apply {
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                if (marginLeft != systemBars.left || marginRight != systemBars.right) {
+                    updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        leftMargin = systemBars.left
+                        rightMargin = systemBars.right
+                    }
+                }
+            }
+            insets
+        }
+
         // Workaround to disable corners animation when expanding bottom sheet
         // If we don't specify shapeAppearance in bottomSheetStyle (see styles.xml)
         // then BottomSheetBehavior won't create MaterialShapeDrawable background
@@ -67,7 +86,8 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                     shapeAppearanceOverlayResId
                 ).build()
 
-            (requireView().parent as View).background = background
+            val bottomSheet = requireView().parent as View
+            bottomSheet.background = background
         }
     }
 }
