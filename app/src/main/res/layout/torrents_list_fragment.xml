@@ -80,16 +80,31 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/mtrl_bottomappbar_height">
 
-            <androidx.appcompat.widget.ActionMenuView
-                android:id="@+id/bottom_menu_view"
+            <ImageButton
+                android:id="@+id/transmission_settings"
+                style="?actionButtonStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
+                android:contentDescription="@string/transmission_settings"
+                app:srcCompat="@drawable/ic_transmission_settings_24dp" />
+
+            <ImageButton
+                android:id="@+id/torrents_filters"
+                style="?actionButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
+                android:contentDescription="@string/torrents_filters"
+                app:srcCompat="@drawable/ic_baseline_filter_list_24" />
 
             <androidx.appcompat.widget.SearchView
-                android:id="@+id/searchView"
+                android:id="@+id/search_view"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
                 android:layout_weight="1" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
@@ -114,5 +129,6 @@
         android:textAlignment="center"
         app:layout_anchor="@id/bottom_toolbar"
         app:layout_anchorGravity="end"
-        tools:text="@string/connect" />
+        tools:text="@string/connect"
+        tools:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -22,6 +22,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.navigation.navGraphViewModels
@@ -133,47 +134,49 @@ class TorrentsListFragment : NavigationFragment(
     }
 
     private fun setupBottomBar() {
-        requireActivity().menuInflater.inflate(R.menu.torrents_list_fragment_bottom_menu, binding.bottomMenuView.menu)
-        binding.bottomMenuView.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.torrents_filters -> navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment())
-                R.id.transmission_settings -> navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment())
-                else -> return@setOnMenuItemClickListener false
+        with(binding) {
+            transmissionSettings.apply {
+                TooltipCompat.setTooltipText(this, contentDescription)
+                setOnClickListener { navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment()) }
             }
-            true
-        }
+            torrentsFilters.apply {
+                TooltipCompat.setTooltipText(this, contentDescription)
+                setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
+            }
 
-        binding.searchView.apply {
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextChange(newText: String): Boolean {
-                    model.nameFilter.value = newText.trim()
-                    return true
+            searchView.apply {
+                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextChange(newText: String): Boolean {
+                        model.nameFilter.value = newText.trim()
+                        return true
+                    }
+
+                    override fun onQueryTextSubmit(query: String): Boolean {
+                        return false
+                    }
+                })
+
+                setOnSearchClickListener {
+                    model.searchViewIsIconified.value = false
+                }
+                setOnCloseListener {
+                    model.searchViewIsIconified.value = true
+                    false
                 }
 
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    return false
+                requiredActivity.onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
+                    collapse()
                 }
-            })
-
-            setOnSearchClickListener {
-                model.searchViewIsIconified.value = false
             }
-            setOnCloseListener {
-                model.searchViewIsIconified.value = true
-                false
+
+            model.searchViewIsIconified.collectWhenStarted(viewLifecycleOwner) {
+                transmissionSettings.isVisible = it
+                torrentsFilters.isVisible = it
             }
-        }
 
-        requiredActivity.onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
-            binding.searchView.collapse()
-        }
-
-        model.searchViewIsIconified.collectWhenStarted(viewLifecycleOwner) {
-            binding.bottomMenuView.isVisible = it
-        }
-
-        binding.addTorrentButton.setOnClickListener {
-            navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
+            addTorrentButton.setOnClickListener {
+                navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
+            }
         }
     }
 
@@ -207,7 +210,7 @@ class TorrentsListFragment : NavigationFragment(
                 if (!connected) performShow()
             }
 
-            bottomMenuView.menu.findItem(R.id.torrents_filters).isVisible = connected
+            binding.torrentsFilters.isVisible = connected
 
             searchView.apply {
                 if (!connected) {
@@ -219,7 +222,7 @@ class TorrentsListFragment : NavigationFragment(
     }
 
     private fun updateTransmissionSettingsMenuItem(hasServers: Boolean) {
-        binding.bottomMenuView.menu.findItem(R.id.transmission_settings).isVisible = hasServers
+        binding.transmissionSettings.isVisible = hasServers
     }
 
     private fun updateTitle(currentServer: Server?) {

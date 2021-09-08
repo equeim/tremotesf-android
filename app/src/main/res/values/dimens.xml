@@ -27,4 +27,7 @@
     <dimen name="card_margins">8dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
+
+    <dimen name="bottom_app_bar_icon_margin">0dp</dimen>
+    <dimen name="bottom_app_bar_icon_size">48dp</dimen>
 </resources>
