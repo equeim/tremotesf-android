@@ -23,12 +23,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.map
 import org.equeim.libtremotesf.RpcConnectionState
@@ -78,15 +80,26 @@ class TorrentsListFragment : NavigationFragment(
 
         setupBottomBar()
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            if (GlobalRpc.isConnected.value) {
-                GlobalRpc.nativeInstance.updateData()
-            } else {
-                binding.swipeRefreshLayout.isRefreshing = false
+        binding.swipeRefreshLayout.apply {
+            requireContext().withStyledAttributes(attrs = intArrayOf(R.attr.colorPrimary)) {
+                setColorSchemeColors(getColor(0, 0))
             }
-        }
-        GlobalRpc.torrentsUpdatedEvent.collectWhenStarted(viewLifecycleOwner) {
-            binding.swipeRefreshLayout.isRefreshing = false
+            val elevation = resources.getDimension(R.dimen.swipe_refresh_progress_bar_elevation)
+            setProgressBackgroundColorSchemeColor(
+                ElevationOverlayProvider(requireContext())
+                    .compositeOverlayWithThemeSurfaceColorIfNeeded(elevation)
+            )
+
+            setOnRefreshListener {
+                if (GlobalRpc.isConnected.value) {
+                    GlobalRpc.nativeInstance.updateData()
+                } else {
+                    binding.swipeRefreshLayout.isRefreshing = false
+                }
+            }
+            GlobalRpc.torrentsUpdatedEvent.collectWhenStarted(viewLifecycleOwner) {
+                isRefreshing = false
+            }
         }
 
         val torrentsAdapter = TorrentsAdapter(this)

@@ -30,4 +30,6 @@
 
     <dimen name="bottom_app_bar_icon_margin">0dp</dimen>
     <dimen name="bottom_app_bar_icon_size">48dp</dimen>
+
+    <dimen name="swipe_refresh_progress_bar_elevation">16dp</dimen>
 </resources>
