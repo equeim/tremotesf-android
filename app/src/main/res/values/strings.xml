@@ -508,4 +508,6 @@
     <string name="load_from_file">Load from file</string>
 
     <string name="free_space_in_download_directory">Free space in download directory</string>
+
+    <string name="bottom_sheet_behavior" translatable="false">org.equeim.tremotesf.ui.ExpandedBottomSheetBehavior</string>
 </resources>

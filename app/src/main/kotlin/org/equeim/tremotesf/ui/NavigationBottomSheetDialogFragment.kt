@@ -1,12 +1,18 @@
 package org.equeim.tremotesf.ui
 
 import android.animation.ValueAnimator
-import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.annotation.LayoutRes
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.res.getDimensionOrThrow
+import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
@@ -34,23 +40,12 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     private var roundedCorners = true
     private var cornersAnimator: ValueAnimator? = null
 
-    private val behavior: BottomSheetBehavior<*>
-        get() = (requireDialog() as BottomSheetDialog).behavior
+    private val behavior: ExpandedBottomSheetBehavior
+        get() = (requireDialog() as BottomSheetDialog).behavior as ExpandedBottomSheetBehavior
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navController = findNavController()
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return (super.onCreateDialog(savedInstanceState) as BottomSheetDialog).apply {
-            // Disable 'peeking' when opening bottom sheet
-            setOnShowListener {
-                requireView().post {
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-            }
-        }
     }
 
     override fun onCreateView(
@@ -90,12 +85,12 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
             R.styleable.BottomSheetBehavior_Layout
         ) {
             val elevation =
-                getDimension(R.styleable.BottomSheetBehavior_Layout_android_elevation, 0.0f)
+                getDimensionOrThrow(R.styleable.BottomSheetBehavior_Layout_android_elevation)
             val background =
                 MaterialShapeDrawable.createWithElevationOverlay(requireContext(), elevation)
 
             val shapeAppearanceResId =
-                getResourceId(R.styleable.BottomSheetBehavior_Layout_shapeAppearance, 0)
+                getResourceIdOrThrow(R.styleable.BottomSheetBehavior_Layout_shapeAppearance)
             val shapeAppearanceOverlayResId = R.style.ShapeAppearanceOverlay_Tremotesf_BottomSheet
             background.shapeAppearanceModel =
                 ShapeAppearanceModel.builder(
@@ -105,6 +100,10 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                 ).build()
 
             bottomSheet.background = background
+            bottomSheet.backgroundTintList = AppCompatResources.getColorStateList(
+                requireContext(),
+                getResourceIdOrThrow(R.styleable.BottomSheetBehavior_Layout_backgroundTint)
+            )
 
             cornersAnimator = ValueAnimator().apply {
                 duration = CORNERS_ANIMATION_DURATION
@@ -118,8 +117,6 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
             override fun onStateChanged(bottomSheet: View, newState: Int) = updateCorners()
             override fun onSlide(bottomSheet: View, slideOffset: Float) = updateCorners()
         })
-
-        updateCorners()
     }
 
     override fun onDestroyView() {
@@ -144,6 +141,59 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
             } else {
                 if (roundedCorners) setFloatValues(0.0f, 1.0f) else setFloatValues(1.0f, 0.0f)
                 start()
+            }
+        }
+    }
+}
+
+@Keep
+class ExpandedBottomSheetBehavior(context: Context, attrs: AttributeSet?) : BottomSheetBehavior<View>(context, attrs) {
+    init {
+        state = STATE_EXPANDED
+    }
+
+    private val callbacks = mutableListOf<BottomSheetCallback>()
+    private var firstLayout = true
+
+    @Suppress("deprecation")
+    override fun setBottomSheetCallback(callback: BottomSheetCallback?) {
+        super.setBottomSheetCallback(callback)
+        callbacks.clear()
+        if (callback != null) callbacks.add(callback)
+    }
+
+    override fun addBottomSheetCallback(callback: BottomSheetCallback) {
+        super.addBottomSheetCallback(callback)
+        callbacks.add(callback)
+    }
+
+    override fun removeBottomSheetCallback(callback: BottomSheetCallback) {
+        super.removeBottomSheetCallback(callback)
+        callbacks.remove(callback)
+    }
+
+    override fun onAttachedToLayoutParams(layoutParams: CoordinatorLayout.LayoutParams) {
+        super.onAttachedToLayoutParams(layoutParams)
+        firstLayout = true
+    }
+
+    override fun onDetachedFromLayoutParams() {
+        super.onDetachedFromLayoutParams()
+        firstLayout = true
+    }
+
+    override fun onLayoutChild(
+        parent: CoordinatorLayout,
+        child: View,
+        layoutDirection: Int
+    ): Boolean {
+        return super.onLayoutChild(parent, child, layoutDirection).also {
+            if (firstLayout) {
+                firstLayout = false
+                // Notify callbacks that we are actually expanded
+                child.post {
+                    callbacks.forEach { it.onStateChanged(child, state) }
+                }
             }
         }
     }
