@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -59,6 +60,12 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
         ViewCompat.setOnApplyWindowInsetsListener(requireDialog().findViewById(android.R.id.content)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            if (lastSystemBarInsets == null && bottomSheet?.paddingTop != systemBars.top) {
+                // This padding is set by BottomSheetDialog but tool late, so sometimes
+                // view jumping can be observed when opening dialog
+                // Set ourselves for the first time
+                bottomSheet?.updatePadding(top = systemBars.top)
+            }
             lastSystemBarInsets = systemBars
             view.apply {
                 if (marginLeft != systemBars.left || marginRight != systemBars.right) {
