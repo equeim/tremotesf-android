@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -81,7 +82,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Eta,
         Ratio,
         Size,
-        AddedDate
+        AddedDate;
+
+        companion object {
+            val DEFAULT = Name
+        }
     }
 
     enum class SortOrder {
@@ -92,6 +97,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             return if (this == Ascending) Descending
             else Ascending
         }
+
+        companion object {
+            val DEFAULT = Ascending
+        }
     }
 
     enum class StatusFilterMode {
@@ -101,7 +110,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Seeding,
         Paused,
         Checking,
-        Errored
+        Errored;
+
+        companion object {
+            val DEFAULT = All
+        }
     }
 
     val sortMode by savedStateFlow(savedStateHandle) { Settings.torrentsSortMode }
@@ -110,7 +123,39 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val statusFilterMode by savedStateFlow(savedStateHandle) { Settings.torrentsStatusFilter }
     val trackerFilter by savedStateFlow(savedStateHandle) { Settings.torrentsTrackerFilter }
     val directoryFilter by savedStateFlow(savedStateHandle) { Settings.torrentsDirectoryFilter }
+
+    init {
+        sortMode.drop(1).onEach { Settings.torrentsSortMode = it }.launchIn(viewModelScope)
+        sortOrder.drop(1).onEach { Settings.torrentsSortOrder = it }.launchIn(viewModelScope)
+        statusFilterMode.drop(1).onEach { Settings.torrentsStatusFilter = it }.launchIn(viewModelScope)
+        trackerFilter.drop(1).onEach { Settings.torrentsTrackerFilter = it }.launchIn(viewModelScope)
+        directoryFilter.drop(1).onEach { Settings.torrentsDirectoryFilter = it }.launchIn(viewModelScope)
+    }
+
     val nameFilter by savedStateFlow(savedStateHandle) { "" }
+
+    fun resetSortAndFilters() {
+        sortMode.value = SortMode.DEFAULT
+        sortOrder.value = SortOrder.DEFAULT
+        statusFilterMode.value = StatusFilterMode.DEFAULT
+        trackerFilter.value = ""
+        directoryFilter.value = ""
+    }
+
+    val sortOrFiltersEnabled = combine(
+        sortMode,
+        sortOrder,
+        statusFilterMode,
+        trackerFilter,
+        directoryFilter,
+    ) { (sortMode, sortOrder, statusFilterMode, trackerFilter, directoryFilter) ->
+        @Suppress("cast_never_succeeds")
+        sortMode != SortMode.DEFAULT ||
+                sortOrder != SortOrder.DEFAULT ||
+                statusFilterMode != StatusFilterMode.DEFAULT ||
+                (trackerFilter as String).isNotEmpty() ||
+                (directoryFilter as String).isNotEmpty()
+    }
 
     private val filteredTorrents = combine(
         GlobalRpc.torrents,

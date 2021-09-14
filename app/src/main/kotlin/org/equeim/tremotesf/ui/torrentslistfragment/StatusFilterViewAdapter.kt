@@ -31,9 +31,10 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 class StatusFilterViewAdapter(
     private val context: Context,
-    private val model: TorrentsListFragmentViewModel,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
+    private var statusFilterMode = StatusFilterMode.DEFAULT
+
     private var activeTorrents = 0
     private var downloadingTorrents = 0
     private var seedingTorrents = 0
@@ -59,10 +60,12 @@ class StatusFilterViewAdapter(
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(model.statusFilterMode.value.ordinal)
+        return getItem(statusFilterMode.ordinal)
     }
 
-    fun update(torrents: List<Torrent>) {
+    fun update(torrents: List<Torrent>, statusFilterMode: StatusFilterMode) {
+        this.statusFilterMode = statusFilterMode
+
         activeTorrents = 0
         downloadingTorrents = 0
         seedingTorrents = 0

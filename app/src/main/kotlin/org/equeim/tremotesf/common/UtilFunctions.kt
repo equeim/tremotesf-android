@@ -19,9 +19,9 @@
 
 package org.equeim.tremotesf.common
 
-inline fun <reified T : Enum<T>> enumFromInt(value: Int): T {
+inline fun <reified T : Enum<T>> enumFromInt(value: Int, default: T): T {
     val values = enumValues<T>()
-    return values.getOrNull(value) ?: values.first()
+    return values.getOrNull(value) ?: default
 }
 
 fun String.dropTrailingPathSeparator(): String = if (endsWith('/')) {

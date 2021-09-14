@@ -98,7 +98,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
                 android:contentDescription="@string/torrents_filters"
-                app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+                app:srcCompat="@drawable/ic_baseline_filter_list_highlighted_24" />
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_view"

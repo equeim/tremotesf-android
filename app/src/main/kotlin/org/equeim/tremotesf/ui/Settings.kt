@@ -161,19 +161,19 @@ object Settings {
         }
 
     var torrentsSortMode: TorrentsListFragmentViewModel.SortMode
-        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_MODE, 0))
+        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_MODE, -1), TorrentsListFragmentViewModel.SortMode.DEFAULT)
         set(value) {
             preferences.edit { putInt(TORRENTS_SORT_MODE, value.ordinal) }
         }
 
     var torrentsSortOrder: TorrentsListFragmentViewModel.SortOrder
-        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_ORDER, 0))
+        get() = enumFromInt(preferences.getInt(TORRENTS_SORT_ORDER, -1), TorrentsListFragmentViewModel.SortOrder.DEFAULT)
         set(value) {
             preferences.edit { putInt(TORRENTS_SORT_ORDER, value.ordinal) }
         }
 
     var torrentsStatusFilter: TorrentsListFragmentViewModel.StatusFilterMode
-        get() = enumFromInt(preferences.getInt(TORRENTS_STATUS_FILTER, 0))
+        get() = enumFromInt(preferences.getInt(TORRENTS_STATUS_FILTER, -1), TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT)
         set(value) {
             preferences.edit { putInt(TORRENTS_STATUS_FILTER, value.ordinal) }
         }

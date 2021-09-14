@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
@@ -155,6 +156,10 @@ class TorrentsListFragment : NavigationFragment(
             torrentsFilters.apply {
                 TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
+                val badgeDrawable = (drawable as LayerDrawable).getDrawable(1)
+                model.sortOrFiltersEnabled.collectWhenStarted(viewLifecycleOwner) {
+                    badgeDrawable.alpha = if (it) 192 else 0
+                }
             }
 
             searchView.apply {

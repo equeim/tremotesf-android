@@ -39,6 +39,8 @@ class DirectoriesViewAdapter(
         private set
     private val comparator = AlphanumericComparator()
 
+    private var directoryFilter = ""
+
     override fun getItem(position: Int): String {
         if (position == 0) {
             return context.getString(R.string.torrents_all, GlobalRpc.torrents.value.size)
@@ -64,7 +66,9 @@ class DirectoriesViewAdapter(
         }
     }
 
-    fun update(torrents: List<Torrent>) {
+    fun update(torrents: List<Torrent>, directoryFilter: String) {
+        this.directoryFilter = directoryFilter
+
         directoriesMap.clear()
         for (torrent in torrents) {
             val directory = torrent.downloadDirectory.dropTrailingPathSeparator()
