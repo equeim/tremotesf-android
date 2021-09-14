@@ -38,7 +38,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
     private var lastSystemBarInsets: Insets? = null
     private var bottomSheet: View? = null
-    private var roundedCorners = true
+    private var expandedToTheTop = false
     private var cornersAnimator: ValueAnimator? = null
 
     private val behavior: ExpandedBottomSheetBehavior
@@ -60,12 +60,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
         ViewCompat.setOnApplyWindowInsetsListener(requireDialog().findViewById(android.R.id.content)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            if (lastSystemBarInsets == null && bottomSheet?.paddingTop != systemBars.top) {
-                // This padding is set by BottomSheetDialog but tool late, so sometimes
-                // view jumping can be observed when opening dialog
-                // Set ourselves for the first time
-                bottomSheet?.updatePadding(top = systemBars.top)
-            }
+            val firstTime = lastSystemBarInsets == null
             lastSystemBarInsets = systemBars
             view.apply {
                 if (marginLeft != systemBars.left || marginRight != systemBars.right) {
@@ -74,7 +69,13 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                         rightMargin = systemBars.right
                     }
                 }
-                updateCorners()
+            }
+            updateCorners()
+            if (firstTime && expandedToTheTop && bottomSheet?.paddingTop != systemBars.top) {
+                // This padding is set by BottomSheetDialog but tool late, so sometimes
+                // view jumping can be observed when opening dialog
+                // Set ourselves for the first time
+                bottomSheet?.updatePadding(top = systemBars.top)
             }
             insets
         }
@@ -137,16 +138,16 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     }
 
     private fun updateCorners() {
-        val roundedCorners = !(behavior.state == BottomSheetBehavior.STATE_EXPANDED &&
+        val expandedToTheTop = (behavior.state == BottomSheetBehavior.STATE_EXPANDED &&
                 lastSystemBarInsets?.top != 0 &&
                 bottomSheet?.top == 0)
-        if (roundedCorners == this.roundedCorners) return
-        this.roundedCorners = roundedCorners
+        if (expandedToTheTop == this.expandedToTheTop) return
+        this.expandedToTheTop = expandedToTheTop
         cornersAnimator?.apply {
             if (isRunning) {
                 reverse()
             } else {
-                if (roundedCorners) setFloatValues(0.0f, 1.0f) else setFloatValues(1.0f, 0.0f)
+                if (expandedToTheTop) setFloatValues(1.0f, 0.0f) else setFloatValues(0.0f, 1.0f)
                 start()
             }
         }
