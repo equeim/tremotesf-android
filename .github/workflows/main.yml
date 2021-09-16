@@ -38,17 +38,10 @@ jobs:
           key: ccache-${{ runner.os }}-${{ github.sha }}
           restore-keys: ccache-${{ runner.os }}-
 
-      - name: Cache Gradle cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle-plugin/**/*.kt') }}
-          restore-keys: gradle-${{ runner.os }}-
-
       - name: Build the app
-        run: ./gradlew --info -P org.equeim.tremotesf.ccache=true build
+        uses: gradle/gradle-build-action@v1
+        with:
+          arguments: --info -P org.equeim.tremotesf.ccache=true build
         env:
           CCACHE_BASEDIR: ${{ github.workspace }}
           CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -73,10 +66,3 @@ jobs:
             libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
-
-      - name: Cleanup Gradle cache
-        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
-        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
