@@ -2,19 +2,22 @@ package org.equeim.tremotesf.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.annotation.Keep
 import androidx.annotation.LayoutRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.getSystemService
 import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.content.withStyledAttributes
-import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginLeft
@@ -36,7 +39,6 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     BottomSheetDialogFragment(), NavControllerProvider {
     override lateinit var navController: NavController
 
-    private var lastSystemBarInsets: Insets? = null
     private var bottomSheet: View? = null
     private var expandedToTheTop = false
     private var cornersAnimator: ValueAnimator? = null
@@ -58,11 +60,39 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        ViewCompat.setOnApplyWindowInsetsListener(requireDialog().findViewById(android.R.id.content)) { view, insets ->
+        val view = requireView()
+
+        val bottomSheet = view.parent as View
+        this.bottomSheet = bottomSheet
+
+        var shouldAddInitialTopPadding = false
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val firstTime = lastSystemBarInsets == null
-            lastSystemBarInsets = systemBars
-            view.apply {
+
+            if (shouldAddInitialTopPadding && bottomSheet.measuredHeight != 0) {
+                shouldAddInitialTopPadding = false
+                if (!bottomSheet.isLaidOut) {
+                    val windowManager = requireContext().getSystemService<WindowManager>()
+                    val windowHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        windowManager?.currentWindowMetrics?.bounds?.height()
+                    } else {
+                        @Suppress("deprecation")
+                        windowManager?.defaultDisplay?.let { display ->
+                            val size = Point()
+                            display.getSize(size)
+                            size.y
+                        }
+                    }
+                    val aboutToBeExpandedToTheTop =
+                        windowHeight != null && (bottomSheet.measuredHeight + systemBars.top) >= windowHeight
+                    if (aboutToBeExpandedToTheTop && bottomSheet.paddingTop != systemBars.top) {
+                        bottomSheet.updatePadding(top = systemBars.top)
+                    }
+                }
+            }
+
+            bottomSheet.apply {
                 if (marginLeft != systemBars.left || marginRight != systemBars.right) {
                     updateLayoutParams<ViewGroup.MarginLayoutParams> {
                         leftMargin = systemBars.left
@@ -71,17 +101,9 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                 }
             }
             updateCorners()
-            if (firstTime && expandedToTheTop && bottomSheet?.paddingTop != systemBars.top) {
-                // This padding is set by BottomSheetDialog but tool late, so sometimes
-                // view jumping can be observed when opening dialog
-                // Set ourselves for the first time
-                bottomSheet?.updatePadding(top = systemBars.top)
-            }
+
             insets
         }
-
-        val bottomSheet = requireView().parent as View
-        this.bottomSheet = bottomSheet
 
         // In order to decide ourselves when we want to change corners radius
         // we need to unset shapeAppearance in bottomSheetStyle (see styles.xml)
@@ -129,7 +151,6 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
     override fun onDestroyView() {
         super.onDestroyView()
-        lastSystemBarInsets = null
         bottomSheet = null
         cornersAnimator?.apply {
             cancel()
@@ -138,9 +159,11 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     }
 
     private fun updateCorners() {
-        val expandedToTheTop = (behavior.state == BottomSheetBehavior.STATE_EXPANDED &&
-                lastSystemBarInsets?.top != 0 &&
-                bottomSheet?.top == 0)
+        val bottomSheet = this.bottomSheet ?: return
+        if (!bottomSheet.isLaidOut) return
+
+        val expandedToTheTop =
+            (behavior.state == BottomSheetBehavior.STATE_EXPANDED && bottomSheet.top == 0)
         if (expandedToTheTop == this.expandedToTheTop) return
         this.expandedToTheTop = expandedToTheTop
         cornersAnimator?.apply {
@@ -155,7 +178,8 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 }
 
 @Keep
-class ExpandedBottomSheetBehavior(context: Context, attrs: AttributeSet?) : BottomSheetBehavior<View>(context, attrs) {
+class ExpandedBottomSheetBehavior(context: Context, attrs: AttributeSet?) :
+    BottomSheetBehavior<View>(context, attrs) {
     init {
         state = STATE_EXPANDED
     }
