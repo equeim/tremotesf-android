@@ -10,13 +10,18 @@
         android:orientation="vertical"
         android:paddingVertical="@dimen/vertical_edge_padding">
 
+        <View
+            style="@style/Widget.Tremotesf.DragHandle"
+            android:layout_gravity="center_horizontal" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:gravity="center_horizontal"
             android:text="@string/transmission_settings"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:textAppearance="@style/TextAppearance.Tremotesf.BottomSheetHeader" />
 
         <Button
             android:id="@+id/connect_button"
@@ -83,8 +88,8 @@
                 android:layout_height="match_parent"
                 android:checkMark="?android:listChoiceIndicatorMultiple"
                 android:gravity="center_vertical"
-                android:textAppearance="?textAppearanceBody1"
-                android:text="@string/alternative_speed_limits" />
+                android:text="@string/alternative_speed_limits"
+                android:textAppearance="?textAppearanceBody1" />
         </FrameLayout>
 
         <TextView

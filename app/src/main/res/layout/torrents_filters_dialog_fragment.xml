@@ -11,28 +11,36 @@
         android:paddingHorizontal="@dimen/horizontal_edge_padding"
         android:paddingVertical="@dimen/vertical_edge_padding">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:animateLayoutChanges="true"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
+
+            <View
+                android:id="@+id/drag_handle"
+                style="@style/Widget.Tremotesf.DragHandle"
+                android:layout_centerHorizontal="true" />
 
             <TextView
+                android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_below="@id/drag_handle"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                 android:gravity="center_horizontal"
                 android:text="@string/torrents_filters"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                android:textAppearance="@style/TextAppearance.Tremotesf.BottomSheetHeader" />
 
             <ImageButton
-                android:id="@+id/resetButton"
+                android:id="@+id/reset_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_gravity="start|center_vertical"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/reset"
                 app:srcCompat="@drawable/ic_baseline_restore_24" />
-        </FrameLayout>
+        </RelativeLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sort_view_layout"
