@@ -65,7 +65,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
         val bottomSheet = view.parent as View
         this.bottomSheet = bottomSheet
 
-        var shouldAddInitialTopPadding = false
+        var shouldAddInitialTopPadding = true
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
