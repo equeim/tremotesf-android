@@ -26,6 +26,8 @@ import android.content.IntentFilter
 import org.equeim.tremotesf.TremotesfApplication
 import timber.log.Timber
 import java.text.DecimalFormat
+import kotlin.math.abs
+import kotlin.math.min
 
 object DecimalFormats {
     private lateinit var genericInternal: DecimalFormat
@@ -70,6 +72,22 @@ object DecimalFormats {
         }
         if (::ratioInternal.isInitialized) {
             resetRatio()
+        }
+    }
+}
+
+infix fun Double.fuzzyEquals(other: Double): Boolean {
+    return (abs(this - other) * 1000000000000.0 <= min(abs(this), abs(other)))
+}
+
+infix fun Double?.fuzzyEquals(other: Double?): Boolean {
+    return if (this == null) {
+        other == null
+    } else {
+        if (other == null) {
+            false
+        } else {
+            this fuzzyEquals other
         }
     }
 }

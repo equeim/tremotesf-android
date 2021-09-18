@@ -29,21 +29,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.fuzzyEquals
 import java.lang.ref.WeakReference
 
 
@@ -106,42 +107,66 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         private val binding: TorrentListItemBinding
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         override fun update() {
+            val oldTorrent = torrent
             super.update()
+            val torrent = this.torrent ?: return
 
             with(binding) {
-                sizeTextView.text = if (torrent.isFinished) {
-                    context.getString(
-                        R.string.uploaded_string,
-                        FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
-                        FormatUtils.formatByteSize(context, torrent.totalUploaded)
-                    )
+                if (torrent.isFinished) {
+                    if (oldTorrent?.isFinished != torrent.isFinished ||
+                        oldTorrent.sizeWhenDone != torrent.sizeWhenDone ||
+                        oldTorrent.totalUploaded != torrent.totalUploaded
+                    ) {
+                        sizeTextView.text =
+                            context.getString(
+                                R.string.uploaded_string,
+                                FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
+                                FormatUtils.formatByteSize(context, torrent.totalUploaded)
+                            )
+                    }
                 } else {
-                    context.getString(
-                        R.string.completed_string,
-                        FormatUtils.formatByteSize(context, torrent.completedSize),
-                        FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
-                        DecimalFormats.generic.format(torrent.percentDone * 100)
-                    )
+                    if (oldTorrent?.isFinished != torrent.isFinished ||
+                        oldTorrent.completedSize != torrent.completedSize ||
+                        oldTorrent.sizeWhenDone != torrent.sizeWhenDone
+                    ) {
+                        sizeTextView.text = context.getString(
+                            R.string.completed_string,
+                            FormatUtils.formatByteSize(context, torrent.completedSize),
+                            FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
+                            DecimalFormats.generic.format(torrent.percentDone * 100)
+                        )
+                    }
                 }
-                etaTextView.text = FormatUtils.formatDuration(context, torrent.eta)
+
+                if (oldTorrent?.eta != torrent.eta) {
+                    etaTextView.text = FormatUtils.formatDuration(context, torrent.eta)
+                }
 
                 progressBar.progress = (torrent.percentDone * 100).toInt()
-                downloadSpeedTextView.text = context.getString(
-                    R.string.download_speed_string,
-                    FormatUtils.formatByteSpeed(
-                        context,
-                        torrent.downloadSpeed
-                    )
-                )
-                uploadSpeedTextView.text = context.getString(
-                    R.string.upload_speed_string,
-                    FormatUtils.formatByteSpeed(
-                        context,
-                        torrent.uploadSpeed
-                    )
-                )
 
-                statusTextView.text = torrent.statusString
+                if (oldTorrent?.downloadSpeed != torrent.downloadSpeed) {
+                    downloadSpeedTextView.text = context.getString(
+                        R.string.download_speed_string,
+                        FormatUtils.formatByteSpeed(
+                            context,
+                            torrent.downloadSpeed
+                        )
+                    )
+                }
+
+                if (oldTorrent?.uploadSpeed != torrent.uploadSpeed) {
+                    uploadSpeedTextView.text = context.getString(
+                        R.string.upload_speed_string,
+                        FormatUtils.formatByteSpeed(
+                            context,
+                            torrent.uploadSpeed
+                        )
+                    )
+                }
+
+                torrent.getStatusStringIfChanged(oldTorrent, context)?.let {
+                    statusTextView.text = it
+                }
             }
         }
 
@@ -155,36 +180,50 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         private val binding: TorrentListItemCompactBinding
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         override fun update() {
+            val oldTorrent = torrent
             super.update()
+            val torrent = this.torrent ?: return
 
-            downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
-                ""
-            } else {
-                context.getString(
-                    R.string.download_speed_string,
-                    FormatUtils.formatByteSpeed(
-                        context,
-                        torrent.downloadSpeed
+            val speedLabelsWereEmpty = downloadSpeedTextView.text.isEmpty() && uploadSpeedTextView.text.isEmpty()
+
+            if (oldTorrent?.downloadSpeed != torrent.downloadSpeed) {
+                downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
+                    ""
+                } else {
+                    context.getString(
+                        R.string.download_speed_string,
+                        FormatUtils.formatByteSpeed(
+                            context,
+                            torrent.downloadSpeed
+                        )
                     )
-                )
+                }
             }
 
-            uploadSpeedTextView.text = if (torrent.uploadSpeed == 0L) {
-                ""
-            } else {
-                context.getString(
-                    R.string.upload_speed_string,
-                    FormatUtils.formatByteSpeed(
-                        context,
-                        torrent.uploadSpeed
+            if (oldTorrent?.uploadSpeed != torrent.uploadSpeed) {
+                uploadSpeedTextView.text = if (torrent.uploadSpeed == 0L) {
+                    ""
+                } else {
+                    context.getString(
+                        R.string.upload_speed_string,
+                        FormatUtils.formatByteSpeed(
+                            context,
+                            torrent.uploadSpeed
+                        )
                     )
-                )
+                }
             }
 
-            binding.progressTextView.text = context.getString(
-                if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
-                DecimalFormats.generic.format(torrent.percentDone * 100)
-            )
+            val speedLabelsAreEmpty = downloadSpeedTextView.text.isEmpty() && uploadSpeedTextView.text.isEmpty()
+
+            if (speedLabelsWereEmpty != speedLabelsAreEmpty ||
+                !(oldTorrent?.percentDone fuzzyEquals torrent.percentDone)
+            ) {
+                binding.progressTextView.text = context.getString(
+                    if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
+                    DecimalFormats.generic.format(torrent.percentDone * 100)
+                )
+            }
         }
     }
 
@@ -192,13 +231,14 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         multilineName: Boolean,
         itemView: View
     ) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
-        protected lateinit var torrent: Torrent
+        protected var torrent: Torrent? = null
             private set
 
         protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
-        @DrawableRes private var iconResId = 0
+        @DrawableRes
+        private var iconResId = 0
         protected val downloadSpeedTextView =
             itemView.findViewById<TextView>(R.id.download_speed_text_view)!!
         protected val uploadSpeedTextView =
@@ -215,9 +255,13 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         override fun update() {
             super.update()
 
-            torrent = getItem(bindingAdapterPosition)
+            val oldTorrent = torrent
+            val torrent: Torrent = getItem(bindingAdapterPosition)
+            this.torrent = torrent
 
-            nameTextView.text = torrent.name
+            if (oldTorrent?.name != torrent.name) {
+                nameTextView.text = torrent.name
+            }
             val resId = when (torrent.status) {
                 TorrentData.Status.Paused -> R.drawable.ic_pause_24dp
                 TorrentData.Status.Downloading,
@@ -238,6 +282,7 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         }
 
         override fun onClick(view: View) {
+            val torrent = this.torrent ?: return
             fragment.navigate(
                 TorrentsListFragmentDirections.toTorrentPropertiesFragment(
                     torrent.hashString,
@@ -247,7 +292,10 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         }
     }
 
-    private class ActionModeCallback(adapter: TorrentsAdapter, selectionTracker: SelectionTracker<Int>) :
+    private class ActionModeCallback(
+        adapter: TorrentsAdapter,
+        selectionTracker: SelectionTracker<Int>
+    ) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
 
         private val adapter = WeakReference(adapter)
@@ -320,7 +368,9 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
                 )
                 R.id.share -> {
                     val magnetLinks =
-                        adapter.currentList.slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
+                        adapter.currentList.slice(
+                            selectionTracker.getSelectedPositionsUnsorted().sorted()
+                        )
                             .map { it.data.magnetLink }
                     Utils.shareTorrents(magnetLinks, activity)
                 }
@@ -344,5 +394,57 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
         override fun areContentsTheSame(oldItem: Torrent, newItem: Torrent): Boolean {
             return oldItem === newItem
         }
+    }
+}
+
+private fun Torrent.getStatusStringIfChanged(oldTorrent: Torrent?, context: Context): CharSequence? {
+    val statusChanged = oldTorrent?.status != status
+    return when (status) {
+        TorrentData.Status.Paused -> context.getTextIf(R.string.torrent_paused, statusChanged)
+        TorrentData.Status.Downloading -> if (statusChanged || oldTorrent?.seeders != seeders) {
+            context.resources.getQuantityString(
+                R.plurals.torrent_downloading,
+                seeders,
+                seeders
+            )
+        } else {
+            null
+        }
+        TorrentData.Status.StalledDownloading -> context.getTextIf(R.string.torrent_downloading_stalled, statusChanged)
+        TorrentData.Status.Seeding -> if (statusChanged || oldTorrent?.leechers != leechers) {
+            context.resources.getQuantityString(
+                R.plurals.torrent_seeding,
+                leechers,
+                leechers
+            )
+        } else {
+            null
+        }
+        TorrentData.Status.StalledSeeding -> context.getTextIf(R.string.torrent_seeding_stalled, statusChanged)
+        TorrentData.Status.QueuedForDownloading,
+        TorrentData.Status.QueuedForSeeding -> context.getTextIf(R.string.torrent_queued, statusChanged)
+        TorrentData.Status.Checking -> if (statusChanged || !(oldTorrent?.recheckProgress fuzzyEquals recheckProgress)) {
+            context.getString(
+                R.string.torrent_checking,
+                DecimalFormats.generic.format(recheckProgress * 100)
+            )
+        } else {
+            null
+        }
+        TorrentData.Status.QueuedForChecking -> context.getTextIf(R.string.torrent_queued_for_checking, statusChanged)
+        TorrentData.Status.Errored -> if (statusChanged || oldTorrent?.errorString != errorString) {
+            errorString
+        } else {
+            null
+        }
+        else -> null
+    }
+}
+
+private fun Context.getTextIf(@StringRes resId: Int, get: Boolean): CharSequence? {
+    return if (get) {
+        getText(resId)
+    } else {
+        null
     }
 }

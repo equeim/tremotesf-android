@@ -23,15 +23,12 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.RpcError
-import org.equeim.libtremotesf.TorrentData
-import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.service.NotificationsController
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.utils.DecimalFormats
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -263,34 +260,5 @@ val Rpc.Status.statusString: String
             RpcConnectionState.Connecting -> context.getString(R.string.connecting)
             RpcConnectionState.Connected -> context.getString(R.string.connected)
             else -> context.getString(R.string.disconnected)
-        }
-    }
-
-val Torrent.statusString: String
-    get() {
-        val context = TremotesfApplication.instance
-        return when (status) {
-            TorrentData.Status.Paused -> context.getString(R.string.torrent_paused)
-            TorrentData.Status.Downloading -> context.resources.getQuantityString(
-                R.plurals.torrent_downloading,
-                seeders,
-                seeders
-            )
-            TorrentData.Status.StalledDownloading -> context.getString(R.string.torrent_downloading_stalled)
-            TorrentData.Status.Seeding -> context.resources.getQuantityString(
-                R.plurals.torrent_seeding,
-                leechers,
-                leechers
-            )
-            TorrentData.Status.StalledSeeding -> context.getString(R.string.torrent_seeding_stalled)
-            TorrentData.Status.QueuedForDownloading,
-            TorrentData.Status.QueuedForSeeding -> context.getString(R.string.torrent_queued)
-            TorrentData.Status.Checking -> context.getString(
-                R.string.torrent_checking,
-                DecimalFormats.generic.format(recheckProgress * 100)
-            )
-            TorrentData.Status.QueuedForChecking -> context.getString(R.string.torrent_queued_for_checking)
-            TorrentData.Status.Errored -> errorString
-            else -> ""
         }
     }
