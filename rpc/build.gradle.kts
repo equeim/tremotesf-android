@@ -26,18 +26,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-
-    flavorDimensions("freedom")
-    productFlavors {
-        register("google") {
-            dimension = "freedom"
-            buildConfigField("boolean", "GOOGLE", "true")
-        }
-        register("fdroid") {
-            dimension = "freedom"
-            buildConfigField("boolean", "GOOGLE", "false")
-        }
-    }
 }
 
 repositories {
