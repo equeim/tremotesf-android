@@ -62,7 +62,10 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
     private class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            private val tabs = Tab.values()
+            private val tabs = Tab.values().toList().let { values ->
+                if (BuildConfig.GOOGLE) values - Tab.Donate
+                else values
+            }
 
             @StringRes
             fun getTitle(position: Int): Int {

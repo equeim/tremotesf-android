@@ -2,13 +2,4 @@
     package="org.equeim.tremotesf">
 
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data
-                android:host="www.paypal.com"
-                android:scheme="https" />
-        </intent>
-    </queries>
 </manifest>
