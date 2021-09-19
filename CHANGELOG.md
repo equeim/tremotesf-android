@@ -15,6 +15,7 @@
 
 ### Removed
 - Dropped support of Android 4.x
+- Google Play donations
 
 ## [2.4.2] - 2021-05-21
 ### Fixed
