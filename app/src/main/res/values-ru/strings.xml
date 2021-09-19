@@ -500,4 +500,5 @@
 
     <string name="free_space_in_download_directory">Свободное место в каталоге загрузки</string>
 
-    </resources>
+    <string name="reset">Сбросить</string>
+</resources>
