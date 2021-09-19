@@ -32,8 +32,8 @@ android {
         applicationId = "org.equeim.tremotesf"
         minSdk = Versions.minSdk
         targetSdk = Versions.targetSdk
-        versionCode = 4041
-        versionName = "2.4.2"
+        versionCode = 4042
+        versionName = "2.5.0"
 
         vectorDrawables.useSupportLibrary = true
     }

@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.5.0] - 2021-09-20
 ### Added
 - Fast scroll support in torrents list
 - PEM certificate can now be loaded from a file
