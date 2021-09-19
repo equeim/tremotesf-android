@@ -378,7 +378,11 @@
     <string name="added_torrents_channel_name">Hinzugefügte Torrents</string>
 
     <string name="appearance">Aussehen</string>
+    <string name="behaviour">Verhalten</string>
     <string name="torrents">Torrents</string>
+
+    <string name="quick_return_title">Schnelle Rückkehr</string>
+    <string name="quick_return_summary">Auf die obere Werkzeugleiste tippen um nach oben zu gelangen</string>
 
     <string name="prefs_delete_files_title">Lösche Dateien auf der Festplatte, wenn der Torrent gelöscht wird</string>
 
@@ -466,4 +470,13 @@
     <string name="enable_location">Standort aktivieren</string>
 
     <string name="storage_permission_rationale_torrent">Tremotesf erforder Zugriff auf die Berechtigung für den Speicher, damit diese Torrentdatei geöffnet werden kann</string>
+
+    <string name="torrents_filters">Filter</string>
+    <string name="transmission_settings">Transmission-Einstellungen</string>
+
+    <string name="load_from_file">Von Datei laden</string>
+
+    <string name="free_space_in_download_directory">Freier Speicher im Downloadverzeichnis</string>
+
+    <string name="reset">Zurücksetzen</string>
 </resources>

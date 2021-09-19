@@ -400,7 +400,11 @@
     <string name="added_torrents_channel_name">Добавленные торренты</string>
 
     <string name="appearance">Внешний вид</string>
+    <string name="behaviour">Поведение</string>
     <string name="torrents">Торренты</string>
+
+    <string name="quick_return_title">Быстрый возврат</string>
+    <string name="quick_return_summary">Коснитесь верхней панели чтобы вернуться к началу</string>
 
     <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
 
@@ -488,4 +492,12 @@
     <string name="enable_location">Включить местоположение</string>
 
     <string name="storage_permission_rationale_torrent">Для открытия этого торрент-файла требуется разрешение на доступ к памяти</string>
-</resources>
+
+    <string name="torrents_filters">Фильтры</string>
+    <string name="transmission_settings">Настройки Transmission</string>
+
+    <string name="load_from_file">Загрузить из файла</string>
+
+    <string name="free_space_in_download_directory">Свободное место в каталоге загрузки</string>
+
+    </resources>
