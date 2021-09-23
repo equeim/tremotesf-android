@@ -93,9 +93,7 @@ abstract class OpenSSLTask @Inject constructor(
                 workingDir = buildDir
                 environment("ANDROID_NDK", ndkDir.get())
 
-                environment.compute("PATH") { _, value ->
-                    if (value == null) binDir else "$binDir:$value"
-                }
+                prependPath(binDir)
                 if (ccache.get()) {
                     environment("CC", "ccache ${binDir.resolve("clang")}")
                 }
@@ -107,9 +105,7 @@ abstract class OpenSSLTask @Inject constructor(
         logger.lifecycle("Building OpenSSL")
         measureNanoTime {
             execOperations.make("build_libs", buildDir, logger, gradle) {
-                environment.compute("PATH") { _, value ->
-                    if (value == null) binDir else "$binDir:$value"
-                }
+                prependPath(binDir)
             }
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
