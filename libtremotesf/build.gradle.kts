@@ -44,7 +44,9 @@ dependencies {
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
 
-val useCcache = (property("org.equeim.tremotesf.ccache") as String).toBoolean()
+val useCmakeFromSdk = (findProperty("org.equeim.tremotesf.use-cmake-from-sdk") as? String?).toBoolean()
+val addHostQtCmakeFlags = (findProperty("org.equeim.tremotesf.host-qt-cmake-flags") as? String?)?.split(" ")?.filter { it.isNotBlank() } ?: emptyList()
+val useCcache = (findProperty("org.equeim.tremotesf.ccache") as? String?).toBoolean()
 
 val openSSLPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(OpenSSLTask.sourceDir(opensslDir))
@@ -69,6 +71,10 @@ val qt by tasks.registering(QtTask::class) {
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
+    if (useCmakeFromSdk) {
+        cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/${android.externalNativeBuild.cmake.version}/bin"))
+    }
+    hostQtCmakeFlags.set(addHostQtCmakeFlags)
     ccache.set(useCcache)
 }
 

@@ -78,6 +78,12 @@ private fun ExecSpec.dropNdkEnvironmentVariables(logger: Logger) {
     }
 }
 
+internal fun ExecSpec.prependPath(dir: File) {
+    environment.compute("PATH") { _, value ->
+        if (value == null) dir.toString() else "$dir:$value"
+    }
+}
+
 internal fun ExecOperations.make(target: String, workingDir: File, logger: Logger, gradle: Gradle, configure: ExecSpec.() -> Unit = {}) =
     exec(logger) {
         executable = MAKE
@@ -96,9 +102,9 @@ internal enum class CMakeMode {
     InstallAndStrip
 }
 
-internal fun ExecOperations.cmake(mode: CMakeMode, workingDir: File, buildDir: File, logger: Logger, gradle: Gradle) =
+internal fun ExecOperations.cmake(cmakeBinary: String, mode: CMakeMode, workingDir: File, buildDir: File, logger: Logger, gradle: Gradle) =
     exec(logger) {
-        executable = CMAKE
+        executable = cmakeBinary
         when (mode) {
             CMakeMode.Build -> args("--build", buildDir, "--parallel", makeJobsCount(gradle))
             CMakeMode.Install -> args("--install", buildDir)
@@ -107,9 +113,9 @@ internal fun ExecOperations.cmake(mode: CMakeMode, workingDir: File, buildDir: F
         this.workingDir = workingDir
     }
 
-internal fun ExecOperations.printCMakeInfo(logger: Logger) {
-    val cmakeVersion = exec(logger, ExecOutputMode.Capture) { commandLine(CMAKE, "--version") }.output
-    val whichCmake = exec(logger, ExecOutputMode.Capture) { commandLine("which", CMAKE) }.output
+internal fun ExecOperations.printCMakeInfo(cmakeBinary: String, logger: Logger) {
+    val cmakeVersion = exec(logger, ExecOutputMode.Capture) { commandLine(cmakeBinary, "--version") }.output
+    val whichCmake = exec(logger, ExecOutputMode.Capture) { commandLine("which", cmakeBinary) }.output
     logger.lifecycle(
         "Using {} from {}",
         cmakeVersion?.toString(StandardCharsets.UTF_8)?.lineSequence()?.first()?.trim(),
@@ -117,7 +123,7 @@ internal fun ExecOperations.printCMakeInfo(logger: Logger) {
     )
 }
 
-private const val CMAKE = "cmake"
+internal const val CMAKE = "cmake"
 
 internal fun ExecOperations.zeroCcacheStatistics(logger: Logger) {
     exec(logger) { commandLine(CCACHE, "-z") }

@@ -9,6 +9,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
@@ -37,16 +38,32 @@ abstract class QtTask @Inject constructor(
     val sourceDir: Provider<File> by lazy { qtDir.map { sourceDir(it) } }
 
     @get:OutputDirectories
-    val installDirs: Provider<List<File>> by lazy { qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) } }
+    val installDirs: Provider<List<File>> by lazy {
+        qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) }
+    }
+
+    @get:Input
+    @get:Optional
+    abstract val cmakeBinaryDir: Property<File>
+
+    private val cmakeBinary: String
+        get() = cmakeBinaryDir.orNull?.resolve(CMAKE)?.toString() ?: CMAKE
+
+    @get:Input
+    abstract val hostQtCmakeFlags: ListProperty<String>
 
     @get:Input
     abstract val ccache: Property<Boolean>
 
     @TaskAction
     fun buildQt() {
-        logger.lifecycle("Start building Qt, make jobs count = {}", makeJobsCount(gradle))
+        logger.lifecycle("Start building Qt")
+        logger.lifecycle("Make jobs count = {}", makeJobsCount(gradle))
+        logger.lifecycle("CMake binary dir = {}", cmakeBinaryDir.orNull)
+        logger.lifecycle("Additional CMake flags for host Qt = {}", hostQtCmakeFlags.get())
+        logger.lifecycle("Ccache = {}", ccache.get())
 
-        execOperations.printCMakeInfo(logger)
+        execOperations.printCMakeInfo(cmakeBinary, logger)
 
         if (ccache.get()) {
             execOperations.zeroCcacheStatistics(logger)
@@ -63,7 +80,7 @@ abstract class QtTask @Inject constructor(
     }
 
     private fun buildHostQt() {
-        logger.lifecycle("Building host Qt, ccache = ${ccache.get()}")
+        logger.lifecycle("Building host Qt")
 
         val buildDir = hostBuildDir(qtDir.get())
 
@@ -112,7 +129,7 @@ abstract class QtTask @Inject constructor(
             "-no-feature-translation",
             "-no-feature-transposeproxymodel",
             "--", "-G", "Ninja"
-        )
+        ) + hostQtCmakeFlags.get()
 
         buildQt(buildDir, configureFlags, false)
     }
@@ -206,9 +223,15 @@ abstract class QtTask @Inject constructor(
                 executable(sourceDir.get().resolve("configure"))
                 args = configureFlags
                 workingDir = buildDir
+                cmakeBinaryDir.orNull?.let { cmakeBinaryDir ->
+                    prependPath(cmakeBinaryDir)
+                }
             }
         }.also {
-            logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
+            logger.lifecycle(
+                "Configuration finished, elapsed time = {} s",
+                nanosToSecondsString(it)
+            )
         }
 
         logger.lifecycle("Building Qt")
@@ -225,8 +248,14 @@ abstract class QtTask @Inject constructor(
         }
 
         measureNanoTime {
-            val result = execOperations.cmake(CMakeMode.Build, qtDir.get(), buildDir, logger, gradle)
-            println("Exit code = ${result.success}")
+            execOperations.cmake(
+                cmakeBinary,
+                CMakeMode.Build,
+                qtDir.get(),
+                buildDir,
+                logger,
+                gradle
+            )
         }.also {
             logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
         }
@@ -234,7 +263,7 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Installing Qt")
         measureNanoTime {
             val mode = if (crossCompiling) CMakeMode.InstallAndStrip else CMakeMode.Install
-            execOperations.cmake(mode, qtDir.get(), buildDir, logger, gradle)
+            execOperations.cmake(cmakeBinary, mode, qtDir.get(), buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
@@ -253,9 +282,14 @@ abstract class QtTask @Inject constructor(
         private fun installDir(qtDir: File, abi: String) = qtDir.resolve("install-$abi")
         private fun installDirs(qtDir: File) = NativeAbis.abis.map { installDir(qtDir, it) }
 
-        fun dirsToClean(qtDir: File) = listOf(hostBuildDir(qtDir), hostInstallDir(qtDir)) + buildDirs(qtDir) + installDirs(qtDir)
+        fun dirsToClean(qtDir: File) =
+            listOf(hostBuildDir(qtDir), hostInstallDir(qtDir)) + buildDirs(qtDir) + installDirs(
+                qtDir
+            )
 
-        fun jar(qtDir: File) = installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
+        fun jar(qtDir: File) =
+            installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
+
         fun coreToolsDir(qtDir: File) = hostInstallDir(qtDir).resolve("lib/cmake/Qt6CoreTools")
     }
 }
