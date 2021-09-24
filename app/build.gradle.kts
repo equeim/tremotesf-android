@@ -66,11 +66,11 @@ android {
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 
-    lintOptions {
+    lint {
         informational("MissingTranslation")
     }
 
-    flavorDimensions("freedom")
+    flavorDimensions.add("freedom")
     productFlavors {
         register("google") {
             dimension = "freedom"
