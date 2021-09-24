@@ -8,32 +8,6 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-
-android {
-    compileSdk = Versions.compileSdk
-    ndkVersion = Versions.ndk
-
-    defaultConfig {
-        minSdk = Versions.minSdk
-        targetSdk = Versions.targetSdk
-        consumerProguardFile("consumer-rules.pro")
-    }
-    
-    sourceSets.named("main") {
-        java.srcDirs("src/main/kotlin")
-    }
-    
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
-}
-
-repositories {
-    mavenCentral()
-    google()
-    maven("https://maven.mozilla.org/maven2")
-}
-
 dependencies {
     implementation(project(":common"))
     api(project(":libtremotesf"))

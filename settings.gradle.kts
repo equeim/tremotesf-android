@@ -1,7 +1,9 @@
 pluginManagement {
-    val android = "7.0.2"
-    val kotlin = "1.5.31"
-    val navigation by (gradle as ExtensionAware).extra("2.3.5")
+    apply(from = "plugin_versions.gradle.kts")
+    val extra = (gradle as ExtensionAware).extra
+    val androidGradlePlugin: String by extra
+    val kotlin: String by extra
+    val navigation: String by extra
 
     plugins {
         kotlin("android") version(kotlin)
@@ -11,7 +13,7 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             when (requested.id.namespace) {
-                "com.android" -> useModule("com.android.tools.build:gradle:$android")
+                "com.android" -> useModule("com.android.tools.build:gradle:$androidGradlePlugin")
                 "androidx.navigation.safeargs" -> useModule("androidx.navigation:navigation-safe-args-gradle-plugin:$navigation")
             }
         }

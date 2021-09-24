@@ -25,13 +25,8 @@ val keystoreProperties = try {
 }
 
 android {
-    compileSdk = Versions.compileSdk
-    ndkVersion = Versions.ndk
-
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
-        minSdk = Versions.minSdk
-        targetSdk = Versions.targetSdk
         versionCode = 4043
         versionName = "2.5.1"
 
@@ -57,18 +52,9 @@ android {
 
     buildFeatures.viewBinding = true
 
-    sourceSets.named("main") {
-        java.srcDirs("src/main/kotlin")
-    }
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-    }
-
-    lint {
-        informational("MissingTranslation")
-    }
+    lint.informational("MissingTranslation")
 
     flavorDimensions.add("freedom")
     productFlavors {
@@ -81,14 +67,6 @@ android {
             buildConfigField("boolean", "GOOGLE", "false")
         }
     }
-
-    packagingOptions.jniLibs.useLegacyPackaging = false
-}
-
-repositories {
-    mavenCentral()
-    google()
-    maven("https://maven.mozilla.org/maven2")
 }
 
 dependencies {

@@ -12,20 +12,12 @@ val opensslDir = rootProject.file("3rdparty/openssl")
 val qtDir = rootProject.file("3rdparty/qt")
 
 android {
-    compileSdk = Versions.compileSdk
-    ndkVersion = Versions.ndk
-
-    defaultConfig {
-        minSdk = Versions.minSdk
-        targetSdk = Versions.targetSdk
-        consumerProguardFile("consumer-rules.pro")
-        externalNativeBuild.cmake.arguments(
-            "-DANDROID_STL=c++_shared",
-            "-DANDROID_ARM_NEON=true",
-            "-DQT_DIR=$qtDir",
-            "-DQt6CoreTools_DIR=${QtTask.coreToolsDir(qtDir)}"
-        )
-    }
+    defaultConfig.externalNativeBuild.cmake.arguments(
+        "-DANDROID_STL=c++_shared",
+        "-DANDROID_ARM_NEON=true",
+        "-DQT_DIR=$qtDir",
+        "-DQt6CoreTools_DIR=${QtTask.coreToolsDir(qtDir)}"
+    )
 
     buildFeatures.buildConfig = false
 
@@ -33,11 +25,6 @@ android {
         path = file("src/main/cpp/CMakeLists.txt")
         version = "3.18.1"
     }
-}
-
-repositories {
-    google()
-    mavenCentral()
 }
 
 dependencies {
