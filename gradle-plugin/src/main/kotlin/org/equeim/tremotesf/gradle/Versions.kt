@@ -11,8 +11,8 @@ object Versions {
     const val targetSdk = 30
     const val ndk = "22.1.7171670"
 
-    const val kotlinxCoroutines = "1.5.1"
-    const val kotlinxSerialization = "1.2.2"
+    const val kotlinxCoroutines = "1.5.2"
+    const val kotlinxSerialization = "1.3.0"
 
     object AndroidX {
         const val appcompat = "1.3.1"
@@ -33,7 +33,7 @@ object Versions {
         const val preference = "1.1.1"
         const val swipeRefreshLayout = "1.1.0"
         const val viewpager2 = "1.0.0"
-        const val work = "2.5.0"
+        const val work = "2.6.0"
 
         internal fun init(gradle: Gradle) {
             _navigation.updateAndGet { it ?: (gradle as ExtensionAware).extra["navigation"] as String }
@@ -48,5 +48,5 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val publicsuffixlist = "92.0.0"
+    const val publicsuffixlist = "93.0.9"
 }
