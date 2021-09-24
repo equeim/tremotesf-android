@@ -9,7 +9,7 @@ object Versions {
     const val compileSdk = 31
     const val minSdk = 21
     const val targetSdk = 30
-    const val ndk = "22.1.7171670"
+    const val ndk = "23.0.7599858"
 
     const val kotlinxCoroutines = "1.5.2"
     const val kotlinxSerialization = "1.3.0"
