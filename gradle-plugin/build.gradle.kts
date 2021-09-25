@@ -40,8 +40,6 @@ fun ModuleDependency.excludeKotlinStdlib() {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
+kotlinDslPluginOptions {
+    jvmTarget.set(JavaVersion.VERSION_11.toString())
 }
