@@ -1,0 +1,9 @@
+- Redesigned main screen
+- Added fast scroll support in torrents list
+- Added swipe to refresh support
+- Added ability to quickly scroll to top by tapping on top toolbar
+- Server stats dialog now shows free space in download directory
+- PEM certificate can now be loaded from a file
+- Optimized opening of torrent files with large number of files
+- Dropped support of Android 4
+- Removed Google Play donations support

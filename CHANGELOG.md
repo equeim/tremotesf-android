@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.1] - 2021-10-03
+### Changed
+- Removed ACCESS_BACKGROUND_LOCATION from google flavor
+
 ## [2.5.0] - 2021-09-20
 ### Added
 - Fast scroll support in torrents list
