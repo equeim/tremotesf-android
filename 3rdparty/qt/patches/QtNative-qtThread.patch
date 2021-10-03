@@ -1,6 +1,6 @@
 --- a/src/android/jar/src/org/qtproject/qt/android/QtNative.java
 +++ b/src/android/jar/src/org/qtproject/qt/android/QtNative.java
-@@ -113,7 +113,7 @@ public class QtNative
+@@ -117,7 +117,7 @@ public class QtNative
      private static Method m_checkSelfPermissionMethod = null;
      private static Boolean m_tabletEventSupported = null;
      private static boolean m_usePrimaryClip = false;
@@ -8,4 +8,4 @@
 +    public static QtThread m_qtThread = null;
      private static HashMap<String, Uri> m_cachedUris = new HashMap<String, Uri>();
      private static ArrayList<String> m_knownDirs = new ArrayList<String>();
- 
+     private static final int KEYBOARD_HEIGHT_THRESHOLD = 100;

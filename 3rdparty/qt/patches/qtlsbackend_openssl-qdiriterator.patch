@@ -1,5 +1,5 @@
---- a/src/network/ssl/qtlsbackend_openssl.cpp
-+++ b/src/network/ssl/qtlsbackend_openssl.cpp
+--- a/src/plugins/tls/openssl/qtlsbackend_openssl.cpp
++++ b/src/plugins/tls/openssl/qtlsbackend_openssl.cpp
 @@ -221,7 +221,7 @@ void QTlsBackendOpenSSL::ensureCiphersAndCertsLoaded() const
      //load symbols needed to receive certificates from system store
  #if defined(Q_OS_QNX)
