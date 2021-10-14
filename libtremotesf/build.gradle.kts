@@ -15,6 +15,7 @@ android {
     defaultConfig.externalNativeBuild.cmake.arguments(
         "-DANDROID_STL=c++_shared",
         "-DANDROID_ARM_NEON=true",
+        "-DOPENSSL_DIR=$opensslDir",
         "-DQT_DIR=$qtDir",
         "-DQt6CoreTools_DIR=${QtTask.coreToolsDir(qtDir)}"
     )

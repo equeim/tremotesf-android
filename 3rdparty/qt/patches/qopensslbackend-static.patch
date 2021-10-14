@@ -1,0 +1,10 @@
+--- a/src/plugins/tls/openssl/CMakeLists.txt
++++ b/src/plugins/tls/openssl/CMakeLists.txt
+@@ -19,6 +19,7 @@ qt_internal_add_plugin(QTlsBackendOpenSSLPlugin
+         Qt::CorePrivate
+     DEFINES
+         OPENSSL_API_COMPAT=0x10100000L
++    STATIC
+ )
+ 
+ qt_internal_extend_target(QTlsBackendOpenSSLPlugin CONDITION QT_FEATURE_dtls
