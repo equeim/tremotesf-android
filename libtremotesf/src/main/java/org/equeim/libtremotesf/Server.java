@@ -180,20 +180,28 @@ public class Server {
     return libtremotesfJNI.Server_updateInterval_get(swigCPtr, this);
   }
 
-  public void setBackgroundUpdateInterval(int value) {
-    libtremotesfJNI.Server_backgroundUpdateInterval_set(swigCPtr, this, value);
-  }
-
-  public int getBackgroundUpdateInterval() {
-    return libtremotesfJNI.Server_backgroundUpdateInterval_get(swigCPtr, this);
-  }
-
   public void setTimeout(int value) {
     libtremotesfJNI.Server_timeout_set(swigCPtr, this, value);
   }
 
   public int getTimeout() {
     return libtremotesfJNI.Server_timeout_get(swigCPtr, this);
+  }
+
+  public void setAutoReconnectEnabled(boolean value) {
+    libtremotesfJNI.Server_autoReconnectEnabled_set(swigCPtr, this, value);
+  }
+
+  public boolean getAutoReconnectEnabled() {
+    return libtremotesfJNI.Server_autoReconnectEnabled_get(swigCPtr, this);
+  }
+
+  public void setAutoReconnectInterval(int value) {
+    libtremotesfJNI.Server_autoReconnectInterval_set(swigCPtr, this, value);
+  }
+
+  public int getAutoReconnectInterval() {
+    return libtremotesfJNI.Server_autoReconnectInterval_get(swigCPtr, this);
   }
 
   public Server() {

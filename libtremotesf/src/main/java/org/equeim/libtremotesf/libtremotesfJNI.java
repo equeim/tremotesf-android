@@ -226,10 +226,12 @@ public class libtremotesfJNI {
   public final static native String Server_password_get(long jarg1, Server jarg1_);
   public final static native void Server_updateInterval_set(long jarg1, Server jarg1_, int jarg2);
   public final static native int Server_updateInterval_get(long jarg1, Server jarg1_);
-  public final static native void Server_backgroundUpdateInterval_set(long jarg1, Server jarg1_, int jarg2);
-  public final static native int Server_backgroundUpdateInterval_get(long jarg1, Server jarg1_);
   public final static native void Server_timeout_set(long jarg1, Server jarg1_, int jarg2);
   public final static native int Server_timeout_get(long jarg1, Server jarg1_);
+  public final static native void Server_autoReconnectEnabled_set(long jarg1, Server jarg1_, boolean jarg2);
+  public final static native boolean Server_autoReconnectEnabled_get(long jarg1, Server jarg1_);
+  public final static native void Server_autoReconnectInterval_set(long jarg1, Server jarg1_, int jarg2);
+  public final static native int Server_autoReconnectInterval_get(long jarg1, Server jarg1_);
   public final static native long new_Server();
   public final static native void delete_Server(long jarg1);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);
