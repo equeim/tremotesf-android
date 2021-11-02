@@ -42,11 +42,7 @@ import androidx.core.location.LocationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -108,14 +104,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 navigate(ServerEditFragmentDirections.toProxySettingsFragment(args.server))
             }
 
-            httpsCheckBox.isChecked = false
-
             certificatedButton.setOnClickListener {
                 navigate(ServerEditFragmentDirections.toCertificatesFragment(args.server))
             }
             httpsCheckBox.setDependentViews(certificatedButton)
 
-            authenticationCheckBox.isChecked = false
             authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
 
             updateIntervalEdit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
@@ -233,7 +226,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             setOnClickListener { onDone() }
         }
 
-        if (savedInstanceState == null) {
+        if (!model.populatedUiFromServer) {
             with(binding) {
                 val server = model.server
                 nameEdit.setText(server.name)
@@ -249,6 +242,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 wifiAutoConnectCheckbox.isChecked = server.autoConnectOnWifiNetworkEnabled
                 wifiAutoConnectSsidEdit.setText(server.autoConnectOnWifiNetworkSSID)
             }
+            model.populatedUiFromServer = true
         }
     }
 
@@ -365,6 +359,8 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
         if (serverName != null) GlobalServers.servers.value.find { it.name == serverName } else null
     val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
 
+    var populatedUiFromServer by savedState(savedStateHandle, false)
+
     val locationPermissionHelper = if (needLocationPermission()) {
         RuntimePermissionHelper(
             if (needFineLocationPermission()) {
@@ -450,7 +446,7 @@ class ServerCertificatesFragment : NavigationFragment(
     private lateinit var getClientCertificateLauncher: ActivityResultLauncher<Unit>
 
     private val args: ServerCertificatesFragmentArgs by navArgs()
-    private lateinit var model: ServerEditFragmentViewModel
+    private lateinit var mainModel: ServerEditFragmentViewModel
 
     private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
 
@@ -482,23 +478,16 @@ class ServerCertificatesFragment : NavigationFragment(
         getClientCertificateLauncher = registerForActivityResult(GetPemFileContract()) {
             if (it != null) handleCertificateResult(it, binding.clientCertificateEdit)
         }
+
+        mainModel = ServerEditFragmentViewModel.from(this, args.server)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        model = ServerEditFragmentViewModel.from(this, args.server)
-
         with(binding) {
             selfSignedCertificateCheckBox.setDependentViews(selfSignedCertificateLayout, selfSignedCertificateLoadFromFile)
             clientCertificateCheckBox.setDependentViews(clientCertificateLayout, clientCertificateLoadFromFile)
-
-            with(model.server) {
-                selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
-                selfSignedCertificateEdit.setText(selfSignedCertificate)
-                clientCertificateCheckBox.isChecked = clientCertificateEnabled
-                clientCertificateEdit.setText(clientCertificate)
-            }
 
             selfSignedCertificateLoadFromFile.setOnClickListener {
                 try {
@@ -514,13 +503,24 @@ class ServerCertificatesFragment : NavigationFragment(
                     Timber.e(e, "Failed to start activity")
                 }
             }
+
+            val model = ViewModelProvider(this@ServerCertificatesFragment)[ServerCertificatesFragmentModel::class.java]
+            if (!model.populatedUiFromServer) {
+                with(mainModel.server) {
+                    selfSignedCertificateCheckBox.isChecked = selfSignedCertificateEnabled
+                    selfSignedCertificateEdit.setText(selfSignedCertificate)
+                    clientCertificateCheckBox.isChecked = clientCertificateEnabled
+                    clientCertificateEdit.setText(clientCertificate)
+                }
+                model.populatedUiFromServer = true
+            }
         }
     }
 
     override fun onNavigatedFrom() {
         if (view != null) {
             with(binding) {
-                model.server.apply {
+                mainModel.server.apply {
                     selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked
                     selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: ""
                     clientCertificateEnabled = clientCertificateCheckBox.isChecked
@@ -544,6 +544,10 @@ class ServerCertificatesFragment : NavigationFragment(
     }
 }
 
+class ServerCertificatesFragmentModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+    var populatedUiFromServer by savedState(savedStateHandle, false)
+}
+
 class ServerProxySettingsFragment : NavigationFragment(
     R.layout.server_edit_proxy_fragment,
     R.string.proxy_settings
@@ -558,7 +562,7 @@ class ServerProxySettingsFragment : NavigationFragment(
     }
 
     private val args: ServerProxySettingsFragmentArgs by navArgs()
-    private lateinit var model: ServerEditFragmentViewModel
+    private lateinit var mainModel: ServerEditFragmentViewModel
     private lateinit var proxyTypeItemValues: Array<String>
 
     private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
@@ -566,30 +570,34 @@ class ServerProxySettingsFragment : NavigationFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
+        mainModel = ServerEditFragmentViewModel.from(this, args.server)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        model = ServerEditFragmentViewModel.from(this, args.server)
 
         with(binding) {
             proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
             proxyTypeView.setOnItemClickListener { _, _, position, _ ->
-                update(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
+                setEditable(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
             }
 
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
-            with(model.server) {
-                proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
-                addressEdit.setText(proxyHostname)
-                portEdit.setText(proxyPort.toString())
-                usernameEdit.setText(proxyUser)
-                passwordEdit.setText(proxyPassword)
+            val model = ViewModelProvider(this@ServerProxySettingsFragment)[ServerProxySettingsFragmentModel::class.java]
+            if (!model.populatedUiFromServer) {
+                with(mainModel.server) {
+                    proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
+                    addressEdit.setText(proxyHostname)
+                    portEdit.setText(proxyPort.toString())
+                    usernameEdit.setText(proxyUser)
+                    passwordEdit.setText(proxyPassword)
 
-                if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
-                    update(false)
+                    if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                        setEditable(false)
+                    }
                 }
+                model.populatedUiFromServer = true
             }
         }
     }
@@ -597,7 +605,7 @@ class ServerProxySettingsFragment : NavigationFragment(
     override fun onNavigatedFrom() {
         if (view != null) {
             with(binding) {
-                model.server.apply {
+                mainModel.server.apply {
                     proxyType = Server.fromNativeProxyType(
                         proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())]
                     )
@@ -610,12 +618,16 @@ class ServerProxySettingsFragment : NavigationFragment(
         }
     }
 
-    private fun update(enabled: Boolean) {
+    private fun setEditable(editable: Boolean) {
         with(binding) {
-            addressEditLayout.isEnabled = enabled
-            portEditLayout.isEnabled = enabled
-            usernameEditLayout.isEnabled = enabled
-            passwordEditLayout.isEnabled = enabled
+            addressEditLayout.isEnabled = editable
+            portEditLayout.isEnabled = editable
+            usernameEditLayout.isEnabled = editable
+            passwordEditLayout.isEnabled = editable
         }
     }
+}
+
+class ServerProxySettingsFragmentModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+    var populatedUiFromServer by savedState(savedStateHandle, false)
 }
