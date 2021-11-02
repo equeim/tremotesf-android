@@ -5374,34 +5374,6 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1upd
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1backgroundUpdateInterval_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
-  int arg2 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::Server **)&jarg1; 
-  arg2 = (int)jarg2; 
-  if (arg1) (arg1)->backgroundUpdateInterval = arg2;
-}
-
-
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1backgroundUpdateInterval_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jint jresult = 0 ;
-  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
-  int result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::Server **)&jarg1; 
-  result = (int) ((arg1)->backgroundUpdateInterval);
-  jresult = (jint)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1timeout_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
   int arg2 ;
@@ -5425,6 +5397,62 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1tim
   (void)jarg1_;
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (int) ((arg1)->timeout);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1autoReconnectEnabled_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->autoReconnectEnabled = arg2;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1autoReconnectEnabled_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (bool) ((arg1)->autoReconnectEnabled);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1autoReconnectInterval_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->autoReconnectInterval = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1autoReconnectInterval_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  result = (int) ((arg1)->autoReconnectInterval);
   jresult = (jint)result; 
   return jresult;
 }

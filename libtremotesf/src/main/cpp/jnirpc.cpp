@@ -38,9 +38,9 @@ namespace libtremotesf
         }
 
         template<typename IndexIterator>
-        std::vector<TorrentData*> toNewPointers(const std::vector<std::shared_ptr<Torrent>>& items, IndexIterator&& begin, IndexIterator&& end)
+        std::vector<TorrentData*> toNewPointers(const std::vector<std::unique_ptr<Torrent>>& items, IndexIterator&& begin, IndexIterator&& end)
         {
-            return toNewPointers<std::shared_ptr<Torrent>, TorrentData>(items, begin, end, [](const std::shared_ptr<Torrent>& i) { return i->data(); });
+            return toNewPointers<std::unique_ptr<Torrent>, TorrentData>(items, begin, end, [](const std::unique_ptr<Torrent>& i) { return i->data(); });
         }
 
         struct IndexIterator
