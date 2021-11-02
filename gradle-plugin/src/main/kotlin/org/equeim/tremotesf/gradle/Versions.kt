@@ -18,12 +18,12 @@ object Versions {
         const val appcompat = "1.3.1"
         const val collection = "1.1.0"
         const val concurrentFutures = "1.1.0"
-        const val core = "1.6.0"
+        const val core = "1.7.0"
         const val coordinatorlayout = "1.1.0"
         const val drawerlayout = "1.1.1"
         const val fragment = "1.3.6"
         const val gridlayout = "1.0.0"
-        const val lifecycle = "2.3.1"
+        const val lifecycle = "2.4.0"
 
         private val _navigation = AtomicReference<String>()
         val navigation: String
@@ -33,7 +33,7 @@ object Versions {
         const val preference = "1.1.1"
         const val swipeRefreshLayout = "1.1.0"
         const val viewpager2 = "1.0.0"
-        const val work = "2.6.0"
+        const val work = "2.7.0"
 
         internal fun init(gradle: Gradle) {
             _navigation.updateAndGet { it ?: (gradle as ExtensionAware).extra["navigation"] as String }
@@ -48,5 +48,5 @@ object Versions {
 
     const val junit = "4.13.2"
 
-    const val publicsuffixlist = "93.0.9"
+    const val publicsuffixlist = "95.0.0"
 }
