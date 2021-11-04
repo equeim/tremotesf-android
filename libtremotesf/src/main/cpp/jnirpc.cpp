@@ -10,6 +10,10 @@
 
 #include <jni.h>
 
+#include <QPluginLoader>
+
+Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
+
 Q_DECLARE_METATYPE(libtremotesf::Server)
 Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 
