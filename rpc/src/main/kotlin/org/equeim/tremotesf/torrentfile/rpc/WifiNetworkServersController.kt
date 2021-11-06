@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("DEPRECATION")
-
 package org.equeim.tremotesf.torrentfile.rpc
 
 import android.content.BroadcastReceiver
@@ -143,7 +141,7 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
 
     // TODO: extract WifiInfo from NetworkCapabilities on Android S
     @RequiresApi(Build.VERSION_CODES.N)
-    private class DefaultNetworkCallback(private val channel: SendChannel<Unit>) :
+    private class DefaultNetworkCallback(private val wifiNetworkChangedChannel: SendChannel<Unit>) :
         ConnectivityManager.NetworkCallback() {
         private var waitingForCapabilities = false
 
@@ -182,7 +180,10 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
             if (wifiNetworkCapabilities.all { networkCapabilities.hasCapability(it) }) {
                 Timber.i("onCapabilitiesChanged: supported Wi-Fi network")
                 waitingForCapabilities = false
-                channel.offer(Unit)
+                val result = wifiNetworkChangedChannel.trySend(Unit)
+                if (!result.isSuccess) {
+                    Timber.e("onCapabilitiesChanged: failed to send notification to channel, result = $result")
+                }
             } else {
                 Timber.i("onCapabilitiesChanged: unsupported network, wait")
             }
@@ -195,6 +196,7 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         return callbackFlow<Unit> {
             Timber.i("observeActiveWifiNetworkV16: registering receiver")
             val receiver = ConnectivityReceiver(connectivityManager, channel)
+            @Suppress("DEPRECATION")
             context.registerReceiver(
                 receiver,
                 IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -206,14 +208,19 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         }.buffer(Channel.CONFLATED)
     }
 
-    private class ConnectivityReceiver(private val connectivityManager: ConnectivityManager, private val channel: SendChannel<Unit>) :
+    private class ConnectivityReceiver(private val connectivityManager: ConnectivityManager, private val wifiNetworkChangedChannel: SendChannel<Unit>) :
         BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val networkInfo = ConnectivityManagerCompat.getNetworkInfoFromBroadcast(connectivityManager, intent)
             Timber.i("onReceive: networkInfo = $networkInfo")
-            if (networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI) {
+            @Suppress("DEPRECATION")
+            val ok = networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI
+            if (ok) {
                 Timber.i("onReceive: Wi-Fi connected")
-                channel.offer(Unit)
+                val result = wifiNetworkChangedChannel.trySend(Unit)
+                if (!result.isSuccess) {
+                    Timber.e("onReceive: failed to send notification to channel, result = $result")
+                }
             }
         }
     }
