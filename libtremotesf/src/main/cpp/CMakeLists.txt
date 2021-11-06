@@ -7,6 +7,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH "${QT_DIR}/install-${ANDROID_ABI}")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 find_library(log-lib log)
 
@@ -23,7 +24,8 @@ add_library(${PROJECT_NAME} SHARED
         libtremotesf/torrentfile.cpp
         libtremotesf/tracker.cpp
         jnirpc.cpp
-        libtremotesf_wrap.cxx)
+        libtremotesf_wrap.cxx
+        resources.qrc)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 17

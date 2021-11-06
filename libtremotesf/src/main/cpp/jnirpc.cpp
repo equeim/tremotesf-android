@@ -5,6 +5,8 @@
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QSslCertificate>
+#include <QSslConfiguration>
 
 #include <android/log.h>
 
@@ -23,6 +25,7 @@ namespace libtremotesf
     {
         constexpr int threadStartTimeoutMs = 5000;
         constexpr const char* logTag = "LibTremotesf";
+        const QLatin1String certPath(":/isrg_root_x1.pem");
 
         template<typename I, typename O, typename IndexIterator, typename Functor>
         std::vector<O*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end, Functor&& transform)
@@ -441,6 +444,19 @@ namespace libtremotesf
     void JniRpc::initRpc()
     {
         qInfo("Initializing Rpc");
+
+        if (QFile certFile(certPath); certFile.open(QIODevice::ReadOnly)) {
+            auto certs = QSslCertificate::fromDevice(&certFile);
+            if (certs.size() == 1 && !certs.first().isNull()) {
+                auto configuration = QSslConfiguration::defaultConfiguration();
+                configuration.addCaCertificate(certs.first());
+                QSslConfiguration::setDefaultConfiguration(configuration);
+            } else {
+                qWarning("Failed to load ISRG Root X1 certificate from resources");
+            }
+        } else {
+            qFatal("Failed to open resource %s", certPath.data());
+        }
 
         mRpc = new Rpc();
 
