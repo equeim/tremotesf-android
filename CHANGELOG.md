@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+### Changed
+- Improved compatibility with Android 12
+
+### Fixed
+- Fixed compatibility with Let's Encrypt ceritificates on Android < 7.1.1
+- Fixed saving of settings in server edit screen
+
 ## [2.5.1] - 2021-10-03
 ### Changed
 - Removed ACCESS_BACKGROUND_LOCATION from google flavor
