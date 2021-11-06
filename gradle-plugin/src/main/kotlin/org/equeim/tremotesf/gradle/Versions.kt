@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference
 object Versions {
     const val compileSdk = 31
     const val minSdk = 21
-    const val targetSdk = 30
+    const val targetSdk = compileSdk
     const val ndk = "23.0.7599858"
 
     const val kotlinxCoroutines = "1.5.2"
