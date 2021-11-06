@@ -315,8 +315,7 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
 @RequiresApi(Build.VERSION_CODES.N)
 private val wifiNetworkCapabilities = arrayOf(
     NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED,
-    NetworkCapabilities.NET_CAPABILITY_TRUSTED,
-    NetworkCapabilities.NET_CAPABILITY_NOT_VPN
+    NetworkCapabilities.NET_CAPABILITY_TRUSTED
 ).let {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         it + arrayOf(
