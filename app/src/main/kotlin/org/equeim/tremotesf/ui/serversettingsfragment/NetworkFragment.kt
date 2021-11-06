@@ -27,6 +27,7 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import timber.log.Timber
 
 
 class NetworkFragment : ServerSettingsFragment.BaseFragment(
@@ -48,7 +49,11 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(
             peerPortEdit.filters = arrayOf(IntFilter(0..65535))
             peerPortEdit.setText(GlobalRpc.serverSettings.peerPort.toString())
             peerPortEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.peerPort = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.peerPort = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse peer port $it")
+                }
             }
 
             randomPortCheckBox.isChecked = GlobalRpc.serverSettings.randomPortEnabled
@@ -91,13 +96,21 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(
             peersPerTorrentEdit.filters = arrayOf(IntFilter(0..10000))
             peersPerTorrentEdit.setText(GlobalRpc.serverSettings.maximumPeersPerTorrent.toString())
             peersPerTorrentEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse maximum peers count $it")
+                }
             }
 
             peersGloballyEdit.filters = arrayOf(IntFilter(0..10000))
             peersGloballyEdit.setText(GlobalRpc.serverSettings.maximumPeersGlobally.toString())
             peersGloballyEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse maximum peers count $it")
+                }
             }
         }
     }

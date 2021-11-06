@@ -43,6 +43,7 @@ import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
+import timber.log.Timber
 import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.util.Calendar
@@ -117,7 +118,11 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
             downloadSpeedLimitEdit.filters = limitsFilters
             downloadSpeedLimitEdit.setText(GlobalRpc.serverSettings.downloadSpeedLimit.toString())
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.downloadSpeedLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.downloadSpeedLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse download speed limit $it")
+                }
             }
 
             uploadSpeedLimitCheckBox.isChecked = GlobalRpc.serverSettings.uploadSpeedLimited
@@ -128,7 +133,11 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
             uploadSpeedLimitEdit.filters = limitsFilters
             uploadSpeedLimitEdit.setText(GlobalRpc.serverSettings.uploadSpeedLimit.toString())
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.uploadSpeedLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.uploadSpeedLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse upload speed limit $it")
+                }
             }
 
             alternativeLimitsCheckBox.isChecked = GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
@@ -142,13 +151,21 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
             alternativeDownloadSpeedLimitEdit.filters = limitsFilters
             alternativeDownloadSpeedLimitEdit.setText(GlobalRpc.serverSettings.alternativeDownloadSpeedLimit.toString())
             alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.alternativeDownloadSpeedLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.alternativeDownloadSpeedLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse alternative download speed limit $it")
+                }
             }
 
             alternativeUploadSpeedLimitEdit.filters = limitsFilters
             alternativeUploadSpeedLimitEdit.setText(GlobalRpc.serverSettings.alternativeUploadSpeedLimit.toString())
             alternativeUploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse alternative upload speed limit $it")
+                }
             }
 
             scheduleCheckBox.isChecked = GlobalRpc.serverSettings.alternativeSpeedLimitsScheduled

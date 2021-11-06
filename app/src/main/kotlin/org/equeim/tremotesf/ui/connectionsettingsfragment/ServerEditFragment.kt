@@ -305,14 +305,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             model.server.apply {
                 name = nameEdit.text?.toString()?.trim() ?: ""
                 address = addressEdit.text?.toString()?.trim() ?: ""
-                port = portEdit.text?.toString()?.toInt() ?: 0
+                port = portEdit.text?.toString()?.toIntOrNull() ?: 0
                 apiPath = apiPathEdit.text?.toString()?.trim() ?: ""
                 httpsEnabled = httpsCheckBox.isChecked
                 authentication = authenticationCheckBox.isChecked
                 username = usernameEdit.text?.toString()?.trim() ?: ""
                 password = passwordEdit.text?.toString()?.trim() ?: ""
-                updateInterval = updateIntervalEdit.text?.toString()?.toInt() ?: 0
-                timeout = timeoutEdit.text?.toString()?.toInt() ?: 0
+                updateInterval = updateIntervalEdit.text?.toString()?.toIntOrNull() ?: 0
+                timeout = timeoutEdit.text?.toString()?.toIntOrNull() ?: 0
                 autoConnectOnWifiNetworkEnabled = wifiAutoConnectCheckbox.isChecked
                 autoConnectOnWifiNetworkSSID =
                     wifiAutoConnectSsidEdit.text?.toString()?.trim() ?: ""
@@ -610,7 +610,7 @@ class ServerProxySettingsFragment : NavigationFragment(
                         proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())]
                     )
                     proxyHostname = addressEdit.text?.toString() ?: ""
-                    proxyPort = portEdit.text?.toString()?.toInt() ?: 0
+                    proxyPort = portEdit.text?.toString()?.toIntOrNull() ?: 0
                     proxyUser = usernameEdit.text?.toString() ?: ""
                     proxyPassword = passwordEdit.text?.toString() ?: ""
                 }

@@ -67,7 +67,7 @@ class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputF
         return fallbackParser?.parse(string, position)
     }
 
-    fun parse(string: String): Double? {
+    fun parseOrNull(string: String): Double? {
         position.index = 0
         val number = parser.parse(string, position) ?: fallbackParse(string)
         if (number == null || position.index != string.length) {
@@ -88,7 +88,7 @@ class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputF
             return null
         }
         val newString = dest.substring(0, dstart) + source + dest.substring(dstart)
-        val number = parse(newString)
+        val number = parseOrNull(newString)
         if (number == null || number !in range) {
             return ""
         }

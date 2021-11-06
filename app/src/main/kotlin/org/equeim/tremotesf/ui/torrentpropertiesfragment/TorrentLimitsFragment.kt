@@ -31,6 +31,7 @@ import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.viewBinding
+import timber.log.Timber
 
 
 class TorrentLimitsFragment :
@@ -113,14 +114,22 @@ class TorrentLimitsFragment :
                 torrent?.setDownloadSpeedLimited(checked)
             }
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                torrent?.setDownloadSpeedLimit(it.toString().toInt())
+                try {
+                    torrent?.setDownloadSpeedLimit(it.toString().toInt())
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse download speed limit $it")
+                }
             }
 
             uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
                 torrent?.setUploadSpeedLimited(checked)
             }
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                torrent?.setUploadSpeedLimit(it.toString().toInt())
+                try {
+                    torrent?.setUploadSpeedLimit(it.toString().toInt())
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse upload speed limit $it")
+                }
             }
 
             priorityView.setOnItemClickListener { _, _, position, _ ->
@@ -133,7 +142,12 @@ class TorrentLimitsFragment :
                 torrent?.setRatioLimitMode(mode)
             }
             ratioLimitEdit.doAfterTextChangedAndNotEmpty {
-                torrent?.setRatioLimit(doubleFilter.parse(it.toString())!!)
+                val limit = doubleFilter.parseOrNull(it.toString())
+                if (limit != null) {
+                    torrent?.setRatioLimit(limit)
+                } else {
+                    Timber.e("Failed to parse ratio limit $it")
+                }
             }
 
             idleSeedingModeView.setOnItemClickListener { _, _, position, _ ->
@@ -143,11 +157,19 @@ class TorrentLimitsFragment :
                 torrent?.setIdleSeedingLimitMode(mode)
             }
             idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
-                torrent?.setIdleSeedingLimit(it.toString().toInt())
+                try {
+                    torrent?.setIdleSeedingLimit(it.toString().toInt())
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse idle seeding limit $it")
+                }
             }
 
             maximumPeersEdit.doAfterTextChangedAndNotEmpty {
-                torrent?.setPeersLimit(it.toString().toInt())
+                try {
+                    torrent?.setPeersLimit(it.toString().toInt())
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse peers limit $it")
+                }
             }
         }
     }

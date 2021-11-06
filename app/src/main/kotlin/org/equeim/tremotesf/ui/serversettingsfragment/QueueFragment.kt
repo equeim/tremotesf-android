@@ -26,6 +26,7 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
+import timber.log.Timber
 
 
 class QueueFragment : ServerSettingsFragment.BaseFragment(
@@ -43,7 +44,11 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(
             downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
             downloadQueueEdit.setText(GlobalRpc.serverSettings.downloadQueueSize.toString())
             downloadQueueEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.downloadQueueSize = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.downloadQueueSize = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse download queue size $it")
+                }
             }
 
             seedQueueCheckBox.isChecked = GlobalRpc.serverSettings.seedQueueEnabled
@@ -54,7 +59,11 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(
             seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
             seedQueueEdit.setText(GlobalRpc.serverSettings.seedQueueSize.toString())
             seedQueueEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.seedQueueSize = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.seedQueueSize = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse seed queue size $it")
+                }
             }
 
             idleQueueCheckBox.isChecked = GlobalRpc.serverSettings.idleQueueLimited
@@ -65,7 +74,11 @@ class QueueFragment : ServerSettingsFragment.BaseFragment(
             idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
             idleQueueEdit.setText(GlobalRpc.serverSettings.idleQueueLimit.toString())
             idleQueueEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.idleQueueLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.idleQueueLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse idle queue limit $it")
+                }
             }
         }
     }

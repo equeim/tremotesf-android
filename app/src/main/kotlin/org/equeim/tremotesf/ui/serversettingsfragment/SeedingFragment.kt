@@ -28,6 +28,7 @@ import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.setDependentViews
+import timber.log.Timber
 
 class SeedingFragment : ServerSettingsFragment.BaseFragment(
     R.layout.server_settings_seeding_fragment,
@@ -45,7 +46,12 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(
             ratioLimitEdit.filters = arrayOf(doubleFilter)
             ratioLimitEdit.setText(DecimalFormats.ratio.format(GlobalRpc.serverSettings.ratioLimit))
             ratioLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.ratioLimit = doubleFilter.parse(it.toString())!!
+                val limit = doubleFilter.parseOrNull(it.toString())
+                if (limit != null) {
+                    GlobalRpc.serverSettings.ratioLimit = limit
+                } else {
+                    Timber.e("Failed to parse ratio limit $it")
+                }
             }
 
             idleSeedingCheckBox.isChecked = GlobalRpc.serverSettings.idleSeedingLimited
@@ -56,7 +62,11 @@ class SeedingFragment : ServerSettingsFragment.BaseFragment(
             idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..10000))
             idleSeedingLimitEdit.setText(GlobalRpc.serverSettings.idleSeedingLimit.toString())
             idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.idleSeedingLimit = it.toString().toInt()
+                try {
+                    GlobalRpc.serverSettings.idleSeedingLimit = it.toString().toInt()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse idle seeding limit $it")
+                }
             }
         }
     }
