@@ -46,8 +46,9 @@ import org.equeim.tremotesf.common.MutableEventFlow
 import timber.log.Timber
 
 class RuntimePermissionHelper(
-    private val permission: String,
-    @StringRes private val permissionRationaleStringId: Int
+    private val requiredPermission: String,
+    @StringRes private val permissionRationaleStringId: Int,
+    private val requestPermissions: List<String> = listOf(requiredPermission)
 ) {
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
@@ -55,15 +56,16 @@ class RuntimePermissionHelper(
     private val _permissionRequestResult = MutableEventFlow<Boolean>()
     val permissionRequestResult: Flow<Boolean> by ::_permissionRequestResult
 
-    fun registerWithFragment(fragment: Fragment): ActivityResultLauncher<String> {
+    fun registerWithFragment(fragment: Fragment): ActivityResultLauncher<Array<String>> {
         val launcher =
-            fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+                val granted = grantResults[requiredPermission] == true
                 _permissionGranted.value = granted
                 _permissionRequestResult.tryEmit(granted)
                 if (granted) {
-                    Timber.i("Permission $permission granted")
+                    Timber.i("Permission $requiredPermission granted")
                 } else {
-                    Timber.i("Permission $permission not granted")
+                    Timber.i("Permission $requiredPermission not granted")
                     Timber.i("Showing rationale for going to permission settings")
                     fragment.navigate(
                         NavMainDirections.toRuntimePermissionSystemSettingsDialog(
@@ -81,10 +83,10 @@ class RuntimePermissionHelper(
     }
 
     fun checkPermission(context: Context): Boolean {
-        Timber.i("Checking permission $permission")
+        Timber.i("Checking permission $requiredPermission")
         if (ContextCompat.checkSelfPermission(
                 context,
-                permission
+                requiredPermission
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             Timber.i("Permission is already granted")
@@ -97,13 +99,13 @@ class RuntimePermissionHelper(
 
     fun requestPermission(
         fragment: Fragment,
-        launcher: ActivityResultLauncher<String>
+        launcher: ActivityResultLauncher<Array<String>>
     ) {
         if (checkPermission(fragment.requireContext())) {
             _permissionRequestResult.tryEmit(true)
             return
         }
-        if (fragment.shouldShowRequestPermissionRationale(permission)) {
+        if (fragment.shouldShowRequestPermissionRationale(requiredPermission)) {
             Timber.i("Showing rationale for requesting permission")
             fragment.navigate(
                 NavMainDirections.toRuntimePermissionRationaleDialog(
@@ -115,10 +117,10 @@ class RuntimePermissionHelper(
         }
     }
 
-    private fun requestPermission(launcher: ActivityResultLauncher<String>) {
-        Timber.i("Requesting permission $permission from system")
+    private fun requestPermission(launcher: ActivityResultLauncher<Array<String>>) {
+        Timber.i("Requesting permissions $requestPermissions from system")
         try {
-            launcher.launch(permission)
+            launcher.launch(requestPermissions.toTypedArray())
         } catch (e: ActivityNotFoundException) {
             Timber.e(e, "Failed to start activity")
         }

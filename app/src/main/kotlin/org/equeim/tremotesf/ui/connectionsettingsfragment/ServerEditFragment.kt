@@ -78,8 +78,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
     private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
-    private var requestLocationPermissionLauncher: ActivityResultLauncher<String>? = null
-    private var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<String>? = null
+    private var requestLocationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
+    private var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
 
     private val binding by viewBinding(ServerEditFragmentBinding::bind)
 
@@ -343,8 +343,22 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
             return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
-        private fun needLocationPermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-        private fun needFineLocationPermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        private fun requiredLocationPermission(): String? {
+            val sdk = Build.VERSION.SDK_INT
+            return when {
+                sdk >= Build.VERSION_CODES.Q -> Manifest.permission.ACCESS_FINE_LOCATION
+                sdk >= Build.VERSION_CODES.O -> Manifest.permission.ACCESS_COARSE_LOCATION
+                else -> null
+            }
+        }
+
+        private fun requestLocationPermissions(): List<String> {
+            val sdk = Build.VERSION.SDK_INT
+            return when {
+                sdk >= Build.VERSION_CODES.S -> listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                else -> requiredLocationPermission()?.let { listOf(it) } ?: emptyList()
+            }
+        }
 
         private fun locationNeedsToBeEnabled() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
@@ -361,17 +375,12 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
 
     var populatedUiFromServer by savedState(savedStateHandle, false)
 
-    val locationPermissionHelper = if (needLocationPermission()) {
+    val locationPermissionHelper = requiredLocationPermission()?.let { permission ->
         RuntimePermissionHelper(
-            if (needFineLocationPermission()) {
-                Manifest.permission.ACCESS_FINE_LOCATION
-            } else {
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            },
-            R.string.location_permission_rationale
+            permission,
+            R.string.location_permission_rationale,
+            requestLocationPermissions()
         )
-    } else {
-        null
     }
 
     val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission() && allowedToRequestBackgroundLocationPermission()) {

@@ -475,7 +475,7 @@
     <string name="auto_connect_on_wifi_network">Автоматически подключаться к этому серверу при подключении к сети Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID Wi-Fi сети</string>
     <string name="wifi_ssid_set_from_current">Установить из текущей Wi-Fi сети</string>
-    <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к местоположению</string>
+    <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к точному местоположению</string>
     <string name="request_location_permission">Запросить разрешение на доступ к местоположению</string>
     <string name="background_wifi_networks_explanation_fdroid">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения либо предоставьте разрешение на фоновый доступ к местоположению</string>
     <string name="background_wifi_networks_explanation_google">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
