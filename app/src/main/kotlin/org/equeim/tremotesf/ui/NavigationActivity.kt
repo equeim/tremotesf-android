@@ -187,7 +187,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
                 destinationId,
                 arguments,
                 NavOptions.Builder()
-                    .setPopUpTo(navController.graph.startDestination, false)
+                    .setPopUpTo(navController.graph.startDestinationId, false)
                     .build()
             )
         }
@@ -251,7 +251,7 @@ class NavHostFragment : NavHostFragment() {
                         setEnterAnim(navOptions.enterAnim)
                         setExitAnim(navOptions.exitAnim)
                         setLaunchSingleTop(navOptions.shouldLaunchSingleTop())
-                        setPopUpTo(navOptions.popUpTo, navOptions.isPopUpToInclusive)
+                        setPopUpTo(navOptions.popUpToId, navOptions.isPopUpToInclusive())
                     }
                 }
                 .build()
