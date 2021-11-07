@@ -24,10 +24,7 @@ import android.text.format.DateUtils
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
 
 
 class TorrentDetailsFragment :
@@ -39,12 +36,9 @@ class TorrentDetailsFragment :
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-
-        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
-
-        binding.hashTextView.text = propertiesFragmentModel.hashString
         firstUpdate = true
-
+        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+        binding.hashTextView.text = propertiesFragmentModel.args.hash
         propertiesFragmentModel.torrent.collectWhenStarted(viewLifecycleOwner, ::update)
     }
 

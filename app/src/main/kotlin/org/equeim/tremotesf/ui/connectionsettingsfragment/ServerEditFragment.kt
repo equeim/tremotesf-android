@@ -39,11 +39,10 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
-import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,19 +62,12 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.savedState
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.textInputLayout
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.navController
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) {
-    private val args: ServerEditFragmentArgs by navArgs()
     private lateinit var model: ServerEditFragmentViewModel
 
     private var requestLocationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
@@ -85,13 +77,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        model = ServerEditFragmentViewModel.from(this, args.server)
-
+        model = ServerEditFragmentViewModel.get(this@ServerEditFragment)
         requestLocationPermissionLauncher =
-            model.locationPermissionHelper?.registerWithFragment(this)
+            model.locationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
         requestBackgroundLocationPermissionLauncher =
-            model.backgroundLocationPermissionHelper?.registerWithFragment(this)
+            model.backgroundLocationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -101,11 +91,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
             proxySettingsButton.setOnClickListener {
-                navigate(ServerEditFragmentDirections.toProxySettingsFragment(args.server))
+                navigate(ServerEditFragmentDirections.toProxySettingsFragment())
             }
 
             certificatedButton.setOnClickListener {
-                navigate(ServerEditFragmentDirections.toCertificatesFragment(args.server))
+                navigate(ServerEditFragmentDirections.toCertificatesFragment())
             }
             httpsCheckBox.setDependentViews(certificatedButton)
 
@@ -331,16 +321,15 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
     }
 }
 
-class ServerEditFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
+class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
     companion object {
-        fun from(fragment: NavigationFragment, serverName: String?): ServerEditFragmentViewModel {
+        fun get(fragment: Fragment): ServerEditFragmentViewModel {
             val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
-            val factory = SavedStateViewModelFactory(
-                fragment.requireActivity().application,
-                entry, bundleOf(ServerEditFragmentViewModel::serverName.name to serverName)
-            )
-            return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
+            return ViewModelProvider(
+                entry,
+                fragment.navArgsViewModelFactory(ServerEditFragmentArgs::fromBundle, ::ServerEditFragmentViewModel)
+            )[ServerEditFragmentViewModel::class.java]
         }
 
         private fun requiredLocationPermission(): String? {
@@ -367,7 +356,7 @@ class ServerEditFragmentViewModel(application: Application, savedStateHandle: Sa
         private fun allowedToRequestBackgroundLocationPermission() = !BuildConfig.GOOGLE
     }
 
-    private val serverName: String? = savedStateHandle[::serverName.name]
+    private val serverName: String? = args.server
 
     val existingServer =
         if (serverName != null) GlobalServers.servers.value.find { it.name == serverName } else null
@@ -454,7 +443,6 @@ class ServerCertificatesFragment : NavigationFragment(
     private lateinit var getServerCertificateLauncher: ActivityResultLauncher<Unit>
     private lateinit var getClientCertificateLauncher: ActivityResultLauncher<Unit>
 
-    private val args: ServerCertificatesFragmentArgs by navArgs()
     private lateinit var mainModel: ServerEditFragmentViewModel
 
     private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
@@ -488,7 +476,7 @@ class ServerCertificatesFragment : NavigationFragment(
             if (it != null) handleCertificateResult(it, binding.clientCertificateEdit)
         }
 
-        mainModel = ServerEditFragmentViewModel.from(this, args.server)
+        mainModel = ServerEditFragmentViewModel.get(this@ServerCertificatesFragment)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -570,7 +558,6 @@ class ServerProxySettingsFragment : NavigationFragment(
         )
     }
 
-    private val args: ServerProxySettingsFragmentArgs by navArgs()
     private lateinit var mainModel: ServerEditFragmentViewModel
     private lateinit var proxyTypeItemValues: Array<String>
 
@@ -579,7 +566,7 @@ class ServerProxySettingsFragment : NavigationFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
-        mainModel = ServerEditFragmentViewModel.from(this, args.server)
+        mainModel = ServerEditFragmentViewModel.get(this@ServerProxySettingsFragment)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

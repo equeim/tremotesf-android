@@ -24,13 +24,7 @@ import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.DoubleFilter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
 
@@ -64,7 +58,7 @@ class TorrentLimitsFragment :
         )
     }
 
-    private val propertiesFragmentModel by TorrentPropertiesFragmentViewModel.getLazy(this)
+    private val propertiesFragmentModel by TorrentPropertiesFragmentViewModel.lazy(this)
     private val torrent: Torrent?
         get() = propertiesFragmentModel.torrent.value
 

@@ -26,12 +26,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
-import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -58,15 +56,7 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.addCustomCallback
-import org.equeim.tremotesf.ui.utils.application
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.findFragment
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
 
@@ -142,14 +132,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
     }
 
-    private val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl> {
-        val args = AddTorrentFileFragmentArgs.fromBundle(requireArguments())
-        SavedStateViewModelFactory(
-            requireContext().application,
-            this,
-            bundleOf(AddTorrentFileModel::uri.name to args.uri)
-        )
-    }
+    private val model: AddTorrentFileModel by viewModels { navArgsViewModelFactory(AddTorrentFileFragmentArgs::fromBundle, ::AddTorrentFileModelImpl) }
 
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 

@@ -41,9 +41,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
-import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewModelFactory
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
 

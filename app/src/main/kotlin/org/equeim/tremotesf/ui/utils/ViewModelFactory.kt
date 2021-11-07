@@ -20,13 +20,14 @@
 package org.equeim.tremotesf.ui.utils
 
 import android.app.Application
+import android.os.Bundle
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import androidx.navigation.NavArgs
+import org.equeim.tremotesf.ui.navController
 
-inline fun <reified T : ViewModel> Fragment.viewModelFactory(crossinline viewModelProducer: (Application) -> T): ViewModelProvider.Factory {
+inline fun <T : ViewModel> Fragment.viewModelFactory(crossinline viewModelProducer: (Application) -> T): ViewModelProvider.Factory {
     return object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
@@ -35,7 +36,7 @@ inline fun <reified T : ViewModel> Fragment.viewModelFactory(crossinline viewMod
     }
 }
 
-inline fun <reified T : ViewModel> Fragment.savedStateViewModelFactory(crossinline viewModelProducer: (Application, SavedStateHandle) -> T): ViewModelProvider.Factory {
+inline fun <T : ViewModel> Fragment.savedStateViewModelFactory(crossinline viewModelProducer: (Application, SavedStateHandle) -> T): ViewModelProvider.Factory {
     return object : AbstractSavedStateViewModelFactory(this, arguments) {
         override fun <T : ViewModel> create(
             key: String,
@@ -47,3 +48,39 @@ inline fun <reified T : ViewModel> Fragment.savedStateViewModelFactory(crossinli
         }
     }
 }
+
+inline fun <Args : NavArgs, VM : ViewModel> Fragment.navArgsViewModelFactory(
+    argsBundle: Bundle?,
+    crossinline navArgsProducer: (Bundle) -> Args,
+    crossinline viewModelProducer: (Args, Application, SavedStateHandle) -> VM
+): ViewModelProvider.Factory {
+    return object : AbstractSavedStateViewModelFactory(this, arguments) {
+        override fun <T : ViewModel> create(
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
+        ): T {
+            @Suppress("UNCHECKED_CAST")
+            return viewModelProducer(
+                navArgsProducer(checkNotNull(argsBundle)),
+                requireContext().application,
+                handle
+            ) as T
+        }
+    }
+}
+
+inline fun <Args : NavArgs, VM : ViewModel> Fragment.navArgsViewModelFactory(
+    crossinline navArgsProducer: (Bundle) -> Args,
+    crossinline viewModelProducer: (Args, Application, SavedStateHandle) -> VM
+) = navArgsViewModelFactory(arguments, navArgsProducer, viewModelProducer)
+
+inline fun <Args : NavArgs, VM : ViewModel> Fragment.navArgsViewModelFactory(
+    @IdRes destinationId: Int,
+    crossinline navArgsProducer: (Bundle) -> Args,
+    crossinline viewModelProducer: (Args, Application, SavedStateHandle) -> VM
+) = navArgsViewModelFactory(
+    navController.getBackStackEntry(destinationId).arguments,
+    navArgsProducer,
+    viewModelProducer
+)

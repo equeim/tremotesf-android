@@ -74,9 +74,7 @@ interface AddTorrentFileModel {
 
     var rememberedPagerItem: Int
 
-    val uri: Uri
     val needStoragePermission: Boolean
-
     val storagePermissionHelper: RuntimePermissionHelper
 
     val parserStatus: StateFlow<ParserStatus>
@@ -91,13 +89,13 @@ interface AddTorrentFileModel {
 }
 
 class AddTorrentFileModelImpl(
+    private val args: AddTorrentFileFragmentArgs,
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application), AddTorrentFileModel {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
-    override val uri: Uri by savedState(savedStateHandle, Uri.EMPTY)
-    override val needStoragePermission = uri.scheme == ContentResolver.SCHEME_FILE
+    override val needStoragePermission = args.uri.scheme == ContentResolver.SCHEME_FILE
 
     override val storagePermissionHelper = RuntimePermissionHelper(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -153,11 +151,11 @@ class AddTorrentFileModelImpl(
     }
 
     private fun load() {
-        Timber.i("load: loading $uri")
+        Timber.i("load: loading ${args.uri}")
         if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
             parserStatus.value = AddTorrentFileModel.ParserStatus.Loading
             viewModelScope.launch {
-                doLoad(uri, getApplication())
+                doLoad(args.uri, getApplication())
             }
         }
     }

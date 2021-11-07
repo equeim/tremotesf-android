@@ -226,12 +226,6 @@
     <fragment
         android:id="@+id/server_certificates_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment">
-
-        <argument
-            android:name="server"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
     </fragment>
     <dialog
         android:id="@+id/persistent_notification_warning_dialog"
@@ -327,11 +321,6 @@
         android:id="@+id/server_proxy_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerProxySettingsFragment"
         android:label="ProxySettingsFragment" >
-        <argument
-            android:name="server"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
     </fragment>
 
     <dialog

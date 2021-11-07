@@ -50,15 +50,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
-import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.addCustomCallback
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
-import org.equeim.tremotesf.ui.utils.handleAndReset
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.popDialog
-import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -68,7 +60,7 @@ class TorrentPropertiesFragment : NavigationFragment(
 ) {
     private val args: TorrentPropertiesFragmentArgs by navArgs()
 
-    private val model by TorrentPropertiesFragmentViewModel.getLazy(this)
+    private val model by TorrentPropertiesFragmentViewModel.lazy(this)
 
     private var menu: Menu? = null
     val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)

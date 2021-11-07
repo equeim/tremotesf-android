@@ -20,12 +20,11 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.createViewModelLazy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.navGraphViewModels
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -36,11 +35,10 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.savedState
-import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
-class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandle: SavedStateHandle) : ViewModel() {
+class TorrentPropertiesFragmentViewModel(val args: TorrentPropertiesFragmentArgs, savedStateHandle: SavedStateHandle) : ViewModel() {
     var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     private val _torrent = MutableStateFlow<Torrent?>(null)
@@ -50,7 +48,7 @@ class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandl
 
     init {
         GlobalRpc.torrents
-            .map { torrents -> torrents.find { it.hashString == hashString } }
+            .map { torrents -> torrents.find { it.hashString == args.hash } }
             .distinctUntilChanged()
             .onEach { torrent ->
                 if (torrent == null && _torrent.value != null && GlobalRpc.isConnected.value) {
@@ -67,30 +65,19 @@ class TorrentPropertiesFragmentViewModel(val hashString: String, savedStateHandl
     }
 
     companion object {
-        fun getLazy(currentFragment: Fragment): Lazy<TorrentPropertiesFragmentViewModel> {
-            val entry by lazy {
-                currentFragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
-            }
-            return currentFragment.createViewModelLazy(
-                TorrentPropertiesFragmentViewModel::class,
-                storeProducer = { entry.viewModelStore },
-                factoryProducer = { currentFragment.factory(entry) }
-            )
+        fun get(fragment: Fragment): TorrentPropertiesFragmentViewModel {
+            val entry = fragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
+            return ViewModelProvider(entry, fragment.navArgsViewModelFactory(
+                entry.arguments,
+                TorrentPropertiesFragmentArgs::fromBundle
+            ) { args, _, handle -> TorrentPropertiesFragmentViewModel(args, handle) })[TorrentPropertiesFragmentViewModel::class.java]
         }
 
-        fun get(currentFragment: Fragment): TorrentPropertiesFragmentViewModel {
-            val entry = currentFragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
-            return ViewModelProvider(
-                entry,
-                currentFragment.factory(entry)
-            )[TorrentPropertiesFragmentViewModel::class.java]
-        }
-
-        private fun Fragment.factory(entry: NavBackStackEntry): ViewModelProvider.Factory {
-            return savedStateViewModelFactory { _, savedStateHandle ->
-                val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
-                TorrentPropertiesFragmentViewModel(args.hash, savedStateHandle)
-            }
+        fun lazy(fragment: Fragment) = fragment.navGraphViewModels<TorrentPropertiesFragmentViewModel>(R.id.torrent_properties_fragment) {
+            fragment.navArgsViewModelFactory(
+                R.id.torrent_properties_fragment,
+                TorrentPropertiesFragmentArgs::fromBundle
+            ) { args, _, handle -> TorrentPropertiesFragmentViewModel(args, handle) }
         }
 
         fun StateFlow<Torrent?>.hasTorrent() = map { it != null }.distinctUntilChanged()
