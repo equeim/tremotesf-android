@@ -50,19 +50,19 @@ fun <T : Any> ViewModel.savedState(
 private class ViewModelSavedStateProperty<T : Any>(
     private val savedStateHandle: SavedStateHandle,
     private val initialValueProducer: () -> T,
-) : ReadWriteProperty<ViewModel, T> {
-
+) : BaseViewModelSavedStateProperty(), ReadWriteProperty<ViewModel, T> {
     private lateinit var value: T
 
     override fun setValue(thisRef: ViewModel, property: KProperty<*>, value: T) {
         this.value = value
-        savedStateHandle[property.name] = value
+        savedStateHandle[getKey(property)] = value
     }
 
     override fun getValue(thisRef: ViewModel, property: KProperty<*>): T {
         if (!::value.isInitialized) {
-            value = savedStateHandle[property.name]
-                ?: initialValueProducer().also { savedStateHandle[property.name] = it }
+            val key = getKey(property)
+            value = savedStateHandle[key]
+                ?: initialValueProducer().also { savedStateHandle[key] = it }
         }
         return value
     }
@@ -78,19 +78,30 @@ fun <T : Any> ViewModel.savedStateFlow(
 private class ViewModelSavedStatePropertyFlow<T : Any>(
     private val savedStateHandle: SavedStateHandle,
     private var initialValueProducer: () -> T
-) : ReadOnlyProperty<ViewModel, MutableStateFlow<T>> {
+) : BaseViewModelSavedStateProperty(), ReadOnlyProperty<ViewModel, MutableStateFlow<T>> {
 
     private lateinit var flow: MutableStateFlow<T>
 
     override fun getValue(thisRef: ViewModel, property: KProperty<*>): MutableStateFlow<T> {
         if (!::flow.isInitialized) {
-            flow = savedStateHandle.getLiveData<T>(property.name).apply {
+            flow = savedStateHandle.getLiveData<T>(getKey(property)).apply {
                 if (value == null) {
                     value = initialValueProducer()
                 }
             }.asStateFlow(thisRef.viewModelScope)
         }
         return flow
+    }
+}
+
+private abstract class BaseViewModelSavedStateProperty {
+    private lateinit var key: String
+
+    protected fun getKey(property: KProperty<*>): String {
+        if (!::key.isInitialized) {
+            key = "property_${property.name}"
+        }
+        return key
     }
 }
 
