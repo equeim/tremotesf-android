@@ -35,7 +35,7 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import timber.log.Timber
 
 class ForegroundService : LifecycleService() {
@@ -107,10 +107,10 @@ class ForegroundService : LifecycleService() {
 
         combine(rpc.status, rpc.serverStats, GlobalServers.servers) { status, _, _ -> status }.drop(
             1
-        ).collectWhenStarted(this) { updatePersistentNotification(it) }
+        ).launchAndCollectWhenStarted(this) { updatePersistentNotification(it) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            GlobalRpc.wifiNetworkController.observingActiveWifiNetwork.collectWhenStarted(
+            GlobalRpc.wifiNetworkController.observingActiveWifiNetwork.launchAndCollectWhenStarted(
                 this,
                 ::startForegroundV29
             )

@@ -35,7 +35,7 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import timber.log.Timber
 
 
@@ -81,7 +81,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             savedInstanceState
         )
 
-        GlobalRpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
+        GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

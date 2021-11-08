@@ -35,7 +35,7 @@ import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 
 class ServerSettingsFragment : NavigationFragment(
@@ -70,7 +70,7 @@ class ServerSettingsFragment : NavigationFragment(
             }
         }
 
-        GlobalRpc.status.collectWhenStarted(viewLifecycleOwner, ::updateView)
+        GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onDestroyView() {
@@ -122,7 +122,7 @@ class ServerSettingsFragment : NavigationFragment(
     ) : NavigationFragment(contentLayoutId, titleRes) {
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-            GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner) {
+            GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
                 if (!it) {
                     navController.popBackStack()
                 }

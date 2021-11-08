@@ -48,7 +48,7 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.addCustomCallback
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.popDialog
 import org.equeim.tremotesf.ui.utils.showSnackbar
@@ -98,7 +98,7 @@ class TorrentsListFragment : NavigationFragment(
                     binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
-            GlobalRpc.torrentsUpdatedEvent.collectWhenStarted(viewLifecycleOwner) {
+            GlobalRpc.torrentsUpdatedEvent.launchAndCollectWhenStarted(viewLifecycleOwner) {
                 isRefreshing = false
             }
         }
@@ -116,30 +116,30 @@ class TorrentsListFragment : NavigationFragment(
             fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
         }
 
-        model.torrents.collectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
+        model.torrents.launchAndCollectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
 
-        GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
+        GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
         GlobalServers.servers.map { it.isNotEmpty() }
-            .collectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
+            .launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
 
-        model.showAddTorrentButton.collectWhenStarted(viewLifecycleOwner) {
+        model.showAddTorrentButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
             binding.addTorrentButton.apply {
                 if (it) show() else hide()
             }
         }
 
-        model.placeholderUpdateData.collectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
+        model.placeholderUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
-        GlobalServers.currentServer.collectWhenStarted(viewLifecycleOwner, ::updateTitle)
-        model.subtitleUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
+        GlobalServers.currentServer.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTitle)
+        model.subtitleUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         model.showAddTorrentDuplicateError.handleAndReset {
             requireView().showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
-        }.collectWhenStarted(viewLifecycleOwner)
+        }.launchAndCollectWhenStarted(viewLifecycleOwner)
 
         model.showAddTorrentError.handleAndReset {
             requireView().showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
-        }.collectWhenStarted(viewLifecycleOwner)
+        }.launchAndCollectWhenStarted(viewLifecycleOwner)
     }
 
     override fun onDestroyView() {
@@ -157,7 +157,7 @@ class TorrentsListFragment : NavigationFragment(
                 TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
                 val badgeDrawable = (drawable as LayerDrawable).getDrawable(1)
-                model.sortOrFiltersEnabled.collectWhenStarted(viewLifecycleOwner) {
+                model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {
                     badgeDrawable.alpha = if (it) 192 else 0
                 }
             }
@@ -187,7 +187,7 @@ class TorrentsListFragment : NavigationFragment(
                 }
             }
 
-            model.searchViewIsIconified.collectWhenStarted(viewLifecycleOwner) {
+            model.searchViewIsIconified.launchAndCollectWhenStarted(viewLifecycleOwner) {
                 transmissionSettings.isVisible = it
                 torrentsFilters.isVisible = it
             }

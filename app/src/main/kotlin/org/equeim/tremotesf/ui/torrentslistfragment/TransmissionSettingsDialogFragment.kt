@@ -9,7 +9,7 @@ import org.equeim.tremotesf.databinding.TransmissionSettingsDialogFragmentBindin
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 class TransmissionSettingsDialogFragment :
     NavigationBottomSheetDialogFragment(R.layout.transmission_settings_dialog_fragment) {
@@ -27,7 +27,7 @@ class TransmissionSettingsDialogFragment :
                     GlobalRpc.nativeInstance.disconnect()
                 }
             }
-            combine(GlobalServers.servers, GlobalRpc.connectionState, ::Pair).collectWhenStarted(
+            combine(GlobalServers.servers, GlobalRpc.connectionState, ::Pair).launchAndCollectWhenStarted(
                 viewLifecycleOwner
             ) { (servers, connectionState) ->
                 connectButton.apply {
@@ -53,7 +53,7 @@ class TransmissionSettingsDialogFragment :
                 }
             }
             combine(GlobalServers.servers, GlobalServers.currentServer) { servers, _ -> servers }
-                .collectWhenStarted(viewLifecycleOwner) { servers ->
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { servers ->
                     serversView.isEnabled = servers.isNotEmpty()
                     serversViewAdapter.update()
                 }
@@ -84,7 +84,7 @@ class TransmissionSettingsDialogFragment :
                 )
             }
 
-            GlobalRpc.isConnected.collectWhenStarted(viewLifecycleOwner) { connected ->
+            GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) { connected ->
                 listOf(
                     serverSettings,
                     alternativeLimitsClickable,

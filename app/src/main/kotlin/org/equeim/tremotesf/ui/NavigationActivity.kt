@@ -54,7 +54,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import timber.log.Timber
 
@@ -125,7 +125,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         if (Settings.showPersistentNotification) {
             ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }
-        GlobalRpc.error.map { it.errorMessage }.collectWhenStarted(this) { error ->
+        GlobalRpc.error.map { it.errorMessage }.launchAndCollectWhenStarted(this) { error ->
             if (error.isNotEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
             }

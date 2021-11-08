@@ -13,7 +13,7 @@ import org.equeim.tremotesf.databinding.TorrentsFiltersDialogFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding
 
 private const val RESET_BUTTON_HIDE_DELAY_MS = 100L
@@ -65,29 +65,29 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             }
 
             combine(model.sortOrder, model.sortMode, ::Pair)
-                .collectWhenStarted(viewLifecycleOwner) { (sortOrder, sortMode) ->
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (sortOrder, sortMode) ->
                     updateSortView(sortOrder, sortMode)
                 }
 
             combine(GlobalRpc.torrents, model.statusFilterMode, ::Pair)
-                .collectWhenStarted(viewLifecycleOwner) { (torrents, statusFilterMode) ->
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, statusFilterMode) ->
                     statusFilterViewAdapter.update(torrents, statusFilterMode)
                 }
 
             combine(GlobalRpc.torrents, model.trackerFilter, ::Pair)
-                .collectWhenStarted(viewLifecycleOwner) { (torrents, trackerFilter) ->
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, trackerFilter) ->
                     trackersViewAdapter.update(torrents, trackerFilter)
                 }
 
             combine(GlobalRpc.torrents, model.directoryFilter, ::Pair)
-                .collectWhenStarted(viewLifecycleOwner) { (torrents, directoryFilter) ->
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, directoryFilter) ->
                     directoriesViewAdapter.update(torrents, directoryFilter)
                 }
 
             TooltipCompat.setTooltipText(resetButton, resetButton.contentDescription)
             resetButton.setOnClickListener { model.resetSortAndFilters() }
             resetButton.isInvisible = true
-            model.sortOrFiltersEnabled.collectWhenStarted(viewLifecycleOwner) {
+            model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {
                 if (it) {
                     resetButton.isInvisible = false
                 } else {
@@ -99,7 +99,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             }
         }
 
-        GlobalRpc.isConnected.filter { !it }.collectWhenStarted(viewLifecycleOwner) {
+        GlobalRpc.isConnected.filter { !it }.launchAndCollectWhenStarted(viewLifecycleOwner) {
             navController.popBackStack()
         }
     }

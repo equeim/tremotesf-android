@@ -88,10 +88,10 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.peers.collectWhenStarted(viewLifecycleOwner, peersAdapter::update)
+        model.peers.launchAndCollectWhenStarted(viewLifecycleOwner, peersAdapter::update)
 
         combine(model.torrent.hasTorrent(), model.peers, model.loaded, ::Triple)
-            .collectWhenStarted(viewLifecycleOwner) { (torrent, peers, loaded) ->
+            .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrent, peers, loaded) ->
                 updatePlaceholder(torrent, peers, loaded)
             }
     }

@@ -147,7 +147,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                                 else -> isVisible = false
                             }
                         }
-                    }.collectWhenStarted(viewLifecycleOwner)
+                    }.launchAndCollectWhenStarted(viewLifecycleOwner)
             }
 
             val backgroundLocationPermissionHelper = model.backgroundLocationPermissionHelper
@@ -170,7 +170,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                         }
                         isClickable = !granted
                     }
-                }.collectWhenStarted(viewLifecycleOwner)
+                }.launchAndCollectWhenStarted(viewLifecycleOwner)
                 backgroundLocationPermissionButton.setOnClickListener {
                     backgroundLocationPermissionHelper.requestPermission(
                         this@ServerEditFragment,
@@ -203,7 +203,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                     if (!model.locationEnabled.value) {
                         navigate(ServerEditFragmentDirections.toEnableLocationDialog())
                     }
-                }.collectWhenStarted(viewLifecycleOwner)
+                }.launchAndCollectWhenStarted(viewLifecycleOwner)
         }
 
         toolbar?.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)

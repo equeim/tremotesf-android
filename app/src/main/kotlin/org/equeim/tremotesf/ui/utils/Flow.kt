@@ -7,10 +7,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner) =
+fun <T> Flow<T>.launchAndCollectWhenStarted(lifecycleOwner: LifecycleOwner) =
     lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect() } }
 
-inline fun <T> Flow<T>.collectWhenStarted(
+inline fun <T> Flow<T>.launchAndCollectWhenStarted(
     lifecycleOwner: LifecycleOwner,
     crossinline action: suspend (value: T) -> Unit
 ) = lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect(action) } }

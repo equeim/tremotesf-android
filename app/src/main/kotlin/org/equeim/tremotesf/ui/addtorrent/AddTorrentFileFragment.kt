@@ -101,7 +101,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 AddTorrentDirectoriesAdapter(downloadDirectoryEdit, savedInstanceState)
             downloadDirectoryEdit.setAdapter(directoriesAdapter)
 
-            GlobalRpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
+            GlobalRpc.gotDownloadDirFreeSpaceEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
                 val text = downloadDirectoryEdit.text?.trim()
                 if (!text.isNullOrEmpty() && GlobalRpc.serverSettings.downloadDirectory?.contentEquals(
                         text
@@ -114,7 +114,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 }
             }
 
-            GlobalRpc.gotFreeSpaceForPathEvents.collectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
+            GlobalRpc.gotFreeSpaceForPathEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
                 val text = downloadDirectoryEdit.text?.trim()
                 if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     downloadDirectoryLayout.helperText = if (success) {
@@ -205,7 +205,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
         }
 
-        model.viewUpdateData.collectWhenStarted(viewLifecycleOwner, ::updateView)
+        model.viewUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
     override fun onStart() {
@@ -428,7 +428,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
+            model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
 
             addNavigationBarBottomPadding()
         }

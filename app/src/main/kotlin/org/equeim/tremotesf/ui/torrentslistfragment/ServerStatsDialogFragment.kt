@@ -31,7 +31,7 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 
 class ServerStatsDialogFragment : NavigationDialogFragment() {
@@ -39,8 +39,8 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        GlobalRpc.isConnected.combine(GlobalRpc.serverStats, ::Pair).collectWhenStarted(this, ::update)
-        GlobalRpc.gotDownloadDirFreeSpaceEvents.collectWhenStarted(this) {
+        GlobalRpc.isConnected.combine(GlobalRpc.serverStats, ::Pair).launchAndCollectWhenStarted(this, ::update)
+        GlobalRpc.gotDownloadDirFreeSpaceEvents.launchAndCollectWhenStarted(this) {
             binding?.freeSpaceInDownloadDirectoryTextView?.text = FormatUtils.formatByteSize(requireContext(), it)
         }
     }

@@ -45,7 +45,7 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import java.util.Comparator
 
 
@@ -74,7 +74,7 @@ class ConnectionSettingsFragment : NavigationFragment(
             }
         }
 
-        GlobalServers.servers.collectWhenStarted(viewLifecycleOwner, ::update)
+        GlobalServers.servers.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     fun update(servers: List<Server>) {

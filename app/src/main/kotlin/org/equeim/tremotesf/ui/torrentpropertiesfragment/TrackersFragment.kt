@@ -29,7 +29,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 
 class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Trackers) {
@@ -65,7 +65,7 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         }
 
         val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
-        propertiesFragmentModel.torrent.collectWhenStarted(viewLifecycleOwner, ::update)
+        propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     override fun onDestroyView() {

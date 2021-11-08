@@ -39,7 +39,7 @@ class TorrentDetailsFragment :
         firstUpdate = true
         val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
         binding.hashTextView.text = propertiesFragmentModel.args.hash
-        propertiesFragmentModel.torrent.collectWhenStarted(viewLifecycleOwner, ::update)
+        propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
     private fun update(torrent: Torrent?) {

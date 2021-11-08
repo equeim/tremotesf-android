@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.utils.collectWhenStarted
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.savedStateViewModelFactory
 import org.equeim.tremotesf.ui.utils.viewBinding
 
@@ -61,14 +61,14 @@ class TorrentFilesFragment :
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.state.collectWhenStarted(viewLifecycleOwner) { state ->
+        model.state.launchAndCollectWhenStarted(viewLifecycleOwner) { state ->
             updatePlaceholder(state)
             updateProgressBar(state)
         }
 
-        model.filesTree.items.collectWhenStarted(viewLifecycleOwner, adapter::update)
+        model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
 
-        GlobalRpc.torrentFileRenamedEvents.collectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
+        GlobalRpc.torrentFileRenamedEvents.launchAndCollectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == model.torrent.value?.id) {
                 model.filesTree.renameFile(filePath, newName)
             }

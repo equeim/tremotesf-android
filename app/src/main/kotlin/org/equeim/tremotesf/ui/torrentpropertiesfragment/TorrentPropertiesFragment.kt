@@ -131,17 +131,17 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
 
         model.showTorrentRemovedMessage.handleAndReset(::showTorrentRemovedMessage)
-            .collectWhenStarted(viewLifecycleOwner)
+            .launchAndCollectWhenStarted(viewLifecycleOwner)
 
-        GlobalRpc.connectionState.collectWhenStarted(viewLifecycleOwner, ::onConnectionStateChanged)
+        GlobalRpc.connectionState.launchAndCollectWhenStarted(viewLifecycleOwner, ::onConnectionStateChanged)
 
         combine(GlobalRpc.status, model.torrent, ::Pair)
-            .collectWhenStarted(viewLifecycleOwner) { (status, torrent) ->
+            .launchAndCollectWhenStarted(viewLifecycleOwner) { (status, torrent) ->
                 updatePlaceholderText(status, torrent)
             }
 
-        model.torrent.hasTorrent().collectWhenStarted(viewLifecycleOwner, ::onHasTorrentChanged)
-        model.torrent.collectWhenStarted(viewLifecycleOwner, ::onTorrentChanged)
+        model.torrent.hasTorrent().launchAndCollectWhenStarted(viewLifecycleOwner, ::onHasTorrentChanged)
+        model.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::onTorrentChanged)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
