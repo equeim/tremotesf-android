@@ -1,20 +1,19 @@
 package org.equeim.tremotesf.ui.utils
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner) =
-    lifecycleOwner.lifecycleScope.launchWhenStarted { collect() }
+    lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect() } }
 
 inline fun <T> Flow<T>.collectWhenStarted(
     lifecycleOwner: LifecycleOwner,
     crossinline action: suspend (value: T) -> Unit
-) = lifecycleOwner.lifecycleScope.launchWhenStarted { collect(action) }
+) = lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect(action) } }
 
 inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit) =
     filter { it }.onEach {
