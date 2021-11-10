@@ -43,10 +43,7 @@ import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
+import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import kotlinx.coroutines.flow.map
@@ -215,13 +212,14 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
 @Keep
 class NavHostFragment : NavHostFragment() {
-    override fun onCreateNavController(navController: NavController) {
-        super.onCreateNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, arguments ->
+    override fun onCreateNavHostController(navHostController: NavHostController) {
+        super.onCreateNavHostController(navHostController)
+        navHostController.addOnDestinationChangedListener { _, destination, arguments ->
             Timber.i("Destination changed: destination = $destination, arguments = $arguments")
         }
     }
 
+    @Suppress("OverridingDeprecatedMember")
     override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
         return FragmentNavigator(requireContext(), childFragmentManager, id, navController)
     }
@@ -236,31 +234,34 @@ class NavHostFragment : NavHostFragment() {
         private val navController: NavController
     ) : androidx.navigation.fragment.FragmentNavigator(context, fragmentManager, containerId) {
         override fun navigate(
+            entries: List<NavBackStackEntry>,
+            navOptions: NavOptions?,
+            navigatorExtras: Navigator.Extras?
+        ) = super.navigate(entries, navOptions?.overridePopAnimations(), navigatorExtras)
+
+        override fun navigate(
             destination: Destination,
             args: Bundle?,
             navOptions: NavOptions?,
             navigatorExtras: Navigator.Extras?
-        ): NavDestination? {
-            val options = NavOptions.Builder()
+        ) = super.navigate(destination, args, navOptions?.overridePopAnimations(), navigatorExtras)
+
+        private fun NavOptions.overridePopAnimations() =
+            NavOptions.Builder()
                 .apply {
                     if (navController.currentDestination != null) {
-                        setPopEnterAnim(navOptions?.popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
-                        setPopExitAnim(navOptions?.popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
+                        setPopEnterAnim(popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
+                        setPopExitAnim(popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
                     }
-                    if (navOptions != null) {
-                        setEnterAnim(navOptions.enterAnim)
-                        setExitAnim(navOptions.exitAnim)
-                        setLaunchSingleTop(navOptions.shouldLaunchSingleTop())
-                        setPopUpTo(navOptions.popUpToId, navOptions.isPopUpToInclusive())
-                    }
+                    setEnterAnim(enterAnim)
+                    setExitAnim(exitAnim)
+                    setLaunchSingleTop(shouldLaunchSingleTop())
+                    setPopUpTo(popUpToId, isPopUpToInclusive())
                 }
                 .build()
-            return super.navigate(destination, args, options, navigatorExtras)
-        }
 
-        private fun Int?.orDefault(@AnimatorRes defaultAnimator: Int): Int = when (this) {
-            null, -1 -> defaultAnimator
-            else -> this
+        private companion object {
+            fun Int.orDefault(@AnimatorRes defaultAnimator: Int): Int = if (this != -1) this else defaultAnimator
         }
     }
 }
