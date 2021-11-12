@@ -279,13 +279,13 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
                 }
                 if (server.autoConnectOnWifiNetworkSSID == ssid) {
                     Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
-                    if (server != currentServer) {
+                    return if (server != currentServer) {
                         Timber.i("setCurrentServerFromWifiNetwork: setting current server")
                         servers.setCurrentServer(server)
-                        return true
+                        true
                     } else {
                         Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
-                        return false
+                        false
                     }
                 }
             }
