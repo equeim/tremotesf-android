@@ -452,14 +452,9 @@
 
     <string name="donations_description">Если вам понравилось это приложение, вы можете поддержать его разработку, отправив пожертвование разработчику.</string>
     <string name="donations_donate">Пожертвовать</string>
-    <string name="donations_amount">Размер пожертвования</string>
-    <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description" formatted="false">Google взимает 30% комиссии с каждого пожертвования</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">После нажатия на кнопку вы можете выбрать сколько хотите пожертвовать</string>
     <string name="donations_yandex_title">Яндекс.Деньги</string>
-    <string name="donations_snackbar_ok">Спасибо за ваше пожертвование!</string>
-    <string name="donations_snackbar_error">Ошибка при обработке пожертвования</string>
 
     <string name="proxy_settings">Настройки прокси</string>
     <string name="proxy_type">Тип прокси</string>

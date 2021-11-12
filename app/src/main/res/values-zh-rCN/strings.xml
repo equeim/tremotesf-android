@@ -372,12 +372,7 @@
 
     <string name="donations_description">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
     <string name="donations_donate">捐赠</string>
-    <string name="donations_amount">捐赠数额</string>
-    <string name="donations_google_title">Google Play 商店</string>
-    <string name="donations_google_description" formatted="false">Google 将收取 30% 的费用</string>
     <string name="donations_paypal_description">点击这个按钮之后选择你想要捐赠多少</string>
-    <string name="donations_snackbar_ok">感谢您的捐赠！</string>
-    <string name="donations_snackbar_error">处理您的捐赠时出错</string>
 
     <string name="proxy_settings">代理设定</string>
     <string name="proxy_type">代理类型</string>

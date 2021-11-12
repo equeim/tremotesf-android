@@ -319,12 +319,7 @@
 
     <string name="donations_description">Nếu bạn thích ứng dụng này, bạn có thể hỗ trợ sự phát triển của nó bằng cách gửi quyên góp cho nhà phát triển.</string>
     <string name="donations_donate">Quyên góp</string>
-    <string name="donations_amount">Số tiền quyên góp</string>
-    <string name="donations_google_title">Cửa hàng Google Play</string>
-    <string name="donations_google_description" formatted="false">Google tính phí 30%</string>
     <string name="donations_paypal_description">Bạn có thể chọn số tiền bạn muốn quyên góp sau khi nhấp vào nút</string>
-    <string name="donations_snackbar_ok">Cảm ơn sự ủng hộ của bạn!</string>
-    <string name="donations_snackbar_error">Lỗi trong khi xử lý quyên góp.</string>
 
     <string-array name="proxy_type_items">
         <item>Mặc định</item>

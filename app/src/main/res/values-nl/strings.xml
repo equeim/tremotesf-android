@@ -406,7 +406,6 @@
 
     <string name="donations_description">Als je deze app leuk vindt, kun je de ontwikkeling ervan ondersteunen door de ontwikkelaar een kleine donatie te geven.</string>
     <string name="donations_donate">Doneren</string>
-    <string name="donations_google_description" formatted="false">Google neemt 30% van de donatie</string>
     <string name="donations_paypal_description">Na het aanraken van de knop kunt u zelf kiezen hoeveel u wilt doneren</string>
     <string name="donations_yandex_title">Yandex.Money</string>
     </resources>

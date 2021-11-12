@@ -425,14 +425,9 @@
 
     <string name="donations_description">Se ti piace questa applicazione, puoi supportare lo sviluppo mandando una donazione allo sviluppatore.</string>
     <string name="donations_donate">Dona</string>
-    <string name="donations_amount">Ammontare da donare</string>
-    <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description" formatted="false">Google addebita una commissione del 30%</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">Puoi scegliere quanto donare dopo aver premuto il pulsante</string>
     <string name="donations_yandex_title">Yandex.Money</string>
-    <string name="donations_snackbar_ok">Grazie per la tua donazione!</string>
-    <string name="donations_snackbar_error">Errore nel processare la donazione</string>
 
     <string name="proxy_settings">Impostazioni Proxy</string>
     <string name="proxy_type">Tipo di Proxy</string>

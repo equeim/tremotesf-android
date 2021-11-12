@@ -461,14 +461,9 @@
 
     <string name="donations_description">If you like this application, you can support its development by sending a donation to the developer.</string>
     <string name="donations_donate">Donate</string>
-    <string name="donations_amount">Donation amount</string>
-    <string name="donations_google_title">Google Play Store</string>
-    <string name="donations_google_description" formatted="false">Google charges a fee of 30%</string>
     <string name="donations_paypal_title">PayPal</string>
     <string name="donations_paypal_description">You can choose how much you want to donate after clicking the button</string>
     <string name="donations_yandex_title">Yandex.Money</string>
-    <string name="donations_snackbar_ok">Thank you for your donation!</string>
-    <string name="donations_snackbar_error">Error while processing donation</string>
 
     <string name="proxy_settings">Proxy settings</string>
     <string name="proxy_type">Proxy type</string>
