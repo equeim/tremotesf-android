@@ -29,10 +29,7 @@ import android.view.ViewGroup
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Server
@@ -43,6 +40,7 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.safeNavigate
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -86,11 +84,7 @@ class ConnectionSettingsFragment : NavigationFragment(
         }
     }
 
-    class ServersAdapter(fragment: Fragment) : RecyclerView.Adapter<ServersAdapter.ViewHolder>() {
-        private val _servers = mutableListOf<Server>()
-        val servers: List<Server>
-            get() = _servers
-
+    class ServersAdapter(fragment: Fragment) : StateRestoringListAdapter<Server, ServersAdapter.ViewHolder>(DiffCallback()) {
         private val comparator = object : Comparator<Server> {
             private val nameComparator = AlphanumericComparator()
             override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
@@ -102,11 +96,7 @@ class ConnectionSettingsFragment : NavigationFragment(
             fragment,
             ::ActionModeCallback,
             R.plurals.servers_selected
-        ) { servers[it].name }
-
-        override fun getItemCount(): Int {
-            return servers.size
-        }
+        ) { getItem(it).name }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(
@@ -122,12 +112,10 @@ class ConnectionSettingsFragment : NavigationFragment(
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
-        fun update(servers: List<Server>) {
-            _servers.clear()
-            _servers.addAll(servers.sortedWith(comparator))
-            notifyDataSetChanged()
-            selectionTracker.restoreInstanceState()
-        }
+        fun update(servers: List<Server>) = submitList(servers.sortedWith(comparator))
+
+        override fun allowStateRestoring() = true
+        override fun onStateRestored() = selectionTracker.restoreInstanceState()
 
         class ViewHolder(
             private val adapter: ServersAdapter,
@@ -137,7 +125,7 @@ class ConnectionSettingsFragment : NavigationFragment(
 
             init {
                 binding.radioButton.setOnClickListener {
-                    val server = adapter.servers[bindingAdapterPosition]
+                    val server = adapter.getItem(bindingAdapterPosition)
                     if (server.name != GlobalServers.currentServer.value?.name) {
                         GlobalServers.setCurrentServer(server)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
@@ -147,7 +135,7 @@ class ConnectionSettingsFragment : NavigationFragment(
 
             override fun update() {
                 super.update()
-                val server = adapter.servers[bindingAdapterPosition]
+                val server = adapter.getItem(bindingAdapterPosition)
                 with(binding) {
                     radioButton.isChecked = (server.name == GlobalServers.currentServer.value?.name)
                     textView.text = server.name
@@ -156,8 +144,15 @@ class ConnectionSettingsFragment : NavigationFragment(
 
             override fun onClick(view: View) {
                 itemView.findNavController()
-                    .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.servers[bindingAdapterPosition].name))
+                    .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.getItem(bindingAdapterPosition).name))
             }
+        }
+
+        private class DiffCallback : DiffUtil.ItemCallback<Server>() {
+            override fun areItemsTheSame(oldItem: Server, newItem: Server) =
+                oldItem.name == newItem.name
+
+            override fun areContentsTheSame(oldItem: Server, newItem: Server) = true
         }
 
         private class ActionModeCallback(selectionTracker: SelectionTracker<String>) :
@@ -201,7 +196,7 @@ class RemoveServerDialogFragment : NavigationDialogFragment() {
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
                 selectionTracker?.apply {
-                    GlobalServers.removeServers(adapter.servers.slice(getSelectedPositionsUnsorted()))
+                    GlobalServers.removeServers(adapter.currentList.slice(getSelectedPositionsUnsorted()))
                     clearSelection()
                 }
             }
