@@ -512,4 +512,7 @@
     <string name="bottom_sheet_behavior" translatable="false">org.equeim.tremotesf.ui.ExpandedBottomSheetBehavior</string>
 
     <string name="reset">Reset</string>
+
+    <string name="directory_icon">Directory icon</string>
+    <string name="file_icon">File icon</string>
 </resources>

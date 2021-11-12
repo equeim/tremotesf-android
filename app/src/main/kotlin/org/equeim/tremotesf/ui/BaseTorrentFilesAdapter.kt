@@ -147,11 +147,11 @@ abstract class BaseTorrentFilesAdapter(
         selectionTracker,
         itemView
     ) {
-
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
-        @DrawableRes private var iconResId = 0
         private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
         private val checkBox: TristateCheckbox = itemView.findViewById(R.id.check_box)
+
+        private var isDirectory: Boolean? = null
 
         init {
             checkBox.setOnClickListener {
@@ -181,10 +181,15 @@ abstract class BaseTorrentFilesAdapter(
 
             val item = adapter.getItem(bindingAdapterPosition)!!
 
-            val resId = if (item.isDirectory) R.drawable.ic_folder_24dp else R.drawable.ic_insert_drive_file_24dp
-            if (resId != iconResId) {
+            if (item.isDirectory != isDirectory) {
+                isDirectory = item.isDirectory
+
+                val resId = if (item.isDirectory) R.drawable.ic_folder_24dp else R.drawable.ic_insert_drive_file_24dp
                 iconView.setImageResource(resId)
-                iconResId = resId
+
+                val contentDescription =
+                    if (item.isDirectory) R.string.directory_icon else R.string.file_icon
+                iconView.contentDescription = itemView.context.getText(contentDescription)
             }
 
             nameTextView.text = item.name
