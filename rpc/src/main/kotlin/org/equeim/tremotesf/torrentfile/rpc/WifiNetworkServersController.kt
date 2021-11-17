@@ -113,7 +113,7 @@ class WifiNetworkServersController(
         }
 
         val scope = CoroutineScope(dispatchers.Main).also { wifiNetworkObserverScope = it }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             observeActiveWifiNetworkV24(connectivityManager)
         } else {
             observeActiveWifiNetworkV16(connectivityManager)
@@ -129,7 +129,7 @@ class WifiNetworkServersController(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeActiveWifiNetworkV24(connectivityManager: ConnectivityManager): Flow<String?> {
         Timber.i("observeActiveWifiNetworkV24() called with: context = $context")
         @Suppress("EXPERIMENTAL_API_USAGE")
@@ -151,7 +151,7 @@ class WifiNetworkServersController(
         }.buffer(Channel.CONFLATED).distinctUntilChanged()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.O)
     private inner class DefaultNetworkCallback : ConnectivityManager.NetworkCallback {
         constructor(wifiSsidChannel: SendChannel<String?>) : super() {
             this.wifiSsidChannel = wifiSsidChannel
