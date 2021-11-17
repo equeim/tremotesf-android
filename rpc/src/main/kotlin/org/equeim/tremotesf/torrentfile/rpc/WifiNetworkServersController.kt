@@ -55,7 +55,12 @@ import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 
 
-class WifiNetworkServersController(private val servers: Servers, scope: CoroutineScope, private val context: Context, private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
+class WifiNetworkServersController(
+    private val servers: Servers,
+    scope: CoroutineScope,
+    private val context: Context,
+    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
+) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
 
@@ -131,7 +136,10 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         return callbackFlow<WifiInfo> {
             Timber.i("observeActiveWifiNetworkV24: registering network callback")
             val callback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                DefaultNetworkCallback(channel, ConnectivityManager.NetworkCallback.FLAG_INCLUDE_LOCATION_INFO)
+                DefaultNetworkCallback(
+                    channel,
+                    ConnectivityManager.NetworkCallback.FLAG_INCLUDE_LOCATION_INFO
+                )
             } else {
                 DefaultNetworkCallback(channel)
             }
@@ -145,26 +153,23 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
 
     @RequiresApi(Build.VERSION_CODES.N)
     private inner class DefaultNetworkCallback : ConnectivityManager.NetworkCallback {
-
         constructor(wifiNetworkChangedChannel: SendChannel<WifiInfo>) : super() {
             this.wifiNetworkChangedChannel = wifiNetworkChangedChannel
         }
+
         @RequiresApi(Build.VERSION_CODES.S)
         constructor(wifiNetworkChangedChannel: SendChannel<WifiInfo>, flags: Int) : super(flags) {
             this.wifiNetworkChangedChannel = wifiNetworkChangedChannel
         }
 
         private val wifiNetworkChangedChannel: SendChannel<WifiInfo>
-        private var waitingForCapabilities = false
 
         override fun onAvailable(network: Network) {
             Timber.i("onAvailable() called with: network = $network")
-            waitingForCapabilities = true
         }
 
         override fun onLost(network: Network) {
             Timber.i("onLost() called with: network = $network")
-            waitingForCapabilities = false
         }
 
         override fun onLosing(network: Network, maxMsToLive: Int) {
@@ -179,35 +184,33 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
             network: Network,
             networkCapabilities: NetworkCapabilities
         ) {
-            if (!waitingForCapabilities) return
-
             Timber.i("onCapabilitiesChanged: networkCapabilities = $networkCapabilities")
 
             if (!networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 Timber.i("onCapabilitiesChanged: not Wi-Fi network, ignore")
-                waitingForCapabilities = false
                 return
             }
 
-            if (wifiNetworkCapabilities.all { networkCapabilities.hasCapability(it) }) {
-                Timber.i("onCapabilitiesChanged: supported Wi-Fi network")
-                waitingForCapabilities = false
+            if (!wifiNetworkCapabilities.all { networkCapabilities.hasCapability(it) }) {
+                Timber.i("onCapabilitiesChanged: unsupported network, wait")
+                return
+            }
 
-                val wifiInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    networkCapabilities.wifiInfo
-                } else {
-                    currentWifiInfo
-                }
-                if (wifiInfo != null) {
-                    val result = wifiNetworkChangedChannel.trySend(wifiInfo)
-                    if (!result.isSuccess) {
-                        Timber.e("onCapabilitiesChanged: failed to send notification to channel, result = $result")
-                    }
-                } else {
-                    Timber.e("onCapabilitiesChanged: WifiInfo is null")
+            val wifiInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                // TODO: there is gotta be a better way
+                !networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+            ) {
+                networkCapabilities.wifiInfo
+            } else {
+                currentWifiInfo
+            }
+            if (wifiInfo != null) {
+                val result = wifiNetworkChangedChannel.trySend(wifiInfo)
+                if (!result.isSuccess) {
+                    Timber.e("onCapabilitiesChanged: failed to send notification to channel, result = $result")
                 }
             } else {
-                Timber.i("onCapabilitiesChanged: unsupported network, wait")
+                Timber.e("onCapabilitiesChanged: WifiInfo is null")
             }
         }
     }
@@ -230,13 +233,18 @@ class WifiNetworkServersController(private val servers: Servers, scope: Coroutin
         }.buffer(Channel.CONFLATED)
     }
 
-    private inner class ConnectivityReceiver(private val connectivityManager: ConnectivityManager, private val wifiNetworkChangedChannel: SendChannel<WifiInfo>) :
+    private inner class ConnectivityReceiver(
+        private val connectivityManager: ConnectivityManager,
+        private val wifiNetworkChangedChannel: SendChannel<WifiInfo>
+    ) :
         BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val networkInfo = ConnectivityManagerCompat.getNetworkInfoFromBroadcast(connectivityManager, intent)
+            val networkInfo =
+                ConnectivityManagerCompat.getNetworkInfoFromBroadcast(connectivityManager, intent)
             Timber.i("onReceive: networkInfo = $networkInfo")
             @Suppress("DEPRECATION")
-            val ok = networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI
+            val ok =
+                networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI
             if (ok) {
                 Timber.i("onReceive: Wi-Fi connected")
                 val wifiInfo = currentWifiInfo
@@ -367,7 +375,8 @@ private val UNKNOWN_SSID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 private fun String.removeSsidQuotes(): String? {
     return if (startsWith(quoteChar) && endsWith(
             quoteChar
-        )) {
+        )
+    ) {
         drop(1).dropLast(1)
     } else {
         Timber.e("removeQuotes: SSID = '$this' is not surrounded by quotation marks, unsupported")
