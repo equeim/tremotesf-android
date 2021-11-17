@@ -117,7 +117,7 @@ class WifiNetworkServersController(
             observeActiveWifiNetworkV24(connectivityManager)
         } else {
             observeActiveWifiNetworkV16(connectivityManager)
-        }.onEach { onActiveWifiNetworkChanged(it) }.launchIn(scope)
+        }.onEach(::onCurrentWifiSsidChanged).launchIn(scope)
     }
 
     @MainThread
@@ -130,10 +130,10 @@ class WifiNetworkServersController(
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun observeActiveWifiNetworkV24(connectivityManager: ConnectivityManager): Flow<WifiInfo> {
+    private fun observeActiveWifiNetworkV24(connectivityManager: ConnectivityManager): Flow<String?> {
         Timber.i("observeActiveWifiNetworkV24() called with: context = $context")
         @Suppress("EXPERIMENTAL_API_USAGE")
-        return callbackFlow<WifiInfo> {
+        return callbackFlow<String?> {
             Timber.i("observeActiveWifiNetworkV24: registering network callback")
             val callback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 DefaultNetworkCallback(
@@ -148,21 +148,21 @@ class WifiNetworkServersController(
                 Timber.i("observeActiveWifiNetworkV24: unregister network callback")
                 connectivityManager.unregisterNetworkCallback(callback)
             }
-        }.buffer(Channel.CONFLATED)
+        }.buffer(Channel.CONFLATED).distinctUntilChanged()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private inner class DefaultNetworkCallback : ConnectivityManager.NetworkCallback {
-        constructor(wifiNetworkChangedChannel: SendChannel<WifiInfo>) : super() {
-            this.wifiNetworkChangedChannel = wifiNetworkChangedChannel
+        constructor(wifiSsidChannel: SendChannel<String?>) : super() {
+            this.wifiSsidChannel = wifiSsidChannel
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
-        constructor(wifiNetworkChangedChannel: SendChannel<WifiInfo>, flags: Int) : super(flags) {
-            this.wifiNetworkChangedChannel = wifiNetworkChangedChannel
+        constructor(wifiSsidChannel: SendChannel<String?>, flags: Int) : super(flags) {
+            this.wifiSsidChannel = wifiSsidChannel
         }
 
-        private val wifiNetworkChangedChannel: SendChannel<WifiInfo>
+        private val wifiSsidChannel: SendChannel<String?>
 
         override fun onAvailable(network: Network) {
             Timber.i("onAvailable() called with: network = $network")
@@ -170,6 +170,7 @@ class WifiNetworkServersController(
 
         override fun onLost(network: Network) {
             Timber.i("onLost() called with: network = $network")
+            wifiSsidChannel.trySendLogged(null, "onLost")
         }
 
         override fun onLosing(network: Network, maxMsToLive: Int) {
@@ -188,11 +189,13 @@ class WifiNetworkServersController(
 
             if (!networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 Timber.i("onCapabilitiesChanged: not Wi-Fi network, ignore")
+                wifiSsidChannel.trySendLogged(null, "onCapabilitiesChanged")
                 return
             }
 
             if (!wifiNetworkCapabilities.all { networkCapabilities.hasCapability(it) }) {
                 Timber.i("onCapabilitiesChanged: unsupported network, wait")
+                wifiSsidChannel.trySendLogged(null, "onCapabilitiesChanged")
                 return
             }
 
@@ -204,21 +207,14 @@ class WifiNetworkServersController(
             } else {
                 currentWifiInfo
             }
-            if (wifiInfo != null) {
-                val result = wifiNetworkChangedChannel.trySend(wifiInfo)
-                if (!result.isSuccess) {
-                    Timber.e("onCapabilitiesChanged: failed to send notification to channel, result = $result")
-                }
-            } else {
-                Timber.e("onCapabilitiesChanged: WifiInfo is null")
-            }
+            wifiSsidChannel.trySendLogged(wifiInfo?.knownSsidOrNull, "onCapabilitiesChanged")
         }
     }
 
-    private fun observeActiveWifiNetworkV16(connectivityManager: ConnectivityManager): Flow<WifiInfo> {
+    private fun observeActiveWifiNetworkV16(connectivityManager: ConnectivityManager): Flow<String?> {
         Timber.i("observeActiveWifiNetworkV16() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
-        return callbackFlow<WifiInfo> {
+        return callbackFlow<String?> {
             Timber.i("observeActiveWifiNetworkV16: registering receiver")
             val receiver = ConnectivityReceiver(connectivityManager, channel)
             @Suppress("DEPRECATION")
@@ -230,14 +226,13 @@ class WifiNetworkServersController(
                 Timber.i("observeActiveWifiNetworkV16: unregister receiver")
                 context.unregisterReceiver(receiver)
             }
-        }.buffer(Channel.CONFLATED)
+        }.buffer(Channel.CONFLATED).distinctUntilChanged()
     }
 
     private inner class ConnectivityReceiver(
         private val connectivityManager: ConnectivityManager,
-        private val wifiNetworkChangedChannel: SendChannel<WifiInfo>
-    ) :
-        BroadcastReceiver() {
+        private val wifiSsidChannel: SendChannel<String?>
+    ) : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val networkInfo =
                 ConnectivityManagerCompat.getNetworkInfoFromBroadcast(connectivityManager, intent)
@@ -247,28 +242,18 @@ class WifiNetworkServersController(
                 networkInfo?.isConnected == true && networkInfo.type == ConnectivityManager.TYPE_WIFI
             if (ok) {
                 Timber.i("onReceive: Wi-Fi connected")
-                val wifiInfo = currentWifiInfo
-                if (wifiInfo != null) {
-                    val result = wifiNetworkChangedChannel.trySend(wifiInfo)
-                    if (!result.isSuccess) {
-                        Timber.e("onReceive: failed to send notification to channel, result = $result")
-                    }
-                } else {
-                    Timber.e("onReceive: WifiInfo is null")
-                }
+                wifiSsidChannel.trySendLogged(currentWifiSsid, "onReceive")
+            } else {
+                wifiSsidChannel.trySendLogged(null, "onReceive")
             }
         }
     }
 
     @MainThread
-    private fun onActiveWifiNetworkChanged(wifiInfo: WifiInfo) {
-        Timber.i("onActiveWifiNetworkChanged() called with: wifiInfo = $wifiInfo")
-        val ssid = wifiInfo.knownSsidOrNull
+    private fun onCurrentWifiSsidChanged(ssid: String?) {
+        Timber.i("onCurrentWifiSsidChanged() called with: ssid = $ssid")
         if (ssid != null) {
-            Timber.i("onActiveWifiNetworkChanged: SSID = '$ssid'")
             setCurrentServerFromWifiNetwork(lazyOf(ssid))
-        } else {
-            Timber.e("onActiveWifiNetworkChanged: SSID is null")
         }
     }
 
@@ -385,3 +370,10 @@ private fun String.removeSsidQuotes(): String? {
 }
 
 private const val quoteChar = '"'
+
+private fun <T> SendChannel<T>.trySendLogged(element: T, context: String) {
+    val result = trySend(element)
+    if (!result.isSuccess) {
+        Timber.e("$context: failed to send notification to channel, result = $result")
+    }
+}
