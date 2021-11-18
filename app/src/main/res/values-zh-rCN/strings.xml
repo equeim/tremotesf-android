@@ -373,7 +373,6 @@
     <string name="donations_description">如果你喜欢本应用，你可以通过捐赠来支持开发者</string>
     <string name="donations_donate">捐赠</string>
     <string name="donations_paypal_description">点击这个按钮之后选择你想要捐赠多少</string>
-
     <string name="proxy_settings">代理设定</string>
     <string name="proxy_type">代理类型</string>
     <string name="share">分享</string>

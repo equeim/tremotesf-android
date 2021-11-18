@@ -320,7 +320,6 @@
     <string name="donations_description">Nếu bạn thích ứng dụng này, bạn có thể hỗ trợ sự phát triển của nó bằng cách gửi quyên góp cho nhà phát triển.</string>
     <string name="donations_donate">Quyên góp</string>
     <string name="donations_paypal_description">Bạn có thể chọn số tiền bạn muốn quyên góp sau khi nhấp vào nút</string>
-
     <string-array name="proxy_type_items">
         <item>Mặc định</item>
         <item>HTTP</item>

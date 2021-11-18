@@ -474,4 +474,7 @@
     <string name="free_space_in_download_directory">Freier Speicher im Downloadverzeichnis</string>
 
     <string name="reset">Zurücksetzen</string>
+
+    <string name="directory_icon">Verzeichnissymbol</string>
+    <string name="file_icon">Dateisymbol</string>
 </resources>

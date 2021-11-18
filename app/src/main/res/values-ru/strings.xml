@@ -496,4 +496,7 @@
     <string name="free_space_in_download_directory">Свободное место в каталоге загрузки</string>
 
     <string name="reset">Сбросить</string>
+
+    <string name="directory_icon">Иконка каталога</string>
+    <string name="file_icon">Иконка файла</string>
 </resources>
