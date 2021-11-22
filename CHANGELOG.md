@@ -1,12 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [2.5.2] - 2021-11-23
 ### Changed
 - Improved compatibility with Android 12
 
 ### Fixed
 - Fixed compatibility with Let's Encrypt ceritificates on Android < 7.1.1
 - Fixed saving of settings in server edit screen
+- Fixed automatic connection to server based on Wi-Fi SSID when VPN is active
 
 ## [2.5.1] - 2021-10-03
 ### Changed
