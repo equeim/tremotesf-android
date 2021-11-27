@@ -51,6 +51,7 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
 val qtPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(QtTask.sourceDir(qtDir))
     patchesDir.set(QtTask.patchesDir(qtDir))
+    substitutionMap.put(Versions::compileSdk.name, Versions.compileSdk)
 }
 
 val qt by tasks.registering(QtTask::class) {

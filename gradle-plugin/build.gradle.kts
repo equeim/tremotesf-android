@@ -24,6 +24,8 @@ val gradleVersionsPlugin: String by extra
 val androidGradlePlugin: String by extra
 val kotlin: String by extra
 
+val commonsText = "1.9"
+
 dependencies {
     implementation("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsPlugin")
     compileOnly("com.android.tools.build:gradle-api:$androidGradlePlugin") {
@@ -32,6 +34,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin") {
         excludeKotlinStdlib()
     }
+    implementation("org.apache.commons:commons-text:$commonsText")
 }
 
 fun ModuleDependency.excludeKotlinStdlib() {
