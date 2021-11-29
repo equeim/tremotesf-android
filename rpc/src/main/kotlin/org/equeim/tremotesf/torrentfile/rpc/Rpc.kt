@@ -25,7 +25,7 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,9 +36,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
-import kotlinx.coroutines.runBlocking
 import mozilla.components.lib.publicsuffixlist.PublicSuffixList
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.JniRpc
@@ -74,27 +71,39 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
-        override fun onConnectionStateChanged(connectionState: RpcConnectionState) {
-            Timber.i("onConnectionStateChanged() called with: connectionState = $connectionState")
-            _connectionState.value = connectionState
+        private inline fun runFromNativeCallback(
+            callback: String,
+            block: () -> Unit
+        ): Unit = runCatching { block() }.getOrElse {
+            scope.launch(Dispatchers.Main) {
+                throw RuntimeException("Exception in $callback", it)
+            }
         }
 
-        override fun onErrorChanged(error: RpcError, errorMessage: String) {
-            Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
-            _error.value = Error(error, errorMessage)
-        }
+        override fun onConnectionStateChanged(connectionState: RpcConnectionState) =
+            runFromNativeCallback("onConnectionStateChanged()") {
+                Timber.i("onConnectionStateChanged() called with: connectionState = $connectionState")
+                _connectionState.value = connectionState
+            }
 
-        override fun onServerSettingsChanged(data: JniServerSettingsData) {
-            val old = serverSettings
-            serverSettings = data
-            old.delete()
-        }
+        override fun onErrorChanged(error: RpcError, errorMessage: String) =
+            runFromNativeCallback("onErrorChanged()") {
+                Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
+                _error.value = Error(error, errorMessage)
+            }
+
+        override fun onServerSettingsChanged(data: JniServerSettingsData) =
+            runFromNativeCallback("onServerSettingsChanged()") {
+                val old = serverSettings
+                serverSettings = data
+                old.delete()
+            }
 
         override fun onTorrentsUpdated(
             removed: IntVector,
             changed: TorrentDataVector,
             added: TorrentDataVector
-        ) {
+        ) = runFromNativeCallback("onTorrentsUpdated()") {
             // We need call Rpc.onTorrentsUpdated() in blocking fashion to prevent state
             // inconsistency when other callbacks are called
             // Run in Unconfined to reduce thread jumping when using PublicSuffixList
@@ -111,63 +120,77 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             uploadSpeed: Long,
             currentSession: SessionStats,
             total: SessionStats
-        ) {
+        ) = runFromNativeCallback("onServerStatsUpdated()") {
             _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
         }
 
-        override fun onTorrentAdded(id: Int, hashString: String, name: String) {
-            Timber.i("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
-            this@Rpc.onTorrentAdded(id, hashString, name)
-        }
+        override fun onTorrentAdded(id: Int, hashString: String, name: String) =
+            runFromNativeCallback("onTorrentAdded()") {
+                Timber.i("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
+                this@Rpc.onTorrentAdded(id, hashString, name)
+            }
 
-        override fun onTorrentFinished(id: Int, hashString: String, name: String) {
-            Timber.i("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
-            this@Rpc.onTorrentFinished(id, hashString, name)
-        }
+        override fun onTorrentFinished(id: Int, hashString: String, name: String) =
+            runFromNativeCallback("onTorrentFinished()") {
+                Timber.i("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
+                this@Rpc.onTorrentFinished(id, hashString, name)
+            }
 
-        override fun onTorrentAddDuplicate() {
+        override fun onTorrentAddDuplicate() = runFromNativeCallback("onTorrentAddDuplicate()") {
             Timber.i("onTorrentAddDuplicate() called")
             _torrentAddDuplicateEvents.tryEmit(Unit)
         }
 
-        override fun onTorrentAddError() {
+        override fun onTorrentAddError() = runFromNativeCallback("onTorrentAddError()") {
             Timber.i("onTorrentAddError() called")
             _torrentAddErrorEvents.tryEmit(Unit)
         }
 
-        override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) {
-            onTorrentFilesUpdated(torrentId, files.toList())
-            files.delete()
-        }
+        override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) =
+            runFromNativeCallback("onTorrentFilesUpdated()") {
+                onTorrentFilesUpdated(torrentId, files.toList())
+                files.delete()
+            }
 
         override fun onTorrentPeersUpdated(
             torrentId: Int,
             removed: IntVector,
             changed: TorrentPeersVector,
             added: TorrentPeersVector
-        ) {
+        ) = runFromNativeCallback("onTorrentPeersUpdated()") {
             onTorrentPeersUpdated(torrentId, removed.toList(), changed.toList(), added.toList())
             removed.delete()
             changed.delete()
             added.delete()
         }
 
-        override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) {
-            Timber.i("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
-            _torrentFileRenamedEvents.tryEmit(TorrentFileRenamedData(torrentId, filePath, newName))
-        }
+        override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) =
+            runFromNativeCallback("onTorrentFileRenamed()") {
+                Timber.i("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
+                _torrentFileRenamedEvents.tryEmit(
+                    TorrentFileRenamedData(
+                        torrentId,
+                        filePath,
+                        newName
+                    )
+                )
+            }
 
-        override fun onGotDownloadDirFreeSpace(bytes: Long) {
-            Timber.i("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
-            _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
-        }
+        override fun onGotDownloadDirFreeSpace(bytes: Long) =
+            runFromNativeCallback("onGotDownloadDirFreeSpace()") {
+                Timber.i("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
+                _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
+            }
 
-        override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) {
-            Timber.i("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
-            _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
-        }
+        override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) =
+            runFromNativeCallback("onGotFreeSpaceForPath()") {
+                Timber.i("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
+                _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
+            }
 
-        override fun onAboutToDisconnect() = this@Rpc.onAboutToDisconnect()
+        override fun onAboutToDisconnect() = runFromNativeCallback("onAboutToDisconnect()") {
+            this@Rpc.onAboutToDisconnect()
+        }
     }
 
     init {
