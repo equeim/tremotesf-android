@@ -1,0 +1,4 @@
+- Improved compatibility with Android 12
+- Fixed compatibility with Let's Encrypt ceritificates on Android < 7.1.1
+- Fixed saving of settings in server edit screen
+- Fixed automatic connection to server based on Wi-Fi SSID when VPN is active

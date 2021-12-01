@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.3] - 2021-12-02
+### Changed
+- Updated Qt to 6.2.2
+
+### Fixed
+- Fixed F-Droid build
+
 ## [2.5.2] - 2021-11-23
 ### Changed
 - Improved compatibility with Android 12
