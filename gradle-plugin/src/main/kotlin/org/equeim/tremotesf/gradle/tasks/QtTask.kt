@@ -261,8 +261,7 @@ abstract class QtTask @Inject constructor(
 
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            val mode = if (crossCompiling) CMakeMode.InstallAndStrip else CMakeMode.Install
-            execOperations.cmake(cmakeBinary, mode, qtDir.get(), buildDir, logger, gradle)
+            execOperations.cmake(cmakeBinary, CMakeMode.Install, qtDir.get(), buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }

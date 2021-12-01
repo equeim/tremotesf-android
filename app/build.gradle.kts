@@ -48,6 +48,8 @@ android {
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
 
         signingConfig = signingConfigs.findByName("release")
+
+        ndk.debugSymbolLevel = "FULL"
     }
 
     buildFeatures.viewBinding = true

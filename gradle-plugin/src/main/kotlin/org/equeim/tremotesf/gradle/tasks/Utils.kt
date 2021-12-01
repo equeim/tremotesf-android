@@ -98,8 +98,7 @@ internal fun defaultMakeArguments(gradle: Gradle) = listOf("-j", makeJobsCount(g
 
 internal enum class CMakeMode {
     Build,
-    Install,
-    InstallAndStrip
+    Install
 }
 
 internal fun ExecOperations.cmake(cmakeBinary: String, mode: CMakeMode, workingDir: File, buildDir: File, logger: Logger, gradle: Gradle) =
@@ -108,7 +107,6 @@ internal fun ExecOperations.cmake(cmakeBinary: String, mode: CMakeMode, workingD
         when (mode) {
             CMakeMode.Build -> args("--build", buildDir, "--parallel", makeJobsCount(gradle))
             CMakeMode.Install -> args("--install", buildDir)
-            CMakeMode.InstallAndStrip -> args("--install", buildDir, "--strip")
         }
         this.workingDir = workingDir
     }

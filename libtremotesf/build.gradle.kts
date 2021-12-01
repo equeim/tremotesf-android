@@ -26,6 +26,8 @@ android {
         path = file("src/main/cpp/CMakeLists.txt")
         version = "3.18.1"
     }
+
+    packagingOptions.jniLibs.keepDebugSymbols.add("**/*.so")
 }
 
 dependencies {
