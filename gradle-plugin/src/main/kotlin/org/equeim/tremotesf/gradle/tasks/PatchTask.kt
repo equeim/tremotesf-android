@@ -42,7 +42,6 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
 
     private fun applyPatchWithSubstitution(patchIn: File) {
         logger.lifecycle("Applying patch {}", patchIn)
-        logger.lifecycle("substitutionMap = {}", substitutionMap.get())
         val prefix = "$$"
         val patch = StringSubstitutor(substitutionMap.get(), prefix, prefix)
             .setEnableUndefinedVariableException(true)

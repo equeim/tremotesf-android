@@ -119,7 +119,6 @@ abstract class QtTask @Inject constructor(
             "-no-feature-processenvironment",
             "-no-feature-proxymodel",
             "-no-feature-relocatable",
-            "-no-feature-settings",
             "-no-feature-sharedmemory",
             "-no-feature-shortcut",
             "-no-feature-sortfilterproxymodel",
