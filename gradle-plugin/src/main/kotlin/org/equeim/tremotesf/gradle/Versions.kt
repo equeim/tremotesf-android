@@ -42,7 +42,6 @@ object Versions {
 
     const val material = "1.4.0"
     const val fastscroll = "2.0.1"
-    const val billing = "4.0.0"
 
     const val timber = "5.0.1"
 
