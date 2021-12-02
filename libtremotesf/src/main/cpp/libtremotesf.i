@@ -90,6 +90,7 @@ namespace libtremotesf
 %typemap(javafinalize) std::unordered_map<QString, QString> ""
 %template(StringMap) std::unordered_map<QString, QString>;
 
+%typemap(javafinalize) std::pair<int, int> ""
 %template(IntPair) std::pair<int, int>;
 %typemap(javafinalize) std::vector<std::pair<int, int>> ""
 %template(IntPairVector) std::vector<std::pair<int, int>>;
