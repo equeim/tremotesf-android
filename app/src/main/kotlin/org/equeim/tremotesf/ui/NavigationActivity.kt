@@ -131,7 +131,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        navController.addOnDestinationChangedListener { _, _, _ ->
             hideKeyboard()
         }
 
