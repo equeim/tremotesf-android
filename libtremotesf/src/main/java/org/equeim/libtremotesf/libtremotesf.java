@@ -9,4 +9,12 @@
 package org.equeim.libtremotesf;
 
 public class libtremotesf {
+  public static TorrentData moveFrom(TorrentData other) {
+    return new TorrentData(libtremotesfJNI.moveFrom__SWIG_0(TorrentData.getCPtr(other), other), true);
+  }
+
+  public static Peer moveFrom(Peer other) {
+    return new Peer(libtremotesfJNI.moveFrom__SWIG_1(Peer.getCPtr(other), other), true);
+  }
+
 }

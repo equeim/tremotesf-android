@@ -470,22 +470,40 @@ namespace libtremotesf
             onServerSettingsChanged(JniServerSettingsData(mRpc->serverSettings()));
         });
 
-        QObject::connect(mRpc, &Rpc::torrentsUpdated, [=](const std::vector<int>& removed, const std::vector<int>& changed, int added) {
-            const auto& t = mRpc->torrents();
-            onTorrentsUpdated(removed,
-                              toNewPointers(t, changed.begin(), changed.end()),
-                              toNewPointers(t, IndexIterator{t.size() - added}, IndexIterator{t.size()}));
+        QObject::connect(mRpc, &Rpc::torrentsUpdated, [=](const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<std::pair<int, int>>& changedIndexRanges, int addedCount) {
+            const auto& begin = mRpc->torrents().begin();
+            const auto& end = mRpc->torrents().end();
+            std::vector<TorrentData> changed;
+            for (const auto& [first, last] : changedIndexRanges) {
+                changed.reserve(changed.size() + static_cast<size_t>(last - first));
+                std::transform(begin + first, begin + last, std::back_inserter(changed), [](const auto& i) { return i->data(); });
+            }
+            std::vector<TorrentData> added;
+            added.reserve(static_cast<size_t>(addedCount));
+            std::transform(end - addedCount, end, std::back_inserter(added), [](const auto& i) { return i->data(); });
+            onTorrentsUpdated(removedIndexRanges,
+                              changed,
+                              added);
         });
 
-        QObject::connect(mRpc, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changed) {
-            onTorrentFilesUpdated(torrent->id(), toNewPointers(torrent->files(), changed.begin(), changed.end()));
+        QObject::connect(mRpc, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changedIndexes) {
+            onTorrentFilesUpdated(torrent->id(), toNewPointers(torrent->files(), changedIndexes.begin(), changedIndexes.end()));
         });
-        QObject::connect(mRpc, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<int>& removed, const std::vector<int>& changed, int added) {
-            const auto& p = torrent->peers();
+        QObject::connect(mRpc, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<std::pair<int, int>>& changedIndexRanges, int addedCount) {
+            const auto& begin = torrent->peers().begin();
+            const auto& end = torrent->peers().end();
+            std::vector<Peer> changed;
+            for (const auto& [first, last] : changedIndexRanges) {
+                changed.reserve(changed.size() + static_cast<size_t>(last - first));
+                std::copy(begin + first, begin + last, std::back_inserter(changed));
+            }
+            std::vector<Peer> added;
+            added.reserve(static_cast<size_t>(addedCount));
+            std::copy(end - addedCount, end, std::back_inserter(added));
             onTorrentPeersUpdated(torrent->id(),
-                                  removed,
-                                  toNewPointers(p, changed.begin(), changed.end()),
-                                  toNewPointers(p, IndexIterator{p.size() - added}, IndexIterator{p.size()}));
+                                  removedIndexRanges,
+                                  changed,
+                                  added);
         });
 
         QObject::connect(mRpc, &Rpc::torrentFileRenamed, [=](int torrentId, const QString& filePath, const QString& newName) {

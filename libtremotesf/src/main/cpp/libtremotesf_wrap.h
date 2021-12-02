@@ -21,9 +21,9 @@ public:
     virtual void onConnectionStateChanged(libtremotesf::RpcConnectionState status);
     virtual void onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage);
     virtual void onServerSettingsChanged(libtremotesf::JniServerSettingsData data);
-    virtual void onTorrentsUpdated(std::vector< int > const &removed,std::vector< libtremotesf::TorrentData * > const &changed,std::vector< libtremotesf::TorrentData * > const &added);
+    virtual void onTorrentsUpdated(std::vector< std::pair< int,int > > const &removedIndexRanges,std::vector< libtremotesf::TorrentData > const &changed,std::vector< libtremotesf::TorrentData > const &added);
     virtual void onTorrentFilesUpdated(int torrentId,std::vector< libtremotesf::TorrentFile * > const &changed);
-    virtual void onTorrentPeersUpdated(int torrentId,std::vector< int > const &removed,std::vector< libtremotesf::Peer * > const &changed,std::vector< libtremotesf::Peer * > const &added);
+    virtual void onTorrentPeersUpdated(int torrentId,std::vector< std::pair< int,int > > const &removedIndexRanges,std::vector< libtremotesf::Peer > const &changed,std::vector< libtremotesf::Peer > const &added);
     virtual void onServerStatsUpdated(long long downloadSpeed,long long uploadSpeed,libtremotesf::SessionStats currentSession,libtremotesf::SessionStats total);
     virtual void onTorrentAdded(int id,QString const &hashString,QString const &name);
     virtual void onTorrentFinished(int id,QString const &hashString,QString const &name);

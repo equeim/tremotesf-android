@@ -215,16 +215,16 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_onServerSettingsChanged(swigCPtr, this, JniServerSettingsData.getCPtr(data), data);
   }
 
-  protected void onTorrentsUpdated(IntVector removed, TorrentDataVector changed, TorrentDataVector added) {
-    libtremotesfJNI.JniRpc_onTorrentsUpdated(swigCPtr, this, IntVector.getCPtr(removed), removed, TorrentDataVector.getCPtr(changed), changed, TorrentDataVector.getCPtr(added), added);
+  protected void onTorrentsUpdated(IntPairVector removedIndexRanges, TorrentDataVector changed, TorrentDataVector added) {
+    libtremotesfJNI.JniRpc_onTorrentsUpdated(swigCPtr, this, IntPairVector.getCPtr(removedIndexRanges), removedIndexRanges, TorrentDataVector.getCPtr(changed), changed, TorrentDataVector.getCPtr(added), added);
   }
 
   protected void onTorrentFilesUpdated(int torrentId, TorrentFilesVector changed) {
     libtremotesfJNI.JniRpc_onTorrentFilesUpdated(swigCPtr, this, torrentId, TorrentFilesVector.getCPtr(changed), changed);
   }
 
-  protected void onTorrentPeersUpdated(int torrentId, IntVector removed, TorrentPeersVector changed, TorrentPeersVector added) {
-    libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, IntVector.getCPtr(removed), removed, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added);
+  protected void onTorrentPeersUpdated(int torrentId, IntPairVector removedIndexRanges, TorrentPeersVector changed, TorrentPeersVector added) {
+    libtremotesfJNI.JniRpc_onTorrentPeersUpdated(swigCPtr, this, torrentId, IntPairVector.getCPtr(removedIndexRanges), removedIndexRanges, TorrentPeersVector.getCPtr(changed), changed, TorrentPeersVector.getCPtr(added), added);
   }
 
   protected void onServerStatsUpdated(long downloadSpeed, long uploadSpeed, SessionStats currentSession, SessionStats total) {

@@ -102,21 +102,27 @@ public class libtremotesfJNI {
   public final static native void StringMap_putUnchecked(long jarg1, StringMap jarg1_, String jarg2, String jarg3);
   public final static native void StringMap_removeUnchecked(long jarg1, StringMap jarg1_, long jarg2, StringMap.Iterator jarg2_);
   public final static native void delete_StringMap(long jarg1);
-  public final static native long new_IntVector__SWIG_0();
-  public final static native long new_IntVector__SWIG_1(long jarg1, IntVector jarg1_);
-  public final static native long IntVector_capacity(long jarg1, IntVector jarg1_);
-  public final static native void IntVector_reserve(long jarg1, IntVector jarg1_, long jarg2);
-  public final static native boolean IntVector_isEmpty(long jarg1, IntVector jarg1_);
-  public final static native void IntVector_clear(long jarg1, IntVector jarg1_);
-  public final static native long new_IntVector__SWIG_2(int jarg1, int jarg2);
-  public final static native int IntVector_doSize(long jarg1, IntVector jarg1_);
-  public final static native void IntVector_doAdd__SWIG_0(long jarg1, IntVector jarg1_, int jarg2);
-  public final static native void IntVector_doAdd__SWIG_1(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
-  public final static native int IntVector_doRemove(long jarg1, IntVector jarg1_, int jarg2);
-  public final static native int IntVector_doGet(long jarg1, IntVector jarg1_, int jarg2);
-  public final static native int IntVector_doSet(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
-  public final static native void IntVector_doRemoveRange(long jarg1, IntVector jarg1_, int jarg2, int jarg3);
-  public final static native void delete_IntVector(long jarg1);
+  public final static native long new_IntPair__SWIG_0();
+  public final static native long new_IntPair__SWIG_1(int jarg1, int jarg2);
+  public final static native long new_IntPair__SWIG_2(long jarg1, IntPair jarg1_);
+  public final static native int IntPair_first_get(long jarg1, IntPair jarg1_);
+  public final static native int IntPair_second_get(long jarg1, IntPair jarg1_);
+  public final static native void delete_IntPair(long jarg1);
+  public final static native long new_IntPairVector__SWIG_0();
+  public final static native long new_IntPairVector__SWIG_1(long jarg1, IntPairVector jarg1_);
+  public final static native long IntPairVector_capacity(long jarg1, IntPairVector jarg1_);
+  public final static native void IntPairVector_reserve(long jarg1, IntPairVector jarg1_, long jarg2);
+  public final static native boolean IntPairVector_isEmpty(long jarg1, IntPairVector jarg1_);
+  public final static native void IntPairVector_clear(long jarg1, IntPairVector jarg1_);
+  public final static native long new_IntPairVector__SWIG_2(int jarg1, long jarg2, IntPair jarg2_);
+  public final static native int IntPairVector_doSize(long jarg1, IntPairVector jarg1_);
+  public final static native void IntPairVector_doAdd__SWIG_0(long jarg1, IntPairVector jarg1_, long jarg2, IntPair jarg2_);
+  public final static native void IntPairVector_doAdd__SWIG_1(long jarg1, IntPairVector jarg1_, int jarg2, long jarg3, IntPair jarg3_);
+  public final static native long IntPairVector_doRemove(long jarg1, IntPairVector jarg1_, int jarg2);
+  public final static native long IntPairVector_doGet(long jarg1, IntPairVector jarg1_, int jarg2);
+  public final static native long IntPairVector_doSet(long jarg1, IntPairVector jarg1_, int jarg2, long jarg3, IntPair jarg3_);
+  public final static native void IntPairVector_doRemoveRange(long jarg1, IntPairVector jarg1_, int jarg2, int jarg3);
+  public final static native void delete_IntPairVector(long jarg1);
   public final static native String Peer_address_get(long jarg1, Peer jarg1_);
   public final static native String Peer_client_get(long jarg1, Peer jarg1_);
   public final static native long Peer_downloadSpeed_get(long jarg1, Peer jarg1_);
@@ -366,9 +372,9 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onConnectionStateChanged(long jarg1, JniRpc jarg1_, int jarg2);
   public final static native void JniRpc_onErrorChanged(long jarg1, JniRpc jarg1_, int jarg2, String jarg3);
   public final static native void JniRpc_onServerSettingsChanged(long jarg1, JniRpc jarg1_, long jarg2, JniServerSettingsData jarg2_);
-  public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, IntVector jarg2_, long jarg3, TorrentDataVector jarg3_, long jarg4, TorrentDataVector jarg4_);
+  public final static native void JniRpc_onTorrentsUpdated(long jarg1, JniRpc jarg1_, long jarg2, IntPairVector jarg2_, long jarg3, TorrentDataVector jarg3_, long jarg4, TorrentDataVector jarg4_);
   public final static native void JniRpc_onTorrentFilesUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, TorrentFilesVector jarg3_);
-  public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, IntVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, TorrentPeersVector jarg5_);
+  public final static native void JniRpc_onTorrentPeersUpdated(long jarg1, JniRpc jarg1_, int jarg2, long jarg3, IntPairVector jarg3_, long jarg4, TorrentPeersVector jarg4_, long jarg5, TorrentPeersVector jarg5_);
   public final static native void JniRpc_onServerStatsUpdated(long jarg1, JniRpc jarg1_, long jarg2, long jarg3, long jarg4, SessionStats jarg4_, long jarg5, SessionStats jarg5_);
   public final static native void JniRpc_onTorrentAdded(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
   public final static native void JniRpc_onTorrentFinished(long jarg1, JniRpc jarg1_, int jarg2, String jarg3, String jarg4);
@@ -379,6 +385,8 @@ public class libtremotesfJNI {
   public final static native void JniRpc_onGotFreeSpaceForPath(long jarg1, JniRpc jarg1_, String jarg2, boolean jarg3, long jarg4);
   public final static native void JniRpc_director_connect(JniRpc obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void JniRpc_change_ownership(JniRpc obj, long cptr, boolean take_or_release);
+  public final static native long moveFrom__SWIG_0(long jarg1, TorrentData jarg1_);
+  public final static native long moveFrom__SWIG_1(long jarg1, Peer jarg1_);
   public final static native long JniServerSettingsData_SWIGUpcast(long jarg1);
 
   public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {
@@ -393,14 +401,14 @@ public class libtremotesfJNI {
   public static void SwigDirector_JniRpc_onServerSettingsChanged(JniRpc jself, long data) {
     jself.onServerSettingsChanged(new JniServerSettingsData(data, true));
   }
-  public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long removed, long changed, long added) {
-    jself.onTorrentsUpdated(new IntVector(removed, false), new TorrentDataVector(changed, false), new TorrentDataVector(added, false));
+  public static void SwigDirector_JniRpc_onTorrentsUpdated(JniRpc jself, long removedIndexRanges, long changed, long added) {
+    jself.onTorrentsUpdated(new IntPairVector(removedIndexRanges, false), new TorrentDataVector(changed, false), new TorrentDataVector(added, false));
   }
   public static void SwigDirector_JniRpc_onTorrentFilesUpdated(JniRpc jself, int torrentId, long changed) {
     jself.onTorrentFilesUpdated(torrentId, new TorrentFilesVector(changed, false));
   }
-  public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long removed, long changed, long added) {
-    jself.onTorrentPeersUpdated(torrentId, new IntVector(removed, false), new TorrentPeersVector(changed, false), new TorrentPeersVector(added, false));
+  public static void SwigDirector_JniRpc_onTorrentPeersUpdated(JniRpc jself, int torrentId, long removedIndexRanges, long changed, long added) {
+    jself.onTorrentPeersUpdated(torrentId, new IntPairVector(removedIndexRanges, false), new TorrentPeersVector(changed, false), new TorrentPeersVector(added, false));
   }
   public static void SwigDirector_JniRpc_onServerStatsUpdated(JniRpc jself, long downloadSpeed, long uploadSpeed, long currentSession, long total) {
     jself.onServerStatsUpdated(downloadSpeed, uploadSpeed, new SessionStats(currentSession, true), new SessionStats(total, true));

@@ -169,18 +169,18 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         }
 
         private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
-            val (torrentId, removed, changed, added) = data
+            val (torrentId, removedIndexRanges, changed, added) = data
 
             if (torrentId != torrent.value?.id) return
 
-            if (loaded.value && removed.isEmpty() && changed.isEmpty() && added.isEmpty()) {
+            if (loaded.value && removedIndexRanges.isEmpty() && changed.isEmpty() && added.isEmpty()) {
                 return
             }
 
             val peers = this.peers.value.toMutableList()
 
-            for (index in removed) {
-                peers.removeAt(index)
+            for (range in removedIndexRanges) {
+                peers.subList(range.first, range.last).clear()
             }
 
             if (changed.isNotEmpty()) {

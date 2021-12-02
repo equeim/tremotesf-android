@@ -37,19 +37,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import mozilla.components.lib.publicsuffixlist.PublicSuffixList
-import org.equeim.libtremotesf.IntVector
-import org.equeim.libtremotesf.JniRpc
-import org.equeim.libtremotesf.JniServerSettingsData
-import org.equeim.libtremotesf.LibTremotesf
-import org.equeim.libtremotesf.Peer
-import org.equeim.libtremotesf.RpcConnectionState
-import org.equeim.libtremotesf.RpcError
-import org.equeim.libtremotesf.SessionStats
-import org.equeim.libtremotesf.TorrentData
-import org.equeim.libtremotesf.TorrentDataVector
-import org.equeim.libtremotesf.TorrentFile
-import org.equeim.libtremotesf.TorrentFilesVector
-import org.equeim.libtremotesf.TorrentPeersVector
+import org.equeim.libtremotesf.*
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.MutableEventFlow
 import org.equeim.tremotesf.common.TremotesfDispatchers
@@ -100,7 +88,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             }
 
         override fun onTorrentsUpdated(
-            removed: IntVector,
+            removedIndexRanges: IntPairVector,
             changed: TorrentDataVector,
             added: TorrentDataVector
         ) = runFromNativeCallback("onTorrentsUpdated()") {
@@ -108,11 +96,11 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             // inconsistency when other callbacks are called
             // Run in Unconfined to reduce thread jumping when using PublicSuffixList
             runBlocking(dispatchers.Unconfined) {
-                this@Rpc.onTorrentsUpdated(removed, changed, added)
+                this@Rpc.onTorrentsUpdated(
+                    removedIndexRanges,
+                    changed.map(libtremotesf::moveFrom),
+                    added.map(libtremotesf::moveFrom))
             }
-            removed.delete()
-            changed.delete()
-            added.delete()
         }
 
         override fun onServerStatsUpdated(
@@ -154,14 +142,16 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
         override fun onTorrentPeersUpdated(
             torrentId: Int,
-            removed: IntVector,
+            removedIndexRanges: IntPairVector,
             changed: TorrentPeersVector,
             added: TorrentPeersVector
         ) = runFromNativeCallback("onTorrentPeersUpdated()") {
-            onTorrentPeersUpdated(torrentId, removed.toList(), changed.toList(), added.toList())
-            removed.delete()
-            changed.delete()
-            added.delete()
+            onTorrentPeersUpdated(
+                torrentId,
+                removedIndexRanges.map { it.first.rangeTo(it.second) },
+                changed.map(libtremotesf::moveFrom),
+                added.map(libtremotesf::moveFrom)
+            )
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) =
@@ -244,7 +234,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
     data class TorrentPeersUpdatedData(
         val torrentId: Int,
-        val removed: List<Int>,
+        val removedIndexRanges: List<IntRange>,
         val changed: List<Peer>,
         val added: List<Peer>
     )
@@ -372,14 +362,14 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
     @WorkerThread
     private suspend fun onTorrentsUpdated(
-        removed: List<Int>,
+        removedIndexRanges: List<IntPair>,
         changed: List<TorrentData>,
         added: List<TorrentData>
     ) {
         val newTorrents = torrents.value.toMutableList()
 
-        for (index in removed) {
-            newTorrents.removeAt(index)
+        for (range in removedIndexRanges) {
+            newTorrents.subList(range.first, range.second).clear()
         }
 
         val trackerSitesCache = mutableMapOf<String, String?>()
@@ -428,7 +418,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     @AnyThread
     private fun onTorrentPeersUpdated(
         torrentId: Int,
-        removed: List<Int>,
+        removed: List<IntRange>,
         changed: List<Peer>,
         added: List<Peer>
     ) {

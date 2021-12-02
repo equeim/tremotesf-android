@@ -13,6 +13,7 @@
 
 %include <std_vector.i>
 %include <std_unordered_map.i>
+%include <std_pair.i>
 
 %include "qbytearray.i"
 %include "qstring.i"
@@ -73,9 +74,8 @@ namespace libtremotesf
     %typemap(javafinalize) JniServerSettingsData ""
 }
 
-%typemap(javafinalize) std::vector<libtremotesf::TorrentData*> ""
-%newobject std::vector<libtremotesf::TorrentData*>::doGet;
-%template(TorrentDataVector) std::vector<libtremotesf::TorrentData*>;
+%typemap(javafinalize) std::vector<libtremotesf::TorrentData> ""
+%template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
 
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;
 
@@ -83,17 +83,17 @@ namespace libtremotesf
 %newobject std::vector<libtremotesf::TorrentFile*>::doGet;
 %template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile*>;
 
-%typemap(javafinalize) std::vector<libtremotesf::Peer*> ""
-%newobject std::vector<libtremotesf::Peer*>::doGet;
-%template(TorrentPeersVector) std::vector<libtremotesf::Peer*>;
+%typemap(javafinalize) std::vector<libtremotesf::Peer> ""
+%template(TorrentPeersVector) std::vector<libtremotesf::Peer>;
 
 %typemap(javafinalize) std::vector<QString> ""
 %template(StringsVector) std::vector<QString>;
 %typemap(javafinalize) std::unordered_map<QString, QString> ""
 %template(StringMap) std::unordered_map<QString, QString>;
 
-%typemap(javafinalize) std::vector<int> ""
-%template(IntVector) std::vector<int>;
+%template(IntPair) std::pair<int, int>;
+%typemap(javafinalize) std::vector<std::pair<int, int>> ""
+%template(IntPairVector) std::vector<std::pair<int, int>>;
 
 %include "libtremotesf/peer.h"
 %include "libtremotesf/torrentfile.h"
