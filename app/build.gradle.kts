@@ -71,6 +71,12 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().withBuildType("debug")) {
+        it.packaging.jniLibs.keepDebugSymbols.add("**/*.so")
+    }
+}
+
 dependencies {
     implementation(project(":common"))
     implementation(project(":billing"))
