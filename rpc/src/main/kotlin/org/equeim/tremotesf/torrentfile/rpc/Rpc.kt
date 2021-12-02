@@ -136,8 +136,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) =
             runFromNativeCallback("onTorrentFilesUpdated()") {
-                onTorrentFilesUpdated(torrentId, files.toList())
-                files.delete()
+                onTorrentFilesUpdated(torrentId, files.map(libtremotesf::moveFrom))
             }
 
         override fun onTorrentPeersUpdated(

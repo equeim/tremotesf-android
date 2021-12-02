@@ -26,37 +26,6 @@ namespace libtremotesf
         constexpr int threadStartTimeoutMs = 5000;
         constexpr const char* logTag = "LibTremotesf";
         const QLatin1String certPath(":/isrg_root_x1.pem");
-
-        template<typename I, typename O, typename IndexIterator, typename Functor>
-        std::vector<O*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end, Functor&& transform)
-        {
-            std::vector<O*> v;
-            v.reserve(end - begin);
-            for (auto i = begin; i != end; ++i) {
-                v.push_back(new O(transform(items[static_cast<size_t>(*i)])));
-            }
-            return v;
-        }
-
-        template<typename I, typename IndexIterator>
-        std::vector<I*> toNewPointers(const std::vector<I>& items, IndexIterator&& begin, IndexIterator&& end)
-        {
-            return toNewPointers<I, I>(items, begin, end, [](const I& i) -> const I& { return i; });
-        }
-
-        template<typename IndexIterator>
-        std::vector<TorrentData*> toNewPointers(const std::vector<std::unique_ptr<Torrent>>& items, IndexIterator&& begin, IndexIterator&& end)
-        {
-            return toNewPointers<std::unique_ptr<Torrent>, TorrentData>(items, begin, end, [](const std::unique_ptr<Torrent>& i) { return i->data(); });
-        }
-
-        struct IndexIterator
-        {
-            size_t value;
-            operator size_t() { return value; }
-            size_t operator*() { return value; }
-            IndexIterator& operator++() { ++value; return *this; }
-        };
     }
 
     JniServerSettingsData::JniServerSettingsData(ServerSettings* settings)
@@ -487,7 +456,13 @@ namespace libtremotesf
         });
 
         QObject::connect(mRpc, &Rpc::torrentFilesUpdated, [=](const Torrent* torrent, const std::vector<int>& changedIndexes) {
-            onTorrentFilesUpdated(torrent->id(), toNewPointers(torrent->files(), changedIndexes.begin(), changedIndexes.end()));
+            const auto& files = torrent->files();
+            std::vector<TorrentFile> changed;
+            changed.reserve(changedIndexes.size());
+            for (int index : changedIndexes) {
+                changed.push_back(files[static_cast<size_t>(index)]);
+            }
+            onTorrentFilesUpdated(torrent->id(), changed);
         });
         QObject::connect(mRpc, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<std::pair<int, int>>& changedIndexRanges, int addedCount) {
             const auto& begin = torrent->peers().begin();

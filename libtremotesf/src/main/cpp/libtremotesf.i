@@ -79,9 +79,8 @@ namespace libtremotesf
 
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;
 
-%typemap(javafinalize) std::vector<libtremotesf::TorrentFile*> ""
-%newobject std::vector<libtremotesf::TorrentFile*>::doGet;
-%template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile*>;
+%typemap(javafinalize) std::vector<libtremotesf::TorrentFile> ""
+%template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
 
 %typemap(javafinalize) std::vector<libtremotesf::Peer> ""
 %template(TorrentPeersVector) std::vector<libtremotesf::Peer>;

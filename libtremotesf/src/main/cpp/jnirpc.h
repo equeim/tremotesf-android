@@ -140,7 +140,7 @@ namespace libtremotesf
 
         virtual void onTorrentsUpdated(const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<TorrentData>& changed, const std::vector<TorrentData>& added) = 0;
 
-        virtual void onTorrentFilesUpdated(int torrentId, const std::vector<TorrentFile*>& changed) = 0;
+        virtual void onTorrentFilesUpdated(int torrentId, const std::vector<TorrentFile>& changed) = 0;
         virtual void onTorrentPeersUpdated(int torrentId, const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<Peer>& changed, const std::vector<Peer>& added) = 0;
 
         virtual void onServerStatsUpdated(long long downloadSpeed, long long uploadSpeed, SessionStats currentSession, SessionStats total) = 0;
@@ -172,6 +172,7 @@ namespace libtremotesf
     };
 
     inline TorrentData moveFrom(TorrentData&& other) { return std::move(other); }
+    inline TorrentFile moveFrom(TorrentFile&& other) { return std::move(other); }
     inline Peer moveFrom(Peer&& other) { return std::move(other); }
 }
 

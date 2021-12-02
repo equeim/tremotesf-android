@@ -386,7 +386,8 @@ public class libtremotesfJNI {
   public final static native void JniRpc_director_connect(JniRpc obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void JniRpc_change_ownership(JniRpc obj, long cptr, boolean take_or_release);
   public final static native long moveFrom__SWIG_0(long jarg1, TorrentData jarg1_);
-  public final static native long moveFrom__SWIG_1(long jarg1, Peer jarg1_);
+  public final static native long moveFrom__SWIG_1(long jarg1, TorrentFile jarg1_);
+  public final static native long moveFrom__SWIG_2(long jarg1, Peer jarg1_);
   public final static native long JniServerSettingsData_SWIGUpcast(long jarg1);
 
   public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {

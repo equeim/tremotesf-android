@@ -13,8 +13,12 @@ public class libtremotesf {
     return new TorrentData(libtremotesfJNI.moveFrom__SWIG_0(TorrentData.getCPtr(other), other), true);
   }
 
+  public static TorrentFile moveFrom(TorrentFile other) {
+    return new TorrentFile(libtremotesfJNI.moveFrom__SWIG_1(TorrentFile.getCPtr(other), other), true);
+  }
+
   public static Peer moveFrom(Peer other) {
-    return new Peer(libtremotesfJNI.moveFrom__SWIG_1(Peer.getCPtr(other), other), true);
+    return new Peer(libtremotesfJNI.moveFrom__SWIG_2(Peer.getCPtr(other), other), true);
   }
 
 }
