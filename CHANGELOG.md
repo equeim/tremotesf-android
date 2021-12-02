@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Fixed
+- Fixed crashes when removing torrents
+
 ## [2.5.3] - 2021-12-02
 ### Changed
 - Updated Qt to 6.2.2
