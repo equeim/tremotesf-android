@@ -375,7 +375,7 @@ namespace libtremotesf
                                                    std::chrono::milliseconds(threadStartTimeoutMs),
                                                    [args] { return args->applicationCreated; });
         }
-        const auto elapsed = timer.nsecsElapsed() / 1000000.0;
+        const auto elapsed = static_cast<double>(timer.nsecsElapsed()) / 1000000.0;
         if (!createdApplication) {
             __android_log_print(ANDROID_LOG_FATAL, logTag, "init: timed out waiting for QCoreApplication creation, elapsed time = %f ms", elapsed);
             std::terminate();

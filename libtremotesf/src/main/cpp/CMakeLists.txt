@@ -15,7 +15,8 @@ find_package(Qt6 COMPONENTS Core Concurrent Network REQUIRED)
 set(Qt6QTlsBackendOpenSSLPlugin_DIR "${Qt6Network_DIR}")
 find_package(Qt6QTlsBackendOpenSSLPlugin REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED
+set(
+        sources
         libtremotesf/peer.cpp
         libtremotesf/rpc.cpp
         libtremotesf/serversettings.cpp
@@ -24,17 +25,40 @@ add_library(${PROJECT_NAME} SHARED
         libtremotesf/torrentfile.cpp
         libtremotesf/tracker.cpp
         jnirpc.cpp
-        libtremotesf_wrap.cxx
-        resources.qrc)
+)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+add_library(
+        ${PROJECT_NAME} SHARED
+        ${sources}
+        libtremotesf_wrap.cxx
+        resources.qrc
+)
+
+set_target_properties(
+        ${PROJECT_NAME} PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
-        INTERPROCEDURAL_OPTIMIZATION ON)
+        INTERPROCEDURAL_OPTIMIZATION ON
+)
+
+set(
+        warnings
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wnon-virtual-dtor
+        -Wcast-align
+        -Woverloaded-virtual
+        -Wconversion
+        -Wsign-conversion
+        -Wdouble-promotion
+        -Wformat=2
+        -Werror=format
+)
+set_source_files_properties(${sources} PROPERTIES COMPILE_OPTIONS "${warnings}")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE QT_DEPRECATED_WARNINGS QT_DISABLE_DEPRECATED_BEFORE=0x05f00)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Qt6Concurrent_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${log-lib} Qt6::Core Qt6::Network Qt6::QTlsBackendOpenSSLPlugin)
 
