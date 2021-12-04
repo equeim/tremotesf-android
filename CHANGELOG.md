@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.5.4] - 2021-12-04
 ### Fixed
 - Fixed crashes when removing torrents
 
