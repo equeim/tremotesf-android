@@ -35,14 +35,14 @@ class QByteArray;
 
 %typemap(directorin) QByteArray
 %{
-    $input = jenv->NewByteArray($1.size());
-    jenv->SetByteArrayRegion($input, 0, $1.size(), reinterpret_cast<const jbyte*>($1.constData()));
+    $input = jenv->NewByteArray(static_cast<jsize>($1.size()));
+    jenv->SetByteArrayRegion($input, 0, static_cast<jsize>($1.size()), reinterpret_cast<const jbyte*>($1.constData()));
 %}
 
 %typemap(out) QByteArray
 %{
-    $result = jenv->NewByteArray($1.size());
-    jenv->SetByteArrayRegion($result, 0, $1.size(), reinterpret_cast<const jbyte*>($1.constData()));
+    $result = jenv->NewByteArray(static_cast<jsize>($1.size()));
+    jenv->SetByteArrayRegion($result, 0, static_cast<jsize>($1.size()), reinterpret_cast<const jbyte*>($1.constData()));
 %}
 
 %typemap(javain) QByteArray "$javainput"
@@ -95,14 +95,14 @@ class QByteArray;
 
 %typemap(directorin) const QByteArray&
 %{
-    $input = jenv->NewByteArray($1->size());
-    jenv->SetByteArrayRegion($input, 0, $1->size(), reinterpret_cast<const jbyte*>($1->constData()));
+    $input = jenv->NewByteArray(static_cast<jsize>($1->size()));
+    jenv->SetByteArrayRegion($input, 0, static_cast<jsize>($1->size()), reinterpret_cast<const jbyte*>($1->constData()));
 %}
 
 %typemap(out) const QByteArray& 
 %{
-    $result = jenv->NewByteArray($1->size());
-    jenv->SetByteArrayRegion($result, 0, $1->size(), reinterpret_cast<const jbyte*>($1->constData()));
+    $result = jenv->NewByteArray(static_cast<jsize>($1->size()));
+    jenv->SetByteArrayRegion($result, 0, static_cast<jsize>($1->size()), reinterpret_cast<const jbyte*>($1->constData()));
 %}
 
 %typemap(javain) const QByteArray& "$javainput"

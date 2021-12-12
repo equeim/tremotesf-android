@@ -1285,7 +1285,7 @@ void SwigDirector_JniRpc::onErrorChanged(libtremotesf::RpcError error,QString co
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jerror = (jint) error;
     
-    jerrorMessage = jenv->NewString((&errorMessage)->utf16(), (&errorMessage)->size());
+    jerrorMessage = jenv->NewString((&errorMessage)->utf16(), static_cast<jsize>((&errorMessage)->size()));
     
     jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[2], swigjobj, jerror, jerrorMessage);
     jthrowable swigerror = jenv->ExceptionOccurred();
@@ -1461,10 +1461,10 @@ void SwigDirector_JniRpc::onTorrentAdded(int id,QString const &hashString,QStrin
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jid = (jint) id;
     
-    jhashString = jenv->NewString((&hashString)->utf16(), (&hashString)->size());
+    jhashString = jenv->NewString((&hashString)->utf16(), static_cast<jsize>((&hashString)->size()));
     
     
-    jname = jenv->NewString((&name)->utf16(), (&name)->size());
+    jname = jenv->NewString((&name)->utf16(), static_cast<jsize>((&name)->size()));
     
     jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[8], swigjobj, jid, jhashString, jname);
     jthrowable swigerror = jenv->ExceptionOccurred();
@@ -1494,10 +1494,10 @@ void SwigDirector_JniRpc::onTorrentFinished(int id,QString const &hashString,QSt
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jid = (jint) id;
     
-    jhashString = jenv->NewString((&hashString)->utf16(), (&hashString)->size());
+    jhashString = jenv->NewString((&hashString)->utf16(), static_cast<jsize>((&hashString)->size()));
     
     
-    jname = jenv->NewString((&name)->utf16(), (&name)->size());
+    jname = jenv->NewString((&name)->utf16(), static_cast<jsize>((&name)->size()));
     
     jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[9], swigjobj, jid, jhashString, jname);
     jthrowable swigerror = jenv->ExceptionOccurred();
@@ -1573,10 +1573,10 @@ void SwigDirector_JniRpc::onTorrentFileRenamed(int torrentId,QString const &file
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jtorrentId = (jint) torrentId;
     
-    jfilePath = jenv->NewString((&filePath)->utf16(), (&filePath)->size());
+    jfilePath = jenv->NewString((&filePath)->utf16(), static_cast<jsize>((&filePath)->size()));
     
     
-    jnewName = jenv->NewString((&newName)->utf16(), (&newName)->size());
+    jnewName = jenv->NewString((&newName)->utf16(), static_cast<jsize>((&newName)->size()));
     
     jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[12], swigjobj, jtorrentId, jfilePath, jnewName);
     jthrowable swigerror = jenv->ExceptionOccurred();
@@ -1629,7 +1629,7 @@ void SwigDirector_JniRpc::onGotFreeSpaceForPath(QString const &path,bool success
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jpath = jenv->NewString((&path)->utf16(), (&path)->size());
+    jpath = jenv->NewString((&path)->utf16(), static_cast<jsize>((&path)->size()));
     
     jsuccess = (jboolean) success;
     jbytes = (jlong) bytes;
@@ -2920,7 +2920,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1Strin
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return 0;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -2971,7 +2971,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsVect
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -2997,7 +2997,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsVect
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -3028,7 +3028,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
     return 0;
   }
   
-  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
   return jresult;
 }
@@ -3052,7 +3052,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
     return 0;
   }
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -3078,7 +3078,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return 0;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -3089,7 +3089,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
     return 0;
   }
   
-  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
   return jresult;
 }
@@ -3206,7 +3206,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
   arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
   result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey((std::unordered_map< QString,QString >::iterator const *)arg1);
   
-  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
   return jresult;
 }
@@ -3223,7 +3223,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
   arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
   result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue((std::unordered_map< QString,QString >::iterator const *)arg1);
   
-  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
   return jresult;
 }
@@ -3245,7 +3245,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -3307,7 +3307,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return 0;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -3385,7 +3385,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringM
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return 0;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -3412,7 +3412,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -3424,7 +3424,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -3842,7 +3842,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1ad
   arg1 = *(libtremotesf::Peer **)&jarg1; 
   result = (QString *) & ((arg1)->address);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -3859,7 +3859,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1cl
   arg1 = *(libtremotesf::Peer **)&jarg1; 
   result = (QString *) & ((arg1)->client);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -3921,7 +3921,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Peer_1fl
   arg1 = *(libtremotesf::Peer **)&jarg1; 
   result = (QString *) & ((arg1)->flags);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4063,7 +4063,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_
   arg1 = *(libtremotesf::Tracker **)&jarg1; 
   result = (QString *) &((libtremotesf::Tracker const *)arg1)->announce();
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4080,7 +4080,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_
   arg1 = *(libtremotesf::Tracker::AnnounceHostInfo **)&jarg1; 
   result = (QString *) & ((arg1)->host);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4164,7 +4164,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Tracker_
   arg1 = *(libtremotesf::Tracker **)&jarg1; 
   result = ((libtremotesf::Tracker const *)arg1)->errorMessage();
   
-  jresult = jenv->NewString((&result)->utf16(), (&result)->size());
+  jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
   return jresult;
 }
@@ -4251,7 +4251,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->hashString);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4268,7 +4268,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->name);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4285,7 +4285,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->magnetLink);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4302,7 +4302,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->errorString);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4769,7 +4769,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->downloadDirectory);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4786,7 +4786,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->comment);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4803,7 +4803,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentD
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QString *) & ((arg1)->creator);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4937,7 +4937,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1nam
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -4956,7 +4956,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->name);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -4978,7 +4978,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1add
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -4997,7 +4997,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->address);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5047,7 +5047,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1api
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5066,7 +5066,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->apiPath);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5116,7 +5116,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1pro
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5135,7 +5135,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->proxyHostname);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5185,7 +5185,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1pro
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5204,7 +5204,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->proxyUser);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5226,7 +5226,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1pro
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5245,7 +5245,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->proxyPassword);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5341,8 +5341,8 @@ SWIGEXPORT jbyteArray JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Serve
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QByteArray *) & ((arg1)->selfSignedCertificate);
   
-  jresult = jenv->NewByteArray(result->size());
-  jenv->SetByteArrayRegion(jresult, 0, result->size(), reinterpret_cast<const jbyte*>(result->constData()));
+  jresult = jenv->NewByteArray(static_cast<jsize>(result->size()));
+  jenv->SetByteArrayRegion(jresult, 0, static_cast<jsize>(result->size()), reinterpret_cast<const jbyte*>(result->constData()));
   
   return jresult;
 }
@@ -5410,8 +5410,8 @@ SWIGEXPORT jbyteArray JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Serve
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QByteArray *) & ((arg1)->clientCertificate);
   
-  jresult = jenv->NewByteArray(result->size());
-  jenv->SetByteArrayRegion(jresult, 0, result->size(), reinterpret_cast<const jbyte*>(result->constData()));
+  jresult = jenv->NewByteArray(static_cast<jsize>(result->size()));
+  jenv->SetByteArrayRegion(jresult, 0, static_cast<jsize>(result->size()), reinterpret_cast<const jbyte*>(result->constData()));
   
   return jresult;
 }
@@ -5461,7 +5461,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1use
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5480,7 +5480,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->username);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5502,7 +5502,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1pas
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -5521,7 +5521,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1
   arg1 = *(libtremotesf::Server **)&jarg1; 
   result = (QString *) & ((arg1)->password);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5747,7 +5747,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSe
   arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
   result = (QString *) & ((arg1)->downloadDirectory);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -5824,7 +5824,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSe
   arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
   result = (QString *) & ((arg1)->incompleteDirectory);
   
-  jresult = jenv->NewString(result->utf16(), result->size());
+  jresult = jenv->NewString(result->utf16(), static_cast<jsize>(result->size()));
   
   return jresult;
 }
@@ -6431,7 +6431,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -6507,7 +6507,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -7062,7 +7062,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -7150,7 +7150,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -7162,7 +7162,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -7390,7 +7390,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -7418,7 +7418,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1ren
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -7430,7 +7430,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1ren
   const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
   if (!arg4_pstr) return ;
   jsize arg4_len = jenv->GetStringLength(jarg4);
-  QString arg4_str(QString::fromUtf16(arg4_pstr, arg4_len));
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
@@ -7465,7 +7465,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1get
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
@@ -7841,7 +7841,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1tor
   const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
   if (!arg4_pstr) return ;
   jsize arg4_len = jenv->GetStringLength(jarg4);
-  QString arg4_str(QString::fromUtf16(arg4_pstr, arg4_len));
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
@@ -7964,7 +7964,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onE
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -8142,7 +8142,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -8154,7 +8154,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
   if (!arg4_pstr) return ;
   jsize arg4_len = jenv->GetStringLength(jarg4);
-  QString arg4_str(QString::fromUtf16(arg4_pstr, arg4_len));
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
@@ -8183,7 +8183,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -8195,7 +8195,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
   if (!arg4_pstr) return ;
   jsize arg4_len = jenv->GetStringLength(jarg4);
-  QString arg4_str(QString::fromUtf16(arg4_pstr, arg4_len));
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
@@ -8250,7 +8250,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg3_pstr = jenv->GetStringChars(jarg3, 0);
   if (!arg3_pstr) return ;
   jsize arg3_len = jenv->GetStringLength(jarg3);
-  QString arg3_str(QString::fromUtf16(arg3_pstr, arg3_len));
+  QString arg3_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg3_pstr), arg3_len));
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
@@ -8262,7 +8262,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
   if (!arg4_pstr) return ;
   jsize arg4_len = jenv->GetStringLength(jarg4);
-  QString arg4_str(QString::fromUtf16(arg4_pstr, arg4_len));
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
   arg4 = &arg4_str;
   jenv->ReleaseStringChars(jarg4, arg4_pstr);
   
@@ -8305,7 +8305,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onG
   const jchar* arg2_pstr = jenv->GetStringChars(jarg2, 0);
   if (!arg2_pstr) return ;
   jsize arg2_len = jenv->GetStringLength(jarg2);
-  QString arg2_str(QString::fromUtf16(arg2_pstr, arg2_len));
+  QString arg2_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg2_pstr), arg2_len));
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
