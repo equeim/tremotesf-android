@@ -1,3 +1,6 @@
+import java.lang.module.ModuleDescriptor
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
 import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask
@@ -10,6 +13,36 @@ plugins {
 
 val opensslDir = rootProject.file("3rdparty/openssl")
 val qtDir = rootProject.file("3rdparty/qt")
+
+val sdkCmakeVersion = "3.18.1"
+val pathCmakeVersion = runCatching {
+    val outputStream = ByteArrayOutputStream()
+    exec {
+        commandLine("cmake", "--version")
+        standardOutput = outputStream
+    }
+    outputStream.toByteArray()
+        .toString(StandardCharsets.UTF_8)
+        .lineSequence()
+        .first()
+        .trim()
+        .split(Regex("\\s"))
+        .last()
+        .takeIf { it.isNotEmpty() }
+}.getOrNull()
+logger.info("Version of CMake from PATH is $pathCmakeVersion")
+
+fun isPathCmakeNewer(): Boolean {
+    if (pathCmakeVersion == null) return false
+    val pathVersion = runCatching {
+        ModuleDescriptor.Version.parse(pathCmakeVersion)
+    }.getOrNull() ?: return false
+    val sdkVersion = runCatching {
+        ModuleDescriptor.Version.parse(sdkCmakeVersion)
+    }.getOrNull() ?: return false
+    return pathVersion > sdkVersion
+}
+val useCmakeFromPath = isPathCmakeNewer()
 
 android {
     defaultConfig.externalNativeBuild.cmake.arguments(
@@ -24,7 +57,7 @@ android {
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
-        version = "3.18.1"
+        version = if (useCmakeFromPath) checkNotNull(pathCmakeVersion) else sdkCmakeVersion
     }
 
     packagingOptions.jniLibs.keepDebugSymbols.add("**/*.so")
@@ -34,7 +67,6 @@ dependencies {
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 }
 
-val useCmakeFromSdk = (findProperty("org.equeim.tremotesf.use-cmake-from-sdk") as? String?).toBoolean()
 val addHostQtCmakeFlags = (findProperty("org.equeim.tremotesf.host-qt-cmake-flags") as? String?)?.split(" ")?.filter { it.isNotBlank() } ?: emptyList()
 val useCcache = (findProperty("org.equeim.tremotesf.ccache") as? String?).toBoolean()
 
@@ -62,8 +94,8 @@ val qt by tasks.registering(QtTask::class) {
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
-    if (useCmakeFromSdk) {
-        cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/${android.externalNativeBuild.cmake.version}/bin"))
+    if (!useCmakeFromPath) {
+        cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/$sdkCmakeVersion/bin"))
     }
     hostQtCmakeFlags.set(addHostQtCmakeFlags)
     ccache.set(useCcache)
