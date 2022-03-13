@@ -37,6 +37,7 @@ abstract class QtTask @Inject constructor(
     @get:InputDirectory
     val sourceDir: Provider<File> by lazy { qtDir.map { sourceDir(it) } }
 
+    @Suppress("unused")
     @get:OutputDirectories
     val installDirs: Provider<List<File>> by lazy {
         qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) }
@@ -69,14 +70,74 @@ abstract class QtTask @Inject constructor(
             execOperations.zeroCcacheStatistics(logger)
         }
 
-        buildHostQt()
+        val hostQtInfo = getHostQtInfo()
+
         for (abi in NativeAbis.abis) {
-            buildQt(abi)
+            buildQt(abi, hostQtInfo)
         }
 
         if (ccache.get()) {
             execOperations.showCcacheStatistics(logger)
         }
+    }
+
+    private data class HostQtInfo(val prefix: String, val cmakeDir: String)
+
+    private fun getHostQtInfo(): HostQtInfo {
+        val prebuiltHostQtInfo = getPrebuiltHostQtInfo()
+        return if (prebuiltHostQtInfo != null) {
+            logger.lifecycle("Using prebuilt host Qt")
+            prebuiltHostQtInfo
+        } else {
+            buildHostQt()
+            val hostInstallDir = hostInstallDir(qtDir.get())
+            HostQtInfo(hostInstallDir.toString(), hostInstallDir.resolve("lib/cmake").toString())
+        }
+    }
+
+    private fun getPrebuiltHostQtInfo(): HostQtInfo? {
+        val buildingQtVersion = runCatching {
+            execOperations.exec(logger, ExecOutputMode.Capture) {
+                commandLine("git", "-C", sourceDir.get(), "describe", "--tags")
+            }.trimmedOutputString().drop(1)
+        }.getOrElse {
+            throw RuntimeException("Failed to determine Qt version", it)
+        }
+
+        logger.lifecycle("Building Qt {}", buildingQtVersion)
+
+        val hostQtVersion = runCatching {
+            execOperations.exec(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_VERSION")
+            }.trimmedOutputString()
+        }.getOrElse { return null }
+
+        logger.lifecycle("Found prebuilt host Qt {}", hostQtVersion)
+
+        if (hostQtVersion != buildingQtVersion) {
+            logger.lifecycle("Prebuilt host Qt version is incompatible")
+            return null
+        }
+
+        val hostPrefix = runCatching {
+            execOperations.exec(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_HOST_PREFIX")
+            }.trimmedOutputString()
+        }.getOrElse {
+            logger.error("Failed to get QT_HOST_PREFIX")
+            return null
+        }
+
+        val hostLibs = runCatching {
+            execOperations.exec(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_HOST_LIBS")
+            }.trimmedOutputString()
+        }.getOrElse {
+            logger.error("Failed to get QT_HOST_LIBS")
+            return null
+        }
+
+        return HostQtInfo(hostPrefix, "${hostLibs}/cmake")
     }
 
     private fun buildHostQt() {
@@ -133,7 +194,7 @@ abstract class QtTask @Inject constructor(
         buildQt(buildDir, configureFlags, false)
     }
 
-    private fun buildQt(abi: String) {
+    private fun buildQt(abi: String, hostQtInfo: HostQtInfo) {
         logger.lifecycle("Building Qt for abi = {}", abi)
 
         val buildDir = buildDir(qtDir.get(), abi)
@@ -144,7 +205,6 @@ abstract class QtTask @Inject constructor(
             "-prefix", installDir(qtDir.get(), abi).toString(),
 
             "-platform", "android-clang",
-            "-qt-host-path", hostInstallDir(qtDir.get()).toString(),
             "-android-sdk", sdkDir.get().toString(),
             "-android-ndk", ndkDir.get().toString(),
             "-android-ndk-platform", "android-${Versions.minSdk}",
@@ -205,8 +265,10 @@ abstract class QtTask @Inject constructor(
             "-no-feature-xmlstreamwriter",
             "-openssl-linked",
             "--",
+            "-G", "Ninja",
             "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
-            "-G", "Ninja"
+            "-DQT_HOST_PATH=${hostQtInfo.prefix}",
+            "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}"
         )
 
         buildQt(buildDir, configureFlags, true)
@@ -287,7 +349,5 @@ abstract class QtTask @Inject constructor(
 
         fun jar(qtDir: File) =
             installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
-
-        fun coreToolsDir(qtDir: File) = hostInstallDir(qtDir).resolve("lib/cmake/Qt6CoreTools")
     }
 }

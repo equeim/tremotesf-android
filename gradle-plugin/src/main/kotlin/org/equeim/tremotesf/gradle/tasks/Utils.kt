@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 internal enum class ExecOutputMode {
@@ -17,7 +17,10 @@ internal enum class ExecOutputMode {
 }
 
 @Suppress("ArrayInDataClass")
-internal data class ExecResult(val success: Boolean, val output: ByteArray?)
+internal data class ExecResult(val success: Boolean, val output: ByteArray?) {
+    fun outputString() = checkNotNull(output).toString(StandardCharsets.UTF_8)
+    fun trimmedOutputString() = outputString().trim()
+}
 
 internal fun ExecOperations.exec(
     logger: Logger,
@@ -44,7 +47,7 @@ internal fun ExecOperations.exec(
         ExecOutputMode.Capture
     }
 
-    var outputStream: ByteArrayOutputStream? = null
+    lateinit var outputStream: ByteArrayOutputStream
     val result = try {
         when (actualOutputMode) {
             ExecOutputMode.Capture -> {
@@ -55,7 +58,7 @@ internal fun ExecOperations.exec(
         }
     } catch (e: Exception) {
         logger.error("Failed to execute {}: {}", commandLine, e)
-        if (outputStream != null) {
+        if (actualOutputMode == ExecOutputMode.Capture) {
             logger.error("Output:")
             outputStream.writeTo(System.err)
         }
@@ -63,7 +66,7 @@ internal fun ExecOperations.exec(
     }
     return ExecResult(
         result.exitValue == 0,
-        if (outputMode == ExecOutputMode.Capture) outputStream?.toByteArray() else null
+        if (outputMode == ExecOutputMode.Capture) outputStream.toByteArray() else null
     )
 }
 
@@ -112,12 +115,12 @@ internal fun ExecOperations.cmake(cmakeBinary: String, mode: CMakeMode, workingD
     }
 
 internal fun ExecOperations.printCMakeInfo(cmakeBinary: String, logger: Logger) {
-    val cmakeVersion = exec(logger, ExecOutputMode.Capture) { commandLine(cmakeBinary, "--version") }.output
-    val whichCmake = exec(logger, ExecOutputMode.Capture) { commandLine("which", cmakeBinary) }.output
+    val cmakeVersion = exec(logger, ExecOutputMode.Capture) { commandLine(cmakeBinary, "--version") }.outputString()
+    val whichCmake = exec(logger, ExecOutputMode.Capture) { commandLine("which", cmakeBinary) }.trimmedOutputString()
     logger.lifecycle(
         "Using {} from {}",
-        cmakeVersion?.toString(StandardCharsets.UTF_8)?.lineSequence()?.first()?.trim(),
-        whichCmake?.toString(StandardCharsets.UTF_8)?.trim()
+        cmakeVersion.lineSequence().first().trim(),
+        whichCmake
     )
 }
 

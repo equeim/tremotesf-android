@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.18.1)
 
-project(tremotesf CXX)
-
+set(CMAKE_TOOLCHAIN_FILE "${QT_DIR}/install-${ANDROID_ABI}/lib/cmake/Qt6/qt.toolchain.cmake")
 list(APPEND CMAKE_FIND_ROOT_PATH "${OPENSSL_DIR}/install-${ANDROID_ABI}")
-list(APPEND CMAKE_FIND_ROOT_PATH "${QT_DIR}/install-${ANDROID_ABI}")
+
+project(tremotesf CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
