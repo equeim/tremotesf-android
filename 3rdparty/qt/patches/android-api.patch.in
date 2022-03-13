@@ -4,8 +4,8 @@
  endfunction()
  
  # Minimum recommend android SDK api version
--set(QT_ANDROID_API_VERSION "android-30")
+-set(QT_ANDROID_API_VERSION "android-31")
 +set(QT_ANDROID_API_VERSION "android-$$compileSdk$$")
  
- # Locate android.jar
- set(QT_ANDROID_JAR "${ANDROID_SDK_ROOT}/platforms/${QT_ANDROID_API_VERSION}/android.jar")
+ function(qt_internal_sort_android_platforms out_var)
+     if(CMAKE_VERSION GREATER_EQUAL 3.18)
