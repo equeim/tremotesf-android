@@ -1,5 +1,10 @@
 package org.equeim.tremotesf.gradle.tasks
 
+import org.equeim.tremotesf.gradle.utils.*
+import org.equeim.tremotesf.gradle.utils.CMakeMode
+import org.equeim.tremotesf.gradle.utils.ExecOutputMode
+import org.equeim.tremotesf.gradle.utils.cmake
+import org.equeim.tremotesf.gradle.utils.executeCommand
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.ListProperty
@@ -61,7 +66,6 @@ abstract class QtTask @Inject constructor(
     @TaskAction
     fun buildQt() {
         logger.lifecycle("Start building Qt")
-        logger.lifecycle("Make jobs count = {}", makeJobsCount(gradle))
         logger.lifecycle("CMake binary dir = {}", cmakeBinaryDir.orNull)
         logger.lifecycle("Additional CMake flags for host Qt = {}", hostQtCmakeFlags.get())
         logger.lifecycle("Ccache = {}", ccache.get())
@@ -99,7 +103,7 @@ abstract class QtTask @Inject constructor(
 
     private fun getPrebuiltHostQtInfo(): HostQtInfo? {
         val buildingQtVersion = runCatching {
-            execOperations.exec(logger, ExecOutputMode.Capture) {
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
                 commandLine("git", "-C", sourceDir.get(), "describe", "--tags")
             }.trimmedOutputString().drop(1)
         }.getOrElse {
@@ -109,7 +113,7 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt {}", buildingQtVersion)
 
         val hostQtVersion = runCatching {
-            execOperations.exec(logger, ExecOutputMode.Capture) {
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
                 commandLine("qmake6", "-query", "QT_VERSION")
             }.trimmedOutputString()
         }.getOrElse { return null }
@@ -122,7 +126,7 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostPrefix = runCatching {
-            execOperations.exec(logger, ExecOutputMode.Capture) {
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
                 commandLine("qmake6", "-query", "QT_HOST_PREFIX")
             }.trimmedOutputString()
         }.getOrElse {
@@ -131,7 +135,7 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostLibs = runCatching {
-            execOperations.exec(logger, ExecOutputMode.Capture) {
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
                 commandLine("qmake6", "-query", "QT_HOST_LIBS")
             }.trimmedOutputString()
         }.getOrElse {
@@ -284,7 +288,7 @@ abstract class QtTask @Inject constructor(
         Files.createDirectories(buildDir.toPath())
 
         measureNanoTime {
-            execOperations.exec(logger) {
+            execOperations.executeCommand(logger) {
                 executable(sourceDir.get().resolve("configure"))
                 args = configureFlags
                 workingDir = buildDir
@@ -307,7 +311,7 @@ abstract class QtTask @Inject constructor(
             // https://github.com/android/ndk/issues/1444
             // Should be unnecessary with NDK r23 or newer + CMake 3.20 or newer, but there is no
             // point in trying to check it
-            execOperations.exec(logger) {
+            execOperations.executeCommand(logger) {
                 commandLine("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja"))
             }
         }

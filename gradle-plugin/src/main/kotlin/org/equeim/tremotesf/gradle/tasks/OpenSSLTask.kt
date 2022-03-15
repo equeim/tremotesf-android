@@ -1,5 +1,10 @@
 package org.equeim.tremotesf.gradle.tasks
 
+import org.equeim.tremotesf.gradle.utils.*
+import org.equeim.tremotesf.gradle.utils.executeCommand
+import org.equeim.tremotesf.gradle.utils.make
+import org.equeim.tremotesf.gradle.utils.showCcacheStatistics
+import org.equeim.tremotesf.gradle.utils.zeroCcacheStatistics
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
@@ -42,7 +47,7 @@ abstract class OpenSSLTask @Inject constructor(
 
     @TaskAction
     fun buildOpenSSL() {
-        logger.lifecycle("Start builiding OpenSSL, make jobs count = {}", makeJobsCount(gradle))
+        logger.lifecycle("Start building OpenSSL")
         if (ccache.get()) {
             execOperations.zeroCcacheStatistics(logger)
         }
@@ -89,7 +94,7 @@ abstract class OpenSSLTask @Inject constructor(
 
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
-            execOperations.exec(logger) {
+            execOperations.executeCommand(logger) {
                 executable(sourceDir.get().resolve("Configure"))
                 args = configureArgs
                 workingDir = buildDir
