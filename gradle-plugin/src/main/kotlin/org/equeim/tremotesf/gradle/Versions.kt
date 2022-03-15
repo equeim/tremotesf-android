@@ -12,25 +12,25 @@ object Versions {
     const val ndk = "23.0.7599858"
 
     const val kotlinxCoroutines = "1.5.2"
-    const val kotlinxSerialization = "1.3.1"
+    const val kotlinxSerialization = "1.3.2"
 
     object AndroidX {
-        const val appcompat = "1.3.1"
-        const val collection = "1.1.0"
+        const val appcompat = "1.4.1"
+        const val collection = "1.2.0"
         const val concurrentFutures = "1.1.0"
         const val core = "1.7.0"
-        const val coordinatorlayout = "1.1.0"
+        const val coordinatorlayout = "1.2.0"
         const val drawerlayout = "1.1.1"
-        const val fragment = "1.3.6"
+        const val fragment = "1.4.1"
         const val gridlayout = "1.0.0"
-        const val lifecycle = "2.4.0"
+        const val lifecycle = "2.4.1"
 
         private val _navigation = AtomicReference<String>()
         val navigation: String
             get() = checkNotNull(_navigation.get())
 
         const val recyclerview = "1.2.1"
-        const val preference = "1.1.1"
+        const val preference = "1.2.0"
         const val swipeRefreshLayout = "1.1.0"
         const val viewpager2 = "1.0.0"
         const val work = "2.7.1"
@@ -40,12 +40,12 @@ object Versions {
         }
     }
 
-    const val material = "1.4.0"
-    const val fastscroll = "2.0.1"
+    const val material = "1.5.0"
+    const val fastscroll = "2.1.0"
 
     const val timber = "5.0.1"
 
     const val junit = "4.13.2"
 
-    const val publicsuffixlist = "95.0.10"
+    const val publicsuffixlist = "99.0.2"
 }
