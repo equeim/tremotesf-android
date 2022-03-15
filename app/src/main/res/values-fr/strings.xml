@@ -49,21 +49,25 @@
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selectionné</item>
+        <item quantity="many">%d torrents sélectionnés</item>
         <item quantity="other">%d torrents sélectionnés</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one">%d fichier sélectionné</item>
+        <item quantity="many">%d fichiers sélectionnés</item>
         <item quantity="other">%d fichiers sélectionnés</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one">%d traqueur sélectionné</item>
+        <item quantity="many">%d traqueurs sélectionnés</item>
         <item quantity="other">%d traqueurs sélectionnés</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one">%d pair</item>
+        <item quantity="many">%d pairs</item>
         <item quantity="other">%d pairs</item>
     </plurals>
 
@@ -175,6 +179,7 @@
 
     <plurals name="servers_selected">
         <item quantity="one">%d serveur sélectionné</item>
+        <item quantity="many">%d serveurs sélectionnés</item>
         <item quantity="other">%d serveurs sélectionnés</item>
     </plurals>
 
@@ -184,6 +189,7 @@
 
     <plurals name="remove_servers_message">
         <item quantity="one">Voulez-vous vraiment supprimer les %d serveurs sélectionnés ?</item>
+        <item quantity="many">Voulez-vous vraiment supprimer les %dserveurs sélectionnés ?</item>
         <item quantity="other">Voulez-vous vraiment supprimer les %dserveurs sélectionnés ?</item>
     </plurals>
 
@@ -285,6 +291,7 @@
 
     <plurals name="started_times">
         <item quantity="one">Démarré%d fois</item>
+        <item quantity="many">Démarrés%d fois</item>
         <item quantity="other">Démarrés%d fois</item>
     </plurals>
 
@@ -293,6 +300,7 @@
 
     <plurals name="remove_torrents_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer le (%d) torrent sélectionné ?</item>
+        <item quantity="many">Êtes-vous sûr de vouloir supprimer les%d torrents sélectionnés</item>
         <item quantity="other">Êtes-vous sûr de vouloir supprimer les%d torrents sélectionnés</item>
     </plurals>
     <string name="delete_files">Supprimer aussi les fichiers du disque</string>
@@ -307,11 +315,13 @@
     <string name="torrent_paused">En pause</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Téléchargé depuis %d pair</item>
+        <item quantity="many">Téléchargé depuis %d pairs</item>
         <item quantity="other">Téléchargé depuis %d pairs</item>
     </plurals>
     <string name="torrent_downloading_stalled">Téléchargement</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Propagation à %d pair</item>
+        <item quantity="many">Propagation à %d pairs</item>
         <item quantity="other">Propagation à %d pairs</item>
     </plurals>
     <string name="torrent_seeding_stalled">Propagation</string>
@@ -321,6 +331,7 @@
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer %d le traqueur sélectionné</item>
+        <item quantity="many">Êtes-vous sûr de vouloir supprimer %d les traqueurs sélectionnés</item>
         <item quantity="other">Êtes-vous sûr de vouloir supprimer %d les traqueurs sélectionnés</item>
     </plurals>
 
