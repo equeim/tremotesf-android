@@ -74,6 +74,15 @@ jobs:
           CCACHE_COMPRESSLEVEL: 3
           CCACHE_MAXSIZE: 1G
 
+      - name: Remove old NDK versions
+        if: always()
+        run: |
+          old_versions=$(./android-sdk/cmdline-tools/latest/bin/sdkmanager --list_installed | grep ndk | tr -s ' ' | cut -d ' ' -f2 | sort -n | head -n -1)
+          for version in $old_versions; do
+            echo "Removing $version"
+            ./android-sdk/cmdline-tools/latest/bin/sdkmanager --uninstall "$version"
+          done
+
       - name: Archive debug APKs
         uses: actions/upload-artifact@v2
         with:
