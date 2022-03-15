@@ -56,7 +56,7 @@ android {
 
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 
-    lint.informational("MissingTranslation")
+    lint.informational.add("MissingTranslation")
 
     flavorDimensions.add("freedom")
     productFlavors {
