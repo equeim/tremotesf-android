@@ -9,14 +9,9 @@ pluginManagement {
         kotlin("android") version(kotlin)
         kotlin("plugin.parcelize") version(kotlin)
         kotlin("plugin.serialization") version(kotlin)
-    }
-    resolutionStrategy {
-        eachPlugin {
-            when (requested.id.namespace) {
-                "com.android" -> useModule("com.android.tools.build:gradle:$androidGradlePlugin")
-                "androidx.navigation.safeargs" -> useModule("androidx.navigation:navigation-safe-args-gradle-plugin:$navigation")
-            }
-        }
+        id("com.android.application") version(androidGradlePlugin)
+        id("com.android.library") version(androidGradlePlugin)
+        id("androidx.navigation.safeargs.kotlin") version(navigation)
     }
     repositories {
         gradlePluginPortal()
