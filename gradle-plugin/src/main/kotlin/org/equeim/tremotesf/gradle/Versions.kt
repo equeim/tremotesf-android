@@ -11,7 +11,7 @@ object Versions {
     const val targetSdk = compileSdk
     const val ndk = "23.0.7599858"
 
-    const val kotlinxCoroutines = "1.5.2"
+    const val kotlinxCoroutines = "1.6.0"
     const val kotlinxSerialization = "1.3.2"
 
     object AndroidX {

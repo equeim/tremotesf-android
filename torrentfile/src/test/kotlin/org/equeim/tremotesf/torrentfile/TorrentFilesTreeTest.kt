@@ -2,26 +2,37 @@ package org.equeim.tremotesf.torrentfile
 
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.*
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import kotlin.reflect.KClass
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class TorrentFilesTreeTest {
-    private val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = StandardTestDispatcher()
     private val dispatchers = TestDispatchers(dispatcher)
 
+    @Before
+    fun before() {
+        Dispatchers.setMain(dispatcher)
+    }
+
+    @After
+    fun after() {
+        Dispatchers.resetMain()
+    }
+
     @Test
-    fun `Check initial initialized state`() = dispatcher.runBlockingTest {
+    fun `Check initial initialized state`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val fileItem = expectedFileItem(0, intArrayOf(0))
         rootNode.addFile(
@@ -40,12 +51,12 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Navigate up when tree is not initialized`() = dispatcher.runBlockingTest {
+    fun `Navigate up when tree is not initialized`() = runTest {
         testWithUnitializedTree { assertFalse(navigateUp()) }
     }
 
     @Test
-    fun `Navigate up when we are in the root directory`() = dispatcher.runBlockingTest {
+    fun `Navigate up when we are in the root directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         rootNode.addFile(
             0,
@@ -62,7 +73,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Navigate down when we are in the root directory`() = runBlockingTest {
+    fun `Navigate down when we are in the root directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val fileItem = expectedFileItem(0, intArrayOf(0, 0))
@@ -76,13 +87,14 @@ class TorrentFilesTreeTest {
         )
         testWithTree(rootNode) {
             navigateDown(directory.item)
+            runCurrent()
             assertSame(directory, currentNodePublic)
             assertEquals(listOf(null, fileItem), items.value)
         }
     }
 
     @Test
-    fun `Navigate down to unknown item`() = runBlockingTest {
+    fun `Navigate down to unknown item`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val fileItem = expectedFileItem(0, intArrayOf(0, 0))
@@ -97,13 +109,14 @@ class TorrentFilesTreeTest {
         val unknownItem = expectedDirectoryItem(intArrayOf(42, 777))
         testWithTree(rootNode) {
             navigateDown(unknownItem)
+            runCurrent()
             assertSame(rootNode, currentNodePublic)
             assertEquals(listOf(directory.item), items.value)
         }
     }
 
     @Test
-    fun `Navigate up when we are in the top-level directory`() = runBlockingTest {
+    fun `Navigate up when we are in the top-level directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val fileItem = expectedFileItem(0, intArrayOf(0, 0))
@@ -117,7 +130,9 @@ class TorrentFilesTreeTest {
         )
         testWithTree(rootNode) {
             navigateDown(directory.item)
+            runCurrent()
             assertTrue(navigateUp())
+            runCurrent()
 
             assertSame(rootNode, currentNodePublic)
             assertEquals(listOf(directory.item), items.value)
@@ -125,7 +140,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Navigate up when we are in the subdirectory`() = runBlockingTest {
+    fun `Navigate up when we are in the subdirectory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val subdirectory = directory.addDirectory("Foo")
@@ -140,8 +155,11 @@ class TorrentFilesTreeTest {
         )
         testWithTree(rootNode) {
             navigateDown(directory.item)
+            runCurrent()
             navigateDown(subdirectory.item)
+            runCurrent()
             assertTrue(navigateUp())
+            runCurrent()
 
             assertSame(directory, currentNodePublic)
             assertEquals(listOf(null, subdirectory.item), items.value)
@@ -149,7 +167,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Update current items and sort them`() = runBlockingTest {
+    fun `Update current items and sort them`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val fileItems =
@@ -166,6 +184,7 @@ class TorrentFilesTreeTest {
         }
         testWithTree(rootNode) {
             navigateDown(directory.item)
+            runCurrent()
 
             assertEquals(listOf(null) + fileItems, items.value)
 
@@ -181,16 +200,16 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Set items wanted state`() = runBlockingTest {
+    fun `Set items wanted state`() = runTest {
         setItemsWantedOrPriority(TorrentFilesTree.Item.WantedState::class)
     }
 
     @Test
-    fun `Set items priority`() = runBlockingTest {
+    fun `Set items priority`() = runTest {
         setItemsWantedOrPriority(TorrentFilesTree.Item.Priority::class)
     }
 
-    private fun <T : Any> TestCoroutineScope.setItemsWantedOrPriority(type: KClass<T>) {
+    private fun <T : Any> TestScope.setItemsWantedOrPriority(type: KClass<T>) {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
 
@@ -223,6 +242,7 @@ class TorrentFilesTreeTest {
 
         testWithTree(rootNode) {
             navigateDown(directory.item)
+            runCurrent()
 
             val oldItems = items.value
 
@@ -251,6 +271,7 @@ class TorrentFilesTreeTest {
 
                 setItemsPriority(listOf(subdirectory.path.last()), TorrentFilesTree.Item.Priority.Low)
             }
+            runCurrent()
 
             assertTrue(callbackCalled)
 
@@ -278,7 +299,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Recalculate node and its parents when node is top-level file node`() = runBlockingTest {
+    fun `Recalculate node and its parents when node is top-level file node`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val file = rootNode.addFile(0, "", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -293,7 +314,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Recalculate node and its parents when node is a directory node`() = runBlockingTest {
+    fun `Recalculate node and its parents when node is a directory node`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -330,7 +351,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Recalculate node and its parents when node is a file node`() = runBlockingTest {
+    fun `Recalculate node and its parents when node is a file node`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -366,7 +387,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Rename file when path is correct and it is in current items`() = runBlockingTest {
+    fun `Rename file when path is correct and it is in current items`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -376,12 +397,14 @@ class TorrentFilesTreeTest {
 
         renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
             navigateDown(directory.item)
+            runCurrent()
             navigateDown(subdirectory.item)
+            runCurrent()
         }
     }
 
     @Test
-    fun `Rename file when path is correct and it is not in current items`() = runBlockingTest {
+    fun `Rename file when path is correct and it is not in current items`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -391,11 +414,12 @@ class TorrentFilesTreeTest {
 
         renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
             navigateDown(directory.item)
+            runCurrent()
         }
     }
 
     @Test
-    fun `Rename directory when path is correct and it is in current items`() = runBlockingTest {
+    fun `Rename directory when path is correct and it is in current items`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -405,11 +429,12 @@ class TorrentFilesTreeTest {
 
         renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
             navigateDown(directory.item)
+            runCurrent()
         }
     }
 
     @Test
-    fun `Rename directory when path is correct and it is not in current items`() = runBlockingTest {
+    fun `Rename directory when path is correct and it is not in current items`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -419,11 +444,13 @@ class TorrentFilesTreeTest {
 
         renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
             navigateDown(directory.item)
+            runCurrent()
             navigateDown(subdirectory.item)
+            runCurrent()
         }
     }
 
-    private fun CoroutineScope.renameFileCorrectly(rootNode: TorrentFilesTree.DirectoryNode, renamedNode: TorrentFilesTree.Node, path: String, navigate: TestTree.() -> Unit) {
+    private fun TestScope.renameFileCorrectly(rootNode: TorrentFilesTree.DirectoryNode, renamedNode: TorrentFilesTree.Node, path: String, navigate: TestTree.() -> Unit) {
         val mustChange = NodesThatMustChangeHelper(renamedNode)
         val mustNotChange = NodesThatMustNotChangeHelper(rootNode.getAllNodes().minus(renamedNode))
 
@@ -434,6 +461,7 @@ class TorrentFilesTreeTest {
             val oldItems = items.value
 
             renameFile(path, "foo")
+            runCurrent()
 
             mustChange.assertThatItemsChanged { assertEquals("foo", it.name) }
             mustNotChange.assertThatItemsAreNotChanged()
@@ -448,26 +476,26 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Rename file when path is incorrect 1`() = runBlockingTest {
+    fun `Rename file when path is incorrect 1`() = runTest {
         renameFileWhenPathIsIncorrect("foo/bar")
     }
 
     @Test
-    fun `Rename file when path is incorrect 2`() = runBlockingTest {
+    fun `Rename file when path is incorrect 2`() = runTest {
         renameFileWhenPathIsIncorrect("dir/subdir/foo")
     }
 
     @Test
-    fun `Rename file when path is incorrect 3`() = runBlockingTest {
+    fun `Rename file when path is incorrect 3`() = runTest {
         renameFileWhenPathIsIncorrect("dir/subdir/file1/foo")
     }
 
     @Test
-    fun `Rename file when path is incorrect 4`() = runBlockingTest {
+    fun `Rename file when path is incorrect 4`() = runTest {
         renameFileWhenPathIsIncorrect("")
     }
 
-    private fun CoroutineScope.renameFileWhenPathIsIncorrect(path: String) {
+    private fun TestScope.renameFileWhenPathIsIncorrect(path: String) {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")
@@ -481,6 +509,7 @@ class TorrentFilesTreeTest {
             val oldItems = items.value
 
             renameFile(path, "foo")
+            runCurrent()
 
             mustNotChange.assertThatItemsAreNotChanged()
             assertSame(oldItems, items.value)
@@ -488,7 +517,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Get name path for top-level file`() = runBlockingTest {
+    fun `Get name path for top-level file`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val file = rootNode.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
         testWithTree(rootNode) {
@@ -497,7 +526,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Get name path for top-level directory`() = runBlockingTest {
+    fun `Get name path for top-level directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
         directory.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -507,7 +536,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Get name path for file`() = runBlockingTest {
+    fun `Get name path for file`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
         val file = directory.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -517,7 +546,7 @@ class TorrentFilesTreeTest {
     }
 
     @Test
-    fun `Get name path for directory`() = runBlockingTest {
+    fun `Get name path for directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
         val subdirectory = directory.addDirectory("foo")
@@ -527,13 +556,14 @@ class TorrentFilesTreeTest {
         }
     }
 
-    private inline fun CoroutineScope.testWithTree(
+    private inline fun TestScope.testWithTree(
         rootNode: TorrentFilesTree.DirectoryNode,
         block: TestTree.() -> Unit
     ) {
         rootNode.children.forEach { (it as? TorrentFilesTree.DirectoryNode)?.initiallyCalculateFromChildrenRecursively() }
         TestTree(this).apply {
             init(rootNode, SavedStateHandle())
+            runCurrent()
             block()
             destroy()
         }

@@ -1,48 +1,60 @@
 package org.equeim.tremotesf.torrentfile
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.*
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class TorrentFileParserTest {
-    private val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = StandardTestDispatcher()
     private val dispatchers = TestDispatchers(dispatcher)
 
     private fun getResource(name: String) = requireNotNull(javaClass.getResourceAsStream(name)) {
         "Resource $name not found"
     }
 
+    @Before
+    fun before() {
+        Dispatchers.setMain(dispatcher)
+    }
+    
+    @After
+    fun after() {
+        Dispatchers.resetMain()
+    }
+
     @Test
-    fun `Parsing single file torrent`() = dispatcher.runBlockingTest {
+    fun `Parsing single file torrent`() = runTest {
         val actual = TorrentFileParser.parseFile(getResource(singleFileTorrent), dispatchers)
         assertEquals(singleFileTorrentParsed, actual)
     }
 
     @Test
-    fun `Creating tree for single file torrent`() = dispatcher.runBlockingTest {
+    fun `Creating tree for single file torrent`() = runTest {
         val actual =
             TorrentFileParser.createFilesTree(singleFileTorrentParsed, dispatchers)
         assertTreeResultsAreSimilar(singleFileTorrentTreeResult, actual)
     }
 
     @Test
-    fun `Parsing multiple file torrent`() = dispatcher.runBlockingTest {
+    fun `Parsing multiple file torrent`() = runTest {
         val actual = TorrentFileParser.parseFile(getResource(multipleFileTorrent), dispatchers)
         assertEquals(multipleFileTorrentParsed, actual)
     }
 
     @Test
-    fun `Creating tree for multiple file torrent`() = dispatcher.runBlockingTest {
+    fun `Creating tree for multiple file torrent`() = runTest {
         val actual =
             TorrentFileParser.createFilesTree(multipleFileTorrentParsed, dispatchers)
         assertTreeResultsAreSimilar(multipleFileTorrentTreeResult, actual)
     }
 
     @Test
-    fun `Parsing multiple file torrent with subdirectories`() = dispatcher.runBlockingTest {
+    fun `Parsing multiple file torrent with subdirectories`() = runTest {
         val actual = TorrentFileParser.parseFile(
             getResource(multipleFileTorrentWithSubdirectories),
             dispatchers
@@ -52,7 +64,7 @@ class TorrentFileParserTest {
 
     @Test
     fun `Creating tree for multiple file torrent with subdirectories`() =
-        dispatcher.runBlockingTest {
+        runTest {
             val actual =
                 TorrentFileParser.createFilesTree(
                     multipleFileTorrentWithSubdirectoriesParsed,
@@ -62,16 +74,16 @@ class TorrentFileParserTest {
         }
 
     @Test
-    fun `Parsing torrent that is too big`() = dispatcher.runBlockingTest {
+    fun `Parsing torrent that is too big`() = runTest {
         try {
             TorrentFileParser.parseFile(getResource(bigTorrent), dispatchers)
         } catch (ignore: FileIsTooLargeException) {
-            return@runBlockingTest
+            return@runTest
         }
         throw AssertionError("FileIsTooLargeException exception is not thrown")
     }
 
-    fun assertTreeResultsAreSimilar(expected: TorrentFilesTreeBuildResult, actual: TorrentFilesTreeBuildResult) {
+    private fun assertTreeResultsAreSimilar(expected: TorrentFilesTreeBuildResult, actual: TorrentFilesTreeBuildResult) {
         assertNodesAreSimilar(expected.rootNode, actual.rootNode)
         assertNodesAreSimilar(expected.files, actual.files)
     }

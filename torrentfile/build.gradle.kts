@@ -7,7 +7,10 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-android.buildFeatures.buildConfig = false
+android {
+    buildFeatures.buildConfig = false
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+}
 
 dependencies {
     implementation(project(":common"))
