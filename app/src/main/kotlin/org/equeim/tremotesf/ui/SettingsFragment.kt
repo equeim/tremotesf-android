@@ -48,7 +48,7 @@ class SettingsFragment : NavigationFragment(
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
 
-            preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+            checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(this)
             findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
@@ -70,7 +70,7 @@ class SettingsFragment : NavigationFragment(
         }
 
         override fun onDestroy() {
-            preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+            checkNotNull(preferenceManager.sharedPreferences).unregisterOnSharedPreferenceChangeListener(this)
             super.onDestroy()
         }
 
