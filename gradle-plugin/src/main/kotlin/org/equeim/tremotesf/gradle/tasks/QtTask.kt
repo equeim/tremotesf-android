@@ -268,7 +268,9 @@ abstract class QtTask @Inject constructor(
             "-G", "Ninja",
             "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
             "-DQT_HOST_PATH=${hostQtInfo.prefix}",
-            "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}"
+            "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}",
+            // Remove when updating Qt to 6.3
+            "-DANDROID_PLATFORM=${Versions.minSdk}"
         )
 
         buildQt(buildDir, configureFlags, true)
