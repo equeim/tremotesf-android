@@ -33,19 +33,16 @@ jobs:
 
       - name: Restore Android SDK from cache
         id: android-sdk-cache
-        uses: actions/cache@v2
+        uses: equeim/cache@v2-altered
         with:
           path: android-sdk
           key: android-sdk-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt') }}
           restore-keys: android-sdk-${{ runner.os }}-
+          save-cache: ${{ github.event_name == 'push' }}
 
       - name: Set up Android SDK
+        if:  steps.android-sdk-cache.outputs.cache-restored == 'false'
         run: |
-          echo 'ANDROID_SDK_ROOT=${{github.workspace}}/android-sdk' >> "$GITHUB_ENV"
-          if [[ -e android-sdk ]]; then
-            echo 'Restored Android SDK from cache'
-            exit
-          fi
           curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
           unzip cmdline-tools.zip
           rm cmdline-tools.zip
@@ -76,11 +73,12 @@ jobs:
           echo "::set-output name=ccache-key::$ccache_key"
 
       - name: Restore ccache directory from cache
-        uses: actions/cache@v2
+        uses: equeim/cache@v2-altered
         with:
           path: .ccache
           key: ccache-${{ runner.os }}-${{ steps.compute-ccache-key.outputs.ccache-key }}
           restore-keys: ccache-${{ runner.os }}-
+          save-cache: ${{ github.event_name == 'push' }}
 
       - name: Add GCC problem matcher
         uses: ammaraskar/gcc-problem-matcher@master
@@ -89,7 +87,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: --info -P org.equeim.tremotesf.ccache=true build
+          cache-read-only: ${{ github.event_name != 'push' }}
         env:
+          ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
           CCACHE_BASEDIR: ${{ github.workspace }}
           CCACHE_DIR: ${{ github.workspace }}/.ccache
           CCACHE_COMPRESS: true
