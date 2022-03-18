@@ -49,6 +49,7 @@ jobs:
           mkdir -p android-sdk/cmdline-tools
           mv cmdline-tools android-sdk/cmdline-tools/latest
           yes | ./android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          ./android-sdk/cmdline-tools/latest/bin/sdkmanager --install 'cmdline-tools;latest'
 
       - name: Compute ccache cache key
         id: compute-ccache-key
