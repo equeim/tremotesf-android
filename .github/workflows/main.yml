@@ -80,9 +80,6 @@ jobs:
           restore-keys: ccache-${{ runner.os }}-
           save-cache: ${{ github.event_name == 'push' }}
 
-      - name: Add GCC problem matcher
-        uses: ammaraskar/gcc-problem-matcher@master
-
       - name: Build the app
         uses: gradle/gradle-build-action@v2
         with:
