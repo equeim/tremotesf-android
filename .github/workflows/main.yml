@@ -70,6 +70,7 @@ jobs:
             ccache_key+="$(stat --printf='mtime=%Y, size=%s' "$(which "$compiler")")"
           done
 
+          echo "$ccache_key"
           ccache_key="$(echo ccache_key | sha256sum | head -c 64)"
           echo "::set-output name=ccache-key::$ccache_key"
 
