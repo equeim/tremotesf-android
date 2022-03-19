@@ -16,6 +16,4 @@
     <color name="icon_color_enabled_focused">@color/icon_color_enabled_focused_night</color>
     <color name="icon_color_enabled_unfocused">@color/icon_color_enabled_unfocused_night</color>
     <color name="icon_color_disabled">@color/icon_color_disabled_night</color>
-
-    <color name="bottom_sheet_list_divider_color">#1Effffff</color>
 </resources>

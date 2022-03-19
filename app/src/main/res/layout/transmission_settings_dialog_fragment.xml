@@ -58,11 +58,10 @@
             android:paddingHorizontal="@dimen/horizontal_edge_padding"
             android:text="@string/connection_settings" />
 
-        <View
+        <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:background="?android:listDivider" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing" />
 
         <TextView
             android:id="@+id/server_settings"
