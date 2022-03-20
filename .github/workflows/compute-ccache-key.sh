@@ -28,15 +28,21 @@ if [[ -z $ANDROID_SDK_ROOT ]]; then
     exit 1
 fi
 
-readonly latest_ndk="$(find "$ANDROID_SDK_ROOT/ndk" -mindepth 1 -maxdepth 1 -type d -print0 | LC_COLLATE=C.utf8 sort -nz | tail -z -n 1)"
-if [[ -n $latest_ndk ]]; then
-    echo "Latest NDK is ${latest_ndk}"
-    readarray -d '' -O ${#compilers[@]} compilers < <(find "$latest_ndk" -xtype f -name clang -print0)
+readonly ndk_version="$(.github/workflows/get-ndk-version.sh)"
+echo "NDK version is $ndk_version"
+readonly ndk="$ANDROID_SDK_ROOT/ndk/$ndk_version"
+if [[ ! -d $ndk ]]; then
+    echo "Installing NDK $ndk_version"
+    "$SDKMANAGER" "ndk;$ndk_version"
+fi
+if [[ -d $ndk ]]; then
+    readarray -d '' -O ${#compilers[@]} compilers < <(find "$ndk" -xtype f -name clang -print0)
 else
-    echo '::warning ::Failed to determine latest NDK'
+    echo '::error ::Required NDK does not exist'
+    exit 1
 fi
 
-echo "Compilers = ${compilers[@]}"
+echo "Compilers = " "${compilers[@]}"
 for compiler in "${compilers[@]}"; do
     compiler_realpath="$(realpath "$compiler")"
     compiler_hash="$(sha256sum "$compiler_realpath" | head -c 64)"
@@ -46,8 +52,11 @@ done
 
 echo -e "\nCcache cache key before final hashing:\n$ccache_key"
 
-ccache_key="$(echo -e "$ccache_key" | sha256sum | head -c 64)"
+ccache_key="ccache-$RUNNER_OS-$(echo -e "$ccache_key" | sha256sum | head -c 64)"
+readonly restore_keys="ccache-$RUNNER_OS-"
 
-echo -e "Final ccache cache key: $ccache_key"
+echo "Final ccache cache key: $ccache_key"
+echo "Restore keys: $restore_keys"
 
-echo "CCACHE_CACHE_KEY=$ccache_key" >> "$GITHUB_ENV"
+echo "::set-output name=cache-key::$ccache_key"
+echo "::set-output name=restore-keys::$restore_keys"

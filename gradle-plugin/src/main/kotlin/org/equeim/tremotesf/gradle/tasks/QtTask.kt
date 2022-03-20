@@ -1,6 +1,5 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.equeim.tremotesf.gradle.Versions
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.ListProperty
@@ -22,6 +21,9 @@ abstract class QtTask @Inject constructor(
     private val execOperations: ExecOperations,
     private val gradle: Gradle
 ) : DefaultTask() {
+    @get:Input
+    abstract val minSdkVersion: Property<String>
+
     @get:Input
     abstract val qtDir: Property<File>
 
@@ -207,7 +209,7 @@ abstract class QtTask @Inject constructor(
             "-platform", "android-clang",
             "-android-sdk", sdkDir.get().toString(),
             "-android-ndk", ndkDir.get().toString(),
-            "-android-ndk-platform", "android-${Versions.minSdk}",
+            "-android-ndk-platform", "android-${minSdkVersion.get()}",
             "-android-abis", abi,
 
             if (ccache.get()) "-ccache" else "-no-ccache",
@@ -270,7 +272,7 @@ abstract class QtTask @Inject constructor(
             "-DQT_HOST_PATH=${hostQtInfo.prefix}",
             "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}",
             // Remove when updating Qt to 6.3
-            "-DANDROID_PLATFORM=${Versions.minSdk}"
+            "-DANDROID_PLATFORM=${minSdkVersion.get()}"
         )
 
         buildQt(buildDir, configureFlags, true)

@@ -1,25 +1,23 @@
-import org.equeim.tremotesf.gradle.Versions
-
 plugins {
-    id("org.equeim.tremotesf")
-    id("com.android.library")
-    kotlin("android")
-    kotlin("plugin.parcelize")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.plugin.parcelize)
+    alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.tremotesf)
 }
 
 dependencies {
     implementation(project(":common"))
     api(project(":libtremotesf"))
 
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}")
+    api(libs.coroutines.core)
 
-    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinxSerialization}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerialization}")
+    api(libs.serialization.core)
+    implementation(libs.serialization.json)
 
-    implementation("androidx.core:core-ktx:${Versions.AndroidX.core}")
+    implementation(libs.androidx.core)
 
-    implementation("org.mozilla.components:lib-publicsuffixlist:${Versions.publicsuffixlist}")
+    implementation(libs.publicsuffixlist)
 
-    implementation("com.jakewharton.timber:timber:${Versions.timber}")
+    implementation(libs.timber)
 }

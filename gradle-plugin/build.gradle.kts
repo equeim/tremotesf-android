@@ -18,23 +18,15 @@ repositories {
     gradlePluginPortal()
 }
 
-apply(from = "../plugin_versions.gradle.kts")
-val extra = (gradle as ExtensionAware).extra
-val gradleVersionsPlugin: String by extra
-val androidGradlePlugin: String by extra
-val kotlin: String by extra
-
-val commonsText = "1.9"
-
 dependencies {
-    implementation("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsPlugin")
-    compileOnly("com.android.tools.build:gradle-api:$androidGradlePlugin") {
+    implementation(libs.gradle.versions.plugin)
+    compileOnly(libs.android.gradle.plugin.api) {
         excludeKotlinStdlib()
     }
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin") {
+    compileOnly(libs.kotlin.gradle.plugin) {
         excludeKotlinStdlib()
     }
-    implementation("org.apache.commons:commons-text:$commonsText")
+    implementation(libs.commons.text)
 }
 
 fun ModuleDependency.excludeKotlinStdlib() {

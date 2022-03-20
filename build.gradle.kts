@@ -1,7 +1,10 @@
 plugins {
-    id("com.android.application") apply(false)
-    kotlin("android") apply(false)
-    id("androidx.navigation.safeargs.kotlin") apply(false)
+    alias(libs.plugins.android.application) apply(false)
+    alias(libs.plugins.android.library) apply(false)
+    alias(libs.plugins.kotlin.android) apply(false)
+    alias(libs.plugins.kotlin.plugin.parcelize) apply(false)
+    alias(libs.plugins.kotlin.plugin.serialization) apply(false)
+    alias(libs.plugins.androidx.navigation) apply(false)
 }
 
 tasks.register<Delete>("clean") {
