@@ -1,6 +1,5 @@
 package org.equeim.tremotesf.gradle.tasks
 
-import org.equeim.tremotesf.gradle.Versions
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
@@ -19,6 +18,9 @@ abstract class OpenSSLTask @Inject constructor(
     private val execOperations: ExecOperations,
     private val gradle: Gradle
 ) : DefaultTask() {
+    @get:Input
+    abstract val minSdkVersion: Property<String>
+
     @get:Input
     abstract val opensslDir: Property<File>
 
@@ -63,7 +65,7 @@ abstract class OpenSSLTask @Inject constructor(
             /** Enable LTO only when not using ccache. See [QtTask] for explanation */
             cflags.add("-flto=thin")
         }
-        cflags.add("-D__ANDROID_API__=${Versions.minSdk}")
+        cflags.add("-D__ANDROID_API__=${minSdkVersion.get()}")
 
         val target = when (abi) {
             "armeabi-v7a" -> {

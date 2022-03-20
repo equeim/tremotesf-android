@@ -8,6 +8,8 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
@@ -17,7 +19,6 @@ import java.util.*
 @Suppress("UnstableApiUsage")
 class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        Versions.AndroidX.init(target.gradle)
         target.addRepositories()
         target.configureAndroidProject()
         target.configureVersionsPlugin()
@@ -33,7 +34,8 @@ class GradlePlugin : Plugin<Project> {
 
     private fun Project.configureAndroidProject() {
         plugins.withType<AndroidBasePlugin> {
-            extensions.getByType(CommonExtension::class).configureAndroidProject()
+            val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
+            extensions.getByType(CommonExtension::class).configureAndroidProject(libs)
         }
         plugins.withType(KotlinAndroidPluginWrapper::class) {
             val androidExtension = extensions.getByType(CommonExtension::class) as ExtensionAware
@@ -41,25 +43,25 @@ class GradlePlugin : Plugin<Project> {
         }
     }
 
-    private fun CommonExtension<*, *, *, *>.configureAndroidProject() {
-        compileSdk = Versions.compileSdk
-        ndkVersion = Versions.ndk
-        defaultConfig.minSdk = Versions.minSdk
+    private fun CommonExtension<*, *, *, *>.configureAndroidProject(libs: VersionCatalog) {
+        compileSdk = libs.compileSdk
+        ndkVersion = libs.ndk
+        defaultConfig.minSdk = libs.minSdk
         when (this) {
-            is LibraryExtension -> configureAndroidProject()
-            is ApplicationExtension -> configureAndroidProject()
+            is LibraryExtension -> configureAndroidProject(libs)
+            is ApplicationExtension -> configureAndroidProject(libs)
         }
     }
 
-    private fun LibraryExtension.configureAndroidProject() {
+    private fun LibraryExtension.configureAndroidProject(libs: VersionCatalog) {
         defaultConfig {
-            targetSdk = Versions.targetSdk
+            targetSdk = libs.targetSdk
             consumerProguardFile("consumer-rules.pro")
         }
     }
 
-    private fun ApplicationExtension.configureAndroidProject() {
-        defaultConfig.targetSdk = Versions.targetSdk
+    private fun ApplicationExtension.configureAndroidProject(libs: VersionCatalog) {
+        defaultConfig.targetSdk = libs.targetSdk
         packagingOptions.jniLibs.useLegacyPackaging = false
     }
 
@@ -93,3 +95,18 @@ class GradlePlugin : Plugin<Project> {
         const val VERSIONS_PLUGIN_ID = "com.github.ben-manes.versions"
     }
 }
+
+private fun VersionCatalog.getVersion(alias: String): String =
+    findVersion(alias).get().requiredVersion
+
+private val VersionCatalog.compileSdk: Int
+    get() = getVersion("sdk.compile").toInt()
+
+private val VersionCatalog.minSdk: Int
+    get() = getVersion("sdk.min").toInt()
+
+private val VersionCatalog.targetSdk: Int
+    get() = getVersion("sdk.target").toInt()
+
+private val VersionCatalog.ndk: String
+    get() = getVersion("ndk")

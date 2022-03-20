@@ -1,14 +1,13 @@
 import java.lang.module.ModuleDescriptor
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
-import org.equeim.tremotesf.gradle.Versions
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask
 import org.equeim.tremotesf.gradle.tasks.QtTask
 
 plugins {
-    id("org.equeim.tremotesf")
-    id("com.android.library")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.tremotesf)
 }
 
 val opensslDir = rootProject.file("3rdparty/openssl")
@@ -63,7 +62,7 @@ android {
 }
 
 dependencies {
-    implementation("com.jakewharton.timber:timber:${Versions.timber}")
+    implementation(libs.timber)
 }
 
 val addHostQtCmakeFlags = (findProperty("org.equeim.tremotesf.host-qt-cmake-flags") as? String?)?.split(" ")?.filter { it.isNotBlank() } ?: emptyList()
@@ -76,6 +75,7 @@ val openSSLPatches by tasks.registering(PatchTask::class) {
 
 val openSSL by tasks.registering(OpenSSLTask::class) {
     dependsOn(openSSLPatches)
+    minSdkVersion.set(libs.versions.sdk.min)
     opensslDir.set(this@Build_gradle.opensslDir)
     ndkDir.set(android.ndkDirectory)
     ccache.set(useCcache)
@@ -84,11 +84,12 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
 val qtPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(QtTask.sourceDir(qtDir))
     patchesDir.set(QtTask.patchesDir(qtDir))
-    substitutionMap.put(Versions::compileSdk.name, Versions.compileSdk)
+    substitutionMap.put("compileSdk", libs.versions.sdk.compile)
 }
 
 val qt by tasks.registering(QtTask::class) {
     dependsOn(qtPatches)
+    minSdkVersion.set(libs.versions.sdk.min)
     qtDir.set(this@Build_gradle.qtDir)
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)

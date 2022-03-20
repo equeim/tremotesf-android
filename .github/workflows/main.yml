@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Install host dependencies
         run: |
-          dnf -y --setopt=install_weak_deps=False install git gcc gcc-c++ make patch cmake ninja-build ccache 'pkgconfig(zlib)' 'cmake(double-conversion)' 'pkgconfig(libb2)' 'pkgconfig(libpcre2-posix)' 'cmake(Qt6HostInfo)' 'cmake(Qt6CoreTools)' 'cmake(Qt6WidgetsTools)' java-11-openjdk-devel unzip curl tar gzip which perl perl-FindBin perl-File-Basename
+          dnf -y --setopt=install_weak_deps=False install git gcc gcc-c++ make patch cmake ninja-build ccache 'pkgconfig(zlib)' 'cmake(double-conversion)' 'pkgconfig(libb2)' 'pkgconfig(libpcre2-posix)' 'cmake(Qt6HostInfo)' 'cmake(Qt6CoreTools)' 'cmake(Qt6WidgetsTools)' java-11-openjdk-devel unzip curl tar gzip zstd which perl 'perl(FindBin)' 'perl(File::Basename)' libtoml jq
 
       - name: Check out
         uses: actions/checkout@v3
@@ -31,19 +31,29 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Set Android SDK environment variables
+      - name: Set Android SDK environment variables and compute cache key
+        id: android-sdk-variables
         run: |
           readonly sdk="$RUNNER_TEMP/android-sdk"
           echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
           echo "SDKMANAGER=$sdk/cmdline-tools/latest/bin/sdkmanager" >> "$GITHUB_ENV"
+
+          android_sdk_cache_key=''
+          readonly keys=(android-gradle-plugin sdk-compile ndk)
+          for key in ${keys[@]}; do
+            android_sdk_cache_key+="$(toml -t gradle/libs.versions.toml -g versions.$key)\n"
+          done
+          echo -e "Android SDK cache key before hashing:\n$android_sdk_cache_key"
+          android_sdk_cache_key="android-sdk-$RUNNER_OS-$(echo -e "$android_sdk_cache_key" | sha256sum | head -c 64)"
+          echo -e "Android SDK cache key:\n$android_sdk_cache_key"
+          echo "::set-output name=cache-key::$android_sdk_cache_key"
 
       - name: Restore Android SDK from cache
         id: android-sdk-cache
         uses: equeim/cache@v2-altered
         with:
           path: ${{ env.ANDROID_SDK_ROOT }}
-          key: android-sdk-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt') }}
-          restore-keys: android-sdk-${{ runner.os }}-
+          key: ${{ steps.android-sdk-variables.outputs.cache-key }}
           save-cache: ${{ github.event_name == 'push' }}
 
       - name: Set up Android SDK
@@ -59,18 +69,15 @@ jobs:
       - name: Compute ccache cache key
         id: compute-ccache-key
         run: |
-          files_hash='${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt', '3rdparty/openssl/patches/*', '3rdparty/qt/patches/*') }}'
-          ./.github/workflows/compute-ccache-key.sh "$files_hash"
-          echo "::set-output name=files-hash::$files_hash"
+          ./.github/workflows/compute-ccache-key.sh '${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt', '3rdparty/openssl/patches/*', '3rdparty/qt/patches/*') }}'
 
       - name: Restore ccache directory from cache
         uses: equeim/cache@v2-altered
         with:
           path: ${{ runner.temp }}/.ccache
-          key: ${{ env.CCACHE_CACHE_KEY }}
-          restore-keys: ccache-${{ runner.os }}-
+          key: ${{ steps.compute-ccache-key.outputs.cache-key }}
+          restore-keys: ${{ steps.compute-ccache-key.outputs.restore-keys }}
           save-cache: ${{ github.event_name == 'push' }}
-          reevaluate-key-when-saving: true
 
       - name: Build the app
         uses: gradle/gradle-build-action@v2
@@ -85,20 +92,6 @@ jobs:
           CCACHE_COMPRESSLEVEL: 3
           CCACHE_MAXSIZE: 1G
           CCACHE_COMPILERCHECK: content
-
-      - name: Remove old NDK versions and recalculate ccache cache key
-        run: |
-          # Remove old NDK versions so that we don't save them in cache
-          old_versions=()
-          readarray -d '' old_versions < <(find "$ANDROID_SDK_ROOT/ndk" -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0 basename | LC_COLLATE=C.utf8 sort -nz | head -z -n -1)
-          if (( ${#old_versions[@]} )); then
-            for version in ${old_versions[@]}; do
-              echo "Removing $version"
-              "$SDKMANAGER" --uninstall "$version"
-            done
-          fi
-          # Recompute ccache cache key with latest NDK
-          ./.github/workflows/compute-ccache-key.sh '${{ steps.compute-ccache-key.outputs.files-hash }}'
 
       - name: Archive debug APKs
         uses: actions/upload-artifact@v2

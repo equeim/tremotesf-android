@@ -20,7 +20,7 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
     abstract val patchesDir: Property<File>
 
     @get:Input
-    abstract val substitutionMap: MapProperty<String, Any>
+    abstract val substitutionMap: MapProperty<String, String>
 
     @TaskAction
     fun applyPatches() {
