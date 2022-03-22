@@ -26,6 +26,6 @@
     <color name="icon_color_disabled_night">#80FFFFFF</color>
 
 <!--Override colors in appcompat library (ActionMode status bar background)-->
-    <color name="abc_decor_view_status_guard">@color/color_background_elevated_4dp</color>
-    <color name="abc_decor_view_status_guard_light">@color/color_background_elevated_4dp</color>
+    <color name="abc_decor_view_status_guard">@android:color/transparent</color>
+    <color name="abc_decor_view_status_guard_light">@android:color/transparent</color>
 </resources>

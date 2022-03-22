@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
             android:hint="@string/priority"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
             <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                 android:id="@+id/priority_view"
