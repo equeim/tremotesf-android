@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
         <item name="android:statusBarColor">@color/status_bar_color</item>
         <item name="android:navigationBarColor">@color/navigation_bar_color</item>
@@ -13,8 +13,12 @@
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">?colorPrimary</item>
         <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorPrimaryContainer">?colorPrimary</item>
+        <item name="colorOnPrimaryContainer">?colorOnPrimary</item>
         <item name="colorSecondary">?colorPrimary</item>
-        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorSecondaryVariant">?colorPrimary</item>
+        <item name="colorSecondaryContainer">?colorPrimary</item>
+        <item name="colorOnSecondaryContainer">?colorOnPrimary</item>
         <item name="colorOnSecondary">?colorOnPrimary</item>
         <item name="android:colorBackground">@color/color_background</item>
         <item name="colorSurface">@color/color_background</item>
@@ -23,9 +27,9 @@
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
-        <item name="toolbarStyle">@style/Toolbar</item>
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="toolbarStyle">@style/Widget.Tremotesf.Toolbar</item>
+        <item name="appBarLayoutStyle">@style/Widget.Tremotesf.AppBarLayout</item>
+        <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
 
         <item name="android:windowBackground">@color/color_background</item>
 
@@ -49,23 +53,28 @@
         <item name="android:textColor">?android:attr/textColorHint</item>
     </style>
 
-    <style name="HeaderTextAppearance" parent="TextAppearance.MaterialComponents.Body2">
+    <style name="HeaderTextAppearance" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+    <style name="Widget.Tremotesf.Toolbar" parent="Widget.Material3.Toolbar.Surface">
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.Tremotesf.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="liftOnScroll">false</item>
+        <item name="android:elevation">@dimen/action_bar_elevation</item>
     </style>
 
     <style name="Widget.Tremotesf.TimePickerItem" parent="android:Widget">
         <item name="android:background">?selectableItemBackground</item>
     </style>
 
-    <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.Tremotesf.BottomSheet.Modal</item>
     </style>
 
-    <style name="Widget.Tremotesf.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+    <style name="Widget.Tremotesf.BottomSheet.Modal" parent="Widget.Material3.BottomSheet.Modal">
         <!-- A hack to set our own corners animation (see NavigationBottomSheetDialogFragment) -->
         <item name="shapeAppearance">@null</item>
         <item name="shapeAppearanceOverlay">@null</item>
@@ -74,12 +83,12 @@
         <item name="paddingLeftSystemWindowInsets">false</item>
     </style>
 
-    <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">
+    <style name="ShapeAppearanceOverlay.Tremotesf.BottomSheet" parent="">
         <item name="cornerSizeTopLeft">@dimen/bottom_sheet_corner_size</item>
         <item name="cornerSizeTopRight">@dimen/bottom_sheet_corner_size</item>
     </style>
 
-    <style name="Widget.Tremotesf.BottomSheetMenuItem" parent="Widget.MaterialComponents.TextView">
+    <style name="Widget.Tremotesf.BottomSheetMenuItem" parent="Widget.AppCompat.TextView">
         <item name="android:background">?selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -87,7 +96,7 @@
         <item name="android:textAppearance">?textAppearanceBody1</item>
     </style>
 
-    <style name="Widget.Tremotesf.CardView" parent="Widget.MaterialComponents.CardView">
+    <style name="Widget.Tremotesf.CardView" parent="Widget.Material3.CardView.Elevated">
         <item name="cardElevation">@dimen/card_elevation</item>
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
     </style>
@@ -96,7 +105,7 @@
         <item name="searchIcon">@drawable/ic_search_24dp</item>
     </style>
 
-    <style name="TextAppearance.Tremotesf.BottomSheetHeader" parent="TextAppearance.MaterialComponents.Headline6">
+    <style name="TextAppearance.Tremotesf.BottomSheetHeader" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:textSize">18sp</item>
     </style>
 

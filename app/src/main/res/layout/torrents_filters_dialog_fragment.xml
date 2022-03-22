@@ -44,7 +44,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sort_view_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
@@ -59,7 +59,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/status_view_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
@@ -74,7 +74,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/trackers_view_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
@@ -89,7 +89,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/directories_view_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
