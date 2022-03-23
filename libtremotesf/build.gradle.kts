@@ -29,10 +29,12 @@ fun isPathCmakeNewer(): Boolean {
     return pathVersion > sdkVersion
 }
 val useCmakeFromPath = isPathCmakeNewer()
-if (useCmakeFromPath) {
+val cmakeVersion = if (useCmakeFromPath) {
     logger.lifecycle("Using CMake from PATH")
+    checkNotNull(pathCmakeVersion)
 } else {
     logger.lifecycle("Using CMake from SDK")
+    sdkCmakeVersion
 }
 
 android {
@@ -47,7 +49,7 @@ android {
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
-        version = if (useCmakeFromPath) checkNotNull(pathCmakeVersion) else sdkCmakeVersion
+        version = cmakeVersion
     }
 
     packagingOptions.jniLibs.keepDebugSymbols.add("**/*.so")
@@ -86,6 +88,7 @@ val qt by tasks.registering(QtTask::class) {
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
+    cmakeVersion.set(this@Build_gradle.cmakeVersion)
     if (!useCmakeFromPath) {
         cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/$sdkCmakeVersion/bin"))
     }
