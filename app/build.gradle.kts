@@ -78,7 +78,6 @@ androidComponents {
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":billing"))
     implementation(project(":torrentfile"))
     implementation(project(":rpc"))
 

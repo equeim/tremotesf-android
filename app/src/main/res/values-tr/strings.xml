@@ -383,8 +383,6 @@
 
     <string name="alternative_speed_limits">Muadil hız sınırları</string>
 
-    <string name="donate_tab">Bağış</string>
-    <string name="donate_dialog_again">Bu iletişim kutusu tekrar gösterilmeyecek.</string>
 
     <string name="free_space">Boş alan: %s</string>
     <string name="free_space_error">Boş alan elde edilirken hata oluştu</string>
@@ -423,11 +421,6 @@
         <item>Aydınlık</item>
     </string-array>
 
-    <string name="donations_description">Bu uygulamayı beğendiyseniz, geliştiriciye bir bağış göndererek gelişimini destekleyebilirsiniz.</string>
-    <string name="donations_donate">Bağış</string>
-    <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_paypal_description">Düğmeye bastıktan sonra ne kadar bağış yapacağınızı seçebilirsiniz</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
 
     <string name="proxy_settings">Vekil ayarları</string>
     <string name="proxy_type">Vekil türü</string>

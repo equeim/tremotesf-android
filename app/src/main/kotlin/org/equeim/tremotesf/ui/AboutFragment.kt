@@ -35,11 +35,9 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AboutFragmentBaseTabFragmentBinding
 import org.equeim.tremotesf.databinding.AboutFragmentBinding
 import org.equeim.tremotesf.databinding.AboutFragmentLicenseTabFragmentBinding
-import org.equeim.tremotesf.ui.donationsfragment.DonationsFragment
 
 
 class AboutFragment : NavigationFragment(R.layout.about_fragment) {
-    private val args: AboutFragmentArgs by navArgs()
     private var pagerAdapter: PagerAdapter? = null
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -53,25 +51,17 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             TabLayoutMediator(tabLayout, pager) { tab, position ->
                 tab.setText(PagerAdapter.getTitle(position))
             }.attach()
-
-            if (args.donate) {
-                pager.currentItem = 1
-            }
         }
     }
 
     private class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            private val tabs = Tab.values().toList().let { values ->
-                if (BuildConfig.GOOGLE) values - Tab.Donate
-                else values
-            }
+            private val tabs = Tab.values().toList()
 
             @StringRes
             fun getTitle(position: Int): Int {
                 return when (tabs[position]) {
                     Tab.Main -> R.string.about
-                    Tab.Donate -> R.string.donate_tab
                     Tab.Authors -> R.string.authors
                     Tab.Translators -> R.string.translators
                     Tab.License -> R.string.license
@@ -81,7 +71,6 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
         private enum class Tab {
             Main,
-            Donate,
             Authors,
             Translators,
             License
@@ -92,7 +81,6 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         override fun createFragment(position: Int): Fragment {
             return when (tabs[position]) {
                 Tab.Main -> MainTabFragment()
-                Tab.Donate -> DonationsFragment()
                 Tab.Authors -> AuthorsTabFragment()
                 Tab.Translators -> TranslatorsTabFragment()
                 Tab.License -> LicenseTabFragment()

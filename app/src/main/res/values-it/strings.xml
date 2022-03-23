@@ -383,8 +383,6 @@
 
     <string name="alternative_speed_limits">Limiti di velocità alternativi</string>
 
-    <string name="donate_tab">Dona</string>
-    <string name="donate_dialog_again">Questa finestra non verrà più mostrata.</string>
 
     <string name="free_space">Spazio libero: %s</string>
     <string name="free_space_error">Errore nel calcolo dello spazio libero</string>
@@ -423,11 +421,6 @@
         <item>Luminoso</item>
     </string-array>
 
-    <string name="donations_description">Se ti piace questa applicazione, puoi supportare lo sviluppo mandando una donazione allo sviluppatore.</string>
-    <string name="donations_donate">Dona</string>
-    <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_paypal_description">Puoi scegliere quanto donare dopo aver premuto il pulsante</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
 
     <string name="proxy_settings">Impostazioni Proxy</string>
     <string name="proxy_type">Tipo di Proxy</string>

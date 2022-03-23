@@ -88,11 +88,7 @@
     </fragment>
     <fragment
         android:id="@+id/about_fragment"
-        android:name="org.equeim.tremotesf.ui.AboutFragment" >
-        <argument
-            android:name="donate"
-            app:argType="boolean"
-            android:defaultValue="false" />
+        android:name="org.equeim.tremotesf.ui.AboutFragment">
     </fragment>
     <fragment
         android:id="@+id/connection_settings_fragment"
@@ -131,10 +127,6 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
-
-    <action
-        android:id="@+id/to_donate_dialog"
-        app:destination="@id/donate_dialog" />
 
     <fragment
         android:id="@+id/server_settings_fragment"
@@ -302,17 +294,6 @@
         <argument
             android:name="location"
             app:argType="string" />
-    </dialog>
-    <dialog
-        android:id="@+id/donate_dialog"
-        android:name="org.equeim.tremotesf.ui.DonateDialogFragment" >
-        <action
-            android:id="@+id/about_fragment"
-            app:destination="@id/about_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </dialog>
     <dialog
         android:id="@+id/server_stats_dialog"
