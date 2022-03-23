@@ -20,10 +20,10 @@ internal data class ExecResult(val success: Boolean, val output: ByteArray?) {
     fun trimmedOutputString() = outputString().trim()
 }
 
-private fun executeCommand(
-    execute: (Action<in ExecSpec>) -> org.gradle.process.ExecResult,
+internal fun executeCommand(
     logger: Logger,
     outputMode: ExecOutputMode?,
+    execute: (Action<in ExecSpec>) -> org.gradle.process.ExecResult,
     configure: ExecSpec.() -> Unit
 ): ExecResult {
     var commandLine: List<String>? = null
@@ -73,7 +73,7 @@ internal fun ExecOperations.executeCommand(
     logger: Logger,
     outputMode: ExecOutputMode? = null,
     configure: ExecSpec.() -> Unit
-) = executeCommand(this::exec, logger, outputMode, configure)
+) = executeCommand(logger, outputMode, this::exec, configure)
 
 private fun ExecSpec.dropNdkEnvironmentVariables(logger: Logger) {
     val iter = environment.iterator()

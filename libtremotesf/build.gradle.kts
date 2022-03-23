@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask
 import org.equeim.tremotesf.gradle.tasks.QtTask
+import org.equeim.tremotesf.gradle.utils.getCMakeVersionOrNull
 
 plugins {
     alias(libs.plugins.android.library)
@@ -14,22 +15,8 @@ val opensslDir = rootProject.file("3rdparty/openssl")
 val qtDir = rootProject.file("3rdparty/qt")
 
 val sdkCmakeVersion = "3.18.1"
-val pathCmakeVersion = runCatching {
-    val outputStream = ByteArrayOutputStream()
-    exec {
-        commandLine("cmake", "--version")
-        standardOutput = outputStream
-    }
-    outputStream.toByteArray()
-        .toString(StandardCharsets.UTF_8)
-        .lineSequence()
-        .first()
-        .trim()
-        .split(Regex("\\s"))
-        .last()
-        .takeIf { it.isNotEmpty() }
-}.getOrNull()
-logger.info("Version of CMake from PATH is $pathCmakeVersion")
+val pathCmakeVersion = getCMakeVersionOrNull()
+logger.lifecycle("Version of CMake from PATH is $pathCmakeVersion")
 
 fun isPathCmakeNewer(): Boolean {
     if (pathCmakeVersion == null) return false
@@ -42,6 +29,11 @@ fun isPathCmakeNewer(): Boolean {
     return pathVersion > sdkVersion
 }
 val useCmakeFromPath = isPathCmakeNewer()
+if (useCmakeFromPath) {
+    logger.lifecycle("Using CMake from PATH")
+} else {
+    logger.lifecycle("Using CMake from SDK")
+}
 
 android {
     defaultConfig.externalNativeBuild.cmake.arguments(

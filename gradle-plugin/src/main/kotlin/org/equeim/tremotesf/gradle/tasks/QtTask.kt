@@ -54,9 +54,6 @@ abstract class QtTask @Inject constructor(
     @get:Optional
     abstract val cmakeBinaryDir: Property<File>
 
-    private val cmakeBinary: String
-        get() = cmakeBinaryDir.orNull?.resolve(CMAKE)?.toString() ?: CMAKE
-
     @get:Input
     abstract val hostQtCmakeFlags: ListProperty<String>
 
@@ -70,7 +67,7 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Additional CMake flags for host Qt = {}", hostQtCmakeFlags.get())
         logger.lifecycle("Ccache = {}", ccache.get())
 
-        execOperations.printCMakeInfo(cmakeBinary, logger)
+        execOperations.printCMakeInfo(cmakeBinaryDir.orNull, logger)
 
         if (ccache.get()) {
             execOperations.zeroCcacheStatistics(logger)
@@ -318,9 +315,8 @@ abstract class QtTask @Inject constructor(
 
         measureNanoTime {
             execOperations.cmake(
-                cmakeBinary,
                 CMakeMode.Build,
-                qtDir.get(),
+                cmakeBinaryDir.orNull,
                 buildDir,
                 logger,
                 gradle
@@ -331,7 +327,7 @@ abstract class QtTask @Inject constructor(
 
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            execOperations.cmake(cmakeBinary, CMakeMode.Install, qtDir.get(), buildDir, logger, gradle)
+            execOperations.cmake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
