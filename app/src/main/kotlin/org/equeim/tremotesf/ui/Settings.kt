@@ -103,7 +103,7 @@ object Settings {
 
     val theme: Int
         get() {
-            return if (oldColors) R.style.AppTheme_Old else R.style.AppTheme
+            return if (oldColors) R.style.AppTheme_Teal else R.style.AppTheme
         }
 
     val torrentCompactView: Boolean

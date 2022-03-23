@@ -5,15 +5,70 @@
     <color name="status_bar_color">@android:color/transparent</color>
     <color name="navigation_bar_color">@color/system_bars_semi_transparent_dark</color>
 
-    <color name="color_primary">#ef5350</color>
-    <color name="color_on_primary">#ffffff</color>
-    <color name="color_background">@color/color_background_dark</color>
     <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
-    <color name="color_background_elevated_4dp">#343434</color>
-
-    <color name="color_primary_old">#80cbc4</color>
+<!--    <color name="color_background_elevated_4dp">#343434</color>-->
 
     <color name="icon_color_enabled_focused">@color/icon_color_enabled_focused_night</color>
     <color name="icon_color_enabled_unfocused">@color/icon_color_enabled_unfocused_night</color>
     <color name="icon_color_disabled">@color/icon_color_disabled_night</color>
+
+    <color name="theme_red_primary">#FFB3A9</color>
+    <color name="theme_red_onPrimary">#680003</color>
+    <color name="theme_red_primaryContainer">#930007</color>
+    <color name="theme_red_onPrimaryContainer">#FFDAD4</color>
+    <color name="theme_red_secondary">#E7BCB7</color>
+    <color name="theme_red_onSecondary">#442A27</color>
+    <color name="theme_red_secondaryContainer">#5D3F3C</color>
+    <color name="theme_red_onSecondaryContainer">#FFDAD5</color>
+    <color name="theme_red_tertiary">#E0C38C</color>
+    <color name="theme_red_onTertiary">#3F2E04</color>
+    <color name="theme_red_tertiaryContainer">#584419</color>
+    <color name="theme_red_onTertiaryContainer">#FEDFA6</color>
+    <color name="theme_red_error">#FFB4A9</color>
+    <color name="theme_red_errorContainer">#930006</color>
+    <color name="theme_red_onError">#680003</color>
+    <color name="theme_red_onErrorContainer">#FFDAD4</color>
+    <color name="theme_red_background">@color/theme_red_background_night</color>
+    <color name="theme_red_onBackground">#EDE0DE</color>
+    <color name="theme_red_surface">#211A19</color>
+    <color name="theme_red_onSurface">#EDE0DE</color>
+    <color name="theme_red_surfaceVariant">#534341</color>
+    <color name="theme_red_onSurfaceVariant">#D8C2BF</color>
+    <color name="theme_red_outline">#A08C8A</color>
+    <color name="theme_red_inverseOnSurface">#211A19</color>
+    <color name="theme_red_inverseSurface">#EDE0DE</color>
+    <color name="theme_red_inversePrimary">#B91D1D</color>
+
+    <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
+    <color name="theme_red_surface_elevated_4dp">#352826</color>
+
+    <color name="theme_teal_primary">#55DBC8</color>
+    <color name="theme_teal_onPrimary">#003730</color>
+    <color name="theme_teal_primaryContainer">#005046</color>
+    <color name="theme_teal_onPrimaryContainer">#75F8E4</color>
+    <color name="theme_teal_secondary">#B1CCC6</color>
+    <color name="theme_teal_onSecondary">#1C3531</color>
+    <color name="theme_teal_secondaryContainer">#334B47</color>
+    <color name="theme_teal_onSecondaryContainer">#CCE8E1</color>
+    <color name="theme_teal_tertiary">#ADCAE5</color>
+    <color name="theme_teal_onTertiary">#143349</color>
+    <color name="theme_teal_tertiaryContainer">#2D4960</color>
+    <color name="theme_teal_onTertiaryContainer">#CAE6FF</color>
+    <color name="theme_teal_error">#FFB4A9</color>
+    <color name="theme_teal_errorContainer">#930006</color>
+    <color name="theme_teal_onError">#680003</color>
+    <color name="theme_teal_onErrorContainer">#FFDAD4</color>
+    <color name="theme_teal_background">#191C1B</color>
+    <color name="theme_teal_onBackground">#E1E3E1</color>
+    <color name="theme_teal_surface">#191C1B</color>
+    <color name="theme_teal_onSurface">#E1E3E1</color>
+    <color name="theme_teal_surfaceVariant">#3F4946</color>
+    <color name="theme_teal_onSurfaceVariant">#BFC9C6</color>
+    <color name="theme_teal_outline">#899390</color>
+    <color name="theme_teal_inverseOnSurface">#191C1B</color>
+    <color name="theme_teal_inverseSurface">#E1E3E1</color>
+    <color name="theme_teal_inversePrimary">#006B5E</color>
+
+    <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
+    <color name="theme_teal_surface_elevated_4dp">#1E2D2B</color>
 </resources>
