@@ -26,7 +26,6 @@ import androidx.annotation.IdRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavDeepLinkBuilder
-import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment
@@ -35,7 +34,6 @@ import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
@@ -76,34 +74,12 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
             if ((intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
                 if (!GlobalServers.hasServers) {
                     deepLinkIntent = createDeepLinkIntent(R.id.server_edit_fragment, null, intent)
-                } else if (shouldShowDonateDialog()) {
-                    deepLinkIntent = createDeepLinkIntent(R.id.donate_dialog, null, intent)
                 }
             } else {
                 Timber.i("getInitialDeepLinkIntent: we are not on our own task, return null")
             }
         }
         return deepLinkIntent
-    }
-
-    private fun shouldShowDonateDialog(): Boolean {
-        if (Settings.donateDialogShown) {
-            return false
-        }
-        val info = getApplication<Application>().packageManager.getPackageInfo(
-            BuildConfig.APPLICATION_ID,
-            0
-        )
-        val currentTime = System.currentTimeMillis()
-        val installDays = TimeUnit.DAYS.convert(
-            currentTime - info.firstInstallTime,
-            TimeUnit.MILLISECONDS
-        )
-        val updateDays = TimeUnit.DAYS.convert(
-            currentTime - info.lastUpdateTime,
-            TimeUnit.MILLISECONDS
-        )
-        return (installDays >= 2 && updateDays >= 1)
     }
 
     private fun createDeepLinkIntent(

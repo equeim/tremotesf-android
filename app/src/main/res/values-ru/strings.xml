@@ -410,8 +410,6 @@
 
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 
-    <string name="donate_tab">Пожертвовать</string>
-    <string name="donate_dialog_again">Этот диалог не будет показан еще раз.</string>
 
     <string name="free_space">Свободное место: %s</string>
     <string name="free_space_error">Ошибка получения свободного места</string>
@@ -450,11 +448,6 @@
         <item>Светлая</item>
     </string-array>
 
-    <string name="donations_description">Если вам понравилось это приложение, вы можете поддержать его разработку, отправив пожертвование разработчику.</string>
-    <string name="donations_donate">Пожертвовать</string>
-    <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_paypal_description">После нажатия на кнопку вы можете выбрать сколько хотите пожертвовать</string>
-    <string name="donations_yandex_title">Яндекс.Деньги</string>
 
     <string name="proxy_settings">Настройки прокси</string>
     <string name="proxy_type">Тип прокси</string>

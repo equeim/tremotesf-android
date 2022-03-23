@@ -212,7 +212,7 @@ class TorrentsListFragment : NavigationFragment(
         if (!connected) {
             requiredActivity.actionMode?.finish()
             when (navController.currentDestination?.id) {
-                R.id.donate_dialog, R.id.transmission_settings_dialog_fragment -> Unit
+                R.id.transmission_settings_dialog_fragment -> Unit
                 else -> navController.popDialog()
             }
         }

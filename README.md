@@ -38,8 +38,5 @@ git submodule update --init
 ## Translations
 Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
 
-## Donate
-I you like this app, you can support its development via [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DDQTRHTY5YV2G&item_name=Support%20Tremotesf%20(Android)%20development&no_note=2&item_number=1&no_shipping=1&currency_code=USD) or [Yandex.Money](https://yasobe.ru/na/equeim_tremotesf_android).
-
 ## Screenshots
 ![](http://i.imgur.com/tsmKQIV.png) ![](http://i.imgur.com/HMucsni.png) ![](http://i.imgur.com/EXc9CG0.png)

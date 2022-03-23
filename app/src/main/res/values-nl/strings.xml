@@ -375,8 +375,6 @@
 
     <string name="alternative_speed_limits">Alternatieve snelheidslimieten</string>
 
-    <string name="donate_tab">Doneren</string>
-    <string name="donate_dialog_again">Deze dialoog zal niet opnieuw getoond worden.</string>
 
     <string name="free_space">Vrije ruimte: %s</string>
     <string name="free_space_error">Fout bij ophalen van vrije ruimte</string>
@@ -404,9 +402,5 @@
         <item>24 uur</item>
     </string-array>
 
-    <string name="donations_description">Als je deze app leuk vindt, kun je de ontwikkeling ervan ondersteunen door de ontwikkelaar een kleine donatie te geven.</string>
-    <string name="donations_donate">Doneren</string>
-    <string name="donations_paypal_description">Na het aanraken van de knop kunt u zelf kiezen hoeveel u wilt doneren</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
 
     </resources>

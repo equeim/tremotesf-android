@@ -277,8 +277,6 @@
 
     <string name="alternative_speed_limits">Giới hạn tốc độ thay thế</string>
 
-    <string name="donate_tab">Quyên góp</string>
-    <string name="donate_dialog_again">Hộp thoại này sẽ không được hiển thị lại.</string>
 
     <string name="free_space">Dung lượng trống: %s</string>
     <string name="free_space_error">Lỗi khi kiểm tra dung lượng trống</string>
@@ -317,9 +315,6 @@
         <item>Sáng</item>
     </string-array>
 
-    <string name="donations_description">Nếu bạn thích ứng dụng này, bạn có thể hỗ trợ sự phát triển của nó bằng cách gửi quyên góp cho nhà phát triển.</string>
-    <string name="donations_donate">Quyên góp</string>
-    <string name="donations_paypal_description">Bạn có thể chọn số tiền bạn muốn quyên góp sau khi nhấp vào nút</string>
     <string-array name="proxy_type_items">
         <item>Mặc định</item>
         <item>HTTP</item>

@@ -417,8 +417,6 @@
 
     <string name="alternative_speed_limits">Alternative speed limits</string>
 
-    <string name="donate_tab">Donate</string>
-    <string name="donate_dialog_again">This dialog won\'t be shown again.</string>
 
     <string name="free_space">Free space: %s</string>
     <string name="free_space_error">Error getting free space</string>
@@ -458,12 +456,6 @@
         <item>Dark</item>
         <item>Light</item>
     </string-array>
-
-    <string name="donations_description">If you like this application, you can support its development by sending a donation to the developer.</string>
-    <string name="donations_donate">Donate</string>
-    <string name="donations_paypal_title">PayPal</string>
-    <string name="donations_paypal_description">You can choose how much you want to donate after clicking the button</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
 
     <string name="proxy_settings">Proxy settings</string>
     <string name="proxy_type">Proxy type</string>

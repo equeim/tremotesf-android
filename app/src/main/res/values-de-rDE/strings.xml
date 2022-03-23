@@ -388,8 +388,6 @@
 
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 
-    <string name="donate_tab">Spenden</string>
-    <string name="donate_dialog_again">Der Dialog wird nicht mehr angezeigt.</string>
 
     <string name="free_space">Freier Speicher: %s</string>
     <string name="free_space_error">Fehler beim Auslesen des freien Speichers</string>
@@ -428,11 +426,6 @@
         <item>Hell</item>
     </string-array>
 
-    <string name="donations_description">Wenn Sie diese Anwendung mögen, können Sie die Entwicklung durch eine Spende an den Entwickler unterstützen.</string>
-    <string name="donations_donate">Spenden</string>
-    <string name="donations_paypal_title">Paypal</string>
-    <string name="donations_paypal_description">Sie können nach dem Klick auf den Button auswählen wie viel Sie spenden möchten</string>
-    <string name="donations_yandex_title">Yandex.Money</string>
 
     <string name="proxy_settings">Proxy-Einstellungen</string>
     <string name="proxy_type">Proxy-Typ</string>
