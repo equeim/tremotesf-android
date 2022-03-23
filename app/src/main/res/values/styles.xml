@@ -10,43 +10,80 @@
 <!--       Android removes background from our icon on splash screen. Override windowSplashScreenIconBackgroundColor to fix it -->
         <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/ic_launcher_background</item>
 
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryVariant">?colorPrimary</item>
-        <item name="colorOnPrimary">@color/color_on_primary</item>
-        <item name="colorPrimaryContainer">?colorPrimary</item>
-        <item name="colorOnPrimaryContainer">?colorOnPrimary</item>
-        <item name="colorSecondary">?colorPrimary</item>
-        <item name="colorSecondaryVariant">?colorPrimary</item>
-        <item name="colorSecondaryContainer">?colorPrimary</item>
-        <item name="colorOnSecondaryContainer">?colorOnPrimary</item>
-        <item name="colorOnSecondary">?colorOnPrimary</item>
-        <item name="android:colorBackground">@color/color_background</item>
-        <item name="colorSurface">@color/color_background</item>
-
-        <item name="searchViewStyle">@style/Widget.Tremotesf.SearchView</item>
+        <item name="colorPrimary">@color/theme_red_primary</item>
+        <item name="colorOnPrimary">@color/theme_red_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/theme_red_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/theme_red_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/theme_red_secondary</item>
+        <item name="colorOnSecondary">@color/theme_red_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/theme_red_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/theme_red_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/theme_red_tertiary</item>
+        <item name="colorOnTertiary">@color/theme_red_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/theme_red_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/theme_red_onTertiaryContainer</item>
+        <item name="colorError">@color/theme_red_error</item>
+        <item name="colorErrorContainer">@color/theme_red_errorContainer</item>
+        <item name="colorOnError">@color/theme_red_onError</item>
+        <item name="colorOnErrorContainer">@color/theme_red_onErrorContainer</item>
+        <item name="android:colorBackground">@color/theme_red_background</item>
+        <item name="colorOnBackground">@color/theme_red_onBackground</item>
+        <item name="colorSurface">@color/theme_red_surface</item>
+        <item name="colorOnSurface">@color/theme_red_onSurface</item>
+        <item name="colorSurfaceVariant">@color/theme_red_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/theme_red_onSurfaceVariant</item>
+        <item name="colorOutline">@color/theme_red_outline</item>
+        <item name="colorOnSurfaceInverse">@color/theme_red_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/theme_red_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/theme_red_inversePrimary</item>
+        <item name="android:windowBackground">@color/theme_red_background</item>
+        <item name="colorSurfaceElevated4dp">@color/theme_red_surface_elevated_4dp</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
+        <item name="searchViewStyle">@style/Widget.Tremotesf.SearchView</item>
+        <item name="actionModeStyle">@style/Widget.Tremotesf.ActionMode</item>
         <item name="toolbarStyle">@style/Widget.Tremotesf.Toolbar</item>
         <item name="appBarLayoutStyle">@style/Widget.Tremotesf.AppBarLayout</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
-
-        <item name="android:windowBackground">@color/color_background</item>
-
         <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
-
-        <item name="actionModeBackground">@drawable/action_mode_background</item>
-
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
         <item name="materialCardViewStyle">@style/Widget.Tremotesf.CardView</item>
     </style>
 
-    <style name="AppTheme.Old">
-        <item name="colorPrimary">@color/color_primary_old</item>
+    <style name="AppTheme.Teal">
+        <item name="colorPrimary">@color/theme_teal_primary</item>
+        <item name="colorOnPrimary">@color/theme_teal_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/theme_teal_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/theme_teal_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/theme_teal_secondary</item>
+        <item name="colorOnSecondary">@color/theme_teal_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/theme_teal_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/theme_teal_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/theme_teal_tertiary</item>
+        <item name="colorOnTertiary">@color/theme_teal_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/theme_teal_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/theme_teal_onTertiaryContainer</item>
+        <item name="colorError">@color/theme_teal_error</item>
+        <item name="colorErrorContainer">@color/theme_teal_errorContainer</item>
+        <item name="colorOnError">@color/theme_teal_onError</item>
+        <item name="colorOnErrorContainer">@color/theme_teal_onErrorContainer</item>
+        <item name="android:colorBackground">@color/theme_teal_background</item>
+        <item name="colorOnBackground">@color/theme_teal_onBackground</item>
+        <item name="colorSurface">@color/theme_teal_surface</item>
+        <item name="colorOnSurface">@color/theme_teal_onSurface</item>
+        <item name="colorSurfaceVariant">@color/theme_teal_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/theme_teal_onSurfaceVariant</item>
+        <item name="colorOutline">@color/theme_teal_outline</item>
+        <item name="colorOnSurfaceInverse">@color/theme_teal_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/theme_teal_inverseSurface</item>
+        <item name="colorPrimaryInverse">@color/theme_teal_inversePrimary</item>
+        <item name="android:windowBackground">@color/theme_teal_background</item>
+        <item name="colorSurfaceElevated4dp">@color/theme_teal_surface_elevated_4dp</item>
     </style>
 
     <style name="AppTheme.Splash" parent="@style/AppTheme">
-        <item name="android:windowBackground">@color/color_background_dark</item>
+        <item name="android:windowBackground">@color/theme_red_background_night</item>
     </style>
 
     <style name="PlaceholderTextAppearance" parent="TextAppearance.AppCompat.Large">
@@ -55,6 +92,11 @@
 
     <style name="HeaderTextAppearance" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.Tremotesf.ActionMode" parent="Widget.Material3.ActionMode">
+        <item name="background">@drawable/action_mode_background</item>
+        <item name="backgroundSplit">@drawable/action_mode_background</item>
     </style>
 
     <style name="Widget.Tremotesf.Toolbar" parent="Widget.Material3.Toolbar.Surface">

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="NonFilteringAutoCompleteTextView">
-        <attr name="readOnly" format="boolean"/>
+        <attr name="readOnly" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="TimePickerItem">
-        <attr name="android:title" format="string"/>
+        <attr name="android:title" format="string" />
     </declare-styleable>
 
-    <attr name="timePickerItemStyle" format="reference"/>
+    <attr name="timePickerItemStyle" format="reference" />
+    <attr name="colorSurfaceElevated4dp" format="color" />
 </resources>
