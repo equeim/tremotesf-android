@@ -1,18 +1,19 @@
 #include "jnirpc.h"
 
+#include <stdexcept>
 #include <thread>
 
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QPluginLoader>
 #include <QSslCertificate>
 #include <QSslConfiguration>
 
 #include <android/log.h>
-
 #include <jni.h>
 
-#include <QPluginLoader>
+#include "libtremotesf/println.h"
 
 Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
 
@@ -380,7 +381,7 @@ namespace libtremotesf
             __android_log_print(ANDROID_LOG_FATAL, logTag, "init: timed out waiting for QCoreApplication creation, elapsed time = %f ms", elapsed);
             std::terminate();
         }
-        qInfo("init: created QCoreApplication, elapsed time = %f ms", elapsed);
+        printlnInfo("init: created QCoreApplication, elapsed time = {} ms", elapsed);
     }
 
     void JniRpc::exec(std::shared_ptr<ThreadStartArgs> args)
@@ -395,7 +396,7 @@ namespace libtremotesf
         new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationName(QLatin1String(logTag));
 
-        qInfo("exec: created QCoreApplication");
+        printlnInfo("exec: created QCoreApplication");
 
         {
             std::unique_lock<std::mutex> lock(args->mutex);
@@ -406,13 +407,13 @@ namespace libtremotesf
 
         initRpc();
 
-        qInfo("exec: calling QCoreApplication::exec");
+        printlnInfo("exec: calling QCoreApplication::exec");
         QCoreApplication::exec();
     }
 
     void JniRpc::initRpc()
     {
-        qInfo("Initializing Rpc");
+        printlnInfo("Initializing Rpc");
 
         if (QFile certFile(certPath); certFile.open(QIODevice::ReadOnly)) {
             auto certs = QSslCertificate::fromDevice(&certFile);
@@ -421,10 +422,10 @@ namespace libtremotesf
                 configuration.addCaCertificate(certs.first());
                 QSslConfiguration::setDefaultConfiguration(configuration);
             } else {
-                qWarning("Failed to load ISRG Root X1 certificate from resources");
+                printlnWarning("Failed to load ISRG Root X1 certificate from resources");
             }
         } else {
-            qFatal("Failed to open resource %s", certPath.data());
+            throw std::runtime_error(fmt::format("Failed to open resource {}", certPath));
         }
 
         mRpc = new Rpc();
@@ -504,7 +505,7 @@ namespace libtremotesf
 
         onServerSettingsChanged(JniServerSettingsData(mRpc->serverSettings()));
 
-        qInfo("Initialized Rpc");
+        printlnInfo("Initialized Rpc");
     }
 
     void JniRpc::setServer(const Server& server)
@@ -536,7 +537,7 @@ namespace libtremotesf
     {
         auto file(std::make_shared<QFile>());
         if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
-            qWarning("Failed to open file by fd");
+            printlnWarning("Failed to open file by fd");
             return;
         }
         file->seek(0);

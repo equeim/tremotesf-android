@@ -144,10 +144,6 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_seeders_get(swigCPtr, this);
   }
 
-  public int getWebSeeders() {
-    return libtremotesfJNI.TorrentData_webSeeders_get(swigCPtr, this);
-  }
-
   public int getLeechers() {
     return libtremotesfJNI.TorrentData_leechers_get(swigCPtr, this);
   }
@@ -211,6 +207,15 @@ public class TorrentData {
   public TrackersVector getTrackers() {
     long cPtr = libtremotesfJNI.TorrentData_trackers_get(swigCPtr, this);
     return (cPtr == 0) ? null : new TrackersVector(cPtr, false);
+  }
+
+  public StringsVector getWebSeeders() {
+    long cPtr = libtremotesfJNI.TorrentData_webSeeders_get(swigCPtr, this);
+    return (cPtr == 0) ? null : new StringsVector(cPtr, false);
+  }
+
+  public int getActiveWebSeeders() {
+    return libtremotesfJNI.TorrentData_activeWebSeeders_get(swigCPtr, this);
   }
 
   public TorrentData() {

@@ -218,7 +218,7 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 
 /* Contract support */
 
-#define SWIG_contract_assert(nullreturn, expr, msg) if (!(expr)) {SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, msg); return nullreturn; } else
+#define SWIG_contract_assert(nullreturn, expr, msg) do { if (!(expr)) {SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, msg); return nullreturn; } } while (0)
 
 /*  Errors in SWIG */
 #define  SWIG_UnknownError    	   -1
@@ -849,7 +849,7 @@ SWIGINTERN std::vector< libtremotesf::TorrentData > *new_std_vector_Sl_libtremot
           throw std::out_of_range("vector count must be positive");
         return new std::vector< libtremotesf::TorrentData >(static_cast<std::vector< libtremotesf::TorrentData >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_libtremotesf_TorrentData_Sg__doSize(std::vector< libtremotesf::TorrentData > const *self){
+SWIGINTERN jint std_vector_Sl_libtremotesf_TorrentData_Sg__doSize__SWIG(std::vector< libtremotesf::TorrentData > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_libtremotesf_TorrentData_Sg__doAdd__SWIG_0(std::vector< libtremotesf::TorrentData > *self,std::vector< libtremotesf::TorrentData >::value_type const &x){
@@ -863,7 +863,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_TorrentData_Sg__doAdd__SWIG_1(std::ve
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_libtremotesf_TorrentData_Sg__doRemove(std::vector< libtremotesf::TorrentData > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_libtremotesf_TorrentData_Sg__doRemove__SWIG(std::vector< libtremotesf::TorrentData > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           libtremotesf::TorrentData const old_value = std::move((*self)[index]);
@@ -873,14 +873,14 @@ SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_li
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type const &std_vector_Sl_libtremotesf_TorrentData_Sg__doGet(std::vector< libtremotesf::TorrentData > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type const &std_vector_Sl_libtremotesf_TorrentData_Sg__doGet__SWIG(std::vector< libtremotesf::TorrentData > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_libtremotesf_TorrentData_Sg__doSet(std::vector< libtremotesf::TorrentData > *self,jint index,std::vector< libtremotesf::TorrentData >::value_type const &val){
+SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_libtremotesf_TorrentData_Sg__doSet__SWIG(std::vector< libtremotesf::TorrentData > *self,jint index,std::vector< libtremotesf::TorrentData >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           libtremotesf::TorrentData const old_value = (*self)[index];
@@ -890,7 +890,7 @@ SWIGINTERN std::vector< libtremotesf::TorrentData >::value_type std_vector_Sl_li
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_libtremotesf_TorrentData_Sg__doRemoveRange(std::vector< libtremotesf::TorrentData > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_libtremotesf_TorrentData_Sg__doRemoveRange__SWIG(std::vector< libtremotesf::TorrentData > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -903,7 +903,7 @@ SWIGINTERN std::vector< libtremotesf::Tracker > *new_std_vector_Sl_libtremotesf_
           throw std::out_of_range("vector count must be positive");
         return new std::vector< libtremotesf::Tracker >(static_cast<std::vector< libtremotesf::Tracker >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_libtremotesf_Tracker_Sg__doSize(std::vector< libtremotesf::Tracker > const *self){
+SWIGINTERN jint std_vector_Sl_libtremotesf_Tracker_Sg__doSize__SWIG(std::vector< libtremotesf::Tracker > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_libtremotesf_Tracker_Sg__doAdd__SWIG_0(std::vector< libtremotesf::Tracker > *self,std::vector< libtremotesf::Tracker >::value_type const &x){
@@ -917,7 +917,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_Tracker_Sg__doAdd__SWIG_1(std::vector
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtremotesf_Tracker_Sg__doRemove(std::vector< libtremotesf::Tracker > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtremotesf_Tracker_Sg__doRemove__SWIG(std::vector< libtremotesf::Tracker > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           libtremotesf::Tracker const old_value = std::move((*self)[index]);
@@ -927,14 +927,14 @@ SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtre
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::Tracker >::value_type const &std_vector_Sl_libtremotesf_Tracker_Sg__doGet(std::vector< libtremotesf::Tracker > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::Tracker >::value_type const &std_vector_Sl_libtremotesf_Tracker_Sg__doGet__SWIG(std::vector< libtremotesf::Tracker > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtremotesf_Tracker_Sg__doSet(std::vector< libtremotesf::Tracker > *self,jint index,std::vector< libtremotesf::Tracker >::value_type const &val){
+SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtremotesf_Tracker_Sg__doSet__SWIG(std::vector< libtremotesf::Tracker > *self,jint index,std::vector< libtremotesf::Tracker >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           libtremotesf::Tracker const old_value = (*self)[index];
@@ -944,7 +944,7 @@ SWIGINTERN std::vector< libtremotesf::Tracker >::value_type std_vector_Sl_libtre
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_libtremotesf_Tracker_Sg__doRemoveRange(std::vector< libtremotesf::Tracker > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_libtremotesf_Tracker_Sg__doRemoveRange__SWIG(std::vector< libtremotesf::Tracker > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -957,7 +957,7 @@ SWIGINTERN std::vector< libtremotesf::TorrentFile > *new_std_vector_Sl_libtremot
           throw std::out_of_range("vector count must be positive");
         return new std::vector< libtremotesf::TorrentFile >(static_cast<std::vector< libtremotesf::TorrentFile >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_libtremotesf_TorrentFile_Sg__doSize(std::vector< libtremotesf::TorrentFile > const *self){
+SWIGINTERN jint std_vector_Sl_libtremotesf_TorrentFile_Sg__doSize__SWIG(std::vector< libtremotesf::TorrentFile > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_libtremotesf_TorrentFile_Sg__doAdd__SWIG_0(std::vector< libtremotesf::TorrentFile > *self,std::vector< libtremotesf::TorrentFile >::value_type const &x){
@@ -971,7 +971,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_TorrentFile_Sg__doAdd__SWIG_1(std::ve
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemove(std::vector< libtremotesf::TorrentFile > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemove__SWIG(std::vector< libtremotesf::TorrentFile > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           libtremotesf::TorrentFile const old_value = std::move((*self)[index]);
@@ -981,14 +981,14 @@ SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_li
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type const &std_vector_Sl_libtremotesf_TorrentFile_Sg__doGet(std::vector< libtremotesf::TorrentFile > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type const &std_vector_Sl_libtremotesf_TorrentFile_Sg__doGet__SWIG(std::vector< libtremotesf::TorrentFile > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_libtremotesf_TorrentFile_Sg__doSet(std::vector< libtremotesf::TorrentFile > *self,jint index,std::vector< libtremotesf::TorrentFile >::value_type const &val){
+SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_libtremotesf_TorrentFile_Sg__doSet__SWIG(std::vector< libtremotesf::TorrentFile > *self,jint index,std::vector< libtremotesf::TorrentFile >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           libtremotesf::TorrentFile const old_value = (*self)[index];
@@ -998,7 +998,7 @@ SWIGINTERN std::vector< libtremotesf::TorrentFile >::value_type std_vector_Sl_li
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemoveRange(std::vector< libtremotesf::TorrentFile > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemoveRange__SWIG(std::vector< libtremotesf::TorrentFile > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -1011,7 +1011,7 @@ SWIGINTERN std::vector< libtremotesf::Peer > *new_std_vector_Sl_libtremotesf_Pee
           throw std::out_of_range("vector count must be positive");
         return new std::vector< libtremotesf::Peer >(static_cast<std::vector< libtremotesf::Peer >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_libtremotesf_Peer_Sg__doSize(std::vector< libtremotesf::Peer > const *self){
+SWIGINTERN jint std_vector_Sl_libtremotesf_Peer_Sg__doSize__SWIG(std::vector< libtremotesf::Peer > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_libtremotesf_Peer_Sg__doAdd__SWIG_0(std::vector< libtremotesf::Peer > *self,std::vector< libtremotesf::Peer >::value_type const &x){
@@ -1025,7 +1025,7 @@ SWIGINTERN void std_vector_Sl_libtremotesf_Peer_Sg__doAdd__SWIG_1(std::vector< l
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremotesf_Peer_Sg__doRemove(std::vector< libtremotesf::Peer > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremotesf_Peer_Sg__doRemove__SWIG(std::vector< libtremotesf::Peer > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           libtremotesf::Peer const old_value = std::move((*self)[index]);
@@ -1035,14 +1035,14 @@ SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremot
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< libtremotesf::Peer >::value_type const &std_vector_Sl_libtremotesf_Peer_Sg__doGet(std::vector< libtremotesf::Peer > *self,jint index){
+SWIGINTERN std::vector< libtremotesf::Peer >::value_type const &std_vector_Sl_libtremotesf_Peer_Sg__doGet__SWIG(std::vector< libtremotesf::Peer > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremotesf_Peer_Sg__doSet(std::vector< libtremotesf::Peer > *self,jint index,std::vector< libtremotesf::Peer >::value_type const &val){
+SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremotesf_Peer_Sg__doSet__SWIG(std::vector< libtremotesf::Peer > *self,jint index,std::vector< libtremotesf::Peer >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           libtremotesf::Peer const old_value = (*self)[index];
@@ -1052,7 +1052,7 @@ SWIGINTERN std::vector< libtremotesf::Peer >::value_type std_vector_Sl_libtremot
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_libtremotesf_Peer_Sg__doRemoveRange(std::vector< libtremotesf::Peer > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_libtremotesf_Peer_Sg__doRemoveRange__SWIG(std::vector< libtremotesf::Peer > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -1065,7 +1065,7 @@ SWIGINTERN std::vector< QString > *new_std_vector_Sl_QString_Sg___SWIG_2(jint co
           throw std::out_of_range("vector count must be positive");
         return new std::vector< QString >(static_cast<std::vector< QString >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_QString_Sg__doSize(std::vector< QString > const *self){
+SWIGINTERN jint std_vector_Sl_QString_Sg__doSize__SWIG(std::vector< QString > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_QString_Sg__doAdd__SWIG_0(std::vector< QString > *self,std::vector< QString >::value_type const &x){
@@ -1079,7 +1079,7 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doAdd__SWIG_1(std::vector< QString > *
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doRemove(std::vector< QString > *self,jint index){
+SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doRemove__SWIG(std::vector< QString > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           QString const old_value = std::move((*self)[index]);
@@ -1089,14 +1089,14 @@ SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doRemove
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< QString >::value_type const &std_vector_Sl_QString_Sg__doGet(std::vector< QString > *self,jint index){
+SWIGINTERN std::vector< QString >::value_type const &std_vector_Sl_QString_Sg__doGet__SWIG(std::vector< QString > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doSet(std::vector< QString > *self,jint index,std::vector< QString >::value_type const &val){
+SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doSet__SWIG(std::vector< QString > *self,jint index,std::vector< QString >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           QString const old_value = (*self)[index];
@@ -1106,7 +1106,7 @@ SWIGINTERN std::vector< QString >::value_type std_vector_Sl_QString_Sg__doSet(st
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange(std::vector< QString > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange__SWIG(std::vector< QString > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -1114,20 +1114,20 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange(std::vector< QString > *
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::unordered_map< QString,QString >::iterator std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(std::unordered_map< QString,QString >::iterator *self){
+SWIGINTERN std::unordered_map< QString,QString >::iterator std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked__SWIG(std::unordered_map< QString,QString >::iterator *self){
           std::unordered_map< QString, QString >::iterator copy = (*self);
           return ++copy;
         }
-SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot(std::unordered_map< QString,QString >::iterator const *self,std::unordered_map< QString,QString >::iterator other){
+SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot__SWIG(std::unordered_map< QString,QString >::iterator const *self,std::unordered_map< QString,QString >::iterator other){
           return (*self != other);
         }
-SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey(std::unordered_map< QString,QString >::iterator const *self){
+SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey__SWIG(std::unordered_map< QString,QString >::iterator const *self){
           return (*self)->first;
         }
-SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue(std::unordered_map< QString,QString >::iterator const *self){
+SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue__SWIG(std::unordered_map< QString,QString >::iterator const *self){
           return (*self)->second;
         }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(std::unordered_map< QString,QString >::iterator *self,QString const &newValue){
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue__SWIG(std::unordered_map< QString,QString >::iterator *self,QString const &newValue){
           (*self)->second = newValue;
         }
 
@@ -1140,16 +1140,16 @@ SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(st
     return sz;
   }
 
-SWIGINTERN jint std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl(std::unordered_map< QString,QString > const *self){
+SWIGINTERN jint std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl__SWIG(std::unordered_map< QString,QString > const *self){
         return SWIG_MapSize(self->size());
       }
-SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(std::unordered_map< QString,QString > *self,QString const &key){
+SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl__SWIG(std::unordered_map< QString,QString > *self,QString const &key){
         return (self->count(key) > 0);
       }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(std::unordered_map< QString,QString > *self,QString const &key,QString const &value){
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked__SWIG(std::unordered_map< QString,QString > *self,QString const &key,QString const &value){
         (*self)[key] = value;
       }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(std::unordered_map< QString,QString > *self,std::unordered_map< QString,QString >::iterator const itr){
+SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked__SWIG(std::unordered_map< QString,QString > *self,std::unordered_map< QString,QString >::iterator const itr){
         self->erase(itr);
       }
 SWIGINTERN std::vector< std::pair< int,int > > *new_std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg___SWIG_2(jint count,std::pair< int,int > const &value){
@@ -1157,7 +1157,7 @@ SWIGINTERN std::vector< std::pair< int,int > > *new_std_vector_Sl_std_pair_Sl_in
           throw std::out_of_range("vector count must be positive");
         return new std::vector< std::pair< int,int > >(static_cast<std::vector< std::pair< int,int > >::size_type>(count), value);
       }
-SWIGINTERN jint std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSize(std::vector< std::pair< int,int > > const *self){
+SWIGINTERN jint std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSize__SWIG(std::vector< std::pair< int,int > > const *self){
         return SWIG_VectorSize(self->size());
       }
 SWIGINTERN void std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doAdd__SWIG_0(std::vector< std::pair< int,int > > *self,std::vector< std::pair< int,int > >::value_type const &x){
@@ -1171,7 +1171,7 @@ SWIGINTERN void std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doAdd__SWIG_1(std::
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemove(std::vector< std::pair< int,int > > *self,jint index){
+SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemove__SWIG(std::vector< std::pair< int,int > > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (0 <= index && index < size) {
           std::pair< int,int > const old_value = std::move((*self)[index]);
@@ -1181,14 +1181,14 @@ SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pai
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::vector< std::pair< int,int > >::value_type const &std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doGet(std::vector< std::pair< int,int > > *self,jint index){
+SWIGINTERN std::vector< std::pair< int,int > >::value_type const &std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doGet__SWIG(std::vector< std::pair< int,int > > *self,jint index){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size)
           return (*self)[index];
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSet(std::vector< std::pair< int,int > > *self,jint index,std::vector< std::pair< int,int > >::value_type const &val){
+SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSet__SWIG(std::vector< std::pair< int,int > > *self,jint index,std::vector< std::pair< int,int > >::value_type const &val){
         jint size = static_cast<jint>(self->size());
         if (index >= 0 && index < size) {
           std::pair< int,int > const old_value = (*self)[index];
@@ -1198,7 +1198,7 @@ SWIGINTERN std::vector< std::pair< int,int > >::value_type std_vector_Sl_std_pai
         else
           throw std::out_of_range("vector index out of range");
       }
-SWIGINTERN void std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemoveRange(std::vector< std::pair< int,int > > *self,jint fromIndex,jint toIndex){
+SWIGINTERN void std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemoveRange__SWIG(std::vector< std::pair< int,int > > *self,jint fromIndex,jint toIndex){
         jint size = static_cast<jint>(self->size());
         if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
           self->erase(self->begin() + fromIndex, self->begin() + toIndex);
@@ -1811,7 +1811,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
   (void)jarg1_;
   arg1 = *(std::vector< libtremotesf::TorrentData > **)&jarg1; 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doSize((std::vector< libtremotesf::TorrentData > const *)arg1);
+    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doSize__SWIG((std::vector< libtremotesf::TorrentData > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -1876,7 +1876,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(std::vector< libtremotesf::TorrentData > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -1898,7 +1898,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(std::vector< libtremotesf::TorrentData > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< libtremotesf::TorrentData >::value_type *) &std_vector_Sl_libtremotesf_TorrentData_Sg__doGet(arg1,arg2);
+    result = (std::vector< libtremotesf::TorrentData >::value_type *) &std_vector_Sl_libtremotesf_TorrentData_Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -1927,7 +1927,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
     return 0;
   } 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doSet(arg1,arg2,(libtremotesf::TorrentData const &)*arg3);
+    result = std_vector_Sl_libtremotesf_TorrentData_Sg__doSet__SWIG(arg1,arg2,(libtremotesf::TorrentData const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -1949,7 +1949,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_libtremotesf_TorrentData_Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_libtremotesf_TorrentData_Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -2093,7 +2093,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TrackersVec
   (void)jarg1_;
   arg1 = *(std::vector< libtremotesf::Tracker > **)&jarg1; 
   try {
-    result = std_vector_Sl_libtremotesf_Tracker_Sg__doSize((std::vector< libtremotesf::Tracker > const *)arg1);
+    result = std_vector_Sl_libtremotesf_Tracker_Sg__doSize__SWIG((std::vector< libtremotesf::Tracker > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2158,7 +2158,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TrackersVe
   arg1 = *(std::vector< libtremotesf::Tracker > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_libtremotesf_Tracker_Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_libtremotesf_Tracker_Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2180,7 +2180,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TrackersVe
   arg1 = *(std::vector< libtremotesf::Tracker > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< libtremotesf::Tracker >::value_type *) &std_vector_Sl_libtremotesf_Tracker_Sg__doGet(arg1,arg2);
+    result = (std::vector< libtremotesf::Tracker >::value_type *) &std_vector_Sl_libtremotesf_Tracker_Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2209,7 +2209,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TrackersVe
     return 0;
   } 
   try {
-    result = std_vector_Sl_libtremotesf_Tracker_Sg__doSet(arg1,arg2,(libtremotesf::Tracker const &)*arg3);
+    result = std_vector_Sl_libtremotesf_Tracker_Sg__doSet__SWIG(arg1,arg2,(libtremotesf::Tracker const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2231,7 +2231,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TrackersVec
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_libtremotesf_Tracker_Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_libtremotesf_Tracker_Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -2375,7 +2375,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile
   (void)jarg1_;
   arg1 = *(std::vector< libtremotesf::TorrentFile > **)&jarg1; 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doSize((std::vector< libtremotesf::TorrentFile > const *)arg1);
+    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doSize__SWIG((std::vector< libtremotesf::TorrentFile > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2440,7 +2440,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFil
   arg1 = *(std::vector< libtremotesf::TorrentFile > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2462,7 +2462,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFil
   arg1 = *(std::vector< libtremotesf::TorrentFile > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< libtremotesf::TorrentFile >::value_type *) &std_vector_Sl_libtremotesf_TorrentFile_Sg__doGet(arg1,arg2);
+    result = (std::vector< libtremotesf::TorrentFile >::value_type *) &std_vector_Sl_libtremotesf_TorrentFile_Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2491,7 +2491,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFil
     return 0;
   } 
   try {
-    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doSet(arg1,arg2,(libtremotesf::TorrentFile const &)*arg3);
+    result = std_vector_Sl_libtremotesf_TorrentFile_Sg__doSet__SWIG(arg1,arg2,(libtremotesf::TorrentFile const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2513,7 +2513,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentFile
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_libtremotesf_TorrentFile_Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -2657,7 +2657,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentPeer
   (void)jarg1_;
   arg1 = *(std::vector< libtremotesf::Peer > **)&jarg1; 
   try {
-    result = std_vector_Sl_libtremotesf_Peer_Sg__doSize((std::vector< libtremotesf::Peer > const *)arg1);
+    result = std_vector_Sl_libtremotesf_Peer_Sg__doSize__SWIG((std::vector< libtremotesf::Peer > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2722,7 +2722,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentPee
   arg1 = *(std::vector< libtremotesf::Peer > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_libtremotesf_Peer_Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_libtremotesf_Peer_Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2744,7 +2744,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentPee
   arg1 = *(std::vector< libtremotesf::Peer > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< libtremotesf::Peer >::value_type *) &std_vector_Sl_libtremotesf_Peer_Sg__doGet(arg1,arg2);
+    result = (std::vector< libtremotesf::Peer >::value_type *) &std_vector_Sl_libtremotesf_Peer_Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2773,7 +2773,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentPee
     return 0;
   } 
   try {
-    result = std_vector_Sl_libtremotesf_Peer_Sg__doSet(arg1,arg2,(libtremotesf::Peer const &)*arg3);
+    result = std_vector_Sl_libtremotesf_Peer_Sg__doSet__SWIG(arg1,arg2,(libtremotesf::Peer const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -2795,7 +2795,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentPeer
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_libtremotesf_Peer_Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_libtremotesf_Peer_Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -2945,7 +2945,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsVect
   (void)jarg1_;
   arg1 = *(std::vector< QString > **)&jarg1; 
   try {
-    result = std_vector_Sl_QString_Sg__doSize((std::vector< QString > const *)arg1);
+    result = std_vector_Sl_QString_Sg__doSize__SWIG((std::vector< QString > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3022,7 +3022,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
   arg1 = *(std::vector< QString > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_QString_Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_QString_Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3046,7 +3046,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
   arg1 = *(std::vector< QString > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< QString >::value_type *) &std_vector_Sl_QString_Sg__doGet(arg1,arg2);
+    result = (std::vector< QString >::value_type *) &std_vector_Sl_QString_Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3083,7 +3083,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsV
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
   try {
-    result = std_vector_Sl_QString_Sg__doSet(arg1,arg2,(QString const &)*arg3);
+    result = std_vector_Sl_QString_Sg__doSet__SWIG(arg1,arg2,(QString const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3107,7 +3107,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringsVect
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_QString_Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_QString_Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -3165,7 +3165,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_
   (void)jcls;
   (void)jarg1_;
   arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(arg1);
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked__SWIG(arg1);
   *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(std::move(result)); 
   return jresult;
 }
@@ -3189,7 +3189,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringM
     return 0;
   }
   arg2 = *argp2; 
-  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot((std::unordered_map< QString,QString >::iterator const *)arg1,arg2);
+  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot__SWIG((std::unordered_map< QString,QString >::iterator const *)arg1,arg2);
   jresult = (jboolean)result; 
   return jresult;
 }
@@ -3204,7 +3204,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
   (void)jcls;
   (void)jarg1_;
   arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey((std::unordered_map< QString,QString >::iterator const *)arg1);
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey__SWIG((std::unordered_map< QString,QString >::iterator const *)arg1);
   
   jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
@@ -3221,7 +3221,7 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
   (void)jcls;
   (void)jarg1_;
   arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue((std::unordered_map< QString,QString >::iterator const *)arg1);
+  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue__SWIG((std::unordered_map< QString,QString >::iterator const *)arg1);
   
   jresult = jenv->NewString((&result)->utf16(), static_cast<jsize>((&result)->size()));
   
@@ -3249,7 +3249,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
-  std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(arg1,(QString const &)*arg2);
+  std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue__SWIG(arg1,(QString const &)*arg2);
 }
 
 
@@ -3357,7 +3357,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   (void)jarg1_;
   arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
   try {
-    result = std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl((std::unordered_map< QString,QString > const *)arg1);
+    result = std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl__SWIG((std::unordered_map< QString,QString > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3389,7 +3389,7 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringM
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
-  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(arg1,(QString const &)*arg2);
+  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl__SWIG(arg1,(QString const &)*arg2);
   jresult = (jboolean)result; 
   return jresult;
 }
@@ -3428,7 +3428,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
-  std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(arg1,(QString const &)*arg2,(QString const &)*arg3);
+  std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked__SWIG(arg1,(QString const &)*arg2,(QString const &)*arg3);
 }
 
 
@@ -3448,7 +3448,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
     return ;
   }
   arg2 = *argp2; 
-  std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(arg1,arg2);
+  std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked__SWIG(arg1,arg2);
 }
 
 
@@ -3675,7 +3675,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntPairVect
   (void)jarg1_;
   arg1 = *(std::vector< std::pair< int,int > > **)&jarg1; 
   try {
-    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSize((std::vector< std::pair< int,int > > const *)arg1);
+    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSize__SWIG((std::vector< std::pair< int,int > > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3740,7 +3740,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntPairVec
   arg1 = *(std::vector< std::pair< int,int > > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemove(arg1,arg2);
+    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemove__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3762,7 +3762,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntPairVec
   arg1 = *(std::vector< std::pair< int,int > > **)&jarg1; 
   arg2 = jarg2; 
   try {
-    result = (std::vector< std::pair< int,int > >::value_type *) &std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doGet(arg1,arg2);
+    result = (std::vector< std::pair< int,int > >::value_type *) &std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doGet__SWIG(arg1,arg2);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3791,7 +3791,7 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntPairVec
     return 0;
   } 
   try {
-    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSet(arg1,arg2,(std::pair< int,int > const &)*arg3);
+    result = std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doSet__SWIG(arg1,arg2,(std::pair< int,int > const &)*arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3813,7 +3813,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntPairVect
   arg2 = jarg2; 
   arg3 = jarg3; 
   try {
-    std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemoveRange(arg1,arg2,arg3);
+    std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemoveRange__SWIG(arg1,arg2,arg3);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return ;
@@ -4638,21 +4638,6 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData
 }
 
 
-SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1webSeeders_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jint jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  int result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (int) ((arg1)->webSeeders);
-  jresult = (jint)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1leechers_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
@@ -4895,6 +4880,36 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (std::vector< libtremotesf::Tracker > *)& ((arg1)->trackers);
   *(std::vector< libtremotesf::Tracker > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1webSeeders_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  std::vector< QString > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (std::vector< QString > *)& ((arg1)->webSeeders);
+  *(std::vector< QString > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1activeWebSeeders_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
+  result = (int) ((arg1)->activeWebSeeders);
+  jresult = (jint)result; 
   return jresult;
 }
 
