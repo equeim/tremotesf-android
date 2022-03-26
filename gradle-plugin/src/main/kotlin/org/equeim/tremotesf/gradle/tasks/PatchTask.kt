@@ -60,8 +60,9 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
         ) {
             directory(sourceDir.get())
         }
-        if (result.success) {
+        didWork = if (result.success) {
             logger.lifecycle("Already applied")
+            false
         } else {
             executeCommand(
                 listOf(PATCH, "-p1", "--fuzz=0", "--input=$patchFile"),
@@ -70,6 +71,7 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
             ) {
                 directory(sourceDir.get())
             }
+            true
         }
     }
 
