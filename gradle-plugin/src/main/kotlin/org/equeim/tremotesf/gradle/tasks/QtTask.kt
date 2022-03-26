@@ -149,7 +149,7 @@ abstract class QtTask @Inject constructor(
             "-prefix", hostInstallDir(qtDir.get()).toString(),
 
             if (ccache.get()) "-ccache" else "-no-ccache",
-            // Precombiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
+            // Precompiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
             if (ccache.get()) "-no-pch" else "-pch",
 
             "-nomake", "examples",
