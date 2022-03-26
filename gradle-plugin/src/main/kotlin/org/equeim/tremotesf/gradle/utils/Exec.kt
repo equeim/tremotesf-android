@@ -3,8 +3,8 @@ package org.equeim.tremotesf.gradle.utils
 import org.gradle.api.logging.Logger
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.time.Duration
 
 internal sealed class ExecInputOutputMode {
     data class InputString(val input: String) : ExecInputOutputMode()
@@ -14,11 +14,7 @@ internal sealed class ExecInputOutputMode {
 }
 
 @Suppress("ArrayInDataClass")
-internal data class ExecResult(
-    val success: Boolean,
-    val output: ByteArray?,
-    val elapsedTime: Duration
-) {
+internal data class ExecResult(val success: Boolean, val output: ByteArray?) {
     fun outputString() = checkNotNull(output).toString(StandardCharsets.UTF_8)
     fun trimmedOutputString() = outputString().trim()
 }
@@ -52,7 +48,6 @@ internal fun executeCommand(
 
     configure(builder)
 
-    val startTime = System.nanoTime()
     val process = builder.start()
     lateinit var outputStream: ByteArrayOutputStream
     try {
@@ -73,15 +68,13 @@ internal fun executeCommand(
         if (!ignoreExitStatus && !success) {
             throw RuntimeException("Exit status $exitStatus")
         }
-        val endTime = System.nanoTime()
         return ExecResult(
             success,
             if (actualInputOutputMode == ExecInputOutputMode.CaptureOutput) {
                 outputStream.toByteArray()
             } else {
                 null
-            },
-            Duration.ofNanos(endTime - startTime)
+            }
         )
     } catch (e: Exception) {
         logger.error("Failed to execute {}: {}", commandLine, e)
