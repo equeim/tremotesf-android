@@ -41,8 +41,6 @@ target_link_libraries(${PROJECT_NAME} libtremotesf ${log-lib} Qt6::QTlsBackendOp
 # We are using target_link_libraries instead of target_link_options
 # because CMake adds -fuse-ld=gold at the end of link flags, so we can't override it there
 # target_link_libraries flags, on the other hand, are added after target_link_options, so it works
-if (CMAKE_VERSION VERSION_LESS "3.20.0")
-    target_link_libraries(${PROJECT_NAME} -fuse-ld=lld)
-endif()
+target_link_libraries(${PROJECT_NAME} -fuse-ld=lld)
 
 set_common_options_on_targets()

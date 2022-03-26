@@ -18,7 +18,6 @@ import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import java.io.File
-import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
 import javax.inject.Inject
 import kotlin.system.measureNanoTime
@@ -50,9 +49,6 @@ abstract class QtTask @Inject constructor(
     val installDirs: Provider<List<File>> by lazy {
         qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) }
     }
-
-    @get:Input
-    abstract val cmakeVersion: Property<String>
 
     @get:Input
     @get:Optional
@@ -306,10 +302,12 @@ abstract class QtTask @Inject constructor(
 
         logger.lifecycle("Building Qt")
 
-        if (needLinkerWorkaround(crossCompiling)) {
+        if (crossCompiling) {
             // Workaround for CMake bug that forces use of gold linker when LTCG is enabled
             // https://gitlab.kitware.com/cmake/cmake/-/issues/21772
             // https://github.com/android/ndk/issues/1444
+            // Should be unnecessary with NDK r23 or newer + CMake 3.20 or newer, but there is no
+            // point in trying to check it
             execOperations.executeCommand(logger) {
                 commandLine("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja"))
             }
@@ -335,13 +333,6 @@ abstract class QtTask @Inject constructor(
         }
     }
 
-    private fun needLinkerWorkaround(crossCompiling: Boolean): Boolean {
-        if (!crossCompiling) return false
-        val cmakeVersion = runCatching { ModuleDescriptor.Version.parse(cmakeVersion.get()) }
-            .getOrNull() ?: return true
-        return cmakeVersion < ModuleDescriptor.Version.parse(CMAKE_VERSION_WITHOUT_LINKER_BUG)
-    }
-
     companion object {
         fun sourceDir(qtDir: File) = qtDir.resolve("qtbase")
         fun patchesDir(qtDir: File) = qtDir.resolve("patches")
@@ -362,7 +353,5 @@ abstract class QtTask @Inject constructor(
 
         fun jar(qtDir: File) =
             installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
-
-        private const val CMAKE_VERSION_WITHOUT_LINKER_BUG = "3.20.0"
     }
 }
