@@ -1,7 +1,6 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.apache.commons.text.StringSubstitutor
-import org.equeim.tremotesf.gradle.utils.executeCommand
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
@@ -53,7 +52,7 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
     }
 
     private fun applyPatchImpl(input: String, configure: ExecSpec.() -> Unit = {}) {
-        val result = execOperations.executeCommand(logger) {
+        val result = execOperations.exec(logger) {
             executable = PATCH
             args("-p1", "-R", "--dry-run", "--force", "--fuzz=0", "--input=$input")
             workingDir(sourceDir)
@@ -63,7 +62,7 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
         if (result.success) {
             logger.lifecycle("Already applied")
         } else {
-            execOperations.executeCommand(logger) {
+            execOperations.exec(logger) {
                 executable = PATCH
                 args("-p1", "--fuzz=0", "--input=$input")
                 workingDir(sourceDir)
