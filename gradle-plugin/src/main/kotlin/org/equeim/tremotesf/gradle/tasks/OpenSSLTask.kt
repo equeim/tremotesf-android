@@ -50,6 +50,7 @@ abstract class OpenSSLTask @Inject constructor(
         if (ccache.get()) {
             showCcacheStatistics(logger)
         }
+        didWork = true
     }
 
     private fun buildOpenSSL(abi: String) {

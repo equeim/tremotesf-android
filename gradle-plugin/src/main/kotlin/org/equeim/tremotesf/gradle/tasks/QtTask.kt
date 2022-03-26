@@ -74,6 +74,8 @@ abstract class QtTask @Inject constructor(
         if (ccache.get()) {
             showCcacheStatistics(logger)
         }
+
+        didWork = true
     }
 
     private data class HostQtInfo(val prefix: String, val cmakeDir: String)
