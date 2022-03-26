@@ -1,17 +1,16 @@
 package org.equeim.tremotesf.gradle.utils
 
-import org.gradle.api.Action
 import org.gradle.api.logging.Logger
-import org.gradle.process.ExecOperations
-import org.gradle.process.ExecSpec
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.OutputStream
+import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
-internal enum class ExecOutputMode {
-    Print,
-    Capture,
+internal sealed class ExecInputOutputMode {
+    data class InputString(val input: String) : ExecInputOutputMode()
+    object PrintOutput : ExecInputOutputMode()
+    object CaptureOutput : ExecInputOutputMode()
+    data class RedirectOutputToFile(val file: File) : ExecInputOutputMode()
 }
 
 @Suppress("ArrayInDataClass")
@@ -21,62 +20,74 @@ internal data class ExecResult(val success: Boolean, val output: ByteArray?) {
 }
 
 internal fun executeCommand(
+    commandLine: List<String>,
     logger: Logger,
-    outputMode: ExecOutputMode?,
-    execute: (Action<in ExecSpec>) -> org.gradle.process.ExecResult,
-    configure: ExecSpec.() -> Unit
+    inputOutputMode: ExecInputOutputMode? = null,
+    ignoreExitStatus: Boolean = false,
+    configure: ProcessBuilder.() -> Unit = {}
 ): ExecResult {
-    var commandLine: List<String>? = null
+    logger.info("Executing $commandLine")
+    val builder = ProcessBuilder(commandLine)
+    builder.dropNdkEnvironmentVariables(logger)
 
-    val executeWithOutputStream = { outputStream: OutputStream? ->
-        execute {
-            dropNdkEnvironmentVariables(logger)
-            configure()
-            commandLine = this.commandLine
-            if (outputStream != null) {
-                standardOutput = outputStream
-                errorOutput = outputStream
-            }
-        }
-    }
-
-    val actualOutputMode = outputMode ?: if (logger.isInfoEnabled) {
-        ExecOutputMode.Print
+    val actualInputOutputMode = inputOutputMode ?: if (logger.isInfoEnabled) {
+        ExecInputOutputMode.PrintOutput
     } else {
-        ExecOutputMode.Capture
+        ExecInputOutputMode.CaptureOutput
+    }
+    when (actualInputOutputMode) {
+        is ExecInputOutputMode.InputString -> Unit
+        is ExecInputOutputMode.PrintOutput,
+        is ExecInputOutputMode.CaptureOutput -> builder.redirectErrorStream(true)
+        is ExecInputOutputMode.RedirectOutputToFile -> {
+            logger.info("Redirecting output to file ${actualInputOutputMode.file}")
+            builder.redirectErrorStream(true)
+            builder.redirectOutput(actualInputOutputMode.file)
+        }
     }
 
+    configure(builder)
+
+    val process = builder.start()
     lateinit var outputStream: ByteArrayOutputStream
-    val result = try {
-        when (actualOutputMode) {
-            ExecOutputMode.Capture -> {
+    try {
+        when (actualInputOutputMode) {
+            is ExecInputOutputMode.InputString ->
+                process.outputStream.use {
+                    it.write(actualInputOutputMode.input.toByteArray(StandardCharsets.UTF_8))
+                }
+            is ExecInputOutputMode.PrintOutput -> process.inputStream.transferTo(System.out)
+            is ExecInputOutputMode.CaptureOutput -> {
                 outputStream = ByteArrayOutputStream()
-                outputStream.buffered().use(executeWithOutputStream)
+                process.inputStream.transferTo(outputStream)
             }
-            ExecOutputMode.Print -> executeWithOutputStream(null)
+            else -> Unit
         }
+        val exitStatus = process.waitFor()
+        val success = exitStatus == 0
+        if (!ignoreExitStatus && !success) {
+            throw RuntimeException("Exit status $exitStatus")
+        }
+        return ExecResult(
+            success,
+            if (actualInputOutputMode == ExecInputOutputMode.CaptureOutput) {
+                outputStream.toByteArray()
+            } else {
+                null
+            }
+        )
     } catch (e: Exception) {
         logger.error("Failed to execute {}: {}", commandLine, e)
-        if (actualOutputMode == ExecOutputMode.Capture) {
+        if (actualInputOutputMode == ExecInputOutputMode.CaptureOutput) {
             logger.error("Output:")
             outputStream.writeTo(System.err)
         }
         throw e
     }
-    return ExecResult(
-        result.exitValue == 0,
-        if (outputMode == ExecOutputMode.Capture) outputStream.toByteArray() else null
-    )
 }
 
-internal fun ExecOperations.executeCommand(
-    logger: Logger,
-    outputMode: ExecOutputMode? = null,
-    configure: ExecSpec.() -> Unit
-) = executeCommand(logger, outputMode, this::exec, configure)
-
-private fun ExecSpec.dropNdkEnvironmentVariables(logger: Logger) {
-    val iter = environment.iterator()
+private fun ProcessBuilder.dropNdkEnvironmentVariables(logger: Logger) {
+    val iter = environment().iterator()
     while (iter.hasNext()) {
         val entry = iter.next()
         if (entry.key.startsWith("ANDROID_NDK")) {
@@ -86,8 +97,8 @@ private fun ExecSpec.dropNdkEnvironmentVariables(logger: Logger) {
     }
 }
 
-internal fun ExecSpec.prependPath(dir: File) {
-    environment.compute("PATH") { _, value ->
+internal fun ProcessBuilder.prependPath(dir: File) {
+    environment().compute("PATH") { _, value ->
         if (value == null) dir.toString() else "$dir:$value"
     }
 }
