@@ -12,7 +12,6 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
-import kotlin.system.measureNanoTime
 
 abstract class OpenSSLTask @Inject constructor(
     private val gradle: Gradle
@@ -87,41 +86,36 @@ abstract class OpenSSLTask @Inject constructor(
         val binDir = ndkDir.get().resolve("toolchains/llvm/prebuilt/linux-x86_64/bin")
 
         logger.lifecycle("Configuring OpenSSL")
-        measureNanoTime {
-            executeCommand(
-                listOf(sourceDir.get().resolve("Configure").toString()) + configureArgs,
-                logger,
-                ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
-            ) {
-                directory(buildDir)
-                prependPath(binDir)
-                environment()["ANDROID_NDK"] = ndkDir.get().toString()
-                if (ccache.get()) {
-                    environment()["CC"] = "ccache ${binDir.resolve("clang")}"
-                }
+        executeCommand(
+            listOf(sourceDir.get().resolve("Configure").toString()) + configureArgs,
+            logger,
+            ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+        ) {
+            directory(buildDir)
+            prependPath(binDir)
+            environment()["ANDROID_NDK"] = ndkDir.get().toString()
+            if (ccache.get()) {
+                environment()["CC"] = "ccache ${binDir.resolve("clang")}"
             }
         }.also {
             logger.lifecycle(
-                "Configuration finished, elapsed time = {} s",
-                nanosToSecondsString(it)
+                "Configuration finished, elapsed time = {}",
+                it.elapsedTime.format()
             )
         }
 
         logger.lifecycle("Building OpenSSL")
-        measureNanoTime {
-            executeMake("build_libs", buildDir, buildDir.resolve(BUILD_LOG_FILE), logger, gradle) {
-                prependPath(binDir)
-            }
+        executeMake("build_libs", buildDir, buildDir.resolve(BUILD_LOG_FILE), logger, gradle) {
+            prependPath(binDir)
         }.also {
-            logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
+            logger.lifecycle("Building finished, elapsed time = {}", it.elapsedTime.format())
         }
 
         logger.lifecycle("Installing OpenSSL")
-        measureNanoTime {
-            executeMake("install_dev", buildDir, buildDir.resolve(INSTALL_LOG_FILE), logger, gradle)
-        }.also {
-            logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
-        }
+        executeMake("install_dev", buildDir, buildDir.resolve(INSTALL_LOG_FILE), logger, gradle)
+            .also {
+                logger.lifecycle("Installation finished, elapsed time = {}", it.elapsedTime.format())
+            }
     }
 
     companion object {
