@@ -50,7 +50,7 @@ jobs:
 
       - name: Restore Android SDK from cache
         id: android-sdk-cache
-        uses: equeim/cache@v2-altered
+        uses: equeim/cache@v3-altered
         with:
           path: ${{ env.ANDROID_SDK_ROOT }}
           key: ${{ steps.android-sdk-variables.outputs.cache-key }}
@@ -72,7 +72,7 @@ jobs:
           ./.github/workflows/compute-ccache-key.sh '${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt', '3rdparty/openssl/patches/*', '3rdparty/qt/patches/*') }}'
 
       - name: Restore ccache directory from cache
-        uses: equeim/cache@v2-altered
+        uses: equeim/cache@v3-altered
         with:
           path: ${{ runner.temp }}/.ccache
           key: ${{ steps.compute-ccache-key.outputs.cache-key }}
@@ -94,13 +94,14 @@ jobs:
           CCACHE_COMPILERCHECK: content
 
       - name: Archive debug APKs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: debug-apks
           path: app/build/outputs/apk/*/debug/*.apk
+          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
 
       - name: Archive test and lint reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: reports
           path: |
@@ -110,9 +111,11 @@ jobs:
             libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
+          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
 
       - name: Archive native dependencies build logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: 3rdparty-build-logs
           path: 3rdparty/*/build-*/tremotesf.*.log
+          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
