@@ -82,7 +82,7 @@ jobs:
       - name: Build the app
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: -P org.equeim.tremotesf.ccache=true build
+          arguments: --info -P org.equeim.tremotesf.ccache=true build
           cache-read-only: ${{ github.event_name != 'push' }}
         env:
           GRADLE_USER_HOME: ${{ runner.temp }}/.gradle
@@ -110,9 +110,3 @@ jobs:
             libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
-
-      - name: Archive native dependencies build logs
-        uses: actions/upload-artifact@v2
-        with:
-          name: 3rdparty-build-logs
-          path: 3rdparty/*/build-*/tremotesf.*.log

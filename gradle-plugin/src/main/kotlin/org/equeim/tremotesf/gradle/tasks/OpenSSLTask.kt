@@ -1,6 +1,10 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.equeim.tremotesf.gradle.utils.*
+import org.equeim.tremotesf.gradle.utils.executeCommand
+import org.equeim.tremotesf.gradle.utils.make
+import org.equeim.tremotesf.gradle.utils.showCcacheStatistics
+import org.equeim.tremotesf.gradle.utils.zeroCcacheStatistics
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
@@ -9,12 +13,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
 import kotlin.system.measureNanoTime
 
 abstract class OpenSSLTask @Inject constructor(
+    private val execOperations: ExecOperations,
     private val gradle: Gradle
 ) : DefaultTask() {
     @get:Input
@@ -43,13 +49,13 @@ abstract class OpenSSLTask @Inject constructor(
     fun buildOpenSSL() {
         logger.lifecycle("Start building OpenSSL")
         if (ccache.get()) {
-            zeroCcacheStatistics(logger)
+            execOperations.zeroCcacheStatistics(logger)
         }
         for (abi in NativeAbis.abis) {
             buildOpenSSL(abi)
         }
         if (ccache.get()) {
-            showCcacheStatistics(logger)
+            execOperations.showCcacheStatistics(logger)
         }
     }
 
@@ -88,28 +94,24 @@ abstract class OpenSSLTask @Inject constructor(
 
         logger.lifecycle("Configuring OpenSSL")
         measureNanoTime {
-            executeCommand(
-                listOf(sourceDir.get().resolve("Configure").toString()) + configureArgs,
-                logger,
-                ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
-            ) {
-                directory(buildDir)
+            execOperations.executeCommand(logger) {
+                executable(sourceDir.get().resolve("Configure"))
+                args = configureArgs
+                workingDir = buildDir
+                environment("ANDROID_NDK", ndkDir.get())
+
                 prependPath(binDir)
-                environment()["ANDROID_NDK"] = ndkDir.get().toString()
                 if (ccache.get()) {
-                    environment()["CC"] = "ccache ${binDir.resolve("clang")}"
+                    environment("CC", "ccache ${binDir.resolve("clang")}")
                 }
             }
         }.also {
-            logger.lifecycle(
-                "Configuration finished, elapsed time = {} s",
-                nanosToSecondsString(it)
-            )
+            logger.lifecycle("Configuration finished, elapsed time = {} s", nanosToSecondsString(it))
         }
 
         logger.lifecycle("Building OpenSSL")
         measureNanoTime {
-            executeMake("build_libs", buildDir, buildDir.resolve(BUILD_LOG_FILE), logger, gradle) {
+            execOperations.make("build_libs", buildDir, logger, gradle) {
                 prependPath(binDir)
             }
         }.also {
@@ -118,15 +120,14 @@ abstract class OpenSSLTask @Inject constructor(
 
         logger.lifecycle("Installing OpenSSL")
         measureNanoTime {
-            executeMake("install_dev", buildDir, buildDir.resolve(INSTALL_LOG_FILE), logger, gradle)
+            execOperations.make("install_dev", buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
     }
 
     companion object {
-        private val COMMON_ARGUMENTS =
-            listOf("no-shared", "no-ssl3", "no-comp", "no-hw", "no-engine")
+        private val COMMON_ARGUMENTS = listOf("no-shared", "no-ssl3", "no-comp", "no-hw", "no-engine")
         private val COMMON_CFLAGS = listOf(
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
@@ -137,12 +138,10 @@ abstract class OpenSSLTask @Inject constructor(
         fun patchesDir(opensslDir: File) = opensslDir.resolve("patches")
 
         private fun buildDir(opensslDir: File, abi: String) = opensslDir.resolve("build-$abi")
-        private fun buildDirs(opensslDir: File) =
-            NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
+        private fun buildDirs(opensslDir: File) = NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
 
         private fun installDir(opensslDir: File, abi: String) = opensslDir.resolve("install-$abi")
-        private fun installDirs(opensslDir: File) =
-            NativeAbis.abis.map { abi -> installDir(opensslDir, abi) }
+        private fun installDirs(opensslDir: File) = NativeAbis.abis.map { abi -> installDir(opensslDir, abi) }
 
         fun dirsToClean(opensslDir: File) = buildDirs(opensslDir) + installDirs(opensslDir)
     }

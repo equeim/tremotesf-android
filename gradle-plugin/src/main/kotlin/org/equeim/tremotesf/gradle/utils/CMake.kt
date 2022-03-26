@@ -1,10 +1,11 @@
 package org.equeim.tremotesf.gradle.utils
 
-import org.equeim.tremotesf.gradle.tasks.BUILD_LOG_FILE
-import org.equeim.tremotesf.gradle.tasks.INSTALL_LOG_FILE
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
+import org.gradle.process.ExecOperations
+import org.gradle.process.ExecSpec
 import java.io.File
 
 private const val CMAKE = "cmake"
@@ -14,36 +15,32 @@ internal enum class CMakeMode {
     Install
 }
 
-internal fun executeCMake(
+internal fun ExecOperations.cmake(
     mode: CMakeMode,
     cmakeBinaryDir: File?,
     buildDir: File,
     logger: Logger,
     gradle: Gradle
 ) =
-    executeCMakeImpl(
+    executeCMake(
         when (mode) {
             CMakeMode.Build -> listOf(
                 "--build",
                 buildDir.toString(),
                 "--parallel",
-                gradle.startParameter.maxWorkerCount.toString(),
-                "--verbose"
+                gradle.startParameter.maxWorkerCount.toString()
             )
-            CMakeMode.Install -> listOf("--install", buildDir.toString(), "--verbose")
+            CMakeMode.Install -> listOf("--install", buildDir.toString())
         },
         cmakeBinaryDir,
         logger,
-        when (mode) {
-            CMakeMode.Build -> ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(BUILD_LOG_FILE))
-            CMakeMode.Install -> ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(INSTALL_LOG_FILE))
-        }
+        null
     )
 
-internal fun printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
+internal fun ExecOperations.printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
     val cmakeVersion = getCMakeVersion(cmakeBinaryDir, logger)
-    val whichCmake = executeCommand(listOf("which", CMAKE), logger, ExecInputOutputMode.CaptureOutput) {
-        cmakeBinaryDir?.let { prependPath(it) }
+    val whichCmake = executeCommand(logger, ExecOutputMode.Capture) {
+        commandLine("which", CMAKE)
     }.trimmedOutputString()
     logger.lifecycle(
         "Using {} from {}",
@@ -54,8 +51,9 @@ internal fun printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
 
 private fun getCMakeVersion(
     cmakeBinaryDir: File?,
-    logger: Logger
-) = executeCMakeImpl(listOf("--version"), cmakeBinaryDir, logger, ExecInputOutputMode.CaptureOutput)
+    logger: Logger,
+    execute: (Action<in ExecSpec>) -> org.gradle.process.ExecResult
+) = executeCMake(listOf("--version"), cmakeBinaryDir, logger, ExecOutputMode.Capture, execute)
     .runCatching {
         outputString()
             .lineSequence()
@@ -67,14 +65,30 @@ private fun getCMakeVersion(
         throw RuntimeException("Failed to parse CMake version", it)
     }.ifEmpty { throw RuntimeException("Failed to parse CMake version") }
 
-fun Project.getCMakeVersionOrNull(cmakeBinaryDir: File? = null) =
-    runCatching { getCMakeVersion(cmakeBinaryDir, logger) }.getOrNull()
+private fun ExecOperations.getCMakeVersion(
+    cmakeBinaryDir: File?,
+    logger: Logger
+) = getCMakeVersion(cmakeBinaryDir, logger, this::exec)
 
-private fun executeCMakeImpl(
+fun Project.getCMakeVersionOrNull(cmakeBinaryDir: File? = null) =
+    runCatching { getCMakeVersion(cmakeBinaryDir, logger, this::exec) }.getOrNull()
+
+private fun executeCMake(
     args: List<String>,
     cmakeBinaryDir: File?,
     logger: Logger,
-    inputOutputMode: ExecInputOutputMode,
-) = executeCommand(listOf(CMAKE) + args, logger, inputOutputMode) {
-    cmakeBinaryDir?.let { prependPath(it) }
-}
+    outputMode: ExecOutputMode?,
+    execute: (Action<in ExecSpec>) -> org.gradle.process.ExecResult
+) =
+    executeCommand(logger, outputMode, execute) {
+        executable = CMAKE
+        setArgs(args)
+        cmakeBinaryDir?.let { prependPath(it) }
+    }
+
+private fun ExecOperations.executeCMake(
+    args: List<String>,
+    cmakeBinaryDir: File?,
+    logger: Logger,
+    outputMode: ExecOutputMode?
+) = executeCMake(args, cmakeBinaryDir, logger, outputMode, this::exec)

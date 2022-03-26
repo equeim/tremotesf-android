@@ -2,6 +2,9 @@ package org.equeim.tremotesf.gradle.tasks
 
 import org.equeim.tremotesf.gradle.utils.*
 import org.equeim.tremotesf.gradle.utils.CMakeMode
+import org.equeim.tremotesf.gradle.utils.ExecOutputMode
+import org.equeim.tremotesf.gradle.utils.cmake
+import org.equeim.tremotesf.gradle.utils.executeCommand
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.ListProperty
@@ -13,6 +16,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import java.io.File
 import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
@@ -20,6 +24,7 @@ import javax.inject.Inject
 import kotlin.system.measureNanoTime
 
 abstract class QtTask @Inject constructor(
+    private val execOperations: ExecOperations,
     private val gradle: Gradle
 ) : DefaultTask() {
     @get:Input
@@ -66,10 +71,10 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Additional CMake flags for host Qt = {}", hostQtCmakeFlags.get())
         logger.lifecycle("Ccache = {}", ccache.get())
 
-        printCMakeInfo(cmakeBinaryDir.orNull, logger)
+        execOperations.printCMakeInfo(cmakeBinaryDir.orNull, logger)
 
         if (ccache.get()) {
-            zeroCcacheStatistics(logger)
+            execOperations.zeroCcacheStatistics(logger)
         }
 
         val hostQtInfo = getHostQtInfo()
@@ -79,7 +84,7 @@ abstract class QtTask @Inject constructor(
         }
 
         if (ccache.get()) {
-            showCcacheStatistics(logger)
+            execOperations.showCcacheStatistics(logger)
         }
     }
 
@@ -99,13 +104,9 @@ abstract class QtTask @Inject constructor(
 
     private fun getPrebuiltHostQtInfo(): HostQtInfo? {
         val buildingQtVersion = runCatching {
-            executeCommand(
-                listOf("git", "-C", sourceDir.get().toString(), "describe", "--tags"),
-                logger,
-                ExecInputOutputMode.CaptureOutput
-            )
-                .trimmedOutputString()
-                .drop(1)
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
+                commandLine("git", "-C", sourceDir.get(), "describe", "--tags")
+            }.trimmedOutputString().drop(1)
         }.getOrElse {
             throw RuntimeException("Failed to determine Qt version", it)
         }
@@ -113,8 +114,9 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt {}", buildingQtVersion)
 
         val hostQtVersion = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_VERSION"), logger, ExecInputOutputMode.CaptureOutput)
-                .trimmedOutputString()
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_VERSION")
+            }.trimmedOutputString()
         }.getOrElse { return null }
 
         logger.lifecycle("Found prebuilt host Qt {}", hostQtVersion)
@@ -125,16 +127,18 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostPrefix = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_PREFIX"), logger, ExecInputOutputMode.CaptureOutput)
-                .trimmedOutputString()
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_HOST_PREFIX")
+            }.trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_PREFIX")
             return null
         }
 
         val hostLibs = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_LIBS"), logger, ExecInputOutputMode.CaptureOutput)
-                .trimmedOutputString()
+            execOperations.executeCommand(logger, ExecOutputMode.Capture) {
+                commandLine("qmake6", "-query", "QT_HOST_LIBS")
+            }.trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_LIBS")
             return null
@@ -285,13 +289,13 @@ abstract class QtTask @Inject constructor(
         Files.createDirectories(buildDir.toPath())
 
         measureNanoTime {
-            executeCommand(
-                listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
-                logger,
-                ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
-            ) {
-                directory(buildDir)
-                cmakeBinaryDir.orNull?.let { prependPath(it) }
+            execOperations.executeCommand(logger) {
+                executable(sourceDir.get().resolve("configure"))
+                args = configureFlags
+                workingDir = buildDir
+                cmakeBinaryDir.orNull?.let { cmakeBinaryDir ->
+                    prependPath(cmakeBinaryDir)
+                }
             }
         }.also {
             logger.lifecycle(
@@ -306,11 +310,13 @@ abstract class QtTask @Inject constructor(
             // Workaround for CMake bug that forces use of gold linker when LTCG is enabled
             // https://gitlab.kitware.com/cmake/cmake/-/issues/21772
             // https://github.com/android/ndk/issues/1444
-            executeCommand(listOf("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja").toString()), logger)
+            execOperations.executeCommand(logger) {
+                commandLine("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja"))
+            }
         }
 
         measureNanoTime {
-            executeCMake(
+            execOperations.cmake(
                 CMakeMode.Build,
                 cmakeBinaryDir.orNull,
                 buildDir,
@@ -323,7 +329,7 @@ abstract class QtTask @Inject constructor(
 
         logger.lifecycle("Installing Qt")
         measureNanoTime {
-            executeCMake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
+            execOperations.cmake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
         }.also {
             logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
         }
