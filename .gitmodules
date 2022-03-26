@@ -1,4 +1,7 @@
-[submodule "libtremotesf/libtremotesf"]
+[submodule "libtremotesf/src/main/cpp/fmt"]
+	path = libtremotesf/src/main/cpp/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "libtremotesf/src/main/cpp/libtremotesf"]
 	path = libtremotesf/src/main/cpp/libtremotesf
 	url = https://github.com/equeim/libtremotesf.git
 [submodule "bencode"]

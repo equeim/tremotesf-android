@@ -177,7 +177,6 @@ public class libtremotesfJNI {
   public final static native double TorrentData_ratioLimit_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_ratioLimitMode_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_seeders_get(long jarg1, TorrentData jarg1_);
-  public final static native int TorrentData_webSeeders_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_leechers_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_peersLimit_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_addedDateTime_get(long jarg1, TorrentData jarg1_);
@@ -194,6 +193,8 @@ public class libtremotesfJNI {
   public final static native boolean TorrentData_singleFile_get(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_trackersAnnounceUrlsChanged_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_trackers_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_webSeeders_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_activeWebSeeders_get(long jarg1, TorrentData jarg1_);
   public final static native long new_TorrentData();
   public final static native void delete_TorrentData(long jarg1);
   public final static native void Server_name_set(long jarg1, Server jarg1_, String jarg2);

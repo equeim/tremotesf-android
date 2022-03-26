@@ -5,9 +5,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH "${OPENSSL_DIR}/install-${ANDROID_ABI}")
 
 project(tremotesf CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 
 find_library(log-lib log)
 
@@ -15,14 +13,15 @@ find_package(Qt6 COMPONENTS Core Concurrent Network REQUIRED)
 set(Qt6QTlsBackendOpenSSLPlugin_DIR "${Qt6Network_DIR}")
 find_package(Qt6QTlsBackendOpenSSLPlugin REQUIRED)
 
+add_subdirectory(fmt)
+
 set(TREMOTESF_QT6 ON CACHE BOOL "Build with Qt 6")
 set(TREMOTESF_SAILFISHOS OFF CACHE BOOL "Build for Sailfish OS")
 include(libtremotesf/cmake/CommonOptions.cmake)
 add_subdirectory(libtremotesf)
 
 add_library(
-        ${PROJECT_NAME}
-        SHARED
+        ${PROJECT_NAME} SHARED
         jnirpc.cpp
         libtremotesf_wrap.cxx
         resources.qrc
@@ -30,12 +29,14 @@ add_library(
 
 set_target_properties(
         ${PROJECT_NAME} PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION ON
+        INCLUDE_CURRENT_DIR ON
+        AUTOMOC ON
+        AUTORCC ON
 )
 
 set_source_files_properties(libtremotesf_wrap.cxx PROPERTIES COMPILE_OPTIONS "-Wno-sign-conversion")
 
-target_link_libraries(${PROJECT_NAME} libtremotesf ${log-lib} Qt6::QTlsBackendOpenSSLPlugin)
+target_link_libraries(${PROJECT_NAME} libtremotesf "${log-lib}" Qt6::QTlsBackendOpenSSLPlugin)
 
 # CMake overrides linker with -fuse-ld=gold when INTERPROCEDURAL_OPTIMIZATION is enabled. Bring it back
 # We are using target_link_libraries instead of target_link_options

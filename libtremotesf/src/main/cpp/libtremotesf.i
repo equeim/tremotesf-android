@@ -28,8 +28,8 @@
 #define QT_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
 // Try to keep it in sync with qtbase submodule
 #define QT_VERSION_MAJOR 6
-#define QT_VERSION_MINOR 1
-#define QT_VERSION_PATCH 2
+#define QT_VERSION_MINOR 2
+#define QT_VERSION_PATCH 4
 #define QT_VERSION QT_VERSION_CHECK(QT_VERSION_MAJOR, QT_VERSION_MINOR, QT_VERSION_PATCH)
 #define Q_NAMESPACE
 #define Q_OBJECT
@@ -101,7 +101,6 @@ namespace libtremotesf
 %include "libtremotesf/torrent.h"
 
 %mutable;
-%include "libtremotesf/qtsupport.h"
 %include "libtremotesf/rpc.h"
 %immutable;
 
