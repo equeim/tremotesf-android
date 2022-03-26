@@ -1,23 +1,16 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.equeim.tremotesf.gradle.utils.*
-import org.equeim.tremotesf.gradle.utils.CMakeMode
 import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectories
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
 import javax.inject.Inject
-import kotlin.system.measureNanoTime
 
 abstract class QtTask @Inject constructor(
     private val gradle: Gradle
@@ -284,20 +277,15 @@ abstract class QtTask @Inject constructor(
 
         Files.createDirectories(buildDir.toPath())
 
-        measureNanoTime {
-            executeCommand(
-                listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
-                logger,
-                ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
-            ) {
-                directory(buildDir)
-                cmakeBinaryDir.orNull?.let { prependPath(it) }
-            }
+        executeCommand(
+            listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
+            logger,
+            ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+        ) {
+            directory(buildDir)
+            cmakeBinaryDir.orNull?.let { prependPath(it) }
         }.also {
-            logger.lifecycle(
-                "Configuration finished, elapsed time = {} s",
-                nanosToSecondsString(it)
-            )
+            logger.lifecycle("Configuration finished, elapsed time = {}", it.elapsedTime.format())
         }
 
         logger.lifecycle("Building Qt")
@@ -309,24 +297,21 @@ abstract class QtTask @Inject constructor(
             executeCommand(listOf("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja").toString()), logger)
         }
 
-        measureNanoTime {
-            executeCMake(
-                CMakeMode.Build,
-                cmakeBinaryDir.orNull,
-                buildDir,
-                logger,
-                gradle
-            )
-        }.also {
-            logger.lifecycle("Building finished, elapsed time = {} s", nanosToSecondsString(it))
+        executeCMake(
+            CMakeMode.Build,
+            cmakeBinaryDir.orNull,
+            buildDir,
+            logger,
+            gradle
+        ).also {
+            logger.lifecycle("Building finished, elapsed time = {}", it.elapsedTime.format())
         }
 
         logger.lifecycle("Installing Qt")
-        measureNanoTime {
             executeCMake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
-        }.also {
-            logger.lifecycle("Installation finished, elapsed time = {} s", nanosToSecondsString(it))
-        }
+                .also {
+                    logger.lifecycle("Installation finished, elapsed time = {}", it.elapsedTime.format())
+                }
     }
 
     private fun needLinkerWorkaround(crossCompiling: Boolean): Boolean {
