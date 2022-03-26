@@ -30,7 +30,7 @@ internal fun executeCommand(
     ignoreExitStatus: Boolean = false,
     configure: ProcessBuilder.() -> Unit = {}
 ): ExecResult {
-    logger.info("Executing $commandLine")
+    logger.info("Executing {}", commandLine)
     val builder = ProcessBuilder(commandLine)
     builder.dropNdkEnvironmentVariables(logger)
 
@@ -44,7 +44,7 @@ internal fun executeCommand(
         is ExecInputOutputMode.PrintOutput,
         is ExecInputOutputMode.CaptureOutput -> builder.redirectErrorStream(true)
         is ExecInputOutputMode.RedirectOutputToFile -> {
-            logger.info("Redirecting output to file ${actualInputOutputMode.file}")
+            logger.info("Redirecting output to file {}", actualInputOutputMode.file)
             builder.redirectErrorStream(true)
             builder.redirectOutput(actualInputOutputMode.file)
         }
@@ -84,10 +84,16 @@ internal fun executeCommand(
             Duration.ofNanos(endTime - startTime)
         )
     } catch (e: Exception) {
-        logger.error("Failed to execute {}: {}", commandLine, e)
-        if (actualInputOutputMode == ExecInputOutputMode.CaptureOutput) {
-            logger.error("Output:")
-            outputStream.writeTo(System.err)
+        logger.error("Failed to execute {}", commandLine, e)
+        when (actualInputOutputMode) {
+            is ExecInputOutputMode.CaptureOutput -> {
+                logger.error("Output:")
+                outputStream.writeTo(System.err)
+            }
+            is ExecInputOutputMode.RedirectOutputToFile -> {
+                logger.error("See process output in {}", actualInputOutputMode.file)
+            }
+            else -> Unit
         }
         throw e
     }

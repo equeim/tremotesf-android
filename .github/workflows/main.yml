@@ -117,5 +117,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 3rdparty-build-logs
-          path: 3rdparty/*/build-*/tremotesf.*.log
+          path: |
+            3rdparty/*/build*/tremotesf.*.log
+            3rdparty/*/build*/**/CMakeOutput.log
+            3rdparty/*/build*/**/CMakeError.log
           retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
