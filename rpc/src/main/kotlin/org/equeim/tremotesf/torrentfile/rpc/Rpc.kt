@@ -26,16 +26,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import mozilla.components.lib.publicsuffixlist.PublicSuffixList
 import org.equeim.libtremotesf.*
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
@@ -53,6 +44,11 @@ data class ServerStats(
     constructor() : this(0, 0, SessionStats(), SessionStats())
 }
 
+private class NativeCallbackException(methodName: String, cause: Throwable) : RuntimeException(
+    "Exception in $methodName: ${cause.message}",
+    cause
+)
+
 abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope, context: Context, protected val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
     init {
         LibTremotesf.init(javaClass.classLoader)
@@ -60,28 +56,33 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
     val nativeInstance: JniRpc = object : JniRpc() {
         private inline fun runFromNativeCallback(
-            callback: String,
             block: () -> Unit
-        ): Unit = runCatching { block() }.getOrElse {
-            scope.launch(Dispatchers.Main) {
-                throw RuntimeException("Exception in $callback", it)
+        ) {
+            runCatching {
+                block()
+            }.getOrElse {
+                val exception = NativeCallbackException(
+                    Throwable().stackTrace.first().methodName,
+                    it
+                )
+                Thread { throw exception }.start()
             }
         }
 
         override fun onConnectionStateChanged(connectionState: RpcConnectionState) =
-            runFromNativeCallback("onConnectionStateChanged()") {
+            runFromNativeCallback {
                 Timber.i("onConnectionStateChanged() called with: connectionState = $connectionState")
                 _connectionState.value = connectionState
             }
 
         override fun onErrorChanged(error: RpcError, errorMessage: String) =
-            runFromNativeCallback("onErrorChanged()") {
+            runFromNativeCallback {
                 Timber.i("onErrorChanged() called with: error = $error, errorMessage = $errorMessage")
                 _error.value = Error(error, errorMessage)
             }
 
         override fun onServerSettingsChanged(data: JniServerSettingsData) =
-            runFromNativeCallback("onServerSettingsChanged()") {
+            runFromNativeCallback {
                 val old = serverSettings
                 serverSettings = data
                 old.delete()
@@ -91,7 +92,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             removedIndexRanges: IntPairVector,
             changed: TorrentDataVector,
             added: TorrentDataVector
-        ) = runFromNativeCallback("onTorrentsUpdated()") {
+        ) = runFromNativeCallback {
             // We need call Rpc.onTorrentsUpdated() in blocking fashion to prevent state
             // inconsistency when other callbacks are called
             // Run in Unconfined to reduce thread jumping when using PublicSuffixList
@@ -108,34 +109,34 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             uploadSpeed: Long,
             currentSession: SessionStats,
             total: SessionStats
-        ) = runFromNativeCallback("onServerStatsUpdated()") {
+        ) = runFromNativeCallback {
             _serverStats.value = ServerStats(downloadSpeed, uploadSpeed, currentSession, total)
         }
 
         override fun onTorrentAdded(id: Int, hashString: String, name: String) =
-            runFromNativeCallback("onTorrentAdded()") {
+            runFromNativeCallback {
                 Timber.i("onTorrentAdded() called with: id = $id, hashString = $hashString, name = $name")
                 this@Rpc.onTorrentAdded(id, hashString, name)
             }
 
         override fun onTorrentFinished(id: Int, hashString: String, name: String) =
-            runFromNativeCallback("onTorrentFinished()") {
+            runFromNativeCallback {
                 Timber.i("onTorrentFinished() called with: id = $id, hashString = $hashString, name = $name")
                 this@Rpc.onTorrentFinished(id, hashString, name)
             }
 
-        override fun onTorrentAddDuplicate() = runFromNativeCallback("onTorrentAddDuplicate()") {
+        override fun onTorrentAddDuplicate() = runFromNativeCallback {
             Timber.i("onTorrentAddDuplicate() called")
             _torrentAddDuplicateEvents.tryEmit(Unit)
         }
 
-        override fun onTorrentAddError() = runFromNativeCallback("onTorrentAddError()") {
+        override fun onTorrentAddError() = runFromNativeCallback {
             Timber.i("onTorrentAddError() called")
             _torrentAddErrorEvents.tryEmit(Unit)
         }
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) =
-            runFromNativeCallback("onTorrentFilesUpdated()") {
+            runFromNativeCallback {
                 onTorrentFilesUpdated(torrentId, files.map(libtremotesf::moveFrom))
             }
 
@@ -144,7 +145,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             removedIndexRanges: IntPairVector,
             changed: TorrentPeersVector,
             added: TorrentPeersVector
-        ) = runFromNativeCallback("onTorrentPeersUpdated()") {
+        ) = runFromNativeCallback {
             onTorrentPeersUpdated(
                 torrentId,
                 removedIndexRanges.map { it.first.rangeTo(it.second) },
@@ -154,7 +155,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         }
 
         override fun onTorrentFileRenamed(torrentId: Int, filePath: String, newName: String) =
-            runFromNativeCallback("onTorrentFileRenamed()") {
+            runFromNativeCallback {
                 Timber.i("onTorrentFileRenamed() called with: torrentId = $torrentId, filePath = $filePath, newName = $newName")
                 _torrentFileRenamedEvents.tryEmit(
                     TorrentFileRenamedData(
@@ -166,18 +167,18 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             }
 
         override fun onGotDownloadDirFreeSpace(bytes: Long) =
-            runFromNativeCallback("onGotDownloadDirFreeSpace()") {
+            runFromNativeCallback {
                 Timber.i("onGotDownloadDirFreeSpace() called with: bytes = $bytes")
                 _gotDownloadDirFreeSpaceEvent.tryEmit(bytes)
             }
 
         override fun onGotFreeSpaceForPath(path: String, success: Boolean, bytes: Long) =
-            runFromNativeCallback("onGotFreeSpaceForPath()") {
+            runFromNativeCallback {
                 Timber.i("onGotFreeSpaceForPath() called with: path = $path, success = $success, bytes = $bytes")
                 _gotFreeSpaceForPathEvents.tryEmit(GotFreeSpaceForPathData(path, success, bytes))
             }
 
-        override fun onAboutToDisconnect() = runFromNativeCallback("onAboutToDisconnect()") {
+        override fun onAboutToDisconnect() = runFromNativeCallback {
             this@Rpc.onAboutToDisconnect()
         }
     }
