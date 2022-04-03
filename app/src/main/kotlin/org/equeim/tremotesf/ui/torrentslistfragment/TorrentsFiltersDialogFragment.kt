@@ -4,10 +4,13 @@ import android.os.Bundle
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.navGraphViewModels
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsFiltersDialogFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -29,13 +32,15 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             sortView.apply {
                 setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
                 setOnItemClickListener { _, _, position, _ ->
-                    model.sortMode.value = TorrentsListFragmentViewModel.SortMode.values()[position]
+                    model.setSortMode(TorrentsListFragmentViewModel.SortMode.values()[position])
                 }
             }
 
             sortViewLayout.setStartIconOnClickListener {
                 with(model) {
-                    sortOrder.value = sortOrder.value.inverted()
+                    viewModelScope.launch {
+                        setSortOrder(sortOrder.first().inverted())
+                    }
                 }
             }
 
@@ -43,8 +48,9 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             statusView.apply {
                 setAdapter(statusFilterViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    model.statusFilterMode.value =
+                    model.setStatusFilterMode(
                         TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
+                    )
                 }
             }
 
@@ -52,7 +58,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             trackersView.apply {
                 setAdapter(trackersViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    model.trackerFilter.value = trackersViewAdapter.getTrackerFilter(position)
+                    model.setTrackerFilter(trackersViewAdapter.getTrackerFilter(position))
                 }
             }
 
@@ -60,7 +66,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             directoriesView.apply {
                 setAdapter(directoriesViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    model.directoryFilter.value = directoriesViewAdapter.getDirectoryFilter(position)
+                    model.setDirectoryFilter(directoriesViewAdapter.getDirectoryFilter(position))
                 }
             }
 

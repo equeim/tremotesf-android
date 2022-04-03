@@ -22,19 +22,16 @@ package org.equeim.tremotesf.ui
 import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
-
 import androidx.annotation.Keep
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.service.ForegroundService
 
 
 class SettingsFragment : NavigationFragment(
@@ -79,28 +76,16 @@ class SettingsFragment : NavigationFragment(
             key: String?
         ) {
             when (key) {
-                Settings.themeKey -> AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
-
-                Settings.oldColorsKey -> NavigationActivity.recreateAllActivities()
-
                 Settings.notifyOnAddedKey,
-                Settings.notifyOnFinishedKey -> updateBackgroundUpdatePreference()
-
-                Settings.persistentNotificationKey -> {
-                    updateBackgroundUpdatePreference()
-                    if (Settings.showPersistentNotification) {
-                        ForegroundService.start(requireContext())
-                    } else {
-                        ForegroundService.stop(requireContext())
-                    }
-                }
+                Settings.notifyOnFinishedKey,
+                Settings.persistentNotificationKey-> updateBackgroundUpdatePreference()
             }
         }
 
-        private fun updateBackgroundUpdatePreference() {
+        private fun updateBackgroundUpdatePreference() = lifecycleScope.launch {
             findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
                 ?.isEnabled =
-                (Settings.notifyOnFinished || Settings.notifyOnAdded) && !Settings.showPersistentNotification
+                (Settings.notifyOnFinished.get() || Settings.notifyOnAdded.get()) && !Settings.showPersistentNotification.get()
         }
     }
 }

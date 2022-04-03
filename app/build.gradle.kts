@@ -84,7 +84,6 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.concurrent.futures)
     implementation(libs.androidx.core)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.fragment)

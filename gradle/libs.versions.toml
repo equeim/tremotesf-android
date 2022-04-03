@@ -13,7 +13,6 @@ serialization = "1.3.2"
 
 androidx-appcompat = "1.4.1"
 androidx-collection = "1.2.0"
-androidx-concurrent-futures = "1.1.0"
 androidx-core = "1.7.0"
 androidx-coordinatorlayout = "1.2.0"
 androidx-fragment = "1.4.1"
@@ -49,7 +48,6 @@ serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode" }
 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-collection = { module = "androidx.collection:collection-ktx", version.ref = "androidx-collection" }
-androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "androidx-concurrent-futures" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "androidx-coordinatorlayout" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }

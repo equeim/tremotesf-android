@@ -51,27 +51,27 @@ class NotificationsController(private val context: Context) {
         }
     }
 
-    fun isTorrentNotificationsEnabled(sinceLastConnection: Boolean): Boolean {
+    suspend fun isTorrentNotificationsEnabled(sinceLastConnection: Boolean): Boolean {
         return isNotifyOnFinishedEnabled(sinceLastConnection) || isNotifyOnAddedEnabled(sinceLastConnection)
     }
 
-    fun isNotifyOnFinishedEnabled(sinceLastConnection: Boolean): Boolean {
+    suspend fun isNotifyOnFinishedEnabled(sinceLastConnection: Boolean): Boolean {
         return if (sinceLastConnection) {
             Settings.notifyOnFinishedSinceLastConnection
         } else {
             Settings.notifyOnFinished
-        }
+        }.get()
     }
 
-    fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
+    suspend fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
         return if (sinceLastConnection) {
             Settings.notifyOnAddedSinceLastConnection
         } else {
             Settings.notifyOnAdded
-        }
+        }.get()
     }
 
-    fun showTorrentFinishedNotification(
+    suspend fun showTorrentFinishedNotification(
         torrentId: Int,
         hashString: String,
         torrentName: String,
@@ -82,7 +82,7 @@ class NotificationsController(private val context: Context) {
         }
     }
 
-    fun showTorrentAddedNotification(
+    suspend fun showTorrentAddedNotification(
         torrentId: Int,
         hashString: String,
         torrentName: String,
