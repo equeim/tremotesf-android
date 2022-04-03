@@ -23,13 +23,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.annotation.AnyRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -42,27 +46,11 @@ import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewMode
 import kotlin.reflect.KClass
 
 
-private const val TORRENTS_SORT_MODE = "torrentsSortMode"
-private const val TORRENTS_SORT_ORDER = "torrentsSortOrder"
-private const val TORRENTS_STATUS_FILTER = "torrentsStatusFilter"
-private const val TORRENTS_TRACKER_FILTER = "torrentsTrackerFilter"
-private const val TORRENTS_DIRECTORY_FILTER = "torrentsFolderFilter"
-
 @SuppressLint("StaticFieldLeak")
 object Settings {
     private val context: Context = TremotesfApplication.instance
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
-    private val themeKey = context.getString(R.string.prefs_theme_key)
-
-    val persistentNotificationKey = context.getString(R.string.prefs_persistent_notification_key)
-    val notifyOnFinishedKey = context.getString(R.string.prefs_notify_on_finished_key)
-    val notifyOnAddedKey = context.getString(R.string.prefs_notify_on_added_key)
-    val backgroundUpdateIntervalKey =
-        context.getString(R.string.prefs_background_update_interval_key)
-
-    private const val THEME_AUTO = "auto"
     private const val THEME_DARK = "dark"
     private const val THEME_LIGHT = "light"
 
@@ -75,6 +63,8 @@ object Settings {
         migrationMutex.withLock {
             if (migrated) return
             withContext(Dispatchers.IO) {
+                val themeKey = context.getString(R.string.prefs_theme_key)
+                val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
                 if (!preferences.contains(themeKey) && preferences.contains(darkThemeKey)) {
                     preferences.edit {
                         putString(
@@ -91,34 +81,53 @@ object Settings {
         }
     }
 
-    val nightMode: Property<Int> = property(themeKey, THEME_AUTO).map {
-        when (it) {
-            THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
-            THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-            else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            } else {
-                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+    val nightMode: Property<Int> =
+        property<String>(R.string.prefs_theme_key, R.string.prefs_theme_default_value).map {
+            when (it) {
+                THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                }
             }
         }
-    }
 
-    val theme: Property<Int> = property(R.string.prefs_old_colors_key, false)
-        .map { if (it) R.style.AppTheme_Teal else R.style.AppTheme }
+    val theme: Property<Int> =
+        property<Boolean>(R.string.prefs_old_colors_key, R.bool.prefs_old_colors_default_value)
+            .map { if (it) R.style.AppTheme_Teal else R.style.AppTheme }
 
-    val torrentCompactView: Property<Boolean> = property(R.string.prefs_torrent_compact_view_key, false)
+    val torrentCompactView: Property<Boolean> = property(
+        R.string.prefs_torrent_compact_view_key,
+        R.bool.prefs_torrent_compact_view_default_value
+    )
 
-    val torrentNameMultiline: Property<Boolean> = property(R.string.prefs_torrent_name_multiline_key, false)
+    val torrentNameMultiline: Property<Boolean> = property(
+        R.string.prefs_torrent_name_multiline_key,
+        R.bool.prefs_torrent_name_multiline_default_value
+    )
 
-    val quickReturn: Property<Boolean> = property(R.string.prefs_quick_return, false)
+    val quickReturn: Property<Boolean> =
+        property(R.string.prefs_quick_return, R.bool.prefs_quick_return_default_value)
 
-    val showPersistentNotification: Property<Boolean> = property(persistentNotificationKey, false)
+    val showPersistentNotification: Property<Boolean> = property(
+        R.string.prefs_persistent_notification_key,
+        R.bool.prefs_persistent_notification_default_value
+    )
 
-    val notifyOnFinished: Property<Boolean> = property(notifyOnFinishedKey, true)
+    val notifyOnFinished: Property<Boolean> = property(
+        R.string.prefs_notify_on_finished_key,
+        R.bool.prefs_notify_on_finished_default_value
+    )
 
-    val notifyOnAdded: Property<Boolean> = property(notifyOnAddedKey, false)
+    val notifyOnAdded: Property<Boolean> =
+        property(R.string.prefs_notify_on_added_key, R.bool.prefs_notify_on_added_default_value)
 
-    val backgroundUpdateInterval: Property<Long> = property(backgroundUpdateIntervalKey, "0").map {
+    val backgroundUpdateInterval: Property<Long> = property<String>(
+        R.string.prefs_background_update_interval_key,
+        R.string.prefs_background_update_interval_default_value
+    ).map {
         try {
             it.toLong()
         } catch (ignore: NumberFormatException) {
@@ -127,41 +136,84 @@ object Settings {
     }
 
     val notifyOnFinishedSinceLastConnection: Property<Boolean> =
-        property(R.string.prefs_notify_on_finished_since_last_key, false)
+        property(
+            R.string.prefs_notify_on_finished_since_last_key,
+            R.bool.prefs_notify_on_finished_since_last_default_value
+        )
 
     val notifyOnAddedSinceLastConnection: Property<Boolean> =
-        property(R.string.prefs_notify_on_added_since_last_key, false)
+        property(
+            R.string.prefs_notify_on_added_since_last_key,
+            R.bool.prefs_notify_on_added_since_last_default_value
+        )
 
-    val deleteFiles: Property<Boolean> = property(R.string.prefs_delete_files_key, false)
+    val deleteFiles: Property<Boolean> =
+        property(R.string.prefs_delete_files_key, R.bool.prefs_delete_files_default_value)
 
     val torrentsSortMode: MutableProperty<TorrentsListFragmentViewModel.SortMode> =
-        mutableProperty(TORRENTS_SORT_MODE, -1).map(
+        mutableProperty<Int>(
+            R.string.torrents_sort_mode_key,
+            R.integer.torrents_sort_mode_default_value
+        ).map(
             transformGetter = { enumFromInt(it, TorrentsListFragmentViewModel.SortMode.DEFAULT) },
             transformSetter = { it.ordinal }
         )
 
     val torrentsSortOrder: MutableProperty<TorrentsListFragmentViewModel.SortOrder> =
-        mutableProperty(TORRENTS_SORT_ORDER, -1).map(
+        mutableProperty<Int>(
+            R.string.torrents_sort_order_key,
+            R.integer.torrents_sort_order_default_value
+        ).map(
             transformGetter = { enumFromInt(it, TorrentsListFragmentViewModel.SortOrder.DEFAULT) },
             transformSetter = { it.ordinal }
         )
 
     val torrentsStatusFilter: MutableProperty<TorrentsListFragmentViewModel.StatusFilterMode> =
-        mutableProperty(TORRENTS_STATUS_FILTER, -1).map(
-            transformGetter = { enumFromInt(it, TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT) },
+        mutableProperty<Int>(
+            R.string.torrents_status_filter_key,
+            R.integer.torrents_status_filter_default_value
+        ).map(
+            transformGetter = {
+                enumFromInt(
+                    it,
+                    TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT
+                )
+            },
             transformSetter = { it.ordinal }
         )
 
-    val torrentsTrackerFilter: MutableProperty<String> = mutableProperty(TORRENTS_TRACKER_FILTER, "")
+    val torrentsTrackerFilter: MutableProperty<String> = mutableProperty(
+        R.string.torrents_tracker_filter_key,
+        R.string.torrents_tracker_filter_default_value
+    )
 
-    var torrentsDirectoryFilter: MutableProperty<String> = mutableProperty(TORRENTS_DIRECTORY_FILTER, "")
+    val torrentsDirectoryFilter: MutableProperty<String> = mutableProperty(
+        R.string.torrents_directory_filter_key,
+        R.string.torrents_directory_filter_default_value
+    )
 
-    private inline fun <reified T : Any> property(
-        key: String,
-        defaultValue: T
+    private fun <T : Any> property(
+        kClass: KClass<T>,
+        @StringRes keyResId: Int,
+        @AnyRes defaultValueResId: Int,
+        key: String = context.getString(keyResId)
     ): Property<T> {
-        val getter = getSharedPreferencesGetter(T::class)
+        @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
+        val defaultValue = when (kClass) {
+            Boolean::class -> context.resources.getBoolean(defaultValueResId)
+            Float::class -> context.resources.getDimension(defaultValueResId)
+            Int::class -> context.resources.getInteger(defaultValueResId)
+            Long::class -> context.resources.getInteger(defaultValueResId).toLong()
+            String::class -> context.getString(defaultValueResId)
+            Set::class -> context.resources.getStringArray(defaultValueResId).toSet()
+            else -> throw IllegalArgumentException("Unsupported property type $kClass")
+        } as T
+
+        val getter = getSharedPreferencesGetter(kClass)
+
         return object : Property<T> {
+            override val key = key
+
             override suspend fun get(): T {
                 migrate()
                 return preferences.getter(key, defaultValue)
@@ -182,15 +234,17 @@ object Settings {
 
     private inline fun <reified T : Any> property(
         @StringRes keyResId: Int,
-        defaultValue: T
-    ) = property(context.getString(keyResId), defaultValue)
+        @AnyRes defaultValueResId: Int
+    ): Property<T> = property(T::class, keyResId, defaultValueResId)
 
-    private inline fun <reified T : Any> mutableProperty(
-        key: String,
-        defaultValue: T
+    private fun <T : Any> mutableProperty(
+        kClass: KClass<T>,
+        @StringRes keyResId: Int,
+        @AnyRes defaultValueResId: Int
     ): MutableProperty<T> {
-        val property = property(key, defaultValue)
-        val setter = getSharedPreferencesSetter(T::class)
+        val key = context.getString(keyResId)
+        val property = property(kClass, keyResId, defaultValueResId, key = key)
+        val setter = getSharedPreferencesSetter(kClass)
         return object : MutableProperty<T>, Property<T> by property {
             override suspend fun set(value: T) = withContext(Dispatchers.IO) {
                 migrate()
@@ -199,7 +253,13 @@ object Settings {
         }
     }
 
+    private inline fun <reified T : Any> mutableProperty(
+        @StringRes keyResId: Int,
+        @AnyRes defaultValueResId: Int
+    ): MutableProperty<T> = mutableProperty(T::class, keyResId, defaultValueResId)
+
     interface Property<T : Any> {
+        val key: String
         suspend fun get(): T
         fun flow(): Flow<T>
     }
@@ -249,6 +309,7 @@ private fun <T : Any> getSharedPreferencesSetter(kClass: KClass<T>): suspend Sha
 
 private fun <T : Any, R : Any> Property<T>.map(transform: suspend (T) -> R) =
     object : Property<R> {
+        override val key = this@map.key
         override suspend fun get() = transform(this@map.get())
         override fun flow() = this@map.flow().map(transform)
     }
@@ -258,6 +319,7 @@ private fun <T : Any, R : Any> Settings.MutableProperty<T>.map(
     transformSetter: suspend (R) -> T
 ) =
     object : Settings.MutableProperty<R> {
+        override val key = this@map.key
         override suspend fun get() = transformGetter(this@map.get())
         override fun flow(): Flow<R> = this@map.flow().map(transformGetter)
         override suspend fun set(value: R) = this@map.set(transformSetter(value))

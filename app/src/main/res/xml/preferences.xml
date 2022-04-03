@@ -5,23 +5,23 @@
             app:title="@string/prefs_dark_theme_mode_title"
             app:entries="@array/prefs_theme_entries"
             app:entryValues="@array/prefs_theme_values"
-            app:defaultValue="auto"
+            app:defaultValue="@string/prefs_theme_default_value"
             app:useSimpleSummaryProvider="true"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_old_colors_default_value"
             android:key="@string/prefs_old_colors_key"
             android:title="@string/prefs_old_colors_title"
             app:singleLineTitle="false"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_torrent_compact_view_default_value"
             android:key="@string/prefs_torrent_compact_view_key"
             android:title="@string/prefs_torrent_compact_view_title"
             app:singleLineTitle="false"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_torrent_name_multiline_default_value"
             android:key="@string/prefs_torrent_name_multiline_key"
             android:title="@string/prefs_torrent_name_multiline_title"
             app:singleLineTitle="false"/>
@@ -29,7 +29,7 @@
 
     <PreferenceCategory android:title="@string/behaviour">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_quick_return_default_value"
             android:key="@string/prefs_quick_return"
             app:title="@string/quick_return_title"
             app:singleLineTitle="false"
@@ -38,7 +38,7 @@
 
     <PreferenceCategory android:title="@string/torrents">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_delete_files_default_value"
             android:key="@string/prefs_delete_files_key"
             android:title="@string/prefs_delete_files_title"
             app:singleLineTitle="false"/>
@@ -46,13 +46,13 @@
 
     <PreferenceCategory android:title="@string/notifications">
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="@bool/prefs_notify_on_finished_default_value"
             android:key="@string/prefs_notify_on_finished_key"
             android:title="@string/notify_on_finished"
             app:singleLineTitle="false"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_notify_on_added_default_value"
             android:key="@string/prefs_notify_on_added_key"
             android:title="@string/notify_on_added"
             app:singleLineTitle="false"/>
@@ -68,7 +68,7 @@
 
     <PreferenceCategory android:title="@string/persistent_notification">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_persistent_notification_default_value"
             android:key="@string/prefs_persistent_notification_key"
             android:title="@string/prefs_persistent_notification_title"
             app:singleLineTitle="false"/>
@@ -76,13 +76,13 @@
 
     <PreferenceCategory android:title="@string/notifications_on_connect">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_notify_on_finished_since_last_default_value"
             android:key="@string/prefs_notify_on_finished_since_last_key"
             android:title="@string/notify_on_finished_since_last"
             app:singleLineTitle="false"/>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/prefs_notify_on_added_since_last_default_value"
             android:key="@string/prefs_notify_on_added_since_last_key"
             android:title="@string/notify_on_added_since_last"
             app:singleLineTitle="false"/>

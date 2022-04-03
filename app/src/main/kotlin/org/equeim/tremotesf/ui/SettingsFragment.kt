@@ -46,7 +46,7 @@ class SettingsFragment : NavigationFragment(
             updateBackgroundUpdatePreference()
 
             checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(this)
-            findPreference<Preference>(Settings.persistentNotificationKey)?.setOnPreferenceChangeListener { _, newValue ->
+            findPreference<Preference>(Settings.showPersistentNotification.key)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
                     false
@@ -56,7 +56,7 @@ class SettingsFragment : NavigationFragment(
             }
 
             requireParentFragment().setFragmentResultListener(SettingsPersistentNotificationWarningFragment.RESULT_KEY) { _, _ ->
-                findPreference<CheckBoxPreference>(Settings.persistentNotificationKey)?.isChecked = true
+                findPreference<CheckBoxPreference>(Settings.showPersistentNotification.key)?.isChecked = true
             }
         }
 
@@ -76,14 +76,14 @@ class SettingsFragment : NavigationFragment(
             key: String?
         ) {
             when (key) {
-                Settings.notifyOnAddedKey,
-                Settings.notifyOnFinishedKey,
-                Settings.persistentNotificationKey-> updateBackgroundUpdatePreference()
+                Settings.notifyOnAdded.key,
+                Settings.notifyOnFinished.key,
+                Settings.showPersistentNotification.key -> updateBackgroundUpdatePreference()
             }
         }
 
         private fun updateBackgroundUpdatePreference() = lifecycleScope.launch {
-            findPreference<Preference>(Settings.backgroundUpdateIntervalKey)
+            findPreference<Preference>(Settings.backgroundUpdateInterval.key)
                 ?.isEnabled =
                 (Settings.notifyOnFinished.get() || Settings.notifyOnAdded.get()) && !Settings.showPersistentNotification.get()
         }

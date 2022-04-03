@@ -1,0 +1,56 @@
+<resources>
+    <string name="prefs_dark_theme_key" translatable="false">darkTheme</string>
+    <string name="prefs_old_colors_key" translatable="false">oldColors</string>
+    <bool name="prefs_old_colors_default_value">false</bool>
+    <string name="prefs_persistent_notification_key" translatable="false">persistentNotification</string>
+    <bool name="prefs_persistent_notification_default_value">false</bool>
+    <string name="prefs_notify_on_finished_key" translatable="false">notifyOnFinished</string>
+    <bool name="prefs_notify_on_finished_default_value">true</bool>
+    <string name="prefs_notify_on_added_key" translatable="false">notifyOnAdded</string>
+    <bool name="prefs_notify_on_added_default_value">false</bool>
+    <fraction name="eeee">3.4</fraction>
+    <string name="prefs_background_update_interval_key" translatable="false">backgroundUpdateInterval</string>
+    <string name="prefs_background_update_interval_default_value" translatable="false">0</string>
+    <string-array name="prefs_background_update_interval_values" translatable="false">
+        <item>0</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
+    <string name="prefs_notify_on_finished_since_last_key" translatable="false">notifyOnFinishedSinceLast</string>
+    <bool name="prefs_notify_on_finished_since_last_default_value">false</bool>
+    <string name="prefs_notify_on_added_since_last_key" translatable="false">notifyOnAddedSinceLast</string>
+    <bool name="prefs_notify_on_added_since_last_default_value">false</bool>
+    <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>
+    <bool name="prefs_delete_files_default_value">false</bool>
+    <string name="prefs_torrent_compact_view_key" translatable="false">torrentCompactView</string>
+    <bool name="prefs_torrent_compact_view_default_value">false</bool>
+    <string name="prefs_torrent_name_multiline_key" translatable="false">torrentNameMultiline</string>
+    <bool name="prefs_torrent_name_multiline_default_value">false</bool>
+
+    <string name="prefs_theme_key" translatable="false">theme</string>
+    <string-array name="prefs_theme_values" translatable="false">
+        <item>auto</item>
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+    <string name="prefs_theme_default_value" translatable="false">auto</string>
+
+    <string name="prefs_quick_return" translatable="false">quickReturn</string>
+    <bool name="prefs_quick_return_default_value">false</bool>
+
+    <string name="torrents_sort_mode_key" translatable="false">torrentsSortMode</string>
+    <integer name="torrents_sort_mode_default_value">-1</integer>
+    <string name="torrents_sort_order_key" translatable="false">torrentsSortOrder</string>
+    <integer name="torrents_sort_order_default_value">-1</integer>
+    <string name="torrents_status_filter_key" translatable="false">torrentsStatusFilter</string>
+    <integer name="torrents_status_filter_default_value">-1</integer>
+    <string name="torrents_tracker_filter_key" translatable="false">torrentsTrackerFilter</string>
+    <string name="torrents_tracker_filter_default_value" translatable="false"/>
+    <string name="torrents_directory_filter_key" translatable="false">torrentsFolderFilter</string>
+    <string name="torrents_directory_filter_default_value" translatable="false"/>
+</resources>
