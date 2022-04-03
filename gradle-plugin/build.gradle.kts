@@ -38,3 +38,4 @@ fun ModuleDependency.excludeKotlinStdlib() {
 kotlinDslPluginOptions {
     jvmTarget.set(JavaVersion.VERSION_11.toString())
 }
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
