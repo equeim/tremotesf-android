@@ -27,13 +27,16 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
@@ -61,7 +64,6 @@ class TorrentsListFragment : NavigationFragment(
     R.menu.torrents_list_fragment_menu
 ) {
     private val binding by viewBinding(TorrentsListFragmentBinding::bind)
-    private var torrentsAdapter: TorrentsAdapter? = null
 
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
 
@@ -73,9 +75,11 @@ class TorrentsListFragment : NavigationFragment(
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        if (Settings.quickReturn) {
-            toolbar?.setOnClickListener {
-                binding.torrentsView.scrollToPosition(0)
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (Settings.quickReturn.get()) {
+                toolbar?.setOnClickListener {
+                    binding.torrentsView.scrollToPosition(0)
+                }
             }
         }
 
@@ -103,20 +107,28 @@ class TorrentsListFragment : NavigationFragment(
             }
         }
 
-        val torrentsAdapter = TorrentsAdapter(this)
-        this.torrentsAdapter = torrentsAdapter
-
         binding.torrentsView.apply {
-            adapter = torrentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            if (Settings.torrentCompactView) {
-                addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-            }
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
         }
 
-        model.torrents.launchAndCollectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val compactView = async { Settings.torrentCompactView.get() }
+            val multilineName = async { Settings.torrentNameMultiline.get() }
+            if (compactView.await()) {
+                binding.torrentsView.addItemDecoration(
+                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+                )
+            }
+            val torrentsAdapter = TorrentsAdapter(
+                this@TorrentsListFragment,
+                compactView.await(),
+                multilineName.await()
+            )
+            binding.torrentsView.adapter = torrentsAdapter
+            model.torrents.launchAndCollectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
+        }
 
         GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
         GlobalServers.servers.map { it.isNotEmpty() }
@@ -140,11 +152,6 @@ class TorrentsListFragment : NavigationFragment(
         model.showAddTorrentError.handleAndReset {
             requireView().showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }.launchAndCollectWhenStarted(viewLifecycleOwner)
-    }
-
-    override fun onDestroyView() {
-        torrentsAdapter = null
-        super.onDestroyView()
     }
 
     private fun setupBottomBar() {

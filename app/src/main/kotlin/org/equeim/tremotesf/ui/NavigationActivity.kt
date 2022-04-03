@@ -32,27 +32,22 @@ import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
-import androidx.core.view.updateLayoutParams
+import androidx.core.view.*
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import timber.log.Timber
 
 
@@ -61,12 +56,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
         private var startedActivity: NavigationActivity? = null
-
-        fun recreateAllActivities() {
-            for (activity in createdActivities) {
-                activity.recreate()
-            }
-        }
 
         fun finishAllActivities() = createdActivities.apply {
             forEach(Activity::finishAndRemoveTask)
@@ -93,15 +82,20 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
         Timber.i("onCreate: intent = $intent")
 
-        AppCompatDelegate.setDefaultNightMode(Settings.nightMode)
-        setTheme(Settings.theme)
+        lifecycleScope.launch {
+            val initialTheme = ActivityThemeProvider.theme.value
+            setTheme(initialTheme)
+            ActivityThemeProvider.theme.first { it != initialTheme }
+            Timber.i("Theme changed, recreating")
+            recreate()
+        }
 
         super.onCreate(savedInstanceState)
+        createdActivities.add(this)
 
         overrideIntentWithDeepLink()
 
         binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
-
         setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -118,10 +112,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             insets
         }
 
-        createdActivities.add(this)
-        if (Settings.showPersistentNotification) {
-            ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
-        }
         GlobalRpc.error.map { it.errorMessage }.launchAndCollectWhenStarted(this) { error ->
             if (error.isNotEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show()
@@ -137,6 +127,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
         upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
+
+        ForegroundService.startStopAutomatically()
 
         Timber.i("onCreate: return")
     }

@@ -22,11 +22,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -39,16 +35,15 @@ import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.fuzzyEquals
+import org.equeim.tremotesf.ui.utils.*
 import java.lang.ref.WeakReference
 
 
-class TorrentsAdapter(private val fragment: TorrentsListFragment) :
+class TorrentsAdapter(
+    private val fragment: TorrentsListFragment,
+    private val compactView: Boolean,
+    private val multilineName: Boolean
+) :
     StateRestoringListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = SelectionTracker.createForIntKeys(
         this,
@@ -59,9 +54,6 @@ class TorrentsAdapter(private val fragment: TorrentsListFragment) :
     ) {
         getItem(it).id
     }
-
-    private val compactView = Settings.torrentCompactView
-    private val multilineName = Settings.torrentNameMultiline
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTorrentsViewHolder {
         if (compactView) {

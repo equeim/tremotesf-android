@@ -24,16 +24,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.*
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.AppForegroundTracker
+import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import timber.log.Timber
@@ -45,6 +50,7 @@ class ForegroundService : LifecycleService() {
 
         private val instances = mutableListOf<ForegroundService>()
 
+        @MainThread
         fun start(context: Context) {
             Timber.i("start()")
             ContextCompat.startForegroundService(
@@ -54,6 +60,7 @@ class ForegroundService : LifecycleService() {
             startRequestInProgress = true
         }
 
+        @MainThread
         fun stop(context: Context) {
             Timber.i("stop()")
             if (startRequestInProgress) {
@@ -87,6 +94,21 @@ class ForegroundService : LifecycleService() {
                     flags
                 )
             }
+        }
+
+        lateinit var startStopScope: CoroutineScope
+        @MainThread
+        fun startStopAutomatically() {
+            if (::startStopScope.isInitialized) return
+            startStopScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+            combine(Settings.showPersistentNotification.flow(), AppForegroundTracker.hasStartedActivity, Boolean::and)
+                .filter { it }
+                .onEach { start(TremotesfApplication.instance) }
+                .launchIn(startStopScope)
+            Settings.showPersistentNotification.flow()
+                .filter { !it }
+                .onEach { stop(TremotesfApplication.instance) }
+                .launchIn(startStopScope)
         }
     }
 

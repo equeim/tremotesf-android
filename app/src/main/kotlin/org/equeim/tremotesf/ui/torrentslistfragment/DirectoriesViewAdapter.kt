@@ -55,7 +55,7 @@ class DirectoriesViewAdapter(
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(directories.indexOf(model.directoryFilter.value) + 1)
+        return getItem(directories.indexOf(directoryFilter) + 1)
     }
 
     fun getDirectoryFilter(position: Int): String {

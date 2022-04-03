@@ -40,6 +40,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
@@ -193,14 +194,16 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
         })
 
-        if (Settings.quickReturn) {
-            toolbar?.setOnClickListener {
-                Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.tabs[binding.pager.currentItem]}")
-                if (PagerAdapter.tabs[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
-                    childFragmentManager.fragments
-                        .filterIsInstance<FilesFragment>()
-                        .singleOrNull()
-                        ?.onToolbarClicked()
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (Settings.quickReturn.get()) {
+                toolbar?.setOnClickListener {
+                    Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.tabs[binding.pager.currentItem]}")
+                    if (PagerAdapter.tabs[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
+                        childFragmentManager.fragments
+                            .filterIsInstance<FilesFragment>()
+                            .singleOrNull()
+                            ?.onToolbarClicked()
+                    }
                 }
             }
         }

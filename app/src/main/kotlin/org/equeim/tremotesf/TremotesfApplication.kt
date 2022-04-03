@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 class TremotesfApplication : Application() {
     companion object {
         lateinit var instance: TremotesfApplication
+            private set
     }
 
     override fun onCreate() {
@@ -14,6 +15,7 @@ class TremotesfApplication : Application() {
         Timber.i("onCreate() called")
         instance = this
         super.onCreate()
+        Timber.i("onCreate() returned")
     }
 }
 

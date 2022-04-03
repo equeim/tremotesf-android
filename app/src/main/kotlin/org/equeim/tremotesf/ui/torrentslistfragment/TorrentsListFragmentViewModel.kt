@@ -20,32 +20,22 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.app.Application
-
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-
 import org.equeim.libtremotesf.TorrentData
+import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.common.dropTrailingPathSeparator
+import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.savedStateFlow
-import org.equeim.tremotesf.common.dropTrailingPathSeparator
-import org.equeim.tremotesf.rpc.GlobalServers
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
@@ -117,29 +107,29 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }
 
-    val sortMode by savedStateFlow(savedStateHandle) { Settings.torrentsSortMode }
-    val sortOrder by savedStateFlow(savedStateHandle) { Settings.torrentsSortOrder }
+    val sortMode = Settings.torrentsSortMode.flow()
+    fun setSortMode(mode: SortMode) = Settings.torrentsSortMode.setAsync(mode)
+    val sortOrder = Settings.torrentsSortOrder.flow()
+    fun setSortOrder(order: SortOrder) = Settings.torrentsSortOrder.setAsync(order)
+    val statusFilterMode = Settings.torrentsStatusFilter.flow()
+    fun setStatusFilterMode(mode: StatusFilterMode) = Settings.torrentsStatusFilter.setAsync(mode)
+    val trackerFilter = Settings.torrentsTrackerFilter.flow()
+    fun setTrackerFilter(filter: String) = Settings.torrentsTrackerFilter.setAsync(filter)
+    val directoryFilter = Settings.torrentsDirectoryFilter.flow()
+    fun setDirectoryFilter(filter: String) = Settings.torrentsDirectoryFilter.setAsync(filter)
 
-    val statusFilterMode by savedStateFlow(savedStateHandle) { Settings.torrentsStatusFilter }
-    val trackerFilter by savedStateFlow(savedStateHandle) { Settings.torrentsTrackerFilter }
-    val directoryFilter by savedStateFlow(savedStateHandle) { Settings.torrentsDirectoryFilter }
-
-    init {
-        sortMode.drop(1).onEach { Settings.torrentsSortMode = it }.launchIn(viewModelScope)
-        sortOrder.drop(1).onEach { Settings.torrentsSortOrder = it }.launchIn(viewModelScope)
-        statusFilterMode.drop(1).onEach { Settings.torrentsStatusFilter = it }.launchIn(viewModelScope)
-        trackerFilter.drop(1).onEach { Settings.torrentsTrackerFilter = it }.launchIn(viewModelScope)
-        directoryFilter.drop(1).onEach { Settings.torrentsDirectoryFilter = it }.launchIn(viewModelScope)
+    private fun <T : Any> Settings.MutableProperty<T>.setAsync(value: T) {
+        viewModelScope.launch { set(value) }
     }
 
     val nameFilter by savedStateFlow(savedStateHandle) { "" }
 
     fun resetSortAndFilters() {
-        sortMode.value = SortMode.DEFAULT
-        sortOrder.value = SortOrder.DEFAULT
-        statusFilterMode.value = StatusFilterMode.DEFAULT
-        trackerFilter.value = ""
-        directoryFilter.value = ""
+        setSortMode(SortMode.DEFAULT)
+        setSortOrder(SortOrder.DEFAULT)
+        setStatusFilterMode(StatusFilterMode.DEFAULT)
+        setTrackerFilter("")
+        setDirectoryFilter("")
     }
 
     val sortOrFiltersEnabled = combine(

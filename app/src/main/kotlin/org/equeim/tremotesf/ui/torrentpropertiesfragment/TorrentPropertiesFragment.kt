@@ -28,6 +28,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
@@ -37,6 +38,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
@@ -78,14 +80,16 @@ class TorrentPropertiesFragment : NavigationFragment(
             toolbar.title = args.name
             menu = toolbar.menu
 
-            if (Settings.quickReturn) {
-                toolbar.setOnClickListener {
-                    val tab = PagerAdapter.tabs[binding.pager.currentItem]
-                    childFragmentManager.fragments
-                        .asSequence()
-                        .filterIsInstance<PagerFragment>()
-                        .find { it.tab == tab }
-                        ?.onToolbarClicked()
+            viewLifecycleOwner.lifecycleScope.launch {
+                if (Settings.quickReturn.get()) {
+                    toolbar.setOnClickListener {
+                        val tab = PagerAdapter.tabs[binding.pager.currentItem]
+                        childFragmentManager.fragments
+                            .asSequence()
+                            .filterIsInstance<PagerFragment>()
+                            .find { it.tab == tab }
+                            ?.onToolbarClicked()
+                    }
                 }
             }
         }

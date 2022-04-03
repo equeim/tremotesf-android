@@ -22,10 +22,12 @@ package org.equeim.tremotesf.ui
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.RemoveTorrentsDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -37,7 +39,9 @@ class RemoveTorrentDialogFragment : NavigationDialogFragment() {
         val builder = MaterialAlertDialogBuilder(requireContext())
         val binding = RemoveTorrentsDialogBinding.inflate(LayoutInflater.from(builder.context))
 
-        binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles
+        lifecycleScope.launch {
+            binding.deleteFilesCheckBox.isChecked = Settings.deleteFiles.get()
+        }
 
         return builder
             .setMessage(
