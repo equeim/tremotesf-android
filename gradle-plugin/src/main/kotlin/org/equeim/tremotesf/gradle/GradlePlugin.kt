@@ -19,17 +19,8 @@ import java.util.*
 @Suppress("UnstableApiUsage")
 class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        target.addRepositories()
         target.configureAndroidProject()
         target.configureVersionsPlugin()
-    }
-
-    private fun Project.addRepositories() {
-        repositories {
-            mavenCentral()
-            google()
-            maven("https://maven.mozilla.org/maven2")
-        }
     }
 
     private fun Project.configureAndroidProject() {
@@ -37,7 +28,7 @@ class GradlePlugin : Plugin<Project> {
             val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
             extensions.getByType(CommonExtension::class).configureAndroidProject(libs)
         }
-        plugins.withType(KotlinAndroidPluginWrapper::class) {
+        plugins.withType<KotlinAndroidPluginWrapper> {
             val androidExtension = extensions.getByType(CommonExtension::class) as ExtensionAware
             androidExtension.extensions.getByType(KotlinJvmOptions::class).configureKotlin()
         }
