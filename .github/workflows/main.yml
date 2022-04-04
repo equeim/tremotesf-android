@@ -79,6 +79,9 @@ jobs:
           restore-keys: ${{ steps.compute-ccache-key.outputs.restore-keys }}
           save-cache: ${{ github.event_name == 'push' }}
 
+      - name: Add Kotlin problem matcher
+        uses: equeim/kotlin-problem-matcher@v1
+
       - name: Build the app
         uses: gradle/gradle-build-action@v2
         with:
