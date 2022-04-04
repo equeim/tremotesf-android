@@ -103,7 +103,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             val constraints =
                 Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
             val request =
-                PeriodicWorkRequest.Builder(UpdateWorker::class.java, interval, TimeUnit.MINUTES)
+                PeriodicWorkRequestBuilder<UpdateWorker>(interval, TimeUnit.MINUTES)
                     .setInitialDelay(interval, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build()
