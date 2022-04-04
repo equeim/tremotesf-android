@@ -53,7 +53,7 @@ android {
 
     buildFeatures.viewBinding = true
 
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 
     lint.informational.add("MissingTranslation")
 
