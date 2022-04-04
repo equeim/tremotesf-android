@@ -15,7 +15,7 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    $1 = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
+    $1 = QTime::fromMSecsSinceStartOfDay($input * 1000);
 %}
 
 %typemap(directorout) QTime
@@ -24,17 +24,17 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    $result = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
+    $result = QTime::fromMSecsSinceStartOfDay($input * 1000);
 %}
 
 %typemap(directorin,descriptor="Ljava/util/Date;") QTime
 %{
-    $input = $1.msecsSinceStartOfDay() / (60 * 1000);
+    $input = $1.msecsSinceStartOfDay() / 1000;
 %}
 
 %typemap(out) QTime
 %{
-    $result = $1.msecsSinceStartOfDay() / (60 * 1000);
+    $result = $1.msecsSinceStartOfDay() / 1000;
 %}
 
 %typemap(javain) QTime "$javainput"
@@ -56,7 +56,7 @@ class QTime;
         SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
         return $null;
     }
-    QTime $1_str(QTime::fromMSecsSinceStartOfDay($input * 60 * 1000));
+    QTime $1_str(QTime::fromMSecsSinceStartOfDay($input * 1000));
     $1 = &$1_str;
 %}
 
@@ -68,18 +68,18 @@ class QTime;
     }
     /* possible thread/reentrant code problem */
     static QTime $1_str;
-    $1_str = QTime::fromMSecsSinceStartOfDay($input * 60 * 1000);
+    $1_str = QTime::fromMSecsSinceStartOfDay($input * 1000);
     $result = &$1_str;
 %}
 
 %typemap(directorin,descriptor="Ljava/util/Date;") const QTime&
 %{
-    $input = $1->msecsSinceStartOfDay() / (60 * 1000);
+    $input = $1->msecsSinceStartOfDay() / 1000;
 %}
 
 %typemap(out) const QTime& 
 %{
-    $result = $1->msecsSinceStartOfDay() / (60 * 1000);
+    $result = $1->msecsSinceStartOfDay() / 1000;
 %}
 
 %typemap(javain) const QTime& "$javainput"

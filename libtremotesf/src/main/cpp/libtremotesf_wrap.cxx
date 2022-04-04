@@ -6126,7 +6126,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
   arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
   result = (QTime *) & ((arg1)->alternativeSpeedLimitsBeginTime);
   
-  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  jresult = result->msecsSinceStartOfDay() / 1000;
   
   return jresult;
 }
@@ -6143,7 +6143,7 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
   arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
   result = (QTime *) & ((arg1)->alternativeSpeedLimitsEndTime);
   
-  jresult = result->msecsSinceStartOfDay() / (60 * 1000);
+  jresult = result->msecsSinceStartOfDay() / 1000;
   
   return jresult;
 }
@@ -6777,7 +6777,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000);
+  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 1000);
   
   (arg1)->setAlternativeSpeedLimitsBeginTime(arg2);
 }
@@ -6796,7 +6796,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniServerSe
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
     return ;
   }
-  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 60 * 1000);
+  arg2 = QTime::fromMSecsSinceStartOfDay(jarg2 * 1000);
   
   (arg1)->setAlternativeSpeedLimitsEndTime(arg2);
 }

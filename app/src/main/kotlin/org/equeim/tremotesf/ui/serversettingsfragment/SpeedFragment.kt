@@ -23,6 +23,7 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
@@ -37,16 +38,15 @@ import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
-import org.equeim.tremotesf.ui.utils.safeNavigate
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalTime
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle
+import org.threeten.bp.format.TextStyle
+import org.threeten.bp.temporal.WeekFields
 import timber.log.Timber
-import java.text.DateFormat
-import java.text.DateFormatSymbols
-import java.util.Calendar
+import java.util.*
 
 
 class SpeedFragment : ServerSettingsFragment.BaseFragment(
@@ -69,38 +69,25 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
         daysSpinnerItems.add(getString(R.string.weekdays))
         daysSpinnerItems.add(getString(R.string.weekends))
 
-        val dayNames = DateFormatSymbols.getInstance().weekdays
-
-        val nextDay = { day: Int ->
-            if (day == Calendar.SATURDAY) {
-                Calendar.SUNDAY
-            } else {
-                day + 1
-            }
+        val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
+        val daysOfWeek = generateSequence(firstDayOfWeek) {
+            val next = it + 1
+            if (next != firstDayOfWeek) next else null
         }
 
-        val dayFromCalendarDay = { day: Int ->
-            when (day) {
-                Calendar.SUNDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Sunday
-                Calendar.MONDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
-                Calendar.TUESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Tuesday
-                Calendar.WEDNESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Wednesday
-                Calendar.THURSDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Thursday
-                Calendar.FRIDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Friday
-                Calendar.SATURDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Saturday
-                else -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
-            }
-        }
-
-        val first = Calendar.getInstance().firstDayOfWeek
-        days.add(dayFromCalendarDay(first))
-        daysSpinnerItems.add(dayNames[first])
-
-        var day = nextDay(first)
-        while (day != first) {
-            days.add(dayFromCalendarDay(day))
-            daysSpinnerItems.add(dayNames[day])
-            day = nextDay(day)
+        for (day in daysOfWeek) {
+            daysSpinnerItems.add(day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()))
+            days.add(
+                when (day) {
+                    DayOfWeek.SUNDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Sunday
+                    DayOfWeek.MONDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
+                    DayOfWeek.TUESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Tuesday
+                    DayOfWeek.WEDNESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Wednesday
+                    DayOfWeek.THURSDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Thursday
+                    DayOfWeek.FRIDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Friday
+                    DayOfWeek.SATURDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Saturday
+                }
+            )
         }
     }
 
@@ -177,11 +164,15 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
                 GlobalRpc.serverSettings.alternativeSpeedLimitsScheduled = checked
             }
 
-            beginTimeItem.beginTime = true
-            beginTimeItem.setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime)
+            beginTimeItem.setTime(
+                LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime.toLong()),
+                true
+            )
 
-            endTimeItem.beginTime = false
-            endTimeItem.setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime)
+            endTimeItem.setTime(
+                LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime.toLong()),
+                false
+            )
 
             daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
             daysView.setText(
@@ -200,10 +191,9 @@ class TimePickerItem @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle
 ) : LinearLayout(context, attrs, defStyleAttr) {
-
-    var beginTime = false
-    private val calendar: Calendar = Calendar.getInstance()
-    private val format = DateFormat.getTimeInstance(DateFormat.SHORT)
+    private val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    private lateinit var time: LocalTime
+    private var isBeginTime: Boolean = false
 
     private val binding =
         ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this)
@@ -221,9 +211,8 @@ class TimePickerItem @JvmOverloads constructor(
         setOnClickListener {
             findNavController().safeNavigate(
                 SpeedFragmentDirections.toTimePickerDialog(
-                    beginTime,
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE)
+                    isBeginTime,
+                    time
                 )
             )
         }
@@ -237,16 +226,10 @@ class TimePickerItem @JvmOverloads constructor(
         }
     }
 
-    fun setTime(hourOfDay: Int, minute: Int) {
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-        calendar.set(Calendar.MINUTE, minute)
-        binding.textView.text = format.format(calendar.time)
-    }
-
-    fun setTime(minutesFromStartOfDay: Int) {
-        calendar.set(Calendar.HOUR_OF_DAY, minutesFromStartOfDay / 60)
-        calendar.set(Calendar.MINUTE, minutesFromStartOfDay.rem(60))
-        binding.textView.text = format.format(calendar.time)
+    fun setTime(time: LocalTime, isBeginTime: Boolean) {
+        this.time = time
+        this.isBeginTime = isBeginTime
+        binding.textView.text = formatter.format(time)
     }
 }
 
@@ -257,21 +240,22 @@ class SpeedTimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnT
         return TimePickerDialog(
             activity,
             this,
-            args.hourOfDay,
-            args.minute,
-            android.text.format.DateFormat.is24HourFormat(activity)
+            args.time.hour,
+            args.time.minute,
+            DateFormat.is24HourFormat(activity)
         )
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
         if (speedFragment != null) {
-            if (args.beginTime) {
-                speedFragment.binding.beginTimeItem.setTime(hourOfDay, minute)
-                GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = (hourOfDay * 60) + minute
+            val time = LocalTime.of(hourOfDay, minute)
+            if (args.isBeginTime) {
+                speedFragment.binding.beginTimeItem.setTime(time, true)
+                GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = time.toSecondOfDay()
             } else {
-                speedFragment.binding.endTimeItem.setTime(hourOfDay, minute)
-                GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = (hourOfDay * 60) + minute
+                speedFragment.binding.endTimeItem.setTime(time, false)
+                GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = time.toSecondOfDay()
             }
         }
     }

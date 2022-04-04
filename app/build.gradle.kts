@@ -102,8 +102,7 @@ dependencies {
     implementation(libs.androidx.work.runtime)
 
     implementation(libs.material)
-
     implementation(libs.fastscroll)
-
     implementation(libs.timber)
+    implementation(libs.threetenabp)
 }
