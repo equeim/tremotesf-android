@@ -3,11 +3,7 @@ package org.equeim.tremotesf.rpc
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.MainThread
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import androidx.work.Worker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.dropWhile
@@ -39,7 +35,7 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
         WorkManager.getInstance(context).enqueueUniqueWork(
             SaveWorker.UNIQUE_WORK_NAME,
             ExistingWorkPolicy.APPEND,
-            OneTimeWorkRequest.from(SaveWorker::class.java)
+            OneTimeWorkRequestBuilder<SaveWorker>().build()
         )
     }
 
