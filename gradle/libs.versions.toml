@@ -30,6 +30,7 @@ fastscroll = "2.1.0"
 material = "1.5.0"
 publicsuffixlist = "99.0.9"
 timber = "5.0.1"
+threetenabp = "1.4.0"
 
 junit = "4.13.2"
 
@@ -70,6 +71,7 @@ fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscr
 material = { module = "com.google.android.material:material", version.ref = "material" }
 publicsuffixlist = { module = "org.mozilla.components:lib-publicsuffixlist", version.ref = "publicsuffixlist" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 

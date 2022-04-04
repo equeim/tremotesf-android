@@ -229,14 +229,11 @@
         android:id="@+id/server_settings_time_picker_dialog"
         android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedTimePickerFragment" >
         <argument
-            android:name="begin_time"
+            android:name="is_begin_time"
             app:argType="boolean" />
         <argument
-            android:name="hour_of_day"
-            app:argType="integer" />
-        <argument
-            android:name="minute"
-            app:argType="integer" />
+            android:name="time"
+            app:argType="org.threeten.bp.LocalTime" />
     </dialog>
     <dialog
         android:id="@+id/torrent_file_rename_dialog"
