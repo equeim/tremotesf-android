@@ -181,11 +181,7 @@
         android:name="org.equeim.tremotesf.ui.serversettingsfragment.SeedingFragment" />
     <fragment
         android:id="@+id/server_settings_speed_fragment"
-        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedFragment" >
-        <action
-            android:id="@+id/to_time_picker_dialog"
-            app:destination="@id/server_settings_time_picker_dialog" />
-    </fragment>
+        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedFragment" />
     <fragment
         android:id="@+id/server_edit_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerEditFragment">
@@ -225,16 +221,6 @@
     <dialog
         android:id="@+id/remove_server_dialog"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.RemoveServerDialogFragment" />
-    <dialog
-        android:id="@+id/server_settings_time_picker_dialog"
-        android:name="org.equeim.tremotesf.ui.serversettingsfragment.SpeedTimePickerFragment" >
-        <argument
-            android:name="is_begin_time"
-            app:argType="boolean" />
-        <argument
-            android:name="time"
-            app:argType="org.threeten.bp.LocalTime" />
-    </dialog>
     <dialog
         android:id="@+id/torrent_file_rename_dialog"
         android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment" >

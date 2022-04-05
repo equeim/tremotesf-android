@@ -19,25 +19,23 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import android.app.Dialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import android.widget.TimePicker
 import androidx.annotation.AttrRes
 import androidx.core.content.withStyledAttributes
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import org.equeim.libtremotesf.ServerSettingsData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalTime
@@ -164,15 +162,23 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
                 GlobalRpc.serverSettings.alternativeSpeedLimitsScheduled = checked
             }
 
-            beginTimeItem.setTime(
-                LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime.toLong()),
-                true
-            )
+            beginTimeItem.apply {
+                setTime(
+                    LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime.toLong())
+                )
+                onTimeChangedListener = {
+                    GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = it.toSecondOfDay()
+                }
+            }
 
-            endTimeItem.setTime(
-                LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime.toLong()),
-                false
-            )
+            endTimeItem.apply {
+                setTime(
+                    LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime.toLong())
+                )
+                onTimeChangedListener = {
+                    GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = it.toSecondOfDay()
+                }
+            }
 
             daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
             daysView.setText(
@@ -192,8 +198,9 @@ class TimePickerItem @JvmOverloads constructor(
     @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    private lateinit var time: LocalTime
-    private var isBeginTime: Boolean = false
+    private var time: LocalTime = LocalTime.MIN
+
+    var onTimeChangedListener: ((LocalTime) -> Unit)? = null
 
     private val binding =
         ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this)
@@ -209,12 +216,15 @@ class TimePickerItem @JvmOverloads constructor(
         }
 
         setOnClickListener {
-            findNavController().safeNavigate(
-                SpeedFragmentDirections.toTimePickerDialog(
-                    isBeginTime,
-                    time
-                )
-            )
+            val picker = MaterialTimePicker.Builder()
+                .setTimeFormat(if (DateFormat.is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
+                .setHour(time.hour)
+                .setMinute(time.minute)
+                .build()
+            picker.addOnPositiveButtonClickListener {
+                setTime(LocalTime.of(picker.hour, picker.minute))
+            }
+            picker.show(findFragment<Fragment>().childFragmentManager, null)
         }
     }
 
@@ -226,37 +236,11 @@ class TimePickerItem @JvmOverloads constructor(
         }
     }
 
-    fun setTime(time: LocalTime, isBeginTime: Boolean) {
-        this.time = time
-        this.isBeginTime = isBeginTime
-        binding.textView.text = formatter.format(time)
-    }
-}
-
-class SpeedTimePickerFragment : NavigationDialogFragment(), TimePickerDialog.OnTimeSetListener {
-    private val args: SpeedTimePickerFragmentArgs by navArgs()
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return TimePickerDialog(
-            activity,
-            this,
-            args.time.hour,
-            args.time.minute,
-            DateFormat.is24HourFormat(activity)
-        )
-    }
-
-    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        val speedFragment = parentFragmentManager.primaryNavigationFragment as? SpeedFragment
-        if (speedFragment != null) {
-            val time = LocalTime.of(hourOfDay, minute)
-            if (args.isBeginTime) {
-                speedFragment.binding.beginTimeItem.setTime(time, true)
-                GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = time.toSecondOfDay()
-            } else {
-                speedFragment.binding.endTimeItem.setTime(time, false)
-                GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = time.toSecondOfDay()
-            }
+    fun setTime(time: LocalTime) {
+        if (time != this.time) {
+            this.time = time
+            binding.textView.text = formatter.format(time)
+            onTimeChangedListener?.invoke(time)
         }
     }
 }
