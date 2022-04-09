@@ -45,8 +45,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import kotlin.collections.set
 
@@ -125,7 +126,7 @@ class SettingsFragment : NavigationFragment(
 
 class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return MaterialAlertDialogBuilder(requireContext())
+        return AlertDialog.Builder(requireContext())
             .setMessage(R.string.persistent_notification_warning)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
