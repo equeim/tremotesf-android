@@ -116,7 +116,7 @@ object Settings {
                     !DynamicColors.isDynamicColorAvailable()
                 ) {
                     val newValue =
-                        context.getString(R.string.prefs_color_theme_default_value_not_system)
+                        context.getString(R.string.prefs_color_theme_default_value)
                     Timber.e("Dynamic colors are not supported, setting ${colorTheme.key} value to $newValue")
                     preferences.edit {
                         putString(colorTheme.key, newValue)

@@ -24,8 +24,7 @@
     <string name="prefs_color_theme_value_system" translatable="false">system</string>
     <string name="prefs_color_theme_value_red" translatable="false">red</string>
     <string name="prefs_color_theme_value_teal" translatable="false">teal</string>
-    <string name="prefs_color_theme_default_value_not_system" translatable="false">@string/prefs_color_theme_value_red</string>
-    <string name="prefs_color_theme_default_value" translatable="false">@string/prefs_color_theme_default_value_not_system</string>
+    <string name="prefs_color_theme_default_value" translatable="false">@string/prefs_color_theme_value_red</string>
 
     <string name="prefs_persistent_notification_key" translatable="false">persistentNotification</string>
     <bool name="prefs_persistent_notification_default_value">false</bool>
