@@ -41,7 +41,6 @@ import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -56,8 +55,6 @@ import timber.log.Timber
 class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
-
-        private var startedActivity: NavigationActivity? = null
 
         fun finishAllActivities() = createdActivities.apply {
             forEach(Activity::finishAndRemoveTask)
@@ -86,6 +83,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         super.onCreate(savedInstanceState)
         createdActivities.add(this)
+        AppForegroundTracker.registerActivity(this)
 
         val colorTheme = ActivityThemeProvider.colorTheme.value
         if (colorTheme == Settings.ColorTheme.System) {
@@ -154,20 +152,10 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     override fun onStart() {
         Timber.i("onStart() called")
         super.onStart()
-        if (startedActivity == null) {
-            AppForegroundTracker.hasStartedActivity.value = true
-        }
-        startedActivity = this
     }
 
     override fun onStop() {
         Timber.i("onStop() called")
-        if (!isChangingConfigurations) {
-            if (startedActivity === this) {
-                startedActivity = null
-                AppForegroundTracker.hasStartedActivity.value = false
-            }
-        }
         super.onStop()
     }
 

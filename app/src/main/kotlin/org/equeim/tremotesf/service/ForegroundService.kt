@@ -34,9 +34,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.Utils
@@ -121,6 +121,7 @@ class ForegroundService : LifecycleService() {
         super.onCreate()
 
         instances.add(this)
+        AppForegroundTracker.registerForegroundService(this)
 
         Timber.i("onCreate: stopRequested = $stopRequested")
 
@@ -189,8 +190,6 @@ class ForegroundService : LifecycleService() {
                 return START_NOT_STICKY
             }
 
-            AppForegroundTracker.foregroundServiceStarted.value = true
-
             Timber.i("onStartCommand: service started")
         }
 
@@ -204,7 +203,6 @@ class ForegroundService : LifecycleService() {
 
     override fun onDestroy() {
         Timber.i("onDestroy: state = ${lifecycle.currentState}")
-        AppForegroundTracker.foregroundServiceStarted.value = false
         stopForeground(true)
         instances.remove(this)
         super.onDestroy()
