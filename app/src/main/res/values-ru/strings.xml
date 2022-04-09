@@ -386,8 +386,6 @@
     <string name="translators">Переводчики</string>
     <string name="license">Лицензия</string>
 
-    <string name="prefs_dark_theme_mode_title">Тема</string>
-
     <string name="prefs_old_colors_title">Использовать старые цвета</string>
 
     <string name="prefs_torrent_compact_view_title">Компактное представление торрентов</string>
@@ -439,15 +437,8 @@
 
     <string name="connection_settings">Настройки подключения</string>
 
-    <string name="theme_auto_pre_q">С учетом режима энергосбережения</string>
-    <string name="theme_auto_q">По умолчанию</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>Темная</item>
-        <item>Светлая</item>
-    </string-array>
-
+    <string name="prefs_dark_theme_mode_auto_pre_q">С учетом режима энергосбережения</string>
+    <string name="prefs_dark_theme_mode_auto_q">По умолчанию</string>
 
     <string name="proxy_settings">Настройки прокси</string>
     <string name="proxy_type">Тип прокси</string>
