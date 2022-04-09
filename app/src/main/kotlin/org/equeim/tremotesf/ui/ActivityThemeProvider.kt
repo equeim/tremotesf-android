@@ -1,16 +1,14 @@
 package org.equeim.tremotesf.ui
 
 import androidx.appcompat.app.AppCompatDelegate
-import kotlinx.coroutines.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicReference
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object ActivityThemeProvider {
-    val theme: StateFlow<Int>
+    val colorTheme: StateFlow<Settings.ColorTheme>
 
     /**
      * Get initial values of theme and night mode, blocking main thread
@@ -19,37 +17,22 @@ object ActivityThemeProvider {
     init {
         Timber.i("init() called")
 
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
-        theme = Settings.theme.flow().stateIn(scope, SharingStarted.Eagerly, Int.MIN_VALUE)
-
-        val initialNightModeContinuation = AtomicReference<Continuation<Int>>()
-        val nightMode = Settings.nightMode.flow().onEach {
-            when (val continuation = initialNightModeContinuation.getAndSet(null)) {
-                // Can't use withContext(Dispatchers.Main) when we are blocking main thread in runBlocking,
-                // resume coroutine instead
-                null -> {
-                    Timber.i("Night mode changed")
-                    withContext(Dispatchers.Main) { AppCompatDelegate.setDefaultNightMode(it) }
-                }
-                else -> continuation.resume(it)
-            }
+        val (initialColorTheme, initialDarkThemeMode) = runBlocking {
+            val colors = async { Settings.colorTheme.get().also { Timber.i("Received initial value of color theme: $it") } }
+            val darkThemeMode = async { Settings.darkThemeMode.get().also { Timber.i("Received initial value of dark theme mode: $it") } }
+            colors.await() to darkThemeMode.await()
         }
 
-        runBlocking {
-            launch {
-                theme.first { it != Int.MIN_VALUE }
-                Timber.i("Received initial value of theme")
-            }
+        val scope = MainScope()
 
-            launch {
-                val initialNightMode = suspendCoroutine<Int> {
-                    initialNightModeContinuation.set(it)
-                    nightMode.launchIn(scope)
-                }
-                Timber.i("Received initial value of nightMode")
-                AppCompatDelegate.setDefaultNightMode(initialNightMode)
-            }
-        }
+        colorTheme = Settings.colorTheme.flow()
+            .stateIn(scope, SharingStarted.Eagerly, initialColorTheme)
+
+        AppCompatDelegate.setDefaultNightMode(initialDarkThemeMode.nightMode)
+        Settings.darkThemeMode.flow().dropWhile { it == initialDarkThemeMode }.onEach {
+            Timber.i("Dark theme mode changed to $it")
+            AppCompatDelegate.setDefaultNightMode(it.nightMode)
+        }.launchIn(scope)
 
         Timber.i("init() returned")
     }

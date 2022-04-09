@@ -1,18 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/appearance">
         <ListPreference
-            app:key="@string/prefs_theme_key"
+            app:key="@string/prefs_dark_theme_mode_key"
             app:title="@string/prefs_dark_theme_mode_title"
-            app:entries="@array/prefs_theme_entries"
-            app:entryValues="@array/prefs_theme_values"
-            app:defaultValue="@string/prefs_theme_default_value"
+            app:entries="@array/prefs_dark_theme_mode_entries"
+            app:entryValues="@array/prefs_dark_theme_mode_values"
+            app:defaultValue="@string/prefs_dark_theme_mode_default_value"
             app:useSimpleSummaryProvider="true"/>
 
-        <CheckBoxPreference
-            android:defaultValue="@bool/prefs_old_colors_default_value"
-            android:key="@string/prefs_old_colors_key"
-            android:title="@string/prefs_old_colors_title"
-            app:singleLineTitle="false"/>
+        <org.equeim.tremotesf.ui.SettingsAppColorsPreference
+            app:key="@string/prefs_color_theme_key"
+            app:title="@string/prefs_color_theme_title" />
 
         <CheckBoxPreference
             android:defaultValue="@bool/prefs_torrent_compact_view_default_value"

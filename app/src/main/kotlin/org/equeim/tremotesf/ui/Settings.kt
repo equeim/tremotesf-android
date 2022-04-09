@@ -25,9 +25,11 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.AnyRes
 import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +45,7 @@ import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.common.enumFromInt
 import org.equeim.tremotesf.ui.Settings.Property
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
+import timber.log.Timber
 import kotlin.reflect.KClass
 
 
@@ -50,9 +53,6 @@ import kotlin.reflect.KClass
 object Settings {
     private val context: Context = TremotesfApplication.instance
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private const val THEME_DARK = "dark"
-    private const val THEME_LIGHT = "light"
 
     @Volatile
     private var migrated = false
@@ -63,17 +63,63 @@ object Settings {
         migrationMutex.withLock {
             if (migrated) return
             withContext(Dispatchers.IO) {
-                val themeKey = context.getString(R.string.prefs_theme_key)
-                val darkThemeKey = context.getString(R.string.prefs_dark_theme_key)
-                if (!preferences.contains(themeKey) && preferences.contains(darkThemeKey)) {
-                    preferences.edit {
-                        putString(
-                            themeKey, if (preferences.getBoolean(darkThemeKey, false)) {
-                                THEME_DARK
-                            } else {
-                                THEME_LIGHT
+                context.getString(R.string.deprecated_prefs_dark_theme_key)
+                    .let { deprecatedDarkThemeKey ->
+                        if (preferences.contains(deprecatedDarkThemeKey)) {
+                            preferences.edit {
+                                putString(
+                                    darkThemeMode.key,
+                                    if (preferences.getBoolean(deprecatedDarkThemeKey, false)) {
+                                        DarkThemeMode.On.prefsValue
+                                    } else {
+                                        DarkThemeMode.Off.prefsValue
+                                    }
+                                )
+                                remove(deprecatedDarkThemeKey)
                             }
-                        )
+                        }
+                    }
+                context.getString(R.string.deprecated_prefs_old_colors_key)
+                    .let { deprecatedOldColorsKey ->
+                        if (preferences.contains(deprecatedOldColorsKey)) {
+                            preferences.edit {
+                                putString(
+                                    colorTheme.key,
+                                    if (preferences.getBoolean(deprecatedOldColorsKey, false)) {
+                                        ColorTheme.Teal.prefsValue
+                                    } else {
+                                        ColorTheme.Red.prefsValue
+                                    }
+                                )
+                                remove(deprecatedOldColorsKey)
+                            }
+                        }
+                    }
+                context.getString(R.string.deprecated_prefs_theme_key).let { deprecatedThemeKey ->
+                    if (preferences.contains(deprecatedThemeKey)) {
+                        preferences.edit {
+                            val darkThemeModeValue =
+                                when (preferences.getString(deprecatedThemeKey, null)) {
+                                    context.getString(R.string.deprecated_prefs_theme_value_auto) -> DarkThemeMode.Auto
+                                    context.getString(R.string.deprecated_prefs_theme_value_dark) -> DarkThemeMode.On
+                                    context.getString(R.string.deprecated_prefs_theme_value_light) -> DarkThemeMode.Off
+                                    else -> null
+                                }
+                            darkThemeModeValue?.let { putString(darkThemeMode.key, it.prefsValue) }
+                            remove(deprecatedThemeKey)
+                        }
+                    }
+                }
+                if (
+                    (preferences.getString(colorTheme.key, null) ==
+                            context.getString(R.string.prefs_color_theme_system)) &&
+                    !DynamicColors.isDynamicColorAvailable()
+                ) {
+                    val newValue =
+                        context.getString(R.string.prefs_color_theme_default_value_not_system)
+                    Timber.e("Dynamic colors are not supported, setting ${colorTheme.key} value to $newValue")
+                    preferences.edit {
+                        putString(colorTheme.key, newValue)
                     }
                 }
                 migrated = true
@@ -81,22 +127,80 @@ object Settings {
         }
     }
 
-    val nightMode: Property<Int> =
-        property<String>(R.string.prefs_theme_key, R.string.prefs_theme_default_value).map {
-            when (it) {
-                THEME_DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                THEME_LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-                else -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                } else {
-                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+    private interface MappedPrefsEnum {
+        val prefsValue: String
+
+        companion object {
+            inline fun <reified T> fromPrefsValueProvider(
+                @StringRes keyResId: Int,
+                @StringRes defaultValueResId: Int
+            ): (String) -> T where T : MappedPrefsEnum, T : Enum<T> {
+                val values = enumValues<T>()
+                return { prefsValue ->
+                    values.find { it.prefsValue == prefsValue } ?: run {
+                        Timber.e("Unknown value $prefsValue for key ${context.getString(keyResId)}")
+                        val defaultPrefsValue = context.getString(defaultValueResId)
+                        values.single { it.prefsValue == defaultPrefsValue }
+                    }
                 }
             }
         }
+    }
 
-    val theme: Property<Int> =
-        property<Boolean>(R.string.prefs_old_colors_key, R.bool.prefs_old_colors_default_value)
-            .map { if (it) R.style.AppTheme_Teal else R.style.AppTheme }
+    enum class ColorTheme(
+        @StringRes prefsValueResId: Int,
+        @StyleRes val activityThemeResId: Int = 0
+    ) : MappedPrefsEnum {
+        System(R.string.prefs_color_theme_value_system),
+        Red(R.string.prefs_color_theme_value_red, R.style.AppTheme),
+        Teal(R.string.prefs_color_theme_value_teal, R.style.AppTheme_Teal);
+
+        override val prefsValue = context.getString(prefsValueResId)
+
+        companion object {
+            val fromPrefsValue = MappedPrefsEnum.fromPrefsValueProvider<ColorTheme>(
+                R.string.prefs_color_theme_key,
+                R.string.prefs_color_theme_default_value
+            )
+        }
+    }
+
+    val colorTheme: MutableProperty<ColorTheme> = mutableProperty<String>(
+        R.string.prefs_color_theme_key,
+        R.string.prefs_color_theme_default_value
+    ).map(
+        transformGetter = ColorTheme.fromPrefsValue,
+        transformSetter = { it.prefsValue }
+    )
+
+    enum class DarkThemeMode(@StringRes prefsValueResId: Int, val nightMode: Int) :
+        MappedPrefsEnum {
+        Auto(
+            R.string.prefs_dark_theme_mode_value_auto,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            } else {
+                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+            }
+        ),
+        On(R.string.prefs_dark_theme_mode_value_on, AppCompatDelegate.MODE_NIGHT_YES),
+        Off(R.string.prefs_dark_theme_mode_value_off, AppCompatDelegate.MODE_NIGHT_NO);
+
+        override val prefsValue = context.getString(prefsValueResId)
+
+        companion object {
+            val fromPrefsValue = MappedPrefsEnum.fromPrefsValueProvider<DarkThemeMode>(
+                R.string.prefs_dark_theme_mode_key,
+                R.string.prefs_dark_theme_mode_default_value
+            )
+        }
+    }
+
+    val darkThemeMode: Property<DarkThemeMode> =
+        property<String>(
+            R.string.prefs_dark_theme_mode_key,
+            R.string.prefs_dark_theme_mode_default_value
+        ).map(DarkThemeMode.fromPrefsValue)
 
     val torrentCompactView: Property<Boolean> = property(
         R.string.prefs_torrent_compact_view_key,

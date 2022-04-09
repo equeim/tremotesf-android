@@ -310,8 +310,6 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
-    <string name="prefs_dark_theme_mode_title">主题</string>
-
     <string name="prefs_old_colors_title">使用旧的配色</string>
 
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
@@ -359,14 +357,8 @@
 
     <string name="connection_settings">连接设置</string>
 
-    <string name="theme_auto_pre_q">根据电量节省设定</string>
-    <string name="theme_auto_q">跟随系统</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>暗色主题</item>
-        <item>亮色主题</item>
-    </string-array>
+    <string name="prefs_dark_theme_mode_auto_pre_q">根据电量节省设定</string>
+    <string name="prefs_dark_theme_mode_auto_q">跟随系统</string>
 
     <string name="proxy_settings">代理设定</string>
     <string name="proxy_type">代理类型</string>

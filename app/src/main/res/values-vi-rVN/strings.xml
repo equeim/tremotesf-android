@@ -257,8 +257,6 @@
     <string name="translators">Biên dịch viên</string>
     <string name="license">Giấy phép</string>
 
-    <string name="prefs_dark_theme_mode_title">Chủ đề</string>
-
     <string name="prefs_old_colors_title">Sử dụng màu cũ</string>
 
     <string name="prefs_torrent_compact_view_title">Sử dụng chế độ xem nhỏ gọn cho torrent</string>
@@ -306,14 +304,8 @@
 
     <string name="connection_settings">Cài đặt kết nối</string>
 
-    <string name="theme_auto_pre_q">Đặt theo trình tiết kiệm pin</string>
-    <string name="theme_auto_q">Mặc định của hệ thống</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>Tối</item>
-        <item>Sáng</item>
-    </string-array>
+    <string name="prefs_dark_theme_mode_auto_pre_q">Đặt theo trình tiết kiệm pin</string>
+    <string name="prefs_dark_theme_mode_auto_q">Mặc định của hệ thống</string>
 
     <string-array name="proxy_type_items">
         <item>Mặc định</item>

@@ -40,6 +40,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -82,16 +84,23 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
         Timber.i("onCreate: intent = $intent")
 
-        lifecycleScope.launch {
-            val initialTheme = ActivityThemeProvider.theme.value
-            setTheme(initialTheme)
-            ActivityThemeProvider.theme.first { it != initialTheme }
-            Timber.i("Theme changed, recreating")
-            recreate()
-        }
-
         super.onCreate(savedInstanceState)
         createdActivities.add(this)
+
+        val colorTheme = ActivityThemeProvider.colorTheme.value
+        if (colorTheme == Settings.ColorTheme.System) {
+            Timber.i("Applying dynamic colors")
+            DynamicColors.applyIfAvailable(this@NavigationActivity)
+        } else {
+            Timber.i("Setting color theme $colorTheme")
+            setTheme(colorTheme.activityThemeResId)
+        }
+
+        lifecycleScope.launch {
+            val newColorTheme = ActivityThemeProvider.colorTheme.first { it != colorTheme }
+            Timber.i("Color theme changed to $newColorTheme, recreating")
+            recreate()
+        }
 
         overrideIntentWithDeepLink()
 

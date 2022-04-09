@@ -373,8 +373,6 @@
     <string name="translators">Traducteurs</string>
     <string name="license">Licence</string>
 
-    <string name="prefs_dark_theme_mode_title">Thème</string>
-
     <string name="prefs_old_colors_title">Utiliser les anciennes couleurs</string>
 
     <string name="prefs_torrent_compact_view_title">Utiliser la vue compact pour les torrents</string>
@@ -422,15 +420,8 @@
 
     <string name="connection_settings">Paramètres de connexion</string>
 
-    <string name="theme_auto_pre_q">Respecter l\'économiseur de batterie</string>
-    <string name="theme_auto_q">Valeur par défaut du système</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">Thème automatique</item>
-        <item>Sombre</item>
-        <item>Clair</item>
-    </string-array>
-
+    <string name="prefs_dark_theme_mode_auto_pre_q">Respecter l\'économiseur de batterie</string>
+    <string name="prefs_dark_theme_mode_auto_q">Valeur par défaut du système</string>
 
     <string name="proxy_settings">Paramètres du serveur mandataire</string>
     <string name="proxy_type">Type du serveur mandataire</string>

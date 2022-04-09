@@ -363,8 +363,6 @@
     <string name="translators">Çevirmenler</string>
     <string name="license">Lisans</string>
 
-    <string name="prefs_dark_theme_mode_title">Tema</string>
-
     <string name="prefs_old_colors_title">Eski renkleri kullan</string>
 
     <string name="prefs_torrent_compact_view_title">Torrentler için derlitoplu görünüm kullanın</string>
@@ -412,15 +410,8 @@
 
     <string name="connection_settings">Bağlantı ayarları</string>
 
-    <string name="theme_auto_pre_q">Pil tasarrufu ile ayarla</string>
-    <string name="theme_auto_q">Sistem varsayılanı</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>Karanlık</item>
-        <item>Aydınlık</item>
-    </string-array>
-
+    <string name="prefs_dark_theme_mode_auto_pre_q">Pil tasarrufu ile ayarla</string>
+    <string name="prefs_dark_theme_mode_auto_q">Sistem varsayılanı</string>
 
     <string name="proxy_settings">Vekil ayarları</string>
     <string name="proxy_type">Vekil türü</string>

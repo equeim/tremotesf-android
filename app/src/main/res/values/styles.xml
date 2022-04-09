@@ -156,4 +156,25 @@
         <item name="android:layout_height">4dp</item>
         <item name="android:background">@drawable/drag_handle</item>
     </style>
+
+    <style name="Widget.Tremotesf.Button.OutlinedButton.IconOnly" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.Tremotesf.SettingsColorThemeColorView" parent="android:Widget">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+    </style>
 </resources>

@@ -20,18 +20,35 @@
 package org.equeim.tremotesf.ui
 
 import android.app.Dialog
+import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.ContextThemeWrapper
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Checkable
+import android.widget.LinearLayout
+import androidx.annotation.AttrRes
 import androidx.annotation.Keep
+import androidx.annotation.StyleRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
+import androidx.preference.DialogPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.equeim.tremotesf.R
+import kotlin.collections.set
 
 
 class SettingsFragment : NavigationFragment(
@@ -41,11 +58,22 @@ class SettingsFragment : NavigationFragment(
     @Keep
     class PreferenceFragment : PreferenceFragmentCompat(),
         SharedPreferences.OnSharedPreferenceChangeListener {
+
+        override fun onDisplayPreferenceDialog(preference: Preference) {
+            if (preference is SettingsAppColorsPreference) {
+                navigate(SettingsFragmentDirections.toColorThemeDialog())
+            } else {
+                super.onDisplayPreferenceDialog(preference)
+            }
+        }
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
 
-            checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(this)
+            checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(
+                this
+            )
             findPreference<Preference>(Settings.showPersistentNotification.key)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
@@ -55,8 +83,11 @@ class SettingsFragment : NavigationFragment(
                 }
             }
 
-            requireParentFragment().setFragmentResultListener(SettingsPersistentNotificationWarningFragment.RESULT_KEY) { _, _ ->
-                findPreference<CheckBoxPreference>(Settings.showPersistentNotification.key)?.isChecked = true
+            requireParentFragment().setFragmentResultListener(
+                SettingsPersistentNotificationWarningFragment.RESULT_KEY
+            ) { _, _ ->
+                findPreference<CheckBoxPreference>(Settings.showPersistentNotification.key)?.isChecked =
+                    true
             }
         }
 
@@ -67,7 +98,9 @@ class SettingsFragment : NavigationFragment(
         }
 
         override fun onDestroy() {
-            checkNotNull(preferenceManager.sharedPreferences).unregisterOnSharedPreferenceChangeListener(this)
+            checkNotNull(preferenceManager.sharedPreferences).unregisterOnSharedPreferenceChangeListener(
+                this
+            )
             super.onDestroy()
         }
 
@@ -103,5 +136,114 @@ class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment()
 
     companion object {
         val RESULT_KEY = SettingsPersistentNotificationWarningFragment::class.qualifiedName!!
+    }
+}
+
+class SettingsAppColorsPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = R.attr.preferenceStyle,
+    @StyleRes defStyleRes: Int = R.style.Preference
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes)
+
+class SettingsColorThemeFragment : NavigationDialogFragment() {
+    private lateinit var themeFromSettings: Deferred<Settings.ColorTheme>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        themeFromSettings = lifecycleScope.async { Settings.colorTheme.get() }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val view = layoutInflater.inflate(R.layout.settings_color_theme_dialog, null)
+
+        val viewsToTheme = mutableMapOf<View, Settings.ColorTheme>()
+        val onViewClicked = { choiceView: View ->
+            val theme = checkNotNull(viewsToTheme[choiceView])
+            requiredActivity.lifecycleScope.launch { Settings.colorTheme.set(theme) }
+            dismiss()
+        }
+
+        checkNotNull(view.findViewById(R.id.system_colors)).apply {
+            if (DynamicColors.isDynamicColorAvailable()) {
+                viewsToTheme[this] = Settings.ColorTheme.System
+            } else {
+                isVisible = false
+            }
+        }
+
+        val choiceList = checkNotNull(view.findViewById<LinearLayout>(R.id.choice_list))
+        for (theme in Settings.ColorTheme.values().asList().minus(Settings.ColorTheme.System)) {
+            SettingsColorThemeColorView(requireContext()).apply {
+                viewsToTheme[this] = theme
+                setColorFromTheme(theme.activityThemeResId)
+                choiceList.addView(
+                    this,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+
+        viewsToTheme.keys.forEach { it.setOnClickListener(onViewClicked) }
+
+        lifecycleScope.launch {
+            val themeFromSettings = this@SettingsColorThemeFragment.themeFromSettings.await()
+            (viewsToTheme.entries.single { it.value == themeFromSettings }.key as Checkable)
+                .isChecked = true
+        }
+
+        return AlertDialog.Builder(requireContext())
+            .setView(view)
+            .setTitle(R.string.prefs_color_theme_title)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+    }
+}
+
+private class SettingsColorThemeColorView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = R.style.Widget_Tremotesf_SettingsColorThemeColorView
+) : LinearLayout(context, attrs, defStyleAttr, defStyleRes), Checkable {
+    init {
+        orientation = HORIZONTAL
+        inflate(context, R.layout.settings_color_theme_color_view, this)
+    }
+
+    fun setColorFromTheme(@StyleRes activityThemeResId: Int) {
+        val color = MaterialColors.getColor(
+            ContextThemeWrapper(context, activityThemeResId),
+            R.attr.colorPrimary,
+            SettingsColorThemeColorView::class.simpleName
+        )
+        findViewById<View>(R.id.color_view).background.colorFilter =
+            PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
+    }
+
+    private var checked = false
+
+    override fun setChecked(checked: Boolean) {
+        this.checked = checked
+        refreshDrawableState()
+    }
+
+    override fun isChecked() = checked
+
+    override fun toggle() {
+        isChecked = !isChecked
+    }
+
+    override fun onCreateDrawableState(extraSpace: Int): IntArray {
+        val drawableState = super.onCreateDrawableState(extraSpace + 1)
+        if (isChecked) {
+            mergeDrawableStates(drawableState, DRAWABLE_STATE_CHECKED)
+        }
+        return drawableState
+    }
+
+    private companion object {
+        val DRAWABLE_STATE_CHECKED = intArrayOf(android.R.attr.state_checked)
     }
 }

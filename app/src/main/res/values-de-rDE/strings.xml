@@ -364,8 +364,6 @@
     <string name="translators">Übersetzer</string>
     <string name="license">Lizenz</string>
 
-    <string name="prefs_dark_theme_mode_title">Aussehen</string>
-
     <string name="prefs_old_colors_title">Benutze alte Farben</string>
 
     <string name="prefs_torrent_compact_view_title">Nutze kompakte Ansicht für Torrents</string>
@@ -417,15 +415,8 @@
 
     <string name="connection_settings">Verbindungseinstellungen</string>
 
-    <string name="theme_auto_pre_q">Setzen durch Energiesparmodus</string>
-    <string name="theme_auto_q">Systemstandard</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>Dunkel</item>
-        <item>Hell</item>
-    </string-array>
-
+    <string name="prefs_dark_theme_mode_auto_pre_q">Setzen durch Energiesparmodus</string>
+    <string name="prefs_dark_theme_mode_auto_q">Systemstandard</string>
 
     <string name="proxy_settings">Proxy-Einstellungen</string>
     <string name="proxy_type">Proxy-Typ</string>

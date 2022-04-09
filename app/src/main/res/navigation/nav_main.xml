@@ -85,6 +85,9 @@
         <action
             android:id="@+id/to_persistent_notification_warning_dialog"
             app:destination="@id/persistent_notification_warning_dialog" />
+        <action
+            android:id="@+id/to_color_theme_dialog"
+            app:destination="@id/color_theme_dialog" />
     </fragment>
     <fragment
         android:id="@+id/about_fragment"
@@ -218,6 +221,9 @@
     <dialog
         android:id="@+id/persistent_notification_warning_dialog"
         android:name="org.equeim.tremotesf.ui.SettingsPersistentNotificationWarningFragment" />
+    <dialog
+        android:id="@+id/color_theme_dialog"
+        android:name="org.equeim.tremotesf.ui.SettingsColorThemeFragment" />
     <dialog
         android:id="@+id/remove_server_dialog"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.RemoveServerDialogFragment" />

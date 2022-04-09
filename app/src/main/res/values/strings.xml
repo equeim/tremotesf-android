@@ -393,7 +393,19 @@
     <string name="translators">Translators</string>
     <string name="license">License</string>
 
-    <string name="prefs_dark_theme_mode_title">Theme</string>
+    <string name="prefs_dark_theme_mode_title">Dark theme</string>
+
+    <string name="prefs_dark_theme_mode_auto_pre_q">Set by Battery Saver</string>
+    <string name="prefs_dark_theme_mode_auto_q">System default</string>
+    <string name="prefs_dark_theme_mode_auto" translatable="false">@string/prefs_dark_theme_mode_auto_pre_q</string>
+    <string name="prefs_dark_theme_mode_on">On</string>
+    <string name="prefs_dark_theme_mode_off">Off</string>
+
+    <string-array name="prefs_dark_theme_mode_entries" translatable="false">
+        <item>@string/prefs_dark_theme_mode_auto</item>
+        <item>@string/prefs_dark_theme_mode_on</item>
+        <item>@string/prefs_dark_theme_mode_off</item>
+    </string-array>
 
     <string name="prefs_old_colors_title">Use old colors</string>
 
@@ -446,17 +458,6 @@
 
     <string name="connection_settings">Connection settings</string>
 
-    <string name="theme_auto_pre_q">Set by Battery Saver</string>
-    <string name="theme_auto_q">System default</string>
-
-    <string name="theme_auto" translatable="false">@string/theme_auto_pre_q</string>
-
-    <string-array name="prefs_theme_entries">
-        <item translatable="false">@string/theme_auto</item>
-        <item>Dark</item>
-        <item>Light</item>
-    </string-array>
-
     <string name="proxy_settings">Proxy settings</string>
     <string name="proxy_type">Proxy type</string>
     <string name="share">Share</string>
@@ -502,4 +503,7 @@
 
     <string name="directory_icon">Directory icon</string>
     <string name="file_icon">File icon</string>
+
+    <string name="prefs_color_theme_title">Colors</string>
+    <string name="prefs_color_theme_system">System colors</string>
 </resources>
