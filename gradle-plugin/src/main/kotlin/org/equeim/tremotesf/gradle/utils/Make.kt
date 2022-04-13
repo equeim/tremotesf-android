@@ -17,7 +17,7 @@ internal fun executeMake(
     executeCommand(
         listOf(MAKE, "-j", gradle.startParameter.maxWorkerCount.toString(), target),
         logger,
-        ExecInputOutputMode.RedirectOutputToFile(outputFile)
+        outputMode = ExecOutputMode.RedirectOutputToFile(outputFile)
     ) {
         directory(workingDir)
         configure()

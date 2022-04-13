@@ -10,5 +10,5 @@ internal fun zeroCcacheStatistics(logger: Logger) {
 
 internal fun showCcacheStatistics(logger: Logger) {
     logger.lifecycle("\nCcache statistics:")
-    executeCommand(listOf(CCACHE, "-s"), logger, ExecInputOutputMode.PrintOutput)
+    executeCommand(listOf(CCACHE, "-s"), logger, outputMode = ExecOutputMode.PrintOutput)
 }

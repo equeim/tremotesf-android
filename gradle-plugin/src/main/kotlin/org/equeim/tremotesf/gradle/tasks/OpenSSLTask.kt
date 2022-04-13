@@ -90,7 +90,7 @@ abstract class OpenSSLTask @Inject constructor(
         executeCommand(
             listOf(sourceDir.get().resolve("Configure").toString()) + configureArgs,
             logger,
-            ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
         ) {
             directory(buildDir)
             prependPath(binDir)
