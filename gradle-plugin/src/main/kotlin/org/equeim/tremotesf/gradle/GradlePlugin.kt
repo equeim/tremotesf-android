@@ -5,6 +5,11 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.equeim.tremotesf.gradle.utils.*
+import org.equeim.tremotesf.gradle.utils.compileSdk
+import org.equeim.tremotesf.gradle.utils.minSdk
+import org.equeim.tremotesf.gradle.utils.ndk
+import org.equeim.tremotesf.gradle.utils.targetSdk
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,7 +30,6 @@ class GradlePlugin : Plugin<Project> {
 
     private fun Project.configureAndroidProject() {
         plugins.withType<AndroidBasePlugin> {
-            val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
             extensions.getByType(CommonExtension::class).configureAndroidProject(libs)
         }
         plugins.withType<KotlinAndroidPluginWrapper> {
@@ -86,18 +90,3 @@ class GradlePlugin : Plugin<Project> {
         const val VERSIONS_PLUGIN_ID = "com.github.ben-manes.versions"
     }
 }
-
-private fun VersionCatalog.getVersion(alias: String): String =
-    findVersion(alias).get().requiredVersion
-
-private val VersionCatalog.compileSdk: Int
-    get() = getVersion("sdk.compile").toInt()
-
-private val VersionCatalog.minSdk: Int
-    get() = getVersion("sdk.min").toInt()
-
-private val VersionCatalog.targetSdk: Int
-    get() = getVersion("sdk.target").toInt()
-
-private val VersionCatalog.ndk: String
-    get() = getVersion("ndk")
