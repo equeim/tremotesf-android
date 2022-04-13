@@ -97,7 +97,7 @@ abstract class QtTask @Inject constructor(
             executeCommand(
                 listOf("git", "-C", sourceDir.get().toString(), "describe", "--tags"),
                 logger,
-                ExecInputOutputMode.CaptureOutput
+                outputMode = ExecOutputMode.CaptureOutput
             )
                 .trimmedOutputString()
                 .drop(1)
@@ -108,7 +108,7 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt {}", buildingQtVersion)
 
         val hostQtVersion = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_VERSION"), logger, ExecInputOutputMode.CaptureOutput)
+            executeCommand(listOf("qmake6", "-query", "QT_VERSION"), logger, outputMode = ExecOutputMode.CaptureOutput)
                 .trimmedOutputString()
         }.getOrElse { return null }
 
@@ -120,7 +120,7 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostPrefix = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_PREFIX"), logger, ExecInputOutputMode.CaptureOutput)
+            executeCommand(listOf("qmake6", "-query", "QT_HOST_PREFIX"), logger, outputMode = ExecOutputMode.CaptureOutput)
                 .trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_PREFIX")
@@ -128,7 +128,7 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostLibs = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_LIBS"), logger, ExecInputOutputMode.CaptureOutput)
+            executeCommand(listOf("qmake6", "-query", "QT_HOST_LIBS"), logger, outputMode = ExecOutputMode.CaptureOutput)
                 .trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_LIBS")
@@ -282,7 +282,7 @@ abstract class QtTask @Inject constructor(
         executeCommand(
             listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
             logger,
-            ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
         ) {
             directory(buildDir)
             cmakeBinaryDir.orNull?.let { prependPath(it) }

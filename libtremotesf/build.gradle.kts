@@ -1,6 +1,4 @@
 import java.lang.module.ModuleDescriptor
-import java.io.ByteArrayOutputStream
-import java.nio.charset.StandardCharsets
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask
 import org.equeim.tremotesf.gradle.tasks.QtTask

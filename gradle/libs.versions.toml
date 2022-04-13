@@ -9,6 +9,7 @@ sdk-target = "31"
 ndk = "24.0.8215888"
 
 coroutines = "1.6.1"
+coroutines15 = "1.5.2"
 serialization = "1.3.2"
 
 androidx-appcompat = "1.4.1"
@@ -42,6 +43,7 @@ gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+coroutines15-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines15" }
 
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }

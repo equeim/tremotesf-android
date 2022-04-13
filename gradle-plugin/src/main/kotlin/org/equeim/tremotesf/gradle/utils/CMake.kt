@@ -35,14 +35,14 @@ internal fun executeCMake(
         cmakeBinaryDir,
         logger,
         when (mode) {
-            CMakeMode.Build -> ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(BUILD_LOG_FILE))
-            CMakeMode.Install -> ExecInputOutputMode.RedirectOutputToFile(buildDir.resolve(INSTALL_LOG_FILE))
+            CMakeMode.Build -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(BUILD_LOG_FILE))
+            CMakeMode.Install -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(INSTALL_LOG_FILE))
         }
     )
 
 internal fun printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
     val cmakeVersion = getCMakeVersion(cmakeBinaryDir, logger)
-    val whichCmake = executeCommand(listOf("which", CMAKE), logger, ExecInputOutputMode.CaptureOutput) {
+    val whichCmake = executeCommand(listOf("which", CMAKE), logger, outputMode = ExecOutputMode.CaptureOutput) {
         cmakeBinaryDir?.let { prependPath(it) }
     }.trimmedOutputString()
     logger.lifecycle(
@@ -55,7 +55,7 @@ internal fun printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
 private fun getCMakeVersion(
     cmakeBinaryDir: File?,
     logger: Logger
-) = executeCMakeImpl(listOf("--version"), cmakeBinaryDir, logger, ExecInputOutputMode.CaptureOutput)
+) = executeCMakeImpl(listOf("--version"), cmakeBinaryDir, logger, ExecOutputMode.CaptureOutput)
     .runCatching {
         outputString()
             .lineSequence()
@@ -74,7 +74,7 @@ private fun executeCMakeImpl(
     args: List<String>,
     cmakeBinaryDir: File?,
     logger: Logger,
-    inputOutputMode: ExecInputOutputMode,
-) = executeCommand(listOf(CMAKE) + args, logger, inputOutputMode) {
+    outputMode: ExecOutputMode,
+) = executeCommand(listOf(CMAKE) + args, logger, outputMode = outputMode) {
     cmakeBinaryDir?.let { prependPath(it) }
 }

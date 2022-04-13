@@ -1,7 +1,7 @@
 package org.equeim.tremotesf.gradle.tasks
 
 import org.apache.commons.text.StringSubstitutor
-import org.equeim.tremotesf.gradle.utils.ExecInputOutputMode
+import org.equeim.tremotesf.gradle.utils.ExecInputMode
 import org.equeim.tremotesf.gradle.utils.executeCommand
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.MapProperty
@@ -51,12 +51,12 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
     }
 
     private fun applyPatchImpl(patchFile: String, processInput: String? = null) {
-        val inputOutputMode = processInput?.let { ExecInputOutputMode.InputString(it) }
+        val inputMode = processInput?.let { ExecInputMode.InputString(it) }
         val result = executeCommand(
             listOf(PATCH, "-p1", "-R", "--dry-run", "--force", "--fuzz=0", "--input=$patchFile"),
             logger,
-            inputOutputMode,
-            true
+            inputMode = inputMode,
+            ignoreExitStatus = true
         ) {
             directory(sourceDir.get())
         }
@@ -67,7 +67,8 @@ abstract class PatchTask @Inject constructor(private val execOperations: ExecOpe
             executeCommand(
                 listOf(PATCH, "-p1", "--fuzz=0", "--input=$patchFile"),
                 logger,
-                inputOutputMode
+                inputMode = inputMode,
+                ignoreExitStatus = false
             ) {
                 directory(sourceDir.get())
             }
