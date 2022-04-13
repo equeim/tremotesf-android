@@ -6,6 +6,7 @@ import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.*
 import java.io.File
 import java.lang.module.ModuleDescriptor
@@ -13,7 +14,8 @@ import java.nio.file.Files
 import javax.inject.Inject
 
 abstract class QtTask @Inject constructor(
-    private val gradle: Gradle
+    private val gradle: Gradle,
+    providerFactory: ProviderFactory
 ) : DefaultTask() {
     @get:Input
     abstract val minSdkVersion: Property<String>
@@ -47,10 +49,13 @@ abstract class QtTask @Inject constructor(
     abstract val cmakeBinaryDir: Property<File>
 
     @get:Input
-    abstract val hostQtCmakeFlags: ListProperty<String>
+    val hostQtCmakeFlags: Provider<List<String>> =
+        providerFactory.gradleProperty("org.equeim.tremotesf.host-qt-cmake-flags")
+            .map { it.split(" ").filter(String::isNotBlank) }
 
     @get:Input
-    abstract val ccache: Property<Boolean>
+    val ccache: Provider<Boolean> =
+        providerFactory.gradleProperty(CCACHE_PROPERTY).map { it.toBoolean() }
 
     @TaskAction
     fun buildQt() {
@@ -108,7 +113,11 @@ abstract class QtTask @Inject constructor(
         logger.lifecycle("Building Qt {}", buildingQtVersion)
 
         val hostQtVersion = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_VERSION"), logger, outputMode = ExecOutputMode.CaptureOutput)
+            executeCommand(
+                listOf("qmake6", "-query", "QT_VERSION"),
+                logger,
+                outputMode = ExecOutputMode.CaptureOutput
+            )
                 .trimmedOutputString()
         }.getOrElse { return null }
 
@@ -120,7 +129,11 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostPrefix = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_PREFIX"), logger, outputMode = ExecOutputMode.CaptureOutput)
+            executeCommand(
+                listOf("qmake6", "-query", "QT_HOST_PREFIX"),
+                logger,
+                outputMode = ExecOutputMode.CaptureOutput
+            )
                 .trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_PREFIX")
@@ -128,7 +141,11 @@ abstract class QtTask @Inject constructor(
         }
 
         val hostLibs = runCatching {
-            executeCommand(listOf("qmake6", "-query", "QT_HOST_LIBS"), logger, outputMode = ExecOutputMode.CaptureOutput)
+            executeCommand(
+                listOf("qmake6", "-query", "QT_HOST_LIBS"),
+                logger,
+                outputMode = ExecOutputMode.CaptureOutput
+            )
                 .trimmedOutputString()
         }.getOrElse {
             logger.error("Failed to get QT_HOST_LIBS")
@@ -296,7 +313,14 @@ abstract class QtTask @Inject constructor(
             // Workaround for CMake bug that forces use of gold linker when LTCG is enabled
             // https://gitlab.kitware.com/cmake/cmake/-/issues/21772
             // https://github.com/android/ndk/issues/1444
-            executeCommand(listOf("sed", "-i", "s/-fuse-ld=gold//g", buildDir.resolve("build.ninja").toString()), logger)
+            executeCommand(
+                listOf(
+                    "sed",
+                    "-i",
+                    "s/-fuse-ld=gold//g",
+                    buildDir.resolve("build.ninja").toString()
+                ), logger
+            )
         }
 
         executeCMake(
@@ -310,10 +334,13 @@ abstract class QtTask @Inject constructor(
         }
 
         logger.lifecycle("Installing Qt")
-            executeCMake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
-                .also {
-                    logger.lifecycle("Installation finished, elapsed time = {}", it.elapsedTime.format())
-                }
+        executeCMake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
+            .also {
+                logger.lifecycle(
+                    "Installation finished, elapsed time = {}",
+                    it.elapsedTime.format()
+                )
+            }
     }
 
     private fun needLinkerWorkaround(crossCompiling: Boolean): Boolean {

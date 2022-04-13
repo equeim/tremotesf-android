@@ -57,9 +57,6 @@ dependencies {
     implementation(libs.timber)
 }
 
-val addHostQtCmakeFlags = (findProperty("org.equeim.tremotesf.host-qt-cmake-flags") as? String?)?.split(" ")?.filter { it.isNotBlank() } ?: emptyList()
-val useCcache = (findProperty("org.equeim.tremotesf.ccache") as? String?).toBoolean()
-
 val openSSLPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(OpenSSLTask.sourceDir(opensslDir))
     patchesDir.set(OpenSSLTask.patchesDir(opensslDir))
@@ -70,7 +67,6 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
     minSdkVersion.set(libs.versions.sdk.min)
     opensslDir.set(this@Build_gradle.opensslDir)
     ndkDir.set(android.ndkDirectory)
-    ccache.set(useCcache)
 }
 
 val qtPatches by tasks.registering(PatchTask::class) {
@@ -90,8 +86,6 @@ val qt by tasks.registering(QtTask::class) {
     if (!useCmakeFromPath) {
         cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/$sdkCmakeVersion/bin"))
     }
-    hostQtCmakeFlags.set(addHostQtCmakeFlags)
-    ccache.set(useCcache)
 }
 
 dependencies {
