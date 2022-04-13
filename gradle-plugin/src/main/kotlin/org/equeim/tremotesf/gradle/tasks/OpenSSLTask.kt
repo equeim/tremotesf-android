@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectories
@@ -14,7 +15,8 @@ import java.nio.file.Files
 import javax.inject.Inject
 
 abstract class OpenSSLTask @Inject constructor(
-    private val gradle: Gradle
+    private val gradle: Gradle,
+    providerFactory: ProviderFactory
 ) : DefaultTask() {
     @get:Input
     abstract val minSdkVersion: Property<String>
@@ -36,7 +38,8 @@ abstract class OpenSSLTask @Inject constructor(
     }
 
     @get:Input
-    abstract val ccache: Property<Boolean>
+    val ccache: Provider<Boolean> =
+        providerFactory.gradleProperty(CCACHE_PROPERTY).map { it.toBoolean() }
 
     @TaskAction
     fun buildOpenSSL() {
