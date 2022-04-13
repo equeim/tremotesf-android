@@ -1,3 +1,4 @@
 #!/bin/bash
 
-toml -t gradle/libs.versions.toml -g versions.ndk -j | jq -r .ndk.value
+set -e -o pipefail
+toml -t gradle/libs.versions.toml -g 'versions.sdk-ndk' -j | jq -r '.["sdk-ndk"].value'

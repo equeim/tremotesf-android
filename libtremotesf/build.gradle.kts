@@ -12,7 +12,8 @@ plugins {
 val opensslDir = rootProject.file("3rdparty/openssl")
 val qtDir = rootProject.file("3rdparty/qt")
 
-val sdkCmakeVersion = "3.18.1"
+val sdkCmakeVersion: String = libs.versions.sdk.cmake.get()
+logger.lifecycle("Version of CMake from SDK is $sdkCmakeVersion")
 val pathCmakeVersion = getCMakeVersionOrNull()
 logger.lifecycle("Version of CMake from PATH is $pathCmakeVersion")
 
@@ -64,7 +65,7 @@ val openSSLPatches by tasks.registering(PatchTask::class) {
 
 val openSSL by tasks.registering(OpenSSLTask::class) {
     dependsOn(openSSLPatches)
-    minSdkVersion.set(libs.versions.sdk.min)
+    minSdkVersion.set(libs.versions.sdk.platform.min)
     opensslDir.set(this@Build_gradle.opensslDir)
     ndkDir.set(android.ndkDirectory)
 }
@@ -72,12 +73,12 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
 val qtPatches by tasks.registering(PatchTask::class) {
     sourceDir.set(QtTask.sourceDir(qtDir))
     patchesDir.set(QtTask.patchesDir(qtDir))
-    substitutionMap.put("compileSdk", libs.versions.sdk.compile)
+    substitutionMap.put("compileSdk", libs.versions.sdk.platform.compile)
 }
 
 val qt by tasks.registering(QtTask::class) {
     dependsOn(qtPatches)
-    minSdkVersion.set(libs.versions.sdk.min)
+    minSdkVersion.set(libs.versions.sdk.platform.min)
     qtDir.set(this@Build_gradle.qtDir)
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
