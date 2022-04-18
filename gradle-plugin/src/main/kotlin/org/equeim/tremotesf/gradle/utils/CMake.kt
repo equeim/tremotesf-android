@@ -1,7 +1,5 @@
 package org.equeim.tremotesf.gradle.utils
 
-import org.equeim.tremotesf.gradle.tasks.BUILD_LOG_FILE
-import org.equeim.tremotesf.gradle.tasks.INSTALL_LOG_FILE
 import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logger
