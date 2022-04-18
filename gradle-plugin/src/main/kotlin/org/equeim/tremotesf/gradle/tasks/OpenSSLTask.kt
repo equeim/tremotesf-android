@@ -14,32 +14,41 @@ import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
 
-abstract class OpenSSLTask @Inject constructor(
-    private val gradle: Gradle,
-    providerFactory: ProviderFactory
-) : DefaultTask() {
+abstract class OpenSSLTask : DefaultTask() {
+    @get:Inject
+    protected abstract val gradle: Gradle
+
+    @get:Inject
+    protected abstract val providerFactory: ProviderFactory
+
+    /**
+     * Input properties
+     */
+    @get:Input
+    abstract val rootDir: Property<File>
+
     @get:Input
     abstract val minSdkVersion: Property<String>
 
     @get:Input
-    abstract val opensslDir: Property<File>
-
-    @get:Input
     abstract val ndkDir: Property<File>
 
+    /**
+     * Other inputs
+     */
     @get:InputDirectory
-    val sourceDir: Provider<File> by lazy {
-        opensslDir.map { sourceDir(it) }
-    }
-
-    @get:OutputDirectories
-    val installDirs: Provider<List<File>> by lazy {
-        opensslDir.map { installDirs(it) }
-    }
+    protected val sourceDir: Provider<File> by lazy { rootDir.map(::sourceDir) }
 
     @get:Input
-    val ccache: Provider<Boolean> =
-        providerFactory.gradleProperty(CCACHE_PROPERTY).map { it.toBoolean() }
+    protected val ccache: Provider<Boolean> by lazy {
+        providerFactory.gradleProperty(CCACHE_PROPERTY).map(String::toBoolean)
+    }
+
+    /**
+     * Outputs
+     */
+    @get:OutputDirectories
+    val installDirs: Provider<List<File>> by lazy { rootDir.map(::installDirs) }
 
     @TaskAction
     fun buildOpenSSL() {
@@ -59,7 +68,7 @@ abstract class OpenSSLTask @Inject constructor(
     private fun buildOpenSSL(abi: String) {
         logger.lifecycle("Building OpenSSL for abi = {}", abi)
 
-        val buildDir = buildDir(opensslDir.get(), abi)
+        val buildDir = buildDir(rootDir.get(), abi)
         Files.createDirectories(buildDir.toPath())
 
         val cflags = COMMON_CFLAGS.toMutableList()
@@ -83,7 +92,7 @@ abstract class OpenSSLTask @Inject constructor(
         val configureArgs = mutableListOf<String>().apply {
             add(target)
             addAll(COMMON_ARGUMENTS)
-            add("--prefix=${installDir(opensslDir.get(), abi)}")
+            add("--prefix=${installDir(rootDir.get(), abi)}")
             addAll(cflags)
         }
 
@@ -131,17 +140,17 @@ abstract class OpenSSLTask @Inject constructor(
             "-O2"
         )
 
-        fun sourceDir(opensslDir: File) = opensslDir.resolve("openssl")
-        fun patchesDir(opensslDir: File) = opensslDir.resolve("patches")
+        fun sourceDir(rootDir: File) = rootDir.resolve(OPENSSL_DIR).resolve("openssl")
+        fun patchesDir(rootDir: File) = rootDir.resolve(OPENSSL_DIR).resolve("patches")
 
-        private fun buildDir(opensslDir: File, abi: String) = opensslDir.resolve("build-$abi")
-        private fun buildDirs(opensslDir: File) =
-            NativeAbis.abis.map { abi -> buildDir(opensslDir, abi) }
+        private fun buildDir(rootDir: File, abi: String) = rootDir.resolve(OPENSSL_DIR).resolve("build-$abi")
+        private fun buildDirs(rootDir: File) =
+            NativeAbis.abis.map { abi -> buildDir(rootDir, abi) }
 
-        private fun installDir(opensslDir: File, abi: String) = opensslDir.resolve("install-$abi")
-        private fun installDirs(opensslDir: File) =
-            NativeAbis.abis.map { abi -> installDir(opensslDir, abi) }
+        private fun installDir(rootDir: File, abi: String) = rootDir.resolve(OPENSSL_DIR).resolve("install-$abi")
+        private fun installDirs(rootDir: File) =
+            NativeAbis.abis.map { abi -> installDir(rootDir, abi) }
 
-        fun dirsToClean(opensslDir: File) = buildDirs(opensslDir) + installDirs(opensslDir)
+        fun dirsToClean(rootDir: File) = buildDirs(rootDir) + installDirs(rootDir)
     }
 }

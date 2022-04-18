@@ -13,15 +13,28 @@ import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
 import javax.inject.Inject
 
-abstract class QtTask @Inject constructor(
-    private val gradle: Gradle,
-    providerFactory: ProviderFactory
-) : DefaultTask() {
+abstract class QtTask : DefaultTask() {
+    @get:Inject
+    protected abstract val gradle: Gradle
+
+    @get:Inject
+    protected abstract val providerFactory: ProviderFactory
+
+    /**
+     * Input properties
+     */
+    @get:Input
+    abstract val rootDir: Property<File>
+
     @get:Input
     abstract val minSdkVersion: Property<String>
 
     @get:Input
-    abstract val qtDir: Property<File>
+    abstract val cmakeVersion: Property<String>
+
+    @get:Input
+    @get:Optional
+    abstract val cmakeBinaryDir: Property<File>
 
     @get:InputFiles
     abstract val opensslInstallDirs: ListProperty<File>
@@ -32,30 +45,30 @@ abstract class QtTask @Inject constructor(
     @get:Input
     abstract val ndkDir: Property<File>
 
+    /**
+     * Other inputs
+     */
     @get:InputDirectory
-    val sourceDir: Provider<File> by lazy { qtDir.map { sourceDir(it) } }
+    protected val sourceDir: Provider<File> by lazy { rootDir.map(::sourceDir) }
 
-    @Suppress("unused")
-    @get:OutputDirectories
-    val installDirs: Provider<List<File>> by lazy {
-        qtDir.map { listOf(hostInstallDir(it)) + installDirs(it) }
+    @get:Input
+    protected val hostQtCmakeFlags: Provider<List<String>> by lazy {
+        providerFactory.gradleProperty("org.equeim.tremotesf.host-qt-cmake-flags")
+            .map { it.split(" ").filter(String::isNotBlank) }
     }
 
     @get:Input
-    abstract val cmakeVersion: Property<String>
+    protected val ccache: Provider<Boolean> by lazy {
+        providerFactory.gradleProperty(CCACHE_PROPERTY).map(String::toBoolean)
+    }
 
-    @get:Input
-    @get:Optional
-    abstract val cmakeBinaryDir: Property<File>
-
-    @get:Input
-    val hostQtCmakeFlags: Provider<List<String>> =
-        providerFactory.gradleProperty("org.equeim.tremotesf.host-qt-cmake-flags")
-            .map { it.split(" ").filter(String::isNotBlank) }
-
-    @get:Input
-    val ccache: Provider<Boolean> =
-        providerFactory.gradleProperty(CCACHE_PROPERTY).map { it.toBoolean() }
+    /**
+     * Outputs
+     */
+    @get:OutputDirectories
+    protected val installDirs: Provider<List<File>> by lazy {
+        rootDir.map { installDirs(it) + hostInstallDir(it) }
+    }
 
     @TaskAction
     fun buildQt() {
@@ -92,7 +105,7 @@ abstract class QtTask @Inject constructor(
             prebuiltHostQtInfo
         } else {
             buildHostQt()
-            val hostInstallDir = hostInstallDir(qtDir.get())
+            val hostInstallDir = hostInstallDir(rootDir.get())
             HostQtInfo(hostInstallDir.toString(), hostInstallDir.resolve("lib/cmake").toString())
         }
     }
@@ -158,12 +171,12 @@ abstract class QtTask @Inject constructor(
     private fun buildHostQt() {
         logger.lifecycle("Building host Qt")
 
-        val buildDir = hostBuildDir(qtDir.get())
+        val buildDir = hostBuildDir(rootDir.get())
 
         val configureFlags = listOf(
             "-release",
 
-            "-prefix", hostInstallDir(qtDir.get()).toString(),
+            "-prefix", hostInstallDir(rootDir.get()).toString(),
 
             if (ccache.get()) "-ccache" else "-no-ccache",
             // Precompiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
@@ -212,12 +225,12 @@ abstract class QtTask @Inject constructor(
     private fun buildQt(abi: String, hostQtInfo: HostQtInfo) {
         logger.lifecycle("Building Qt for abi = {}", abi)
 
-        val buildDir = buildDir(qtDir.get(), abi)
+        val buildDir = buildDir(rootDir.get(), abi)
 
         val configureFlags = listOf(
             "-release",
 
-            "-prefix", installDir(qtDir.get(), abi).toString(),
+            "-prefix", installDir(rootDir.get(), abi).toString(),
 
             "-platform", "android-clang",
             "-android-sdk", sdkDir.get().toString(),
@@ -323,6 +336,7 @@ abstract class QtTask @Inject constructor(
             )
         }
 
+
         executeCMake(
             CMakeMode.Build,
             cmakeBinaryDir.orNull,
@@ -351,25 +365,23 @@ abstract class QtTask @Inject constructor(
     }
 
     companion object {
-        fun sourceDir(qtDir: File) = qtDir.resolve("qtbase")
-        fun patchesDir(qtDir: File) = qtDir.resolve("patches")
+        fun sourceDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("qtbase")
+        fun patchesDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("patches")
 
-        private fun hostBuildDir(qtDir: File) = qtDir.resolve("build-host")
-        private fun hostInstallDir(qtDir: File) = qtDir.resolve("install-host")
+        private fun hostBuildDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("build-host")
+        private fun hostInstallDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("install-host")
 
-        private fun buildDir(qtDir: File, abi: String) = qtDir.resolve("build-$abi")
-        private fun buildDirs(qtDir: File) = NativeAbis.abis.map { buildDir(qtDir, it) }
+        private fun buildDir(rootDir: File, abi: String) = rootDir.resolve(QT_DIR).resolve("build-$abi")
+        private fun buildDirs(rootDir: File) = NativeAbis.abis.map { buildDir(rootDir, it) }
 
-        private fun installDir(qtDir: File, abi: String) = qtDir.resolve("install-$abi")
-        private fun installDirs(qtDir: File) = NativeAbis.abis.map { installDir(qtDir, it) }
+        private fun installDir(rootDir: File, abi: String) = rootDir.resolve(QT_DIR).resolve("install-$abi")
+        private fun installDirs(rootDir: File) = NativeAbis.abis.map { installDir(rootDir, it) }
 
-        fun dirsToClean(qtDir: File) =
-            listOf(hostBuildDir(qtDir), hostInstallDir(qtDir)) + buildDirs(qtDir) + installDirs(
-                qtDir
-            )
+        fun dirsToClean(rootDir: File) =
+            listOf(hostBuildDir(rootDir), hostInstallDir(rootDir)) + buildDirs(rootDir) + installDirs(rootDir)
 
-        fun jar(qtDir: File) =
-            installDir(qtDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
+        fun jar(rootDir: File) =
+            installDir(rootDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
 
         private const val CMAKE_VERSION_WITHOUT_LINKER_BUG = "3.20.0"
     }
