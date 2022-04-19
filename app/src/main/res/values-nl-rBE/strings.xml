@@ -357,7 +357,6 @@
     <string name="translators">Vertalers</string>
     <string name="license">Licentie</string>
 
-    <string name="prefs_old_colors_title">Oude kleuren gebruiken</string>
 
     <string name="prefs_torrent_compact_view_title">Compacte weergave gebruiken voor torrents</string>
     <string name="prefs_torrent_name_multiline_title">Torrentnamen weergaven op meerdere regels</string>

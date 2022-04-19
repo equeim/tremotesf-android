@@ -310,8 +310,6 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
-    <string name="prefs_old_colors_title">使用旧的配色</string>
-
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
     <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>
 

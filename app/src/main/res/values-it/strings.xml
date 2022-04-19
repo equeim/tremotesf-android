@@ -363,7 +363,6 @@
     <string name="translators">Traduzioni</string>
     <string name="license">Licenza</string>
 
-    <string name="prefs_old_colors_title">Usa vecchio tema</string>
 
     <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
     <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>

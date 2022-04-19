@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="list_item_selected_color">#26000000</color>
 
     <color name="system_bars_semi_transparent_light">#e6ffffff</color>
@@ -17,8 +17,8 @@
     <color name="icon_color_disabled_night">#80FFFFFF</color>
 
 <!--Override colors in appcompat library (ActionMode status bar background)-->
-    <color name="abc_decor_view_status_guard">@android:color/transparent</color>
-    <color name="abc_decor_view_status_guard_light">@android:color/transparent</color>
+    <color name="abc_decor_view_status_guard" tools:keep="@color/abc_decor_view_status_guard">@android:color/transparent</color>
+    <color name="abc_decor_view_status_guard_light" tools:keep="@color/abc_decor_view_status_guard_light">@android:color/transparent</color>
 
     <color name="theme_red_primary">#B91D1D</color>
     <color name="theme_red_onPrimary">#FFFFFF</color>
