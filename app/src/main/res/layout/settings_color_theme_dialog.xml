@@ -7,23 +7,6 @@
         android:id="@+id/choice_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="?attr/dialogPreferredPadding"
-        android:orientation="vertical">
-
-        <CheckedTextView
-            android:id="@+id/system_colors"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:drawableStart="?android:attr/listChoiceIndicatorSingle"
-            android:drawablePadding="20dp"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:minHeight="?attr/listPreferredItemHeightSmall"
-            android:paddingHorizontal="?attr/dialogPreferredPadding"
-            android:text="@string/prefs_color_theme_system"
-            android:textAppearance="?textAppearanceTitleMedium" />
-    </LinearLayout>
+        android:layout_marginTop="8dp"
+        android:orientation="vertical" />
 </ScrollView>

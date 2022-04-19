@@ -49,6 +49,7 @@
         <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
         <item name="materialCardViewStyle">@style/Widget.Tremotesf.CardView</item>
+        <item name="settingsColorThemeChoiceViewStyle">@style/Widget.Tremotesf.SettingsColorThemeChoiceView</item>
     </style>
 
     <style name="AppTheme.Teal">
@@ -170,11 +171,18 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="Widget.Tremotesf.SettingsColorThemeColorView" parent="android:Widget">
+    <style name="Widget.Tremotesf.SettingsColorThemeChoiceView" parent="android:Widget">
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:drawableStart">?android:attr/listChoiceIndicatorSingle</item>
+        <item name="android:drawablePadding">20dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">?attr/textColorAlertDialogListItem</item>
     </style>
 </resources>
