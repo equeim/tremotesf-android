@@ -3,6 +3,7 @@ package org.equeim.tremotesf.common
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
+@Suppress("PropertyName")
 interface TremotesfDispatchers {
     val Default: CoroutineDispatcher
     val IO: CoroutineDispatcher

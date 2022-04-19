@@ -2,7 +2,6 @@ package org.equeim.tremotesf.rpc
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.work.*

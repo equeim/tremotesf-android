@@ -49,7 +49,7 @@ import kotlin.coroutines.coroutineContext
 
 open class TorrentFilesTree(
     parentScope: CoroutineScope,
-    val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
+    private val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
     private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
 ) {
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))

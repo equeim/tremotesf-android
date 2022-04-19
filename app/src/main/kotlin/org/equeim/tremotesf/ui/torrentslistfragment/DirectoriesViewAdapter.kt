@@ -31,7 +31,6 @@ import org.equeim.tremotesf.common.dropTrailingPathSeparator
 
 class DirectoriesViewAdapter(
     private val context: Context,
-    private val model: TorrentsListFragmentViewModel,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private val directoriesMap = mutableMapOf<String, Int>()
