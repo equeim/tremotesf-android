@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Tremotesf</string>
 
     <string name="add_navigation_bar_padding" translatable="false">add_navigation_bar_padding</string>
@@ -407,8 +407,6 @@
         <item>@string/prefs_dark_theme_mode_off</item>
     </string-array>
 
-    <string name="prefs_old_colors_title">Use old colors</string>
-
     <string name="prefs_torrent_compact_view_title">Use compact view for torrents</string>
     <string name="prefs_torrent_name_multiline_title">Display torrents\' names on multiple lines</string>
 
@@ -497,7 +495,8 @@
 
     <string name="free_space_in_download_directory">Free space in download directory</string>
 
-    <string name="bottom_sheet_behavior" translatable="false">org.equeim.tremotesf.ui.ExpandedBottomSheetBehavior</string>
+<!--    Override BottomSheetDialog's BottomSheetBehavior-->
+    <string name="bottom_sheet_behavior" translatable="false" tools:keep="@string/bottom_sheet_behavior">org.equeim.tremotesf.ui.ExpandedBottomSheetBehavior</string>
 
     <string name="reset">Reset</string>
 

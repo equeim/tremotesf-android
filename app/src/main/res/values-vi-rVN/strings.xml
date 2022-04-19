@@ -257,7 +257,6 @@
     <string name="translators">Biên dịch viên</string>
     <string name="license">Giấy phép</string>
 
-    <string name="prefs_old_colors_title">Sử dụng màu cũ</string>
 
     <string name="prefs_torrent_compact_view_title">Sử dụng chế độ xem nhỏ gọn cho torrent</string>
     <string name="prefs_torrent_name_multiline_title">Hiển thị tên của torrent trên nhiều dòng</string>

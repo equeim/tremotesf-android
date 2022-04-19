@@ -386,7 +386,6 @@
     <string name="translators">Переводчики</string>
     <string name="license">Лицензия</string>
 
-    <string name="prefs_old_colors_title">Использовать старые цвета</string>
 
     <string name="prefs_torrent_compact_view_title">Компактное представление торрентов</string>
     <string name="prefs_torrent_name_multiline_title">Отображать названия торрентов на нескольких строках</string>

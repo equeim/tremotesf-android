@@ -363,7 +363,6 @@
     <string name="translators">Çevirmenler</string>
     <string name="license">Lisans</string>
 
-    <string name="prefs_old_colors_title">Eski renkleri kullan</string>
 
     <string name="prefs_torrent_compact_view_title">Torrentler için derlitoplu görünüm kullanın</string>
     <string name="prefs_torrent_name_multiline_title">Torrent adlarını birden fazla satırda göster</string>

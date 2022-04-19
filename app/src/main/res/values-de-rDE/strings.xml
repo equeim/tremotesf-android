@@ -364,8 +364,6 @@
     <string name="translators">Übersetzer</string>
     <string name="license">Lizenz</string>
 
-    <string name="prefs_old_colors_title">Benutze alte Farben</string>
-
     <string name="prefs_torrent_compact_view_title">Nutze kompakte Ansicht für Torrents</string>
     <string name="prefs_torrent_name_multiline_title">Zeige Namen der Torrents über mehrere Zeilen an</string>
 
