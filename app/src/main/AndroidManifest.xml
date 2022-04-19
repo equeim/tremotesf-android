@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.equeim.tremotesf">
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
@@ -21,12 +22,14 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:name=".TremotesfApplication"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Splash"
-        android:requestLegacyExternalStorage="true">
+        android:requestLegacyExternalStorage="true"
+        tools:targetApi="s">
 
         <activity
             android:name=".ui.NavigationActivity"
