@@ -35,7 +35,8 @@ import androidx.annotation.AttrRes
 import androidx.annotation.Keep
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatCheckedTextView
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
@@ -45,10 +46,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.updateCompoundDrawables
 import kotlin.collections.set
 
 
@@ -145,7 +145,32 @@ class SettingsAppColorsPreference @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.preferenceStyle,
     @StyleRes defStyleRes: Int = R.style.Preference
-) : DialogPreference(context, attrs, defStyleAttr, defStyleRes)
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
+    init {
+        // Set initial value so that height will remain fixed
+        summary = "\u200B"
+    }
+
+    private lateinit var scope: CoroutineScope
+    override fun onAttached() {
+        super.onAttached()
+        scope = MainScope()
+        scope.launch {
+            Settings.colorTheme.flow().collect {
+                setSummary(when (it) {
+                    Settings.ColorTheme.System -> R.string.prefs_color_theme_system
+                    Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
+                    Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+                })
+            }
+        }
+    }
+
+    override fun onDetached() {
+        super.onDetached()
+        scope.cancel()
+    }
+}
 
 class SettingsColorThemeFragment : NavigationDialogFragment() {
     private lateinit var themeFromSettings: Deferred<Settings.ColorTheme>
@@ -165,24 +190,26 @@ class SettingsColorThemeFragment : NavigationDialogFragment() {
             dismiss()
         }
 
-        checkNotNull(view.findViewById(R.id.system_colors)).apply {
-            if (DynamicColors.isDynamicColorAvailable()) {
-                viewsToTheme[this] = Settings.ColorTheme.System
-            } else {
-                isVisible = false
-            }
-        }
-
         val choiceList = checkNotNull(view.findViewById<LinearLayout>(R.id.choice_list))
-        for (theme in Settings.ColorTheme.values().asList().minus(Settings.ColorTheme.System)) {
-            SettingsColorThemeColorView(requireContext()).apply {
-                viewsToTheme[this] = theme
-                setColorFromTheme(theme.activityThemeResId)
+        for (theme in Settings.ColorTheme.values()) {
+            if (theme == Settings.ColorTheme.System && !DynamicColors.isDynamicColorAvailable()) {
+                continue
+            }
+            SettingsColorThemeChoiceView(requireContext()).apply {
+                setText(when (theme) {
+                    Settings.ColorTheme.System -> R.string.prefs_color_theme_system
+                    Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
+                    Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+                })
+                if (theme != Settings.ColorTheme.System) {
+                    setColorFromTheme(theme.activityThemeResId)
+                }
                 choiceList.addView(
                     this,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
+                viewsToTheme[this] = theme
             }
         }
 
@@ -202,49 +229,20 @@ class SettingsColorThemeFragment : NavigationDialogFragment() {
     }
 }
 
-private class SettingsColorThemeColorView @JvmOverloads constructor(
+class SettingsColorThemeChoiceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = 0,
-    @StyleRes defStyleRes: Int = R.style.Widget_Tremotesf_SettingsColorThemeColorView
-) : LinearLayout(context, attrs, defStyleAttr, defStyleRes), Checkable {
-    init {
-        orientation = HORIZONTAL
-        inflate(context, R.layout.settings_color_theme_color_view, this)
-    }
-
+    @AttrRes defStyleAttr: Int = R.attr.settingsColorThemeChoiceViewStyle
+) : AppCompatCheckedTextView(context, attrs, defStyleAttr) {
     fun setColorFromTheme(@StyleRes activityThemeResId: Int) {
         val color = MaterialColors.getColor(
             ContextThemeWrapper(context, activityThemeResId),
             R.attr.colorPrimary,
-            SettingsColorThemeColorView::class.simpleName
+            SettingsColorThemeChoiceView::class.simpleName
         )
-        findViewById<View>(R.id.color_view).background.colorFilter =
-            PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
-    }
-
-    private var checked = false
-
-    override fun setChecked(checked: Boolean) {
-        this.checked = checked
-        refreshDrawableState()
-    }
-
-    override fun isChecked() = checked
-
-    override fun toggle() {
-        isChecked = !isChecked
-    }
-
-    override fun onCreateDrawableState(extraSpace: Int): IntArray {
-        val drawableState = super.onCreateDrawableState(extraSpace + 1)
-        if (isChecked) {
-            mergeDrawableStates(drawableState, DRAWABLE_STATE_CHECKED)
+        val colorDrawable = AppCompatResources.getDrawable(context, R.drawable.settings_color_theme_color_view_shape_48dp)?.apply {
+            colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
         }
-        return drawableState
-    }
-
-    private companion object {
-        val DRAWABLE_STATE_CHECKED = intArrayOf(android.R.attr.state_checked)
+        updateCompoundDrawables(end = colorDrawable)
     }
 }

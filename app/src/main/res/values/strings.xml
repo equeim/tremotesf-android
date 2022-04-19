@@ -506,4 +506,6 @@
 
     <string name="prefs_color_theme_title">Colors</string>
     <string name="prefs_color_theme_system">System colors</string>
+    <string name="prefs_color_theme_red">Red</string>
+    <string name="prefs_color_theme_teal">Teal</string>
 </resources>

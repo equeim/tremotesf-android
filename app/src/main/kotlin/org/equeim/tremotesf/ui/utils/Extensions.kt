@@ -23,6 +23,7 @@ package org.equeim.tremotesf.ui.utils
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.View
 import android.view.ViewParent
@@ -107,6 +108,16 @@ inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Edi
             action(it)
         }
     }
+
+fun TextView.updateCompoundDrawables(start: Drawable? = null, top: Drawable? = null, end: Drawable? = null, bottom: Drawable? = null) {
+    val drawables = compoundDrawablesRelative
+    setCompoundDrawablesRelativeWithIntrinsicBounds(
+        start ?: drawables[0],
+        top ?: drawables[1],
+        end ?: drawables[2],
+        bottom ?: drawables[3]
+    )
+}
 
 val EditText.textInputLayout: TextInputLayout
     get() {
