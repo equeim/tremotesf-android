@@ -20,16 +20,12 @@
 package org.equeim.tremotesf.ui
 
 import android.os.Bundle
-
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
-
 import com.google.android.material.tabs.TabLayoutMediator
-
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AboutFragmentBaseTabFragmentBinding

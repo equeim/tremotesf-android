@@ -96,7 +96,7 @@ class ForegroundService : LifecycleService() {
             }
         }
 
-        lateinit var startStopScope: CoroutineScope
+        private lateinit var startStopScope: CoroutineScope
         @MainThread
         fun startStopAutomatically() {
             if (::startStopScope.isInitialized) return

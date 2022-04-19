@@ -50,6 +50,6 @@ abstract class StateRestoringListAdapter<T : Any?, VH : RecyclerView.ViewHolder>
     protected open fun onStateRestored() {}
 
     private companion object {
-        fun <T> List<T>.nullIfEmpty() = if (isEmpty()) null else this
+        fun <T> List<T>.nullIfEmpty() = ifEmpty { null }
     }
 }

@@ -63,7 +63,7 @@ class NotificationsController(private val context: Context) {
         }.get()
     }
 
-    suspend fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
+    private suspend fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
         return if (sinceLastConnection) {
             Settings.notifyOnAddedSinceLastConnection
         } else {

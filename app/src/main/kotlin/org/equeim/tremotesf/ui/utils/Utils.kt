@@ -46,7 +46,7 @@ object Utils {
         startActivityChooser(intent, context.getText(R.string.share_torrent), context)
     }
 
-    fun startActivityChooser(intent: Intent, title: CharSequence, context: Context) {
+    private fun startActivityChooser(intent: Intent, title: CharSequence, context: Context) {
         Timber.i("startActivityChooser() is called with: intent = $intent, title = $title, context = $context")
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(Intent.createChooser(intent, title))

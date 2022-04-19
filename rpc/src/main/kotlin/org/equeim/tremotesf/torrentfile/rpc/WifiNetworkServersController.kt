@@ -133,7 +133,7 @@ class WifiNetworkServersController(
     private fun observeActiveWifiNetworkV24(connectivityManager: ConnectivityManager): Flow<String?> {
         Timber.i("observeActiveWifiNetworkV24() called with: context = $context")
         @Suppress("EXPERIMENTAL_API_USAGE")
-        return callbackFlow<String?> {
+        return callbackFlow {
             Timber.i("observeActiveWifiNetworkV24: registering network callback")
             val callback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 DefaultNetworkCallback(
@@ -214,7 +214,7 @@ class WifiNetworkServersController(
     private fun observeActiveWifiNetworkV16(connectivityManager: ConnectivityManager): Flow<String?> {
         Timber.i("observeActiveWifiNetworkV16() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
-        return callbackFlow<String?> {
+        return callbackFlow {
             Timber.i("observeActiveWifiNetworkV16: registering receiver")
             val receiver = ConnectivityReceiver(connectivityManager, channel)
             @Suppress("DEPRECATION")

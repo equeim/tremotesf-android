@@ -62,7 +62,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                 }
             }
 
-            val directoriesViewAdapter = DirectoriesViewAdapter(requireContext(), model, directoriesView)
+            val directoriesViewAdapter = DirectoriesViewAdapter(requireContext(), directoriesView)
             directoriesView.apply {
                 setAdapter(directoriesViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->

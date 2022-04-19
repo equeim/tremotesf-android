@@ -28,20 +28,17 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewModelFactory
 import timber.log.Timber
 
 
