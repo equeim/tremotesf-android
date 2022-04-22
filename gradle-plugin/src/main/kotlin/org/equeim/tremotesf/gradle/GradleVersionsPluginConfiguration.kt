@@ -8,6 +8,8 @@ import java.util.*
 private const val GRADLE_VERSIONS_PLUGIN_ID = "com.github.ben-manes.versions"
 
 fun Project.configureGradleVersionsPlugin() {
+    // Apply only to root project
+    if (this != rootProject) return
     if (pluginManager.hasPlugin(GRADLE_VERSIONS_PLUGIN_ID)) return
     pluginManager.apply(GRADLE_VERSIONS_PLUGIN_ID)
     tasks.named<DependencyUpdatesTask>("dependencyUpdates") {

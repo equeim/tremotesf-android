@@ -36,6 +36,9 @@ threetenabp = "1.4.0"
 
 junit = "4.13.2"
 
+serialization-bencode = "0.1"
+tremotesf-plugin = "0.1"
+
 [libraries]
 android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -48,7 +51,7 @@ coroutines15-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", 
 
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
-serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode" }
+serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode", version.ref = "serialization-bencode" }
 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-collection = { module = "androidx.collection:collection-ktx", version.ref = "androidx-collection" }
@@ -85,4 +88,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-navigation = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
-tremotesf = { id = "org.equeim.tremotesf", version = "SNAPSHOT" }
+tremotesf = { id = "org.equeim.tremotesf", version.ref = "tremotesf-plugin" }

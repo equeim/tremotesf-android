@@ -3,6 +3,9 @@ plugins {
     `kotlin-dsl`
 }
 
+group = "org.equeim"
+version = "0.1"
+
 gradlePlugin {
     plugins {
         create("plugin") {
