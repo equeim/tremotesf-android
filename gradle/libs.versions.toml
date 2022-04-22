@@ -29,6 +29,7 @@ androidx-work = "2.7.1"
 
 commons-text = "1.9"
 fastscroll = "2.1.0"
+leakcanary = "2.9.1"
 material = "1.5.0"
 publicsuffixlist = "100.0.8"
 timber = "5.0.1"
@@ -74,6 +75,7 @@ androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref
 
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscroll" }
+leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 publicsuffixlist = { module = "org.mozilla.components:lib-publicsuffixlist", version.ref = "publicsuffixlist" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

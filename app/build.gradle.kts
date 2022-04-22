@@ -105,4 +105,6 @@ dependencies {
     implementation(libs.fastscroll)
     implementation(libs.timber)
     implementation(libs.threetenabp)
+
+    debugImplementation(libs.leakcanary)
 }
