@@ -66,6 +66,7 @@ val openSSL by tasks.registering(OpenSSLTask::class) {
     rootDir.set(project.rootDir)
     minSdkVersion.set(libs.versions.sdk.platform.min)
     ndkDir.set(android.ndkDirectory)
+    ndkVersion.set(android.ndkVersion)
 }
 
 val qtPatches by tasks.registering(PatchTask::class) {
@@ -82,6 +83,7 @@ val qt by tasks.registering(QtTask::class) {
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
+    ndkVersion.set(android.ndkVersion)
     if (!useCmakeFromPath) {
         cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/$sdkCmakeVersion/bin"))
     }
@@ -91,6 +93,6 @@ dependencies {
     implementation(files(QtTask.jar(rootDir)).builtBy(qt))
 }
 
-val clean3rdparty by tasks.registering(Delete::class) {
+tasks.named<Delete>("clean") {
     delete(OpenSSLTask.dirsToClean(rootDir), QtTask.dirsToClean(rootDir))
 }

@@ -13,6 +13,7 @@ import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
 import javax.inject.Inject
 
+@CacheableTask
 abstract class QtTask : DefaultTask() {
     @get:Inject
     protected abstract val gradle: Gradle
@@ -37,6 +38,7 @@ abstract class QtTask : DefaultTask() {
     abstract val cmakeBinaryDir: Property<File>
 
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     abstract val opensslInstallDirs: ListProperty<File>
 
     @get:Input
@@ -45,10 +47,15 @@ abstract class QtTask : DefaultTask() {
     @get:Input
     abstract val ndkDir: Property<File>
 
+    // Added for build cache
+    @get:Input
+    abstract val ndkVersion: Property<String>
+
     /**
      * Other inputs
      */
     @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     protected val sourceDir: Provider<File> by lazy { rootDir.map(::sourceDir) }
 
     @get:Input
