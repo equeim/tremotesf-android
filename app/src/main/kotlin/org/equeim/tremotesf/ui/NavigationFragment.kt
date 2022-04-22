@@ -127,7 +127,7 @@ open class NavigationFragment(
             val activity = requiredActivity
             if (!activity.appBarConfiguration.topLevelDestinations.contains(destinationId)) {
                 navigationIcon = activity.upNavigationIcon
-                setNavigationContentDescription(R.string.nav_app_bar_navigate_up_description)
+                setNavigationContentDescription(androidx.navigation.ui.R.string.nav_app_bar_navigate_up_description)
             }
             setNavigationOnClickListener {
                 navController.navigateUp(activity.appBarConfiguration)

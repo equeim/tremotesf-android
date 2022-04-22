@@ -110,17 +110,18 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
         // In that case BottomSheetBehavior won't create MaterialShapeDrawable background
         // and won't animate its corners
         // We then need to set our own background and animator
+
         requireContext().withStyledAttributes(
-            R.style.Widget_MaterialComponents_BottomSheet_Modal,
-            R.styleable.BottomSheetBehavior_Layout
+            com.google.android.material.R.style.Widget_MaterialComponents_BottomSheet_Modal,
+            com.google.android.material.R.styleable.BottomSheetBehavior_Layout
         ) {
             val elevation =
-                getDimensionOrThrow(R.styleable.BottomSheetBehavior_Layout_android_elevation)
+                getDimensionOrThrow(com.google.android.material.R.styleable.BottomSheetBehavior_Layout_android_elevation)
             val background =
                 MaterialShapeDrawable.createWithElevationOverlay(requireContext(), elevation)
 
             val shapeAppearanceResId =
-                getResourceIdOrThrow(R.styleable.BottomSheetBehavior_Layout_shapeAppearance)
+                getResourceIdOrThrow(com.google.android.material.R.styleable.BottomSheetBehavior_Layout_shapeAppearance)
             val shapeAppearanceOverlayResId = R.style.ShapeAppearanceOverlay_Tremotesf_BottomSheet
             background.shapeAppearanceModel =
                 ShapeAppearanceModel.builder(
@@ -132,7 +133,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
             bottomSheet.background = background
             bottomSheet.backgroundTintList = AppCompatResources.getColorStateList(
                 requireContext(),
-                getResourceIdOrThrow(R.styleable.BottomSheetBehavior_Layout_backgroundTint)
+                getResourceIdOrThrow(com.google.android.material.R.styleable.BottomSheetBehavior_Layout_backgroundTint)
             )
 
             cornersAnimator = ValueAnimator().apply {
