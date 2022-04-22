@@ -9,7 +9,6 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.l4digital.fastscroll.FastScroller
-import org.equeim.tremotesf.R
 
 class FastScrollRecyclerView @JvmOverloads constructor(
     context: Context,
@@ -21,15 +20,15 @@ class FastScrollRecyclerView @JvmOverloads constructor(
     val fastScroller = FastScroller(context).apply {
         context.withStyledAttributes(
             attrs = intArrayOf(
-                R.attr.colorControlActivated,
-                R.attr.colorControlNormal
+                androidx.appcompat.R.attr.colorControlActivated,
+                androidx.appcompat.R.attr.colorControlNormal
             )
         ) {
             setBubbleColor(getColor(0, 0))
             setHandleColor(getColor(1, 0))
         }
     }
-    private val fastScrollerMarginBottom = context.resources.getDimensionPixelSize(R.dimen.fastscroll_scrollbar_margin_bottom)
+    private val fastScrollerMarginBottom = context.resources.getDimensionPixelSize(com.l4digital.fastscroll.R.dimen.fastscroll_scrollbar_margin_bottom)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

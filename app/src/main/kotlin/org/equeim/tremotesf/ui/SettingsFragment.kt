@@ -143,8 +143,8 @@ class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment()
 class SettingsAppColorsPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = R.attr.preferenceStyle,
-    @StyleRes defStyleRes: Int = R.style.Preference
+    @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
+    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference
 ) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
     init {
         // Set initial value so that height will remain fixed
@@ -237,7 +237,7 @@ class SettingsColorThemeChoiceView @JvmOverloads constructor(
     fun setColorFromTheme(@StyleRes activityThemeResId: Int) {
         val color = MaterialColors.getColor(
             ContextThemeWrapper(context, activityThemeResId),
-            R.attr.colorPrimary,
+            androidx.appcompat.R.attr.colorPrimary,
             SettingsColorThemeChoiceView::class.simpleName
         )
         val colorDrawable = AppCompatResources.getDrawable(context, R.drawable.settings_color_theme_color_view_shape_48dp)?.apply {

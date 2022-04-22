@@ -86,7 +86,7 @@ class TorrentsListFragment : NavigationFragment(
         setupBottomBar()
 
         binding.swipeRefreshLayout.apply {
-            requireContext().withStyledAttributes(attrs = intArrayOf(R.attr.colorPrimary)) {
+            requireContext().withStyledAttributes(attrs = intArrayOf(androidx.appcompat.R.attr.colorPrimary)) {
                 setColorSchemeColors(getColor(0, 0))
             }
             val elevation = resources.getDimension(R.dimen.swipe_refresh_progress_bar_elevation)

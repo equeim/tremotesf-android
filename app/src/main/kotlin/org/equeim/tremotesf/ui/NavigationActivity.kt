@@ -239,8 +239,8 @@ class NavHostFragment : NavHostFragment() {
             NavOptions.Builder()
                 .apply {
                     if (navController.currentDestination != null) {
-                        setPopEnterAnim(popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
-                        setPopExitAnim(popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
+                        setPopEnterAnim(popEnterAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_enter_anim))
+                        setPopExitAnim(popExitAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_exit_anim))
                     }
                     setEnterAnim(enterAnim)
                     setExitAnim(exitAnim)
