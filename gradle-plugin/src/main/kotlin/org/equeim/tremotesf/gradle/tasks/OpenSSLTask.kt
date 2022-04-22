@@ -6,14 +6,14 @@ import org.gradle.api.invocation.Gradle
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectories
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
+import org.gradle.work.DisableCachingByDefault
+import org.gradle.work.NormalizeLineEndings
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
 
+@CacheableTask
 abstract class OpenSSLTask : DefaultTask() {
     @get:Inject
     protected abstract val gradle: Gradle
@@ -33,10 +33,15 @@ abstract class OpenSSLTask : DefaultTask() {
     @get:Input
     abstract val ndkDir: Property<File>
 
+    // Added for build cache
+    @get:Input
+    abstract val ndkVersion: Property<String>
+
     /**
      * Other inputs
      */
     @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     protected val sourceDir: Provider<File> by lazy { rootDir.map(::sourceDir) }
 
     @get:Input
