@@ -116,7 +116,7 @@ class WifiNetworkServersController(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             observeActiveWifiNetworkV24(connectivityManager)
         } else {
-            observeActiveWifiNetworkV16(connectivityManager)
+            observeActiveWifiNetworkV21(connectivityManager)
         }.onEach(::onCurrentWifiSsidChanged).launchIn(scope)
     }
 
@@ -211,11 +211,11 @@ class WifiNetworkServersController(
         }
     }
 
-    private fun observeActiveWifiNetworkV16(connectivityManager: ConnectivityManager): Flow<String?> {
-        Timber.i("observeActiveWifiNetworkV16() called")
+    private fun observeActiveWifiNetworkV21(connectivityManager: ConnectivityManager): Flow<String?> {
+        Timber.i("observeActiveWifiNetworkV21() called")
         @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow {
-            Timber.i("observeActiveWifiNetworkV16: registering receiver")
+            Timber.i("observeActiveWifiNetworkV21: registering receiver")
             val receiver = ConnectivityReceiver(connectivityManager, channel)
             @Suppress("DEPRECATION")
             context.registerReceiver(
@@ -223,7 +223,7 @@ class WifiNetworkServersController(
                 IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
             )
             awaitClose {
-                Timber.i("observeActiveWifiNetworkV16: unregister receiver")
+                Timber.i("observeActiveWifiNetworkV21: unregister receiver")
                 context.unregisterReceiver(receiver)
             }
         }.buffer(Channel.CONFLATED).distinctUntilChanged()
