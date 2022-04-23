@@ -17,14 +17,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: fedora:latest
+    container: ghcr.io/${{ github.repository }}-build-environment:latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Install host dependencies
-        run: |
-          dnf -y --setopt=install_weak_deps=False install git gcc gcc-c++ make patch cmake ninja-build ccache 'pkgconfig(zlib)' 'cmake(double-conversion)' 'pkgconfig(libb2)' 'pkgconfig(libpcre2-posix)' 'cmake(Qt6HostInfo)' 'cmake(Qt6CoreTools)' 'cmake(Qt6WidgetsTools)' java-17-openjdk-devel unzip curl tar gzip zstd which perl 'perl(FindBin)' 'perl(File::Basename)' libtoml jq
-
       - name: Check out
         uses: actions/checkout@v3
         with:
