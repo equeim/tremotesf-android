@@ -21,6 +21,10 @@ abstract class OpenSSLTask : DefaultTask() {
     @get:Inject
     protected abstract val providerFactory: ProviderFactory
 
+    private val printBuildLogOnError: Provider<Boolean> by lazy {
+        providerFactory.gradleProperty(PRINT_BUILD_LOG_ON_ERROR_PROPERTY).map(String::toBoolean)
+    }
+
     /**
      * Input properties
      */
@@ -107,7 +111,7 @@ abstract class OpenSSLTask : DefaultTask() {
         executeCommand(
             listOf(sourceDir.get().resolve("Configure").toString()) + configureArgs,
             logger,
-            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE), printBuildLogOnError.get())
         ) {
             directory(buildDir)
             prependPath(binDir)
@@ -123,14 +127,14 @@ abstract class OpenSSLTask : DefaultTask() {
         }
 
         logger.lifecycle("Building OpenSSL")
-        executeMake("build_libs", buildDir, buildDir.resolve(BUILD_LOG_FILE), logger, gradle) {
+        executeMake("build_libs", buildDir, buildDir.resolve(BUILD_LOG_FILE), printBuildLogOnError.get(), logger, gradle) {
             prependPath(binDir)
         }.also {
             logger.lifecycle("Building finished, elapsed time = {}", it.elapsedTime.format())
         }
 
         logger.lifecycle("Installing OpenSSL")
-        executeMake("install_dev", buildDir, buildDir.resolve(INSTALL_LOG_FILE), logger, gradle)
+        executeMake("install_dev", buildDir, buildDir.resolve(INSTALL_LOG_FILE), printBuildLogOnError.get(), logger, gradle)
             .also {
                 logger.lifecycle("Installation finished, elapsed time = {}", it.elapsedTime.format())
             }

@@ -10,6 +10,7 @@ internal fun executeMake(
     target: String,
     workingDir: File,
     outputFile: File,
+    printOutputFileOnError: Boolean,
     logger: Logger,
     gradle: Gradle,
     configure: ProcessBuilder.() -> Unit = {}
@@ -17,7 +18,7 @@ internal fun executeMake(
     executeCommand(
         listOf(MAKE, "-j", gradle.startParameter.maxWorkerCount.toString(), target),
         logger,
-        outputMode = ExecOutputMode.RedirectOutputToFile(outputFile)
+        outputMode = ExecOutputMode.RedirectOutputToFile(outputFile, printOutputFileOnError)
     ) {
         directory(workingDir)
         configure()

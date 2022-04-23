@@ -14,6 +14,7 @@ internal enum class CMakeMode {
 
 internal fun executeCMake(
     mode: CMakeMode,
+    printBuildLogOnError: Boolean,
     cmakeBinaryDir: File?,
     buildDir: File,
     logger: Logger,
@@ -33,8 +34,8 @@ internal fun executeCMake(
         cmakeBinaryDir,
         logger,
         when (mode) {
-            CMakeMode.Build -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(BUILD_LOG_FILE))
-            CMakeMode.Install -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(INSTALL_LOG_FILE))
+            CMakeMode.Build -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(BUILD_LOG_FILE), printBuildLogOnError)
+            CMakeMode.Install -> ExecOutputMode.RedirectOutputToFile(buildDir.resolve(INSTALL_LOG_FILE), printBuildLogOnError)
         }
     )
 
