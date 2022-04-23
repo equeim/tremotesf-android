@@ -10,7 +10,7 @@ plugins {
 
 class KeystoreProperties(rootProject: Project) {
     private val properties = Properties().apply {
-        load(rootProject.file("keystore.properties").inputStream())
+        rootProject.file("keystore.properties").inputStream().use(::load)
     }
     val keyAlias: String by properties
     val keyPassword: String by properties
