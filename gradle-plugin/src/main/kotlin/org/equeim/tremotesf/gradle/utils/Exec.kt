@@ -16,7 +16,7 @@ internal sealed class ExecInputMode {
 internal sealed class ExecOutputMode {
     object PrintOutput : ExecOutputMode()
     object CaptureOutput : ExecOutputMode()
-    data class RedirectOutputToFile(val file: File) : ExecOutputMode()
+    data class RedirectOutputToFile(val file: File, val printOnError: Boolean) : ExecOutputMode()
 }
 
 @Suppress("ArrayInDataClass")
@@ -105,6 +105,10 @@ internal fun executeCommand(
         when {
             outputMode is ExecOutputMode.RedirectOutputToFile -> {
                 logger.error("See process output in {}", outputMode.file)
+                if (outputMode.printOnError) {
+                    logger.error("Process output:")
+                    outputMode.file.inputStream().use { it.transferTo(System.err) }
+                }
             }
             adjustedOutputMode is ExecOutputMode.CaptureOutput -> {
                 logger.error("Process output:")

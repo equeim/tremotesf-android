@@ -21,6 +21,10 @@ abstract class QtTask : DefaultTask() {
     @get:Inject
     protected abstract val providerFactory: ProviderFactory
 
+    private val printBuildLogOnError: Provider<Boolean> by lazy {
+        providerFactory.gradleProperty(PRINT_BUILD_LOG_ON_ERROR_PROPERTY).map(String::toBoolean)
+    }
+
     /**
      * Input properties
      */
@@ -319,7 +323,7 @@ abstract class QtTask : DefaultTask() {
         executeCommand(
             listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
             logger,
-            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE))
+            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE), printBuildLogOnError.get())
         ) {
             directory(buildDir)
             cmakeBinaryDir.orNull?.let { prependPath(it) }
@@ -346,6 +350,7 @@ abstract class QtTask : DefaultTask() {
 
         executeCMake(
             CMakeMode.Build,
+            printBuildLogOnError.get(),
             cmakeBinaryDir.orNull,
             buildDir,
             logger,
@@ -355,7 +360,7 @@ abstract class QtTask : DefaultTask() {
         }
 
         logger.lifecycle("Installing Qt")
-        executeCMake(CMakeMode.Install, cmakeBinaryDir.orNull, buildDir, logger, gradle)
+        executeCMake(CMakeMode.Install, printBuildLogOnError.get(), cmakeBinaryDir.orNull, buildDir, logger, gradle)
             .also {
                 logger.lifecycle(
                     "Installation finished, elapsed time = {}",
