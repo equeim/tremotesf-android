@@ -1,0 +1,22 @@
+Oberfläche zur Fernsteuerung des Transmission BitTorrent Client
+
+Funktionen:
+- Torrentliste anzeigen
+- Torrents sortieren
+- Torrents nach Name, Status und Tracker filtern
+- Start/Stop/Verifizieren/Entfernen von Torrents, zzgl. Mehrfachauswahl
+- Torrents über Torrentdateien und Magnet-Links hinzufügen
+- Auswahl der Dateien die beim hinzufügen eines Torrents heruntergeladen werden sollen
+- Torrentdateien verwalten
+- Hinzufügen und Entfernen von Torrent-Trackern
+- Torrentverbindungen anzeigen
+- Torrentlimits festlegen
+- Einstellungen des Servers betrffend der Fernsteuerung ändern
+- Serverstatistiken anzeigen
+- Mehrfache Server
+- Unterstützung für HTTPS-Verbindungen
+- Kann Verbindungen zu Servern mit selbstsignierten Zertifikaten herstellen (das Zertifikat muss in den Servereinstellungen hinzugefügt werden)
+- Client-Zertifikat-Authentifizierung
+
+Quelltext: https://github.com/equeim/tremotesf-android
+Übersetzungen: https://www.transifex.com/equeim/tremotesf-android

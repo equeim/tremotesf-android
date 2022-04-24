@@ -1,0 +1,22 @@
+Interface graphique de contrôle à distance pour le client BitTorrent Transmission.
+
+Fonctionnalités :
+- Voir la liste des torrents
+- Trier les torrents
+- Filtrer les torrents par nom, statut et traqueurs
+- Démarrer/arrêter/vérifier/supprimer les torrents par sélection multiple
+- Ajouter les torrents depuis des fichiers et liens magnet
+- Sélectionner les fichiers à télécharger lors de l'ajout d'un torrent
+- Gérer les fichiers torrents
+- Ajouter et supprimer des traqueurs
+- Voir les pairs
+- Fixer une limite de torrents
+- Changer les paramètres du serveur distant
+- Voir les statistiques du serveur
+- Serveurs multiples
+- Supporte les connexions HTTPS
+- Peut se connecter aux serveurs avec des certificats auto-signés (vous devez ajouter un certificat aux paramètres du serveur)
+- Certificat d'authentification du client
+
+Code source : https://github.com/equeim/tremotesf-android
+Traductions : https://www.transifex.com/equeim/tremotesf-android

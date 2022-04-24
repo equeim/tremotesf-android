@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
     <string name="disconnected">Déconnecté</string>
     <string name="connecting">Connexion\u2026</string>
     <string name="connected">Connecté</string>
@@ -26,7 +26,7 @@
 
     <string name="sort">Tri</string>
     <string name="progress">Progression</string>
-    <string name="eta">ETA</string>
+    <string name="eta">Temps restant estimé</string>
     <string name="ratio">Ratio</string>
     <string name="size">Taille</string>
     <string name="added_date">Date d\'ajout</string>
@@ -35,7 +35,7 @@
 
     <string name="no_torrents">Aucun torrent</string>
 
-    <string name="torrents_all">Tout (%d)</string>
+    <string name="torrents_all">Tous (%d)</string>
     <string name="torrents_active">Actif (%d)</string>
     <string name="torrents_downloading">Téléchargement (%d)</string>
     <string name="torrents_seeding">Envoi (%d)</string>
@@ -49,25 +49,21 @@
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selectionné</item>
-        <item quantity="many">%d torrents sélectionnés</item>
         <item quantity="other">%d torrents sélectionnés</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one">%d fichier sélectionné</item>
-        <item quantity="many">%d fichiers sélectionnés</item>
         <item quantity="other">%d fichiers sélectionnés</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one">%d traqueur sélectionné</item>
-        <item quantity="many">%d traqueurs sélectionnés</item>
         <item quantity="other">%d traqueurs sélectionnés</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one">%d pair</item>
-        <item quantity="many">%d pairs</item>
         <item quantity="other">%d pairs</item>
     </plurals>
 
@@ -99,13 +95,13 @@
     <string name="uploaded">Envoyé</string>
     <string name="download_speed">Vitesse de réception</string>
     <string name="upload_speed">Vitesse d\'envoi</string>
-    <string name="seeders">Propagateurs</string>
-    <string name="leechers">Téléchargeurs</string>
+    <string name="seeders">Seeders</string>
+    <string name="leechers">Leechers</string>
     <string name="last_activity">Dernière activité</string>
 
     <string name="total_size">Taille totale</string>
     <string name="location">Emplacement</string>
-    <string name="hash">Empreinte</string>
+    <string name="hash">Hachage</string>
     <string name="created_by">Crée par</string>
     <string name="created_on">Crée le</string>
     <string name="comment">Commentaire</string>
@@ -145,7 +141,7 @@
 
     <string name="speed">Vitesse</string>
     <string name="honor_global_limits">Respecter les limites globales</string>
-    <string name="kbps">kB/s</string>
+    <string name="kbps">ko/s</string>
     <string name="download_noun">Téléchargé</string>
     <string name="upload_noun">Envoyé</string>
 
@@ -154,14 +150,15 @@
     <string name="ratio_limit">Limite de ratio</string>
     <string-array name="ratio_limit_mode">
         <item>Utiliser les paramètres globaux</item>
-        <item>Propager peu importe le ratio</item>
-        <item>@string/stop_seeding_at_ratio</item>
+        <item>Partager peu importe le ratio</item>
+        <item>Arrêter de partager au ratio</item>
     </string-array>
 
+    <string name="idle_seeding">Partage inactif</string>
     <string-array name="idle_seeding_mode">
         <item>Utiliser les paramètres globaux</item>
-        <item>Partager quelque soit l\'activité</item>
-        <item>Arrêter de partager si inactif après</item>
+        <item>Partager quelle que soit l\'activité</item>
+        <item>Arrêter de partager si inactif pendant</item>
     </string-array>
 
     <string name="min">min</string>
@@ -179,7 +176,6 @@
 
     <plurals name="servers_selected">
         <item quantity="one">%d serveur sélectionné</item>
-        <item quantity="many">%d serveurs sélectionnés</item>
         <item quantity="other">%d serveurs sélectionnés</item>
     </plurals>
 
@@ -188,9 +184,8 @@
     <string name="remove">Supprimer</string>
 
     <plurals name="remove_servers_message">
-        <item quantity="one">Voulez-vous vraiment supprimer les %d serveurs sélectionnés ?</item>
-        <item quantity="many">Voulez-vous vraiment supprimer les %dserveurs sélectionnés ?</item>
-        <item quantity="other">Voulez-vous vraiment supprimer les %dserveurs sélectionnés ?</item>
+        <item quantity="one">Voulez-vous vraiment supprimer %d serveur sélectionné ?</item>
+        <item quantity="other">Voulez-vous vraiment supprimer les %d serveurs sélectionnés ?</item>
     </plurals>
 
     <string name="no_servers">Aucun serveur</string>
@@ -231,17 +226,17 @@
     <string name="server_settings_network">Réseau</string>
 
     <string name="start_added_torrents">Démarrer les torrents ajoutés</string>
-    <string name="rename_incomplete_files">Ajouter \".part\" aux noms de fichiers incomplets</string>
+    <string name="rename_incomplete_files">Ajouter \".part\" aux noms des fichiers incomplets</string>
     <string name="incomplete_files_directory">Répertoire pour les fichiers incomplets</string>
-    <string name="stop_seeding_at_ratio">Propager jusqu’à un ratio de</string>
+    <string name="stop_seeding_at_ratio">Partager jusqu’à un ratio de</string>
     <string name="stop_seeding_if_idle_for">Arrêter de partager si inactif depuis</string>
     <string name="maximum_active_downloads">Nombre maximum de téléchargements actifs</string>
     <string name="maximum_active_uploads">Nombre maximum d\'envois actifs</string>
     <string name="ignore_queue">Ignorer la position dans la file si inactif depuis</string>
     <string name="alternative_limits">Limites alternatives</string>
     <string name="enable">Activer</string>
-    <string name="download_kbps">Téléchargement, kB/s</string>
-    <string name="upload_kbps">Envoi, kB/s</string>
+    <string name="download_kbps">Téléchargement, ko/s</string>
+    <string name="upload_kbps">Envoi, ko/s</string>
     <string name="scheduled">Programmé</string>
     <string name="from">De</string>
     <string name="to">‭À</string>
@@ -249,9 +244,9 @@
     <string name="weekdays">Jours de la semaine</string>
     <string name="weekends">Week-ends</string>
     <string name="connection">Connexion</string>
-    <string name="peer_port">Port du pair</string>
+    <string name="peer_port">Port d\'écoute</string>
     <string name="random_port">Port aléatoire au démarrage de Transmission</string>
-    <string name="port_forwarding">Activer la translation de port</string>
+    <string name="port_forwarding">Activer la redirection de port</string>
     <string name="encryption">Chiffrement</string>
     <string-array name="encryption_items">
         <item>Autoriser</item>
@@ -278,7 +273,7 @@
     <string name="server_stats">Statistiques du serveur</string>
 
     <!-- e.g. "5 d 21 h" -->
-    <string name="duration_days">%1$d d %2$d h</string>
+    <string name="duration_days">%1$d j %2$d h</string>
 
     <!-- e.g. "5 h 21 m" -->
     <string name="duration_hours">%1$d h %2$d m</string>
@@ -291,17 +286,16 @@
 
     <plurals name="started_times">
         <item quantity="one">Démarré%d fois</item>
-        <item quantity="many">Démarrés%d fois</item>
-        <item quantity="other">Démarrés%d fois</item>
+        <item quantity="other">Démarré %d fois</item>
     </plurals>
 
     <string name="start">Démarrer</string>
+    <string name="start_now">Démarrer maintenant</string>
     <string name="pause">Pause</string>
 
     <plurals name="remove_torrents_message">
-        <item quantity="one">Êtes-vous sûr de vouloir supprimer le (%d) torrent sélectionné ?</item>
-        <item quantity="many">Êtes-vous sûr de vouloir supprimer les%d torrents sélectionnés</item>
-        <item quantity="other">Êtes-vous sûr de vouloir supprimer les%d torrents sélectionnés</item>
+        <item quantity="one">Êtes-vous sûr de vouloir supprimer %d torrent sélectionné ?</item>
+        <item quantity="other">Êtes-vous sûr de vouloir supprimer les %d torrents sélectionnés ?</item>
     </plurals>
     <string name="delete_files">Supprimer aussi les fichiers du disque</string>
     <string name="check_local_data">Vérification données locales</string>
@@ -314,54 +308,51 @@
 
     <string name="torrent_paused">En pause</string>
     <plurals name="torrent_downloading">
-        <item quantity="one">Téléchargé depuis %d pair</item>
-        <item quantity="many">Téléchargé depuis %d pairs</item>
-        <item quantity="other">Téléchargé depuis %d pairs</item>
+        <item quantity="one">Téléchargement depuis %d pair</item>
+        <item quantity="other">Téléchargement depuis %d pairs</item>
     </plurals>
     <string name="torrent_downloading_stalled">Téléchargement</string>
     <plurals name="torrent_seeding">
-        <item quantity="one">Propagation à %d pair</item>
-        <item quantity="many">Propagation à %d pairs</item>
-        <item quantity="other">Propagation à %d pairs</item>
+        <item quantity="one">Partage à %d pair</item>
+        <item quantity="other">Partage à %d pairs</item>
     </plurals>
-    <string name="torrent_seeding_stalled">Propagation</string>
+    <string name="torrent_seeding_stalled">Partage</string>
     <string name="torrent_queued">En attente</string>
     <string name="torrent_checking">Vérification (%s %%)</string>
     <string name="torrent_queued_for_checking">En attente de vérification</string>
 
     <plurals name="remove_trackers_message">
-        <item quantity="one">Êtes-vous sûr de vouloir supprimer %d le traqueur sélectionné</item>
-        <item quantity="many">Êtes-vous sûr de vouloir supprimer %d les traqueurs sélectionnés</item>
-        <item quantity="other">Êtes-vous sûr de vouloir supprimer %d les traqueurs sélectionnés</item>
+        <item quantity="one">Êtes-vous sûr de vouloir supprimer %d traqueur sélectionné ?</item>
+        <item quantity="other">Êtes-vous sûr de vouloir supprimer les %d traqueurs sélectionnés ?</item>
     </plurals>
 
     <string-array name="size_units">
-        <item>%s B</item>
-        <item>%s KiB</item>
-        <item>%s MiB</item>
-        <item>%s GiB</item>
-        <item>%s TiB</item>
-        <item>%s PiB</item>
-        <item>%s EiB</item>
-        <item>%s ZiB</item>
-        <item>%s YiB</item>
+        <item>%s o</item>
+        <item>%s Kio</item>
+        <item>%s Mio</item>
+        <item>%s Gio</item>
+        <item>%s Tio</item>
+        <item>%s Pio</item>
+        <item>%s Eio</item>
+        <item>%s Zio</item>
+        <item>%s Yio</item>
     </string-array>
 
     <string-array name="speed_units">
-        <item>%s B/s</item>
-        <item>%s KiB/s</item>
-        <item>%s MiB/s</item>
-        <item>%s GiB/s</item>
-        <item>%s TiB/s</item>
-        <item>%s PiB/s</item>
-        <item>%s EiB/s</item>
-        <item>%s ZiB/s</item>
-        <item>%s YiB/s</item>
+        <item>%s o/s</item>
+        <item>%s Kio/s</item>
+        <item>%s Mio/s</item>
+        <item>%s Gio/s</item>
+        <item>%s Tio/s</item>
+        <item>%s Pio/s</item>
+        <item>%s Eio/s</item>
+        <item>%s Zio/s</item>
+        <item>%s Yio/s</item>
     </string-array>
 
     <string name="remove_torrent_message">Êtes-vous sûr de vouloir supprimer ce torrent ?</string>
 
-    <string name="set_location">Emplacement défini</string>
+    <string name="set_location">Définir l\'emplacement</string>
     <string name="move_files">Déplacer les fichiers depuis le répertoire courant</string>
 
     <string name="rename">Renommer</string>
@@ -373,8 +364,9 @@
     <string name="translators">Traducteurs</string>
     <string name="license">Licence</string>
 
-
-    <string name="prefs_torrent_compact_view_title">Utiliser la vue compact pour les torrents</string>
+    <string name="prefs_dark_theme_mode_auto_pre_q">Défini par l\'économiseur de batterie</string>
+    <string name="prefs_dark_theme_mode_auto_q">Valeur par défaut du système</string>
+    <string name="prefs_torrent_compact_view_title">Utiliser la vue compacte pour les torrents</string>
     <string name="prefs_torrent_name_multiline_title">Afficher le nom du torrent sur plusieurs lignes</string>
 
     <string name="prefs_persistent_notification_title">Afficher une notification persistante</string>
@@ -384,7 +376,11 @@
     <string name="added_torrents_channel_name">Torrents ajoutés</string>
 
     <string name="appearance">Apparence</string>
+    <string name="behaviour">Comportement</string>
     <string name="torrents">Torrents</string>
+
+    <string name="quick_return_title">Retour rapide</string>
+    <string name="quick_return_summary">Appuyez sur la barre d\'outils supérieure pour revenir en haut</string>
 
     <string name="prefs_delete_files_title">Supprimer les fichiers du disque lors de la suppression du torrent</string>
 
@@ -419,9 +415,6 @@
 
     <string name="connection_settings">Paramètres de connexion</string>
 
-    <string name="prefs_dark_theme_mode_auto_pre_q">Respecter l\'économiseur de batterie</string>
-    <string name="prefs_dark_theme_mode_auto_q">Valeur par défaut du système</string>
-
     <string name="proxy_settings">Paramètres du serveur mandataire</string>
     <string name="proxy_type">Type du serveur mandataire</string>
     <string name="share">Partager</string>
@@ -436,9 +429,34 @@
     <string name="auto_connect_on_wifi_network">Se connecter automatiquement à ce serveur lors de la connexion au réseau Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID du réseau Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Définir à partir du réseau Wi-Fi actuel</string>
+    <string name="location_permission_rationale">Tremotesf requiert l\'autorisation d\'accès à la localisation précise pour obtenir des informations sur le SSID Wi-Fi</string>
+    <string name="request_location_permission">Demander l\'autorisation de localisation</string>
+    <string name="background_wifi_networks_explanation_fdroid">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, activez la notification persistante dans les paramètres de l\'application ou accordez l\'autorisation de localisation en arrière-plan</string>
     <string name="background_wifi_networks_explanation_google">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, activez la notification persistante dans les paramètres de l\'application</string>
+    <string name="background_location_permission_rationale">Tremotesf requiert l\'autorisation d\'accès à la localisation en arrière-plan pour obtenir des informations sur le SSID Wi-Fi en arrière-plan sans utiliser de notification persistante</string>
+    <string name="request_background_location_permission">Demander l\'autorisation de localisation en arrière-plan</string>
+    <string name="background_location_permission_granted">Autorisation de localisation en arrière-plan accordée</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">Veuillez accorder cette autorisation à partir des paramètres système</string>
     <string name="go_to_settings">Aller aux paramètres</string>
 
     <string name="current_ssid_error">Le SSID du réseau Wi-Fi est inconnu</string>
+
+    <string name="request_enable_location">Veuillez activer la localisation dans les paramètres système</string>
+    <string name="enable_location">Activer la localisation</string>
+
+    <string name="storage_permission_rationale_torrent">Tremotesf requiert l\'autorisation d\'accès au stockage pour ouvrir ce fichier torrent</string>
+
+    <string name="torrents_filters">Filtres</string>
+    <string name="transmission_settings">Paramètres de Transmission</string>
+
+    <string name="load_from_file">Charger à partir d\'un fichier</string>
+
+    <string name="free_space_in_download_directory">Espace libre dans le dossier de téléchargement</string>
+
+<string name="reset">Réinitialiser</string>
+
+    <string name="directory_icon">Icône du répertoire</string>
+    <string name="file_icon">Icône du fichier</string>
 
     </resources>

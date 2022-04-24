@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Verbindung getrennt</string>
     <string name="connecting">Verbinden\u2026</string>
     <string name="connected">Verbunden</string>
@@ -364,6 +364,13 @@
     <string name="translators">Übersetzer</string>
     <string name="license">Lizenz</string>
 
+    <string name="prefs_dark_theme_mode_title">Dunkles Thema</string>
+
+    <string name="prefs_dark_theme_mode_auto_pre_q">Setzen durch Energiesparmodus</string>
+    <string name="prefs_dark_theme_mode_auto_q">Systemstandard</string>
+    <string name="prefs_dark_theme_mode_on">Ein</string>
+    <string name="prefs_dark_theme_mode_off">Aus</string>
+
     <string name="prefs_torrent_compact_view_title">Nutze kompakte Ansicht für Torrents</string>
     <string name="prefs_torrent_name_multiline_title">Zeige Namen der Torrents über mehrere Zeilen an</string>
 
@@ -413,9 +420,6 @@
 
     <string name="connection_settings">Verbindungseinstellungen</string>
 
-    <string name="prefs_dark_theme_mode_auto_pre_q">Setzen durch Energiesparmodus</string>
-    <string name="prefs_dark_theme_mode_auto_q">Systemstandard</string>
-
     <string name="proxy_settings">Proxy-Einstellungen</string>
     <string name="proxy_type">Proxy-Typ</string>
     <string name="share">Teilen</string>
@@ -455,8 +459,13 @@
 
     <string name="free_space_in_download_directory">Freier Speicher im Downloadverzeichnis</string>
 
-    <string name="reset">Zurücksetzen</string>
+<string name="reset">Zurücksetzen</string>
 
     <string name="directory_icon">Verzeichnissymbol</string>
     <string name="file_icon">Dateisymbol</string>
+
+    <string name="prefs_color_theme_title">Farben</string>
+    <string name="prefs_color_theme_system">Systemfarben</string>
+    <string name="prefs_color_theme_red">Rot</string>
+    <string name="prefs_color_theme_teal">Blaugrün</string>
 </resources>

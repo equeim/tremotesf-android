@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Disconnesso</string>
     <string name="connecting">In connessione\n2026</string>
     <string name="connected">Connesso</string>
@@ -363,7 +363,8 @@
     <string name="translators">Traduzioni</string>
     <string name="license">Licenza</string>
 
-
+    <string name="prefs_dark_theme_mode_auto_pre_q">Impostato dal Salva Batteria</string>
+    <string name="prefs_dark_theme_mode_auto_q">Predefinito di Sistema</string>
     <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
     <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>
 
@@ -408,9 +409,6 @@
     </string-array>
 
     <string name="connection_settings">Impostazioni di connessione</string>
-
-    <string name="prefs_dark_theme_mode_auto_pre_q">Impostato dal Salva Batteria</string>
-    <string name="prefs_dark_theme_mode_auto_q">Predefinito di Sistema</string>
 
     <string name="proxy_settings">Impostazioni Proxy</string>
     <string name="proxy_type">Tipo di Proxy</string>

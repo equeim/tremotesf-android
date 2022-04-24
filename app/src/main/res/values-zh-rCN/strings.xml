@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">已断开</string>
     <string name="connecting">正在连接\u2026</string>
     <string name="connected">已连接</string>
@@ -310,6 +310,8 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
+    <string name="prefs_dark_theme_mode_auto_pre_q">根据电量节省设定</string>
+    <string name="prefs_dark_theme_mode_auto_q">跟随系统</string>
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
     <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>
 
@@ -354,9 +356,6 @@
     </string-array>
 
     <string name="connection_settings">连接设置</string>
-
-    <string name="prefs_dark_theme_mode_auto_pre_q">根据电量节省设定</string>
-    <string name="prefs_dark_theme_mode_auto_q">跟随系统</string>
 
     <string name="proxy_settings">代理设定</string>
     <string name="proxy_type">代理类型</string>
