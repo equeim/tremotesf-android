@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Verbinding verbroken</string>
     <string name="connecting">Verbinden\u2026</string>
     <string name="connected">Verbonden</string>
@@ -70,6 +70,7 @@
     <string name="next_update">Volgende update over %s</string>
     <string name="edit_tracker">Tracker bewerken</string>
 
+    <string name="tracker_announce_url">Tracker-aankondigings-URL</string>
     <string name="torrent_finished">Torrent voltooid</string>
     <string name="torrent_added">Torrent toegevoegd</string>
 
@@ -357,7 +358,6 @@
     <string name="translators">Vertalers</string>
     <string name="license">Licentie</string>
 
-
     <string name="prefs_torrent_compact_view_title">Compacte weergave gebruiken voor torrents</string>
     <string name="prefs_torrent_name_multiline_title">Torrentnamen tonen op meerdere regels</string>
 
@@ -400,6 +400,5 @@
         <item>12 uur</item>
         <item>24 uur</item>
     </string-array>
-
 
     </resources>

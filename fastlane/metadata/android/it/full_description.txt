@@ -1,0 +1,22 @@
+Interfaccia remota per il client BitTorrent Transmission.
+
+Caratteristiche:
+- Possibilità di vedere la lista dei torrent
+- Possibilità di ordinare i torrent
+- Possibilità di filtrare i torrent per nome, stato e server traccia
+- Possiblità di Avviare/Fermare/Verificare/Rimuovere i torrent con selezione multipla
+- Aggiungere torrent da file torrent e link magnet
+- Possibilità di ielezionare i file da scaricare quando si aggiunge un torrent
+- Possibilità di gestire i file torrent
+- Possibilità di aggiungere e rimuovere server traccia
+- Possibilità di vedere i peer del torrent
+- Possibilità di impostare i limiti al torrent
+- Possibilità di cambiare le impostazioni del server remoto
+- Possibilità di vedere le caratteristiche del server
+- Possibilità di gestire più server
+- Supporta connessione HTTPS
+- Possibilità di connettersi a server con certificato auto-firmato (si necessita l'aggiunta del certificato all'interno delle impostazioni del server)
+- Autenticazione con certificato client
+
+Codice sorgente: https://github.com/equeim/tremotesf-android
+Traduzioni: https://www.transifex.com/equeim/tremotesf-android

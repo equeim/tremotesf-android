@@ -1,0 +1,22 @@
+Uzaktan GKA için Transmission BitTorrent istemcisi
+
+Öne çıkanlar:
+- Torrent listelerini görüntüle
+- Torrentleri sırala
+- Torrentleri ada, duruma ve izleyicilere göre filtreleyin
+- Çoklu seçim ile torrentleri başlat/durdur/doğrula/kaldır
+- Torrent dosyalarından ve magnet bağlantılarından torrentler ekleyin
+- Torrent eklerken hangi dosyaların indirileceğini seçin
+- Torrent dosyalarını yönetin
+- Torrent izleyicileri ekleyin ve kaldırın
+- Torrent eşlerini görüntüle
+- Torrent sınırlarını ayarla
+- Uzak sunucu ayarlarını değiştirin
+- Sunucu istatistiklerini görüntüleyin
+ - Çoklu sunucular
+- HTTPS bağlantısını destekler
+- Kendinden imzalı sertifikalara sahip sunuculara bağlanabilir (sunucu ayarlarına sertifika eklemeniz gerekir)
+- İstemci sertifikası kimlik doğrulaması
+
+Kaynak kodu: https://github.com/equeim/tremotesf-android
+Çeviriler: https://www.transifex.com/equeim/tremotesf-android

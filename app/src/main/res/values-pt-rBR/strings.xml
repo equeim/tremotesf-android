@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando\u2026</string>
     <string name="connected">Conectado</string>
@@ -70,6 +70,7 @@
     <string name="next_update">Próxima atualização em %s</string>
     <string name="edit_tracker">Editar rastreador</string>
 
+    <string name="tracker_announce_url">URL de anúncio do rastreador</string>
     <string name="torrent_finished">Torrent finalizado</string>
     <string name="torrent_added">Torrent adicionado</string>
 
@@ -367,5 +368,6 @@
     <string name="notify_on_finished_since_last">Notificar sobre torrents finalizados desde a última conexão ao servidor</string>
     <string name="notify_on_added_since_last">Notificar sobre torrents adicionados desde a última conexão ao servidor</string>
 
+    <string name="persistent_notification">Notificação persistente</string>
 
     </resources>
