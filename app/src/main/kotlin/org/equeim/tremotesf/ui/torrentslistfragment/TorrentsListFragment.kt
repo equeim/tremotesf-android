@@ -295,11 +295,15 @@ class TorrentsListFragment : NavigationFragment(
             val text = when {
                 !hasServers -> {
                     setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
-                    getText(R.string.add_server)
+                    R.string.add_server
                 }
                 status.connectionState == RpcConnectionState.Disconnected -> {
                     setOnClickListener { GlobalRpc.nativeInstance.connect() }
-                    getText(R.string.connect)
+                    R.string.connect
+                }
+                status.connectionState == RpcConnectionState.Connecting -> {
+                    setOnClickListener { GlobalRpc.nativeInstance.disconnect() }
+                    R.string.disconnect
                 }
                 else -> {
                     setOnClickListener(null)
@@ -309,7 +313,7 @@ class TorrentsListFragment : NavigationFragment(
             if (text == null) {
                 hide()
             } else {
-                this.text = text
+                setText(text)
                 show()
             }
         }
