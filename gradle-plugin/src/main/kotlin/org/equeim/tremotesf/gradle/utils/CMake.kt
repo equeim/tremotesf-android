@@ -74,6 +74,6 @@ private fun executeCMakeImpl(
     cmakeBinaryDir: File?,
     logger: Logger,
     outputMode: ExecOutputMode,
-) = executeCommand(listOf(CMAKE) + args, logger, outputMode = outputMode) {
+) = executeCommand(listOf(cmakeBinaryDir?.resolve(CMAKE)?.toString() ?: CMAKE) + args, logger, outputMode = outputMode) {
     cmakeBinaryDir?.let { prependPath(it) }
 }
