@@ -30,6 +30,7 @@ dependencies {
         excludeKotlinStdlib()
     }
     implementation(libs.coroutines15.core)
+    implementation(libs.coroutines15.jdk8)
     implementation(libs.commons.text)
 }
 

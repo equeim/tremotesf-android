@@ -1,6 +1,7 @@
 package org.equeim.tremotesf.gradle.utils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.logging.Logger
@@ -62,7 +63,7 @@ internal fun executeCommand(
     var outputStream: ByteArrayOutputStream? = null
     try {
         val process = builder.start()
-        val exitStatus = runBlocking {
+        runBlocking {
             when (inputMode) {
                 is ExecInputMode.InputString -> {
                     launch(Dispatchers.IO) {
@@ -84,11 +85,12 @@ internal fun executeCommand(
                 }
                 else -> Unit
             }
-            process.waitFor()
+            process.onExit().await()
         }
+        val exitStatus = process.exitValue()
         val success = exitStatus == 0
         if (!ignoreExitStatus && !success) {
-            throw RuntimeException("Exit status $exitStatus")
+            throw RuntimeException("Failed to execute '${commandLine.first()}': exit status $exitStatus")
         }
         val endTime = System.nanoTime()
         return ExecResult(
