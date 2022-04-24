@@ -59,9 +59,9 @@ internal fun executeCommand(
     configure(builder)
 
     val startTime = System.nanoTime()
-    val process = builder.start()
-    lateinit var outputStream: ByteArrayOutputStream
+    var outputStream: ByteArrayOutputStream? = null
     try {
+        val process = builder.start()
         val exitStatus = runBlocking {
             when (inputMode) {
                 is ExecInputMode.InputString -> {
@@ -94,7 +94,7 @@ internal fun executeCommand(
         return ExecResult(
             success,
             if (outputMode == ExecOutputMode.CaptureOutput) {
-                outputStream.toByteArray()
+                checkNotNull(outputStream).toByteArray()
             } else {
                 null
             },
@@ -102,17 +102,16 @@ internal fun executeCommand(
         )
     } catch (e: Exception) {
         logger.error("Failed to execute {}", commandLine, e)
-        when {
-            outputMode is ExecOutputMode.RedirectOutputToFile -> {
-                logger.error("See process output in {}", outputMode.file)
-                if (outputMode.printOnError) {
-                    logger.error("Process output:")
-                    outputMode.file.inputStream().use { it.transferTo(System.err) }
-                }
-            }
-            adjustedOutputMode is ExecOutputMode.CaptureOutput -> {
+        if (outputMode is ExecOutputMode.RedirectOutputToFile) {
+            logger.error("See process output in {}", outputMode.file)
+            if (outputMode.printOnError) {
                 logger.error("Process output:")
-                outputStream.writeTo(System.err)
+                outputMode.file.inputStream().use { it.transferTo(System.err) }
+            }
+        } else {
+            outputStream?.let {
+                logger.error("Process output:")
+                it.writeTo(System.err)
             }
         }
         throw e
