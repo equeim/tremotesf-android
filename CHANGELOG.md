@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- System colors support on Android 12
+- Disconnect button is shown on bottom toolbar when connecting to server
+
+### Changed
+- Theme updated for Material You design
+- Updated OpenSSL to 3.0.2 and Qt to 6.2.4
+
 ## [2.5.4] - 2021-12-04
 ### Fixed
 - Fixed crashes when removing torrents
