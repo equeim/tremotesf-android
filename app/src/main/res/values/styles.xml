@@ -37,7 +37,6 @@
         <item name="colorSurfaceInverse">@color/theme_red_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/theme_red_inversePrimary</item>
         <item name="android:windowBackground">@color/theme_red_background</item>
-        <item name="colorSurfaceElevated4dp">@color/theme_red_surface_elevated_4dp</item>
 
         <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
 
@@ -80,7 +79,6 @@
         <item name="colorSurfaceInverse">@color/theme_teal_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/theme_teal_inversePrimary</item>
         <item name="android:windowBackground">@color/theme_teal_background</item>
-        <item name="colorSurfaceElevated4dp">@color/theme_teal_surface_elevated_4dp</item>
     </style>
 
     <style name="AppTheme.Splash" parent="@style/AppTheme">
