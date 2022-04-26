@@ -9,6 +9,5 @@
     </declare-styleable>
 
     <attr name="timePickerItemStyle" format="reference" />
-    <attr name="colorSurfaceElevated4dp" format="color" />
     <attr name="settingsColorThemeChoiceViewStyle" format="reference" />
 </resources>

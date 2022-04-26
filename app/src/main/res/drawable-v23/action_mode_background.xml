@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="?colorSurface" />
+    <item>
+        <shape>
+            <solid android:color="@color/elevation_overlay_color_4dp" />
+        </shape>
+    </item>
     <item android:top="-3dp" android:right="-3dp" android:left="-3dp">
         <shape android:shape="rectangle">
-            <solid android:color="?colorSurface" />
             <stroke android:width="2dp" android:color="?colorPrimary"/>
         </shape>
     </item>

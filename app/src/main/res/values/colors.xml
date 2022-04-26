@@ -48,8 +48,6 @@
     <color name="theme_red_inversePrimary">#FFB3A9</color>
 
     <color name="theme_red_background_night">#211A19</color>
-    <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
-    <color name="theme_red_surface_elevated_4dp">#F5E7E7</color>
 
     <color name="theme_teal_primary">#006B5E</color>
     <color name="theme_teal_onPrimary">#FFFFFF</color>
@@ -77,7 +75,4 @@
     <color name="theme_teal_inverseOnSurface">#EFF1EF</color>
     <color name="theme_teal_inverseSurface">#2E3130</color>
     <color name="theme_teal_inversePrimary">#55DBC8</color>
-
-    <!--Must be kept in sync with behavior of ElevationOverlayProvider-->
-    <color name="theme_teal_surface_elevated_4dp">#E2EFEB</color>
 </resources>
