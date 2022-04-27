@@ -1,0 +1,3 @@
+- Added system colors support on Android 12
+- Theme updated for Material You design
+- Disconnect button is shown on bottom toolbar when connecting to server

@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.6.0] - 2022-04-28
 ### Added
 - System colors support on Android 12
 - Disconnect button is shown on bottom toolbar when connecting to server
