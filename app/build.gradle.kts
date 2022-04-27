@@ -26,8 +26,8 @@ val keystoreProperties = try {
 android {
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
-        versionCode = 4046
-        versionName = "2.5.4"
+        versionCode = 4047
+        versionName = "2.6.0"
 
         vectorDrawables.useSupportLibrary = true
     }
