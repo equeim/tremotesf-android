@@ -1,25 +1,90 @@
 name: CI
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [master]
   pull_request:
     branches: [master]
-
-  # Allows you to run this workflow manually from the Actions tab
+  schedule:
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    container: ghcr.io/${{ github.repository }}-build-environment:latest
+env:
+  CONTAINER_REGISTRY: ghcr.io
+  CONTAINER_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-build-environment
+  CONTAINER_IMAGE_PACKAGE_NAME: ${{ github.event.repository.name }}-build-environment
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+jobs:
+  build-environment:
+    runs-on: ubuntu-latest
+
+    outputs:
+      container-image: ${{ steps.meta.outputs.tags || format('{0}:{1}', env.CONTAINER_IMAGE, 'latest') }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Determine whether we need to build image
+        id: enable
+        run: |
+          if [[ $GITHUB_EVENT_NAME == schedule || $GITHUB_EVENT_NAME == workflow_dispatch ]]; then
+            echo 'Build container image'
+            echo '::set-output name=enabled::true'
+            exit
+          fi
+          if [[ $GITHUB_EVENT_NAME == push ]]; then
+            before=${{ github.event.before }}
+          elif [[ $GITHUB_EVENT_NAME == pull_request ]]; then
+            before='origin/${{ github.base_ref }}'
+          else
+            echo "Unknown event '$GITHUB_EVENT_NAME'"
+            exit 1
+          fi
+          echo "Before commit is $before"
+          changed_files="$(git diff --name-only $before HEAD)"
+          echo "Changed files are $changed_files"
+          if [[ $changed_files == *.github/* ]]; then
+            echo 'Build container image'
+            echo '::set-output name=enabled::true'
+          else
+            echo 'Do not build container image'
+            echo '::set-output name=enabled::false'
+          fi
+
+      - name: Log in to the container registry
+        if: steps.enable.outputs.enabled == 'true'
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for container image
+        id: meta
+        if: steps.enable.outputs.enabled == 'true'
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.CONTAINER_IMAGE }}
+          tags: ${{ github.event_name == 'pull_request' && 'type=ref,event=pr' || 'type=raw,value=latest' }}
+
+      - name: Create build environment container image
+        if: steps.enable.outputs.enabled == 'true'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: .github/workflows/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-app:
+    needs: build-environment
+    runs-on: ubuntu-latest
+    container: ${{ needs.build-environment.outputs.container-image }}
+
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -50,7 +115,7 @@ jobs:
         with:
           path: ${{ env.ANDROID_SDK_ROOT }}
           key: ${{ steps.android-sdk-variables.outputs.cache-key }}
-          save-cache: ${{ github.event_name == 'push' }}
+          save-cache: ${{ github.event_name != 'pull_request' }}
 
       - name: Set up Android SDK
         if:  steps.android-sdk-cache.outputs.cache-restored == 'false'
@@ -73,7 +138,7 @@ jobs:
           path: ${{ runner.temp }}/.ccache
           key: ${{ steps.compute-ccache-key.outputs.cache-key }}
           restore-keys: ${{ steps.compute-ccache-key.outputs.restore-keys }}
-          save-cache: ${{ github.event_name == 'push' }}
+          save-cache: ${{ github.event_name != 'pull_request' }}
 
       - name: Add Kotlin problem matcher
         uses: equeim/kotlin-problem-matcher@v1
@@ -82,7 +147,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: -P org.equeim.tremotesf.ccache=true build
-          cache-read-only: ${{ github.event_name != 'push' }}
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
         env:
           GRADLE_USER_HOME: ${{ runner.temp }}/.gradle
           CCACHE_BASEDIR: ${{ github.workspace }}
@@ -97,7 +162,7 @@ jobs:
         with:
           name: debug-apks
           path: app/build/outputs/apk/*/debug/*.apk
-          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
+          retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
       - name: Archive test and lint reports
         uses: actions/upload-artifact@v3
@@ -110,7 +175,7 @@ jobs:
             libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
-          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
+          retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
       - name: Archive native dependencies build logs
         uses: actions/upload-artifact@v3
@@ -120,4 +185,15 @@ jobs:
             3rdparty/*/build*/tremotesf.*.log
             3rdparty/*/build*/**/CMakeOutput.log
             3rdparty/*/build*/**/CMakeError.log
-          retention-days: ${{ github.event_name == 'push' && github.retention_days || 3 }}
+          retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
+
+      - name: Delete container image packages
+        id: package-versions-for-deletion
+        if: always()
+        run: |
+          package_versions="$(curl -s -u '${{ github.actor }}:${{ secrets.DELETE_PACKAGES_TOKEN }}' -H "Accept: application/vnd.github.v3+json" 'https://api.github.com/user/packages/container/${{ env.CONTAINER_IMAGE_PACKAGE_NAME }}/versions' | jq -r 'map(select(.metadata.container.tags != ["latest"])) | map(.id) | join(" ")')"
+          echo "Package versions to delete are $package_versions"
+          for version in $package_versions; do
+            echo "Deleting $version"
+            curl -s -u '${{ github.actor }}:${{ secrets.DELETE_PACKAGES_TOKEN }}' -X DELETE -H "Accept: application/vnd.github.v3+json" "https://api.github.com/user/packages/container/${{ env.CONTAINER_IMAGE_PACKAGE_NAME }}/versions/$version"
+          done
