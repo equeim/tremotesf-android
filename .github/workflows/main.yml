@@ -102,7 +102,7 @@ jobs:
           android_sdk_cache_key=''
           readonly keys=(android-gradle-plugin sdk-platform-compile sdk-ndk)
           for key in ${keys[@]}; do
-            android_sdk_cache_key+="$(toml -t gradle/libs.versions.toml -g versions.$key)\n"
+            android_sdk_cache_key+="$(tomlq -r ".versions[\"$key\"]" gradle/libs.versions.toml)\n"
           done
           echo -e "Android SDK cache key before hashing:\n$android_sdk_cache_key"
           android_sdk_cache_key="android-sdk-$RUNNER_OS-$(echo -e "$android_sdk_cache_key" | sha256sum | head -c 64)"
