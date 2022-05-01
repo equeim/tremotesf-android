@@ -11,8 +11,8 @@ on:
 
 env:
   CONTAINER_REGISTRY: ghcr.io
-  CONTAINER_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-build-environment
-  CONTAINER_IMAGE_PACKAGE_NAME: ${{ github.event.repository.name }}-build-environment
+  CONTAINER_IMAGE: ghcr.io/${{ github.repository_owner }}/tremotesf-android-build-environment
+  CONTAINER_IMAGE_PACKAGE_NAME: tremotesf-android-build-environment
 
 jobs:
   build-environment:
