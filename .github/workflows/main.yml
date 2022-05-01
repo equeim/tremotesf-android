@@ -38,7 +38,7 @@ jobs:
           if [[ $GITHUB_EVENT_NAME == push ]]; then
             before=${{ github.event.before }}
           elif [[ $GITHUB_EVENT_NAME == pull_request ]]; then
-            before='origin/${{ github.base_ref }}'
+            before=${{ github.event.pull_request.base.sha }}
           else
             echo "Unknown event '$GITHUB_EVENT_NAME'"
             exit 1
