@@ -42,14 +42,33 @@
             android:layout_gravity="center_horizontal" />
 
         <TextView
-            android:id="@+id/placeholder_text"
+            android:id="@+id/status_string"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:gravity="center_horizontal"
-            android:textAppearance="@style/PlaceholderTextAppearance" />
+            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder" />
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder.Small" />
+
+        <Button
+            android:id="@+id/detailed_error_message_button"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+            android:text="@string/see_detailed_error_message" />
     </LinearLayout>
 
     <com.google.android.material.appbar.AppBarLayout
@@ -78,8 +97,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:animateLayoutChanges="true"
-            android:layout_height="@dimen/mtrl_bottomappbar_height">
+            android:layout_height="@dimen/mtrl_bottomappbar_height"
+            android:animateLayoutChanges="true">
 
             <ImageButton
                 android:id="@+id/transmission_settings"

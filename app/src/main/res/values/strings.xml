@@ -507,4 +507,8 @@
     <string name="prefs_color_theme_system">System colors</string>
     <string name="prefs_color_theme_red">Red</string>
     <string name="prefs_color_theme_teal">Teal</string>
+
+    <string name="see_detailed_error_message">See detailed error message</string>
+    <string name="detailed_error_message">Detailed error message</string>
+    <string name="copy">Copy</string>
 </resources>

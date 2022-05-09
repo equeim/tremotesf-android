@@ -39,11 +39,15 @@ object Utils {
     }
 
     fun shareTorrents(magnetLinks: List<String>, context: Context) {
+        shareText(magnetLinks.joinToString("\n"), context.getText(R.string.share_torrent), context)
+    }
+
+    fun shareText(text: CharSequence, activityChooserTitle: CharSequence, context: Context) {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, magnetLinks.joinToString("\n"))
+            putExtra(Intent.EXTRA_TEXT, text)
         }
-        startActivityChooser(intent, context.getText(R.string.share_torrent), context)
+        startActivityChooser(intent, activityChooserTitle, context)
     }
 
     private fun startActivityChooser(intent: Intent, title: CharSequence, context: Context) {

@@ -207,8 +207,8 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_onConnectionStateChanged(swigCPtr, this, status.swigValue());
   }
 
-  protected void onErrorChanged(RpcError error, String errorMessage) {
-    libtremotesfJNI.JniRpc_onErrorChanged(swigCPtr, this, error.swigValue(), errorMessage);
+  protected void onErrorChanged(RpcError error, String errorMessage, String detailedConnectionErrorMessage) {
+    libtremotesfJNI.JniRpc_onErrorChanged(swigCPtr, this, error.swigValue(), errorMessage, detailedConnectionErrorMessage);
   }
 
   protected void onServerSettingsChanged(JniServerSettingsData data) {

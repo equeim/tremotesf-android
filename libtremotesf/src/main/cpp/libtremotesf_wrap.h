@@ -19,7 +19,7 @@ public:
     virtual ~SwigDirector_JniRpc();
     virtual void onAboutToDisconnect();
     virtual void onConnectionStateChanged(libtremotesf::RpcConnectionState status);
-    virtual void onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage);
+    virtual void onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage,QString const &detailedConnectionErrorMessage);
     virtual void onServerSettingsChanged(libtremotesf::JniServerSettingsData data);
     virtual void onTorrentsUpdated(std::vector< std::pair< int,int > > const &removedIndexRanges,std::vector< libtremotesf::TorrentData > const &changed,std::vector< libtremotesf::TorrentData > const &added);
     virtual void onTorrentFilesUpdated(int torrentId,std::vector< libtremotesf::TorrentFile > const &changed);
