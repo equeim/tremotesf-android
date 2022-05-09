@@ -67,7 +67,7 @@
         <item quantity="other">%d pairs</item>
     </plurals>
 
-    <string name="next_update">Prochaine mise à jour dans%s</string>
+    <string name="next_update">Prochaine mise à jour dans %s</string>
     <string name="add_trackers">Ajouter des traqueurs</string>
     <string name="edit_tracker">Éditer traqueur</string>
 
@@ -142,8 +142,8 @@
     <string name="speed">Vitesse</string>
     <string name="honor_global_limits">Respecter les limites globales</string>
     <string name="kbps">ko/s</string>
-    <string name="download_noun">Téléchargé</string>
-    <string name="upload_noun">Envoyé</string>
+    <string name="download_noun">Téléchargement</string>
+    <string name="upload_noun">Envoi</string>
 
     <string name="seeding">Envoi</string>
 
@@ -171,7 +171,7 @@
 
     <string name="select_all">Tout sélectionner</string>
 
-    <string name="add_server">Ajouter serveur</string>
+    <string name="add_server">Ajouter un serveur</string>
     <string name="edit_server">Éditer serveur</string>
 
     <plurals name="servers_selected">
@@ -211,7 +211,7 @@
     <string name="overwrite">Écraser</string>
 
     <string name="add_torrent">Ajouter torrent</string>
-    <string name="add_torrent_file">Ajouter fichier torrent</string>
+    <string name="add_torrent_file">Ajouter un torrent via un fichier</string>
     <string name="storage_permission_error">La permission d\'accès au stockage est requise</string>
     <string name="file_is_too_large">Le fichier est trop volumineux</string>
     <string name="file_reading_error">Erreur à la lecture du fichier</string>
@@ -264,7 +264,7 @@
     <string name="start_downloading_after_adding">Commencer le téléchargement après l\'ajout</string>
 
     <string name="torrent_link">Lien du torrent</string>
-    <string name="add_torrent_link">Ajouter le lien du torrent</string>
+    <string name="add_torrent_link">Ajouter un torrent via un lien</string>
 
     <string name="current_session">Session actuelle</string>
     <string name="total">Total</string>
@@ -364,8 +364,13 @@
     <string name="translators">Traducteurs</string>
     <string name="license">Licence</string>
 
+    <string name="prefs_dark_theme_mode_title">Thème sombre</string>
+
     <string name="prefs_dark_theme_mode_auto_pre_q">Défini par l\'économiseur de batterie</string>
     <string name="prefs_dark_theme_mode_auto_q">Valeur par défaut du système</string>
+    <string name="prefs_dark_theme_mode_on">Activé</string>
+    <string name="prefs_dark_theme_mode_off">Désactivé</string>
+
     <string name="prefs_torrent_compact_view_title">Utiliser la vue compacte pour les torrents</string>
     <string name="prefs_torrent_name_multiline_title">Afficher le nom du torrent sur plusieurs lignes</string>
 
@@ -459,4 +464,8 @@
     <string name="directory_icon">Icône du répertoire</string>
     <string name="file_icon">Icône du fichier</string>
 
-    </resources>
+    <string name="prefs_color_theme_title">Couleurs</string>
+    <string name="prefs_color_theme_system">Couleurs du système</string>
+    <string name="prefs_color_theme_red">Rouge</string>
+    <string name="prefs_color_theme_teal">Bleu sarcelle</string>
+</resources>
