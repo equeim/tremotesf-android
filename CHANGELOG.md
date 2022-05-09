@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.6.1] - 2022-05-10
+### Added
+- Detailed connection error message can now be seen from main screen
+  (most useful when figuring out TLS issues)
+
+### Changed
+- Colors for new Material You theme are changed to be more like old style,
+  primary color is not used to signal surface elevation
+- Updated OpenSSL to 3.0.3 and Qt to 6.3.0
+
+### Fixed
+- Fixed showing of connection error toast when returning to application
+
 ## [2.6.0] - 2022-04-28
 ### Added
 - System colors support on Android 12

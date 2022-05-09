@@ -1,0 +1,3 @@
+- Added support of showing detailed connection error message with description of TLS or HTTP errors
+- Colors for new Material You theme are changed to be more like old style
+- Fixed showing of connection error toast when returning to application
