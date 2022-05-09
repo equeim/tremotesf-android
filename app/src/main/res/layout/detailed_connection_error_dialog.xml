@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="horizontal">
+    android:paddingTop="@dimen/vertical_edge_padding">
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/vertical_edge_padding"
-        android:scrollbars="vertical">
+        android:scrollbars="horizontal"
+        tools:ignore="UselessParent">
 
-        <TextView
-            android:id="@+id/text"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="?dialogPreferredPadding"
-            android:layout_marginVertical="@dimen/vertical_edge_padding"
-            android:fontFamily="monospace"
-            android:textAppearance="?textAppearanceBodyMedium"
-            android:textIsSelectable="true" />
-    </androidx.core.widget.NestedScrollView>
-</HorizontalScrollView>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:paddingHorizontal="?dialogPreferredPadding"
+                android:paddingVertical="@dimen/vertical_edge_padding"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:textIsSelectable="true" />
+        </androidx.core.widget.NestedScrollView>
+    </HorizontalScrollView>
+</FrameLayout>
