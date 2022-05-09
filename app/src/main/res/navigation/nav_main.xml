@@ -53,6 +53,9 @@
         <action
             android:id="@+id/to_transmission_settings_dialog_fragment"
             app:destination="@id/transmission_settings_dialog_fragment" />
+        <action
+            android:id="@+id/to_detailed_connection_error_dialog_fragment"
+            app:destination="@id/detailed_connection_error_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -372,4 +375,8 @@
             android:id="@+id/to_server_stats_dialog"
             app:destination="@id/server_stats_dialog" />
     </dialog>
+
+    <dialog
+        android:id="@+id/detailed_connection_error_dialog_fragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.DetailedConnectionErrorDialogFragment" />
 </navigation>

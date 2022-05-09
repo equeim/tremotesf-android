@@ -21,7 +21,7 @@
             android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
             android:gravity="center_horizontal"
             android:text="@string/no_servers"
-            android:textAppearance="@style/PlaceholderTextAppearance" />
+            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/servers_view"

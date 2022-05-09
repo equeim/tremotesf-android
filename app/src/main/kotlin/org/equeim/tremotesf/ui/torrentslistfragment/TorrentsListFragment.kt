@@ -38,6 +38,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
+import org.equeim.libtremotesf.RpcError
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -111,6 +112,10 @@ class TorrentsListFragment : NavigationFragment(
             layoutManager = LinearLayoutManager(requireContext())
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
+        }
+
+        binding.detailedErrorMessageButton.setOnClickListener {
+            navigate(TorrentsListFragmentDirections.toDetailedConnectionErrorDialogFragment())
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -219,7 +224,8 @@ class TorrentsListFragment : NavigationFragment(
         if (!connected) {
             requiredActivity.actionMode?.finish()
             when (navController.currentDestination?.id) {
-                R.id.transmission_settings_dialog_fragment -> Unit
+                R.id.transmission_settings_dialog_fragment,
+                R.id.detailed_connection_error_dialog_fragment -> Unit
                 else -> navController.popDialog()
             }
         }
@@ -279,13 +285,24 @@ class TorrentsListFragment : NavigationFragment(
         val (status, hasTorrents, hasServers) = data
 
         progressBar.isVisible = status.connectionState == RpcConnectionState.Connecting && !hasTorrents
-        placeholderText.apply {
+        statusString.apply {
             text = when {
                 hasTorrents -> null
                 (status.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
                 else -> status.statusString
             }
             isVisible = !text.isNullOrEmpty()
+        }
+        errorMessage.apply {
+            text = if (status.error.error == RpcError.ConnectionError) {
+                status.error.errorMessage
+            } else {
+                null
+            }
+            isVisible = !text.isNullOrEmpty()
+        }
+        detailedErrorMessageButton.apply {
+            isVisible = status.error.detailedErrorMessage.isNotEmpty()
         }
         placeholderView.apply {
             isVisible = children.any { it.isVisible }

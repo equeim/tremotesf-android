@@ -25,7 +25,7 @@
             android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:gravity="center_horizontal"
-            android:textAppearance="@style/PlaceholderTextAppearance"/>
+            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder"/>
     </LinearLayout>
 
     <LinearLayout

@@ -1270,12 +1270,13 @@ void SwigDirector_JniRpc::onConnectionStateChanged(libtremotesf::RpcConnectionSt
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_JniRpc::onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage) {
+void SwigDirector_JniRpc::onErrorChanged(libtremotesf::RpcError error,QString const &errorMessage,QString const &detailedConnectionErrorMessage) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   jint jerror  ;
   jstring jerrorMessage = 0 ;
+  jstring jdetailedConnectionErrorMessage = 0 ;
   
   if (!swig_override[2]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onErrorChanged.");
@@ -1287,7 +1288,10 @@ void SwigDirector_JniRpc::onErrorChanged(libtremotesf::RpcError error,QString co
     
     jerrorMessage = jenv->NewString((&errorMessage)->utf16(), static_cast<jsize>((&errorMessage)->size()));
     
-    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[2], swigjobj, jerror, jerrorMessage);
+    
+    jdetailedConnectionErrorMessage = jenv->NewString((&detailedConnectionErrorMessage)->utf16(), static_cast<jsize>((&detailedConnectionErrorMessage)->size()));
+    
+    jenv->CallStaticVoidMethod(Swig::jclass_libtremotesfJNI, Swig::director_method_ids[2], swigjobj, jerror, jerrorMessage, jdetailedConnectionErrorMessage);
     jthrowable swigerror = jenv->ExceptionOccurred();
     if (swigerror) {
       Swig::DirectorException::raise(jenv, swigerror);
@@ -1651,7 +1655,7 @@ void SwigDirector_JniRpc::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
   static SwigDirectorMethod methods[] = {
     SwigDirectorMethod(jenv, baseclass, "onAboutToDisconnect", "()V"),
     SwigDirectorMethod(jenv, baseclass, "onConnectionStateChanged", "(Lorg/equeim/libtremotesf/RpcConnectionState;)V"),
-    SwigDirectorMethod(jenv, baseclass, "onErrorChanged", "(Lorg/equeim/libtremotesf/RpcError;Ljava/lang/String;)V"),
+    SwigDirectorMethod(jenv, baseclass, "onErrorChanged", "(Lorg/equeim/libtremotesf/RpcError;Ljava/lang/String;Ljava/lang/String;)V"),
     SwigDirectorMethod(jenv, baseclass, "onServerSettingsChanged", "(Lorg/equeim/libtremotesf/JniServerSettingsData;)V"),
     SwigDirectorMethod(jenv, baseclass, "onTorrentsUpdated", "(Lorg/equeim/libtremotesf/IntPairVector;Lorg/equeim/libtremotesf/TorrentDataVector;Lorg/equeim/libtremotesf/TorrentDataVector;)V"),
     SwigDirectorMethod(jenv, baseclass, "onTorrentFilesUpdated", "(ILorg/equeim/libtremotesf/TorrentFilesVector;)V"),
@@ -7960,10 +7964,11 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onC
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onErrorChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onErrorChanged(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::RpcError arg2 ;
   QString *arg3 = 0 ;
+  QString *arg4 = 0 ;
   SwigDirector_JniRpc *darg = 0;
   
   (void)jenv;
@@ -7983,8 +7988,20 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onE
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
+  
+  if(!jarg4) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QString");
+    return ;
+  }
+  const jchar* arg4_pstr = jenv->GetStringChars(jarg4, 0);
+  if (!arg4_pstr) return ;
+  jsize arg4_len = jenv->GetStringLength(jarg4);
+  QString arg4_str(QString::fromUtf16(reinterpret_cast<const char16_t*>(arg4_pstr), arg4_len));
+  arg4 = &arg4_str;
+  jenv->ReleaseStringChars(jarg4, arg4_pstr);
+  
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onErrorChanged(arg2,(QString const &)*arg3);
+  (darg)->onErrorChanged(arg2,(QString const &)*arg3,(QString const &)*arg4);
 }
 
 
@@ -8428,7 +8445,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_swig_1modul
       "SwigDirector_JniRpc_onConnectionStateChanged", "(Lorg/equeim/libtremotesf/JniRpc;I)V" 
     },
     {
-      "SwigDirector_JniRpc_onErrorChanged", "(Lorg/equeim/libtremotesf/JniRpc;ILjava/lang/String;)V" 
+      "SwigDirector_JniRpc_onErrorChanged", "(Lorg/equeim/libtremotesf/JniRpc;ILjava/lang/String;Ljava/lang/String;)V" 
     },
     {
       "SwigDirector_JniRpc_onServerSettingsChanged", "(Lorg/equeim/libtremotesf/JniRpc;J)V" 

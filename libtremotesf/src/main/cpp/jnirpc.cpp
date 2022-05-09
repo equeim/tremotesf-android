@@ -434,7 +434,7 @@ namespace libtremotesf
 
         QObject::connect(mRpc, &Rpc::aboutToDisconnect, [=]() { onAboutToDisconnect(); });
         QObject::connect(mRpc, &Rpc::connectionStateChanged, [=]() { onConnectionStateChanged(mRpc->connectionState()); });
-        QObject::connect(mRpc, &Rpc::errorChanged, [=]() { onErrorChanged(mRpc->error(), mRpc->errorMessage()); });
+        QObject::connect(mRpc, &Rpc::errorChanged, [=]() { onErrorChanged(mRpc->error(), mRpc->errorMessage(), mRpc->detailedErrorMessage()); });
 
         QObject::connect(mRpc->serverSettings(), &ServerSettings::changed, mRpc, [this] {
             onServerSettingsChanged(JniServerSettingsData(mRpc->serverSettings()));
