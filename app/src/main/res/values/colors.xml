@@ -22,9 +22,9 @@
 
     <color name="theme_red_primary">#B91D1D</color>
     <color name="theme_red_onPrimary">#FFFFFF</color>
-    <color name="theme_red_primaryContainer">#FFDAD4</color>
+    <color name="theme_red_primaryContainer">#FFBAAE</color>
     <color name="theme_red_onPrimaryContainer">#410001</color>
-    <color name="theme_red_secondary">#775652</color>
+    <color name="theme_red_secondary">#B91D1D</color>
     <color name="theme_red_onSecondary">#FFFFFF</color>
     <color name="theme_red_secondaryContainer">#FFDAD5</color>
     <color name="theme_red_onSecondaryContainer">#2C1513</color>
@@ -49,11 +49,11 @@
 
     <color name="theme_red_background_night">#211A19</color>
 
-    <color name="theme_teal_primary">#006B5E</color>
+    <color name="theme_teal_primary">#0CA592</color>
     <color name="theme_teal_onPrimary">#FFFFFF</color>
     <color name="theme_teal_primaryContainer">#75F8E4</color>
     <color name="theme_teal_onPrimaryContainer">#00201B</color>
-    <color name="theme_teal_secondary">#4A635E</color>
+    <color name="theme_teal_secondary">#0CA592</color>
     <color name="theme_teal_onSecondary">#FFFFFF</color>
     <color name="theme_teal_secondaryContainer">#CCE8E1</color>
     <color name="theme_teal_onSecondaryContainer">#061F1C</color>
