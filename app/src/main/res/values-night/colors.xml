@@ -9,11 +9,11 @@
     <color name="icon_color_enabled_unfocused">@color/icon_color_enabled_unfocused_night</color>
     <color name="icon_color_disabled">@color/icon_color_disabled_night</color>
 
-    <color name="theme_red_primary">#FFB3A9</color>
+    <color name="theme_red_primary">#DF6454</color>
     <color name="theme_red_onPrimary">#680003</color>
     <color name="theme_red_primaryContainer">#930007</color>
     <color name="theme_red_onPrimaryContainer">#FFDAD4</color>
-    <color name="theme_red_secondary">#E7BCB7</color>
+    <color name="theme_red_secondary">#DF6454</color>
     <color name="theme_red_onSecondary">#442A27</color>
     <color name="theme_red_secondaryContainer">#5D3F3C</color>
     <color name="theme_red_onSecondaryContainer">#FFDAD5</color>
