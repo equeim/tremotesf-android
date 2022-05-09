@@ -119,10 +119,9 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             insets
         }
 
-        GlobalRpc.error.map { it.errorMessage }.launchAndCollectWhenStarted(this) { error ->
-            if (error.isNotEmpty()) {
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
-            }
+        model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+            model.rpcErrorToastShown()
         }
 
         navController =

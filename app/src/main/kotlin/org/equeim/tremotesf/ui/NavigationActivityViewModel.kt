@@ -25,8 +25,15 @@ import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
@@ -103,5 +110,19 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
             }
+    }
+
+    private val _showRpcErrorToast = MutableStateFlow<String?>(null)
+    val showRpcErrorToast: StateFlow<String?> by ::_showRpcErrorToast
+    fun rpcErrorToastShown() {
+        _showRpcErrorToast.value = null
+    }
+
+    init {
+        viewModelScope.launch {
+            GlobalRpc.error.map { it.errorMessage }.filter { it.isNotEmpty() }.collect { error ->
+                _showRpcErrorToast.value = error
+            }
+        }
     }
 }
