@@ -31,7 +31,7 @@ commons-text = "1.9"
 fastscroll = "2.1.0"
 leakcanary = "2.9.1"
 material = "1.5.0"
-publicsuffixlist = "100.0.8"
+publicsuffixlist = "101.0.3"
 timber = "5.0.1"
 threetenabp = "1.4.0"
 
