@@ -308,8 +308,8 @@ abstract class QtTask : DefaultTask() {
             "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
             "-DQT_HOST_PATH=${hostQtInfo.prefix}",
             "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}",
-            // Remove when updating Qt to 6.3
-            "-DANDROID_PLATFORM=${minSdkVersion.get()}"
+            // Fix CMake forcing gold linker
+            "-DCMAKE_ANDROID_NDK_VERSION=${ndkVersion.get().splitToSequence('.').first()}"
         )
 
         buildQt(buildDir, configureFlags, true)
