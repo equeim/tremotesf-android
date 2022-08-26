@@ -39,7 +39,9 @@ android {
         "-DANDROID_STL=c++_shared",
         "-DANDROID_ARM_NEON=true",
         "-DOPENSSL_DIR=${rootDir.resolve(OPENSSL_DIR)}",
-        "-DQT_DIR=${rootDir.resolve(QT_DIR)}"
+        "-DQT_DIR=${rootDir.resolve(QT_DIR)}",
+        // Fix CMake forcing gold linker
+        "-DCMAKE_ANDROID_NDK_VERSION=${libs.versions.sdk.ndk.get().splitToSequence('.').first()}"
     )
 
     buildFeatures.buildConfig = false
