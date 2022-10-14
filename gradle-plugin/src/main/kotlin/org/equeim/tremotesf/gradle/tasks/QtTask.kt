@@ -83,7 +83,7 @@ abstract class QtTask : DefaultTask() {
 
     @TaskAction
     fun buildQt() {
-        logger.lifecycle("Start building Qt")
+        logger.lifecycle("===> Start building Qt")
         logger.lifecycle("CMake binary dir = {}", cmakeBinaryDir.orNull)
         logger.lifecycle("Additional CMake flags for host Qt = {}", hostQtCmakeFlags.get())
         logger.lifecycle("Ccache = {}", ccache.get())
@@ -180,7 +180,7 @@ abstract class QtTask : DefaultTask() {
     }
 
     private fun buildHostQt() {
-        logger.lifecycle("Building host Qt")
+        logger.lifecycle("===> Building host Qt")
 
         val buildDir = hostBuildDir(rootDir.get())
 
@@ -234,7 +234,7 @@ abstract class QtTask : DefaultTask() {
     }
 
     private fun buildQt(abi: String, hostQtInfo: HostQtInfo) {
-        logger.lifecycle("Building Qt for abi = {}", abi)
+        logger.lifecycle("===> Building Qt for abi = {}", abi)
 
         val buildDir = buildDir(rootDir.get(), abi)
 
@@ -287,7 +287,8 @@ abstract class QtTask : DefaultTask() {
             "-no-feature-processenvironment",
             "-no-feature-proxymodel",
             "-no-feature-relocatable",
-            "-no-feature-settings",
+            // Broken in 6.4.0
+            //"-no-feature-settings",
             "-no-feature-sharedmemory",
             "-no-feature-shortcut",
             "-no-feature-sortfilterproxymodel",
