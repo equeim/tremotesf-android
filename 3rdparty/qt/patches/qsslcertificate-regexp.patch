@@ -1,8 +1,8 @@
 --- a/src/network/ssl/qsslcertificate.cpp
 +++ b/src/network/ssl/qsslcertificate.cpp
-@@ -667,7 +667,7 @@ QList<QSslCertificate> QSslCertificate::fromPath(const QString &path,
+@@ -635,7 +635,7 @@ QList<QSslCertificate> QSslCertificate::fromPath(const QString &path,
      else if (syntax == PatternSyntax::RegularExpression)
-         pos = sourcePath.indexOf(QRegularExpression(QLatin1String("[\\$\\(\\)\\*\\+\\.\\?\\[\\]\\^\\{\\}\\|]")));
+         pos = sourcePath.indexOf(QRegularExpression("[\\$\\(\\)\\*\\+\\.\\?\\[\\]\\^\\{\\}\\|]"_L1));
  #else
 -    if (syntax == PatternSyntax::Wildcard || syntax == PatternSyntax::RegExp)
 +    if (syntax == PatternSyntax::Wildcard || syntax == PatternSyntax::RegularExpression)

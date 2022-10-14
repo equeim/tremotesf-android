@@ -61,7 +61,7 @@ abstract class OpenSSLTask : DefaultTask() {
 
     @TaskAction
     fun buildOpenSSL() {
-        logger.lifecycle("Start building OpenSSL")
+        logger.lifecycle("===> Start building OpenSSL")
         if (ccache.get()) {
             zeroCcacheStatistics(logger)
         }
@@ -75,7 +75,7 @@ abstract class OpenSSLTask : DefaultTask() {
     }
 
     private fun buildOpenSSL(abi: String) {
-        logger.lifecycle("Building OpenSSL for abi = {}", abi)
+        logger.lifecycle("===> Building OpenSSL for abi = {}", abi)
 
         val buildDir = buildDir(rootDir.get(), abi)
         Files.createDirectories(buildDir.toPath())
