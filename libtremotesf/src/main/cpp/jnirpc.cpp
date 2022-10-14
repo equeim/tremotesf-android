@@ -13,7 +13,7 @@
 #include <android/log.h>
 #include <jni.h>
 
-#include "libtremotesf/println.h"
+#include "libtremotesf/log.h"
 
 Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
 
@@ -26,7 +26,7 @@ namespace libtremotesf
     {
         constexpr int threadStartTimeoutMs = 5000;
         constexpr const char* logTag = "LibTremotesf";
-        const QLatin1String certPath(":/isrg_root_x1.pem");
+        constexpr auto certPath = ":/isrg_root_x1.pem"_l1;
     }
 
     JniServerSettingsData::JniServerSettingsData(ServerSettings* settings)
@@ -381,7 +381,7 @@ namespace libtremotesf
             __android_log_print(ANDROID_LOG_FATAL, logTag, "init: timed out waiting for QCoreApplication creation, elapsed time = %f ms", elapsed);
             std::terminate();
         }
-        printlnInfo("init: created QCoreApplication, elapsed time = {} ms", elapsed);
+        logInfo("init: created QCoreApplication, elapsed time = {} ms", elapsed);
     }
 
     void JniRpc::exec(std::shared_ptr<ThreadStartArgs> args)
@@ -396,7 +396,7 @@ namespace libtremotesf
         new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationName(QLatin1String(logTag));
 
-        printlnInfo("exec: created QCoreApplication");
+        logInfo("exec: created QCoreApplication");
 
         {
             std::unique_lock<std::mutex> lock(args->mutex);
@@ -407,13 +407,13 @@ namespace libtremotesf
 
         initRpc();
 
-        printlnInfo("exec: calling QCoreApplication::exec");
+        logInfo("exec: calling QCoreApplication::exec");
         QCoreApplication::exec();
     }
 
     void JniRpc::initRpc()
     {
-        printlnInfo("Initializing Rpc");
+        logInfo("Initializing Rpc");
 
         if (QFile certFile(certPath); certFile.open(QIODevice::ReadOnly)) {
             auto certs = QSslCertificate::fromDevice(&certFile);
@@ -422,7 +422,7 @@ namespace libtremotesf
                 configuration.addCaCertificate(certs.first());
                 QSslConfiguration::setDefaultConfiguration(configuration);
             } else {
-                printlnWarning("Failed to load ISRG Root X1 certificate from resources");
+                logWarning("Failed to load ISRG Root X1 certificate from resources");
             }
         } else {
             throw std::runtime_error(fmt::format("Failed to open resource {}", certPath));
@@ -505,7 +505,7 @@ namespace libtremotesf
 
         onServerSettingsChanged(JniServerSettingsData(mRpc->serverSettings()));
 
-        printlnInfo("Initialized Rpc");
+        logInfo("Initialized Rpc");
     }
 
     void JniRpc::setServer(const Server& server)
@@ -537,7 +537,7 @@ namespace libtremotesf
     {
         auto file(std::make_shared<QFile>());
         if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
-            printlnWarning("Failed to open file by fd");
+            logWarning("Failed to open file by fd");
             return;
         }
         file->seek(0);
