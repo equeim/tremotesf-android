@@ -29,8 +29,8 @@ dependencies {
     compileOnly(libs.kotlin.gradle.plugin) {
         excludeKotlinStdlib()
     }
-    implementation(libs.coroutines15.core)
-    implementation(libs.coroutines15.jdk8)
+    implementation(libs.coroutines.gradle.core)
+    implementation(libs.coroutines.gradle.jdk8)
     implementation(libs.commons.text)
 }
 
