@@ -136,6 +136,7 @@ class NotificationsController(private val context: Context) {
                         .setDestination(R.id.torrents_list_fragment)
                         .createPendingIntent()
                 )
+                .setOngoing(true)
                 .setShowWhen(false)
 
         val currentServer = GlobalServers.currentServer.value
