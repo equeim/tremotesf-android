@@ -137,7 +137,7 @@ abstract class QtTask : DefaultTask() {
 
         val hostQtVersion = runCatching {
             executeCommand(
-                listOf("qmake6", "-query", "QT_VERSION"),
+                listOf("qtpaths6", "--query", "QT_VERSION"),
                 logger,
                 outputMode = ExecOutputMode.CaptureOutput
             )
@@ -153,7 +153,7 @@ abstract class QtTask : DefaultTask() {
 
         val hostPrefix = runCatching {
             executeCommand(
-                listOf("qmake6", "-query", "QT_HOST_PREFIX"),
+                listOf("qtpaths6", "--query", "QT_HOST_PREFIX"),
                 logger,
                 outputMode = ExecOutputMode.CaptureOutput
             )
@@ -165,7 +165,7 @@ abstract class QtTask : DefaultTask() {
 
         val hostLibs = runCatching {
             executeCommand(
-                listOf("qmake6", "-query", "QT_HOST_LIBS"),
+                listOf("qtpaths6", "--query", "QT_HOST_LIBS"),
                 logger,
                 outputMode = ExecOutputMode.CaptureOutput
             )
