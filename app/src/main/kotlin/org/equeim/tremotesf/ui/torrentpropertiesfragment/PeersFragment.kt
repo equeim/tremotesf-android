@@ -24,6 +24,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,10 +37,10 @@ import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.viewModelFactory
 import timber.log.Timber
 
 
@@ -70,7 +72,13 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
     private val binding by viewBinding(PeersFragmentBinding::bind)
     private var peersAdapter: PeersAdapter? = null
 
-    private val model: Model by viewModels { viewModelFactory { Model(TorrentPropertiesFragmentViewModel.get(this).torrent) } }
+    private val model: Model by viewModels {
+        viewModelFactory {
+            initializer {
+                Model(TorrentPropertiesFragmentViewModel.get(navController).torrent)
+            }
+        }
+    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)

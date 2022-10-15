@@ -279,7 +279,7 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
         val addingTrackers = (args.trackerId == -1)
 
         val onAccepted = { textField: TextView ->
-            val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+            val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
             val torrent = propertiesFragmentModel.torrent.value
             if (torrent != null) {
                 textField.text?.let { text ->
@@ -333,7 +333,7 @@ class RemoveTrackerDialogFragment : NavigationDialogFragment() {
             )
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
-                val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+                val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
                 val torrent = propertiesFragmentModel.torrent.value
                 torrent?.removeTrackers(args.ids)
                 requiredActivity.actionMode?.finish()

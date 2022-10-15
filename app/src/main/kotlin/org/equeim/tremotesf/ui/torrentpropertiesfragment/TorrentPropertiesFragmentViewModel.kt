@@ -20,10 +20,11 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavController
 import androidx.navigation.navGraphViewModels
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,10 @@ import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
-class TorrentPropertiesFragmentViewModel(val args: TorrentPropertiesFragmentArgs, savedStateHandle: SavedStateHandle) : ViewModel() {
+class TorrentPropertiesFragmentViewModel(
+    val args: TorrentPropertiesFragmentArgs,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
     var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     private val _torrent = MutableStateFlow<Torrent?>(null)
@@ -65,19 +69,25 @@ class TorrentPropertiesFragmentViewModel(val args: TorrentPropertiesFragmentArgs
     }
 
     companion object {
-        fun get(fragment: Fragment): TorrentPropertiesFragmentViewModel {
-            val entry = fragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
-            return ViewModelProvider(entry, fragment.navArgsViewModelFactory(
-                entry.arguments,
-                TorrentPropertiesFragmentArgs::fromBundle
-            ) { args, _, handle -> TorrentPropertiesFragmentViewModel(args, handle) })[TorrentPropertiesFragmentViewModel::class.java]
+        fun get(navController: NavController): TorrentPropertiesFragmentViewModel {
+            val entry = navController.getBackStackEntry(R.id.torrent_properties_fragment)
+            val factory = viewModelFactory {
+                initializer {
+                    val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
+                    TorrentPropertiesFragmentViewModel(args, createSavedStateHandle())
+                }
+            }
+            return ViewModelProvider(entry, factory)[TorrentPropertiesFragmentViewModel::class.java]
         }
 
         fun lazy(fragment: Fragment) = fragment.navGraphViewModels<TorrentPropertiesFragmentViewModel>(R.id.torrent_properties_fragment) {
-            fragment.navArgsViewModelFactory(
-                R.id.torrent_properties_fragment,
-                TorrentPropertiesFragmentArgs::fromBundle
-            ) { args, _, handle -> TorrentPropertiesFragmentViewModel(args, handle) }
+            viewModelFactory {
+                initializer {
+                    val entry = fragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
+                    val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
+                    TorrentPropertiesFragmentViewModel(args, createSavedStateHandle())
+                }
+            }
         }
 
         fun StateFlow<Torrent?>.hasTorrent() = map { it != null }.distinctUntilChanged()

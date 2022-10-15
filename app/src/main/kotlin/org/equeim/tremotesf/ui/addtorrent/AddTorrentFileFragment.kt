@@ -30,7 +30,12 @@ import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -133,7 +138,18 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
     }
 
-    private val model: AddTorrentFileModel by viewModels { navArgsViewModelFactory(AddTorrentFileFragmentArgs::fromBundle, ::AddTorrentFileModelImpl) }
+    private val args: AddTorrentFileFragmentArgs by navArgs()
+    private val model: AddTorrentFileModel by viewModels {
+        viewModelFactory {
+            initializer {
+                AddTorrentFileModelImpl(
+                    args,
+                    checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY)),
+                    createSavedStateHandle()
+                )
+            }
+        }
+    }
 
     private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
 
