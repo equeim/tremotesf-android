@@ -39,8 +39,8 @@ fun EditText.showKeyboard() {
         }
     }
     val listener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View?) = Unit
-        override fun onViewDetachedFromWindow(v: View?) = job.cancel()
+        override fun onViewAttachedToWindow(v: View) = Unit
+        override fun onViewDetachedFromWindow(v: View) = job.cancel()
     }
     job.invokeOnCompletion {
         removeOnAttachStateChangeListener(listener)

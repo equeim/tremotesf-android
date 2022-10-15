@@ -26,6 +26,7 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
@@ -203,7 +204,7 @@ class ForegroundService : LifecycleService() {
 
     override fun onDestroy() {
         Timber.i("onDestroy: state = ${lifecycle.currentState}")
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         instances.remove(this)
         super.onDestroy()
     }

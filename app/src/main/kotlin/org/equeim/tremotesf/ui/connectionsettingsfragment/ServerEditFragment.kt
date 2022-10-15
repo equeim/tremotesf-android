@@ -534,7 +534,7 @@ class ServerCertificatesFragment : NavigationFragment(
     }
 
     private class GetPemFileContract : ActivityResultContract<Unit, Uri?>() {
-        override fun createIntent(context: Context, input: Unit?): Intent {
+        override fun createIntent(context: Context, input: Unit): Intent {
             return Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
