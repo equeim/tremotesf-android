@@ -11,9 +11,9 @@ import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.ui.utils.FormatUtils

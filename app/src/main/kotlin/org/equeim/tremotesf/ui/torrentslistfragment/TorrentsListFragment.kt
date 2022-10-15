@@ -22,6 +22,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.withStyledAttributes
@@ -49,14 +50,7 @@ import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.addCustomCallback
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.handleAndReset
-import org.equeim.tremotesf.ui.utils.popDialog
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.*
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -65,12 +59,13 @@ class TorrentsListFragment : NavigationFragment(
     R.menu.torrents_list_fragment_menu
 ) {
     private val binding by viewBinding(TorrentsListFragmentBinding::bind)
-
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
+    private var notificationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
+        notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -157,6 +152,17 @@ class TorrentsListFragment : NavigationFragment(
         model.showAddTorrentError.handleAndReset {
             requireView().showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
         }.launchAndCollectWhenStarted(viewLifecycleOwner)
+
+        notificationPermissionLauncher?.let { launcher ->
+            model.showNotificationPermissionRequest.handleAndReset {
+                requireView().showSnackbar(
+                    message = R.string.notification_permission_rationale,
+                    length = Snackbar.LENGTH_INDEFINITE,
+                    actionText = R.string.request_permission,
+                    action = { model.notificationPermissionHelper?.requestPermission(this, launcher) }
+                )
+            }.launchAndCollectWhenStarted(viewLifecycleOwner)
+        }
     }
 
     private fun setupBottomBar() {

@@ -43,6 +43,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">
+        <org.equeim.tremotesf.ui.NotificationPermissionPreference
+            app:key="@string/notification_permission_key"
+            app:layout="@layout/settings_fragment_notification_permission_button" />
+
         <CheckBoxPreference
             android:defaultValue="@bool/prefs_notify_on_finished_default_value"
             android:key="@string/prefs_notify_on_finished_key"

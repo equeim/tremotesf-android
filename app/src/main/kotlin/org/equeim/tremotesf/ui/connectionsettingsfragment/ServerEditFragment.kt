@@ -372,7 +372,7 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
         RuntimePermissionHelper(
             permission,
             R.string.location_permission_rationale,
-            requestLocationPermissions()
+            requestPermissions = requestLocationPermissions()
         )
     }
 

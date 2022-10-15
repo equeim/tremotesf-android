@@ -80,4 +80,6 @@
 
     <string name="torrents_directory_filter_key" translatable="false">torrentsFolderFilter</string>
     <string name="torrents_directory_filter_default_value" translatable="false"/>
+
+    <string name="notification_permission_key" translatable="false">notificationPermission</string>
 </resources>

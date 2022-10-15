@@ -19,7 +19,9 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
+import android.Manifest
 import android.app.Application
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.equeim.libtremotesf.TorrentData
+import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.common.dropTrailingPathSeparator
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -35,6 +38,7 @@ import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.SavedStateFlowHolder
 import org.equeim.tremotesf.ui.utils.savedStateFlow
 
@@ -58,8 +62,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     else -> false
                 }
                 StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
-                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking) ||
-                        (torrent.status == TorrentData.Status.Checking)
+                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking)
                 StatusFilterMode.Errored -> (torrent.status == TorrentData.Status.Errored)
                 StatusFilterMode.All -> true
             }
@@ -180,6 +183,17 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)
 
+    val notificationPermissionHelper = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RuntimePermissionHelper(
+            Manifest.permission.POST_NOTIFICATIONS,
+            R.string.notification_permission_rationale,
+            showRationaleBeforeRequesting = false
+        )
+    } else {
+        null
+    }
+    val showNotificationPermissionRequest = MutableStateFlow(false)
+
     init {
         GlobalRpc.torrentAddDuplicateEvents
             .onEach { showAddTorrentDuplicateError.value = true }
@@ -187,6 +201,25 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         GlobalRpc.torrentAddErrorEvents
             .onEach { showAddTorrentError.value = true }
             .launchIn(viewModelScope)
+
+        notificationPermissionHelper?.let { helper ->
+            val notificationsEnabled = combine(
+                Settings.notifyOnAdded.flow(),
+                Settings.notifyOnFinished.flow(),
+                Settings.notifyOnAddedSinceLastConnection.flow(),
+                Settings.notifyOnFinishedSinceLastConnection.flow(),
+                Settings.showPersistentNotification.flow()
+            ) { array -> array.any { it } }
+
+            combine(notificationsEnabled, GlobalRpc.isConnected, Boolean::and)
+                .distinctUntilChanged()
+                .onEach {
+                    if (!helper.checkPermission(application)) {
+                        showNotificationPermissionRequest.value = true
+                    }
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     private fun createFilterPredicate(
