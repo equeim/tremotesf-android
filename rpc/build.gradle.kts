@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.tremotesf)
 }
 
+android.namespace = "org.equeim.tremotesf.rpc"
+
 dependencies {
     implementation(project(":common"))
     api(project(":libtremotesf"))

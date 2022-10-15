@@ -24,6 +24,8 @@ val keystoreProperties = try {
 }
 
 android {
+    namespace = "org.equeim.tremotesf"
+
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
         versionCode = 4048
@@ -51,7 +53,10 @@ android {
         ndk.debugSymbolLevel = "FULL"
     }
 
-    buildFeatures.viewBinding = true
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
 
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 

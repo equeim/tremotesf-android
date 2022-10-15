@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    buildFeatures.buildConfig = false
+    namespace = "org.equeim.tremotesf.torrentfile"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
