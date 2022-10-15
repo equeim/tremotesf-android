@@ -307,7 +307,7 @@ abstract class QtTask : DefaultTask() {
             addAll(hostQtCmakeFlags.get())
         }
 
-        buildQt(buildDir, configureFlags, false)
+        buildQt(buildDir, configureFlags)
     }
 
     private fun buildAndroidQt(abi: String, hostQtInfo: HostQtInfo) {
@@ -347,10 +347,10 @@ abstract class QtTask : DefaultTask() {
             )
         }
 
-        buildQt(buildDir, configureFlags, true)
+        buildQt(buildDir, configureFlags)
     }
 
-    private fun buildQt(buildDir: File, configureFlags: List<String>, crossCompiling: Boolean) {
+    private fun buildQt(buildDir: File, configureFlags: List<String>) {
         logger.lifecycle("Configuring Qt")
 
         Files.createDirectories(buildDir.toPath())
