@@ -35,6 +35,8 @@ val cmakeVersion = if (useCmakeFromPath) {
 }
 
 android {
+    namespace = "org.equeim.libtremotesf"
+
     defaultConfig.externalNativeBuild.cmake.arguments(
         "-DANDROID_STL=c++_shared",
         "-DANDROID_ARM_NEON=true",
@@ -43,8 +45,6 @@ android {
         // Fix CMake forcing gold linker
         "-DCMAKE_ANDROID_NDK_VERSION=${libs.versions.sdk.ndk.get().splitToSequence('.').first()}"
     )
-
-    buildFeatures.buildConfig = false
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")

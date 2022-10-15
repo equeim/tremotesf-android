@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.tremotesf)
 }
 
-android.buildFeatures.buildConfig = false
+android.namespace = "org.equeim.tremotesf.common"
 
 dependencies {
     api(libs.coroutines.core)
