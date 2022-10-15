@@ -97,7 +97,7 @@ abstract class QtTask : DefaultTask() {
         val hostQtInfo = getHostQtInfo()
 
         for (abi in NativeAbis.abis) {
-            buildQt(abi, hostQtInfo)
+            buildAndroidQt(abi, hostQtInfo)
         }
 
         if (ccache.get()) {
@@ -179,139 +179,174 @@ abstract class QtTask : DefaultTask() {
         return HostQtInfo(hostPrefix, "${hostLibs}/cmake")
     }
 
+    private fun commonConfigureFlags(): List<String> = listOf(
+        "-release",
+        if (ccache.get()) "-ccache" else "-no-ccache",
+        // Precompiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
+        if (ccache.get()) "-no-pch" else "-pch",
+        "-nomake", "examples"
+    )
+
+    private val commonDisabledFeatures = listOf(
+        "dbus",
+        "gui",
+        "sql",
+        "testlib",
+        "xml",
+
+        "androiddeployqt",
+        "animation",
+        "backtrace",
+        // Broken
+        //"cborstreamreader",
+        "cborstreamwriter",
+        "clock-gettime",
+        "clock-monotonic",
+        "concatenatetablesproxymodel",
+        // Broken
+        //"datestring",
+        "datetimeparser",
+        "easingcurve",
+        "filesystemiterator",
+        "filesystemwatcher",
+        "gestures",
+        "glib",
+        "hijricalendar",
+        "icu",
+        "identityproxymodel",
+        "inotify",
+        "islamiccivilcalendar",
+        "itemmodel",
+        "jalalicalendar",
+        "journald",
+        "library",
+        "macdeployqt",
+        "mimetype-database",
+        "mimetype",
+        "processenvironment",
+        "process",
+        "proxymodel",
+        "qmake",
+        // Broken
+        //"regularexpression",
+        "settings",
+        "sharedmemory",
+        "shortcut",
+        "slog2",
+        "sortfilterproxymodel",
+        "stringlistmodel",
+        "syslog",
+        "systemsemaphore",
+        "temporaryfile",
+        // Broken
+        //"textdate",
+        "timezone",
+        "translation",
+        "transposeproxymodel",
+        "windeployqt"
+    )
+
+    @Suppress("OPT_IN_IS_NOT_ENABLED")
+    @OptIn(ExperimentalStdlibApi::class)
+    private val hostDisabledFeatures = buildList {
+        addAll(commonDisabledFeatures)
+        addAll(
+            listOf(
+                "concurrent",
+                "network"
+            )
+        )
+    }
+
+    @Suppress("OPT_IN_IS_NOT_ENABLED")
+    @OptIn(ExperimentalStdlibApi::class)
+    private val androidDisabledFeatures = buildList {
+        addAll(commonDisabledFeatures)
+        addAll(
+            listOf(
+                "commandlineparser",
+                "xmlstream",
+
+                "dnslookup",
+                "dtls",
+                "gssapi",
+                "libproxy",
+                "localserver",
+                "networkdiskcache",
+                "networklistmanager",
+                "publicsuffix-system",
+                "sctp",
+                "sspi",
+                "system-proxies",
+                "topleveldomain",
+                "udpsocket",
+            )
+        )
+    }
+
+    private fun List<String>.toDisabledFeatures(): List<String> = map { "-no-feature-$it" }
+
+    private val commonCMakeOptions = listOf(
+        "--log-level=STATUS",
+        "-G", "Ninja",
+    )
+
     private fun buildHostQt() {
         logger.lifecycle("===> Building host Qt")
 
         val buildDir = hostBuildDir(rootDir.get())
 
-        val configureFlags = listOf(
-            "-release",
-
-            "-prefix", hostInstallDir(rootDir.get()).toString(),
-
-            if (ccache.get()) "-ccache" else "-no-ccache",
-            // Precompiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
-            if (ccache.get()) "-no-pch" else "-pch",
-
-            "-nomake", "examples",
-
-            "-no-feature-concurrent",
-            "-no-feature-dbus",
-            "-no-feature-gui",
-            "-no-feature-network",
-            "-no-feature-sql",
-            "-no-feature-testlib",
-
-            "-no-feature-animation",
-            "-no-feature-cborstreamwriter",
-            "-no-feature-concatenatetablesproxymodel",
-            "-no-feature-datetimeparser",
-            "-no-feature-easingcurve",
-            "-no-feature-filesystemiterator",
-            "-no-feature-filesystemwatcher",
-            "-no-feature-gestures",
-            "-no-feature-hijricalendar",
-            "-no-feature-identityproxymodel",
-            "-no-feature-islamiccivilcalendar",
-            "-no-feature-jalalicalendar",
-            "-no-feature-mimetype",
-            "-no-feature-process",
-            "-no-feature-processenvironment",
-            "-no-feature-proxymodel",
-            "-no-feature-relocatable",
-            "-no-feature-sharedmemory",
-            "-no-feature-shortcut",
-            "-no-feature-sortfilterproxymodel",
-            "-no-feature-stringlistmodel",
-            "-no-feature-systemsemaphore",
-            "-no-feature-temporaryfile",
-            "-no-feature-translation",
-            "-no-feature-transposeproxymodel",
-            "--", "-G", "Ninja"
-        ) + hostQtCmakeFlags.get()
+        @Suppress("OPT_IN_IS_NOT_ENABLED")
+        @OptIn(ExperimentalStdlibApi::class)
+        val configureFlags = buildList {
+            addAll(commonConfigureFlags())
+            add("-prefix")
+            add(hostInstallDir(rootDir.get()).toString())
+            addAll(hostDisabledFeatures.toDisabledFeatures())
+            add("--")
+            addAll(commonCMakeOptions)
+            addAll(hostQtCmakeFlags.get())
+        }
 
         buildQt(buildDir, configureFlags, false)
     }
 
-    private fun buildQt(abi: String, hostQtInfo: HostQtInfo) {
+    private fun buildAndroidQt(abi: String, hostQtInfo: HostQtInfo) {
         logger.lifecycle("===> Building Qt for abi = {}", abi)
 
         val buildDir = buildDir(rootDir.get(), abi)
 
-        val configureFlags = listOf(
-            "-release",
-
-            "-prefix", installDir(rootDir.get(), abi).toString(),
-
-            "-platform", "android-clang",
-            "-android-sdk", sdkDir.get().toString(),
-            "-android-ndk", ndkDir.get().toString(),
-            "-android-ndk-platform", "android-${minSdkVersion.get()}",
-            "-android-abis", abi,
-
-            if (ccache.get()) "-ccache" else "-no-ccache",
-            // Precombiled headers cause a lot of cache misses even with right CCACHE_SLOPPINESS values
-            if (ccache.get()) "-no-pch" else "-pch",
-            // Ccache can't cache when linking and with LTCG/LTO a lot of time-consuming operations happen there,
-            // which makes ccache not very effective. Just disable LTCG
-            if (ccache.get()) "-no-ltcg" else "-ltcg",
-
-            "-nomake", "examples",
-
-            "-no-feature-dbus",
-            "-no-feature-gui",
-            "-no-feature-sql",
-            "-no-feature-testlib",
-            "-no-feature-xml",
-
-            "-no-feature-animation",
-            "-no-feature-cborstreamwriter",
-            "-no-feature-commandlineparser",
-            "-no-feature-concatenatetablesproxymodel",
-            "-no-feature-datetimeparser",
-            "-no-feature-dnslookup",
-            "-no-feature-dtls",
-            "-no-feature-easingcurve",
-            "-no-feature-filesystemiterator",
-            "-no-feature-filesystemwatcher",
-            "-no-feature-gestures",
-            "-no-feature-gssapi",
-            "-no-feature-hijricalendar",
-            "-no-feature-identityproxymodel",
-            "-no-feature-islamiccivilcalendar",
-            "-no-feature-jalalicalendar",
-            "-no-feature-localserver",
-            "-no-feature-mimetype",
-            "-no-feature-networkdiskcache",
-            "-no-feature-process",
-            "-no-feature-processenvironment",
-            "-no-feature-proxymodel",
-            "-no-feature-relocatable",
-            // Broken in 6.4.0
-            //"-no-feature-settings",
-            "-no-feature-sharedmemory",
-            "-no-feature-shortcut",
-            "-no-feature-sortfilterproxymodel",
-            "-no-feature-sspi",
-            "-no-feature-stringlistmodel",
-            "-no-feature-systemsemaphore",
-            "-no-feature-temporaryfile",
-            "-no-feature-topleveldomain",
-            "-no-feature-translation",
-            "-no-feature-transposeproxymodel",
-            "-no-feature-udpsocket",
-            "-no-feature-xmlstream",
-            "-no-feature-xmlstreamreader",
-            "-no-feature-xmlstreamwriter",
-            "-openssl-linked",
-            "--",
-            "-G", "Ninja",
-            "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
-            "-DQT_HOST_PATH=${hostQtInfo.prefix}",
-            "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}",
-            // Fix CMake forcing gold linker
-            "-DCMAKE_ANDROID_NDK_VERSION=${ndkVersion.get().splitToSequence('.').first()}"
-        )
+        @Suppress("OPT_IN_IS_NOT_ENABLED")
+        @OptIn(ExperimentalStdlibApi::class)
+        val configureFlags = buildList {
+            addAll(commonConfigureFlags())
+            addAll(
+                listOf(
+                    "-prefix", installDir(rootDir.get(), abi).toString(),
+                    "-platform", "android-clang",
+                    "-android-sdk", sdkDir.get().toString(),
+                    "-android-ndk", ndkDir.get().toString(),
+                    "-android-ndk-platform", "android-${minSdkVersion.get()}",
+                    "-android-abis", abi,
+                    // Ccache can't cache when linking and with LTCG/LTO a lot of time-consuming operations happen there,
+                    // which makes ccache not very effective. Just disable LTCG
+                    if (ccache.get()) "-no-ltcg" else "-ltcg",
+                    "-openssl-linked"
+                )
+            )
+            addAll(androidDisabledFeatures.toDisabledFeatures())
+            add("--")
+            addAll(commonCMakeOptions)
+            addAll(
+                listOf(
+                    "-DCMAKE_FIND_ROOT_PATH=${opensslInstallDirs.get()[NativeAbis.abis.indexOf(abi)]}",
+                    "-DQT_HOST_PATH=${hostQtInfo.prefix}",
+                    "-DQT_HOST_PATH_CMAKE_DIR=${hostQtInfo.cmakeDir}",
+                    // Fix CMake forcing gold linker
+                    "-DCMAKE_ANDROID_NDK_VERSION=${ndkVersion.get().splitToSequence('.').first()}"
+                )
+            )
+        }
 
         buildQt(buildDir, configureFlags, true)
     }
@@ -324,7 +359,10 @@ abstract class QtTask : DefaultTask() {
         executeCommand(
             listOf(sourceDir.get().resolve("configure").toString()) + configureFlags,
             logger,
-            outputMode = ExecOutputMode.RedirectOutputToFile(buildDir.resolve(CONFIGURE_LOG_FILE), printBuildLogOnError.get())
+            outputMode = ExecOutputMode.RedirectOutputToFile(
+                buildDir.resolve(CONFIGURE_LOG_FILE),
+                printBuildLogOnError.get()
+            )
         ) {
             directory(buildDir)
             cmakeBinaryDir.orNull?.let { prependPath(it) }
@@ -348,7 +386,6 @@ abstract class QtTask : DefaultTask() {
             )
         }
 
-
         executeCMake(
             CMakeMode.Build,
             printBuildLogOnError.get(),
@@ -361,7 +398,14 @@ abstract class QtTask : DefaultTask() {
         }
 
         logger.lifecycle("Installing Qt")
-        executeCMake(CMakeMode.Install, printBuildLogOnError.get(), cmakeBinaryDir.orNull, buildDir, logger, gradle)
+        executeCMake(
+            CMakeMode.Install,
+            printBuildLogOnError.get(),
+            cmakeBinaryDir.orNull,
+            buildDir,
+            logger,
+            gradle
+        )
             .also {
                 logger.lifecycle(
                     "Installation finished, elapsed time = {}",
@@ -384,14 +428,21 @@ abstract class QtTask : DefaultTask() {
         private fun hostBuildDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("build-host")
         private fun hostInstallDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("install-host")
 
-        private fun buildDir(rootDir: File, abi: String) = rootDir.resolve(QT_DIR).resolve("build-$abi")
+        private fun buildDir(rootDir: File, abi: String) =
+            rootDir.resolve(QT_DIR).resolve("build-$abi")
+
         private fun buildDirs(rootDir: File) = NativeAbis.abis.map { buildDir(rootDir, it) }
 
-        private fun installDir(rootDir: File, abi: String) = rootDir.resolve(QT_DIR).resolve("install-$abi")
+        private fun installDir(rootDir: File, abi: String) =
+            rootDir.resolve(QT_DIR).resolve("install-$abi")
+
         private fun installDirs(rootDir: File) = NativeAbis.abis.map { installDir(rootDir, it) }
 
         fun dirsToClean(rootDir: File) =
-            listOf(hostBuildDir(rootDir), hostInstallDir(rootDir)) + buildDirs(rootDir) + installDirs(rootDir)
+            listOf(
+                hostBuildDir(rootDir),
+                hostInstallDir(rootDir)
+            ) + buildDirs(rootDir) + installDirs(rootDir)
 
         fun jar(rootDir: File) =
             installDir(rootDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
