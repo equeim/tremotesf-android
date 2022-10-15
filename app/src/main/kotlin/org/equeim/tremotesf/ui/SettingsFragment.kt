@@ -19,11 +19,14 @@
 
 package org.equeim.tremotesf.ui
 
+import android.Manifest
+import android.app.Application
 import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
@@ -31,23 +34,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Checkable
 import android.widget.LinearLayout
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.AttrRes
-import androidx.annotation.Keep
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatCheckedTextView
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.CheckBoxPreference
-import androidx.preference.DialogPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.updateCompoundDrawables
 import kotlin.collections.set
 
@@ -56,9 +61,18 @@ class SettingsFragment : NavigationFragment(
     R.layout.settings_fragment,
     R.string.settings
 ) {
-    @Keep
     class PreferenceFragment : PreferenceFragmentCompat(),
         SharedPreferences.OnSharedPreferenceChangeListener {
+
+        private val model: PreferenceFragmentViewModel by viewModels()
+        private var notificationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            // super.onCreate() calls onCreatePreferences() so we need to setup launcher before that
+            notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this, requireParentFragment())
+            model.notificationPermissionHelper?.checkPermission(requireContext())
+            super.onCreate(savedInstanceState)
+        }
 
         override fun onDisplayPreferenceDialog(preference: Preference) {
             if (preference is SettingsAppColorsPreference) {
@@ -68,6 +82,11 @@ class SettingsFragment : NavigationFragment(
             }
         }
 
+        override fun onStart() {
+            super.onStart()
+            model.notificationPermissionHelper?.checkPermission(requireContext())
+        }
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
             updateBackgroundUpdatePreference()
@@ -75,12 +94,28 @@ class SettingsFragment : NavigationFragment(
             checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(
                 this
             )
+
             findPreference<Preference>(Settings.showPersistentNotification.key)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
                     false
                 } else {
                     true
+                }
+            }
+
+            findPreference<NotificationPermissionPreference>(getText(R.string.notification_permission_key))?.let { preference ->
+                val helper = model.notificationPermissionHelper
+                val launcher = notificationPermissionLauncher
+                if (helper != null && launcher != null) {
+                    helper.permissionGranted.onEach {
+                        preference.isVisible = !it
+                    }.launchIn(lifecycleScope)
+                    preference.onButtonClicked = {
+                        helper.requestPermission(this, launcher, requireParentFragment())
+                    }
+                } else {
+                    preference.isVisible = false
                 }
             }
 
@@ -124,6 +159,17 @@ class SettingsFragment : NavigationFragment(
     }
 }
 
+class PreferenceFragmentViewModel(application: Application) : AndroidViewModel(application) {
+    val notificationPermissionHelper = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RuntimePermissionHelper(
+            Manifest.permission.POST_NOTIFICATIONS,
+            R.string.notification_permission_rationale
+        )
+    } else {
+        null
+    }
+}
+
 class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireContext())
@@ -137,6 +183,24 @@ class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment()
 
     companion object {
         val RESULT_KEY = SettingsPersistentNotificationWarningFragment::class.qualifiedName!!
+    }
+}
+
+class NotificationPermissionPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
+    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference
+) : Preference(context, attrs, defStyleAttr, defStyleRes) {
+    var onButtonClicked: (() -> Unit)? = null
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        holder.itemView.apply {
+            isClickable = false
+            isFocusable = false
+        }
+        holder.findViewById(R.id.button).setOnClickListener { onButtonClicked?.invoke() }
     }
 }
 

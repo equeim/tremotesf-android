@@ -30,7 +30,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
-import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
@@ -197,7 +196,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     }
 }
 
-@Keep
 class NavHostFragment : NavHostFragment() {
     override fun onCreateNavHostController(navHostController: NavHostController) {
         super.onCreateNavHostController(navHostController)
