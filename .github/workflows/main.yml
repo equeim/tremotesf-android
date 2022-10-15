@@ -56,7 +56,7 @@ jobs:
 
       - name: Log in to the container registry
         if: steps.enable.outputs.enabled == 'true'
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ github.actor }}
@@ -65,14 +65,14 @@ jobs:
       - name: Extract metadata (tags, labels) for container image
         id: meta
         if: steps.enable.outputs.enabled == 'true'
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.CONTAINER_IMAGE }}
           tags: ${{ github.event_name == 'pull_request' && 'type=ref,event=pr' || 'type=raw,value=latest' }}
 
       - name: Create build environment container image
         if: steps.enable.outputs.enabled == 'true'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: .github/workflows/Dockerfile
