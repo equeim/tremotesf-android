@@ -9,7 +9,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.*
 import java.io.File
-import java.lang.module.ModuleDescriptor
 import java.nio.file.Files
 import javax.inject.Inject
 
@@ -372,20 +371,6 @@ abstract class QtTask : DefaultTask() {
 
         logger.lifecycle("Building Qt")
 
-        if (needLinkerWorkaround(crossCompiling)) {
-            // Workaround for CMake bug that forces use of gold linker when LTCG is enabled
-            // https://gitlab.kitware.com/cmake/cmake/-/issues/21772
-            // https://github.com/android/ndk/issues/1444
-            executeCommand(
-                listOf(
-                    "sed",
-                    "-i",
-                    "s/-fuse-ld=gold//g",
-                    buildDir.resolve("build.ninja").toString()
-                ), logger
-            )
-        }
-
         executeCMake(
             CMakeMode.Build,
             printBuildLogOnError.get(),
@@ -414,13 +399,6 @@ abstract class QtTask : DefaultTask() {
             }
     }
 
-    private fun needLinkerWorkaround(crossCompiling: Boolean): Boolean {
-        if (!crossCompiling) return false
-        val cmakeVersion = runCatching { ModuleDescriptor.Version.parse(cmakeVersion.get()) }
-            .getOrNull() ?: return true
-        return cmakeVersion < ModuleDescriptor.Version.parse(CMAKE_VERSION_WITHOUT_LINKER_BUG)
-    }
-
     companion object {
         fun sourceDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("qtbase")
         fun patchesDir(rootDir: File) = rootDir.resolve(QT_DIR).resolve("patches")
@@ -446,7 +424,5 @@ abstract class QtTask : DefaultTask() {
 
         fun jar(rootDir: File) =
             installDir(rootDir, NativeAbis.abis.first()).resolve("jar/Qt6Android.jar")
-
-        private const val CMAKE_VERSION_WITHOUT_LINKER_BUG = "3.20.0"
     }
 }
