@@ -35,6 +35,7 @@ import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.utils.SavedStateFlowHolder
 import org.equeim.tremotesf.ui.utils.savedStateFlow
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
@@ -107,22 +108,22 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }
 
-    val sortMode = Settings.torrentsSortMode.flow()
+    val sortMode: Flow<SortMode> = Settings.torrentsSortMode.flow()
     fun setSortMode(mode: SortMode) = Settings.torrentsSortMode.setAsync(mode)
-    val sortOrder = Settings.torrentsSortOrder.flow()
+    val sortOrder: Flow<SortOrder> = Settings.torrentsSortOrder.flow()
     fun setSortOrder(order: SortOrder) = Settings.torrentsSortOrder.setAsync(order)
-    val statusFilterMode = Settings.torrentsStatusFilter.flow()
+    val statusFilterMode: Flow<StatusFilterMode> = Settings.torrentsStatusFilter.flow()
     fun setStatusFilterMode(mode: StatusFilterMode) = Settings.torrentsStatusFilter.setAsync(mode)
-    val trackerFilter = Settings.torrentsTrackerFilter.flow()
+    val trackerFilter: Flow<String> = Settings.torrentsTrackerFilter.flow()
     fun setTrackerFilter(filter: String) = Settings.torrentsTrackerFilter.setAsync(filter)
-    val directoryFilter = Settings.torrentsDirectoryFilter.flow()
+    val directoryFilter: Flow<String> = Settings.torrentsDirectoryFilter.flow()
     fun setDirectoryFilter(filter: String) = Settings.torrentsDirectoryFilter.setAsync(filter)
 
     private fun <T : Any> Settings.MutableProperty<T>.setAsync(value: T) {
         viewModelScope.launch { set(value) }
     }
 
-    val nameFilter by savedStateFlow(savedStateHandle) { "" }
+    val nameFilter: SavedStateFlowHolder<String> by savedStateFlow(savedStateHandle, "")
 
     fun resetSortAndFilters() {
         setSortMode(SortMode.DEFAULT)
@@ -152,7 +153,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         statusFilterMode,
         trackerFilter,
         directoryFilter,
-        nameFilter
+        nameFilter.flow()
     ) { torrents, status, tracker, directory, name ->
         torrents.asSequence().filter(createFilterPredicate(status, tracker, directory, name))
     }
@@ -167,9 +168,9 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
-    val searchViewIsIconified by savedStateFlow(savedStateHandle) { true }
+    val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
 
-    val showAddTorrentButton = combine(GlobalRpc.isConnected, searchViewIsIconified, Boolean::and)
+    val showAddTorrentButton = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and)
 
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
     private val hasServers = GlobalServers.servers.map { it.isNotEmpty() }
