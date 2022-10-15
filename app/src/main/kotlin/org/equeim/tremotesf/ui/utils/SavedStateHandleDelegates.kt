@@ -20,99 +20,88 @@
 package org.equeim.tremotesf.ui.utils
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-@Suppress("unused")
-fun <T : Any> ViewModel.savedState(
+fun <T> savedState(
     savedStateHandle: SavedStateHandle,
     initialValueProducer: () -> T
 ): ReadWriteProperty<ViewModel, T> =
-    ViewModelSavedStateProperty(savedStateHandle, initialValueProducer)
+    SavedStateProperty(savedStateHandle, initialValueProducer)
 
-@Suppress("unused")
-fun <T : Any> ViewModel.savedState(
+fun <T> savedState(
     savedStateHandle: SavedStateHandle,
     initialValue: T
 ): ReadWriteProperty<ViewModel, T> = savedState(savedStateHandle) { initialValue }
 
-private class ViewModelSavedStateProperty<T : Any>(
+private class SavedStateProperty<T>(
     private val savedStateHandle: SavedStateHandle,
     private val initialValueProducer: () -> T,
-) : BaseViewModelSavedStateProperty(), ReadWriteProperty<ViewModel, T> {
-    private lateinit var value: T
+) : ReadWriteProperty<ViewModel, T> {
+    private lateinit var key: String
+
+    private fun getKey(property: KProperty<*>): String {
+        if (!::key.isInitialized) {
+            key = property.savedStateKey
+        }
+        return key
+    }
 
     override fun setValue(thisRef: ViewModel, property: KProperty<*>, value: T) {
-        this.value = value
         savedStateHandle[getKey(property)] = value
     }
 
     override fun getValue(thisRef: ViewModel, property: KProperty<*>): T {
-        if (!::value.isInitialized) {
-            val key = getKey(property)
-            value = savedStateHandle[key]
-                ?: initialValueProducer().also { savedStateHandle[key] = it }
+        val key = getKey(property)
+        return if (savedStateHandle.contains(key)) {
+            @Suppress("UNCHECKED_CAST", "RemoveExplicitTypeArguments")
+            savedStateHandle.get<T>(key) as T
+        } else {
+            initialValueProducer().also {
+                savedStateHandle[key] = it
+            }
         }
-        return value
     }
 }
 
-@Suppress("unused")
-fun <T : Any> ViewModel.savedStateFlow(
+fun <T> savedStateFlow(
     savedStateHandle: SavedStateHandle,
     initialValueProducer: () -> T
-): ReadOnlyProperty<ViewModel, MutableStateFlow<T>> =
-    ViewModelSavedStatePropertyFlow(savedStateHandle, initialValueProducer)
+): ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> =
+    SavedStateFlowProperty(savedStateHandle, initialValueProducer)
 
-private class ViewModelSavedStatePropertyFlow<T : Any>(
+fun <T> savedStateFlow(
+    savedStateHandle: SavedStateHandle,
+    initialValue: T
+): ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> =
+    savedStateFlow(savedStateHandle) { initialValue }
+
+class SavedStateFlowHolder<T>(
+    private val savedStateHandle: SavedStateHandle,
+    private val key: String,
+    private val initialValueProducer: () -> T
+) {
+    fun flow(): StateFlow<T> = savedStateHandle.getStateFlow(key, initialValueProducer())
+    fun set(value: T) = savedStateHandle.set(key, value)
+}
+
+private class SavedStateFlowProperty<T>(
     private val savedStateHandle: SavedStateHandle,
     private var initialValueProducer: () -> T
-) : BaseViewModelSavedStateProperty(), ReadOnlyProperty<ViewModel, MutableStateFlow<T>> {
+) : ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> {
 
-    private lateinit var flow: MutableStateFlow<T>
+    private lateinit var holder: SavedStateFlowHolder<T>
 
-    override fun getValue(thisRef: ViewModel, property: KProperty<*>): MutableStateFlow<T> {
-        if (!::flow.isInitialized) {
-            flow = savedStateHandle.getLiveData<T>(getKey(property)).apply {
-                if (value == null) {
-                    value = initialValueProducer()
-                }
-            }.asStateFlow(thisRef.viewModelScope)
+    override fun getValue(thisRef: ViewModel, property: KProperty<*>): SavedStateFlowHolder<T> {
+        if (!::holder.isInitialized) {
+            holder =
+                SavedStateFlowHolder(savedStateHandle, property.savedStateKey, initialValueProducer)
         }
-        return flow
+        return holder
     }
 }
 
-private abstract class BaseViewModelSavedStateProperty {
-    private lateinit var key: String
-
-    protected fun getKey(property: KProperty<*>): String {
-        if (!::key.isInitialized) {
-            key = "property_${property.name}"
-        }
-        return key
-    }
-}
-
-private fun <T : Any> MutableLiveData<T>.asStateFlow(scope: CoroutineScope): MutableStateFlow<T> {
-    val flow = MutableStateFlow(requireNotNull(value))
-
-    val observer = Observer<T> { flow.value = it }
-    observeForever(observer)
-
-    scope.launch(Dispatchers.Main.immediate) {
-        flow.onCompletion {
-            removeObserver(observer)
-        }.collect {
-            value = it
-        }
-    }
-
-    return flow
-}
+private val KProperty<*>.savedStateKey: String
+    get() = "property_$name"

@@ -177,7 +177,7 @@ class TorrentsListFragment : NavigationFragment(
             searchView.apply {
                 setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
-                        model.nameFilter.value = newText.trim()
+                        model.nameFilter.set(newText.trim())
                         return true
                     }
 
@@ -187,10 +187,10 @@ class TorrentsListFragment : NavigationFragment(
                 })
 
                 setOnSearchClickListener {
-                    model.searchViewIsIconified.value = false
+                    model.searchViewIsIconified.set(false)
                 }
                 setOnCloseListener {
-                    model.searchViewIsIconified.value = true
+                    model.searchViewIsIconified.set(true)
                     false
                 }
 
@@ -199,7 +199,7 @@ class TorrentsListFragment : NavigationFragment(
                 }
             }
 
-            model.searchViewIsIconified.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            model.searchViewIsIconified.flow().launchAndCollectWhenStarted(viewLifecycleOwner) {
                 transmissionSettings.isVisible = it
                 torrentsFilters.isVisible = it
             }
