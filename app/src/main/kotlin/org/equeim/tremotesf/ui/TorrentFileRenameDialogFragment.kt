@@ -33,6 +33,7 @@ import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
+import org.equeim.tremotesf.ui.utils.parcelable
 
 class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
     private val args: TorrentFileRenameDialogFragmentArgs by navArgs()
@@ -79,7 +80,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
 
         fun setFragmentResultListener(fragment: Fragment, listener: (FileRenameRequest) -> Unit) {
             fragment.setFragmentResultListener(RESULT_KEY) { _, bundle ->
-                bundle.getParcelable<FileRenameRequest>(FILE_RENAME_REQUEST_KEY)?.let(listener)
+                bundle.parcelable<FileRenameRequest>(FILE_RENAME_REQUEST_KEY)?.let(listener)
             }
         }
     }

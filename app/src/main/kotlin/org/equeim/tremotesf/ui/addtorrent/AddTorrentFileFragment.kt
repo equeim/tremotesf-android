@@ -252,7 +252,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             )
             infoFragment.directoriesAdapter?.save()
             done = true
-            activity?.onBackPressed()
+            requiredActivity.onBackPressedDispatcher.onBackPressed()
         }
     }
 

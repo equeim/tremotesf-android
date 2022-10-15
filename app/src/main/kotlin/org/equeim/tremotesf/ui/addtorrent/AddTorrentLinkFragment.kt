@@ -129,7 +129,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
         directoriesAdapter?.save()
 
-        activity?.onBackPressed()
+        requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
 
     private fun updateView(status: Rpc.Status) {

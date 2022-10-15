@@ -24,6 +24,9 @@ import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.view.View
 import android.view.ViewParent
@@ -130,3 +133,10 @@ val EditText.textInputLayout: TextInputLayout
         }
         throw IllegalArgumentException("$this is not a child of TextInputLayout")
     }
+
+inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    getParcelable(key, T::class.java)
+} else {
+    @Suppress("DEPRECATION")
+    getParcelable(key)
+}
