@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -88,7 +87,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         val colorTheme = ActivityThemeProvider.colorTheme.value
         if (colorTheme == Settings.ColorTheme.System) {
             Timber.i("Applying dynamic colors")
-            DynamicColors.applyIfAvailable(this@NavigationActivity)
+            DynamicColors.applyToActivityIfAvailable(this@NavigationActivity)
         } else {
             Timber.i("Setting color theme $colorTheme")
             setTheme(colorTheme.activityThemeResId)
