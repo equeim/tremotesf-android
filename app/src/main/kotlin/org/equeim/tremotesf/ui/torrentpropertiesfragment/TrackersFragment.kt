@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
+import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
@@ -64,7 +65,7 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
             })
         }
 
-        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(this)
+        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
         propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 

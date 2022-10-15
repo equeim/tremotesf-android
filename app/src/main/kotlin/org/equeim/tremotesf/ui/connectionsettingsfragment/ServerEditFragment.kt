@@ -41,28 +41,25 @@ import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
@@ -77,13 +74,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            model = ServerEditFragmentViewModel.get(this@ServerEditFragment)
-            requestLocationPermissionLauncher =
-                model.locationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
-            requestBackgroundLocationPermissionLauncher =
-                model.backgroundLocationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
-        }
+        model = ServerEditFragmentViewModel.get(navController)
+        requestLocationPermissionLauncher =
+            model.locationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
+        requestBackgroundLocationPermissionLauncher =
+            model.backgroundLocationPermissionHelper?.registerWithFragment(this@ServerEditFragment)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -326,14 +321,19 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
     companion object {
-        suspend fun get(fragment: Fragment): ServerEditFragmentViewModel {
-            val entry = fragment.navController.getBackStackEntry(R.id.server_edit_fragment)
-            return entry.withCreated {
-                ViewModelProvider(
-                    entry,
-                    fragment.navArgsViewModelFactory(ServerEditFragmentArgs::fromBundle, ::ServerEditFragmentViewModel)
-                )[ServerEditFragmentViewModel::class.java]
+        fun get(navController: NavController): ServerEditFragmentViewModel {
+            val entry = navController.getBackStackEntry(R.id.server_edit_fragment)
+            val factory = viewModelFactory {
+                initializer {
+                    val args = ServerEditFragmentArgs.fromBundle(checkNotNull(entry.arguments))
+                    ServerEditFragmentViewModel(
+                        args,
+                        checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY)),
+                        createSavedStateHandle()
+                    )
+                }
             }
+            return ViewModelProvider(entry, factory)[ServerEditFragmentViewModel::class.java]
         }
 
         private fun requiredLocationPermission(): String? {
@@ -480,9 +480,7 @@ class ServerCertificatesFragment : NavigationFragment(
             if (it != null) handleCertificateResult(it, binding.clientCertificateEdit)
         }
 
-        lifecycleScope.launch {
-            mainModel = ServerEditFragmentViewModel.get(this@ServerCertificatesFragment)
-        }
+        mainModel = ServerEditFragmentViewModel.get(navController)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -572,9 +570,7 @@ class ServerProxySettingsFragment : NavigationFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         proxyTypeItemValues = resources.getStringArray(R.array.proxy_type_items)
-        lifecycleScope.launch {
-            mainModel = ServerEditFragmentViewModel.get(this@ServerProxySettingsFragment)
-        }
+        mainModel = ServerEditFragmentViewModel.get(navController)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

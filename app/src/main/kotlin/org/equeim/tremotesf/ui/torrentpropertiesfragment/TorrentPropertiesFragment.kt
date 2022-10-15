@@ -28,7 +28,10 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
@@ -102,8 +105,10 @@ class TorrentPropertiesFragment : NavigationFragment(
         }.attach()
 
         val torrentFilesModel: TorrentFilesFragmentViewModel by viewModels {
-            savedStateViewModelFactory { _, handle ->
-                TorrentFilesFragmentViewModel(model.torrent, handle)
+            viewModelFactory {
+                initializer {
+                    TorrentFilesFragmentViewModel(model.torrent, createSavedStateHandle())
+                }
             }
         }
         requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
