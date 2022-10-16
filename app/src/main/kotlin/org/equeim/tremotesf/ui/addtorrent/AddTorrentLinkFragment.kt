@@ -26,16 +26,11 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.textInputLayout
-import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
 
@@ -50,11 +45,9 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private val args: AddTorrentLinkFragmentArgs by navArgs()
 
-    private val binding by viewBinding(AddTorrentLinkFragmentBinding::bind)
-
-    private var snackbar: Snackbar? = null
-
-    private var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
+    private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
+    private var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
+    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,13 +78,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        directoriesAdapter?.saveInstanceState(outState)
-    }
-
-    override fun onDestroyView() {
-        snackbar = null
-        directoriesAdapter = null
-        super.onDestroyView()
+        directoriesAdapter.saveInstanceState(outState)
     }
 
     private fun addTorrentLink(): Unit = with(binding) {

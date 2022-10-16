@@ -21,45 +21,39 @@ package org.equeim.tremotesf.ui.connectionsettingsfragment
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import org.equeim.tremotesf.ui.utils.safeNavigate
-import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import java.util.Comparator
+import org.equeim.tremotesf.ui.utils.safeNavigate
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class ConnectionSettingsFragment : NavigationFragment(
     R.layout.connection_settings_fragment,
     R.string.connection_settings
 ) {
-    private val binding by viewBinding(ConnectionSettingsFragmentBinding::bind)
-    var adapter: ServersAdapter? = null
-        private set
+    private val binding by viewLifecycleObject(ConnectionSettingsFragmentBinding::bind)
+    val adapter by viewLifecycleObject { ServersAdapter(this) }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-
-        val adapter = ServersAdapter(this)
-        this.adapter = adapter
 
         with(binding) {
             serversView.adapter = adapter
@@ -76,8 +70,8 @@ class ConnectionSettingsFragment : NavigationFragment(
     }
 
     fun update(servers: List<Server>) {
-        adapter?.update(servers)
-        binding.placeholder.visibility = if (adapter?.itemCount == 0) {
+        adapter.update(servers)
+        binding.placeholder.visibility = if (adapter.itemCount == 0) {
             View.VISIBLE
         } else {
             View.GONE

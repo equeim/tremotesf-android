@@ -17,17 +17,16 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 private const val RESET_BUTTON_HIDE_DELAY_MS = 100L
 
 class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layout.torrents_filters_dialog_fragment) {
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
-    private val binding by viewBinding(TorrentsFiltersDialogFragmentBinding::bind)
+    private val binding by viewLifecycleObject(TorrentsFiltersDialogFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-
         with (binding) {
             sortView.apply {
                 setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))

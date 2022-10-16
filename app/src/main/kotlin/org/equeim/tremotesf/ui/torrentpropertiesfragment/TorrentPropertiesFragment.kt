@@ -20,7 +20,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
@@ -45,11 +44,11 @@ import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
@@ -64,13 +63,10 @@ class TorrentPropertiesFragment : NavigationFragment(
     R.menu.torrent_properties_fragment_menu
 ) {
     private val args: TorrentPropertiesFragmentArgs by navArgs()
-
     private val model by TorrentPropertiesFragmentViewModel.lazy(this)
 
-    private var menu: Menu? = null
-    val binding by viewBinding(TorrentPropertiesFragmentBinding::bind)
-    private var pagerAdapter: PagerAdapter? = null
-    private var snackbar: Snackbar? = null
+    val binding by viewLifecycleObject(TorrentPropertiesFragmentBinding::bind)
+    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,27 +75,22 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        toolbar?.let { toolbar ->
-            toolbar.title = args.name
-            menu = toolbar.menu
+        toolbar.title = args.name
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                if (Settings.quickReturn.get()) {
-                    toolbar.setOnClickListener {
-                        val tab = PagerAdapter.tabs[binding.pager.currentItem]
-                        childFragmentManager.fragments
-                            .asSequence()
-                            .filterIsInstance<PagerFragment>()
-                            .find { it.tab == tab }
-                            ?.onToolbarClicked()
-                    }
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (Settings.quickReturn.get()) {
+                toolbar.setOnClickListener {
+                    val tab = PagerAdapter.tabs[binding.pager.currentItem]
+                    childFragmentManager.fragments
+                        .asSequence()
+                        .filterIsInstance<PagerFragment>()
+                        .find { it.tab == tab }
+                        ?.onToolbarClicked()
                 }
             }
         }
 
-        val pagerAdapter = PagerAdapter(this)
-        this.pagerAdapter = pagerAdapter
-        binding.pager.adapter = pagerAdapter
+        binding.pager.adapter = PagerAdapter(this)
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
@@ -160,13 +151,6 @@ class TorrentPropertiesFragment : NavigationFragment(
                 model.rememberedPagerItem = currentItem
             }
         }
-    }
-
-    override fun onDestroyView() {
-        menu = null
-        pagerAdapter = null
-        snackbar = null
-        super.onDestroyView()
     }
 
     override fun onNavigatedFrom(newDestination: NavDestination) {
@@ -286,14 +270,14 @@ class TorrentPropertiesFragment : NavigationFragment(
     private fun onTorrentChanged(torrent: Torrent?) {
         updateMenu(torrent)
         if (torrent != null) {
-            toolbar?.title = torrent.name
+            toolbar.title = torrent.name
         }
     }
 
     private fun updateMenu(torrent: Torrent?) {
-        val menu = this.menu ?: return
+        val menu = toolbar.menu
         if (torrent == null) {
-            toolbar?.hideOverflowMenu()
+            toolbar.hideOverflowMenu()
             menu.setGroupVisible(0, false)
         } else {
             menu.setGroupVisible(0, true)

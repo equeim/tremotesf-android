@@ -70,7 +70,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
     private var requestLocationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
     private var requestBackgroundLocationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
 
-    private val binding by viewBinding(ServerEditFragmentBinding::bind)
+    private val binding by viewLifecycleObject(ServerEditFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -449,7 +449,7 @@ class ServerCertificatesFragment : NavigationFragment(
 
     private lateinit var mainModel: ServerEditFragmentViewModel
 
-    private val binding by viewBinding(ServerEditCertificatesFragmentBinding::bind)
+    private val binding by viewLifecycleObject(ServerEditCertificatesFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -565,7 +565,7 @@ class ServerProxySettingsFragment : NavigationFragment(
     private lateinit var mainModel: ServerEditFragmentViewModel
     private lateinit var proxyTypeItemValues: Array<String>
 
-    private val binding by viewBinding(ServerEditProxyFragmentBinding::bind)
+    private val binding by viewLifecycleObject(ServerEditProxyFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

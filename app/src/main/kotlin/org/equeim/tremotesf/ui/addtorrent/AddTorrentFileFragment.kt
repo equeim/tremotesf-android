@@ -24,7 +24,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.core.text.trimmedLength
 import androidx.core.widget.doAfterTextChanged
@@ -49,19 +48,10 @@ import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
-import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
-import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
-import org.equeim.tremotesf.databinding.DownloadDirectoryEditBinding
-import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
+import org.equeim.tremotesf.databinding.*
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString
-import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
-import org.equeim.tremotesf.ui.NavigationActivity
-import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
+import org.equeim.tremotesf.ui.*
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
@@ -151,11 +141,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
     }
 
-    private val binding by viewBinding(AddTorrentFileFragmentBinding::bind)
-
-    private var pagerAdapter: PagerAdapter? = null
-    private var backPressedCallback: OnBackPressedCallback? = null
-    private var snackbar: Snackbar? = null
+    private val binding by viewLifecycleObject(AddTorrentFileFragmentBinding::bind)
+    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
 
     private var done = false
 
@@ -183,9 +170,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        val pagerAdapter = PagerAdapter(this)
-        this.pagerAdapter = pagerAdapter
-        binding.pager.adapter = pagerAdapter
+        binding.pager.adapter = PagerAdapter(this)
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
@@ -212,7 +197,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
         viewLifecycleOwner.lifecycleScope.launch {
             if (Settings.quickReturn.get()) {
-                toolbar?.setOnClickListener {
+                toolbar.setOnClickListener {
                     Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.tabs[binding.pager.currentItem]}")
                     if (PagerAdapter.tabs[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
                         childFragmentManager.fragments
@@ -245,13 +230,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
     }
 
-    override fun onDestroyView() {
-        pagerAdapter = null
-        backPressedCallback = null
-        snackbar = null
-        super.onDestroyView()
-    }
-
     private fun addTorrentFile() {
         val infoFragment = findFragment<InfoFragment>()
         if (infoFragment?.check() == true) {
@@ -266,7 +244,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())].swigValue(),
                 infoFragment.binding.startDownloadingCheckBox.isChecked
             )
-            infoFragment.directoriesAdapter?.save()
+            infoFragment.directoriesAdapter.save()
             done = true
             requiredActivity.onBackPressedDispatcher.onBackPressed()
         }
@@ -277,7 +255,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
         with(binding) {
             if (rpcStatus.isConnected && parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
-                this@AddTorrentFileFragment.toolbar?.apply {
+                this@AddTorrentFileFragment.toolbar.apply {
                     (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
@@ -323,7 +301,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
                 addButton.hide()
 
-                this@AddTorrentFileFragment.toolbar?.apply {
+                this@AddTorrentFileFragment.toolbar.apply {
                     (layoutParams as AppBarLayout.LayoutParams).scrollFlags = 0
                     subtitle = null
                 }
@@ -347,6 +325,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                         }
                     } else {
                         snackbar?.dismiss()
+                        snackbar = null
                     }
                 }
             }
@@ -382,8 +361,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
     }
 
     class InfoFragment : Fragment(R.layout.add_torrent_file_info_fragment) {
-        val binding by viewBinding(AddTorrentFileInfoFragmentBinding::bind)
-        var directoriesAdapter: AddTorrentDirectoriesAdapter? = null
+        val binding by viewLifecycleObject(AddTorrentFileInfoFragmentBinding::bind)
+        var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
 
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
@@ -405,7 +384,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }
 
         override fun onSaveInstanceState(outState: Bundle) {
-            directoriesAdapter?.saveInstanceState(outState)
+            directoriesAdapter.saveInstanceState(outState)
         }
 
         fun check(): Boolean {
@@ -428,37 +407,28 @@ class AddTorrentFileFragment : AddTorrentFragment(
         private val mainFragment: AddTorrentFileFragment
             get() = requireParentFragment() as AddTorrentFileFragment
 
-        private val binding by viewBinding(AddTorrentFileFilesFragmentBinding::bind)
-        var adapter: Adapter? = null
-            private set
+        private val binding by viewLifecycleObject(AddTorrentFileFilesFragmentBinding::bind)
+        val adapter: Adapter by viewLifecycleObject {
+            Adapter(mainFragment.model, this, requireActivity() as NavigationActivity)
+        }
 
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
 
-            val model = mainFragment.model
-
-            val adapter = Adapter(model, this, requireActivity() as NavigationActivity)
-            this.adapter = adapter
-
             binding.filesView.apply {
-                this.adapter = adapter
+                adapter = this@FilesFragment.adapter
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
+            mainFragment.model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
 
             addNavigationBarBottomPadding()
         }
 
         fun onToolbarClicked() {
             binding.filesView.scrollToPosition(0)
-        }
-
-        override fun onDestroyView() {
-            adapter = null
-            super.onDestroyView()
         }
 
         class Adapter(

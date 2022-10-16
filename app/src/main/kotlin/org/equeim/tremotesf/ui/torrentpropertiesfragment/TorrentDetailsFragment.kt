@@ -25,7 +25,10 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class TorrentDetailsFragment :
@@ -33,7 +36,7 @@ class TorrentDetailsFragment :
 
     private var firstUpdate = true
 
-    private val binding by viewBinding(TorrentDetailsFragmentBinding::bind)
+    private val binding by viewLifecycleObject(TorrentDetailsFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)

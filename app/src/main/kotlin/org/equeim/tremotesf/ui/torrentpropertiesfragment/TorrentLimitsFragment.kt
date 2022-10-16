@@ -22,8 +22,8 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 import android.os.Bundle
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 
@@ -68,7 +68,7 @@ class TorrentLimitsFragment :
 
     private lateinit var doubleFilter: DoubleFilter
 
-    private val binding by viewBinding(TorrentLimitsFragmentBinding::bind)
+    private val binding by viewLifecycleObject(TorrentLimitsFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

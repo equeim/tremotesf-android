@@ -36,7 +36,10 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.ui.utils.IntFilter
+import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -51,8 +54,6 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
     R.layout.server_settings_speed_fragment,
     R.string.server_settings_speed
 ) {
-    val binding by viewBinding(ServerSettingsSpeedFragmentBinding::bind)
-
     private val days = mutableListOf(
         ServerSettingsData.AlternativeSpeedLimitsDays.All,
         ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
@@ -94,7 +95,7 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
-        with(binding) {
+        with(ServerSettingsSpeedFragmentBinding.bind(requireView())) {
             downloadSpeedLimitCheckBox.isChecked = GlobalRpc.serverSettings.downloadSpeedLimited
             downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 GlobalRpc.serverSettings.downloadSpeedLimited = checked

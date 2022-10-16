@@ -26,25 +26,22 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.viewBinding
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.trackers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Trackers) {
     private val torrentPropertiesFragment: TorrentPropertiesFragment
         get() = requireParentFragment() as TorrentPropertiesFragment
 
-    private val binding by viewBinding(TrackersFragmentBinding::bind)
-    private var trackersAdapter: TrackersAdapter? = null
+    private val binding by viewLifecycleObject(TrackersFragmentBinding::bind)
+    private val trackersAdapter by viewLifecycleObject { TrackersAdapter(this) }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-
-        val trackersAdapter = TrackersAdapter(this)
-        this.trackersAdapter = trackersAdapter
 
         binding.trackersView.apply {
             adapter = trackersAdapter
@@ -69,19 +66,12 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    override fun onDestroyView() {
-        trackersAdapter = null
-        super.onDestroyView()
-    }
-
     private fun update(torrent: Torrent?) {
-        trackersAdapter?.let { adapter ->
-            adapter.update(torrent)
-            binding.placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+        trackersAdapter.update(torrent)
+        binding.placeholder.visibility = if ((trackersAdapter.itemCount == 0) && torrent != null) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 }
