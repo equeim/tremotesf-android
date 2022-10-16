@@ -32,13 +32,7 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
+import androidx.core.view.*
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -52,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 open class NavigationFragment(
@@ -78,8 +73,7 @@ open class NavigationFragment(
             }
         }
 
-    protected var toolbar: Toolbar? = null
-        private set
+    protected val toolbar: Toolbar by viewLifecycleObject { it.findViewById(R.id.toolbar) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +117,7 @@ open class NavigationFragment(
     }
 
     private fun setupToolbar() {
-        toolbar = requireView().findViewById<Toolbar>(R.id.toolbar).apply {
+        toolbar.apply {
             val activity = requiredActivity
             if (!activity.appBarConfiguration.topLevelDestinations.contains(destinationId)) {
                 navigationIcon = activity.upNavigationIcon
@@ -143,7 +137,6 @@ open class NavigationFragment(
     }
 
     private fun createStatusBarPlaceholder() {
-        val toolbar = checkNotNull(toolbar)
         var container = toolbar.parent as View
         if (container is AppBarLayout) {
             val appBarLayout = container
@@ -183,13 +176,12 @@ open class NavigationFragment(
     }
 
     override fun onDestroyView() {
-        toolbar = null
         navController.removeOnDestinationChangedListener(destinationListener)
         super.onDestroyView()
     }
 
     fun showOverflowMenu(): Boolean {
-        toolbar?.apply {
+        toolbar.apply {
             if (!isOverflowMenuShowing) {
                 return showOverflowMenu()
             }

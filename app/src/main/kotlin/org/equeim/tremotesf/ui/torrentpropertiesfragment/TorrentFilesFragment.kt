@@ -33,7 +33,7 @@ import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class TorrentFilesFragment :
@@ -50,17 +50,14 @@ class TorrentFilesFragment :
         }
     }
 
-    private val binding by viewBinding(TorrentFilesFragmentBinding::bind)
-    private var adapter: TorrentFilesAdapter? = null
+    private val binding by viewLifecycleObject(TorrentFilesFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        val adapter = TorrentFilesAdapter(model, this)
-        this.adapter = adapter
-
+        val filesAdapter = TorrentFilesAdapter(model, this)
         binding.filesView.apply {
-            this.adapter = adapter
+            adapter = filesAdapter
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
@@ -71,7 +68,7 @@ class TorrentFilesFragment :
             updateProgressBar(state)
         }
 
-        model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
+        model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, filesAdapter::update)
 
         GlobalRpc.torrentFileRenamedEvents.launchAndCollectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
             if (torrentId == model.torrent.value?.id) {
@@ -82,11 +79,6 @@ class TorrentFilesFragment :
 
     override fun onToolbarClicked() {
         binding.filesView.scrollToPosition(0)
-    }
-
-    override fun onDestroyView() {
-        adapter = null
-        super.onDestroyView()
     }
 
     override fun onNavigatedFromParent() {

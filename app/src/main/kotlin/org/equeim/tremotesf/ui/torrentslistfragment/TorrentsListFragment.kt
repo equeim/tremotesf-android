@@ -58,9 +58,9 @@ class TorrentsListFragment : NavigationFragment(
     0,
     R.menu.torrents_list_fragment_menu
 ) {
-    private val binding by viewBinding(TorrentsListFragmentBinding::bind)
     private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
     private var notificationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
+    private val binding by viewLifecycleObject(TorrentsListFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +73,7 @@ class TorrentsListFragment : NavigationFragment(
 
         viewLifecycleOwner.lifecycleScope.launch {
             if (Settings.quickReturn.get()) {
-                toolbar?.setOnClickListener {
+                toolbar.setOnClickListener {
                     binding.torrentsView.scrollToPosition(0)
                 }
             }
@@ -263,7 +263,7 @@ class TorrentsListFragment : NavigationFragment(
     }
 
     private fun updateTitle(currentServer: Server?) {
-        toolbar?.title = if (currentServer != null) {
+        toolbar.title = if (currentServer != null) {
             getString(
                 R.string.current_server_string,
                 currentServer.name,
@@ -276,7 +276,7 @@ class TorrentsListFragment : NavigationFragment(
 
     private fun updateSubtitle(subtitleData: Pair<ServerStats, Boolean>) {
         val (stats, isConnected) = subtitleData
-        toolbar?.subtitle = if (isConnected) {
+        toolbar.subtitle = if (isConnected) {
             getString(
                 R.string.main_activity_subtitle,
                 FormatUtils.formatByteSpeed(requireContext(), stats.downloadSpeed),

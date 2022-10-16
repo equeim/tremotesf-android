@@ -40,7 +40,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewBinding
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
 
@@ -69,9 +69,6 @@ data class Peer(
 }
 
 class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Peers) {
-    private val binding by viewBinding(PeersFragmentBinding::bind)
-    private var peersAdapter: PeersAdapter? = null
-
     private val model: Model by viewModels {
         viewModelFactory {
             initializer {
@@ -80,12 +77,12 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         }
     }
 
+    private val binding by viewLifecycleObject(PeersFragmentBinding::bind)
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
         val peersAdapter = PeersAdapter()
-        this.peersAdapter = peersAdapter
-
         binding.peersView.apply {
             adapter = peersAdapter
             layoutManager = LinearLayoutManager(activity)
@@ -103,11 +100,6 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
 
     override fun onToolbarClicked() {
         binding.peersView.scrollToPosition(0)
-    }
-
-    override fun onDestroyView() {
-        peersAdapter = null
-        super.onDestroyView()
     }
 
     override fun onNavigatedFromParent() {

@@ -27,23 +27,20 @@ import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.databinding.ServerSettingsFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewBinding
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.*
 
 
 class ServerSettingsFragment : NavigationFragment(
     R.layout.server_settings_fragment,
     R.string.server_settings
 ) {
-    private val binding by viewBinding(ServerSettingsFragmentBinding::bind)
-    private var snackbar: Snackbar? = null
+    private val binding by viewLifecycleObject(ServerSettingsFragmentBinding::bind)
+    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -73,13 +70,9 @@ class ServerSettingsFragment : NavigationFragment(
         GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
-    override fun onDestroyView() {
-        snackbar = null
-        super.onDestroyView()
-    }
-
     private fun updateView(status: Rpc.Status) {
         snackbar?.dismiss()
+        snackbar = null
         when (status.connectionState) {
             RpcConnectionState.Disconnected -> {
                 snackbar = requireView().showSnackbar(
