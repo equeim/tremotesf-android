@@ -139,7 +139,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
     }
 
     private val args: AddTorrentFileFragmentArgs by navArgs()
-    private val model: AddTorrentFileModel by viewModels {
+    private val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl> {
         viewModelFactory {
             initializer {
                 AddTorrentFileModelImpl(
