@@ -46,7 +46,7 @@ abstract class AddTorrentFragment(
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        toolbar?.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             if (!requireActivity().isTaskRoot) {
                 // FIXME: https://issuetracker.google.com/issues/145231159
                 // For some reason it is needed to finish activity before navigateUp(),

@@ -114,7 +114,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             startDownloadingCheckBox.isChecked
         )
 
-        directoriesAdapter?.save()
+        directoriesAdapter.save()
 
         requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
