@@ -38,7 +38,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        toolbar?.title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
+        toolbar.title = "%s %s".format(getString(R.string.app_name), BuildConfig.VERSION_NAME)
 
         pagerAdapter = PagerAdapter(this)
 

@@ -201,7 +201,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 }.launchAndCollectWhenStarted(viewLifecycleOwner)
         }
 
-        toolbar?.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
+        toolbar.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
 
         binding.saveButton.apply {
             setText(if (model.existingServer == null) {
