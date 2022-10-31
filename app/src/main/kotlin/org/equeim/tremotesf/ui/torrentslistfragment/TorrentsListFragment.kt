@@ -36,6 +36,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
@@ -134,13 +136,13 @@ class TorrentsListFragment : NavigationFragment(
         GlobalServers.servers.map { it.isNotEmpty() }
             .launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
 
-        model.showAddTorrentButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            binding.addTorrentButton.apply {
-                if (it) show() else hide()
-            }
+        combine(model.showAddTorrentButton, model.connectionButtonState) { showAddTorrentButton, connectionButtonState ->
+            showAddTorrentButton || connectionButtonState != TorrentsListFragmentViewModel.ConnectionButtonState.Hidden
+        }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner) {
+            binding.endButtonSpacer.isVisible = it
         }
 
-        model.placeholderUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
+        model.placeholderState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
         GlobalServers.currentServer.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTitle)
         model.subtitleUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
@@ -174,6 +176,7 @@ class TorrentsListFragment : NavigationFragment(
             torrentsFilters.apply {
                 TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
+
                 val badgeDrawable = (drawable as LayerDrawable).getDrawable(1)
                 model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {
                     badgeDrawable.alpha = if (it) 192 else 0
@@ -212,6 +215,42 @@ class TorrentsListFragment : NavigationFragment(
 
             addTorrentButton.setOnClickListener {
                 navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
+            }
+            model.showAddTorrentButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                binding.addTorrentButton.apply {
+                    isVisible = it
+                }
+            }
+
+            model.connectionButtonState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateConnectionButton)
+        }
+    }
+
+    private fun updateConnectionButton(state: TorrentsListFragmentViewModel.ConnectionButtonState) {
+        binding.connectionButton.apply {
+            val text = when (state) {
+                TorrentsListFragmentViewModel.ConnectionButtonState.AddServer -> {
+                    setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
+                    R.string.add_server
+                }
+                TorrentsListFragmentViewModel.ConnectionButtonState.Connect -> {
+                    setOnClickListener { GlobalRpc.nativeInstance.connect() }
+                    R.string.connect
+                }
+                TorrentsListFragmentViewModel.ConnectionButtonState.Disconnect -> {
+                    setOnClickListener { GlobalRpc.nativeInstance.disconnect() }
+                    R.string.disconnect
+                }
+                TorrentsListFragmentViewModel.ConnectionButtonState.Hidden -> {
+                    setOnClickListener(null)
+                    null
+                }
+            }
+            isVisible = if (text == null) {
+                false
+            } else {
+                setText(text)
+                true
             }
         }
     }
@@ -287,8 +326,8 @@ class TorrentsListFragment : NavigationFragment(
         }
     }
 
-    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderUpdateData) = with(binding) {
-        val (status, hasTorrents, hasServers) = data
+    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderState) = with(binding) {
+        val (status, hasTorrents) = data
 
         progressBar.isVisible = status.connectionState == RpcConnectionState.Connecting && !hasTorrents
         statusString.apply {
@@ -312,33 +351,6 @@ class TorrentsListFragment : NavigationFragment(
         }
         placeholderView.apply {
             isVisible = children.any { it.isVisible }
-        }
-
-        actionButton.apply {
-            val text = when {
-                !hasServers -> {
-                    setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
-                    R.string.add_server
-                }
-                status.connectionState == RpcConnectionState.Disconnected -> {
-                    setOnClickListener { GlobalRpc.nativeInstance.connect() }
-                    R.string.connect
-                }
-                status.connectionState == RpcConnectionState.Connecting -> {
-                    setOnClickListener { GlobalRpc.nativeInstance.disconnect() }
-                    R.string.disconnect
-                }
-                else -> {
-                    setOnClickListener(null)
-                    null
-                }
-            }
-            if (text == null) {
-                hide()
-            } else {
-                setText(text)
-                show()
-            }
         }
     }
 }
