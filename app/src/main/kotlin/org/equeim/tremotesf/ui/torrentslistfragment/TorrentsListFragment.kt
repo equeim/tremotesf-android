@@ -213,6 +213,7 @@ class TorrentsListFragment : NavigationFragment(
                 torrentsFilters.isVisible = it
             }
 
+            TooltipCompat.setTooltipText(addTorrentButton, addTorrentButton.contentDescription)
             addTorrentButton.setOnClickListener {
                 navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
             }
