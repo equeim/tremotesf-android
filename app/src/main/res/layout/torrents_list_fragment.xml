@@ -90,14 +90,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:fabAlignmentMode="end"
         app:hideOnScroll="true"
         app:paddingLeftSystemWindowInsets="false"
         app:paddingRightSystemWindowInsets="false">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/mtrl_bottomappbar_height"
+            android:layout_height="68dp"
             android:animateLayoutChanges="true">
 
             <ImageButton
@@ -126,29 +125,37 @@
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
                 android:layout_weight="1" />
+
+            <android.widget.Space
+                android:id="@+id/end_button_spacer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/add_torrent_button"
+                style="?attr/materialIconButtonFilledStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="14dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/horizontal_edge_padding"
+                android:contentDescription="@string/add_torrent"
+                app:icon="@drawable/ic_add_24dp"
+                app:iconSize="24dp"
+                app:shapeAppearance="?shapeAppearanceCornerLarge" />
+
+            <Button
+                android:id="@+id/connection_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/horizontal_edge_padding"
+                app:shapeAppearance="?shapeAppearanceCornerLarge"
+                tools:text="@string/connect" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_torrent_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/add_torrent"
-        app:layout_anchor="@id/bottom_toolbar"
-        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
-        app:srcCompat="@drawable/ic_add_24dp" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/horizontal_edge_padding"
-        android:paddingStart="@dimen/horizontal_edge_padding"
-        android:paddingEnd="@dimen/horizontal_edge_padding"
-        android:text="@string/add_server"
-        android:textAlignment="center"
-        app:layout_anchor="@id/bottom_toolbar"
-        app:layout_anchorGravity="end"
-        tools:text="@string/connect"
-        tools:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

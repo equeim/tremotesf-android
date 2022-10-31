@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -172,13 +173,29 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
     val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
+    val showAddTorrentButton: Flow<Boolean> = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
 
-    val showAddTorrentButton = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and)
+    private val hasServers: Flow<Boolean> = GlobalServers.servers.map { it.isNotEmpty() }
+
+    enum class ConnectionButtonState {
+        AddServer,
+        Connect,
+        Disconnect,
+        Hidden
+    }
+    val connectionButtonState: Flow<ConnectionButtonState> = combine(hasServers, GlobalRpc.connectionState, searchViewIsIconified.flow()) { hasServers, connectionState, searchViewIsIconified ->
+        when {
+            !searchViewIsIconified -> ConnectionButtonState.Hidden
+            !hasServers -> ConnectionButtonState.AddServer
+            connectionState == RpcConnectionState.Disconnected -> ConnectionButtonState.Connect
+            connectionState == RpcConnectionState.Connecting -> ConnectionButtonState.Disconnect
+            else -> ConnectionButtonState.Hidden
+        }
+    }.distinctUntilChanged()
 
     private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
-    private val hasServers = GlobalServers.servers.map { it.isNotEmpty() }
-    data class PlaceholderUpdateData(val status: Rpc.Status, val hasTorrents: Boolean, val hasServers: Boolean)
-    val placeholderUpdateData = combine(GlobalRpc.status, hasTorrents, hasServers, ::PlaceholderUpdateData)
+    data class PlaceholderState(val status: Rpc.Status, val hasTorrents: Boolean)
+    val placeholderState: Flow<PlaceholderState> = combine(GlobalRpc.status, hasTorrents, ::PlaceholderState).distinctUntilChanged()
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)
