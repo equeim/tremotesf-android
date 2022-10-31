@@ -6,6 +6,7 @@
 #include <QAbstractEventDispatcher>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QFile>
 #include <QPluginLoader>
 #include <QSslCertificate>
 #include <QSslConfiguration>
