@@ -19,21 +19,17 @@
 
 package org.equeim.tremotesf.ui
 
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.checkbox.MaterialCheckBox
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import org.equeim.tremotesf.ui.views.TristateCheckbox
 import java.lang.ref.WeakReference
 
 
@@ -148,7 +144,7 @@ abstract class BaseTorrentFilesAdapter(
     ) {
         private val iconView: ImageView = itemView.findViewById(R.id.icon_view)
         private val nameTextView: TextView = itemView.findViewById(R.id.name_text_view)
-        private val checkBox: TristateCheckbox = itemView.findViewById(R.id.check_box)
+        private val checkBox: MaterialCheckBox = itemView.findViewById(R.id.check_box)
 
         private var isDirectory: Boolean? = null
 
@@ -193,10 +189,10 @@ abstract class BaseTorrentFilesAdapter(
 
             nameTextView.text = item.name
 
-            checkBox.state = when (item.wantedState) {
-                TorrentFilesTree.Item.WantedState.Wanted -> TristateCheckbox.State.Checked
-                TorrentFilesTree.Item.WantedState.Unwanted -> TristateCheckbox.State.Unchecked
-                TorrentFilesTree.Item.WantedState.Mixed -> TristateCheckbox.State.Indeterminate
+            checkBox.checkedState = when (item.wantedState) {
+                TorrentFilesTree.Item.WantedState.Wanted -> MaterialCheckBox.STATE_CHECKED
+                TorrentFilesTree.Item.WantedState.Unwanted -> MaterialCheckBox.STATE_UNCHECKED
+                TorrentFilesTree.Item.WantedState.Mixed -> MaterialCheckBox.STATE_INDETERMINATE
             }
             checkBox.isEnabled = !selectionTracker.hasSelection
         }

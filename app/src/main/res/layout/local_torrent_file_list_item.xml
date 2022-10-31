@@ -40,7 +40,7 @@
             android:textSize="@dimen/text_size_smaller"/>
     </LinearLayout>
 
-    <org.equeim.tremotesf.ui.views.TristateCheckbox
+    <CheckBox
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
