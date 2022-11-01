@@ -38,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.RpcError
@@ -133,8 +132,6 @@ class TorrentsListFragment : NavigationFragment(
         }
 
         GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
-        GlobalServers.servers.map { it.isNotEmpty() }
-            .launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTransmissionSettingsMenuItem)
 
         combine(model.showAddTorrentButton, model.connectionButtonState) { showAddTorrentButton, connectionButtonState ->
             showAddTorrentButton || connectionButtonState != TorrentsListFragmentViewModel.ConnectionButtonState.Hidden
@@ -173,6 +170,10 @@ class TorrentsListFragment : NavigationFragment(
                 TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment()) }
             }
+            model.showTransmissionSettingsButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                transmissionSettings.isVisible = it
+            }
+
             torrentsFilters.apply {
                 TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
@@ -181,6 +182,9 @@ class TorrentsListFragment : NavigationFragment(
                 model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {
                     badgeDrawable.alpha = if (it) 192 else 0
                 }
+            }
+            model.showTorrentsFiltersButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                torrentsFilters.isVisible = it
             }
 
             searchView.apply {
@@ -207,10 +211,9 @@ class TorrentsListFragment : NavigationFragment(
                     collapse()
                 }
             }
-
-            model.searchViewIsIconified.flow().launchAndCollectWhenStarted(viewLifecycleOwner) {
-                transmissionSettings.isVisible = it
-                torrentsFilters.isVisible = it
+            model.showSearchView.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                if (!it) searchView.collapse()
+                searchView.isVisible = it
             }
 
             TooltipCompat.setTooltipText(addTorrentButton, addTorrentButton.contentDescription)
@@ -286,20 +289,7 @@ class TorrentsListFragment : NavigationFragment(
                 hideOnScroll = connected
                 if (!connected) performShow()
             }
-
-            binding.torrentsFilters.isVisible = connected
-
-            searchView.apply {
-                if (!connected) {
-                    collapse()
-                }
-                isVisible = connected
-            }
         }
-    }
-
-    private fun updateTransmissionSettingsMenuItem(hasServers: Boolean) {
-        binding.transmissionSettings.isVisible = hasServers
     }
 
     private fun updateTitle(currentServer: Server?) {

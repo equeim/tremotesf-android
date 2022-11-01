@@ -208,7 +208,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                         return@withContext Result.success()
                     }
 
-                    if (!GlobalServers.hasServers) {
+                    if (!GlobalServers.hasServers.value) {
                         Timber.w("startWork: no servers, return")
                         return@withContext Result.success()
                     }

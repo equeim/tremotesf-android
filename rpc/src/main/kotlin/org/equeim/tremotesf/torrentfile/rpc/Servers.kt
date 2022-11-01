@@ -23,9 +23,10 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -48,10 +49,10 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
 
-    val hasServers: Boolean
-        get() {
-            return servers.value.isNotEmpty()
-        }
+    val hasServers: StateFlow<Boolean> = servers
+        .map { it.isNotEmpty() }
+        .distinctUntilChanged()
+        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     // currentServer observers should not access servers or hasServers
     private val _currentServer = MutableStateFlow<Server?>(null)

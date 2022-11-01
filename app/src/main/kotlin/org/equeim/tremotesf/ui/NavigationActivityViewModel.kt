@@ -79,7 +79,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
         }
         if (deepLinkIntent == null) {
             if ((intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
-                if (!GlobalServers.hasServers) {
+                if (!GlobalServers.hasServers.value) {
                     deepLinkIntent = createDeepLinkIntent(R.id.server_edit_fragment, null, intent)
                 }
             } else {

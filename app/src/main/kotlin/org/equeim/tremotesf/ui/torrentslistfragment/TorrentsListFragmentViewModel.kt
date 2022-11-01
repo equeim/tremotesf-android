@@ -172,10 +172,13 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
-    val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
-    val showAddTorrentButton: Flow<Boolean> = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
-
     private val hasServers: Flow<Boolean> = GlobalServers.servers.map { it.isNotEmpty() }
+
+    val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
+    val showSearchView: Flow<Boolean> = GlobalRpc.isConnected
+    val showTransmissionSettingsButton: Flow<Boolean> = combine(GlobalServers.hasServers, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
+    val showTorrentsFiltersButton: Flow<Boolean> = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
+    val showAddTorrentButton: Flow<Boolean> = showTorrentsFiltersButton
 
     enum class ConnectionButtonState {
         AddServer,
