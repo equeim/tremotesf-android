@@ -58,5 +58,5 @@ readonly restore_keys="ccache-$RUNNER_OS-"
 echo "Final ccache cache key: $ccache_key"
 echo "Restore keys: $restore_keys"
 
-echo "::set-output name=cache-key::$ccache_key"
-echo "::set-output name=restore-keys::$restore_keys"
+echo "cache-key=$ccache_key" >> "$GITHUB_OUTPUT"
+echo "restore-keys=$restore_keys" >> "$GITHUB_OUTPUT"
