@@ -28,11 +28,11 @@ jobs:
           fetch-depth: 0
 
       - name: Determine whether we need to build image
-        id: enable
+        id: build-image-check
         run: |
           if [[ $GITHUB_EVENT_NAME == schedule || $GITHUB_EVENT_NAME == workflow_dispatch ]]; then
             echo 'Build container image'
-            echo '::set-output name=enabled::true'
+            echo 'build-image=true' >> "$GITHUB_OUTPUT"
             exit
           fi
           if [[ $GITHUB_EVENT_NAME == push ]]; then
@@ -48,14 +48,14 @@ jobs:
           echo "Changed files are $changed_files"
           if [[ $changed_files == *.github/* ]]; then
             echo 'Build container image'
-            echo '::set-output name=enabled::true'
+            echo 'build-image=true' >> "$GITHUB_OUTPUT"
           else
             echo 'Do not build container image'
-            echo '::set-output name=enabled::false'
+            echo 'build-image=false' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Log in to the container registry
-        if: steps.enable.outputs.enabled == 'true'
+        if: steps.build-image-check.outputs.build-image == 'true'
         uses: docker/login-action@v2
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
@@ -64,14 +64,14 @@ jobs:
 
       - name: Extract metadata (tags, labels) for container image
         id: meta
-        if: steps.enable.outputs.enabled == 'true'
+        if: steps.build-image-check.outputs.build-image == 'true'
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.CONTAINER_IMAGE }}
           tags: ${{ github.event_name == 'pull_request' && 'type=ref,event=pr' || 'type=raw,value=latest' }}
 
       - name: Create build environment container image
-        if: steps.enable.outputs.enabled == 'true'
+        if: steps.build-image-check.outputs.build-image == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -107,7 +107,7 @@ jobs:
           echo -e "Android SDK cache key before hashing:\n$android_sdk_cache_key"
           android_sdk_cache_key="android-sdk-$RUNNER_OS-$(echo -e "$android_sdk_cache_key" | sha256sum | head -c 64)"
           echo -e "Android SDK cache key:\n$android_sdk_cache_key"
-          echo "::set-output name=cache-key::$android_sdk_cache_key"
+          echo "cache-key=$android_sdk_cache_key" >> "$GITHUB_OUTPUT"
 
       - name: Restore Android SDK from cache
         id: android-sdk-cache
