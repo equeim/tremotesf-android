@@ -234,6 +234,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="@dimen/fab_margin"
+            android:contentDescription="@string/add"
             android:paddingStart="@dimen/horizontal_edge_padding"
             android:paddingEnd="@dimen/horizontal_edge_padding"
             android:tag="@string/add_navigation_bar_margin"
