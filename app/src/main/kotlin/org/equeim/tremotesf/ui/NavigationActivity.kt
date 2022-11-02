@@ -105,12 +105,13 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val margins = insets.toActivityMargins()
             view.apply {
-                if (marginLeft != systemBars.left || marginRight != systemBars.right) {
+                if (marginLeft != margins.left || marginRight != margins.right || marginBottom != margins.bottom) {
                     updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        leftMargin = systemBars.left
-                        rightMargin = systemBars.right
+                        leftMargin = margins.left
+                        rightMargin = margins.right
+                        bottomMargin = margins.bottom
                     }
                 }
             }
@@ -250,3 +251,21 @@ class NavHostFragment : NavHostFragment() {
         }
     }
 }
+
+private data class ActivityMargins(
+    val left: Int,
+    val right: Int,
+    val bottom: Int
+)
+
+private fun WindowInsetsCompat.toActivityMargins(): ActivityMargins {
+    val systemBars = getInsets(WindowInsetsCompat.Type.systemBars())
+    val ime = getInsets(WindowInsetsCompat.Type.ime())
+    return ActivityMargins(
+        left = ime.left.orOtherIfZero(systemBars.left),
+        right = ime.right.orOtherIfZero(systemBars.right),
+        bottom = ime.bottom
+    )
+}
+
+private fun Int.orOtherIfZero(other: Int) = if (this != 0) this else other

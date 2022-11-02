@@ -90,7 +90,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:tag="@string/add_navigation_bar_padding"
         app:hideOnScroll="true"
+        app:paddingBottomSystemWindowInsets="false"
         app:paddingLeftSystemWindowInsets="false"
         app:paddingRightSystemWindowInsets="false">
 

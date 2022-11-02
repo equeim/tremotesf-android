@@ -141,19 +141,29 @@ open class NavigationFragment(
         if (container is AppBarLayout) {
             val appBarLayout = container
             container = (container.parent as CoordinatorLayout)
-            val scrollingView = container.children.find { (it.layoutParams as CoordinatorLayout.LayoutParams).behavior is AppBarLayout.ScrollingViewBehavior }
+            val scrollingView =
+                container.children.find { (it.layoutParams as CoordinatorLayout.LayoutParams).behavior is AppBarLayout.ScrollingViewBehavior }
             val placeholder = View(context).apply {
-                layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+                layoutParams =
+                    CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
                 elevation = resources.getDimension(R.dimen.action_bar_elevation)
-                setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(elevation))
+                setBackgroundColor(
+                    ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(
+                        elevation
+                    )
+                )
             }
             ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                 if (appBarLayout.marginTop != topInset) {
-                    appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = topInset }
+                    appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = topInset
+                    }
                 }
                 if (scrollingView != null && scrollingView.marginBottom != topInset) {
-                    scrollingView.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = topInset }
+                    scrollingView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = topInset
+                    }
                 }
                 if (view.layoutParams.height != topInset) {
                     view.updateLayoutParams {
@@ -164,7 +174,11 @@ open class NavigationFragment(
             }
             container.addView(placeholder)
         } else if (container.id == R.id.toolbar_container && container is FrameLayout && container.childCount == 1) {
-            container.setBackgroundColor(ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(resources.getDimension(R.dimen.action_bar_elevation)))
+            container.setBackgroundColor(
+                ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(
+                    resources.getDimension(R.dimen.action_bar_elevation)
+                )
+            )
             ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                 if (view.paddingTop != topInset) {
@@ -208,11 +222,7 @@ fun Fragment.addNavigationBarBottomPadding() {
 
     val rootView = requireView()
 
-    val setPaddingForRootView = when (rootView) {
-        is ScrollView, is NestedScrollView, is ListView -> true
-        is RecyclerView -> (rootView.layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
-        else -> false
-    }
+    val setPaddingForRootView = rootView.isVerticalScrollView
     if (setPaddingForRootView) {
         handleBottomInsetWithPadding(rootView)
     }
@@ -226,13 +236,21 @@ fun Fragment.addNavigationBarBottomPadding() {
     }
 }
 
+private val View.isVerticalScrollView: Boolean
+    get() = when (this) {
+        is ScrollView, is NestedScrollView, is ListView -> true
+        is RecyclerView -> (layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL
+        else -> false
+    }
+
 private fun handleBottomInsetWithPadding(view: View) {
     (view as? ViewGroup)?.clipToPadding = false
     val initialPadding = view.paddingBottom
     ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-        val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-        if (v.paddingBottom != (initialPadding + bottomInset)) {
-            v.updatePadding(bottom = initialPadding + bottomInset)
+        val bottomInset = insets.bottomSystemBarsInsetIfImeIsHidden()
+        val padding = initialPadding + bottomInset
+        if (v.paddingBottom != padding) {
+            v.updatePadding(bottom = padding)
         }
         insets
     }
@@ -241,12 +259,20 @@ private fun handleBottomInsetWithPadding(view: View) {
 private fun handleBottomInsetWithMargin(view: View) {
     val initialMargin = view.marginBottom
     ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-        val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-        if (v.marginBottom != (initialMargin + bottomInset)) {
+        val bottomInset = insets.bottomSystemBarsInsetIfImeIsHidden()
+        val margin = initialMargin + bottomInset
+        if (v.marginBottom != margin) {
             v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = initialMargin + bottomInset
+                bottomMargin = margin
             }
         }
         insets
     }
 }
+
+private fun WindowInsetsCompat.bottomSystemBarsInsetIfImeIsHidden(): Int =
+    if (!isVisible(WindowInsetsCompat.Type.ime())) {
+        getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+    } else {
+        0
+    }
