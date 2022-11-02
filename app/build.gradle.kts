@@ -60,8 +60,6 @@ android {
 
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 
-    lint.informational.add("MissingTranslation")
-
     flavorDimensions.add("freedom")
     productFlavors {
         register("google") {

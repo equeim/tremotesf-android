@@ -36,20 +36,26 @@ class GradlePlugin : Plugin<Project> {
         compileSdk = libs.compileSdk
         ndkVersion = libs.ndk
         defaultConfig.minSdk = libs.minSdk
+        lint.apply {
+            informational.add("MissingTranslation")
+            quiet = false
+            checkAllWarnings = true
+            disable.addAll(listOf("InvalidPackage", "SyntheticAccessor", "TypographyQuotes"))
+        }
         when (this) {
-            is LibraryExtension -> configureAndroidProject(libs)
-            is ApplicationExtension -> configureAndroidProject(libs)
+            is LibraryExtension -> configureLibraryProject(libs)
+            is ApplicationExtension -> configureApplicationProject(libs)
         }
     }
 
-    private fun LibraryExtension.configureAndroidProject(libs: VersionCatalog) {
+    private fun LibraryExtension.configureLibraryProject(libs: VersionCatalog) {
         defaultConfig {
             targetSdk = libs.targetSdk
             consumerProguardFile("consumer-rules.pro")
         }
     }
 
-    private fun ApplicationExtension.configureAndroidProject(libs: VersionCatalog) {
+    private fun ApplicationExtension.configureApplicationProject(libs: VersionCatalog) {
         defaultConfig.targetSdk = libs.targetSdk
         packagingOptions.jniLibs.useLegacyPackaging = false
     }
