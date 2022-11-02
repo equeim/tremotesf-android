@@ -62,6 +62,7 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
+import java.io.FileNotFoundException
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) {
@@ -453,34 +454,40 @@ class ServerCertificatesFragment : NavigationFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val handleCertificateResult = { uri: Uri, view: TextView ->
-            Timber.d("handleCertificateResult() called with: uri = $uri, view = $view")
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val stream = requireContext().contentResolver.openInputStream(uri)
-                    if (stream != null) {
-                        val text = stream.reader().readText()
-                        withContext(Dispatchers.Main) {
-                            view.text = text
-                        }
-                    } else {
-                        Timber.e("handleCertificateResult: InputStream is null")
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "handleCertificateResult: failed to read content")
-                }
-            }
-        }
-
         getServerCertificateLauncher = registerForActivityResult(GetPemFileContract()) {
             if (it != null) handleCertificateResult(it, binding.selfSignedCertificateEdit)
         }
         getClientCertificateLauncher = registerForActivityResult(GetPemFileContract()) {
             if (it != null) handleCertificateResult(it, binding.clientCertificateEdit)
         }
-
         mainModel = ServerEditFragmentViewModel.get(navController)
+    }
+
+    private fun handleCertificateResult(uri: Uri, view: TextView) {
+        Timber.d("handleCertificateResult() called with: uri = $uri, view = $view")
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val certificate = readCertificate(uri)
+            if (certificate != null) {
+                withContext(Dispatchers.Main) {
+                    view.text = certificate
+                }
+            }
+        }
+    }
+
+    private fun readCertificate(uri: Uri): String? {
+        return try {
+            val stream = requireContext().contentResolver.openInputStream(uri)
+            if (stream != null) {
+                stream.use { it.reader().readText() }
+            } else {
+                Timber.e("readCertificate: failed to read certificate, ContentResolver returned null InputStream")
+                null
+            }
+        } catch (e: FileNotFoundException) {
+            Timber.e(e, "readCertificate: failed to read certificate")
+            null
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

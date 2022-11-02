@@ -29,24 +29,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.TorrentFilesTree
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
-import org.equeim.tremotesf.torrentfile.FileParseException
-import org.equeim.tremotesf.torrentfile.FileReadException
-import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.torrentfile.*
+import org.equeim.tremotesf.torrentfile.rpc.Rpc
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
+import java.io.FileNotFoundException
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -195,10 +188,9 @@ class AddTorrentFileModelImpl(
 
     private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
         val fd = try {
-            @Suppress("BlockingMethodInNonBlockingContext")
             context.contentResolver.openAssetFileDescriptor(uri, "r")
-        } catch (error: Exception) {
-            Timber.e(error, "Failed to open file descriptor")
+        } catch (e: FileNotFoundException) {
+            Timber.e(e, "Failed to open file descriptor")
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
         }
