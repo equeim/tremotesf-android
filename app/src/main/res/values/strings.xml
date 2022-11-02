@@ -510,7 +510,6 @@
 
     <string name="see_detailed_error_message">See detailed error message</string>
     <string name="detailed_error_message">Detailed error message</string>
-    <string name="copy">Copy</string>
 
     <string name="notification_permission_rationale">Tremotesf needs notification permission to show notifications about torrents</string>
     <string name="request_permission">Grant permission</string>
