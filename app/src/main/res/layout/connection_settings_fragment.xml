@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:scrollbars="none"
         android:layout_marginBottom="@dimen/fab_margin"
         android:tag="@string/add_navigation_bar_margin"
         android:text="@string/add_server"
