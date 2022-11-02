@@ -101,8 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:paddingStart="@dimen/horizontal_edge_padding"
-            android:paddingEnd="@dimen/horizontal_edge_padding"
+            android:scrollbars="none"
             android:tag="@string/add_navigation_bar_margin"
             app:icon="@drawable/ic_done_24dp"
             android:text="@string/add" />
