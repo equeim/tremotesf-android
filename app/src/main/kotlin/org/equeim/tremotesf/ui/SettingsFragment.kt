@@ -130,7 +130,7 @@ class SettingsFragment : NavigationFragment(
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
             listView.tag = getText(R.string.add_navigation_bar_padding)
-            addNavigationBarBottomPadding()
+            applyNavigationBarBottomInset()
         }
 
         override fun onDestroy() {

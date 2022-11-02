@@ -18,12 +18,7 @@ import androidx.core.content.getSystemService
 import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.content.withStyledAttributes
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
+import androidx.core.view.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -32,6 +27,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 private const val CORNERS_ANIMATION_DURATION = 200L
 
@@ -67,7 +63,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
 
         var shouldAddInitialTopPadding = true
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+        (requireActivity() as NavigationActivity).windowInsets.launchAndCollectWhenStarted(viewLifecycleOwner) { insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
             if (shouldAddInitialTopPadding && bottomSheet.measuredHeight != 0) {
@@ -101,8 +97,6 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
                 }
             }
             updateCorners()
-
-            insets
         }
 
         // In order to decide ourselves when we want to change corners radius

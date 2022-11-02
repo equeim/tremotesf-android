@@ -35,6 +35,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.*
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
@@ -43,9 +44,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
@@ -112,7 +117,7 @@ open class NavigationFragment(
 
         setupToolbar()
         createStatusBarPlaceholder()
-        addNavigationBarBottomPadding()
+        applyNavigationBarBottomInset()
         navController.addOnDestinationChangedListener(destinationListener)
     }
 
@@ -153,7 +158,7 @@ open class NavigationFragment(
                     )
                 )
             }
-            ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
+            requiredActivity.windowInsets.launchAndCollectWhenStarted(viewLifecycleOwner) { insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                 if (appBarLayout.marginTop != topInset) {
                     appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -165,12 +170,11 @@ open class NavigationFragment(
                         bottomMargin = topInset
                     }
                 }
-                if (view.layoutParams.height != topInset) {
-                    view.updateLayoutParams {
+                if (placeholder.layoutParams.height != topInset) {
+                    placeholder.updateLayoutParams {
                         height = topInset
                     }
                 }
-                insets
             }
             container.addView(placeholder)
         } else if (container.id == R.id.toolbar_container && container is FrameLayout && container.childCount == 1) {
@@ -179,12 +183,11 @@ open class NavigationFragment(
                     resources.getDimension(R.dimen.action_bar_elevation)
                 )
             )
-            ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
+            requiredActivity.windowInsets.launchAndCollectWhenStarted(viewLifecycleOwner) { insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-                if (view.paddingTop != topInset) {
-                    view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+                if (container.paddingTop != topInset) {
+                    container.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
                 }
-                insets
             }
         }
     }
@@ -208,31 +211,55 @@ open class NavigationFragment(
     protected open fun onNavigatedFrom() = Unit
 }
 
-fun Fragment.addNavigationBarBottomPadding() {
-    fun findViewsWithTagRecursively(view: View, tag: Any, block: (View) -> Unit) {
-        if (view.tag == tag) {
-            block(view)
-        }
-        if (view is ViewGroup) {
-            for (child in view.children) {
-                findViewsWithTagRecursively(child, tag, block)
+fun Fragment.applyNavigationBarBottomInset() {
+    val rootView = requireView()
+    val paddingViews = rootView.findPaddingViews()
+    val marginViews = rootView.findMarginViews()
+    (requireActivity() as NavigationActivity).windowInsets
+        .map { it.bottomNavigationBarInsetIfImeIsHidden() }
+        .distinctUntilChanged()
+        .launchAndCollectWhenStarted(viewLifecycleOwner) { inset ->
+            paddingViews.forEach { (view, initialPadding) ->
+                view.applyNavigationBarBottomInsetAsPadding(inset, initialPadding)
+            }
+            marginViews.forEach { (view, initialMargin) ->
+                view.applyNavigationBarBottomInsetAsMargin(inset, initialMargin)
             }
         }
+}
+
+private fun WindowInsetsCompat.bottomNavigationBarInsetIfImeIsHidden(): Int =
+    if (!isVisible(WindowInsetsCompat.Type.ime())) {
+        getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    } else {
+        0
     }
 
-    val rootView = requireView()
-
-    val setPaddingForRootView = rootView.isVerticalScrollView
-    if (setPaddingForRootView) {
-        handleBottomInsetWithPadding(rootView)
+private fun View.applyNavigationBarBottomInsetAsPadding(inset: Int, initialPadding: Int) {
+    val padding = initialPadding + inset
+    if (paddingBottom != padding) {
+        updatePadding(bottom = padding)
     }
+}
 
-    findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_padding)) {
-        handleBottomInsetWithPadding(it)
+private fun View.applyNavigationBarBottomInsetAsMargin(inset: Int, initialMargin: Int) {
+    val margin = initialMargin + inset
+    if (marginBottom != margin) {
+        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            bottomMargin = margin
+        }
     }
+}
 
-    findViewsWithTagRecursively(rootView, getText(R.string.add_navigation_bar_margin)) {
-        handleBottomInsetWithMargin(it)
+private fun View.findPaddingViews(): Map<View, Int> = buildMap {
+    if (this@findPaddingViews.isVerticalScrollView) {
+        put(this@findPaddingViews, paddingBottom)
+    }
+    findViewsWithTagRecursively(this@findPaddingViews, context.getText(R.string.add_navigation_bar_padding)) {
+        put(it, it.paddingBottom)
+    }
+    forEach { (view, _) ->
+        (view as? ViewGroup)?.clipToPadding = false
     }
 }
 
@@ -243,36 +270,22 @@ private val View.isVerticalScrollView: Boolean
         else -> false
     }
 
-private fun handleBottomInsetWithPadding(view: View) {
-    (view as? ViewGroup)?.clipToPadding = false
-    val initialPadding = view.paddingBottom
-    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-        val bottomInset = insets.bottomSystemBarsInsetIfImeIsHidden()
-        val padding = initialPadding + bottomInset
-        if (v.paddingBottom != padding) {
-            v.updatePadding(bottom = padding)
-        }
-        insets
+private fun View.findMarginViews(): Map<View, Int> = buildMap {
+    findViewsWithTagRecursively(this@findMarginViews, context.getText(R.string.add_navigation_bar_margin)) {
+        put(it, it.marginBottom)
     }
 }
 
-private fun handleBottomInsetWithMargin(view: View) {
-    val initialMargin = view.marginBottom
-    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-        val bottomInset = insets.bottomSystemBarsInsetIfImeIsHidden()
-        val margin = initialMargin + bottomInset
-        if (v.marginBottom != margin) {
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = margin
+private fun findViewsWithTagRecursively(view: View, tag: Any, onFound: (View) -> Unit) {
+    if (view.tag == tag) {
+        onFound(view)
+    }
+    when (view) {
+        is FragmentContainerView, is RecyclerView, is ViewPager2 -> Unit
+        is ViewGroup -> {
+            for (child in view.children) {
+                findViewsWithTagRecursively(child, tag, onFound)
             }
         }
-        insets
     }
 }
-
-private fun WindowInsetsCompat.bottomSystemBarsInsetIfImeIsHidden(): Int =
-    if (!isVisible(WindowInsetsCompat.Type.ime())) {
-        getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-    } else {
-        0
-    }

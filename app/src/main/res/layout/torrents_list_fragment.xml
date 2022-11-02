@@ -19,7 +19,7 @@
                 android:id="@+id/torrents_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/mtrl_bottomappbar_height"
+                android:paddingBottom="@dimen/bottom_app_bar_height"
                 android:scrollbars="none"
                 android:tag="@string/add_navigation_bar_padding"
                 app:bubbleColor="?attr/colorControlActivated"
