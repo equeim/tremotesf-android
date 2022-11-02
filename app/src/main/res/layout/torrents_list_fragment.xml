@@ -90,7 +90,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:minHeight="0dp"
+        android:paddingStart="0dp"
+        android:paddingLeft="0dp"
+        android:paddingEnd="0dp"
+        android:paddingRight="0dp"
         android:tag="@string/add_navigation_bar_padding"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
         app:hideOnScroll="true"
         app:paddingBottomSystemWindowInsets="false"
         app:paddingLeftSystemWindowInsets="false"
@@ -98,7 +107,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="68dp"
+            android:layout_height="@dimen/bottom_app_bar_height"
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
             android:animateLayoutChanges="true">
 
             <ImageButton
@@ -107,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_spacing"
                 android:contentDescription="@string/transmission_settings"
                 app:srcCompat="@drawable/ic_transmission_settings_24dp" />
 
@@ -117,7 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_spacing"
                 android:contentDescription="@string/torrents_filters"
                 app:srcCompat="@drawable/ic_baseline_filter_list_highlighted_24" />
 
@@ -125,7 +135,7 @@
                 android:id="@+id/search_view"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_margin"
+                android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_spacing"
                 android:layout_weight="1" />
 
             <android.widget.Space
@@ -136,27 +146,19 @@
 
             <Button
                 android:id="@+id/add_torrent_button"
-                style="?attr/materialIconButtonFilledStyle"
+                style="@style/Widget.Tremotesf.BottomAppBarActionButton.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="14dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/horizontal_edge_padding"
                 android:contentDescription="@string/add_torrent"
-                app:icon="@drawable/ic_add_24dp"
-                app:iconSize="24dp"
-                app:shapeAppearance="?shapeAppearanceCornerLarge" />
+                app:icon="@drawable/ic_add_24dp" />
 
             <Button
                 android:id="@+id/connection_button"
+                style="@style/Widget.Tremotesf.BottomAppBarActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="16dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/horizontal_edge_padding"
-                app:shapeAppearance="?shapeAppearanceCornerLarge"
                 tools:text="@string/connect" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
