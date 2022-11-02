@@ -52,7 +52,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.addNavigationBarBottomPadding
+import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.*
 
@@ -340,7 +340,7 @@ class TorrentPropertiesFragment : NavigationFragment(
 
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-            addNavigationBarBottomPadding()
+            applyNavigationBarBottomInset()
         }
     }
 }

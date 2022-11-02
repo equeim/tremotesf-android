@@ -176,6 +176,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         }.attach()
 
         binding.addButton.setOnClickListener { addTorrentFile() }
+        binding.addButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
 
         requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
             !done &&
@@ -380,7 +381,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
             }
 
-            addNavigationBarBottomPadding()
+            applyNavigationBarBottomInset()
         }
 
         override fun onSaveInstanceState(outState: Bundle) {
@@ -424,7 +425,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
             mainFragment.model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
 
-            addNavigationBarBottomPadding()
+            applyNavigationBarBottomInset()
         }
 
         fun onToolbarClicked() {

@@ -31,22 +31,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Gravity
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.launch
-import androidx.appcompat.widget.TooltipCompat
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.text.trimmedLength
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -217,24 +211,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             })
             setOnClickListener { onDone() }
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.saveButton) { _, insets ->
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            binding.saveButton.apply {
-                isExtended = !imeVisible
-                TooltipCompat.setTooltipText(this, if (imeVisible) contentDescription else null)
-            }
-            binding.saveButton.updateLayoutParams<CoordinatorLayout.LayoutParams> {
-                if (imeVisible) {
-                    gravity = Gravity.BOTTOM or Gravity.END
-                    marginEnd = resources.getDimensionPixelSize(R.dimen.fab_margin)
-                } else {
-                    gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                    marginEnd = 0
-                }
-            }
-            insets
-        }
+        binding.saveButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
 
         if (!model.populatedUiFromServer) {
             with(binding) {

@@ -66,6 +66,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
 
             addButton.setOnClickListener { addTorrentLink() }
+            addButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
         }
 
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(

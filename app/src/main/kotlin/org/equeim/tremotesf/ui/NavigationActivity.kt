@@ -75,6 +75,9 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     lateinit var upNavigationIcon: DrawerArrowDrawable
         private set
 
+    private val _windowInsets = MutableStateFlow<WindowInsetsCompat?>(null)
+    val windowInsets: Flow<WindowInsetsCompat> = _windowInsets.filterNotNull()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
         Timber.i("onCreate: intent = $intent")
@@ -104,18 +107,24 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val margins = insets.toActivityMargins()
-            view.apply {
-                if (marginLeft != margins.left || marginRight != margins.right || marginBottom != margins.bottom) {
-                    updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        leftMargin = margins.left
-                        rightMargin = margins.right
-                        bottomMargin = margins.bottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            _windowInsets.value = insets
+            WindowInsetsCompat.CONSUMED
+        }
+
+        windowInsets
+            .map { it.toActivityMargins() }
+            .distinctUntilChanged()
+            .launchAndCollectWhenStarted(this) { margins ->
+                binding.root.apply {
+                    if (marginLeft != margins.left || marginRight != margins.right || marginBottom != margins.bottom) {
+                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            leftMargin = margins.left
+                            rightMargin = margins.right
+                            bottomMargin = margins.bottom
+                        }
                     }
                 }
-            }
-            insets
         }
 
         model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->

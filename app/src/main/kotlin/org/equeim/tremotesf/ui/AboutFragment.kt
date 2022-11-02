@@ -87,7 +87,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     open class PagerFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-            addNavigationBarBottomPadding()
+            applyNavigationBarBottomInset()
         }
     }
 
