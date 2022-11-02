@@ -176,4 +176,27 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">?attr/textColorAlertDialogListItem</item>
     </style>
+
+    <style name="Widget.Tremotesf.BottomAppBarActionButton" parent="Widget.Material3.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Tremotesf.BottomAppBarActionButton</item>
+        <item name="android:minHeight">@dimen/bottom_app_bar_action_button_height</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="shapeAppearance">?shapeAppearanceCornerLarge</item>
+    </style>
+
+    <style name="Widget.Tremotesf.BottomAppBarActionButton.IconButton">
+        <item name="android:minWidth">@dimen/bottom_app_bar_action_button_height</item>
+        <item name="iconSize">24dp</item>
+        <item name="android:padding">0dp</item>
+        <!-- Calculated as (minWidth - iconSize) / 2  -->
+        <item name="android:paddingStart">12dp</item>
+    </style>
+
+    <style name="ThemeOverlay.Tremotesf.BottomAppBarActionButton" parent="ThemeOverlay.Material3.Button">
+        <item name="colorOnContainer">?colorOnPrimaryContainer</item>
+        <item name="colorContainer">?colorPrimaryContainer</item>
+    </style>
 </resources>

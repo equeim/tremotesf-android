@@ -28,7 +28,9 @@
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
 
-    <dimen name="bottom_app_bar_icon_margin">0dp</dimen>
+    <dimen name="bottom_app_bar_icon_spacing">0dp</dimen>
+    <dimen name="bottom_app_bar_height">68dp</dimen>
+    <dimen name="bottom_app_bar_action_button_height">48dp</dimen>
 
     <dimen name="swipe_refresh_progress_bar_elevation">16dp</dimen>
 </resources>
