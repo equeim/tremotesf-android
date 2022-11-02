@@ -24,6 +24,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -126,8 +127,11 @@ class TorrentPropertiesFragment : NavigationFragment(
             }
         })
 
-        binding.fab.setOnClickListener {
-            navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog())
+        binding.fab.apply {
+            TooltipCompat.setTooltipText(this, contentDescription)
+            setOnClickListener {
+                navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog())
+            }
         }
 
         model.showTorrentRemovedMessage.handleAndReset(::showTorrentRemovedMessage)
