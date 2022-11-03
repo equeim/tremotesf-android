@@ -233,22 +233,22 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     private fun addTorrentFile() {
         val infoFragment = findFragment<InfoFragment>()
-        if (infoFragment?.check() == true) {
-            val priorities = model.getFilePriorities()
-            GlobalRpc.nativeInstance.addTorrentFile(
-                model.detachFd(),
-                infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
-                priorities.unwantedFiles.toIntArray(),
-                priorities.highPriorityFiles.toIntArray(),
-                priorities.lowPriorityFiles.toIntArray(),
-                StringMap().apply { putAll(model.renamedFiles) },
-                priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())].swigValue(),
-                infoFragment.binding.startDownloadingCheckBox.isChecked
-            )
-            infoFragment.directoriesAdapter.save()
-            done = true
-            requiredActivity.onBackPressedDispatcher.onBackPressed()
-        }
+        if (infoFragment?.check() != true) return
+        val priorities = model.getFilePriorities()
+        val fd = model.detachFd() ?: return
+        GlobalRpc.nativeInstance.addTorrentFile(
+            fd,
+            infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+            priorities.unwantedFiles.toIntArray(),
+            priorities.highPriorityFiles.toIntArray(),
+            priorities.lowPriorityFiles.toIntArray(),
+            StringMap().apply { putAll(model.renamedFiles) },
+            priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())].swigValue(),
+            infoFragment.binding.startDownloadingCheckBox.isChecked
+        )
+        infoFragment.directoriesAdapter.save()
+        done = true
+        requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
 
     private fun updateView(viewUpdateData: AddTorrentFileModel.ViewUpdateData) {
