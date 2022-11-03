@@ -77,7 +77,7 @@ interface AddTorrentFileModel {
     val torrentName: String
     val renamedFiles: MutableMap<String, String>
 
-    fun detachFd(): Int
+    fun detachFd(): Int?
     fun getFilePriorities(): FilePriorities
 }
 
@@ -153,10 +153,16 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    override fun detachFd(): Int {
+    override fun detachFd(): Int? {
         Timber.i("detachFd() called")
-        return checkNotNull(fd).parcelFileDescriptor.detachFd().also {
-            fd = null
+        val fd = this.fd
+        return if (fd != null) {
+            Timber.i("detachFd: detaching file descriptor")
+            this.fd = null
+            fd.parcelFileDescriptor.detachFd()
+        } else {
+            Timber.e("detachFd: file descriptor is already detached")
+            null
         }
     }
 
