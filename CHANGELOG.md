@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.7.0] - 2022-11-04
 ### Added
 - Android 13 support
 - Themed icons support
