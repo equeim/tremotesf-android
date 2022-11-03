@@ -1,3 +1,5 @@
+import org.equeim.tremotesf.gradle.utils.PUBLICSUFFIXLIST_AAR_PROPERTY
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -19,7 +21,12 @@ dependencies {
 
     implementation(libs.androidx.core)
 
-    implementation(libs.publicsuffixlist)
+    val publicsuffixlist = providers.gradleProperty(PUBLICSUFFIXLIST_AAR_PROPERTY)
+        .orNull?.takeIf { it.isNotEmpty() }?.let { aar ->
+            logger.lifecycle("Using {} for publicsuffixlist dependency", aar)
+            files(aar)
+        } ?: libs.publicsuffixlist
+    implementation(publicsuffixlist)
 
     implementation(libs.timber)
 }
