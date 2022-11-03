@@ -23,28 +23,24 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
 import android.text.format.DateUtils
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
-import java.util.Comparator
 
 
 data class TrackersAdapterItem(
@@ -175,7 +171,8 @@ class TrackersAdapter(
         val binding: TrackerListItemBinding
     ) : SelectionTracker.ViewHolder<Int>(selectionTracker, binding.root) {
         override fun onClick(view: View) {
-            val tracker = getItem(bindingAdapterPosition)
+            val position = bindingAdapterPositionOrNull ?: return
+            val tracker = getItem(position)
             fragment.navigate(
                 TorrentPropertiesFragmentDirections.toEditTrackerDialog(
                     tracker.id,
@@ -186,7 +183,7 @@ class TrackersAdapter(
 
         override fun update() {
             super.update()
-            val tracker = getItem(bindingAdapterPosition)
+            val tracker = bindingAdapterPositionOrNull?.let(::getItem) ?: return
             with(binding) {
                 nameTextView.text = tracker.announce
                 statusTextView.text = when (tracker.status) {

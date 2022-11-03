@@ -475,12 +475,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
             ) : BaseItemHolder(adapter, selectionTracker, binding.root) {
                 override fun update() {
                     super.update()
-                    val context = binding.sizeTextView.context
-                    binding.sizeTextView.text =
-                        FormatUtils.formatByteSize(
-                            context,
-                            adapter.getItem(bindingAdapterPosition)!!.size
-                        )
+                    bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
+                        binding.sizeTextView.apply {
+                            text = FormatUtils.formatByteSize(context, item.size)
+                        }
+                    }
                 }
             }
         }

@@ -39,10 +39,7 @@ import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.safeNavigate
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import org.equeim.tremotesf.ui.utils.*
 
 
 class ConnectionSettingsFragment : NavigationFragment(
@@ -119,17 +116,18 @@ class ConnectionSettingsFragment : NavigationFragment(
 
             init {
                 binding.radioButton.setOnClickListener {
-                    val server = adapter.getItem(bindingAdapterPosition)
-                    if (server.name != GlobalServers.currentServer.value?.name) {
-                        GlobalServers.setCurrentServer(server)
-                        adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                    bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
+                        if (server.name != GlobalServers.currentServer.value?.name) {
+                            GlobalServers.setCurrentServer(server)
+                            adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                        }
                     }
                 }
             }
 
             override fun update() {
                 super.update()
-                val server = adapter.getItem(bindingAdapterPosition)
+                val server = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
                 with(binding) {
                     radioButton.isChecked = (server.name == GlobalServers.currentServer.value?.name)
                     textView.text = server.name
@@ -137,8 +135,10 @@ class ConnectionSettingsFragment : NavigationFragment(
             }
 
             override fun onClick(view: View) {
-                itemView.findNavController()
-                    .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(adapter.getItem(bindingAdapterPosition).name))
+                bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
+                    itemView.findNavController()
+                        .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(server.name))
+                }
             }
         }
 

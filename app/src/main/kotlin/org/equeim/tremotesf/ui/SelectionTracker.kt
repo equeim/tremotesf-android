@@ -27,7 +27,6 @@ import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-
 import androidx.annotation.CallSuper
 import androidx.annotation.PluralsRes
 import androidx.appcompat.view.ActionMode
@@ -36,11 +35,10 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.savedstate.SavedStateRegistryOwner
-
 import org.equeim.tremotesf.R
-
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import java.lang.ref.WeakReference
-import java.util.Collections
+import java.util.*
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.ui.SelectionTracker"
@@ -283,10 +281,13 @@ class SelectionTracker<K : Any> private constructor(
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         init {
             itemView.setOnClickListener {
-                if (selectionTracker.hasSelection && getSelectionKey() != selectionTracker.unselectableKey) {
-                    selectionTracker.toggleSelection(getSelectionKey(), bindingAdapterPosition)
-                } else {
-                    onClick(it)
+                bindingAdapterPositionOrNull?.let { position ->
+                    val key = getSelectionKey(position)
+                    if (selectionTracker.hasSelection && key != selectionTracker.unselectableKey) {
+                        selectionTracker.toggleSelection(key, position)
+                    } else {
+                        onClick(it)
+                    }
                 }
             }
             itemView.setOnLongClickListener(this)
@@ -294,7 +295,9 @@ class SelectionTracker<K : Any> private constructor(
 
         @CallSuper
         open fun update() {
-            updateSelectionState(selectionTracker.isSelected(getSelectionKey()))
+            bindingAdapterPositionOrNull?.let {
+                updateSelectionState(selectionTracker.isSelected(getSelectionKey(it)))
+            }
         }
 
         open fun updateSelectionState(isSelected: Boolean) {
@@ -302,16 +305,18 @@ class SelectionTracker<K : Any> private constructor(
         }
 
         final override fun onLongClick(view: View): Boolean {
-            if (selectionTracker.hasSelection || getSelectionKey() == selectionTracker.unselectableKey) {
+            val position = bindingAdapterPositionOrNull ?: return false
+            val key = getSelectionKey(position)
+            if (selectionTracker.hasSelection || key == selectionTracker.unselectableKey) {
                 return false
             }
-            selectionTracker.toggleSelection(getSelectionKey(), bindingAdapterPosition)
+            selectionTracker.toggleSelection(key, position)
             selectionTracker.startActionMode()
             return true
         }
 
-        private fun getSelectionKey(): K {
-            return selectionTracker.selectionKeysProvider.getKeyForPosition(bindingAdapterPosition)
+        private fun getSelectionKey(position: Int): K {
+            return selectionTracker.selectionKeysProvider.getKeyForPosition(position)
         }
     }
 

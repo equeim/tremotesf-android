@@ -247,8 +247,8 @@ class TorrentsAdapter(
         override fun update() {
             super.update()
 
-            val oldTorrent = torrent
-            val torrent: Torrent = getItem(bindingAdapterPosition)
+            val torrent = bindingAdapterPositionOrNull?.let(::getItem) ?: return
+            val oldTorrent = this.torrent
             this.torrent = torrent
 
             if (oldTorrent?.name != torrent.name) {

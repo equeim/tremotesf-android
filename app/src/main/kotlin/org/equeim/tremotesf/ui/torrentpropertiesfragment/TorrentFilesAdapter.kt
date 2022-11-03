@@ -29,6 +29,7 @@ import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 
 
 class TorrentFilesAdapter(
@@ -66,7 +67,7 @@ class TorrentFilesAdapter(
     ) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()
-            val item = adapter.getItem(bindingAdapterPosition)!!
+            val item = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
             with(binding) {
                 progressBar.progress = (item.progress * 100).toInt()
                 val context = progressBar.context

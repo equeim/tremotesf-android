@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -140,3 +141,6 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? = if (Bu
     @Suppress("DEPRECATION")
     getParcelable(key)
 }
+
+val RecyclerView.ViewHolder.bindingAdapterPositionOrNull: Int?
+    get() = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }
