@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Déconnecté</string>
     <string name="connecting">Connexion\u2026</string>
     <string name="connected">Connecté</string>
@@ -49,21 +49,25 @@
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selectionné</item>
+        <item quantity="many">%d torrents sélectionnés</item>
         <item quantity="other">%d torrents sélectionnés</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one">%d fichier sélectionné</item>
+        <item quantity="many">%d fichiers sélectionnés</item>
         <item quantity="other">%d fichiers sélectionnés</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one">%d traqueur sélectionné</item>
+        <item quantity="many">%d traqueurs sélectionnés</item>
         <item quantity="other">%d traqueurs sélectionnés</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one">%d pair</item>
+        <item quantity="many">%d pairs</item>
         <item quantity="other">%d pairs</item>
     </plurals>
 
@@ -176,6 +180,7 @@
 
     <plurals name="servers_selected">
         <item quantity="one">%d serveur sélectionné</item>
+        <item quantity="many">%d serveurs sélectionnés</item>
         <item quantity="other">%d serveurs sélectionnés</item>
     </plurals>
 
@@ -185,6 +190,7 @@
 
     <plurals name="remove_servers_message">
         <item quantity="one">Voulez-vous vraiment supprimer %d serveur sélectionné ?</item>
+        <item quantity="many">Voulez-vous vraiment supprimer les %d serveurs sélectionnés ?</item>
         <item quantity="other">Voulez-vous vraiment supprimer les %d serveurs sélectionnés ?</item>
     </plurals>
 
@@ -286,6 +292,7 @@
 
     <plurals name="started_times">
         <item quantity="one">Démarré%d fois</item>
+        <item quantity="many">Démarré %d fois</item>
         <item quantity="other">Démarré %d fois</item>
     </plurals>
 
@@ -295,6 +302,7 @@
 
     <plurals name="remove_torrents_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer %d torrent sélectionné ?</item>
+        <item quantity="many">Êtes-vous sûr de vouloir supprimer les %d torrents sélectionnés ?</item>
         <item quantity="other">Êtes-vous sûr de vouloir supprimer les %d torrents sélectionnés ?</item>
     </plurals>
     <string name="delete_files">Supprimer aussi les fichiers du disque</string>
@@ -309,11 +317,13 @@
     <string name="torrent_paused">En pause</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Téléchargement depuis %d pair</item>
+        <item quantity="many">Téléchargement depuis %d pairs</item>
         <item quantity="other">Téléchargement depuis %d pairs</item>
     </plurals>
     <string name="torrent_downloading_stalled">Téléchargement</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Partage à %d pair</item>
+        <item quantity="many">Partage à %d pairs</item>
         <item quantity="other">Partage à %d pairs</item>
     </plurals>
     <string name="torrent_seeding_stalled">Partage</string>
@@ -323,6 +333,7 @@
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer %d traqueur sélectionné ?</item>
+        <item quantity="many">Êtes-vous sûr de vouloir supprimer les %d traqueurs sélectionnés ?</item>
         <item quantity="other">Êtes-vous sûr de vouloir supprimer les %d traqueurs sélectionnés ?</item>
     </plurals>
 
@@ -434,12 +445,6 @@
     <string name="auto_connect_on_wifi_network">Se connecter automatiquement à ce serveur lors de la connexion au réseau Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID du réseau Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Définir à partir du réseau Wi-Fi actuel</string>
-    <string name="location_permission_rationale">Tremotesf requiert l\'autorisation d\'accès à la localisation précise pour obtenir des informations sur le SSID Wi-Fi</string>
-    <string name="request_location_permission">Demander l\'autorisation de localisation</string>
-    <string name="background_wifi_networks_explanation_fdroid">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, activez la notification persistante dans les paramètres de l\'application ou accordez l\'autorisation de localisation en arrière-plan</string>
-    <string name="background_wifi_networks_explanation_google">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, activez la notification persistante dans les paramètres de l\'application</string>
-    <string name="background_location_permission_rationale">Tremotesf requiert l\'autorisation d\'accès à la localisation en arrière-plan pour obtenir des informations sur le SSID Wi-Fi en arrière-plan sans utiliser de notification persistante</string>
-    <string name="request_background_location_permission">Demander l\'autorisation de localisation en arrière-plan</string>
     <string name="background_location_permission_granted">Autorisation de localisation en arrière-plan accordée</string>
 
     <string name="runtime_permission_go_to_settings_rationale">Veuillez accorder cette autorisation à partir des paramètres système</string>
@@ -449,8 +454,6 @@
 
     <string name="request_enable_location">Veuillez activer la localisation dans les paramètres système</string>
     <string name="enable_location">Activer la localisation</string>
-
-    <string name="storage_permission_rationale_torrent">Tremotesf requiert l\'autorisation d\'accès au stockage pour ouvrir ce fichier torrent</string>
 
     <string name="torrents_filters">Filtres</string>
     <string name="transmission_settings">Paramètres de Transmission</string>
@@ -468,4 +471,5 @@
     <string name="prefs_color_theme_system">Couleurs du système</string>
     <string name="prefs_color_theme_red">Rouge</string>
     <string name="prefs_color_theme_teal">Bleu sarcelle</string>
-</resources>
+
+    </resources>
