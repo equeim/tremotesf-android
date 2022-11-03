@@ -30,6 +30,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import java.lang.ref.WeakReference
 
 
@@ -150,31 +151,23 @@ abstract class BaseTorrentFilesAdapter(
 
         init {
             checkBox.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != -1) {
-                    with(adapter) {
-                        filesTree.setItemsWanted(
-                            listOf(getItem(position)!!.nodePath.last()),
-                            checkBox.isChecked
-                        )
-                    }
+                bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
+                    adapter.filesTree.setItemsWanted(
+                        listOf(item.nodePath.last()),
+                        checkBox.isChecked
+                    )
                 }
             }
         }
 
         override fun onClick(view: View) {
-            val position = bindingAdapterPosition
-            if (position != -1) {
-                with(adapter) {
-                    filesTree.navigateDown(getItem(position)!!)
-                }
-            }
+            bindingAdapterPositionOrNull?.let(adapter::getItem)?.let(adapter.filesTree::navigateDown)
         }
 
         override fun update() {
             super.update()
 
-            val item = adapter.getItem(bindingAdapterPosition)!!
+            val item = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
 
             if (item.isDirectory != isDirectory) {
                 isDirectory = item.isDirectory
