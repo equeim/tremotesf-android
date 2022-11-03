@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Android 13 support
+- Themed icons support
+- Per-app language preferences support
+
+### Fixed
+- Keyboard now doesn't overlap app's UI elements
+- Fixed crashes
+- IPv6 address can now be used to connect to server
+
 ## [2.6.1] - 2022-05-10
 ### Added
 - Detailed connection error message can now be seen from main screen
