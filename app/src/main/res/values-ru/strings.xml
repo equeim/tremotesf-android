@@ -457,11 +457,11 @@
     <string name="wifi_ssid_hint">SSID Wi-Fi сети</string>
     <string name="wifi_ssid_set_from_current">Установить из текущей Wi-Fi сети</string>
     <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к точному местоположению</string>
-    <string name="request_location_permission">Запросить разрешение на доступ к местоположению</string>
-    <string name="background_wifi_networks_explanation_fdroid">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения либо предоставьте разрешение на фоновый доступ к местоположению</string>
+    <string name="request_location_permission">Разрешить доступ к местоположению</string>
+    <string name="background_wifi_networks_explanation_fdroid">Чтобы использовать эту функцию когда приложение находится в фоне, предоставьте разрешение на фоновый доступ к местоположению либо включите постоянное уведомление в настройках приложения</string>
     <string name="background_wifi_networks_explanation_google">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
-    <string name="background_location_permission_rationale">Для получения информации о SSID Wi-Fi сети когда приложение находится в фоне, требуется разрешение на фоновый доступ к местоположению</string>
-    <string name="request_background_location_permission">Запросить разрешение на фоновый доступ к местоположению</string>
+    <string name="background_location_permission_rationale">Для получения информации о SSID Wi-Fi сети когда приложение находится в фоне требуется разрешение на фоновый доступ к местоположению</string>
+    <string name="request_background_location_permission">Разрешить фоновый доступ к местоположению</string>
     <string name="background_location_permission_granted">Разрешение на фоновый доступ к местоположению предоставлено</string>
 
     <string name="runtime_permission_go_to_settings_rationale">Пожалуйста, предоставьте разрешение из системных настроек</string>
@@ -490,4 +490,11 @@
     <string name="prefs_color_theme_system">Системные цвета</string>
     <string name="prefs_color_theme_red">Красный</string>
     <string name="prefs_color_theme_teal">Бирюзовый</string>
+
+    <string name="see_detailed_error_message">Подробное сообщение об ошибке</string>
+    <string name="detailed_error_message">Подробное сообщение об ошибке</string>
+
+    <string name="notification_permission_rationale">Для показа уведомлений о торрентах требуется разрешение</string>
+    <string name="request_permission">Предоставить разрешение</string>
+    <string name="request_notification_permission">Предоставить разрешение на показ уведомлений</string>
 </resources>

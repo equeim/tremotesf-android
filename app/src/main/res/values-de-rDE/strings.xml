@@ -434,12 +434,12 @@
     <string name="auto_connect_on_wifi_network">Automatisch mit diesem Server verbinden, wenn mit Wi-Fi-Netzwerk verbunden</string>
     <string name="wifi_ssid_hint">Wi-Fi-Netzwerk-SSID</string>
     <string name="wifi_ssid_set_from_current">Aus aktuellem Wi-Fi-Netzwerk eingestellt</string>
-    <string name="location_permission_rationale">Tremotesf erfordert Zugriff auf die Berechtigung für den Standort, um Informationen über die Wi-Fi SSID zu erhalten</string>
-    <string name="request_location_permission">Berechtigung für Standort anfordern</string>
-    <string name="background_wifi_networks_explanation_fdroid">Um diese Funktion nutzen zu können während sich die App im Hintergrund befindet, aktivieren Sie bitte die dauerhaften Benachrichtigung in den App-Einstellungen oder gewähren die Berechtigung für den Standort im Hintergrund </string>
-    <string name="background_wifi_networks_explanation_google">Um diese Funktion nutzen zu können während sich die App im Hintergrund befindet, aktivieren Sie bitte die dauerhaften Benachrichtigung in den App-Einstellungen</string>
-    <string name="background_location_permission_rationale">Tremotesf erfordert Zugriff auf die Berechtigung für den Standort im Hintergrund, um Informationen über die Wi-Fi SSID im Hintergrund, ohne dauerhafte Benachrichtigung, zu erhalten</string>
-    <string name="request_background_location_permission">Berechtigung für Standort im Hintergrund anfordern</string>
+    <string name="location_permission_rationale">Tremotesf benötigt genaue Standortberechtigung, um Informationen über die WLAN-SSID zu erhalten</string>
+    <string name="request_location_permission">Berechtigung für Standort erteilen</string>
+    <string name="background_wifi_networks_explanation_fdroid">Um diese Funktion zu verwenden, wenn sich die App im Hintergrund befindet, erteilen Sie in den App-Einstellungen eine dauerhafte Benachrichtigung oder erteilen Sie die Berechtigung für Standort im Hintergrund</string>
+    <string name="background_wifi_networks_explanation_google">Um diese Funktion zu verwenden, wenn sich die App im Hintergrund befindet, erteilen Sie eine dauerhafte Benachrichtigung in den App-Einstellungen</string>
+    <string name="background_location_permission_rationale">Tremotesf benötigt die Berechtigung für Standort im Hintergrund, um Informationen über die Wi-Fi-SSID im Hintergrund zu erhalten, ohne eine dauerhafte Benachrichtigung zu verwenden</string>
+    <string name="request_background_location_permission">Berechtigung für Standort im Hintergrund erteilen</string>
     <string name="background_location_permission_granted">Berechtigung für Standort im Hintergrund gewährt</string>
 
     <string name="runtime_permission_go_to_settings_rationale">Bitte erlauben Sie die Berechtigung über die Systemeinstellungen</string>
@@ -468,4 +468,11 @@
     <string name="prefs_color_theme_system">Systemfarben</string>
     <string name="prefs_color_theme_red">Rot</string>
     <string name="prefs_color_theme_teal">Blaugrün</string>
+
+    <string name="see_detailed_error_message">Ausführliche Fehlermeldung anzeigen</string>
+    <string name="detailed_error_message">Ausführliche Fehlermeldung</string>
+
+    <string name="notification_permission_rationale">Tremotesf benötigt die Berechtigung für Benachrichtigung, um Benachrichtigungen über Torrents anzuzeigen</string>
+    <string name="request_permission">Berechtigung erteilen</string>
+    <string name="request_notification_permission">Berechtigung für Benachrichtung erteilen</string>
 </resources>
