@@ -199,8 +199,6 @@ abstract class QtTask : DefaultTask() {
         // Broken
         //"cborstreamreader",
         "cborstreamwriter",
-        "clock-gettime",
-        "clock-monotonic",
         "concatenatetablesproxymodel",
         // Broken
         //"datestring",
