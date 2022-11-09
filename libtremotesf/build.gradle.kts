@@ -10,20 +10,19 @@ plugins {
     alias(libs.plugins.tremotesf)
 }
 
-val sdkCmakeVersion: String = libs.versions.sdk.cmake.get()
+val sdkCmakeVersion: ModuleDescriptor.Version = ModuleDescriptor.Version.parse(libs.versions.sdk.cmake.get())
 logger.lifecycle("Version of CMake from SDK is $sdkCmakeVersion")
-val pathCmakeVersion = getCMakeVersionOrNull()
+val pathCmakeVersion: ModuleDescriptor.Version? = getCMakeVersionOrNull()?.let { version ->
+    runCatching { ModuleDescriptor.Version.parse(version) }.getOrElse {
+        logger.error("Failed to parse version of CMake from PATH: {}", version)
+        null
+    }
+}
 logger.lifecycle("Version of CMake from PATH is $pathCmakeVersion")
 
 fun isPathCmakeNewer(): Boolean {
     if (pathCmakeVersion == null) return false
-    val pathVersion = runCatching {
-        ModuleDescriptor.Version.parse(pathCmakeVersion)
-    }.getOrNull() ?: return false
-    val sdkVersion = runCatching {
-        ModuleDescriptor.Version.parse(sdkCmakeVersion)
-    }.getOrNull() ?: return false
-    return pathVersion > sdkVersion
+    return pathCmakeVersion > sdkCmakeVersion
 }
 val useCmakeFromPath = isPathCmakeNewer()
 val cmakeVersion = if (useCmakeFromPath) {
@@ -32,6 +31,10 @@ val cmakeVersion = if (useCmakeFromPath) {
 } else {
     logger.lifecycle("Using CMake from SDK")
     sdkCmakeVersion
+}
+val MINIMUM_CMAKE_VERSION = ModuleDescriptor.Version.parse("3.20.0")
+if (cmakeVersion < MINIMUM_CMAKE_VERSION) {
+    throw GradleException("CMake version ${cmakeVersion} is less than minimum version ${MINIMUM_CMAKE_VERSION}", null as Throwable?)
 }
 
 android {
@@ -48,7 +51,7 @@ android {
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
-        version = cmakeVersion
+        version = cmakeVersion.toString()
     }
 
     packagingOptions.jniLibs.keepDebugSymbols.add("**/*.so")
@@ -81,7 +84,7 @@ val qt by tasks.registering(QtTask::class) {
     dependsOn(qtPatches)
     rootDir.set(project.rootDir)
     minSdkVersion.set(libs.versions.sdk.platform.min)
-    cmakeVersion.set(this@Build_gradle.cmakeVersion)
+    cmakeVersion.set(this@Build_gradle.cmakeVersion.toString())
     opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
     sdkDir.set(android.sdkDirectory)
     ndkDir.set(android.ndkDirectory)
