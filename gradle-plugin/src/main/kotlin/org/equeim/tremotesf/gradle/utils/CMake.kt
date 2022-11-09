@@ -19,7 +19,7 @@ internal fun executeCMake(
     buildDir: File,
     logger: Logger,
     gradle: Gradle
-) =
+): ExecResult =
     executeCMakeImpl(
         when (mode) {
             CMakeMode.Build -> listOf(
@@ -40,40 +40,45 @@ internal fun executeCMake(
     )
 
 internal fun printCMakeInfo(cmakeBinaryDir: File?, logger: Logger) {
-    val cmakeVersion = getCMakeVersion(cmakeBinaryDir, logger)
-    val whichCmake = executeCommand(listOf("which", CMAKE), logger, outputMode = ExecOutputMode.CaptureOutput) {
-        cmakeBinaryDir?.let { prependPath(it) }
-    }.trimmedOutputString()
-    logger.lifecycle(
-        "Using {} from {}",
-        cmakeVersion.lineSequence().first().trim(),
-        whichCmake
-    )
+    val info = getCMakeInfoOrNull(cmakeBinaryDir, logger) ?: return
+    logger.lifecycle("Using CMake {} from {}", info.version, info.executablePath)
 }
 
-private fun getCMakeVersion(
+data class CMakeInfo(val executablePath: String, val version: String)
+
+fun getCMakeInfoOrNull(
     cmakeBinaryDir: File?,
     logger: Logger
-) = executeCMakeImpl(listOf("--version"), cmakeBinaryDir, logger, ExecOutputMode.CaptureOutput)
-    .runCatching {
-        outputString()
+): CMakeInfo? {
+    val execResult = runCatching {
+        executeCMakeImpl(listOf("--version"), cmakeBinaryDir, logger, ExecOutputMode.CaptureOutput)
+    }.getOrNull() ?: return null
+    val executablePath = execResult.executablePath ?: run {
+        logger.error("CMake executable path is unknown")
+        return null
+    }
+    val output = execResult.outputString()
+    val version = runCatching {
+        output
             .lineSequence()
             .first()
             .trim()
             .split(Regex("\\s"))
             .last()
     }.getOrElse {
-        throw RuntimeException("Failed to parse CMake version", it)
-    }.ifEmpty { throw RuntimeException("Failed to parse CMake version") }
-
-fun Project.getCMakeVersionOrNull(cmakeBinaryDir: File? = null) =
-    runCatching { getCMakeVersion(cmakeBinaryDir, logger) }.getOrNull()
+        logger.error("Failed to parse output of `cmake --version`", it)
+        logger.error("Output:")
+        System.err.println(output)
+        return null
+    }
+    return CMakeInfo(executablePath, version)
+}
 
 private fun executeCMakeImpl(
     args: List<String>,
     cmakeBinaryDir: File?,
     logger: Logger,
     outputMode: ExecOutputMode,
-) = executeCommand(listOf(cmakeBinaryDir?.resolve(CMAKE)?.toString() ?: CMAKE) + args, logger, outputMode = outputMode) {
+): ExecResult = executeCommand(listOf(cmakeBinaryDir?.resolve(CMAKE)?.toString() ?: CMAKE) + args, logger, outputMode = outputMode) {
     cmakeBinaryDir?.let { prependPath(it) }
 }
