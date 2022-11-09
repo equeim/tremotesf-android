@@ -90,7 +90,7 @@ internal fun executeCommand(
         val exitStatus = process.exitValue()
         val success = exitStatus == 0
         if (!ignoreExitStatus && !success) {
-            throw RuntimeException("Failed to execute '${commandLine.first()}': exit status $exitStatus")
+            throw RuntimeException("Exit status $exitStatus")
         }
         val endTime = System.nanoTime()
         return ExecResult(
@@ -103,7 +103,7 @@ internal fun executeCommand(
             Duration.ofNanos(endTime - startTime)
         )
     } catch (e: Exception) {
-        logger.error("Failed to execute {}", commandLine, e)
+        logger.error("Failed to execute {}: {}", commandLine, e.toString())
         if (outputMode is ExecOutputMode.RedirectOutputToFile) {
             logger.error("See process output in {}", outputMode.file)
             if (outputMode.printOnError) {
