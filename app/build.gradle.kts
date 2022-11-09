@@ -28,8 +28,8 @@ android {
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
-        versionCode = 4049
-        versionName = "2.7.0"
+        versionCode = 4050
+        versionName = "2.7.1"
 
         vectorDrawables.useSupportLibrary = true
     }

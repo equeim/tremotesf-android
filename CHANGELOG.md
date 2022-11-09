@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.1] - 2022-11-09
+### Fixed
+- Building app on Debian
+
 ## [2.7.0] - 2022-11-04
 ### Added
 - Android 13 support

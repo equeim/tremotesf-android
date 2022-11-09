@@ -1,0 +1,6 @@
+- Android 13 support
+- Themed icons support
+- Per-app language preferences support
+- Keyboard now doesn't overlap app's UI elements
+- Fixed crashes
+- IPv6 address can now be used to connect to server
