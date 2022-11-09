@@ -1,6 +1,6 @@
 [versions]
 android-gradle-plugin = "7.3.1"
-kotlin = "1.7.20"
+kotlin = "1.7.21"
 gradle-versions-plugin = "0.42.0"
 
 sdk-platform-compile = "33"
@@ -32,9 +32,9 @@ commons-text = "1.9"
 fastscroll = "2.1.0"
 leakcanary = "2.9.1"
 material = "1.7.0"
-publicsuffixlist = "107.0.4"
+publicsuffixlist = "107.0.6"
 timber = "5.0.1"
-threetenabp = "1.4.2"
+threetenabp = "1.4.3"
 
 junit = "4.13.2"
 
