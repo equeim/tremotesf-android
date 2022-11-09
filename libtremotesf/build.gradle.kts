@@ -11,20 +11,18 @@ plugins {
 }
 
 val sdkCmakeVersion: ModuleDescriptor.Version = ModuleDescriptor.Version.parse(libs.versions.sdk.cmake.get())
-logger.lifecycle("Version of CMake from SDK is $sdkCmakeVersion")
-val pathCmakeVersion: ModuleDescriptor.Version? = getCMakeVersionOrNull()?.let { version ->
-    runCatching { ModuleDescriptor.Version.parse(version) }.getOrElse {
-        logger.error("Failed to parse version of CMake from PATH: {}", version)
+logger.lifecycle("CMake version from SDK is $sdkCmakeVersion")
+
+val pathCmakeVersion: ModuleDescriptor.Version? = getCMakeInfoOrNull(null, logger)?.let { info ->
+    logger.lifecycle("CMake executable from PATH is ${info.executablePath}")
+    runCatching { ModuleDescriptor.Version.parse(info.version) }.getOrElse {
+        logger.error("Failed to parse version of CMake from PATH: {}", info.version)
         null
     }
 }
-logger.lifecycle("Version of CMake from PATH is $pathCmakeVersion")
+logger.lifecycle("CMake version from PATH is $pathCmakeVersion")
 
-fun isPathCmakeNewer(): Boolean {
-    if (pathCmakeVersion == null) return false
-    return pathCmakeVersion > sdkCmakeVersion
-}
-val useCmakeFromPath = isPathCmakeNewer()
+val useCmakeFromPath = pathCmakeVersion?.let { it > sdkCmakeVersion } ?: false
 val cmakeVersion = if (useCmakeFromPath) {
     logger.lifecycle("Using CMake from PATH")
     checkNotNull(pathCmakeVersion)
@@ -32,6 +30,7 @@ val cmakeVersion = if (useCmakeFromPath) {
     logger.lifecycle("Using CMake from SDK")
     sdkCmakeVersion
 }
+
 val MINIMUM_CMAKE_VERSION = ModuleDescriptor.Version.parse("3.20.0")
 if (cmakeVersion < MINIMUM_CMAKE_VERSION) {
     throw GradleException("CMake version ${cmakeVersion} is less than minimum version ${MINIMUM_CMAKE_VERSION}", null as Throwable?)

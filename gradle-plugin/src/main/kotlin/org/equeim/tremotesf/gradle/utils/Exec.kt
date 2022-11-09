@@ -24,7 +24,8 @@ internal sealed class ExecOutputMode {
 internal data class ExecResult(
     val success: Boolean,
     val output: ByteArray?,
-    val elapsedTime: Duration
+    val elapsedTime: Duration,
+    val executablePath: String?
 ) {
     fun outputString() = checkNotNull(output).toString(StandardCharsets.UTF_8)
     fun trimmedOutputString() = outputString().trim()
@@ -63,6 +64,7 @@ internal fun executeCommand(
     var outputStream: ByteArrayOutputStream? = null
     try {
         val process = builder.start()
+        val executablePath = process.info().command().orElse(null)
         runBlocking {
             when (inputMode) {
                 is ExecInputMode.InputString -> {
@@ -100,7 +102,8 @@ internal fun executeCommand(
             } else {
                 null
             },
-            Duration.ofNanos(endTime - startTime)
+            Duration.ofNanos(endTime - startTime),
+            executablePath
         )
     } catch (e: Exception) {
         logger.error("Failed to execute {}: {}", commandLine, e.toString())
