@@ -40,7 +40,7 @@ class ServerSettingsFragment : NavigationFragment(
     R.string.server_settings
 ) {
     private val binding by viewLifecycleObject(ServerSettingsFragmentBinding::bind)
-    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
+    private var connectSnackbar: Snackbar? by viewLifecycleObjectNullable()
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -71,25 +71,30 @@ class ServerSettingsFragment : NavigationFragment(
     }
 
     private fun updateView(status: Rpc.Status) {
-        snackbar?.dismiss()
-        snackbar = null
         when (status.connectionState) {
             RpcConnectionState.Disconnected -> {
-                snackbar = requireView().showSnackbar(
-                    "",
-                    Snackbar.LENGTH_INDEFINITE,
-                    R.string.connect,
-                    GlobalRpc.nativeInstance::connect
+                connectSnackbar = binding.root.showSnackbar(
+                    message = "",
+                    length = Snackbar.LENGTH_INDEFINITE,
+                    actionText = R.string.connect,
+                    action = GlobalRpc.nativeInstance::connect
                 ) {
-                    snackbar = null
+                    if (connectSnackbar == it) {
+                        connectSnackbar = null
+                    }
                 }
                 binding.placeholder.text = status.statusString
                 hideKeyboard()
             }
             RpcConnectionState.Connecting -> {
                 binding.placeholder.text = getString(R.string.connecting)
+                connectSnackbar?.dismiss()
+                connectSnackbar = null
             }
-            RpcConnectionState.Connected -> {}
+            RpcConnectionState.Connected -> {
+                connectSnackbar?.dismiss()
+                connectSnackbar = null
+            }
         }
 
         with(binding) {

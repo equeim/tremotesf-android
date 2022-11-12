@@ -142,7 +142,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
     }
 
     private val binding by viewLifecycleObject(AddTorrentFileFragmentBinding::bind)
-    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
+    private var connectSnackbar: Snackbar? by viewLifecycleObjectNullable()
 
     private var done = false
 
@@ -316,17 +316,19 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
                 if (parserStatus == AddTorrentFileModel.ParserStatus.Loaded) {
                     if (rpcStatus.connectionState == RpcConnectionState.Disconnected) {
-                        snackbar = coordinatorLayout.showSnackbar(
-                            "",
-                            Snackbar.LENGTH_INDEFINITE,
-                            R.string.connect,
-                            GlobalRpc.nativeInstance::connect,
+                        connectSnackbar = coordinatorLayout.showSnackbar(
+                            message = "",
+                            length = Snackbar.LENGTH_INDEFINITE,
+                            actionText = R.string.connect,
+                            action = GlobalRpc.nativeInstance::connect,
                         ) {
-                            snackbar = null
+                            if (connectSnackbar == it) {
+                                connectSnackbar = null
+                            }
                         }
                     } else {
-                        snackbar?.dismiss()
-                        snackbar = null
+                        connectSnackbar?.dismiss()
+                        connectSnackbar = null
                     }
                 }
             }
