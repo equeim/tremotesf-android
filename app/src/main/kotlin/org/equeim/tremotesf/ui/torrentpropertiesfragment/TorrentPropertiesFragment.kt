@@ -200,13 +200,17 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     private fun showTorrentRemovedMessage() {
         snackbar?.dismiss()
+        snackbar = null
         snackbar = binding.coordinatorLayout.showSnackbar(R.string.torrent_removed, Snackbar.LENGTH_INDEFINITE) {
-            snackbar = null
+            if (snackbar == it) {
+                snackbar = null
+            }
         }
     }
 
     private fun onConnectionStateChanged(connectionState: RpcConnectionState) {
         snackbar?.dismiss()
+        snackbar = null
         if (connectionState == RpcConnectionState.Disconnected) {
             snackbar = binding.coordinatorLayout.showSnackbar(
                 "",
@@ -214,7 +218,9 @@ class TorrentPropertiesFragment : NavigationFragment(
                 R.string.connect,
                 GlobalRpc.nativeInstance::connect
             ) {
-                snackbar = null
+                if (snackbar == it) {
+                    snackbar = null
+                }
             }
         }
 

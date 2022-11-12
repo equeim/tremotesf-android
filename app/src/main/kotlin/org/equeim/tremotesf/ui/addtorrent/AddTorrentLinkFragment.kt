@@ -47,7 +47,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
     private var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
-    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
+    private var connectSnackbar: Snackbar? by viewLifecycleObjectNullable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,24 +124,30 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         with(binding) {
             when (status.connectionState) {
                 RpcConnectionState.Disconnected -> {
-                    snackbar = requireView().showSnackbar(
-                        "",
-                        Snackbar.LENGTH_INDEFINITE,
-                        R.string.connect
-                    ) {
-                        snackbar = null
-                        GlobalRpc.nativeInstance.connect()
-                    }
                     placeholder.text = status.statusString
-
                     hideKeyboard()
+                    if (connectSnackbar == null) {
+                        connectSnackbar = coordinatorLayout.showSnackbar(
+                            message = "",
+                            length = Snackbar.LENGTH_INDEFINITE,
+                            actionText = R.string.connect,
+                            action = GlobalRpc.nativeInstance::connect,
+                        ) {
+                            if (connectSnackbar == it) {
+                                connectSnackbar = null
+                            }
+                        }
+                    }
                 }
                 RpcConnectionState.Connecting -> {
-                    snackbar?.dismiss()
-                    snackbar = null
+                    connectSnackbar?.dismiss()
+                    connectSnackbar = null
                     placeholder.text = getString(R.string.connecting)
                 }
-                RpcConnectionState.Connected -> {}
+                RpcConnectionState.Connected -> {
+                    connectSnackbar?.dismiss()
+                    connectSnackbar = null
+                }
             }
 
             if (status.isConnected) {
