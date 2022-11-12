@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.2] - 2022-11-12
+### Fixed
+- Crashes when snackbar is shown
+
 ## [2.7.1] - 2022-11-09
 ### Fixed
 - Building app on Debian
