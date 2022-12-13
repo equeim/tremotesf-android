@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
@@ -44,3 +46,12 @@ kotlinDslPluginOptions {
     jvmTarget.set(JavaVersion.VERSION_11.toString())
 }
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+
+afterEvaluate {
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            apiVersion = "1.6"
+            languageVersion = "1.6"
+        }
+    }
+}

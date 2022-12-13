@@ -25,7 +25,7 @@ private class DependencyVersionChecker {
     private val regex = "^[0-9,.v-]+(-r)?$".toRegex()
 
     fun isNonStable(version: String): Boolean {
-        val versionUppercase = version.toUpperCase(Locale.ROOT)
+        val versionUppercase = version.uppercase(Locale.ROOT)
         val hasStableKeyword = stableKeywords.any(versionUppercase::contains)
         val isStable = hasStableKeyword || regex.matches(version)
         return isStable.not()
