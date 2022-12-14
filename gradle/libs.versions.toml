@@ -1,7 +1,7 @@
 [versions]
 android-gradle-plugin = "7.3.1"
 kotlin = "1.7.21"
-gradle-versions-plugin = "0.42.0"
+gradle-versions-plugin = "0.44.0"
 
 sdk-platform-compile = "33"
 sdk-platform-min = "21"
@@ -18,7 +18,7 @@ androidx-appcompat = "1.5.1"
 androidx-collection = "1.2.0"
 androidx-core = "1.9.0"
 androidx-coordinatorlayout = "1.2.0"
-androidx-fragment = "1.5.4"
+androidx-fragment = "1.5.5"
 androidx-gridlayout = "1.0.0"
 androidx-lifecycle = "2.5.1"
 androidx-navigation = "2.5.3"
@@ -30,11 +30,11 @@ androidx-work = "2.7.1"
 
 commons-text = "1.9"
 fastscroll = "2.1.0"
-leakcanary = "2.9.1"
+leakcanary = "2.10"
 material = "1.7.0"
-publicsuffixlist = "107.0.6"
+publicsuffixlist = "108.0.8"
 timber = "5.0.1"
-threetenabp = "1.4.3"
+threetenabp = "1.4.4"
 
 junit = "4.13.2"
 
