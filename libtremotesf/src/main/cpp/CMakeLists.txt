@@ -14,12 +14,11 @@ find_package(Qt6 COMPONENTS Core Concurrent Network REQUIRED)
 set(Qt6QTlsBackendOpenSSLPlugin_DIR "${Qt6Network_DIR}")
 find_package(Qt6QTlsBackendOpenSSLPlugin REQUIRED)
 
-add_subdirectory(fmt)
+add_subdirectory(fmt EXCLUDE_FROM_ALL)
 
 set(TREMOTESF_QT6 ON CACHE BOOL "Build with Qt 6")
-set(TREMOTESF_SAILFISHOS OFF CACHE BOOL "Build for Sailfish OS")
 include(libtremotesf/cmake/CommonOptions.cmake)
-add_subdirectory(libtremotesf)
+add_subdirectory(libtremotesf EXCLUDE_FROM_ALL)
 
 add_library(
         ${PROJECT_NAME} SHARED
