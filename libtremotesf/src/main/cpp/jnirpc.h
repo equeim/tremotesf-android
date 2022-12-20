@@ -85,12 +85,12 @@ namespace libtremotesf
                             const QVariantList& highPriorityFiles,
                             const QVariantList& lowPriorityFiles,
                             const std::unordered_map<QString, QString>& renamedFiles,
-                            int bandwidthPriority,
+                            TorrentData::Priority bandwidthPriority,
                             bool start);
 
         void addTorrentLink(const QString& link,
                             const QString& downloadDirectory,
-                            int bandwidthPriority,
+                            TorrentData::Priority bandwidthPriority,
                             bool start);
 
         void startTorrents(const QVariantList& ids);
@@ -114,12 +114,12 @@ namespace libtremotesf
         void setTorrentDownloadSpeedLimit(TorrentData& data, int limit);
         void setTorrentUploadSpeedLimited(TorrentData& data, bool limited);
         void setTorrentUploadSpeedLimit(TorrentData& data, int limit);
-        void setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode);
+        void setTorrentRatioLimitMode(TorrentData& data, TorrentData::RatioLimitMode mode);
         void setTorrentRatioLimit(TorrentData& data, double limit);
         void setTorrentPeersLimit(TorrentData& data, int limit);
         void setTorrentHonorSessionLimits(TorrentData& data, bool honor);
-        void setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority);
-        void setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode);
+        void setTorrentBandwidthPriority(TorrentData& data, TorrentData::Priority priority);
+        void setTorrentIdleSeedingLimitMode(TorrentData& data, TorrentData::IdleSeedingLimitMode mode);
         void setTorrentIdleSeedingLimit(TorrentData& data, int limit);
         void setTorrentFilesEnabled(TorrentData& data, bool enabled);
         void setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted);
@@ -171,9 +171,9 @@ namespace libtremotesf
         Rpc* mRpc = nullptr;
     };
 
-    inline TorrentData moveFrom(TorrentData&& other) { return std::move(other); }
-    inline TorrentFile moveFrom(TorrentFile&& other) { return std::move(other); }
-    inline Peer moveFrom(Peer&& other) { return std::move(other); }
+    inline TorrentData moveFromVector(TorrentData& other) { return std::move(other); }
+    inline TorrentFile moveFromVector(TorrentFile& other) { return std::move(other); }
+    inline Peer moveFromVector(Peer& other) { return std::move(other); }
 }
 
 #endif // LIBTREMOTESF_JNIRPC_H

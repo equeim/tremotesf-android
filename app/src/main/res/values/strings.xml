@@ -132,8 +132,8 @@
     <string name="no_files">No files</string>
 
     <string name="tracker_inactive">Inactive</string>
-    <string name="tracker_active">Active</string>
-    <string name="tracker_queued">Queued</string>
+    <string name="tracker_waiting_for_update">Waiting for update</string>
+    <string name="tracker_queued_for_update">About to update</string>
     <string name="tracker_updating">Updating</string>
     <string name="tracker_error">Error: %s</string>
 
@@ -336,19 +336,33 @@
     <string name="uploaded_string">%1$s, uploaded %2$s</string>
 
     <string name="torrent_paused">Paused</string>
+    <string name="torrent_paused_with_error">Paused (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Downloading from %d peer</item>
         <item quantity="other">Downloading from %d peers</item>
     </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="one">Downloading from %1$d peer (%2$s)</item>
+        <item quantity="other">Downloading from %1$d peers (%2$s)</item>
+    </plurals>
     <string name="torrent_downloading_stalled">Downloading</string>
+    <string name="torrent_downloading_stalled_with_error">Downloading (%s)</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Seeding to %d peer</item>
         <item quantity="other">Seeding to %d peers</item>
     </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="one">Seeding to %1$d peer (%2$s)</item>
+        <item quantity="other">Seeding to %1$d peers (%2$s)</item>
+    </plurals>
     <string name="torrent_seeding_stalled">Seeding</string>
+    <string name="torrent_seeding_stalled_with_error">Seeding (%s)</string>
     <string name="torrent_queued">Queued</string>
-    <string name="torrent_checking">Checking (%s%%)</string>
+    <string name="torrent_queued_with_error">Queued (%s)</string>
+    <string name="torrent_checking">Checking: %s%%</string>
+    <string name="torrent_checking_with_error">Checking: %1$s%% (%2$s)</string>
     <string name="torrent_queued_for_checking">Queued for checking</string>
+    <string name="torrent_queued_for_checking_with_error">Queued for checking (%s)</string>
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Are you sure you want to remove %d selected tracker?</item>

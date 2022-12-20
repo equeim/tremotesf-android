@@ -119,8 +119,6 @@
     <string name="no_files">Sem arquivos</string>
 
     <string name="tracker_inactive">Inativo</string>
-    <string name="tracker_active">Ativo</string>
-    <string name="tracker_queued">Na fila</string>
     <string name="tracker_updating">Atualizando</string>
     <string name="tracker_error">Erro: %s</string>
 

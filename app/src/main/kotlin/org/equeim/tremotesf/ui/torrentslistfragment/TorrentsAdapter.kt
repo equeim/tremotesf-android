@@ -156,8 +156,10 @@ class TorrentsAdapter(
                     )
                 }
 
-                torrent.getStatusStringIfChanged(oldTorrent, context)?.let {
-                    statusTextView.text = it
+                torrent.getStatusString(context).let {
+                    if (!statusTextView.text.contentEquals(it)) {
+                        statusTextView.text = it
+                    }
                 }
             }
         }
@@ -254,18 +256,18 @@ class TorrentsAdapter(
             if (oldTorrent?.name != torrent.name) {
                 nameTextView.text = torrent.name
             }
-            val resId = when (torrent.status) {
-                TorrentData.Status.Paused -> R.drawable.ic_pause_24dp
-                TorrentData.Status.Downloading,
-                TorrentData.Status.StalledDownloading,
-                TorrentData.Status.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
-                TorrentData.Status.Seeding,
-                TorrentData.Status.StalledSeeding,
-                TorrentData.Status.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
-                TorrentData.Status.Checking,
-                TorrentData.Status.QueuedForChecking -> R.drawable.ic_refresh_24dp
-                TorrentData.Status.Errored -> R.drawable.ic_error_24dp
-                else -> 0
+            val resId = if (torrent.hasError) {
+                R.drawable.ic_error_24dp
+            } else {
+                when (torrent.status) {
+                    TorrentData.Status.Paused -> R.drawable.ic_pause_24dp
+                    TorrentData.Status.Downloading,
+                    TorrentData.Status.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
+                    TorrentData.Status.Seeding,
+                    TorrentData.Status.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
+                    TorrentData.Status.Checking,
+                    TorrentData.Status.QueuedForChecking -> R.drawable.ic_refresh_24dp
+                }
             }
             if (resId != iconResId) {
                 nameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(resId, 0, 0, 0)
@@ -301,11 +303,7 @@ class TorrentsAdapter(
             super.onPrepareActionMode(mode, menu)
 
             if (selectionTracker?.selectedCount == 1) {
-                val startEnabled = when (adapter.get()?.getFirstSelectedTorrent()?.status) {
-                    TorrentData.Status.Paused,
-                    TorrentData.Status.Errored -> true
-                    else -> false
-                }
+                val startEnabled = adapter.get()?.getFirstSelectedTorrent()?.status == TorrentData.Status.Paused
                 for (id in intArrayOf(R.id.start, R.id.start_now)) {
                     menu.findItem(id).isEnabled = startEnabled
                 }
@@ -389,54 +387,79 @@ class TorrentsAdapter(
     }
 }
 
-private fun Torrent.getStatusStringIfChanged(oldTorrent: Torrent?, context: Context): CharSequence? {
-    val statusChanged = oldTorrent?.status != status
+private fun Torrent.getStatusString(context: Context): CharSequence {
     return when (status) {
-        TorrentData.Status.Paused -> context.getTextIf(R.string.torrent_paused, statusChanged)
-        TorrentData.Status.Downloading -> if (statusChanged || oldTorrent?.seeders != seeders) {
-            context.resources.getQuantityString(
-                R.plurals.torrent_downloading,
-                seeders,
-                seeders
-            )
+        TorrentData.Status.Paused -> if (hasError) {
+            context.getString(R.string.torrent_paused_with_error, errorString)
         } else {
-            null
+            context.getText(R.string.torrent_paused)
         }
-        TorrentData.Status.StalledDownloading -> context.getTextIf(R.string.torrent_downloading_stalled, statusChanged)
-        TorrentData.Status.Seeding -> if (statusChanged || oldTorrent?.leechers != leechers) {
-            context.resources.getQuantityString(
-                R.plurals.torrent_seeding,
-                leechers,
-                leechers
-            )
+        TorrentData.Status.Downloading -> if (isDownloadingStalled) {
+            if (hasError) {
+                context.getString(R.string.torrent_downloading_stalled_with_error, errorString)
+            } else {
+                context.getText(R.string.torrent_downloading_stalled)
+            }
         } else {
-            null
+            if (hasError) {
+                context.resources.getQuantityString(
+                    R.plurals.torrent_downloading_with_error,
+                    seeders,
+                    seeders,
+                    errorString
+                )
+            } else {
+                context.resources.getQuantityString(
+                    R.plurals.torrent_downloading,
+                    seeders,
+                    seeders
+                )
+            }
         }
-        TorrentData.Status.StalledSeeding -> context.getTextIf(R.string.torrent_seeding_stalled, statusChanged)
+        TorrentData.Status.Seeding -> if (isSeedingStalled) {
+            if (hasError) {
+                context.getString(R.string.torrent_seeding_stalled_with_error, errorString)
+            } else {
+                context.getText(R.string.torrent_seeding_stalled)
+            }
+        } else {
+            if (hasError) {
+                context.resources.getQuantityString(
+                    R.plurals.torrent_seeding_with_error,
+                    leechers,
+                    leechers,
+                    errorString
+                )
+            } else {
+                context.resources.getQuantityString(
+                    R.plurals.torrent_seeding,
+                    leechers,
+                    leechers
+                )
+            }
+        }
         TorrentData.Status.QueuedForDownloading,
-        TorrentData.Status.QueuedForSeeding -> context.getTextIf(R.string.torrent_queued, statusChanged)
-        TorrentData.Status.Checking -> if (statusChanged || !(oldTorrent?.recheckProgress fuzzyEquals recheckProgress)) {
+        TorrentData.Status.QueuedForSeeding -> if (hasError) {
+            context.getString(R.string.torrent_queued_with_error, errorString)
+        } else {
+            context.getText(R.string.torrent_queued)
+        }
+        TorrentData.Status.Checking -> if (hasError) {
+            context.getString(
+                R.string.torrent_checking_with_error,
+                DecimalFormats.generic.format(recheckProgress * 100),
+                errorString
+            )
+        } else {
             context.getString(
                 R.string.torrent_checking,
                 DecimalFormats.generic.format(recheckProgress * 100)
             )
-        } else {
-            null
         }
-        TorrentData.Status.QueuedForChecking -> context.getTextIf(R.string.torrent_queued_for_checking, statusChanged)
-        TorrentData.Status.Errored -> if (statusChanged || oldTorrent?.errorString != errorString) {
-            errorString
+        TorrentData.Status.QueuedForChecking -> if (hasError) {
+            context.getString(R.string.torrent_queued_for_checking_with_error, errorString)
         } else {
-            null
+            context.getText(R.string.torrent_queued_for_checking)
         }
-        else -> null
-    }
-}
-
-private fun Context.getTextIf(@StringRes resId: Int, get: Boolean): CharSequence? {
-    return if (get) {
-        getText(resId)
-    } else {
-        null
     }
 }

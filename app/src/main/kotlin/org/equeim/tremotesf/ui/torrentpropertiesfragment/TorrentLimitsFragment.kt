@@ -38,23 +38,23 @@ class TorrentLimitsFragment :
 
         // Should match R.array.priority_items
         val priorityItems = arrayOf(
-            TorrentData.Priority.HighPriority,
-            TorrentData.Priority.NormalPriority,
-            TorrentData.Priority.LowPriority
+            TorrentData.Priority.High,
+            TorrentData.Priority.Normal,
+            TorrentData.Priority.Low
         )
 
         // Should match R.array.ratio_limit_mode
         val ratioLimitModeItems = arrayOf(
-            TorrentData.RatioLimitMode.GlobalRatioLimit,
-            TorrentData.RatioLimitMode.UnlimitedRatio,
-            TorrentData.RatioLimitMode.SingleRatioLimit
+            TorrentData.RatioLimitMode.Global,
+            TorrentData.RatioLimitMode.Unlimited,
+            TorrentData.RatioLimitMode.Single
         )
 
         // Should match R.array.idle_seeding_mode
         val idleSeedingModeItems = arrayOf(
-            TorrentData.IdleSeedingLimitMode.GlobalIdleSeedingLimit,
-            TorrentData.IdleSeedingLimitMode.UnlimitedIdleSeeding,
-            TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit
+            TorrentData.IdleSeedingLimitMode.Global,
+            TorrentData.IdleSeedingLimitMode.Unlimited,
+            TorrentData.IdleSeedingLimitMode.Single
         )
     }
 
@@ -132,7 +132,7 @@ class TorrentLimitsFragment :
 
             ratioLimitModeView.setOnItemClickListener { _, _, position, _ ->
                 val mode = ratioLimitModeItems[position]
-                ratioLimitLayout.isEnabled = (mode == TorrentData.RatioLimitMode.SingleRatioLimit)
+                ratioLimitLayout.isEnabled = (mode == TorrentData.RatioLimitMode.Single)
                 torrent?.setRatioLimitMode(mode)
             }
             ratioLimitEdit.doAfterTextChangedAndNotEmpty {
@@ -147,7 +147,7 @@ class TorrentLimitsFragment :
             idleSeedingModeView.setOnItemClickListener { _, _, position, _ ->
                 val mode = idleSeedingModeItems[position]
                 idleSeedingLimitLayout.isEnabled =
-                    (mode == TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit)
+                    (mode == TorrentData.IdleSeedingLimitMode.Single)
                 torrent?.setIdleSeedingLimitMode(mode)
             }
             idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
@@ -199,11 +199,11 @@ class TorrentLimitsFragment :
 
             ratioLimitLayout.isEnabled =
                 (ratioLimitModeView.text.toString() == ratioLimitModeItemValues[ratioLimitModeItems.indexOf(
-                    TorrentData.RatioLimitMode.SingleRatioLimit
+                    TorrentData.RatioLimitMode.Single
                 )])
             idleSeedingLimitLayout.isEnabled =
                 (idleSeedingModeView.text.toString() == idleSeedingModeItemValues[idleSeedingModeItems.indexOf(
-                    TorrentData.IdleSeedingLimitMode.SingleIdleSeedingLimit
+                    TorrentData.IdleSeedingLimitMode.Single
                 )])
         }
     }

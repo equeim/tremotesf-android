@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QLoggingCategory>
 #include <QPluginLoader>
 #include <QSslCertificate>
 #include <QSslConfiguration>
@@ -343,9 +344,9 @@ namespace libtremotesf
     JniRpc::JniRpc()
     {
         qRegisterMetaType<Server>();
-        qRegisterMetaType<Torrent::Priority>();
-        qRegisterMetaType<Torrent::RatioLimitMode>();
-        qRegisterMetaType<Torrent::IdleSeedingLimitMode>();
+        qRegisterMetaType<TorrentData::Priority>();
+        qRegisterMetaType<TorrentData::RatioLimitMode>();
+        qRegisterMetaType<TorrentData::IdleSeedingLimitMode>();
         qRegisterMetaType<TorrentFile::Priority>();
         qRegisterMetaType<ServerSettingsData::AlternativeSpeedLimitsDays>();
         qRegisterMetaType<ServerSettingsData::EncryptionMode>();
@@ -393,6 +394,13 @@ namespace libtremotesf
 
         __android_log_print(ANDROID_LOG_INFO, logTag, "exec() called");
         __android_log_print(ANDROID_LOG_INFO, logTag, "exec: started Qt thread, creating QCoreApplication");
+
+#ifdef NDEBUG
+        constexpr bool enableDebugLogs = false;
+#else
+        constexpr bool enableDebugLogs = true;
+#endif
+        QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, enableDebugLogs);
 
         new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationName(QLatin1String(logTag));
@@ -534,7 +542,7 @@ namespace libtremotesf
         runOnThread([=] { mRpc->setUpdateDisabled(disabled); });
     }
 
-    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, TorrentData::Priority bandwidthPriority, bool start)
     {
         auto file(std::make_shared<QFile>());
         if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
@@ -559,7 +567,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::addTorrentLink(const QString& link, const QString& downloadDirectory, int bandwidthPriority, bool start)
+    void JniRpc::addTorrentLink(const QString& link, const QString& downloadDirectory, TorrentData::Priority bandwidthPriority, bool start)
     {
         runOnThread([=] {
             mRpc->addTorrentLink(link, downloadDirectory, bandwidthPriority, start);
@@ -648,7 +656,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentRatioLimitMode(TorrentData& data, Torrent::RatioLimitMode mode)
+    void JniRpc::setTorrentRatioLimitMode(TorrentData& data, TorrentData::RatioLimitMode mode)
     {
         data.ratioLimitMode = mode;
         runOnTorrent(data.id, [=](Torrent* torrent) {
@@ -680,7 +688,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentBandwidthPriority(TorrentData& data, Torrent::Priority priority)
+    void JniRpc::setTorrentBandwidthPriority(TorrentData& data, TorrentData::Priority priority)
     {
         data.bandwidthPriority = priority;
         runOnTorrent(data.id, [=](Torrent* torrent) {
@@ -688,7 +696,7 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentIdleSeedingLimitMode(TorrentData& data, Torrent::IdleSeedingLimitMode mode)
+    void JniRpc::setTorrentIdleSeedingLimitMode(TorrentData& data, TorrentData::IdleSeedingLimitMode mode)
     {
         data.idleSeedingLimitMode = mode;
         runOnTorrent(data.id, [=](Torrent* torrent) {

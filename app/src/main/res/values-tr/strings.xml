@@ -127,8 +127,6 @@
     <string name="no_files">Dosya yok.</string>
 
     <string name="tracker_inactive">Ettkin değil</string>
-    <string name="tracker_active">Etkin</string>
-    <string name="tracker_queued">Sıraya alındı</string>
     <string name="tracker_updating">Güncelleniyor</string>
     <string name="tracker_error">Hata: %s</string>
 

@@ -45,10 +45,10 @@ import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 
 data class TrackersAdapterItem(
     val id: Int,
-    var announce: String,
-    var status: Tracker.Status,
-    var errorMessage: String,
-    var peers: Int,
+    val announce: String,
+    val status: Tracker.Status,
+    val errorMessage: String,
+    val peers: Int,
     private var nextUpdateTime: Long
 ) {
 
@@ -187,20 +187,17 @@ class TrackersAdapter(
             with(binding) {
                 nameTextView.text = tracker.announce
                 statusTextView.text = when (tracker.status) {
-                    Tracker.Status.Inactive -> context.getString(R.string.tracker_inactive)
-                    Tracker.Status.Active -> context.getString(R.string.tracker_active)
-                    Tracker.Status.Queued -> context.getString(R.string.tracker_queued)
-                    Tracker.Status.Updating -> context.getString(R.string.tracker_updating)
-                    else -> {
-                        if (tracker.errorMessage.isEmpty()) {
-                            context.getString(R.string.error)
-                        } else {
-                            context.getString(R.string.tracker_error, tracker.errorMessage)
-                        }
+                    Tracker.Status.Inactive -> if (tracker.errorMessage.isNotEmpty()) {
+                        context.getString(R.string.tracker_error, tracker.errorMessage)
+                    } else {
+                        context.getText(R.string.tracker_inactive)
                     }
+                    Tracker.Status.WaitingForUpdate -> context.getText(R.string.tracker_waiting_for_update)
+                    Tracker.Status.QueuedForUpdate -> context.getText(R.string.tracker_queued_for_update)
+                    Tracker.Status.Updating -> context.getText(R.string.tracker_updating)
                 }
 
-                if (tracker.status == Tracker.Status.Error) {
+                if (tracker.errorMessage.isNotEmpty()) {
                     peersTextView.visibility = View.GONE
                 } else {
                     peersTextView.text = context.resources.getQuantityString(

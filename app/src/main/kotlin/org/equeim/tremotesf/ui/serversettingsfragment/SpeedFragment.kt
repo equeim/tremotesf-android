@@ -164,20 +164,16 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
             }
 
             beginTimeItem.apply {
-                setTime(
-                    LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime.toLong())
-                )
+                setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime)
                 onTimeChangedListener = {
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = it.toSecondOfDay()
+                    GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = it
                 }
             }
 
             endTimeItem.apply {
-                setTime(
-                    LocalTime.ofSecondOfDay(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime.toLong())
-                )
+                setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime)
                 onTimeChangedListener = {
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = it.toSecondOfDay()
+                    GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = it
                 }
             }
 

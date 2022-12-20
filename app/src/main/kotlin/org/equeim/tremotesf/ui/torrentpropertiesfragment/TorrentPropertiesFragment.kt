@@ -291,13 +291,7 @@ class TorrentPropertiesFragment : NavigationFragment(
             menu.setGroupVisible(0, false)
         } else {
             menu.setGroupVisible(0, true)
-            val paused = when (torrent.status) {
-                TorrentData.Status.Paused,
-                TorrentData.Status.Errored -> true
-                else -> false
-            }
-
-            if (paused) {
+            if (torrent.status == TorrentData.Status.Paused) {
                 intArrayOf(R.id.pause)
             } else {
                 intArrayOf(R.id.start, R.id.start_now)

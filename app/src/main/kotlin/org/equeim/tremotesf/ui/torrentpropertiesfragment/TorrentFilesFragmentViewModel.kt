@@ -150,19 +150,19 @@ class RpcTorrentFilesTree(
 
         private fun TorrentFile.Priority.toTreeItemPriority(): Item.Priority {
             return when (this) {
-                TorrentFile.Priority.LowPriority -> Item.Priority.Low
-                TorrentFile.Priority.NormalPriority -> Item.Priority.Normal
-                TorrentFile.Priority.HighPriority -> Item.Priority.High
+                TorrentFile.Priority.Low -> Item.Priority.Low
+                TorrentFile.Priority.Normal -> Item.Priority.Normal
+                TorrentFile.Priority.High -> Item.Priority.High
                 else -> Item.Priority.Normal
             }
         }
 
         private fun Item.Priority.toTorrentFilePriority(): TorrentFile.Priority {
             return when (this) {
-                Item.Priority.Low -> TorrentFile.Priority.LowPriority
-                Item.Priority.Normal -> TorrentFile.Priority.NormalPriority
-                Item.Priority.High -> TorrentFile.Priority.HighPriority
-                else -> TorrentFile.Priority.NormalPriority
+                Item.Priority.Low -> TorrentFile.Priority.Low
+                Item.Priority.Normal -> TorrentFile.Priority.Normal
+                Item.Priority.High -> TorrentFile.Priority.High
+                else -> TorrentFile.Priority.Normal
             }
         }
     }

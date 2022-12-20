@@ -16,6 +16,7 @@
 %include <std_pair.i>
 
 %include "qbytearray.i"
+%include "qdatetime.i"
 %include "qstring.i"
 %include "qvariantlist.i"
 %include "qtime.i"
@@ -28,8 +29,8 @@
 #define QT_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
 // Try to keep it in sync with qtbase submodule
 #define QT_VERSION_MAJOR 6
-#define QT_VERSION_MINOR 2
-#define QT_VERSION_PATCH 4
+#define QT_VERSION_MINOR 4
+#define QT_VERSION_PATCH 1
 #define QT_VERSION QT_VERSION_CHECK(QT_VERSION_MAJOR, QT_VERSION_MINOR, QT_VERSION_PATCH)
 #define Q_NAMESPACE
 #define Q_OBJECT
@@ -40,6 +41,12 @@
 #define Q_INVOKABLE
 #define signals private
 
+#define SPECIALIZE_FORMATTER_FOR_Q_ENUM(T)
+#define FORMAT_CONST
+namespace fmt {}
+%ignore fmt::formatter;
+%ignore libtremotesf::SimpleFormatter;
+
 %immutable;
 
 namespace libtremotesf
@@ -48,11 +55,8 @@ namespace libtremotesf
     %typemap(javafinalize) JniRpc ""
 
     %ignore Torrent;
+    %ignore TorrentData::priorityToInt;
     %ignore TorrentData::update;
-    %ignore TorrentData::addedDate;
-    %ignore TorrentData::activityDate;
-    %ignore TorrentData::doneDate;
-    %ignore TorrentData::creationDate;
 
     %ignore TorrentFile::TorrentFile;
     %ignore TorrentFile::update;

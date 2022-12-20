@@ -34,9 +34,9 @@ abstract class AddTorrentFragment(
 ) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
     protected lateinit var priorityItems: Array<String>
     protected val priorityItemEnums = arrayOf(
-        TorrentData.Priority.HighPriority,
-        TorrentData.Priority.NormalPriority,
-        TorrentData.Priority.LowPriority
+        TorrentData.Priority.High,
+        TorrentData.Priority.Normal,
+        TorrentData.Priority.Low
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

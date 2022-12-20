@@ -3,89 +3,64 @@
 class QTime;
 
 // QTime
-%typemap(jni) QTime "jint"
-%typemap(jtype) QTime "int"
-%typemap(jstype) QTime "int"
-%typemap(javadirectorin) QTime "$jniinput"
-%typemap(javadirectorout) QTime "$javacall"
+%typemap(jni) QTime "jlong"
+%typemap(jtype) QTime "long"
+%typemap(jstype) QTime "org.threeten.bp.LocalTime"
+%typemap(javain) QTime "$javainput.toNanoOfDay()"
+%typemap(javaout) QTime { return org.threeten.bp.LocalTime.ofNanoOfDay($jnicall); }
+%typemap(javadirectorin) QTime "org.threeten.bp.LocalTime.ofNanoOfDay($jniinput)"
+%typemap(javadirectorout) QTime "$javacall.toNanoOfDay()"
 
 %typemap(in) QTime
 %{
-    if(!$input) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
-        return $null;
-    }
-    $1 = QTime::fromMSecsSinceStartOfDay($input * 1000);
+    $1 = QTime::fromMSecsSinceStartOfDay(static_cast<int>($input / jlong{1000000}));
 %}
 
 %typemap(directorout) QTime
 %{
-    if(!$input) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
-        return $null;
-    }
-    $result = QTime::fromMSecsSinceStartOfDay($input * 1000);
+    $result = QTime::fromMSecsSinceStartOfDay(static_cast<int>($input / jlong{1000000}));
 %}
 
-%typemap(directorin,descriptor="Ljava/util/Date;") QTime
+%typemap(directorin,descriptor="J") QTime
 %{
-    $input = $1.msecsSinceStartOfDay() / 1000;
+    $input = static_cast<jlong>($1.msecsSinceStartOfDay()) * jlong{1000000};
 %}
 
 %typemap(out) QTime
 %{
-    $result = $1.msecsSinceStartOfDay() / 1000;
+    $result = static_cast<jlong>($1.msecsSinceStartOfDay()) * jlong{1000000};
 %}
 
-%typemap(javain) QTime "$javainput"
-
-%typemap(javaout) QTime
-{
-    return $jnicall;
-}
-
-%typemap(jni) const QTime& "jint"
-%typemap(jtype) const QTime& "int"
-%typemap(jstype) const QTime& "int"
-%typemap(javadirectorin) const QTime& "$jniinput"
-%typemap(javadirectorout) const QTime& "$javacall"
+%typemap(jni) const QTime& "jlong"
+%typemap(jtype) const QTime& "long"
+%typemap(jstype) const QTime& "org.threeten.bp.LocalTime"
+%typemap(javain) const QTime& "$javainput.toNanoOfDay()"
+%typemap(javaout) const QTime& { return org.threeten.bp.LocalTime.ofNanoOfDay($jnicall); }
+%typemap(javadirectorin) const QTime& "org.threeten.bp.LocalTime.ofNanoOfDay($jniinput)"
+%typemap(javadirectorout) const QTime& "$javacall.toNanoOfDay()"
 
 %typemap(in) const QTime&
 %{
-    if(!$input) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
-        return $null;
-    }
-    QTime $1_str(QTime::fromMSecsSinceStartOfDay($input * 1000));
+    auto $1_str = QTime::fromMSecsSinceStartOfDay(static_cast<int>($input / jlong{1000000}));
     $1 = &$1_str;
 %}
 
 %typemap(directorout,warning=SWIGWARN_TYPEMAP_THREAD_UNSAFE_MSG) const QTime&
 %{
-    if(!$input) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QTime");
-        return $null;
-    }
     /* possible thread/reentrant code problem */
-    static QTime $1_str;
-    $1_str = QTime::fromMSecsSinceStartOfDay($input * 1000);
-    $result = &$1_str;
+    static QTime $1_static{};
+    $1_static = QTime::fromMSecsSinceStartOfDay(static_cast<int>($input / jlong{1000000}));
+    $result = &$1_static;
 %}
 
-%typemap(directorin,descriptor="Ljava/util/Date;") const QTime&
+%typemap(directorin,descriptor="J") const QTime&
 %{
-    $input = $1->msecsSinceStartOfDay() / 1000;
+    $input = static_cast<jlong>($1.msecsSinceStartOfDay()) * jlong{1000000};
 %}
 
 %typemap(out) const QTime& 
 %{
-    $result = $1->msecsSinceStartOfDay() / 1000;
+    $result = static_cast<jlong>($1->msecsSinceStartOfDay()) * jlong{1000000};
 %}
 
-%typemap(javain) const QTime& "$javainput"
-
-%typemap(javaout) const QTime&
-{
-    return $jnicall;
-}
 

@@ -111,7 +111,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         GlobalRpc.nativeInstance.addTorrentLink(
             torrentLinkEdit.text?.toString() ?: "",
             downloadDirectoryEdit.text.toString(),
-            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())].swigValue(),
+            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
             startDownloadingCheckBox.isChecked
         )
 

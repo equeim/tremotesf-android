@@ -99,8 +99,8 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             runBlocking(dispatchers.Unconfined) {
                 this@Rpc.onTorrentsUpdated(
                     removedIndexRanges,
-                    changed.map(libtremotesf::moveFrom),
-                    added.map(libtremotesf::moveFrom))
+                    changed.map(libtremotesf::moveFromVector),
+                    added.map(libtremotesf::moveFromVector))
             }
         }
 
@@ -137,7 +137,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
 
         override fun onTorrentFilesUpdated(torrentId: Int, files: TorrentFilesVector) =
             runFromNativeCallback {
-                onTorrentFilesUpdated(torrentId, files.map(libtremotesf::moveFrom))
+                onTorrentFilesUpdated(torrentId, files.map(libtremotesf::moveFromVector))
             }
 
         override fun onTorrentPeersUpdated(
@@ -149,8 +149,8 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             onTorrentPeersUpdated(
                 torrentId,
                 removedIndexRanges.map { it.first.rangeTo(it.second) },
-                changed.map(libtremotesf::moveFrom),
-                added.map(libtremotesf::moveFrom)
+                changed.map(libtremotesf::moveFromVector),
+                added.map(libtremotesf::moveFromVector)
             )
         }
 
