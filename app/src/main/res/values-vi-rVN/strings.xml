@@ -79,8 +79,6 @@
     <string name="no_files">Không có tệp</string>
 
     <string name="tracker_inactive">Không hoạt động</string>
-    <string name="tracker_active">Hoạt động</string>
-    <string name="tracker_queued">Đã đặt vào hàng đợi</string>
     <string name="tracker_error">Lỗi: %s</string>
 
     <string name="loading">Đang tải\u2026</string>

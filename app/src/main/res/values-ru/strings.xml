@@ -135,8 +135,6 @@
     <string name="no_files">Нет файлов</string>
 
     <string name="tracker_inactive">Неактивен</string>
-    <string name="tracker_active">Активен</string>
-    <string name="tracker_queued">В очереди</string>
     <string name="tracker_updating">Обновляется</string>
     <string name="tracker_error">Ошибка: %s</string>
 

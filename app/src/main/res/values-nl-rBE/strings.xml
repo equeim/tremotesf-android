@@ -124,8 +124,6 @@
     <string name="no_files">Geen bestanden</string>
 
     <string name="tracker_inactive">Inactief</string>
-    <string name="tracker_active">Actief</string>
-    <string name="tracker_queued">In wachtrij</string>
     <string name="tracker_updating">Bijwerken</string>
     <string name="tracker_error">Fout: %s</string>
 

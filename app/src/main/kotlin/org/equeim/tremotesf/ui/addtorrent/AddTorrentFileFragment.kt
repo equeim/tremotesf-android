@@ -243,7 +243,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             priorities.highPriorityFiles.toIntArray(),
             priorities.lowPriorityFiles.toIntArray(),
             StringMap().apply { putAll(model.renamedFiles) },
-            priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())].swigValue(),
+            priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())],
             infoFragment.binding.startDownloadingCheckBox.isChecked
         )
         infoFragment.directoriesAdapter.save()

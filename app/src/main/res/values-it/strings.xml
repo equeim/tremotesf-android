@@ -127,8 +127,6 @@
     <string name="no_files">Nessun file</string>
 
     <string name="tracker_inactive">Inattivo</string>
-    <string name="tracker_active">Attivo</string>
-    <string name="tracker_queued">In coda</string>
     <string name="tracker_updating">In aggiornamento</string>
     <string name="tracker_error">Errore: %s</string>
 

@@ -48,23 +48,21 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
-                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading) ||
-                        (torrent.status == TorrentData.Status.Seeding)
+                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading && !torrent.isDownloadingStalled) ||
+                        (torrent.status == TorrentData.Status.Seeding && !torrent.isSeedingStalled)
                 StatusFilterMode.Downloading -> when (torrent.status) {
                     TorrentData.Status.Downloading,
-                    TorrentData.Status.StalledDownloading,
                     TorrentData.Status.QueuedForDownloading -> true
                     else -> false
                 }
                 StatusFilterMode.Seeding -> when (torrent.status) {
                     TorrentData.Status.Seeding,
-                    TorrentData.Status.StalledSeeding,
                     TorrentData.Status.QueuedForSeeding -> true
                     else -> false
                 }
                 StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
                 StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking)
-                StatusFilterMode.Errored -> (torrent.status == TorrentData.Status.Errored)
+                StatusFilterMode.Errored -> (torrent.hasError)
                 StatusFilterMode.All -> true
             }
         }
@@ -268,7 +266,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     SortMode.Eta -> o1.eta.compareTo(o2.eta)
                     SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
                     SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
-                    SortMode.AddedDate -> o1.addedDateTime.compareTo(o2.addedDateTime)
+                    SortMode.AddedDate -> o1.addedDate.compareTo(o2.addedDate)
                 }
                 if (sortMode != SortMode.Name && compared == 0) {
                     compared = nameComparator.compare(o1.name, o2.name)

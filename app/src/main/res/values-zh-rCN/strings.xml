@@ -106,8 +106,6 @@
     <string name="no_files">无文件</string>
 
     <string name="tracker_inactive">未活动</string>
-    <string name="tracker_active">活动的</string>
-    <string name="tracker_queued">排队中</string>
     <string name="tracker_updating">正在更新</string>
     <string name="tracker_error">错误：%s</string>
 

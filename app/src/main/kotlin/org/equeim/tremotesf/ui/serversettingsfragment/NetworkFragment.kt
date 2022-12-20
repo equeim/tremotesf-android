@@ -37,9 +37,9 @@ class NetworkFragment : ServerSettingsFragment.BaseFragment(
     private companion object {
         // Should match R.array.encryption_items
         val encryptionItems = arrayOf(
-            ServerSettingsData.EncryptionMode.AllowedEncryption,
-            ServerSettingsData.EncryptionMode.PreferredEncryption,
-            ServerSettingsData.EncryptionMode.RequiredEncryption
+            ServerSettingsData.EncryptionMode.Allowed,
+            ServerSettingsData.EncryptionMode.Preferred,
+            ServerSettingsData.EncryptionMode.Required
         )
     }
 

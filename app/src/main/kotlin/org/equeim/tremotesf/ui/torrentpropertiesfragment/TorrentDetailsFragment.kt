@@ -70,7 +70,7 @@ class TorrentDetailsFragment :
             seedersTextView.text = torrent.seeders.toString()
             leechersTextView.text = torrent.leechers.toString()
             lastActivityTextView.text =
-                DateUtils.getRelativeTimeSpanString(torrent.data.activityDateTime)
+                DateUtils.getRelativeTimeSpanString(torrent.data.activityDate.toEpochMilli())
 
             totalSizeTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalSize)
 
@@ -81,8 +81,8 @@ class TorrentDetailsFragment :
 
             creatorTextView.text = torrent.data.creator
             creationDateTextView.text =
-                DateUtils.getRelativeTimeSpanString(torrent.data.creationDateTime)
-            addedDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.addedDateTime)
+                DateUtils.getRelativeTimeSpanString(torrent.data.creationDate.toEpochMilli())
+            addedDateTextView.text = DateUtils.getRelativeTimeSpanString(torrent.addedDate.toEpochMilli())
 
             val comment: String = torrent.data.comment
             if (!comment.contentEquals(commentTextView.text)) {

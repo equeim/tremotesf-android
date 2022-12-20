@@ -24,6 +24,7 @@ import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentFile
 import org.equeim.libtremotesf.Tracker
+import org.threeten.bp.Instant
 
 class Torrent private constructor(
     val data: TorrentData,
@@ -37,6 +38,9 @@ class Torrent private constructor(
     val name: String = data.name
 
     val status: TorrentData.Status = data.status
+    val isDownloadingStalled: Boolean = data.isDownloadingStalled
+    val isSeedingStalled: Boolean = data.isSeedingStalled
+    val hasError: Boolean = data.error != TorrentData.Error.None
     val errorString: String = data.errorString
 
     val totalSize = data.totalSize
@@ -57,7 +61,7 @@ class Torrent private constructor(
     val seeders = data.seeders
     val leechers = data.leechers
 
-    val addedDateTime: Long = data.addedDateTime
+    val addedDate: Instant = data.addedDate
 
     val downloadDirectory: String = data.downloadDirectory
 

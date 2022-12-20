@@ -131,8 +131,6 @@
     <string name="no_files">Aucun fichier</string>
 
     <string name="tracker_inactive">Inactif</string>
-    <string name="tracker_active">Actif</string>
-    <string name="tracker_queued">En attente</string>
     <string name="tracker_updating">Mise à jour en cours</string>
     <string name="tracker_error">Erreur : %s</string>
 

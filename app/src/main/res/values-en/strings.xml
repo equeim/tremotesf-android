@@ -124,8 +124,6 @@
     <string name="no_files">No files</string>
 
     <string name="tracker_inactive">Inactive</string>
-    <string name="tracker_active">Active</string>
-    <string name="tracker_queued">Queued</string>
     <string name="tracker_updating">Updating</string>
     <string name="tracker_error">Error: %s</string>
 
