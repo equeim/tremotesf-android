@@ -52,9 +52,9 @@ namespace fmt {}
 namespace libtremotesf
 {
     %ignore Rpc;
-    %typemap(javafinalize) JniRpc ""
 
     %ignore Torrent;
+    %ignore TorrentData::TorrentData;
     %ignore TorrentData::priorityToInt;
     %ignore TorrentData::update;
 
@@ -72,31 +72,18 @@ namespace libtremotesf
     %ignore SessionStats::update;
 
     %ignore ServerSettings;
+    %ignore ServerSettingsData::ServerSettingsData;
     %ignore JniServerSettingsData::JniServerSettingsData(ServerSettings*);
     %ignore Rpc::serverSettings;
-    %typemap(javafinalize) ServerSettingsData ""
-    %typemap(javafinalize) JniServerSettingsData ""
 }
 
-%typemap(javafinalize) std::vector<libtremotesf::TorrentData> ""
 %template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
-
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;
-
-%typemap(javafinalize) std::vector<libtremotesf::TorrentFile> ""
 %template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
-
-%typemap(javafinalize) std::vector<libtremotesf::Peer> ""
 %template(TorrentPeersVector) std::vector<libtremotesf::Peer>;
-
-%typemap(javafinalize) std::vector<QString> ""
 %template(StringsVector) std::vector<QString>;
-%typemap(javafinalize) std::unordered_map<QString, QString> ""
 %template(StringMap) std::unordered_map<QString, QString>;
-
-%typemap(javafinalize) std::pair<int, int> ""
 %template(IntPair) std::pair<int, int>;
-%typemap(javafinalize) std::vector<std::pair<int, int>> ""
 %template(IntPairVector) std::vector<std::pair<int, int>>;
 
 %include "libtremotesf/peer.h"
