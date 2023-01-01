@@ -1311,6 +1311,9 @@ SWIGINTERN void std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg__doRemoveRange(std::
         }
       }
 
+#include <memory>
+
+
 
 /* ---------------------------------------------------
  * C++ director class methods
@@ -1435,13 +1438,13 @@ void SwigDirector_JniRpc::onServerSettingsChanged(libtremotesf::JniServerSetting
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_JniRpc::onTorrentsUpdated(std::vector< std::pair< int,int > > const &removedIndexRanges,std::vector< libtremotesf::TorrentData > const &changed,std::vector< libtremotesf::TorrentData > const &added) {
+void SwigDirector_JniRpc::onTorrentsUpdated(std::vector< std::pair< int,int > > &&removedIndexRanges,std::vector< libtremotesf::TorrentData > &&changed,std::vector< libtremotesf::TorrentData > &&added) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
-  jlong jremovedIndexRanges = 0 ;
-  jlong jchanged = 0 ;
-  jlong jadded = 0 ;
+  jlong jremovedIndexRanges  ;
+  jlong jchanged  ;
+  jlong jadded  ;
   
   if (!swig_override[4]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentsUpdated.");
@@ -1464,12 +1467,12 @@ void SwigDirector_JniRpc::onTorrentsUpdated(std::vector< std::pair< int,int > > 
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_JniRpc::onTorrentFilesUpdated(int torrentId,std::vector< libtremotesf::TorrentFile > const &changed) {
+void SwigDirector_JniRpc::onTorrentFilesUpdated(int torrentId,std::vector< libtremotesf::TorrentFile > &&changed) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   jint jtorrentId  ;
-  jlong jchanged = 0 ;
+  jlong jchanged  ;
   
   if (!swig_override[5]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentFilesUpdated.");
@@ -1491,14 +1494,14 @@ void SwigDirector_JniRpc::onTorrentFilesUpdated(int torrentId,std::vector< libtr
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_JniRpc::onTorrentPeersUpdated(int torrentId,std::vector< std::pair< int,int > > const &removedIndexRanges,std::vector< libtremotesf::Peer > const &changed,std::vector< libtremotesf::Peer > const &added) {
+void SwigDirector_JniRpc::onTorrentPeersUpdated(int torrentId,std::vector< std::pair< int,int > > &&removedIndexRanges,std::vector< libtremotesf::Peer > &&changed,std::vector< libtremotesf::Peer > &&added) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   jint jtorrentId  ;
-  jlong jremovedIndexRanges = 0 ;
-  jlong jchanged = 0 ;
-  jlong jadded = 0 ;
+  jlong jremovedIndexRanges  ;
+  jlong jchanged  ;
+  jlong jadded  ;
   
   if (!swig_override[6]) {
     SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method libtremotesf::JniRpc::onTorrentPeersUpdated.");
@@ -8360,6 +8363,9 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   std::vector< std::pair< int,int > > *arg2 = 0 ;
   std::vector< libtremotesf::TorrentData > *arg3 = 0 ;
   std::vector< libtremotesf::TorrentData > *arg4 = 0 ;
+  std::unique_ptr< std::vector< std::pair< int,int > > > rvrdeleter2 ;
+  std::unique_ptr< std::vector< libtremotesf::TorrentData > > rvrdeleter3 ;
+  std::unique_ptr< std::vector< libtremotesf::TorrentData > > rvrdeleter4 ;
   SwigDirector_JniRpc *darg = 0;
   
   (void)jenv;
@@ -8371,21 +8377,24 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = *(std::vector< std::pair< int,int > > **)&jarg2;
   if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< std::pair< int,int > > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< std::pair< int,int > > && is null");
     return ;
-  } 
+  }
+  rvrdeleter2.reset(arg2); 
   arg3 = *(std::vector< libtremotesf::TorrentData > **)&jarg3;
   if (!arg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentData > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentData > && is null");
     return ;
-  } 
+  }
+  rvrdeleter3.reset(arg3); 
   arg4 = *(std::vector< libtremotesf::TorrentData > **)&jarg4;
   if (!arg4) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentData > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentData > && is null");
     return ;
-  } 
+  }
+  rvrdeleter4.reset(arg4); 
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onTorrentsUpdated((std::vector< std::pair< int,int > > const &)*arg2,(std::vector< libtremotesf::TorrentData > const &)*arg3,(std::vector< libtremotesf::TorrentData > const &)*arg4);
+  (darg)->onTorrentsUpdated((std::vector< std::pair< int,int > > &&)*arg2,(std::vector< libtremotesf::TorrentData > &&)*arg3,(std::vector< libtremotesf::TorrentData > &&)*arg4);
 }
 
 
@@ -8393,6 +8402,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   int arg2 ;
   std::vector< libtremotesf::TorrentFile > *arg3 = 0 ;
+  std::unique_ptr< std::vector< libtremotesf::TorrentFile > > rvrdeleter3 ;
   SwigDirector_JniRpc *darg = 0;
   
   (void)jenv;
@@ -8403,11 +8413,12 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   arg2 = (int)jarg2; 
   arg3 = *(std::vector< libtremotesf::TorrentFile > **)&jarg3;
   if (!arg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentFile > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::TorrentFile > && is null");
     return ;
-  } 
+  }
+  rvrdeleter3.reset(arg3); 
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onTorrentFilesUpdated(arg2,(std::vector< libtremotesf::TorrentFile > const &)*arg3);
+  (darg)->onTorrentFilesUpdated(arg2,(std::vector< libtremotesf::TorrentFile > &&)*arg3);
 }
 
 
@@ -8417,6 +8428,9 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   std::vector< std::pair< int,int > > *arg3 = 0 ;
   std::vector< libtremotesf::Peer > *arg4 = 0 ;
   std::vector< libtremotesf::Peer > *arg5 = 0 ;
+  std::unique_ptr< std::vector< std::pair< int,int > > > rvrdeleter3 ;
+  std::unique_ptr< std::vector< libtremotesf::Peer > > rvrdeleter4 ;
+  std::unique_ptr< std::vector< libtremotesf::Peer > > rvrdeleter5 ;
   SwigDirector_JniRpc *darg = 0;
   
   (void)jenv;
@@ -8429,21 +8443,24 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1onT
   arg2 = (int)jarg2; 
   arg3 = *(std::vector< std::pair< int,int > > **)&jarg3;
   if (!arg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< std::pair< int,int > > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< std::pair< int,int > > && is null");
     return ;
-  } 
+  }
+  rvrdeleter3.reset(arg3); 
   arg4 = *(std::vector< libtremotesf::Peer > **)&jarg4;
   if (!arg4) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::Peer > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::Peer > && is null");
     return ;
-  } 
+  }
+  rvrdeleter4.reset(arg4); 
   arg5 = *(std::vector< libtremotesf::Peer > **)&jarg5;
   if (!arg5) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::Peer > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< libtremotesf::Peer > && is null");
     return ;
-  } 
+  }
+  rvrdeleter5.reset(arg5); 
   darg = dynamic_cast<SwigDirector_JniRpc *>(arg1);
-  (darg)->onTorrentPeersUpdated(arg2,(std::vector< std::pair< int,int > > const &)*arg3,(std::vector< libtremotesf::Peer > const &)*arg4,(std::vector< libtremotesf::Peer > const &)*arg5);
+  (darg)->onTorrentPeersUpdated(arg2,(std::vector< std::pair< int,int > > &&)*arg3,(std::vector< libtremotesf::Peer > &&)*arg4,(std::vector< libtremotesf::Peer > &&)*arg5);
 }
 
 
