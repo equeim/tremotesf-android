@@ -33,6 +33,11 @@ public class TorrentDataVector extends java.util.AbstractList<TorrentData> imple
     return ptr;
   }
 
+  @SuppressWarnings("deprecation")
+  protected void finalize() {
+    delete();
+  }
+
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {

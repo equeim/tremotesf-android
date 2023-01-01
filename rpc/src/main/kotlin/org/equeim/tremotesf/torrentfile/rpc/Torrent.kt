@@ -20,6 +20,7 @@
 package org.equeim.tremotesf.torrentfile.rpc
 
 import mozilla.components.lib.publicsuffixlist.PublicSuffixList
+import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.StringsVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.libtremotesf.TorrentFile
@@ -133,11 +134,11 @@ class Torrent private constructor(
     }
 
     fun setFilesWanted(files: IntArray, wanted: Boolean) {
-        rpc.nativeInstance.setTorrentFilesWanted(data, files, wanted)
+        rpc.nativeInstance.setTorrentFilesWanted(data, IntVector(files), wanted)
     }
 
     fun setFilesPriority(files: IntArray, priority: TorrentFile.Priority) {
-        rpc.nativeInstance.setTorrentFilesPriority(data, files, priority)
+        rpc.nativeInstance.setTorrentFilesPriority(data, IntVector(files), priority)
     }
 
     fun addTrackers(announceUrls: List<String>) {
@@ -153,7 +154,7 @@ class Torrent private constructor(
     }
 
     fun removeTrackers(ids: IntArray) {
-        rpc.nativeInstance.torrentRemoveTrackers(data, ids)
+        rpc.nativeInstance.torrentRemoveTrackers(data, IntVector(ids))
     }
 
     internal companion object {

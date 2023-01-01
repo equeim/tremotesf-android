@@ -831,11 +831,7 @@ template <typename T> T SwigValueInit() {
 #include <stdexcept>
 
 
-#include <vector>
-#include <stdexcept>
-
-
-#include <unordered_map>
+#include <map>
 #include <stdexcept>
 
 
@@ -878,6 +874,10 @@ SWIGINTERN void SWIG_JavaException(JNIEnv *jenv, int code, const char *msg) {
 
 
 #include <utility>
+
+
+#include <vector>
+#include <stdexcept>
 
 
 /* Check for overflow converting to Java int (always signed 32-bit) from (unsigned variable-bit) size_t */
@@ -1164,20 +1164,20 @@ SWIGINTERN void std_vector_Sl_QString_Sg__doRemoveRange(std::vector< QString > *
           throw std::out_of_range("vector index out of range");
         }
       }
-SWIGINTERN std::unordered_map< QString,QString >::iterator std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(std::unordered_map< QString,QString >::iterator *self){
-          std::unordered_map< QString, QString >::iterator copy = (*self);
+SWIGINTERN std::map< QString,QString,std::less< QString > >::iterator std_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(std::map< QString,QString >::iterator *self){
+          std::map< QString, QString, std::less< QString > >::iterator copy = (*self);
           return ++copy;
         }
-SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot(std::unordered_map< QString,QString >::iterator const *self,std::unordered_map< QString,QString >::iterator other){
+SWIGINTERN bool std_map_Sl_QString_Sc_QString_Sg__iterator_isNot(std::map< QString,QString >::iterator const *self,std::map< QString,QString >::iterator other){
           return (*self != other);
         }
-SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey(std::unordered_map< QString,QString >::iterator const *self){
+SWIGINTERN QString std_map_Sl_QString_Sc_QString_Sg__iterator_getKey(std::map< QString,QString >::iterator const *self){
           return (*self)->first;
         }
-SWIGINTERN QString std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue(std::unordered_map< QString,QString >::iterator const *self){
+SWIGINTERN QString std_map_Sl_QString_Sc_QString_Sg__iterator_getValue(std::map< QString,QString >::iterator const *self){
           return (*self)->second;
         }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(std::unordered_map< QString,QString >::iterator *self,QString const &newValue){
+SWIGINTERN void std_map_Sl_QString_Sc_QString_Sg__iterator_setValue(std::map< QString,QString >::iterator *self,QString const &newValue){
           (*self)->second = newValue;
         }
 
@@ -1190,17 +1190,71 @@ SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(st
     return sz;
   }
 
-SWIGINTERN jint std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl(std::unordered_map< QString,QString > const *self){
+SWIGINTERN jint std_map_Sl_QString_Sc_QString_Sg__sizeImpl(std::map< QString,QString > const *self){
         return SWIG_MapSize(self->size());
       }
-SWIGINTERN bool std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(std::unordered_map< QString,QString > *self,QString const &key){
+SWIGINTERN bool std_map_Sl_QString_Sc_QString_Sg__containsImpl(std::map< QString,QString > *self,QString const &key){
         return (self->count(key) > 0);
       }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(std::unordered_map< QString,QString > *self,QString const &key,QString const &value){
+SWIGINTERN void std_map_Sl_QString_Sc_QString_Sg__putUnchecked(std::map< QString,QString > *self,QString const &key,QString const &value){
         (*self)[key] = value;
       }
-SWIGINTERN void std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(std::unordered_map< QString,QString > *self,std::unordered_map< QString,QString >::iterator const itr){
+SWIGINTERN void std_map_Sl_QString_Sc_QString_Sg__removeUnchecked(std::map< QString,QString > *self,std::map< QString,QString,std::less< QString > >::iterator const itr){
         self->erase(itr);
+      }
+SWIGINTERN std::vector< int > *new_std_vector_Sl_int_Sg___SWIG_2(jint count,int const &value){
+        if (count < 0)
+          throw std::out_of_range("vector count must be positive");
+        return new std::vector< int >(static_cast<std::vector< int >::size_type>(count), value);
+      }
+SWIGINTERN jint std_vector_Sl_int_Sg__doSize(std::vector< int > const *self){
+        return SWIG_VectorSize(self->size());
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doAdd__SWIG_0(std::vector< int > *self,std::vector< int >::value_type const &x){
+        self->push_back(x);
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doAdd__SWIG_1(std::vector< int > *self,jint index,std::vector< int >::value_type const &x){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= index && index <= size) {
+          self->insert(self->begin() + index, x);
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
+      }
+SWIGINTERN std::vector< int >::value_type std_vector_Sl_int_Sg__doRemove(std::vector< int > *self,jint index){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= index && index < size) {
+          int const old_value = SWIG_STD_MOVE((*self)[index]);
+          self->erase(self->begin() + index);
+          return old_value;
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
+      }
+SWIGINTERN std::vector< int >::value_type const &std_vector_Sl_int_Sg__doGet(std::vector< int > *self,jint index){
+        jint size = static_cast<jint>(self->size());
+        if (index >= 0 && index < size)
+          return (*self)[index];
+        else
+          throw std::out_of_range("vector index out of range");
+      }
+SWIGINTERN std::vector< int >::value_type std_vector_Sl_int_Sg__doSet(std::vector< int > *self,jint index,std::vector< int >::value_type const &val){
+        jint size = static_cast<jint>(self->size());
+        if (index >= 0 && index < size) {
+          int const old_value = (*self)[index];
+          (*self)[index] = val;
+          return old_value;
+        }
+        else
+          throw std::out_of_range("vector index out of range");
+      }
+SWIGINTERN void std_vector_Sl_int_Sg__doRemoveRange(std::vector< int > *self,jint fromIndex,jint toIndex){
+        jint size = static_cast<jint>(self->size());
+        if (0 <= fromIndex && fromIndex <= toIndex && toIndex <= size) {
+          self->erase(self->begin() + fromIndex, self->begin() + toIndex);
+        } else {
+          throw std::out_of_range("vector index out of range");
+        }
       }
 SWIGINTERN std::vector< std::pair< int,int > > *new_std_vector_Sl_std_pair_Sl_int_Sc_int_Sg__Sg___SWIG_2(jint count,std::pair< int,int > const &value){
         if (count < 0)
@@ -3197,69 +3251,69 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Str
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1StringMap_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString > *result = 0 ;
+  std::map< QString,QString > *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  result = (std::unordered_map< QString,QString > *)new std::unordered_map< QString,QString >();
-  *(std::unordered_map< QString,QString > **)&jresult = result; 
+  result = (std::map< QString,QString > *)new std::map< QString,QString >();
+  *(std::map< QString,QString > **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1StringMap_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = 0 ;
-  std::unordered_map< QString,QString > *result = 0 ;
+  std::map< QString,QString > *arg1 = 0 ;
+  std::map< QString,QString > *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1;
+  arg1 = *(std::map< QString,QString > **)&jarg1;
   if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::unordered_map< QString,QString > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::map< QString,QString > const & is null");
     return 0;
   } 
-  result = (std::unordered_map< QString,QString > *)new std::unordered_map< QString,QString >((std::unordered_map< QString,QString > const &)*arg1);
-  *(std::unordered_map< QString,QString > **)&jresult = result; 
+  result = (std::map< QString,QString > *)new std::map< QString,QString >((std::map< QString,QString > const &)*arg1);
+  *(std::map< QString,QString > **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getNextUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
-  std::unordered_map< QString,QString >::iterator result;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString,std::less< QString > >::iterator result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(arg1);
-  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
+  result = std_map_Sl_QString_Sc_QString_Sg__iterator_getNextUnchecked(arg1);
+  *(std::map< QString,QString,std::less< QString > >::iterator **)&jresult = new std::map< QString,QString,std::less< QString > >::iterator(SWIG_STD_MOVE(result)); 
   return jresult;
 }
 
 
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1isNot(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   jboolean jresult = 0 ;
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
-  std::unordered_map< QString,QString >::iterator arg2 ;
-  std::unordered_map< QString,QString >::iterator *argp2 ;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString >::iterator arg2 ;
+  std::map< QString,QString >::iterator *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  argp2 = *(std::unordered_map< QString,QString >::iterator **)&jarg2; 
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
+  argp2 = *(std::map< QString,QString >::iterator **)&jarg2; 
   if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::unordered_map< QString,QString >::iterator");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::map< QString,QString >::iterator");
     return 0;
   }
   arg2 = *argp2; 
-  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_isNot((std::unordered_map< QString,QString >::iterator const *)arg1,SWIG_STD_MOVE(arg2));
+  result = (bool)std_map_Sl_QString_Sc_QString_Sg__iterator_isNot((std::map< QString,QString >::iterator const *)arg1,SWIG_STD_MOVE(arg2));
   jresult = (jboolean)result; 
   return jresult;
 }
@@ -3267,14 +3321,14 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringM
 
 SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getKey(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
   QString result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getKey((std::unordered_map< QString,QString >::iterator const *)arg1);
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
+  result = std_map_Sl_QString_Sc_QString_Sg__iterator_getKey((std::map< QString,QString >::iterator const *)arg1);
   
   static_assert(sizeof(std::remove_pointer_t<decltype((&result)->utf16())>) == sizeof(jchar));
   jresult = jenv->NewString(reinterpret_cast<const jchar*>((&result)->utf16()), static_cast<jsize>((&result)->size()));
@@ -3285,14 +3339,14 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
 
 SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1getValue(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
   QString result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
-  result = std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_getValue((std::unordered_map< QString,QString >::iterator const *)arg1);
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
+  result = std_map_Sl_QString_Sc_QString_Sg__iterator_getValue((std::map< QString,QString >::iterator const *)arg1);
   
   static_assert(sizeof(std::remove_pointer_t<decltype((&result)->utf16())>) == sizeof(jchar));
   jresult = jenv->NewString(reinterpret_cast<const jchar*>((&result)->utf16()), static_cast<jsize>((&result)->size()));
@@ -3302,13 +3356,13 @@ SWIGEXPORT jstring JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMa
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1Iterator_1setValue(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
   QString *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
   
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null String");
@@ -3322,56 +3376,56 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
-  std_unordered_map_Sl_QString_Sc_QString_Sg__iterator_setValue(arg1,(QString const &)*arg2);
+  std_map_Sl_QString_Sc_QString_Sg__iterator_setValue(arg1,(QString const &)*arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1StringMap_1Iterator(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  std::unordered_map< QString,QString >::iterator *arg1 = (std::unordered_map< QString,QString >::iterator *) 0 ;
+  std::map< QString,QString >::iterator *arg1 = (std::map< QString,QString >::iterator *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(std::unordered_map< QString,QString >::iterator **)&jarg1; 
+  arg1 = *(std::map< QString,QString >::iterator **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1isEmpty(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
-  result = (bool)((std::unordered_map< QString,QString > const *)arg1)->empty();
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
+  result = (bool)((std::map< QString,QString > const *)arg1)->empty();
   jresult = (jboolean)result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1clear(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   (arg1)->clear();
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1find(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   QString *arg2 = 0 ;
-  std::unordered_map< QString,QString >::iterator result;
+  std::map< QString,QString >::iterator result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null String");
@@ -3386,52 +3440,52 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
   result = (arg1)->find((QString const &)*arg2);
-  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
+  *(std::map< QString,QString >::iterator **)&jresult = new std::map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1begin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
-  std::unordered_map< QString,QString >::iterator result;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
+  std::map< QString,QString >::iterator result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   result = (arg1)->begin();
-  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
+  *(std::map< QString,QString >::iterator **)&jresult = new std::map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1end(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
-  std::unordered_map< QString,QString >::iterator result;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
+  std::map< QString,QString >::iterator result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   result = (arg1)->end();
-  *(std::unordered_map< QString,QString >::iterator **)&jresult = new std::unordered_map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
+  *(std::map< QString,QString >::iterator **)&jresult = new std::map< QString,QString >::iterator(SWIG_STD_MOVE(result)); 
   return jresult;
 }
 
 
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1sizeImpl(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   jint result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   try {
-    result = std_unordered_map_Sl_QString_Sc_QString_Sg__sizeImpl((std::unordered_map< QString,QString > const *)arg1);
+    result = std_map_Sl_QString_Sc_QString_Sg__sizeImpl((std::map< QString,QString > const *)arg1);
   } catch(std::out_of_range &_e) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
     return 0;
@@ -3443,14 +3497,14 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
 
 SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1containsImpl(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   jboolean jresult = 0 ;
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   QString *arg2 = 0 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null String");
@@ -3464,21 +3518,21 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringM
   arg2 = &arg2_str;
   jenv->ReleaseStringChars(jarg2, arg2_pstr);
   
-  result = (bool)std_unordered_map_Sl_QString_Sc_QString_Sg__containsImpl(arg1,(QString const &)*arg2);
+  result = (bool)std_map_Sl_QString_Sc_QString_Sg__containsImpl(arg1,(QString const &)*arg2);
   jresult = (jboolean)result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1putUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jstring jarg3) {
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   QString *arg2 = 0 ;
   QString *arg3 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null String");
@@ -3505,36 +3559,36 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
-  std_unordered_map_Sl_QString_Sc_QString_Sg__putUnchecked(arg1,(QString const &)*arg2,(QString const &)*arg3);
+  std_map_Sl_QString_Sc_QString_Sg__putUnchecked(arg1,(QString const &)*arg2,(QString const &)*arg3);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_StringMap_1removeUnchecked(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
-  std::unordered_map< QString,QString >::iterator arg2 ;
-  std::unordered_map< QString,QString >::iterator const *argp2 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
+  std::map< QString,QString,std::less< QString > >::iterator arg2 ;
+  std::map< QString,QString,std::less< QString > >::iterator const *argp2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
-  argp2 = *(std::unordered_map< QString,QString >::iterator **)&jarg2; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
+  argp2 = *(std::map< QString,QString,std::less< QString > >::iterator **)&jarg2; 
   if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::unordered_map< QString,QString >::iterator const");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::map< QString,QString,std::less< QString > >::iterator const");
     return ;
   }
   arg2 = *argp2; 
-  std_unordered_map_Sl_QString_Sc_QString_Sg__removeUnchecked(arg1,SWIG_STD_MOVE(arg2));
+  std_map_Sl_QString_Sc_QString_Sg__removeUnchecked(arg1,SWIG_STD_MOVE(arg2));
 }
 
 
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1StringMap(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  std::unordered_map< QString,QString > *arg1 = (std::unordered_map< QString,QString > *) 0 ;
+  std::map< QString,QString > *arg1 = (std::map< QString,QString > *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(std::unordered_map< QString,QString > **)&jarg1; 
+  arg1 = *(std::map< QString,QString > **)&jarg1; 
   delete arg1;
 }
 
@@ -3622,6 +3676,276 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1Int
   (void)jenv;
   (void)jcls;
   arg1 = *(std::pair< int,int > **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_10(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (std::vector< int > *)new std::vector< int >();
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::vector< int > *arg1 = 0 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1;
+  if (!arg1) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
+    return 0;
+  } 
+  result = (std::vector< int > *)new std::vector< int >((std::vector< int > const &)*arg1);
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1capacity(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::size_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  result = ((std::vector< int > const *)arg1)->capacity();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1reserve(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::size_type arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = (std::vector< int >::size_type)jarg2; 
+  try {
+    (arg1)->reserve(arg2);
+  } catch(std::length_error &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1isEmpty(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  result = (bool)((std::vector< int > const *)arg1)->empty();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1clear(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  (arg1)->clear();
+}
+
+
+SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1IntVector_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
+  jlong jresult = 0 ;
+  jint arg1 ;
+  int *arg2 = 0 ;
+  int temp2 ;
+  std::vector< int > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = jarg1; 
+  temp2 = (int)jarg2; 
+  arg2 = &temp2; 
+  try {
+    result = (std::vector< int > *)new_std_vector_Sl_int_Sg___SWIG_2(SWIG_STD_MOVE(arg1),(int const &)*arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  *(std::vector< int > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doSize(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  try {
+    result = std_vector_Sl_int_Sg__doSize((std::vector< int > const *)arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doAdd_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  std::vector< int >::value_type *arg2 = 0 ;
+  std::vector< int >::value_type temp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  temp2 = (std::vector< int >::value_type)jarg2; 
+  arg2 = &temp2; 
+  std_vector_Sl_int_Sg__doAdd__SWIG_0(arg1,(int const &)*arg2);
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doAdd_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *arg3 = 0 ;
+  std::vector< int >::value_type temp3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  temp3 = (std::vector< int >::value_type)jarg3; 
+  arg3 = &temp3; 
+  try {
+    std_vector_Sl_int_Sg__doAdd__SWIG_1(arg1,SWIG_STD_MOVE(arg2),(int const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doRemove(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  try {
+    result = (std::vector< int >::value_type)std_vector_Sl_int_Sg__doRemove(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doGet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  try {
+    result = (std::vector< int >::value_type *) &std_vector_Sl_int_Sg__doGet(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)*result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doSet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  jint jresult = 0 ;
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  std::vector< int >::value_type *arg3 = 0 ;
+  std::vector< int >::value_type temp3 ;
+  std::vector< int >::value_type result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  temp3 = (std::vector< int >::value_type)jarg3; 
+  arg3 = &temp3; 
+  try {
+    result = (std::vector< int >::value_type)std_vector_Sl_int_Sg__doSet(arg1,SWIG_STD_MOVE(arg2),(int const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return 0;
+  }
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_IntVector_1doRemoveRange(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jint jarg3) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  jint arg2 ;
+  jint arg3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(std::vector< int > **)&jarg1; 
+  arg2 = jarg2; 
+  arg3 = jarg3; 
+  try {
+    std_vector_Sl_int_Sg__doRemoveRange(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, (&_e)->what());
+    return ;
+  }
+}
+
+
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1IntVector(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  std::vector< int > *arg1 = (std::vector< int > *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(std::vector< int > **)&jarg1; 
   delete arg1;
 }
 
@@ -5057,18 +5381,6 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1TorrentData(JNIEnv *jenv, jclass jcls) {
-  jlong jresult = 0 ;
-  libtremotesf::TorrentData *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  result = (libtremotesf::TorrentData *)new libtremotesf::TorrentData();
-  *(libtremotesf::TorrentData **)&jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_delete_1TorrentData(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
   
@@ -5880,6 +6192,21 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerS
 }
 
 
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1hasTableMode(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
+  result = (bool)((libtremotesf::ServerSettingsData const *)arg1)->hasTableMode();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSettingsData_1rpcVersion_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
   libtremotesf::ServerSettingsData *arg1 = (libtremotesf::ServerSettingsData *) 0 ;
@@ -6475,18 +6802,6 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_ServerSetti
   arg1 = *(libtremotesf::ServerSettingsData **)&jarg1; 
   result = (int) ((arg1)->maximumPeersGlobally);
   jresult = (jint)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1ServerSettingsData(JNIEnv *jenv, jclass jcls) {
-  jlong jresult = 0 ;
-  libtremotesf::ServerSettingsData *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  result = (libtremotesf::ServerSettingsData *)new libtremotesf::ServerSettingsData();
-  *(libtremotesf::ServerSettingsData **)&jresult = result; 
   return jresult;
 }
 
@@ -7215,20 +7530,23 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jintArray jarg4, jintArray jarg5, jintArray jarg6, jlong jarg7, jobject jarg7_, jint jarg8, jboolean jarg9) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1addTorrentFile(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jlong jarg4, jobject jarg4_, jlong jarg5, jobject jarg5_, jlong jarg6, jobject jarg6_, jlong jarg7, jobject jarg7_, jint jarg8, jboolean jarg9) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   int arg2 ;
   QString *arg3 = 0 ;
-  QVariantList *arg4 = 0 ;
-  QVariantList *arg5 = 0 ;
-  QVariantList *arg6 = 0 ;
-  std::unordered_map< QString,QString > *arg7 = 0 ;
+  std::vector< int > *arg4 = 0 ;
+  std::vector< int > *arg5 = 0 ;
+  std::vector< int > *arg6 = 0 ;
+  std::map< QString,QString,std::less< QString > > *arg7 = 0 ;
   libtremotesf::TorrentData::Priority arg8 ;
   bool arg9 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg4_;
+  (void)jarg5_;
+  (void)jarg6_;
   (void)jarg7_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = (int)jarg2; 
@@ -7245,68 +7563,29 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
   arg3 = &arg3_str;
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
-  
-  if(!jarg4) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg4 = *(std::vector< int > **)&jarg4;
+  if (!arg4) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg4_pstr = jenv->GetIntArrayElements(jarg4, 0);
-  if (!arg4_pstr) return ;
-  jsize arg4_len = jenv->GetArrayLength(jarg4);
-  QVariantList arg4_str;
-  if (arg4_len) {
-    arg4_str.reserve(arg4_len);
-    for (jsize i = 0; i < arg4_len; ++i) {
-      arg4_str.push_back(arg4_pstr[i]);
-    }
-  }
-  arg4 = &arg4_str;
-  jenv->ReleaseIntArrayElements(jarg4, arg4_pstr, 0);
-  
-  
-  if(!jarg5) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  } 
+  arg5 = *(std::vector< int > **)&jarg5;
+  if (!arg5) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg5_pstr = jenv->GetIntArrayElements(jarg5, 0);
-  if (!arg5_pstr) return ;
-  jsize arg5_len = jenv->GetArrayLength(jarg5);
-  QVariantList arg5_str;
-  if (arg5_len) {
-    arg5_str.reserve(arg5_len);
-    for (jsize i = 0; i < arg5_len; ++i) {
-      arg5_str.push_back(arg5_pstr[i]);
-    }
-  }
-  arg5 = &arg5_str;
-  jenv->ReleaseIntArrayElements(jarg5, arg5_pstr, 0);
-  
-  
-  if(!jarg6) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  } 
+  arg6 = *(std::vector< int > **)&jarg6;
+  if (!arg6) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg6_pstr = jenv->GetIntArrayElements(jarg6, 0);
-  if (!arg6_pstr) return ;
-  jsize arg6_len = jenv->GetArrayLength(jarg6);
-  QVariantList arg6_str;
-  if (arg6_len) {
-    arg6_str.reserve(arg6_len);
-    for (jsize i = 0; i < arg6_len; ++i) {
-      arg6_str.push_back(arg6_pstr[i]);
-    }
-  }
-  arg6 = &arg6_str;
-  jenv->ReleaseIntArrayElements(jarg6, arg6_pstr, 0);
-  
-  arg7 = *(std::unordered_map< QString,QString > **)&jarg7;
+  } 
+  arg7 = *(std::map< QString,QString,std::less< QString > > **)&jarg7;
   if (!arg7) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::unordered_map< QString,QString > const & is null");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::map< QString,QString,std::less< QString > > const & is null");
     return ;
   } 
   arg8 = (libtremotesf::TorrentData::Priority)jarg8; 
   arg9 = jarg9 ? true : false; 
-  (arg1)->addTorrentFile(arg2,(QString const &)*arg3,(QVariantList const &)*arg4,(QVariantList const &)*arg5,(QVariantList const &)*arg6,(std::unordered_map< QString,QString > const &)*arg7,arg8,arg9);
+  (arg1)->addTorrentFile(arg2,(QString const &)*arg3,(std::vector< int > const &)*arg4,(std::vector< int > const &)*arg5,(std::vector< int > const &)*arg6,(std::map< QString,QString,std::less< QString > > const &)*arg7,arg8,arg9);
 }
 
 
@@ -7353,216 +7632,132 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1add
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1startTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1startTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
-  (arg1)->startTorrents((QVariantList const &)*arg2);
+  } 
+  (arg1)->startTorrents((std::vector< int > const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1startTorrentsNow(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1startTorrentsNow(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
-  (arg1)->startTorrentsNow((QVariantList const &)*arg2);
+  } 
+  (arg1)->startTorrentsNow((std::vector< int > const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1pauseTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1pauseTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
-  (arg1)->pauseTorrents((QVariantList const &)*arg2);
+  } 
+  (arg1)->pauseTorrents((std::vector< int > const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1removeTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jboolean jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1removeTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jboolean jarg3) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   bool arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
+  } 
   arg3 = jarg3 ? true : false; 
-  (arg1)->removeTorrents((QVariantList const &)*arg2,arg3);
+  (arg1)->removeTorrents((std::vector< int > const &)*arg2,arg3);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1checkTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1checkTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
-  (arg1)->checkTorrents((QVariantList const &)*arg2);
+  } 
+  (arg1)->checkTorrents((std::vector< int > const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1reannounceTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1reannounceTorrents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
-  (arg1)->reannounceTorrents((QVariantList const &)*arg2);
+  } 
+  (arg1)->reannounceTorrents((std::vector< int > const &)*arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentsLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2, jstring jarg3, jboolean jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentsLocation(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jstring jarg3, jboolean jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
-  QVariantList *arg2 = 0 ;
+  std::vector< int > *arg2 = 0 ;
   QString *arg3 = 0 ;
   bool arg4 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
+  (void)jarg2_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
-  
-  if(!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg2 = *(std::vector< int > **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg2_pstr = jenv->GetIntArrayElements(jarg2, 0);
-  if (!arg2_pstr) return ;
-  jsize arg2_len = jenv->GetArrayLength(jarg2);
-  QVariantList arg2_str;
-  if (arg2_len) {
-    arg2_str.reserve(arg2_len);
-    for (jsize i = 0; i < arg2_len; ++i) {
-      arg2_str.push_back(arg2_pstr[i]);
-    }
-  }
-  arg2 = &arg2_str;
-  jenv->ReleaseIntArrayElements(jarg2, arg2_pstr, 0);
-  
+  } 
   
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null String");
@@ -7577,7 +7772,7 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
   jenv->ReleaseStringChars(jarg3, arg3_pstr);
   
   arg4 = jarg4 ? true : false; 
-  (arg1)->setTorrentsLocation((QVariantList const &)*arg2,(QString const &)*arg3,arg4);
+  (arg1)->setTorrentsLocation((std::vector< int > const &)*arg2,(QString const &)*arg3,arg4);
 }
 
 
@@ -7898,81 +8093,57 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1set
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesWanted(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3, jboolean jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesWanted(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jboolean jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::TorrentData *arg2 = 0 ;
-  QVariantList *arg3 = 0 ;
+  std::vector< int > *arg3 = 0 ;
   bool arg4 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
+  (void)jarg3_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = *(libtremotesf::TorrentData **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & is null");
     return ;
   } 
-  
-  if(!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg3 = *(std::vector< int > **)&jarg3;
+  if (!arg3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg3_pstr = jenv->GetIntArrayElements(jarg3, 0);
-  if (!arg3_pstr) return ;
-  jsize arg3_len = jenv->GetArrayLength(jarg3);
-  QVariantList arg3_str;
-  if (arg3_len) {
-    arg3_str.reserve(arg3_len);
-    for (jsize i = 0; i < arg3_len; ++i) {
-      arg3_str.push_back(arg3_pstr[i]);
-    }
-  }
-  arg3 = &arg3_str;
-  jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
-  
+  } 
   arg4 = jarg4 ? true : false; 
-  (arg1)->setTorrentFilesWanted(*arg2,(QVariantList const &)*arg3,arg4);
+  (arg1)->setTorrentFilesWanted(*arg2,(std::vector< int > const &)*arg3,arg4);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesPriority(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3, jint jarg4) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1setTorrentFilesPriority(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jint jarg4) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::TorrentData *arg2 = 0 ;
-  QVariantList *arg3 = 0 ;
+  std::vector< int > *arg3 = 0 ;
   libtremotesf::TorrentFile::Priority arg4 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
+  (void)jarg3_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = *(libtremotesf::TorrentData **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & is null");
     return ;
   } 
-  
-  if(!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg3 = *(std::vector< int > **)&jarg3;
+  if (!arg3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg3_pstr = jenv->GetIntArrayElements(jarg3, 0);
-  if (!arg3_pstr) return ;
-  jsize arg3_len = jenv->GetArrayLength(jarg3);
-  QVariantList arg3_str;
-  if (arg3_len) {
-    arg3_str.reserve(arg3_len);
-    for (jsize i = 0; i < arg3_len; ++i) {
-      arg3_str.push_back(arg3_pstr[i]);
-    }
-  }
-  arg3 = &arg3_str;
-  jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
-  
+  } 
   arg4 = (libtremotesf::TorrentFile::Priority)jarg4; 
-  (arg1)->setTorrentFilesPriority(*arg2,(QVariantList const &)*arg3,arg4);
+  (arg1)->setTorrentFilesPriority(*arg2,(std::vector< int > const &)*arg3,arg4);
 }
 
 
@@ -8035,40 +8206,28 @@ SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1tor
 }
 
 
-SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentRemoveTrackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jintArray jarg3) {
+SWIGEXPORT void JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_JniRpc_1torrentRemoveTrackers(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_) {
   libtremotesf::JniRpc *arg1 = (libtremotesf::JniRpc *) 0 ;
   libtremotesf::TorrentData *arg2 = 0 ;
-  QVariantList *arg3 = 0 ;
+  std::vector< int > *arg3 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
+  (void)jarg3_;
   arg1 = *(libtremotesf::JniRpc **)&jarg1; 
   arg2 = *(libtremotesf::TorrentData **)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData & is null");
     return ;
   } 
-  
-  if(!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null QVariantList");
+  arg3 = *(std::vector< int > **)&jarg3;
+  if (!arg3) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< int > const & is null");
     return ;
-  }
-  jint* arg3_pstr = jenv->GetIntArrayElements(jarg3, 0);
-  if (!arg3_pstr) return ;
-  jsize arg3_len = jenv->GetArrayLength(jarg3);
-  QVariantList arg3_str;
-  if (arg3_len) {
-    arg3_str.reserve(arg3_len);
-    for (jsize i = 0; i < arg3_len; ++i) {
-      arg3_str.push_back(arg3_pstr[i]);
-    }
-  }
-  arg3 = &arg3_str;
-  jenv->ReleaseIntArrayElements(jarg3, arg3_pstr, 0);
-  
-  (arg1)->torrentRemoveTrackers(*arg2,(QVariantList const &)*arg3);
+  } 
+  (arg1)->torrentRemoveTrackers(*arg2,(std::vector< int > const &)*arg3);
 }
 
 

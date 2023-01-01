@@ -33,6 +33,11 @@ public class ServerSettingsData {
     return ptr;
   }
 
+  @SuppressWarnings("deprecation")
+  protected void finalize() {
+    delete();
+  }
+
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
@@ -53,6 +58,10 @@ public class ServerSettingsData {
 
   public boolean hasSessionIdFile() {
     return libtremotesfJNI.ServerSettingsData_hasSessionIdFile(swigCPtr, this);
+  }
+
+  public boolean hasTableMode() {
+    return libtremotesfJNI.ServerSettingsData_hasTableMode(swigCPtr, this);
   }
 
   public int getRpcVersion() {
@@ -205,10 +214,6 @@ public class ServerSettingsData {
 
   public int getMaximumPeersGlobally() {
     return libtremotesfJNI.ServerSettingsData_maximumPeersGlobally_get(swigCPtr, this);
-  }
-
-  public ServerSettingsData() {
-    this(libtremotesfJNI.new_ServerSettingsData(), true);
   }
 
   public enum AlternativeSpeedLimitsDays {

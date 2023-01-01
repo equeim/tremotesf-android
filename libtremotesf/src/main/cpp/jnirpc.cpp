@@ -542,7 +542,7 @@ namespace libtremotesf
         runOnThread([=] { mRpc->setUpdateDisabled(disabled); });
     }
 
-    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const QVariantList& unwantedFiles, const QVariantList& highPriorityFiles, const QVariantList& lowPriorityFiles, const std::unordered_map<QString, QString>& renamedFiles, TorrentData::Priority bandwidthPriority, bool start)
+    void JniRpc::addTorrentFile(int fd, const QString& downloadDirectory, const std::vector<int>& unwantedFiles, const std::vector<int>& highPriorityFiles, const std::vector<int>& lowPriorityFiles, const std::map<QString, QString>& renamedFiles, TorrentData::Priority bandwidthPriority, bool start)
     {
         auto file(std::make_shared<QFile>());
         if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle)) {
@@ -550,18 +550,14 @@ namespace libtremotesf
             return;
         }
         file->seek(0);
-        QVariantMap renamed;
-        for (const auto& i : renamedFiles) {
-            renamed.insert(i.first, i.second);
-        }
-        runOnThread([=, file = std::move(file), renamed = std::move(renamed)]() mutable {
+        runOnThread([=, file = std::move(file)]() mutable {
             mRpc->addTorrentFile(
                     std::move(file),
                     downloadDirectory,
                     unwantedFiles,
                     highPriorityFiles,
                     lowPriorityFiles,
-                    renamed,
+                    renamedFiles,
                     bandwidthPriority,
                     start);
         });
@@ -574,37 +570,37 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::startTorrents(const QVariantList& ids)
+    void JniRpc::startTorrents(const std::vector<int>& ids)
     {
         runOnThread([=] { mRpc->startTorrents(ids); });
     }
 
-    void JniRpc::startTorrentsNow(const QVariantList& ids)
+    void JniRpc::startTorrentsNow(const std::vector<int>& ids)
     {
         runOnThread([=] { mRpc->startTorrentsNow(ids); });
     }
 
-    void JniRpc::pauseTorrents(const QVariantList& ids)
+    void JniRpc::pauseTorrents(const std::vector<int>& ids)
     {
         runOnThread([=] { mRpc->pauseTorrents(ids); });
     }
 
-    void JniRpc::removeTorrents(const QVariantList& ids, bool deleteFiles)
+    void JniRpc::removeTorrents(const std::vector<int>& ids, bool deleteFiles)
     {
         runOnThread([=] { mRpc->removeTorrents(ids, deleteFiles); });
     }
 
-    void JniRpc::checkTorrents(const QVariantList& ids)
+    void JniRpc::checkTorrents(const std::vector<int>& ids)
     {
         runOnThread([=] { mRpc->checkTorrents(ids); });
     }
 
-    void JniRpc::reannounceTorrents(const QVariantList& ids)
+    void JniRpc::reannounceTorrents(const std::vector<int>& ids)
     {
         runOnThread([=] { mRpc->reannounceTorrents(ids); });
     }
 
-    void JniRpc::setTorrentsLocation(const QVariantList& ids, const QString& location, bool moveFiles)
+    void JniRpc::setTorrentsLocation(const std::vector<int>& ids, const QString& location, bool moveFiles)
     {
         runOnThread([=] { mRpc->setTorrentsLocation(ids, location, moveFiles); });
     }
@@ -719,17 +715,17 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::setTorrentFilesWanted(TorrentData& data, const QVariantList& files, bool wanted)
+    void JniRpc::setTorrentFilesWanted(TorrentData& data, const std::vector<int>& fileIds, bool wanted)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->setFilesWanted(files, wanted);
+            torrent->setFilesWanted(fileIds, wanted);
         });
     }
 
-    void JniRpc::setTorrentFilesPriority(TorrentData& data, const QVariantList& files, TorrentFile::Priority priority)
+    void JniRpc::setTorrentFilesPriority(TorrentData& data, const std::vector<int>& fileIds, TorrentFile::Priority priority)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->setFilesPriority(files, priority);
+            torrent->setFilesPriority(fileIds, priority);
         });
     }
 
@@ -752,10 +748,10 @@ namespace libtremotesf
         });
     }
 
-    void JniRpc::torrentRemoveTrackers(TorrentData& data, const QVariantList& ids)
+    void JniRpc::torrentRemoveTrackers(TorrentData& data, const std::vector<int>& trackerIds)
     {
         runOnTorrent(data.id, [=](Torrent* torrent) {
-            torrent->removeTrackers(ids);
+            torrent->removeTrackers(trackerIds);
         });
     }
 

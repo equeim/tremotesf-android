@@ -42,6 +42,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
@@ -168,11 +169,11 @@ class TorrentPropertiesFragment : NavigationFragment(
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
         val torrent = model.torrent.value ?: return false
         when (menuItem.itemId) {
-            R.id.start -> GlobalRpc.nativeInstance.startTorrents(intArrayOf(torrent.id))
-            R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(intArrayOf(torrent.id))
-            R.id.check -> GlobalRpc.nativeInstance.checkTorrents(intArrayOf(torrent.id))
-            R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(intArrayOf(torrent.id))
-            R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(intArrayOf(torrent.id))
+            R.id.start -> GlobalRpc.nativeInstance.startTorrents(IntVector(listOf(torrent.id)))
+            R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(IntVector(listOf(torrent.id)))
+            R.id.check -> GlobalRpc.nativeInstance.checkTorrents(IntVector(listOf(torrent.id)))
+            R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(IntVector(listOf(torrent.id)))
+            R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(IntVector(listOf(torrent.id)))
             R.id.set_location -> navigate(
                 TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
                     intArrayOf(torrent.id),

@@ -45,6 +45,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
+import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
@@ -239,9 +240,9 @@ class AddTorrentFileFragment : AddTorrentFragment(
         GlobalRpc.nativeInstance.addTorrentFile(
             fd,
             infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
-            priorities.unwantedFiles.toIntArray(),
-            priorities.highPriorityFiles.toIntArray(),
-            priorities.lowPriorityFiles.toIntArray(),
+            IntVector(priorities.unwantedFiles),
+            IntVector(priorities.highPriorityFiles),
+                IntVector(priorities.lowPriorityFiles),
             StringMap().apply { putAll(model.renamedFiles) },
             priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())],
             infoFragment.binding.startDownloadingCheckBox.isChecked

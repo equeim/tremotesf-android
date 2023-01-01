@@ -23,6 +23,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
 import androidx.navigation.fragment.navArgs
+import org.equeim.libtremotesf.IntVector
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -51,7 +52,7 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
             },
             {
                 GlobalRpc.nativeInstance.setTorrentsLocation(
-                    args.torrentIds,
+                    IntVector(args.torrentIds),
                     it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
                     it.moveFilesCheckBox.isChecked
                 )

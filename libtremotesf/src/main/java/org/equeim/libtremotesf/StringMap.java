@@ -33,6 +33,11 @@ public class StringMap extends java.util.AbstractMap<String, String> {
     return ptr;
   }
 
+  @SuppressWarnings("deprecation")
+  protected void finalize() {
+    delete();
+  }
+
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
