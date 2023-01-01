@@ -25,9 +25,9 @@ import android.text.TextUtils
 import android.view.*
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
+import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
@@ -323,20 +323,16 @@ class TorrentsAdapter(
             val selectionTracker = this.selectionTracker ?: return false
             val adapter = this.adapter.get() ?: return false
 
-            val getTorrentIds = {
-                selectionTracker.selectedKeys.toIntArray()
-            }
-
             when (item.itemId) {
-                R.id.start -> GlobalRpc.nativeInstance.startTorrents(getTorrentIds())
-                R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(getTorrentIds())
-                R.id.check -> GlobalRpc.nativeInstance.checkTorrents(getTorrentIds())
-                R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(getTorrentIds())
-                R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(getTorrentIds())
+                R.id.start -> GlobalRpc.nativeInstance.startTorrents(IntVector(selectionTracker.selectedKeys))
+                R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(IntVector(selectionTracker.selectedKeys))
+                R.id.check -> GlobalRpc.nativeInstance.checkTorrents(IntVector(selectionTracker.selectedKeys))
+                R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(IntVector(selectionTracker.selectedKeys))
+                R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(IntVector(selectionTracker.selectedKeys))
                 R.id.set_location -> {
                     activity.navigate(
                         TorrentsListFragmentDirections.toTorrentSetLocationDialog(
-                            getTorrentIds(),
+                            selectionTracker.selectedKeys.toIntArray(),
                             adapter.getFirstSelectedTorrent().downloadDirectory
                         )
                     )
@@ -353,7 +349,7 @@ class TorrentsAdapter(
                 }
                 R.id.remove -> activity.navigate(
                     TorrentsListFragmentDirections.toRemoveTorrentDialog(
-                        getTorrentIds()
+                        selectionTracker.selectedKeys.toIntArray()
                     )
                 )
                 R.id.share -> {

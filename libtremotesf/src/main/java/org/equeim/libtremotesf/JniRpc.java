@@ -33,6 +33,11 @@ public class JniRpc {
     return ptr;
   }
 
+  @SuppressWarnings("deprecation")
+  protected void finalize() {
+    delete();
+  }
+
   public synchronized void delete() {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
@@ -87,40 +92,40 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_setUpdateDisabled(swigCPtr, this, disabled);
   }
 
-  public void addTorrentFile(int fd, String downloadDirectory, int[] unwantedFiles, int[] highPriorityFiles, int[] lowPriorityFiles, StringMap renamedFiles, TorrentData.Priority bandwidthPriority, boolean start) {
-    libtremotesfJNI.JniRpc_addTorrentFile(swigCPtr, this, fd, downloadDirectory, unwantedFiles, highPriorityFiles, lowPriorityFiles, StringMap.getCPtr(renamedFiles), renamedFiles, bandwidthPriority.swigValue(), start);
+  public void addTorrentFile(int fd, String downloadDirectory, IntVector unwantedFiles, IntVector highPriorityFiles, IntVector lowPriorityFiles, StringMap renamedFiles, TorrentData.Priority bandwidthPriority, boolean start) {
+    libtremotesfJNI.JniRpc_addTorrentFile(swigCPtr, this, fd, downloadDirectory, IntVector.getCPtr(unwantedFiles), unwantedFiles, IntVector.getCPtr(highPriorityFiles), highPriorityFiles, IntVector.getCPtr(lowPriorityFiles), lowPriorityFiles, StringMap.getCPtr(renamedFiles), renamedFiles, bandwidthPriority.swigValue(), start);
   }
 
   public void addTorrentLink(String link, String downloadDirectory, TorrentData.Priority bandwidthPriority, boolean start) {
     libtremotesfJNI.JniRpc_addTorrentLink(swigCPtr, this, link, downloadDirectory, bandwidthPriority.swigValue(), start);
   }
 
-  public void startTorrents(int[] ids) {
-    libtremotesfJNI.JniRpc_startTorrents(swigCPtr, this, ids);
+  public void startTorrents(IntVector ids) {
+    libtremotesfJNI.JniRpc_startTorrents(swigCPtr, this, IntVector.getCPtr(ids), ids);
   }
 
-  public void startTorrentsNow(int[] ids) {
-    libtremotesfJNI.JniRpc_startTorrentsNow(swigCPtr, this, ids);
+  public void startTorrentsNow(IntVector ids) {
+    libtremotesfJNI.JniRpc_startTorrentsNow(swigCPtr, this, IntVector.getCPtr(ids), ids);
   }
 
-  public void pauseTorrents(int[] ids) {
-    libtremotesfJNI.JniRpc_pauseTorrents(swigCPtr, this, ids);
+  public void pauseTorrents(IntVector ids) {
+    libtremotesfJNI.JniRpc_pauseTorrents(swigCPtr, this, IntVector.getCPtr(ids), ids);
   }
 
-  public void removeTorrents(int[] ids, boolean deleteFiles) {
-    libtremotesfJNI.JniRpc_removeTorrents(swigCPtr, this, ids, deleteFiles);
+  public void removeTorrents(IntVector ids, boolean deleteFiles) {
+    libtremotesfJNI.JniRpc_removeTorrents(swigCPtr, this, IntVector.getCPtr(ids), ids, deleteFiles);
   }
 
-  public void checkTorrents(int[] ids) {
-    libtremotesfJNI.JniRpc_checkTorrents(swigCPtr, this, ids);
+  public void checkTorrents(IntVector ids) {
+    libtremotesfJNI.JniRpc_checkTorrents(swigCPtr, this, IntVector.getCPtr(ids), ids);
   }
 
-  public void reannounceTorrents(int[] ids) {
-    libtremotesfJNI.JniRpc_reannounceTorrents(swigCPtr, this, ids);
+  public void reannounceTorrents(IntVector ids) {
+    libtremotesfJNI.JniRpc_reannounceTorrents(swigCPtr, this, IntVector.getCPtr(ids), ids);
   }
 
-  public void setTorrentsLocation(int[] ids, String location, boolean moveFiles) {
-    libtremotesfJNI.JniRpc_setTorrentsLocation(swigCPtr, this, ids, location, moveFiles);
+  public void setTorrentsLocation(IntVector ids, String location, boolean moveFiles) {
+    libtremotesfJNI.JniRpc_setTorrentsLocation(swigCPtr, this, IntVector.getCPtr(ids), ids, location, moveFiles);
   }
 
   public void renameTorrentFile(int torrentId, String filePath, String newName) {
@@ -183,12 +188,12 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_setTorrentFilesEnabled(swigCPtr, this, TorrentData.getCPtr(data), data, enabled);
   }
 
-  public void setTorrentFilesWanted(TorrentData data, int[] files, boolean wanted) {
-    libtremotesfJNI.JniRpc_setTorrentFilesWanted(swigCPtr, this, TorrentData.getCPtr(data), data, files, wanted);
+  public void setTorrentFilesWanted(TorrentData data, IntVector fileIds, boolean wanted) {
+    libtremotesfJNI.JniRpc_setTorrentFilesWanted(swigCPtr, this, TorrentData.getCPtr(data), data, IntVector.getCPtr(fileIds), fileIds, wanted);
   }
 
-  public void setTorrentFilesPriority(TorrentData data, int[] files, TorrentFile.Priority priority) {
-    libtremotesfJNI.JniRpc_setTorrentFilesPriority(swigCPtr, this, TorrentData.getCPtr(data), data, files, priority.swigValue());
+  public void setTorrentFilesPriority(TorrentData data, IntVector fileIds, TorrentFile.Priority priority) {
+    libtremotesfJNI.JniRpc_setTorrentFilesPriority(swigCPtr, this, TorrentData.getCPtr(data), data, IntVector.getCPtr(fileIds), fileIds, priority.swigValue());
   }
 
   public void torrentAddTrackers(TorrentData data, StringsVector announceUrls) {
@@ -199,8 +204,8 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_torrentSetTracker(swigCPtr, this, TorrentData.getCPtr(data), data, trackerId, announce);
   }
 
-  public void torrentRemoveTrackers(TorrentData data, int[] ids) {
-    libtremotesfJNI.JniRpc_torrentRemoveTrackers(swigCPtr, this, TorrentData.getCPtr(data), data, ids);
+  public void torrentRemoveTrackers(TorrentData data, IntVector trackerIds) {
+    libtremotesfJNI.JniRpc_torrentRemoveTrackers(swigCPtr, this, TorrentData.getCPtr(data), data, IntVector.getCPtr(trackerIds), trackerIds);
   }
 
   public void setTorrentPeersEnabled(TorrentData data, boolean enabled) {

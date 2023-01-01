@@ -11,14 +11,13 @@
 %include "enums.swg"
 %javaconst(1);
 
-%include <std_vector.i>
-%include <std_unordered_map.i>
+%include <std_map.i>
 %include <std_pair.i>
+%include <std_vector.i>
 
 %include "qbytearray.i"
 %include "qdatetime.i"
 %include "qstring.i"
-%include "qvariantlist.i"
 %include "qtime.i"
 
 %ignore QT_VERSION_MAJOR;
@@ -82,8 +81,9 @@ namespace libtremotesf
 %template(TorrentFilesVector) std::vector<libtremotesf::TorrentFile>;
 %template(TorrentPeersVector) std::vector<libtremotesf::Peer>;
 %template(StringsVector) std::vector<QString>;
-%template(StringMap) std::unordered_map<QString, QString>;
+%template(StringMap) std::map<QString, QString>;
 %template(IntPair) std::pair<int, int>;
+%template(IntVector) std::vector<int>;
 %template(IntPairVector) std::vector<std::pair<int, int>>;
 
 %include "libtremotesf/peer.h"

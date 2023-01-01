@@ -234,10 +234,6 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_isSeedingStalled(swigCPtr, this);
   }
 
-  public TorrentData() {
-    this(libtremotesfJNI.new_TorrentData(), true);
-  }
-
   public enum Status {
     Paused,
     QueuedForChecking,
@@ -447,6 +443,47 @@ public class TorrentData {
 
     @SuppressWarnings("unused")
     private IdleSeedingLimitMode(IdleSeedingLimitMode swigEnum) {
+      this.swigValue = swigEnum.swigValue;
+      SwigNext.next = this.swigValue+1;
+    }
+
+    private final int swigValue;
+
+    private static class SwigNext {
+      private static int next = 0;
+    }
+  }
+
+  public enum UpdateKey {
+  ;
+
+    public final int swigValue() {
+      return swigValue;
+    }
+
+    public static UpdateKey swigToEnum(int swigValue) {
+      UpdateKey[] swigValues = UpdateKey.class.getEnumConstants();
+      if (swigValue < swigValues.length && swigValue >= 0 && swigValues[swigValue].swigValue == swigValue)
+        return swigValues[swigValue];
+      for (UpdateKey swigEnum : swigValues)
+        if (swigEnum.swigValue == swigValue)
+          return swigEnum;
+      throw new IllegalArgumentException("No enum " + UpdateKey.class + " with value " + swigValue);
+    }
+
+    @SuppressWarnings("unused")
+    private UpdateKey() {
+      this.swigValue = SwigNext.next++;
+    }
+
+    @SuppressWarnings("unused")
+    private UpdateKey(int swigValue) {
+      this.swigValue = swigValue;
+      SwigNext.next = swigValue+1;
+    }
+
+    @SuppressWarnings("unused")
+    private UpdateKey(UpdateKey swigEnum) {
       this.swigValue = swigEnum.swigValue;
       SwigNext.next = this.swigValue+1;
     }
