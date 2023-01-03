@@ -20,6 +20,8 @@
 package org.equeim.tremotesf.ui
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.IdRes
@@ -35,10 +37,7 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragment
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
+import org.equeim.tremotesf.ui.addtorrent.*
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
 
@@ -50,18 +49,9 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
 
     fun getAddTorrentDirections(intent: Intent): AddTorrentDirections? {
         if (intent.action != Intent.ACTION_VIEW) return null
-        val data = intent.data ?: return null
-        return when (intent.scheme) {
-            in AddTorrentFileFragment.SCHEMES -> AddTorrentDirections(
-                R.id.add_torrent_file_fragment,
-                AddTorrentFileFragmentArgs(data).toBundle()
-            )
-            in AddTorrentLinkFragment.SCHEMES -> AddTorrentDirections(
-                R.id.add_torrent_link_fragment,
-                AddTorrentLinkFragmentArgs(data).toBundle()
-            )
-            else -> null
-        }
+        return intent.data
+            ?.toTorrentUri(getApplication(), checkContentUriType = false)
+            ?.let(::getAddTorrentDirections)
     }
 
     fun getInitialDeepLinkIntent(intent: Intent): Intent? {
@@ -110,6 +100,30 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
             }
+    }
+
+    fun acceptDragStartEvent(clipDescription: ClipDescription): Boolean {
+        val mimeTypes = clipDescription.run { (0 until mimeTypeCount).map(::getMimeType) }
+        Timber.i("Drag start event mime types = $mimeTypes")
+        return clipDescription.hasMimeType(TORRENT_FILE_MIME_TYPE) ||
+                TORRENT_LINK_MIME_TYPES.any(clipDescription::hasMimeType)
+    }
+
+    fun getAddTorrentDirections(clipData: ClipData): AddTorrentDirections? {
+        return clipData.getTorrentUri(getApplication())?.let(::getAddTorrentDirections)
+    }
+
+    private fun getAddTorrentDirections(uri: TorrentUri): AddTorrentDirections {
+        return when (uri.type) {
+            TorrentUri.Type.File -> AddTorrentDirections(
+                R.id.add_torrent_file_fragment,
+                AddTorrentFileFragmentArgs(uri.uri).toBundle()
+            )
+            TorrentUri.Type.Link -> AddTorrentDirections(
+                R.id.add_torrent_link_fragment,
+                AddTorrentLinkFragmentArgs(uri.uri).toBundle()
+            )
+        }
     }
 
     private val _showRpcErrorToast = MutableStateFlow<String?>(null)

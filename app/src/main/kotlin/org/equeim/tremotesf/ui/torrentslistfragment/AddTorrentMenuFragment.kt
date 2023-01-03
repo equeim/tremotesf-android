@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentMenuFragmentBinding
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
+import org.equeim.tremotesf.ui.addtorrent.TORRENT_FILE_MIME_TYPE
 import timber.log.Timber
 
 class AddTorrentMenuFragment : NavigationBottomSheetDialogFragment(R.layout.add_torrent_menu_fragment) {
@@ -35,7 +36,7 @@ class AddTorrentMenuFragment : NavigationBottomSheetDialogFragment(R.layout.add_
 
     private fun startFilePickerActivity() {
         try {
-            getContentActivityLauncher.launch("application/x-bittorrent")
+            getContentActivityLauncher.launch(TORRENT_FILE_MIME_TYPE)
         } catch (e: ActivityNotFoundException) {
             Timber.e(e, "Failed to start activity")
         }

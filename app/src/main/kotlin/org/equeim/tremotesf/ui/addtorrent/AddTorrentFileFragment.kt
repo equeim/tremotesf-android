@@ -19,7 +19,6 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
-import android.content.ContentResolver
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -63,8 +62,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
     0
 ) {
     companion object {
-        val SCHEMES = arrayOf(ContentResolver.SCHEME_FILE, ContentResolver.SCHEME_CONTENT)
-
         fun setupDownloadDirectoryEdit(
             binding: DownloadDirectoryEditBinding,
             fragment: Fragment,

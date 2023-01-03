@@ -24,6 +24,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
@@ -543,7 +544,7 @@ class ServerCertificatesFragment : NavigationFragment(
             return Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-pem-file", "text/plain"))
+                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-pem-file", ClipDescription.MIMETYPE_TEXT_PLAIN))
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

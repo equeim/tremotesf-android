@@ -19,6 +19,7 @@
 
 package org.equeim.tremotesf.ui.utils
 
+import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
 import org.equeim.tremotesf.R
@@ -44,7 +45,7 @@ object Utils {
 
     fun shareText(text: CharSequence, activityChooserTitle: CharSequence, context: Context) {
         val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
+            type = ClipDescription.MIMETYPE_TEXT_PLAIN
             putExtra(Intent.EXTRA_TEXT, text)
         }
         startActivityChooser(intent, activityChooserTitle, context)
