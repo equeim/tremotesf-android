@@ -23,6 +23,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
+import androidx.core.app.ActivityCompat
 import androidx.core.view.*
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -86,6 +88,36 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         createdActivities.add(this)
         AppForegroundTracker.registerActivity(this)
 
+        applyColorTheme()
+        overrideIntentWithDeepLink()
+
+        binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
+
+        handleWindowInsets()
+
+        navController =
+            (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            hideKeyboard()
+        }
+
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
+
+        handleDropEvents()
+
+        model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+            model.rpcErrorToastShown()
+        }
+
+        ForegroundService.startStopAutomatically()
+
+        Timber.i("onCreate: return")
+    }
+
+    private fun applyColorTheme() {
         val colorTheme = ActivityThemeProvider.colorTheme.value
         if (colorTheme == Settings.ColorTheme.System) {
             Timber.i("Applying dynamic colors")
@@ -100,18 +132,23 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             Timber.i("Color theme changed to $newColorTheme, recreating")
             recreate()
         }
+    }
 
-        overrideIntentWithDeepLink()
+    private fun overrideIntentWithDeepLink() {
+        if (model.navigatedInitially) return
+        model.navigatedInitially = true
 
-        binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
-        setContentView(binding.root)
+        val intent = model.getInitialDeepLinkIntent(intent) ?: return
+        Timber.i("overrideIntentWithDeepLink: intent = $intent")
+        this.intent = intent
+    }
 
+    private fun handleWindowInsets() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             _windowInsets.value = insets
             WindowInsetsCompat.CONSUMED
         }
-
         windowInsets
             .map { it.toActivityMargins() }
             .distinctUntilChanged()
@@ -125,35 +162,43 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
                         }
                     }
                 }
-        }
-
-        model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->
-            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
-            model.rpcErrorToastShown()
-        }
-
-        navController =
-            (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
-
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            hideKeyboard()
-        }
-
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
-
-        ForegroundService.startStopAutomatically()
-
-        Timber.i("onCreate: return")
+            }
     }
 
-    private fun overrideIntentWithDeepLink() {
-        if (model.navigatedInitially) return
-        model.navigatedInitially = true
-
-        val intent = model.getInitialDeepLinkIntent(intent) ?: return
-        Timber.i("overrideIntentWithDeepLink: intent = $intent")
-        this.intent = intent
+    private fun handleDropEvents() {
+        binding.root.setOnDragListener { _, event ->
+            when (event.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    Timber.d("Handling drag start event")
+                    model.acceptDragStartEvent(event.clipDescription)
+                }
+                DragEvent.ACTION_DROP -> {
+                    Timber.d("Handling drop event")
+                    val directions = model.getAddTorrentDirections(event.clipData)
+                    if (directions != null) {
+                        ActivityCompat.requestDragAndDropPermissions(this, event)
+                        navController.navigate(
+                            directions.destinationId,
+                            directions.arguments,
+                            NavOptions.Builder()
+                                .setPopUpTo(navController.graph.startDestinationId, false)
+                                .build()
+                        )
+                    }
+                    directions != null
+                }
+                /**
+                 * Don't enter [also] branch to avoid log spam
+                 */
+                else -> return@setOnDragListener false
+            }.also {
+                if (it) {
+                    Timber.d("Accepting event")
+                } else {
+                    Timber.d("Rejecting event")
+                }
+            }
+        }
     }
 
     override fun onStart() {

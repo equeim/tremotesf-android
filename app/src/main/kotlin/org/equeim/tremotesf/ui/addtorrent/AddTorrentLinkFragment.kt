@@ -20,7 +20,9 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.os.Bundle
+import android.view.DragEvent
 import android.view.View
+import android.view.View.OnDragListener
 import androidx.core.text.trimmedLength
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -39,10 +41,6 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     R.string.add_torrent_link,
     0
 ) {
-    companion object {
-        val SCHEMES = arrayOf("magnet")
-    }
-
     private val args: AddTorrentLinkFragmentArgs by navArgs()
 
     private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
@@ -69,6 +67,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             addButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
         }
 
+        handleDragEvents()
+
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(
             binding.downloadDirectoryLayout,
             this,
@@ -76,6 +76,39 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         )
 
         GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
+    }
+
+    private fun handleDragEvents() {
+        val listener = OnDragListener { view, event ->
+            when (event.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    Timber.d("Handling drag start event on $view")
+                    TORRENT_LINK_MIME_TYPES.any(event.clipDescription::hasMimeType)
+                }
+                DragEvent.ACTION_DROP -> {
+                    Timber.d("Handling drop event on $view")
+                    val uri = event.clipData.getTorrentUri(requireContext())
+                    if (uri != null && uri.type == TorrentUri.Type.Link) {
+                        binding.torrentLinkEdit.setText(uri.uri.toString())
+                        true
+                    } else {
+                        false
+                    }
+                }
+                /**
+                 * Don't enter [also] branch to avoid log spam
+                 */
+                else -> return@OnDragListener false
+            }.also {
+                if (it) {
+                    Timber.d("Accepting event")
+                } else {
+                    Timber.d("Rejecting event")
+                }
+            }
+        }
+        binding.root.setOnDragListener(listener)
+        binding.torrentLinkEdit.setOnDragListener(listener)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
