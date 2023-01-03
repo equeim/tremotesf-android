@@ -195,7 +195,7 @@ class AddTorrentFileModelImpl(
     private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
         val fd = try {
             context.contentResolver.openAssetFileDescriptor(uri, "r")
-        } catch (e: FileNotFoundException) {
+        } catch (e: Exception) {
             Timber.e(e, "Failed to open file descriptor")
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
