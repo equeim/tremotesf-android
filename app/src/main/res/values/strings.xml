@@ -438,6 +438,7 @@
     <string name="quick_return_summary">Tap the top toolbar to return to the top</string>
 
     <string name="prefs_delete_files_title">Delete files on the hard disk when removing torrent</string>
+    <string name="prefs_link_from_clipboard_title">Automatically fill link from clipboard when adding torrent link</string>
 
     <string name="alternative_speed_limits">Alternative speed limits</string>
 

@@ -103,8 +103,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     }
 
     fun acceptDragStartEvent(clipDescription: ClipDescription): Boolean {
-        val mimeTypes = clipDescription.run { (0 until mimeTypeCount).map(::getMimeType) }
-        Timber.i("Drag start event mime types = $mimeTypes")
+        Timber.i("Drag start event mime types = ${clipDescription.mimeTypes()}")
         return clipDescription.hasMimeType(TORRENT_FILE_MIME_TYPE) ||
                 TORRENT_LINK_MIME_TYPES.any(clipDescription::hasMimeType)
     }
