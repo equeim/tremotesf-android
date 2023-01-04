@@ -6,6 +6,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
+import org.equeim.tremotesf.BuildConfig
+import timber.log.Timber
 import java.net.URI
 
 const val TORRENT_FILE_MIME_TYPE = "application/x-bittorrent"
@@ -62,8 +64,26 @@ fun ClipData.getTorrentUri(context: Context): TorrentUri? =
 private fun ClipData.items(): Sequence<ClipData.Item> =
     (0 until itemCount).asSequence().map(::getItemAt)
 
-fun ClipData.Item.getTorrentUri(context: Context): TorrentUri? =
-    uri()?.toTorrentUri(context, checkContentUriType = true)
+fun ClipData.Item.getTorrentUri(context: Context): TorrentUri? {
+    if (BuildConfig.DEBUG) {
+        Timber.d("Processing ClipData.Item with:")
+        Timber.d(" - uri: $uri")
+        Timber.d(" - intent: $intent")
+        Timber.d(" - text: $text")
+    }
+    return uri()
+        .also {
+            if (BuildConfig.DEBUG) {
+                Timber.d(" - Final URI is $it")
+            }
+        }
+        ?.toTorrentUri(context, checkContentUriType = true)
+        .also {
+            if (BuildConfig.DEBUG) {
+                Timber.d(" - Torrent URI is $it")
+            }
+        }
+}
 
 private fun ClipData.Item.uri(): Uri? {
     uri?.let { return it }
@@ -73,6 +93,8 @@ private fun ClipData.Item.uri(): Uri? {
     }
     return null
 }
+
+fun ClipDescription.mimeTypes(): List<String> = (0 until mimeTypeCount).map(::getMimeType)
 
 private const val TORRENT_FILE_SUFFIX = ".torrent"
 private const val SCHEME_HTTP = "http"

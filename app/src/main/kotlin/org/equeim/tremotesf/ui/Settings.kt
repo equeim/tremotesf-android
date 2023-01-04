@@ -254,6 +254,9 @@ object Settings {
     val deleteFiles: Property<Boolean> =
         property(R.string.prefs_delete_files_key, R.bool.prefs_delete_files_default_value)
 
+    val fillTorrentLinkFromKeyboard: Property<Boolean> =
+        property(R.string.prefs_link_from_clipboard_key, R.bool.prefs_link_from_clipboard_default_value)
+
     val torrentsSortMode: MutableProperty<TorrentsListFragmentViewModel.SortMode> =
         mutableProperty<Int>(
             R.string.torrents_sort_mode_key,

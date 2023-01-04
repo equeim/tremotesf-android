@@ -40,6 +40,12 @@
             android:key="@string/prefs_delete_files_key"
             android:title="@string/prefs_delete_files_title"
             app:singleLineTitle="false"/>
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/prefs_link_from_clipboard_default_value"
+            android:key="@string/prefs_link_from_clipboard_key"
+            android:title="@string/prefs_link_from_clipboard_title"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">

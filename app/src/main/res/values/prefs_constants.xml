@@ -57,6 +57,9 @@
     <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>
     <bool name="prefs_delete_files_default_value">false</bool>
 
+    <string name="prefs_link_from_clipboard_key" translatable="false">fillTorrentLinkFromClipboard</string>
+    <bool name="prefs_link_from_clipboard_default_value">false</bool>
+
     <string name="prefs_torrent_compact_view_key" translatable="false">torrentCompactView</string>
     <bool name="prefs_torrent_compact_view_default_value">false</bool>
 

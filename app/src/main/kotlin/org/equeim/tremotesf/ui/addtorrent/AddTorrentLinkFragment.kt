@@ -24,8 +24,14 @@ import android.view.DragEvent
 import android.view.View
 import android.view.View.OnDragListener
 import androidx.core.text.trimmedLength
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
@@ -42,39 +48,58 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     0
 ) {
     private val args: AddTorrentLinkFragmentArgs by navArgs()
+    private val model: AddTorrentLinkModel by viewModels {
+        viewModelFactory {
+            initializer {
+                AddTorrentLinkModel(
+                    args.uri,
+                    checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
+                )
+            }
+        }
+    }
 
     private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
     private var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
     private var connectSnackbar: Snackbar? by viewLifecycleObjectNullable()
 
+    private var setInitialTorrentLink = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.i("onCreate: arguments = $arguments")
+        if (savedInstanceState == null) {
+            setInitialTorrentLink = true
+        }
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.torrentLinkEdit.text = null
         with(binding) {
-            args.uri?.let { torrentLinkEdit.setText(it.toString()) }
-
-            priorityView.setText(R.string.normal_priority)
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
-
+            priorityView.setText(R.string.normal_priority)
             startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
-
-            addButton.setOnClickListener { addTorrentLink() }
-            addButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
         }
-
-        handleDragEvents()
-
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(
             binding.downloadDirectoryLayout,
             this,
             savedInstanceState
         )
+    }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (setInitialTorrentLink) {
+            lifecycleScope.launch {
+                model.getInitialTorrentLink()?.let(binding.torrentLinkEdit::setText)
+            }
+        }
+        binding.addButton.apply {
+            setOnClickListener { addTorrentLink() }
+            extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
+        }
+        handleDragEvents()
         GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
     }
 
@@ -83,17 +108,14 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
                     Timber.d("Handling drag start event on $view")
-                    TORRENT_LINK_MIME_TYPES.any(event.clipDescription::hasMimeType)
+                    model.acceptDragStartEvent(event.clipDescription)
                 }
                 DragEvent.ACTION_DROP -> {
                     Timber.d("Handling drop event on $view")
-                    val uri = event.clipData.getTorrentUri(requireContext())
-                    if (uri != null && uri.type == TorrentUri.Type.Link) {
-                        binding.torrentLinkEdit.setText(uri.uri.toString())
+                    model.getTorrentLinkFromDropEvent(event.clipData)?.let {
+                        binding.torrentLinkEdit.setText(it)
                         true
-                    } else {
-                        false
-                    }
+                    } ?: false
                 }
                 /**
                  * Don't enter [also] branch to avoid log spam
