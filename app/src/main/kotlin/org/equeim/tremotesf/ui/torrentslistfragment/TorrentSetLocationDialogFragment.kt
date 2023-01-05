@@ -30,6 +30,8 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
+import org.equeim.tremotesf.ui.utils.normalizePath
+import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
     private val args: TorrentSetLocationDialogFragmentArgs by navArgs()
@@ -37,23 +39,23 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return createTextFieldDialog(requireContext(),
-            null,
-            SetLocationDialogBinding::inflate,
-            R.id.download_directory_edit,
-            R.id.download_directory_layout,
-            getString(R.string.location),
-            InputType.TYPE_TEXT_VARIATION_URI,
-            args.location,
-            {
+            title = null,
+            viewBindingFactory = SetLocationDialogBinding::inflate,
+            textFieldId = R.id.download_directory_edit,
+            textFieldLayoutId = R.id.download_directory_layout,
+            hint = getString(R.string.location),
+            inputType = InputType.TYPE_TEXT_VARIATION_URI,
+            defaultText = args.location.toNativeSeparators(),
+            onInflatedView = {
                 it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
                     directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
                     edit.setAdapter(directoriesAdapter)
                 }
             },
-            {
+            onAccepted = {
                 GlobalRpc.nativeInstance.setTorrentsLocation(
                     IntVector(args.torrentIds),
-                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString().normalizePath(),
                     it.moveFilesCheckBox.isChecked
                 )
                 directoriesAdapter?.save()

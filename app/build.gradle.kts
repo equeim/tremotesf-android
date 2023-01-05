@@ -110,4 +110,6 @@ dependencies {
     implementation(libs.threetenabp)
 
     debugImplementation(libs.leakcanary)
+
+    testImplementation(libs.junit)
 }

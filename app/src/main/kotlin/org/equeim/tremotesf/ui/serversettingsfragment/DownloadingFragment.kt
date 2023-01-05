@@ -24,7 +24,9 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.normalizePath
 import org.equeim.tremotesf.ui.utils.setDependentViews
+import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 
 class DownloadingFragment : ServerSettingsFragment.BaseFragment(
@@ -34,9 +36,9 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         with(ServerSettingsDownloadingFragmentBinding.bind(requireView())) {
-            downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
+            downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
             downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.downloadDirectory = it.toString()
+                GlobalRpc.serverSettings.downloadDirectory = it.toString().normalizePath()
             }
 
             startTorrentsCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
@@ -55,9 +57,9 @@ class DownloadingFragment : ServerSettingsFragment.BaseFragment(
                 GlobalRpc.serverSettings.incompleteDirectoryEnabled = checked
             }
 
-            incompleteFilesDirectoryEdit.setText(GlobalRpc.serverSettings.incompleteDirectory)
+            incompleteFilesDirectoryEdit.setText(GlobalRpc.serverSettings.incompleteDirectory.toNativeSeparators())
             incompleteFilesDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                GlobalRpc.serverSettings.incompleteDirectory = it.toString()
+                GlobalRpc.serverSettings.incompleteDirectory = it.toString().normalizePath()
             }
         }
     }
