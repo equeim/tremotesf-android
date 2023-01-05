@@ -70,15 +70,15 @@ class AddTorrentFileFragment : AddTorrentFragment(
             val downloadDirectoryEdit = binding.downloadDirectoryEdit
             val downloadDirectoryLayout = binding.downloadDirectoryLayout
             downloadDirectoryEdit.doAfterTextChanged {
-                val path = it?.trim()
+                val path = it?.toString()?.normalizePath()
                 when {
                     path.isNullOrEmpty() -> {
                         downloadDirectoryLayout.helperText = null
                     }
                     GlobalRpc.serverSettings.canShowFreeSpaceForPath() -> {
-                        GlobalRpc.nativeInstance.getFreeSpaceForPath(path.toString())
+                        GlobalRpc.nativeInstance.getFreeSpaceForPath(path)
                     }
-                    GlobalRpc.serverSettings.downloadDirectory?.contentEquals(path) == true -> {
+                    GlobalRpc.serverSettings.downloadDirectory == path -> {
                         GlobalRpc.nativeInstance.getDownloadDirFreeSpace()
                     }
                     else -> {
@@ -88,7 +88,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             if (savedInstanceState == null) {
-                downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
+                downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
             }
 
             val directoriesAdapter =
@@ -96,7 +96,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             downloadDirectoryEdit.setAdapter(directoriesAdapter)
 
             GlobalRpc.gotDownloadDirFreeSpaceEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
-                val text = downloadDirectoryEdit.text?.trim()
+                val text = downloadDirectoryEdit.text?.toString()?.normalizePath()
                 if (!text.isNullOrEmpty() && GlobalRpc.serverSettings.downloadDirectory?.contentEquals(
                         text
                     ) == true
@@ -109,7 +109,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             GlobalRpc.gotFreeSpaceForPathEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { (path, success, bytes) ->
-                val text = downloadDirectoryEdit.text?.trim()
+                val text = downloadDirectoryEdit.text?.toString()?.normalizePath()
                 if (!text.isNullOrEmpty() && path.contentEquals(text)) {
                     downloadDirectoryLayout.helperText = if (success) {
                         fragment.getString(
@@ -236,7 +236,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
         val fd = model.detachFd() ?: return
         GlobalRpc.nativeInstance.addTorrentFile(
             fd,
-            infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+            infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString().normalizePath(),
             IntVector(priorities.unwantedFiles),
             IntVector(priorities.highPriorityFiles),
                 IntVector(priorities.lowPriorityFiles),

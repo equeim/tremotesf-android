@@ -25,10 +25,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import org.equeim.tremotesf.ui.utils.*
 
 
 class TorrentDetailsFragment :
@@ -74,7 +71,7 @@ class TorrentDetailsFragment :
 
             totalSizeTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalSize)
 
-            val dir = torrent.downloadDirectory
+            val dir = torrent.downloadDirectory.toNativeSeparators()
             if (!dir.contentEquals(locationTextView.text)) {
                 locationTextView.text = dir
             }

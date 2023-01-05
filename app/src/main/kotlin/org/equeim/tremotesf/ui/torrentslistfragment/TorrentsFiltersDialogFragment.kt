@@ -65,7 +65,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             directoriesView.apply {
                 setAdapter(directoriesViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    model.setDirectoryFilter(directoriesViewAdapter.getDirectoryFilter(position))
+                    model.setDirectoryFilter(directoriesViewAdapter.getDirectoryPath(position).orEmpty())
                 }
             }
 

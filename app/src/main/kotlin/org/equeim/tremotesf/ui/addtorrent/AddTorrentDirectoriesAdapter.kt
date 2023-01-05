@@ -28,6 +28,8 @@ import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
+import org.equeim.tremotesf.ui.utils.normalizePath
+import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 
 class AddTorrentDirectoriesAdapter(
@@ -40,10 +42,6 @@ class AddTorrentDirectoriesAdapter(
     companion object {
         private const val STATE_KEY =
             "org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter.items"
-
-        private fun dropTrailingSeparator(path: String): String {
-            return if (path.endsWith('/')) path.dropLast(1) else path
-        }
     }
 
     private val items: ArrayList<String>
@@ -55,12 +53,14 @@ class AddTorrentDirectoriesAdapter(
         } else {
             val comparator = AlphanumericComparator()
             val sorted =
-                GlobalServers.currentServer.value?.addTorrentDialogDirectories?.toSortedSet(comparator)
+                GlobalServers.currentServer.value?.addTorrentDialogDirectories
+                    ?.map { it.normalizePath().toNativeSeparators() }
+                    ?.toSortedSet(comparator)
                     ?: sortedSetOf(comparator)
             for (torrent in GlobalRpc.torrents.value) {
-                sorted.add(dropTrailingSeparator(torrent.downloadDirectory))
+                sorted.add(torrent.downloadDirectory.toNativeSeparators())
             }
-            sorted.add(dropTrailingSeparator(GlobalRpc.serverSettings.downloadDirectory))
+            sorted.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
             ArrayList(sorted)
         }
     }
@@ -82,10 +82,10 @@ class AddTorrentDirectoriesAdapter(
     }
 
     fun save() {
-        val saved = ArrayList(items)
-        val trimmed = textEdit.text.trim().toString()
-        if (!saved.contains(trimmed)) {
-            saved.add(trimmed)
+        val saved = ArrayList(items.map { it.normalizePath() })
+        val editPath = textEdit.text.toString().normalizePath()
+        if (!saved.contains(editPath)) {
+            saved.add(editPath)
         }
         GlobalServers.currentServer.value?.addTorrentDialogDirectories = saved
         GlobalServers.save()

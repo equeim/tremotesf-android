@@ -33,7 +33,6 @@ import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.common.dropTrailingPathSeparator
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
@@ -249,7 +248,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         return { torrent: Torrent ->
             statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
                     (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
-                    (directoryFilter.isEmpty() || torrent.downloadDirectory.dropTrailingPathSeparator() == directoryFilter) &&
+                    (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
                     torrent.name.contains(nameFilter, true)
         }
     }
