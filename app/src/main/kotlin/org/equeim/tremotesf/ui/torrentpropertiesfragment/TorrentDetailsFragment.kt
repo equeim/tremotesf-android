@@ -26,6 +26,12 @@ import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.*
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle
+import kotlin.math.abs
 
 
 class TorrentDetailsFragment :
@@ -35,7 +41,8 @@ class TorrentDetailsFragment :
     ) {
 
     private var firstUpdate = true
-
+    private val dateTimeFormatter =
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
     private val binding by viewLifecycleObject(TorrentDetailsFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -73,7 +80,7 @@ class TorrentDetailsFragment :
             seedersTextView.text = torrent.seeders.toString()
             leechersTextView.text = torrent.leechers.toString()
             lastActivityTextView.text =
-                torrent.data.activityDate?.let { DateUtils.getRelativeTimeSpanString(it.toEpochMilli()) }
+                torrent.data.activityDate?.toDisplayString()
 
             totalSizeTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalSize)
 
@@ -84,14 +91,31 @@ class TorrentDetailsFragment :
 
             creatorTextView.text = torrent.data.creator
             creationDateTextView.text =
-                torrent.data.creationDate?.let { DateUtils.getRelativeTimeSpanString(it.toEpochMilli()) }
+                torrent.data.creationDate?.toDisplayString()
             addedDateTextView.text =
-                torrent.data.addedDate?.let { DateUtils.getRelativeTimeSpanString(it.toEpochMilli()) }
+                torrent.data.addedDate?.toDisplayString()
 
             val comment: String = torrent.data.comment
             if (!comment.contentEquals(commentTextView.text)) {
                 commentTextView.text = comment
             }
+        }
+    }
+
+    private fun Instant.toDisplayString(): String {
+        val absolute = dateTimeFormatter.format(this.atZone(ZoneId.systemDefault()))
+        val now = Instant.now()
+        val relativeMillis = Duration.between(this, now).toMillis()
+        return if (abs(relativeMillis) < DateUtils.WEEK_IN_MILLIS) {
+            val relative = DateUtils.getRelativeTimeSpanString(
+                toEpochMilli(),
+                now.toEpochMilli(),
+                DateUtils.MINUTE_IN_MILLIS,
+                0
+            )
+            getString(R.string.date_time_with_relative, absolute, relative)
+        } else {
+            absolute
         }
     }
 }

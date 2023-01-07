@@ -529,4 +529,6 @@
     <string name="notification_permission_rationale">Tremotesf needs notification permission to show notifications about torrents</string>
     <string name="request_permission">Grant permission</string>
     <string name="request_notification_permission">Grant notification permission</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 </resources>
