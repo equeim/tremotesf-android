@@ -138,12 +138,6 @@ class TrackersAdapter(
 
         val trackers = currentList
 
-        if (!torrent.isChanged && !(trackers.isEmpty() && torrent.trackerSites.isNotEmpty())) {
-            trackers.forEach(TrackersAdapterItem::updateNextUpdateEta)
-            notifyItemRangeChanged(0, trackers.size)
-            return
-        }
-
         val newTrackers = mutableListOf<TrackersAdapterItem>()
         val rpcTrackers = torrent.trackers
         for (rpcTracker: Tracker in rpcTrackers) {

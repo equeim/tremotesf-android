@@ -86,9 +86,6 @@ class Torrent private constructor(
             }
         }
 
-    @Volatile
-    var isChanged = true
-
     fun setDownloadSpeedLimited(limited: Boolean) {
         rpc.nativeInstance.setTorrentDownloadSpeedLimited(data, limited)
     }
