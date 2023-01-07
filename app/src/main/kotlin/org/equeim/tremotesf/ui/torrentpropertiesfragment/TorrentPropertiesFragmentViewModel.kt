@@ -58,10 +58,14 @@ class TorrentPropertiesFragmentViewModel(
                 if (torrent == null && _torrent.value != null && GlobalRpc.isConnected.value) {
                     showTorrentRemovedMessage.value = true
                 }
-                if (torrent != null) {
-                    Timber.i("Torrent appeared")
+                if ((torrent == null) != (_torrent.value == null)) {
+                    if (torrent != null) {
+                        Timber.i("Torrent appeared")
+                    } else {
+                        Timber.i("Torrent disappeared")
+                    }
                 } else {
-                    Timber.i("Torrent disappeared")
+                    Timber.i("Torrent changed")
                 }
                 _torrent.value = torrent
             }

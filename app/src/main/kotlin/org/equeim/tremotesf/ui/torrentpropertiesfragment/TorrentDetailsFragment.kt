@@ -40,14 +40,12 @@ class TorrentDetailsFragment :
         TorrentPropertiesFragment.PagerAdapter.Tab.Details
     ) {
 
-    private var firstUpdate = true
     private val dateTimeFormatter =
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
     private val binding by viewLifecycleObject(TorrentDetailsFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        firstUpdate = true
         val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
         binding.hashTextView.text = propertiesFragmentModel.args.hash
         propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
@@ -55,11 +53,6 @@ class TorrentDetailsFragment :
 
     private fun update(torrent: Torrent?) {
         if (torrent == null) return
-
-        if (!torrent.isChanged && !firstUpdate) return
-
-        firstUpdate = false
-
         with(binding) {
             completedTextView.text =
                 FormatUtils.formatByteSize(requireContext(), torrent.completedSize)

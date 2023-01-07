@@ -388,8 +388,6 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
                     } else {
                         changedId = -1
                     }
-                } else {
-                    torrent.isChanged = false
                 }
             }
         }
