@@ -265,7 +265,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     SortMode.Eta -> o1.eta.compareTo(o2.eta)
                     SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
                     SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
-                    SortMode.AddedDate -> o1.addedDate.compareTo(o2.addedDate)
+                    SortMode.AddedDate -> o1.addedDate?.compareTo(o2.addedDate) ?: 0
                 }
                 if (sortMode != SortMode.Name && compared == 0) {
                     compared = nameComparator.compare(o1.name, o2.name)

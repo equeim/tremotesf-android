@@ -168,11 +168,11 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_peersLimit_get(swigCPtr, this);
   }
 
-  public org.threeten.bp.Instant getAddedDate() { return org.threeten.bp.Instant.ofEpochMilli(libtremotesfJNI.TorrentData_addedDate_get(swigCPtr, this)); }
+  public @androidx.annotation.Nullable org.threeten.bp.Instant getAddedDate() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.TorrentData_addedDate_get(swigCPtr, this)); }
 
-  public org.threeten.bp.Instant getActivityDate() { return org.threeten.bp.Instant.ofEpochMilli(libtremotesfJNI.TorrentData_activityDate_get(swigCPtr, this)); }
+  public @androidx.annotation.Nullable org.threeten.bp.Instant getActivityDate() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.TorrentData_activityDate_get(swigCPtr, this)); }
 
-  public org.threeten.bp.Instant getDoneDate() { return org.threeten.bp.Instant.ofEpochMilli(libtremotesfJNI.TorrentData_doneDate_get(swigCPtr, this)); }
+  public @androidx.annotation.Nullable org.threeten.bp.Instant getDoneDate() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.TorrentData_doneDate_get(swigCPtr, this)); }
 
   public TorrentData.IdleSeedingLimitMode getIdleSeedingLimitMode() {
     return TorrentData.IdleSeedingLimitMode.swigToEnum(libtremotesfJNI.TorrentData_idleSeedingLimitMode_get(swigCPtr, this));
@@ -194,7 +194,7 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_creator_get(swigCPtr, this);
 }
 
-  public org.threeten.bp.Instant getCreationDate() { return org.threeten.bp.Instant.ofEpochMilli(libtremotesfJNI.TorrentData_creationDate_get(swigCPtr, this)); }
+  public @androidx.annotation.Nullable org.threeten.bp.Instant getCreationDate() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.TorrentData_creationDate_get(swigCPtr, this)); }
 
   public TorrentData.Priority getBandwidthPriority() {
     return TorrentData.Priority.swigToEnum(libtremotesfJNI.TorrentData_bandwidthPriority_get(swigCPtr, this));

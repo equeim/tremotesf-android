@@ -95,6 +95,7 @@ val qt by tasks.registering(QtTask::class) {
 
 dependencies {
     implementation(files(QtTask.jar(rootDir)).builtBy(qt))
+    api(libs.androidx.annotation)
     api(libs.threetenabp)
 }
 

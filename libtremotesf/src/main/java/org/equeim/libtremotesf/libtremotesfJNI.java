@@ -9,6 +9,15 @@
 package org.equeim.libtremotesf;
 
 public class libtremotesfJNI {
+
+  public final static long instantToMillis(@androidx.annotation.Nullable org.threeten.bp.Instant instant) {
+    return instant == null ? 0 : instant.toEpochMilli();
+  }
+
+  public final static @androidx.annotation.Nullable org.threeten.bp.Instant millisToInstant(long millis) {
+    return millis == 0 ? null : org.threeten.bp.Instant.ofEpochMilli(millis);
+  }
+
   public final static native long new_TorrentDataVector__SWIG_0();
   public final static native long new_TorrentDataVector__SWIG_1(long jarg1, TorrentDataVector jarg1_);
   public final static native long TorrentDataVector_capacity(long jarg1, TorrentDataVector jarg1_);

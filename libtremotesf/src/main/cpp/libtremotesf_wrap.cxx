@@ -5108,7 +5108,11 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QDateTime *) & ((arg1)->addedDate);
   
-  jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  if (result->isValid()) {
+    jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  } else {
+    jresult = 0;
+  }
   
   return jresult;
 }
@@ -5125,7 +5129,11 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QDateTime *) & ((arg1)->activityDate);
   
-  jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  if (result->isValid()) {
+    jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  } else {
+    jresult = 0;
+  }
   
   return jresult;
 }
@@ -5142,7 +5150,11 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QDateTime *) & ((arg1)->doneDate);
   
-  jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  if (result->isValid()) {
+    jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  } else {
+    jresult = 0;
+  }
   
   return jresult;
 }
@@ -5243,7 +5255,11 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentDat
   arg1 = *(libtremotesf::TorrentData **)&jarg1; 
   result = (QDateTime *) & ((arg1)->creationDate);
   
-  jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  if (result->isValid()) {
+    jresult = static_cast<jlong>(result->toMSecsSinceEpoch());
+  } else {
+    jresult = 0;
+  }
   
   return jresult;
 }
