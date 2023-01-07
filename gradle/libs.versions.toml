@@ -14,6 +14,7 @@ serialization = "1.4.1"
 # Gradle bundles Kotlin 1.6, make sure to not pull newer version through dependencies
 coroutines-gradle = "1.6.4"
 
+androidx-annotation = "1.5.0"
 androidx-appcompat = "1.5.1"
 androidx-collection = "1.2.0"
 androidx-core = "1.9.0"
@@ -56,6 +57,7 @@ serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cor
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode", version.ref = "serialization-bencode" }
 
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-collection = { module = "androidx.collection:collection-ktx", version.ref = "androidx-collection" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }

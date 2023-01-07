@@ -62,7 +62,7 @@ class Torrent private constructor(
     val seeders = data.seeders
     val leechers = data.leechers
 
-    val addedDate: Instant = data.addedDate
+    val addedDate: Instant? = data.addedDate
 
     val downloadDirectory: String = data.downloadDirectory
 
