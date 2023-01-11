@@ -74,7 +74,7 @@ public class TorrentFile {
   }
 
   public enum Priority {
-    Low(-1),
+    Low,
     Normal,
     High;
 

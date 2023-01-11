@@ -172,7 +172,6 @@ public class libtremotesfJNI {
   public final static native String Tracker_errorMessage(long jarg1, Tracker jarg1_);
   public final static native int Tracker_peers(long jarg1, Tracker jarg1_);
   public final static native long Tracker_nextUpdateTime(long jarg1, Tracker jarg1_);
-  public final static native int Tracker_nextUpdateEta(long jarg1, Tracker jarg1_);
   public final static native void delete_Tracker(long jarg1);
   public final static native int TorrentData_id_get(long jarg1, TorrentData jarg1_);
   public final static native String TorrentData_hashString_get(long jarg1, TorrentData jarg1_);

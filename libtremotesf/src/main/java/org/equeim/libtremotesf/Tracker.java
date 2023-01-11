@@ -126,13 +126,7 @@ public class Tracker {
     return libtremotesfJNI.Tracker_peers(swigCPtr, this);
   }
 
-  public long nextUpdateTime() {
-    return libtremotesfJNI.Tracker_nextUpdateTime(swigCPtr, this);
-  }
-
-  public int nextUpdateEta() {
-    return libtremotesfJNI.Tracker_nextUpdateEta(swigCPtr, this);
-  }
+  public @androidx.annotation.Nullable org.threeten.bp.Instant nextUpdateTime() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.Tracker_nextUpdateTime(swigCPtr, this)); }
 
   public enum Status {
     Inactive,
