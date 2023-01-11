@@ -26,8 +26,11 @@ import android.text.format.DateUtils
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.*
 import org.equeim.libtremotesf.Tracker
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -41,6 +44,9 @@ import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
+import kotlin.time.Duration.Companion.seconds
 
 
 data class TrackersAdapterItem(
@@ -49,11 +55,9 @@ data class TrackersAdapterItem(
     val status: Tracker.Status,
     val errorMessage: String,
     val peers: Int,
-    private var nextUpdateTime: Long
+    val nextUpdateTime: Instant?,
+    val nextUpdateEta: Duration? = nextUpdateTime?.let { Duration.between(Instant.now(), nextUpdateTime) }
 ) {
-
-    var nextUpdateEta = 0L
-
     constructor(rpcTracker: Tracker) : this(
         rpcTracker.id(),
         rpcTracker.announce(),
@@ -63,26 +67,11 @@ data class TrackersAdapterItem(
         rpcTracker.nextUpdateTime()
     )
 
-    init {
-        updateNextUpdateEta()
-    }
-
-    fun updatedFrom(rpcTracker: Tracker): TrackersAdapterItem {
-        return copy(
-            announce = rpcTracker.announce(),
-            status = rpcTracker.status(),
-            errorMessage = rpcTracker.errorMessage(),
-            peers = rpcTracker.peers(),
-            nextUpdateTime = rpcTracker.nextUpdateTime()
-        )
-    }
-
-    fun updateNextUpdateEta() {
-        nextUpdateEta = if (nextUpdateTime > 0) {
-            val eta = nextUpdateTime - System.currentTimeMillis() / 1000
-            if (eta < 0) -1 else eta
+    fun withUpdatedNextUpdateEta(): TrackersAdapterItem {
+        return if (nextUpdateTime == null) {
+            this
         } else {
-            -1
+            copy(nextUpdateEta = nextUpdateTime.let { Duration.between(Instant.now(), nextUpdateTime) })
         }
     }
 }
@@ -91,6 +80,7 @@ class TrackersAdapter(
     private val fragment: TrackersFragment
 ) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
+    private var etaUpdateJob: Job? = null
 
     private val comparator = object : Comparator<TrackersAdapterItem> {
         private val stringComparator = AlphanumericComparator()
@@ -125,6 +115,8 @@ class TrackersAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
     fun update(torrent: Torrent?) {
+        etaUpdateJob?.cancel()
+        etaUpdateJob = null
         if (torrent == null) {
             if (this.torrent == null) {
                 return
@@ -133,22 +125,29 @@ class TrackersAdapter(
             submitList(null)
             return
         }
-
         this.torrent = torrent
-
-        val trackers = currentList
-
-        val newTrackers = mutableListOf<TrackersAdapterItem>()
-        val rpcTrackers = torrent.trackers
-        for (rpcTracker: Tracker in rpcTrackers) {
-            val id = rpcTracker.id()
-            var tracker = trackers.find { it.id == id }
-            tracker = tracker?.updatedFrom(rpcTracker) ?: TrackersAdapterItem(rpcTracker)
-            newTrackers.add(tracker)
-        }
-
+        val newTrackers = torrent.trackers.map(::TrackersAdapterItem)
         submitList(newTrackers.sortedWith(comparator)) {
             selectionTracker.commitAdapterUpdate()
+            if (newTrackers.any { it.nextUpdateTime != null }) {
+                updateEtaPeriodically()
+            }
+        }
+    }
+
+    private fun updateEtaPeriodically() {
+        etaUpdateJob?.cancel()
+        val lifecycleOwner = fragment.viewLifecycleOwner
+        etaUpdateJob = lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.whenStarted {
+                while (currentCoroutineContext().isActive) {
+                    delay(1.seconds)
+                    val newTrackers = currentList.map(TrackersAdapterItem::withUpdatedNextUpdateEta)
+                    submitList(newTrackers.sortedWith(comparator)) {
+                        selectionTracker.commitAdapterUpdate()
+                    }
+                }
+            }
         }
     }
 
@@ -202,12 +201,12 @@ class TrackersAdapter(
                     peersTextView.visibility = View.VISIBLE
                 }
 
-                if (tracker.nextUpdateEta < 0) {
+                if (tracker.nextUpdateEta == null) {
                     nextUpdateTextView.visibility = View.GONE
                 } else {
                     nextUpdateTextView.text = context.getString(
                         R.string.next_update,
-                        DateUtils.formatElapsedTime(tracker.nextUpdateEta)
+                        DateUtils.formatElapsedTime(tracker.nextUpdateEta.seconds)
                     )
                     nextUpdateTextView.visibility = View.VISIBLE
                 }
