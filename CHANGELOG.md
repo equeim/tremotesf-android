@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Torrent link is automatically filled from clipboard when adding torrent (disabled by default)
+- Drag & drop suuport for adding torrents
+- More efficient data transfer with Transmission server is used when Transmission version is at least 3.00
+
+### Changed
+- When relative time displayed for torrent's added/created/last active dates, absolute date and time is also shown
+
+### Fixed
+- Fixed display of trackers' next update time
+- File paths are now displayed with correct separators when Transmission is running on Windows
+
 ## [2.7.2] - 2022-11-12
 ### Fixed
 - Crashes when snackbar is shown
