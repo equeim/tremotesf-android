@@ -38,6 +38,8 @@ import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.Utils
@@ -98,11 +100,16 @@ class ForegroundService : LifecycleService() {
         }
 
         private lateinit var startStopScope: CoroutineScope
+
         @MainThread
         fun startStopAutomatically() {
             if (::startStopScope.isInitialized) return
             startStopScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-            combine(Settings.showPersistentNotification.flow(), AppForegroundTracker.hasStartedActivity, Boolean::and)
+            combine(
+                Settings.showPersistentNotification.flow(),
+                AppForegroundTracker.hasStartedActivity,
+                Boolean::and
+            )
                 .filter { it }
                 .onEach { start(TremotesfApplication.instance) }
                 .launchIn(startStopScope)
@@ -129,9 +136,16 @@ class ForegroundService : LifecycleService() {
         rpc = GlobalRpc
         notificationsController = GlobalRpc.notificationsController
 
-        combine(rpc.status, rpc.serverStats, GlobalServers.servers) { status, _, _ -> status }.drop(
-            1
-        ).launchAndCollectWhenStarted(this) { updatePersistentNotification(it) }
+        combine(
+            rpc.status,
+            GlobalServers.currentServer,
+            rpc.serverStats,
+            ::Triple
+        )
+            .drop(1)
+            .launchAndCollectWhenStarted(this) { (status, currentServer, serverStats) ->
+                updatePersistentNotification(status, currentServer, serverStats)
+            }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             GlobalRpc.wifiNetworkController.observingActiveWifiNetwork.launchAndCollectWhenStarted(
@@ -214,9 +228,18 @@ class ForegroundService : LifecycleService() {
         stopSelf()
     }
 
-    private fun updatePersistentNotification(status: Rpc.Status) {
+    private fun updatePersistentNotification(
+        status: Rpc.Status,
+        currentServer: Server?,
+        serverStats: ServerStats
+    ) {
         if (!stopUpdatingNotification) {
-            notificationsController.updatePersistentNotification(rpc, status)
+            notificationsController.updatePersistentNotification(
+                rpc,
+                status,
+                currentServer,
+                serverStats
+            )
         }
     }
 }

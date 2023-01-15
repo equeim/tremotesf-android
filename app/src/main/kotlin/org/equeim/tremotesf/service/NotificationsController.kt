@@ -14,6 +14,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.ServerStats
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.ui.utils.FormatUtils
@@ -126,7 +128,12 @@ class NotificationsController(private val context: Context) {
         )
     }
 
-    fun buildPersistentNotification(rpc: Rpc, status: Rpc.Status = rpc.status.value): Notification {
+    fun buildPersistentNotification(
+        rpc: Rpc,
+        status: Rpc.Status = rpc.status.value,
+        currentServer: Server? = GlobalServers.serversState.value.currentServer,
+        serverStats: ServerStats = rpc.serverStats.value
+    ): Notification {
         val notificationBuilder =
             NotificationCompat.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
@@ -139,7 +146,6 @@ class NotificationsController(private val context: Context) {
                 .setOngoing(true)
                 .setShowWhen(false)
 
-        val currentServer = GlobalServers.currentServer.value
         if (currentServer != null) {
             notificationBuilder.setContentTitle(
                 context.getString(
@@ -153,17 +159,16 @@ class NotificationsController(private val context: Context) {
         }
 
         if (status.isConnected) {
-            val stats = rpc.serverStats.value
             notificationBuilder.setContentText(
                 context.getString(
                     R.string.main_activity_subtitle,
                     FormatUtils.formatByteSpeed(
                         context,
-                        stats.downloadSpeed
+                        serverStats.downloadSpeed
                     ),
                     FormatUtils.formatByteSpeed(
                         context,
-                        stats.uploadSpeed
+                        serverStats.uploadSpeed
                     )
                 )
             )
@@ -194,9 +199,9 @@ class NotificationsController(private val context: Context) {
         return notificationBuilder.build()
     }
 
-    fun updatePersistentNotification(rpc: Rpc, status: Rpc.Status) {
+    fun updatePersistentNotification(rpc: Rpc, status: Rpc.Status, currentServer: Server?, serverStats: ServerStats) {
         if (notificationManager != null) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(rpc, status))
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(rpc, status, currentServer, serverStats))
         } else {
             Timber.e("updatePersistentNotification: NotificationManager is null")
         }

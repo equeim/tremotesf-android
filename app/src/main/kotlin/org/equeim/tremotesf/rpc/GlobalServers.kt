@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
 object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope, TremotesfApplication.instance) {
-    private val saveData = AtomicReference<SaveData>()
+    private val saveData = AtomicReference<ServersState>()
 
     init {
         AppForegroundTracker.appInForeground
@@ -30,8 +30,8 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
     }
 
     @MainThread
-    override fun save(saveData: SaveData) {
-        this.saveData.set(saveData)
+    override fun save(serversState: ServersState) {
+        this.saveData.set(serversState)
         WorkManager.getInstance(context).enqueueUniqueWork(
             SaveWorker.UNIQUE_WORK_NAME,
             ExistingWorkPolicy.APPEND,
@@ -44,9 +44,9 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
 
         override fun doWork(): Result {
             Timber.i("doWork() called")
-            val data = saveData.getAndSet(null)
-            if (data != null) {
-                doSave(data)
+            val serversState = saveData.getAndSet(null)
+            if (serversState != null) {
+                doSave(serversState)
             } else {
                 Timber.w("doWork: SaveData is null")
             }

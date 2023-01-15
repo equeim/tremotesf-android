@@ -284,7 +284,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             ) {
                 val editingServer = model.editingServer
                 if ((editingServer == null || nameEditText != editingServer.name) &&
-                    GlobalServers.servers.value.find { it.name == nameEditText } != null
+                    GlobalServers.serversState.value.servers.find { it.name == nameEditText } != null
                 ) {
                     navigate(ServerEditFragmentDirections.toOverwriteDialog())
                 } else {
@@ -370,7 +370,7 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
     private val serverName: String? = args.server
 
     val editingServer: Server? =
-        if (serverName != null) GlobalServers.servers.value.find { it.name == serverName } else null
+        if (serverName != null) GlobalServers.serversState.value.servers.find { it.name == serverName } else null
     var server: Server by savedState(savedStateHandle) { editingServer?.copy() ?: Server() }
 
     var populatedUiFromServer by savedState(savedStateHandle, false)

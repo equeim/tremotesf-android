@@ -24,22 +24,26 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.torrentfile.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.*
+import kotlin.coroutines.resume
 
 
 class ConnectionSettingsFragment : NavigationFragment(
@@ -68,23 +72,27 @@ class ConnectionSettingsFragment : NavigationFragment(
             }
         }
 
-        GlobalServers.servers.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
+        GlobalServers.serversState.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    fun update(servers: List<Server>) {
-        adapter.update(servers)
-        binding.placeholder.visibility = if (adapter.itemCount == 0) {
-            View.VISIBLE
-        } else {
-            View.GONE
+    fun update(serversState: Servers.ServersState) {
+        lifecycleScope.launch {
+            adapter.update(serversState)
+            binding.placeholder.visibility = if (adapter.itemCount == 0) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
     }
 
     class ServersAdapter(fragment: Fragment) :
-        StateRestoringListAdapter<Server, ServersAdapter.ViewHolder>(DiffCallback()) {
-        private val comparator = object : Comparator<Server> {
+        StateRestoringListAdapter<ServersAdapter.Item, ServersAdapter.ViewHolder>(DiffCallback()) {
+        data class Item(val serverName: String, val current: Boolean)
+
+        private val comparator = object : Comparator<Item> {
             private val nameComparator = AlphanumericComparator()
-            override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
+            override fun compare(o1: Item, o2: Item) = nameComparator.compare(o1.serverName, o2.serverName)
         }
 
         val selectionTracker = SelectionTracker.createForStringKeys(
@@ -93,7 +101,9 @@ class ConnectionSettingsFragment : NavigationFragment(
             fragment,
             ::ActionModeCallback,
             R.plurals.servers_selected
-        ) { getItem(it).name }
+        ) { getItem(it).serverName }
+
+        private var currentServerName: String? = null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(
@@ -109,7 +119,15 @@ class ConnectionSettingsFragment : NavigationFragment(
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
-        fun update(servers: List<Server>) = submitList(servers.sortedWith(comparator))
+        suspend fun update(serversState: Servers.ServersState): Unit = suspendCancellableCoroutine { continuation ->
+            val items = serversState.servers
+                .map { Item(it.name, it.name == serversState.currentServerName) }
+                .sortedWith(comparator)
+            submitList(items) {
+                currentServerName = serversState.currentServerName
+                continuation.resume(Unit)
+            }
+        }
 
         override fun allowStateRestoring() = true
         override fun onStateRestored() = selectionTracker.restoreInstanceState()
@@ -122,41 +140,37 @@ class ConnectionSettingsFragment : NavigationFragment(
 
             init {
                 binding.radioButton.setOnClickListener {
-                    bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
-                        if (server.name != GlobalServers.currentServer.value?.name) {
-                            GlobalServers.setCurrentServer(server.name)
-                            adapter.notifyItemRangeChanged(0, adapter.itemCount)
-                        }
+                    bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
+                        GlobalServers.setCurrentServer(item.serverName)
                     }
                 }
             }
 
             override fun update() {
                 super.update()
-                val server = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
+                val item = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
                 with(binding) {
-                    radioButton.isChecked = (server.name == GlobalServers.currentServer.value?.name)
-                    textView.text = server.name
+                    radioButton.isChecked = item.current
+                    textView.text = item.serverName
                 }
             }
 
             override fun onClick(view: View) {
-                bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
+                bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
                     itemView.findNavController()
                         .safeNavigate(
                             ConnectionSettingsFragmentDirections.toServerEditFragment(
-                                server.name
+                                item.serverName
                             )
                         )
                 }
             }
         }
 
-        private class DiffCallback : DiffUtil.ItemCallback<Server>() {
-            override fun areItemsTheSame(oldItem: Server, newItem: Server) =
-                oldItem.name == newItem.name
-
-            override fun areContentsTheSame(oldItem: Server, newItem: Server) = true
+        private class DiffCallback : DiffUtil.ItemCallback<Item>() {
+            override fun areItemsTheSame(oldItem: Item, newItem: Item) =
+                oldItem.serverName == newItem.serverName
+            override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
         }
 
         private class ActionModeCallback(selectionTracker: SelectionTracker<String>) :
@@ -203,7 +217,7 @@ class RemoveServerDialogFragment : NavigationDialogFragment() {
                     GlobalServers.removeServers(
                         adapter.currentList.slice(getSelectedPositionsUnsorted()).mapTo(
                             mutableSetOf(),
-                            Server::name
+                            ConnectionSettingsFragment.ServersAdapter.Item::serverName
                         )
                     )
                     clearSelection()
