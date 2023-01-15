@@ -53,7 +53,7 @@ class AddTorrentDirectoriesAdapter(
         } else {
             val comparator = AlphanumericComparator()
             val sorted =
-                GlobalServers.currentServer.value?.addTorrentDialogDirectories
+                GlobalServers.serversState.value.currentServer?.addTorrentDialogDirectories
                     ?.map { it.normalizePath().toNativeSeparators() }
                     ?.toSortedSet(comparator)
                     ?: sortedSetOf(comparator)
@@ -87,7 +87,7 @@ class AddTorrentDirectoriesAdapter(
         if (!saved.contains(editPath)) {
             saved.add(editPath)
         }
-        GlobalServers.currentServer.value?.let { current ->
+        GlobalServers.serversState.value.currentServer?.let { current ->
             if (current.addTorrentDialogDirectories != saved) {
                 GlobalServers.addOrReplaceServer(current.copy(addTorrentDialogDirectories = saved))
             }

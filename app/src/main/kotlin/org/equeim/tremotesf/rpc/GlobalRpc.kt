@@ -159,7 +159,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             return
         }
 
-        val server = servers.currentServer.value
+        val server = servers.serversState.value.currentServer
         if (server == null) {
             Timber.e("showNotificationsSinceLastConnection: server is null")
             return
@@ -208,7 +208,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                         return@withContext Result.success()
                     }
 
-                    if (!GlobalServers.hasServers.value) {
+                    if (GlobalServers.serversState.value.servers.isEmpty()) {
                         Timber.w("startWork: no servers, return")
                         return@withContext Result.success()
                     }

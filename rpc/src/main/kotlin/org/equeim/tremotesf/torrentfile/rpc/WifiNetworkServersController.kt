@@ -78,15 +78,15 @@ class WifiNetworkServersController(
         Timber.i("init")
 
         val hasServerWithWifiNetwork = servers.servers.map { servers ->
-            val has =
-                servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() } != null
-            if (has) {
-                Timber.i("There are servers with Wi-Fi networks configured")
-            } else {
-                Timber.i("There are no servers with Wi-Fi networks configured")
+                val has =
+                    servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() } != null
+                if (has) {
+                    Timber.i("There are servers with Wi-Fi networks configured")
+                } else {
+                    Timber.i("There are no servers with Wi-Fi networks configured")
+                }
+                has
             }
-            has
-        }
 
         combine(hasServerWithWifiNetwork, enabled, Boolean::and)
             .distinctUntilChanged()
@@ -263,8 +263,8 @@ class WifiNetworkServersController(
 
         val ssid by ssidLazy
 
-        val currentServer = servers.currentServer.value
-        for (server in servers.servers.value) {
+        val serversState = servers.serversState.value
+        for (server in serversState.servers) {
             if (server.autoConnectOnWifiNetworkEnabled) {
                 if (ssid == null) {
                     Timber.i("setCurrentServerFromWifiNetwork: SSID is null")
@@ -272,14 +272,7 @@ class WifiNetworkServersController(
                 }
                 if (server.autoConnectOnWifiNetworkSSID == ssid) {
                     Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
-                    return if (server != currentServer) {
-                        Timber.i("setCurrentServerFromWifiNetwork: setting current server")
-                        servers.setCurrentServer(server.name)
-                        true
-                    } else {
-                        Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
-                        false
-                    }
+                    return servers.setCurrentServer(server.name)
                 }
             }
         }

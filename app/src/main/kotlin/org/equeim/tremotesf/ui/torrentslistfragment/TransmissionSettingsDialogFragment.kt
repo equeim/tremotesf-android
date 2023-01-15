@@ -27,11 +27,11 @@ class TransmissionSettingsDialogFragment :
                     GlobalRpc.nativeInstance.disconnect()
                 }
             }
-            combine(GlobalServers.servers, GlobalRpc.connectionState, ::Pair).launchAndCollectWhenStarted(
+            combine(GlobalServers.hasServers, GlobalRpc.connectionState, ::Pair).launchAndCollectWhenStarted(
                 viewLifecycleOwner
-            ) { (servers, connectionState) ->
+            ) { (hasServers, connectionState) ->
                 connectButton.apply {
-                    isEnabled = servers.isNotEmpty()
+                    isEnabled = hasServers
                     text = when (connectionState) {
                         RpcConnectionState.Disconnected -> getString(R.string.connect)
                         RpcConnectionState.Connecting,
@@ -46,17 +46,14 @@ class TransmissionSettingsDialogFragment :
                 setAdapter(serversViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
                     serversViewAdapter.servers[position].let {
-                        if (it != GlobalServers.currentServer.value) {
-                            GlobalServers.setCurrentServer(it.name)
-                        }
+                        GlobalServers.setCurrentServer(it.name)
                     }
                 }
             }
-            combine(GlobalServers.servers, GlobalServers.currentServer) { servers, _ -> servers }
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { servers ->
-                    serversView.isEnabled = servers.isNotEmpty()
-                    serversViewAdapter.update()
-                }
+            GlobalServers.serversState.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                serversView.isEnabled = it.servers.isNotEmpty()
+                serversViewAdapter.update()
+            }
 
             connectionSettings.setOnClickListener {
                 navigate(TransmissionSettingsDialogFragmentDirections.toConnectionSettingsFragment())

@@ -284,7 +284,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             }
         }
 
-        servers.currentServer.value?.let {
+        servers.serversState.value.currentServer?.let {
             setConnectionConfiguration(it.toConnectionConfiguration())
         }
 

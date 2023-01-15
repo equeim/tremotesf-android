@@ -169,8 +169,6 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
-    private val hasServers: Flow<Boolean> = GlobalServers.servers.map { it.isNotEmpty() }
-
     val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
     val showSearchView: Flow<Boolean> = GlobalRpc.isConnected
     val showTransmissionSettingsButton: Flow<Boolean> = combine(GlobalServers.hasServers, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
@@ -183,7 +181,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Disconnect,
         Hidden
     }
-    val connectionButtonState: Flow<ConnectionButtonState> = combine(hasServers, GlobalRpc.connectionState, searchViewIsIconified.flow()) { hasServers, connectionState, searchViewIsIconified ->
+    val connectionButtonState: Flow<ConnectionButtonState> = combine(GlobalServers.hasServers, GlobalRpc.connectionState, searchViewIsIconified.flow()) { hasServers, connectionState, searchViewIsIconified ->
         when {
             !searchViewIsIconified -> ConnectionButtonState.Hidden
             !hasServers -> ConnectionButtonState.AddServer

@@ -42,11 +42,11 @@ class ServersViewAdapter(textView: AutoCompleteTextView) :
     override fun getCount() = servers.size
 
     override fun getCurrentItem(): CharSequence {
-        return GlobalServers.currentServer.value?.name ?: ""
+        return GlobalServers.serversState.value.currentServerName ?: ""
     }
 
     fun update() {
-        servers = GlobalServers.servers.value.sortedWith(comparator)
+        servers = GlobalServers.serversState.value.servers.sortedWith(comparator)
         notifyDataSetChanged()
     }
 }

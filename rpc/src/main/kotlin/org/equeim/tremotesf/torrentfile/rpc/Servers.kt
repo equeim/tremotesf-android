@@ -23,10 +23,8 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -50,19 +48,24 @@ abstract class Servers(
     protected val context: Context,
     private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
 ) {
-    private val _servers = MutableStateFlow<List<Server>>(emptyList())
-    val servers: StateFlow<List<Server>> by ::_servers
+    @Serializable
+    data class ServersState(
+        @SerialName("servers") val servers: List<Server>,
+        @SerialName("current") val currentServerName: String?
+    ) {
+        val currentServer: Server?
+            get() = if (currentServerName != null) {
+                servers.find { it.name == currentServerName }
+            } else {
+                null
+            }
+    }
 
-    val hasServers: StateFlow<Boolean> = servers
-        .map { it.isNotEmpty() }
-        .distinctUntilChanged()
-        .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
-
-    // currentServer observers should not access servers or hasServers
-    private val _currentServerName = MutableStateFlow<String?>(null)
-    val currentServer: StateFlow<Server?> = combine(_servers, _currentServerName) { servers, name ->
-        servers.find { it.name == name }
-    }.stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, null)
+    private val _serversState = MutableStateFlow(ServersState(emptyList(), null))
+    val serversState: StateFlow<ServersState> by ::_serversState
+    val servers: Flow<List<Server>> = _serversState.map { it.servers }.distinctUntilChanged()
+    val hasServers: Flow<Boolean> = _serversState.map { it.servers.isNotEmpty() }.distinctUntilChanged()
+    val currentServer: Flow<Server?> = _serversState.map { it.currentServer }.distinctUntilChanged()
 
     internal var lastTorrentsProvider: LastTorrentsProvider? = null
 
@@ -74,48 +77,11 @@ abstract class Servers(
 
     private fun load() {
         try {
-            val servers = mutableListOf<Server>()
-
             val fileData =
                 context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
-            val saveData = Json.decodeFromString(SaveData.serializer(), fileData)
-            for (readServer in saveData.servers) {
-                Timber.i("Reading server $readServer")
-                var server = readServer
-                if (server.name.isBlank()) {
-                    Timber.e("Server's name is empty, skip")
-                    continue
-                }
-                if (server.port !in Server.portRange) {
-                    Timber.e("Server's port is not in range, set default")
-                    server = server.copy(port = Server.DEFAULT_PORT)
-                }
-                if (server.apiPath.isEmpty()) {
-                    Timber.e("Server's API path can't be empty, set default")
-                    server = server.copy(apiPath = Server.DEFAULT_API_PATH)
-                }
-                if (server.updateInterval !in Server.updateIntervalRange) {
-                    Timber.e("Server's update interval is not in range, set default")
-                    server = server.copy(updateInterval = Server.DEFAULT_UPDATE_INTERVAL)
-                }
-                if (server.timeout !in Server.timeoutRange) {
-                    Timber.e("Server's timeout is not in range, set default")
-                    server = server.copy(timeout = Server.DEFAULT_TIMEOUT)
-                }
-                servers.add(server)
-            }
-
-            _servers.value = servers
-            var shouldSave = false
-            _currentServerName.value =
-                if (servers.find { it.name == saveData.currentServerName } != null) {
-                    saveData.currentServerName
-                } else {
-                    servers.firstOrNull()?.name.also {
-                        if (it != null) shouldSave = true
-                    }
-                }
-            if (shouldSave) {
+            val (servers, changed) = Json.decodeFromString(ServersState.serializer(), fileData).validateLoaded()
+            _serversState.value = servers
+            if (changed) {
                 save()
             }
         } catch (error: FileNotFoundException) {
@@ -127,31 +93,74 @@ abstract class Servers(
         }
     }
 
+    private fun ServersState.validateLoaded(): Pair<ServersState, Boolean> {
+        var changed = false
+        val servers = this.servers.mapNotNull { server ->
+            server.validateLoaded().also {
+                if (it !== server) {
+                    changed = true
+                }
+            }
+        }
+        Timber.i("validateLoaded: current server is ${this.currentServerName}")
+        val currentServerName =
+            if (this.currentServerName != null && servers.find { it.name == this.currentServerName } != null) {
+                this.currentServerName
+            } else {
+                servers.firstOrNull()?.name
+            }
+        if (currentServerName != this.currentServerName) {
+            Timber.e("validateLoaded: current server changed to $currentServerName")
+            changed = true
+        }
+        return ServersState(servers, currentServerName) to changed
+    }
+
+    private fun Server.validateLoaded(): Server? {
+        Timber.i("validateLoaded: loading server $this")
+        if (name.isBlank()) {
+            Timber.e("Server's name is empty, skip")
+            return null
+        }
+        var newServer = this
+        if (port !in Server.portRange) {
+            Timber.e("validateLoaded: server's port is not in range, set default")
+            newServer = newServer.copy(port = Server.DEFAULT_PORT)
+        }
+        if (apiPath.isEmpty()) {
+            Timber.e("validateLoaded: server's API path can't be empty, set default")
+            newServer = newServer.copy(apiPath = Server.DEFAULT_API_PATH)
+        }
+        if (updateInterval !in Server.updateIntervalRange) {
+            Timber.e("validateLoaded: server's update interval is not in range, set default")
+            newServer = newServer.copy(updateInterval = Server.DEFAULT_UPDATE_INTERVAL)
+        }
+        if (timeout !in Server.timeoutRange) {
+            Timber.e("validateLoaded: server's timeout is not in range, set default")
+            newServer = newServer.copy(timeout = Server.DEFAULT_TIMEOUT)
+        }
+        return newServer
+    }
+
     @AnyThread
     private fun save() {
         Timber.i("save() called")
-        val saveData = SaveData(_currentServerName.value, _servers.value)
-        scope.launch(dispatchers.Main) { save(saveData) }
+        val servers = _serversState.value
+        scope.launch(dispatchers.Main) { save(servers) }
     }
 
-    @Serializable
-    protected data class SaveData(
-        @SerialName("current") val currentServerName: String?,
-        @SerialName("servers") val servers: List<Server>
-    )
-
     @MainThread
-    protected abstract fun save(saveData: SaveData)
+    protected abstract fun save(serversState: ServersState)
 
-    protected fun doSave(data: SaveData) {
+    protected fun doSave(serversState: ServersState) {
         val elapsed = measureTimeMillis {
             try {
                 val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
                 temp.bufferedWriter().use {
                     it.write(
                         json.encodeToString(
-                            SaveData.serializer(),
-                            data
+                            ServersState.serializer(),
+                            serversState
                         )
                     )
                 }
@@ -170,69 +179,76 @@ abstract class Servers(
     fun addOrReplaceServer(newServer: Server, previousName: String? = null) {
         Timber.d("addOrReplaceServer() called with: newServer = $newServer, previousName = $previousName")
 
-        val servers = _servers.value.toMutableList()
+        val state = _serversState.value
+        val servers = state.servers.toMutableList()
         val removeNames = setOfNotNull(newServer.name, previousName)
         servers.removeAll { removeNames.contains(it.name) }
         servers.add(newServer)
 
-        var current = _currentServerName.value
-        if (current == null ||
-            (previousName != null && newServer.name != previousName && previousName == current)
+        var currentServerName = state.currentServerName
+        if (currentServerName == null ||
+            (previousName != null && newServer.name != previousName && previousName == currentServerName)
         ) {
             Timber.d("Setting current server as ${newServer.name}")
-            current = newServer.name
+            currentServerName = newServer.name
         }
-
-        _servers.value = servers
-        _currentServerName.value = current
-
+        _serversState.value = ServersState(servers, currentServerName)
         save()
     }
 
     fun removeServers(serverNames: Set<String>) {
         Timber.d("removeServers() called with: serverNames = $serverNames")
-        val servers = _servers.value.toMutableList()
+        val state = _serversState.value
+        val servers = state.servers.toMutableList()
         servers.removeAll { serverNames.contains(it.name) }
-        var current = _currentServerName.value
-        if (current != null && servers.find { it.name == current } == null) {
-            current = servers.firstOrNull()?.name
+        var currentServerName = state.currentServerName
+        if (currentServerName != null && servers.find { it.name == currentServerName } == null) {
+            currentServerName = servers.firstOrNull()?.name
         }
-        _servers.value = servers
-        _currentServerName.value = current
+        _serversState.value = ServersState(servers, currentServerName)
         save()
     }
 
-    fun setCurrentServer(serverName: String) {
+    fun setCurrentServer(serverName: String): Boolean {
         Timber.d("setCurrentServer() called with: serverName = $serverName")
-        _currentServerName.value = serverName
-        save()
+        val state = _serversState.value
+        return if (serverName != state.currentServerName) {
+            _serversState.value = state.copy(currentServerName = serverName)
+            save()
+            true
+        } else {
+            Timber.d("setCurrentServer: current server did not change")
+            false
+        }
     }
 
     fun saveCurrentServerLastTorrents() {
         Timber.d("saveCurrentServerLastTorrents() called")
-        val current = currentServer.value
-        if (current == null) {
+        val state = _serversState.value
+        val currentServer = state.currentServer
+        if (currentServer == null) {
             Timber.d("saveCurrentServerLastTorrents: no current server")
             return
         }
-        Timber.d("saveCurrentServerLastTorrents: current server = $current")
+        Timber.d("saveCurrentServerLastTorrents: current server = $currentServer")
         val lastTorrents = lastTorrentsProvider?.lastTorrentsForCurrentServer()
         if (lastTorrents == null) {
             Timber.e("saveCurrentServerLastTorrents: failed to get last torrents")
             return
         }
         Timber.i("saveCurrentServerLastTorrents: last torrents count = ${lastTorrents.torrents.size}")
-        if (lastTorrents == current.lastTorrents) {
+        if (lastTorrents == currentServer.lastTorrents) {
             Timber.d("saveCurrentServerLastTorrents: last torrents did not change")
             return
         }
-        _servers.value = servers.value.map { server ->
-            if (server.name == current.name) {
+        val servers = state.servers.map { server ->
+            if (server.name == currentServer.name) {
                 server.copy(lastTorrents = lastTorrents)
             } else {
                 server
             }
         }
+        _serversState.value = state.copy(servers = servers)
         save()
     }
 
