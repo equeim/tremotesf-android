@@ -55,7 +55,12 @@ class ConnectionSettingsFragment : NavigationFragment(
         with(binding) {
             serversView.adapter = adapter
             serversView.layoutManager = LinearLayoutManager(requireContext())
-            serversView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            serversView.addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
             addServerButton.setOnClickListener {
@@ -75,7 +80,8 @@ class ConnectionSettingsFragment : NavigationFragment(
         }
     }
 
-    class ServersAdapter(fragment: Fragment) : StateRestoringListAdapter<Server, ServersAdapter.ViewHolder>(DiffCallback()) {
+    class ServersAdapter(fragment: Fragment) :
+        StateRestoringListAdapter<Server, ServersAdapter.ViewHolder>(DiffCallback()) {
         private val comparator = object : Comparator<Server> {
             private val nameComparator = AlphanumericComparator()
             override fun compare(o1: Server, o2: Server) = nameComparator.compare(o1.name, o2.name)
@@ -118,7 +124,7 @@ class ConnectionSettingsFragment : NavigationFragment(
                 binding.radioButton.setOnClickListener {
                     bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
                         if (server.name != GlobalServers.currentServer.value?.name) {
-                            GlobalServers.setCurrentServer(server)
+                            GlobalServers.setCurrentServer(server.name)
                             adapter.notifyItemRangeChanged(0, adapter.itemCount)
                         }
                     }
@@ -137,7 +143,11 @@ class ConnectionSettingsFragment : NavigationFragment(
             override fun onClick(view: View) {
                 bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { server ->
                     itemView.findNavController()
-                        .safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(server.name))
+                        .safeNavigate(
+                            ConnectionSettingsFragmentDirections.toServerEditFragment(
+                                server.name
+                            )
+                        )
                 }
             }
         }
@@ -190,7 +200,12 @@ class RemoveServerDialogFragment : NavigationDialogFragment() {
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.remove) { _, _ ->
                 selectionTracker?.apply {
-                    GlobalServers.removeServers(adapter.currentList.slice(getSelectedPositionsUnsorted()))
+                    GlobalServers.removeServers(
+                        adapter.currentList.slice(getSelectedPositionsUnsorted()).mapTo(
+                            mutableSetOf(),
+                            Server::name
+                        )
+                    )
                     clearSelection()
                 }
             }

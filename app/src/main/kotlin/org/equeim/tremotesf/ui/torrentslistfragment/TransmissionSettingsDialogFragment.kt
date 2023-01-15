@@ -47,7 +47,7 @@ class TransmissionSettingsDialogFragment :
                 setOnItemClickListener { _, _, position, _ ->
                     serversViewAdapter.servers[position].let {
                         if (it != GlobalServers.currentServer.value) {
-                            GlobalServers.setCurrentServer(it)
+                            GlobalServers.setCurrentServer(it.name)
                         }
                     }
                 }

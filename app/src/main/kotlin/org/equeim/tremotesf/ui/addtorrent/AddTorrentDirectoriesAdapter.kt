@@ -87,8 +87,11 @@ class AddTorrentDirectoriesAdapter(
         if (!saved.contains(editPath)) {
             saved.add(editPath)
         }
-        GlobalServers.currentServer.value?.addTorrentDialogDirectories = saved
-        GlobalServers.save()
+        GlobalServers.currentServer.value?.let { current ->
+            if (current.addTorrentDialogDirectories != saved) {
+                GlobalServers.addOrReplaceServer(current.copy(addTorrentDialogDirectories = saved))
+            }
+        }
     }
 
     fun saveInstanceState(outState: Bundle) {

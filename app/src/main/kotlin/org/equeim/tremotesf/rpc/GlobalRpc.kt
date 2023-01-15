@@ -139,7 +139,7 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
                 Timber.i("handleWorkerCompleter: save servers")
                 withContext(dispatchers.Main) {
                     if (isConnected.value) {
-                        servers.save()
+                        servers.saveCurrentServerLastTorrents()
                     }
                 }
             }

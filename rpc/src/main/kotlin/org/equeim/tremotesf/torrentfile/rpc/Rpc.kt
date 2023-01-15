@@ -284,12 +284,13 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             }
         }
 
-        servers.currentServer.value?.let(::setServer)
+        servers.currentServer.value?.let { setServer(it.toLibtremotesfServer()) }
 
-        scope.launch {
-            servers.currentServer.drop(1).collect { server ->
-                Timber.i("Current server changed")
-
+        servers.currentServer
+            .map { it?.toLibtremotesfServer() }
+            .distinctUntilChanged()
+            .drop(1)
+            .onEach { server ->
                 if (isConnected.value) {
                     disconnectingAfterCurrentServerChanged.set(true)
                 }
@@ -301,42 +302,15 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
                     nativeInstance.resetServer()
                 }
             }
-        }
+            .launchIn(scope)
 
         Timber.i("init: finished initialization")
     }
 
     @AnyThread
-    private fun setServer(server: Server) {
+    private fun setServer(server: org.equeim.libtremotesf.Server) {
         Timber.i("setServer() called for server with: name = ${server.name}, address = ${server.address}, port = ${server.port}")
-
-        val s = org.equeim.libtremotesf.Server()
-        with(server) {
-            s.name = name
-            s.address = address
-            s.port = port
-            s.apiPath = apiPath
-
-            s.proxyType = nativeProxyType()
-            s.proxyHostname = proxyHostname
-            s.proxyPort = proxyPort
-            s.proxyUser = proxyUser
-            s.proxyPassword = proxyPassword
-
-            s.https = httpsEnabled
-            s.selfSignedCertificateEnabled = selfSignedCertificateEnabled
-            s.selfSignedCertificate = selfSignedCertificate.toByteArray()
-            s.clientCertificateEnabled = clientCertificateEnabled
-            s.clientCertificate = clientCertificate.toByteArray()
-
-            s.authentication = authentication
-            s.username = username
-            s.password = password
-
-            s.updateInterval = updateInterval
-            s.timeout = timeout
-        }
-        nativeInstance.setServer(s)
+        nativeInstance.setServer(server)
     }
 
     @MainThread
@@ -438,7 +412,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         Timber.i("onAboutToDisconnect() called")
         if (!disconnectingAfterCurrentServerChanged.get()) {
             Timber.i("onAboutToDisconnect: saving servers")
-            servers.save()
+            servers.saveCurrentServerLastTorrents()
         } else {
             Timber.i("onAboutToDisconnect: current server changed, do nothing")
         }
