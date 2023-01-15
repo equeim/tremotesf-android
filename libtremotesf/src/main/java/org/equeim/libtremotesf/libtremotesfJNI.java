@@ -264,6 +264,7 @@ public class libtremotesfJNI {
   public final static native boolean Server_autoReconnectEnabled_get(long jarg1, Server jarg1_);
   public final static native void Server_autoReconnectInterval_set(long jarg1, Server jarg1_, int jarg2);
   public final static native int Server_autoReconnectInterval_get(long jarg1, Server jarg1_);
+  public final static native boolean Server_swigEquals(long jarg1, Server jarg1_, long jarg2, Server jarg2_);
   public final static native long new_Server();
   public final static native void delete_Server(long jarg1);
   public final static native boolean ServerSettingsData_canRenameFiles(long jarg1, ServerSettingsData jarg1_);

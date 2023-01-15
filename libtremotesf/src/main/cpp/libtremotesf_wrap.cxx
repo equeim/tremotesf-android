@@ -6135,6 +6135,28 @@ SWIGEXPORT jint JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1aut
 }
 
 
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Server_1swigEquals(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  libtremotesf::Server *arg1 = (libtremotesf::Server *) 0 ;
+  libtremotesf::Server *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(libtremotesf::Server **)&jarg1; 
+  arg2 = *(libtremotesf::Server **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::Server const & is null");
+    return 0;
+  } 
+  result = (bool)((libtremotesf::Server const *)arg1)->operator ==((libtremotesf::Server const &)*arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_new_1Server(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   libtremotesf::Server *result = 0 ;

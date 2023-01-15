@@ -74,7 +74,17 @@ namespace libtremotesf
     %ignore ServerSettingsData::ServerSettingsData;
     %ignore JniServerSettingsData::JniServerSettingsData(ServerSettings*);
     %ignore Rpc::serverSettings;
+
+    %rename(swigEquals) Server::operator==;
 }
+
+%typemap(javacode) libtremotesf::Server %{
+  public boolean equals(Object obj) {
+    if (obj == this) return true;
+    if (obj instanceof $javaclassname) return swigEquals(($javaclassname) obj);
+    return false;
+  }
+%}
 
 %template(TorrentDataVector) std::vector<libtremotesf::TorrentData>;
 %template(TrackersVector) std::vector<libtremotesf::Tracker>;
