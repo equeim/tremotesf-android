@@ -25,14 +25,16 @@ import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.encodeToStream
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
-import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -75,21 +77,22 @@ abstract class Servers(
         load()
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     private fun load() {
         try {
-            val fileData =
-                context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
-            val (servers, changed) = Json.decodeFromString(ServersState.serializer(), fileData).validateLoaded()
+            val (servers, changed) = context.openFileInput(FILE_NAME).buffered().use {
+                json.decodeFromStream(ServersState.serializer(), it)
+            }.validateLoaded()
             _serversState.value = servers
             if (changed) {
                 save()
             }
         } catch (error: FileNotFoundException) {
-            Timber.e(error, "Error opening servers file")
+            Timber.w(error, "Servers file does not exist")
         } catch (error: IOException) {
             Timber.e(error, "Error reading servers file")
         } catch (error: SerializationException) {
-            Timber.e(error, "Error deserializing servers file")
+            Timber.e(error, "Error parsing servers file")
         }
     }
 
@@ -152,17 +155,13 @@ abstract class Servers(
     @MainThread
     protected abstract fun save(serversState: ServersState)
 
+    @OptIn(ExperimentalSerializationApi::class)
     protected fun doSave(serversState: ServersState) {
         val elapsed = measureTimeMillis {
             try {
                 val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
-                temp.bufferedWriter().use {
-                    it.write(
-                        json.encodeToString(
-                            ServersState.serializer(),
-                            serversState
-                        )
-                    )
+                temp.outputStream().buffered().use {
+                    json.encodeToStream(ServersState.serializer(), serversState, it)
                 }
                 if (!temp.renameTo(context.getFileStreamPath(FILE_NAME))) {
                     Timber.e("Failed to rename temp file")
