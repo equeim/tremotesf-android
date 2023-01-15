@@ -51,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.equeim.libtremotesf.ConnectionConfiguration.ProxyType
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
@@ -568,9 +569,9 @@ class ServerProxySettingsFragment : NavigationFragment(
     private companion object {
         // Should match R.array.proxy_type_items
         val proxyTypeItems = arrayOf(
-            org.equeim.libtremotesf.Server.ProxyType.Default,
-            org.equeim.libtremotesf.Server.ProxyType.Http,
-            org.equeim.libtremotesf.Server.ProxyType.Socks5
+            ProxyType.Default,
+            ProxyType.Http,
+            ProxyType.Socks5
         )
     }
 
@@ -591,7 +592,7 @@ class ServerProxySettingsFragment : NavigationFragment(
         with(binding) {
             proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
             proxyTypeView.setOnItemClickListener { _, _, position, _ ->
-                setEditable(proxyTypeItems[position] != org.equeim.libtremotesf.Server.ProxyType.Default)
+                setEditable(proxyTypeItems[position] != ProxyType.Default)
             }
 
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
@@ -606,7 +607,7 @@ class ServerProxySettingsFragment : NavigationFragment(
                     usernameEdit.setText(proxyUser)
                     passwordEdit.setText(proxyPassword)
 
-                    if (proxyType == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                    if (proxyType == ProxyType.Default) {
                         setEditable(false)
                     }
                 }
@@ -621,7 +622,7 @@ class ServerProxySettingsFragment : NavigationFragment(
                 mainModel.server = mainModel.server.copy(
                     proxyType = proxyTypeItemValues.indexOf(proxyTypeView.text.toString())
                         .takeIf { it != -1 }?.let(proxyTypeItems::get)
-                        ?: org.equeim.libtremotesf.Server.ProxyType.Default,
+                        ?: ProxyType.Default,
                     proxyHostname = addressEdit.text?.toString() ?: "",
                     proxyPort = portEdit.text?.toString()?.toIntOrNull() ?: 0,
                     proxyUser = usernameEdit.text?.toString() ?: "",

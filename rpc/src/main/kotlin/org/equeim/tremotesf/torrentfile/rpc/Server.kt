@@ -16,7 +16,8 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import org.equeim.libtremotesf.Server.ProxyType
+import org.equeim.libtremotesf.ConnectionConfiguration
+import org.equeim.libtremotesf.ConnectionConfiguration.ProxyType
 import timber.log.Timber
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -158,8 +159,7 @@ private object ProxyTypeSerializer : KSerializer<ProxyType> {
         encoder.encodeString(requireNotNull(strings.find { it.first == value }?.second))
 }
 
-fun Server.toLibtremotesfServer() = org.equeim.libtremotesf.Server().also { s ->
-    s.name = name
+fun Server.toConnectionConfiguration() = ConnectionConfiguration().also { s ->
     s.address = address
     s.port = port
     s.apiPath = apiPath

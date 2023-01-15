@@ -284,22 +284,24 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
             }
         }
 
-        servers.currentServer.value?.let { setServer(it.toLibtremotesfServer()) }
+        servers.currentServer.value?.let {
+            setConnectionConfiguration(it.toConnectionConfiguration())
+        }
 
         servers.currentServer
-            .map { it?.toLibtremotesfServer() }
+            .map { it?.toConnectionConfiguration() }
             .distinctUntilChanged()
             .drop(1)
-            .onEach { server ->
+            .onEach { configuration ->
                 if (isConnected.value) {
                     disconnectingAfterCurrentServerChanged.set(true)
                 }
-
-                if (server != null) {
-                    setServer(server)
+                if (configuration != null) {
+                    setConnectionConfiguration(configuration)
                     nativeInstance.connect()
                 } else {
-                    nativeInstance.resetServer()
+                    Timber.i("Calling resetConnectionConfiguration()")
+                    nativeInstance.resetConnectionConfiguration()
                 }
             }
             .launchIn(scope)
@@ -308,9 +310,9 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
     }
 
     @AnyThread
-    private fun setServer(server: org.equeim.libtremotesf.Server) {
-        Timber.i("setServer() called for server with: name = ${server.name}, address = ${server.address}, port = ${server.port}")
-        nativeInstance.setServer(server)
+    private fun setConnectionConfiguration(configuration: ConnectionConfiguration) {
+        Timber.i("Calling setConnectionConfiguration() with: address = ${configuration.address}, port = ${configuration.port}")
+        nativeInstance.setConnectionConfiguration(configuration)
     }
 
     @MainThread

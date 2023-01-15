@@ -71,8 +71,8 @@ namespace libtremotesf
 
         void init();
 
-        void setServer(const Server& server);
-        void resetServer();
+        void setConnectionConfiguration(const ConnectionConfiguration& configuration);
+        void resetConnectionConfiguration();
 
         void connect();
         void disconnect();

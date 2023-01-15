@@ -75,13 +75,16 @@ namespace libtremotesf
     %ignore JniServerSettingsData::JniServerSettingsData(ServerSettings*);
     %ignore Rpc::serverSettings;
 
-    %rename(swigEquals) Server::operator==;
+    %rename(swigEquals) ConnectionConfiguration::operator==;
 }
 
-%typemap(javacode) libtremotesf::Server %{
-  public boolean equals(Object obj) {
-    if (obj == this) return true;
-    if (obj instanceof $javaclassname) return swigEquals(($javaclassname) obj);
+%typemap(javacode) libtremotesf::ConnectionConfiguration %{
+  public boolean equals(Object other) {
+    if (other == this) return true;
+    if (!(other instanceof $javaclassname)) return false;
+    final $javaclassname otherCasted = ($javaclassname) other;
+    if (otherCasted.swigCPtr == swigCPtr) return true;
+    if (otherCasted.swigCPtr != 0 && swigCPtr != 0) return swigEquals(otherCasted);
     return false;
   }
 %}
