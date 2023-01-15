@@ -26,7 +26,17 @@ import java.text.DecimalFormatSymbols
 import java.text.ParsePosition
 
 
-class IntFilter(private val range: IntRange) : InputFilter {
+class IntFilter : InputFilter {
+    private val range: LongRange
+
+    constructor(range: IntRange) {
+        this.range = range.first.toLong()..range.last.toLong()
+    }
+
+    constructor(range: LongRange) {
+        this.range = range
+    }
+
     override fun filter(
         source: CharSequence,
         start: Int,
@@ -40,7 +50,7 @@ class IntFilter(private val range: IntRange) : InputFilter {
         }
         val newString = dest.substring(0, dstart) + source + dest.substring(dstart)
         try {
-            if (newString.toInt() in range) {
+            if (newString.toLong() in range) {
                 return null
             }
         } catch (error: NumberFormatException) {

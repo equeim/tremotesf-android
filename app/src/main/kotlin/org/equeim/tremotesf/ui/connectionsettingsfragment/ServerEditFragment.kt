@@ -64,6 +64,7 @@ import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.*
 import timber.log.Timber
 import java.io.FileNotFoundException
+import kotlin.time.Duration.Companion.seconds
 
 
 class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) {
@@ -100,8 +101,10 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
             authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
 
-            updateIntervalEdit.filters = arrayOf(IntFilter(Server.updateIntervalRange))
-            timeoutEdit.filters = arrayOf(IntFilter(Server.timeoutRange))
+            updateIntervalEdit.filters =
+                arrayOf(IntFilter(Server.MINIMUM_UPDATE_INTERVAL.inWholeSeconds.rangeTo(Server.MAXIMUM_UPDATE_INTERVAL.inWholeSeconds)))
+            timeoutEdit.filters =
+                arrayOf(IntFilter(Server.MINIMUM_TIMEOUT.inWholeSeconds.rangeTo(Server.MAXIMUM_TIMEOUT.inWholeSeconds)))
 
             wifiAutoConnectCheckbox.setOnClickListener {
                 if (wifiAutoConnectCheckbox.isChecked) {
@@ -203,14 +206,16 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 }.launchAndCollectWhenStarted(viewLifecycleOwner)
         }
 
-        toolbar.setTitle(if (model.existingServer == null) R.string.add_server else R.string.edit_server)
+        toolbar.setTitle(if (model.editingServer == null) R.string.add_server else R.string.edit_server)
 
         binding.saveButton.apply {
-            setText(if (model.existingServer == null) {
-                R.string.add
-            } else {
-                R.string.save
-            })
+            setText(
+                if (model.editingServer == null) {
+                    R.string.add
+                } else {
+                    R.string.save
+                }
+            )
             setOnClickListener { onDone() }
         }
         binding.saveButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
@@ -226,8 +231,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 authenticationCheckBox.isChecked = server.authentication
                 usernameEdit.setText(server.username)
                 passwordEdit.setText(server.password)
-                updateIntervalEdit.setText(server.updateInterval.toString())
-                timeoutEdit.setText(server.timeout.toString())
+                updateIntervalEdit.setText(server.updateInterval.inWholeSeconds.toString())
+                timeoutEdit.setText(server.timeout.inWholeSeconds.toString())
                 wifiAutoConnectCheckbox.isChecked = server.autoConnectOnWifiNetworkEnabled
                 wifiAutoConnectSsidEdit.setText(server.autoConnectOnWifiNetworkSSID)
             }
@@ -276,7 +281,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 updateIntervalOk &&
                 timeoutOk
             ) {
-                if (nameEditText != model.existingServer?.name &&
+                val editingServer = model.editingServer
+                if ((editingServer == null || nameEditText != editingServer.name) &&
                     GlobalServers.servers.value.find { it.name == nameEditText } != null
                 ) {
                     navigate(ServerEditFragmentDirections.toOverwriteDialog())
@@ -291,31 +297,29 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
     fun save() {
         with(binding) {
-            model.server.apply {
-                name = nameEdit.text?.toString()?.trim() ?: ""
-                address = addressEdit.text?.toString()?.trim() ?: ""
-                port = portEdit.text?.toString()?.toIntOrNull() ?: 0
-                apiPath = apiPathEdit.text?.toString()?.trim() ?: ""
-                httpsEnabled = httpsCheckBox.isChecked
-                authentication = authenticationCheckBox.isChecked
-                username = usernameEdit.text?.toString()?.trim() ?: ""
-                password = passwordEdit.text?.toString()?.trim() ?: ""
-                updateInterval = updateIntervalEdit.text?.toString()?.toIntOrNull() ?: 0
-                timeout = timeoutEdit.text?.toString()?.toIntOrNull() ?: 0
-                autoConnectOnWifiNetworkEnabled = wifiAutoConnectCheckbox.isChecked
+            model.server = model.server.copy(
+                name = nameEdit.text?.toString()?.trim() ?: "",
+                address = addressEdit.text?.toString()?.trim() ?: "",
+                port = portEdit.text?.toString()?.toIntOrNull() ?: 0,
+                apiPath = apiPathEdit.text?.toString()?.trim() ?: "",
+                httpsEnabled = httpsCheckBox.isChecked,
+                authentication = authenticationCheckBox.isChecked,
+                username = usernameEdit.text?.toString()?.trim() ?: "",
+                password = passwordEdit.text?.toString()?.trim() ?: "",
+                updateInterval = updateIntervalEdit.text?.toString()?.toIntOrNull()?.seconds
+                    ?: Server.DEFAULT_UPDATE_INTERVAL,
+                timeout = timeoutEdit.text?.toString()?.toIntOrNull()?.seconds
+                    ?: Server.DEFAULT_TIMEOUT,
+                autoConnectOnWifiNetworkEnabled = wifiAutoConnectCheckbox.isChecked,
                 autoConnectOnWifiNetworkSSID =
-                    wifiAutoConnectSsidEdit.text?.toString()?.trim() ?: ""
-            }
+                wifiAutoConnectSsidEdit.text?.toString()?.trim() ?: ""
+            )
         }
-
-        model.existingServer.let { existing ->
-            if (existing == null) {
-                GlobalServers.addServer(model.server)
-            } else {
-                GlobalServers.setServer(existing, model.server)
-            }
+        if (model.editingServer == null || model.server != model.editingServer) {
+            GlobalServers.addOrReplaceServer(model.server, previousName = model.editingServer?.name)
+        } else {
+            Timber.d("save: server did not change")
         }
-
         navController.popBackStack(R.id.server_edit_fragment, true)
     }
 }
@@ -364,9 +368,9 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
 
     private val serverName: String? = args.server
 
-    val existingServer =
+    val editingServer: Server? =
         if (serverName != null) GlobalServers.servers.value.find { it.name == serverName } else null
-    val server by savedState(savedStateHandle) { existingServer?.copy() ?: Server() }
+    var server: Server by savedState(savedStateHandle) { editingServer?.copy() ?: Server() }
 
     var populatedUiFromServer by savedState(savedStateHandle, false)
 
@@ -529,12 +533,12 @@ class ServerCertificatesFragment : NavigationFragment(
     override fun onNavigatedFrom() {
         if (view != null) {
             with(binding) {
-                mainModel.server.apply {
-                    selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked
-                    selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: ""
-                    clientCertificateEnabled = clientCertificateCheckBox.isChecked
+                mainModel.server = mainModel.server.copy(
+                    selfSignedCertificateEnabled = selfSignedCertificateCheckBox.isChecked,
+                    selfSignedCertificate = selfSignedCertificateEdit.text?.toString() ?: "",
+                    clientCertificateEnabled = clientCertificateCheckBox.isChecked,
                     clientCertificate = clientCertificateEdit.text?.toString() ?: ""
-                }
+                )
             }
         }
     }
@@ -592,16 +596,17 @@ class ServerProxySettingsFragment : NavigationFragment(
 
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
-            val model = ViewModelProvider(this@ServerProxySettingsFragment)[ServerProxySettingsFragmentModel::class.java]
+            val model =
+                ViewModelProvider(this@ServerProxySettingsFragment)[ServerProxySettingsFragmentModel::class.java]
             if (!model.populatedUiFromServer) {
                 with(mainModel.server) {
-                    proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(nativeProxyType())])
+                    proxyTypeView.setText(proxyTypeItemValues[proxyTypeItems.indexOf(proxyType)])
                     addressEdit.setText(proxyHostname)
                     portEdit.setText(proxyPort.toString())
                     usernameEdit.setText(proxyUser)
                     passwordEdit.setText(proxyPassword)
 
-                    if (nativeProxyType() == org.equeim.libtremotesf.Server.ProxyType.Default) {
+                    if (proxyType == org.equeim.libtremotesf.Server.ProxyType.Default) {
                         setEditable(false)
                     }
                 }
@@ -613,15 +618,15 @@ class ServerProxySettingsFragment : NavigationFragment(
     override fun onNavigatedFrom() {
         if (view != null) {
             with(binding) {
-                mainModel.server.apply {
-                    proxyType = Server.fromNativeProxyType(
-                        proxyTypeItems[proxyTypeItemValues.indexOf(proxyTypeView.text.toString())]
-                    )
-                    proxyHostname = addressEdit.text?.toString() ?: ""
-                    proxyPort = portEdit.text?.toString()?.toIntOrNull() ?: 0
-                    proxyUser = usernameEdit.text?.toString() ?: ""
+                mainModel.server = mainModel.server.copy(
+                    proxyType = proxyTypeItemValues.indexOf(proxyTypeView.text.toString())
+                        .takeIf { it != -1 }?.let(proxyTypeItems::get)
+                        ?: org.equeim.libtremotesf.Server.ProxyType.Default,
+                    proxyHostname = addressEdit.text?.toString() ?: "",
+                    proxyPort = portEdit.text?.toString()?.toIntOrNull() ?: 0,
+                    proxyUser = usernameEdit.text?.toString() ?: "",
                     proxyPassword = passwordEdit.text?.toString() ?: ""
-                }
+                )
             }
         }
     }

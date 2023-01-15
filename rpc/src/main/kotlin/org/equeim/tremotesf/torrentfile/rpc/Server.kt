@@ -1,124 +1,185 @@
+@file:UseSerializers(DurationSerializer::class, ProxyTypeSerializer::class)
+
 package org.equeim.tremotesf.torrentfile.rpc
 
+import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.TypeParceler
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import org.equeim.libtremotesf.Server.ProxyType
 import timber.log.Timber
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Serializable
 @Parcelize
+@TypeParceler<Duration, DurationParceler>
 data class Server(
     @SerialName("name")
-    var name: String = "",
+    val name: String = "",
     @SerialName("address")
-    var address: String = "",
+    val address: String = "",
     @SerialName("port")
-    var port: Int = DEFAULT_PORT,
+    val port: Int = DEFAULT_PORT,
     @SerialName("apiPath")
-    var apiPath: String = DEFAULT_API_PATH,
+    val apiPath: String = DEFAULT_API_PATH,
 
     @SerialName("proxyType")
-    var proxyType: String = "",
+    val proxyType: ProxyType = ProxyType.Default,
     @SerialName("proxyHostname")
-    var proxyHostname: String = "",
+    val proxyHostname: String = "",
     @SerialName("proxyPort")
-    var proxyPort: Int = 0,
+    val proxyPort: Int = 0,
     @SerialName("proxyUser")
-    var proxyUser: String = "",
+    val proxyUser: String = "",
     @SerialName("proxyPassword")
-    var proxyPassword: String = "",
+    val proxyPassword: String = "",
 
     @SerialName("httpsEnabled")
-    var httpsEnabled: Boolean = false,
+    val httpsEnabled: Boolean = false,
     @SerialName("selfSignedCertificateEnabled")
-    var selfSignedCertificateEnabled: Boolean = false,
+    val selfSignedCertificateEnabled: Boolean = false,
     @SerialName("selfSignedCertificate")
-    var selfSignedCertificate: String = "",
+    val selfSignedCertificate: String = "",
     @SerialName("clientCertificateEnabled")
-    var clientCertificateEnabled: Boolean = false,
+    val clientCertificateEnabled: Boolean = false,
     @SerialName("clientCertificate")
-    var clientCertificate: String = "",
+    val clientCertificate: String = "",
 
     @SerialName("authentication")
-    var authentication: Boolean = false,
+    val authentication: Boolean = false,
     @SerialName("username")
-    var username: String = "",
+    val username: String = "",
     @SerialName("password")
-    var password: String = "",
+    val password: String = "",
 
-    @SerialName("updateIntervar")
-    var updateInterval: Int = DEFAULT_UPDATE_INTERVAL,
+    @SerialName("updateInterval")
+    val updateInterval: Duration = DEFAULT_UPDATE_INTERVAL,
     @SerialName("timeout")
-    var timeout: Int = DEFAULT_TIMEOUT,
+    val timeout: Duration = DEFAULT_TIMEOUT,
 
     @SerialName("autoConnectOnWifiNetworkEnabled")
-    var autoConnectOnWifiNetworkEnabled: Boolean = false,
+    val autoConnectOnWifiNetworkEnabled: Boolean = false,
     @SerialName("autoConnectOnWifiNetworkSSID")
-    var autoConnectOnWifiNetworkSSID: String = "",
+    val autoConnectOnWifiNetworkSSID: String = "",
 
     @SerialName("lastTorrents")
-    @Volatile
-    var lastTorrents: LastTorrents = LastTorrents(),
+    val lastTorrents: LastTorrents = LastTorrents(),
     @SerialName("addTorrentDialogDirectories")
-    @Volatile
-    var addTorrentDialogDirectories: List<String> = emptyList()
+    val addTorrentDialogDirectories: List<String> = emptyList()
 ) : Parcelable {
     override fun toString() = "Server(name=$name)"
-
-    fun nativeProxyType(): org.equeim.libtremotesf.Server.ProxyType {
-        return when (proxyType) {
-            "", "Default" -> org.equeim.libtremotesf.Server.ProxyType.Default
-            "HTTP" -> org.equeim.libtremotesf.Server.ProxyType.Http
-            "SOCKS5" -> org.equeim.libtremotesf.Server.ProxyType.Socks5
-            else -> {
-                Timber.w("Unknown proxy type $proxyType")
-                org.equeim.libtremotesf.Server.ProxyType.Default
-            }
-        }
-    }
 
     @Serializable
     @Parcelize
     data class Torrent(
+        @SerialName("id")
         val id: Int,
+        @SerialName("hashString")
         val hashString: String,
+        @SerialName("name")
         val name: String,
+        @SerialName("finished")
         val finished: Boolean
     ) : Parcelable
 
     @Serializable
     @Parcelize
     data class LastTorrents(
+        @SerialName("saved")
         val saved: Boolean = false,
+        @SerialName("torrents")
         val torrents: List<Torrent> = emptyList()
     ) : Parcelable
 
     companion object {
-        const val MINIMUM_PORT = 0
-        const val MAXIMUM_PORT = 65535
-        const val DEFAULT_PORT = 9091
+        private const val MINIMUM_PORT = 0
+        private const val MAXIMUM_PORT = 65535
         val portRange get() = MINIMUM_PORT..MAXIMUM_PORT
+        const val DEFAULT_PORT = 9091
 
         const val DEFAULT_API_PATH = "/transmission/rpc"
 
-        const val MINIMUM_UPDATE_INTERVAL = 1
-        const val MAXIMUM_UPDATE_INTERVAL = 3600
-        const val DEFAULT_UPDATE_INTERVAL = 5
+        val MINIMUM_UPDATE_INTERVAL = 1.seconds
+        val MAXIMUM_UPDATE_INTERVAL = 1.hours
         val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
+        val DEFAULT_UPDATE_INTERVAL = 5.seconds
 
-        const val MINIMUM_TIMEOUT = 5
-        const val MAXIMUM_TIMEOUT = 60
-        const val DEFAULT_TIMEOUT = 30
+        val MINIMUM_TIMEOUT = 5.seconds
+        val MAXIMUM_TIMEOUT = 60.seconds
         val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
+        val DEFAULT_TIMEOUT = 30.seconds
+    }
+}
 
-        fun fromNativeProxyType(type: org.equeim.libtremotesf.Server.ProxyType): String {
-            return when (type) {
-                org.equeim.libtremotesf.Server.ProxyType.Default -> "Default"
-                org.equeim.libtremotesf.Server.ProxyType.Http -> "HTTP"
-                org.equeim.libtremotesf.Server.ProxyType.Socks5 -> "SOCKS5"
-                else -> "Default"
-            }
+private object DurationSerializer : KSerializer<Duration> {
+    override val descriptor = PrimitiveSerialDescriptor(DurationSerializer::class.qualifiedName!!, PrimitiveKind.INT)
+    override fun deserialize(decoder: Decoder): Duration = decoder.decodeInt().seconds
+    override fun serialize(encoder: Encoder, value: Duration) = encoder.encodeInt(value.inWholeSeconds.toInt())
+}
+
+private object DurationParceler : Parceler<Duration> {
+    override fun create(parcel: Parcel): Duration = parcel.readLong().milliseconds
+    override fun Duration.write(parcel: Parcel, flags: Int) = parcel.writeLong(inWholeMilliseconds)
+}
+
+private object ProxyTypeSerializer : KSerializer<ProxyType> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor(ProxyTypeSerializer::class.qualifiedName!!, PrimitiveKind.STRING)
+
+    private val strings = arrayOf(
+        ProxyType.Default to "Default",
+        ProxyType.Http to "HTTP",
+        ProxyType.Socks5 to "SOCKS5"
+    )
+
+    override fun deserialize(decoder: Decoder): ProxyType {
+        val typeString = decoder.decodeString()
+        if (typeString.isEmpty()) return ProxyType.Default
+        return strings.find { it.second == typeString }?.first ?: run {
+            Timber.e("Unknown proxy type $typeString")
+            ProxyType.Default
         }
     }
+
+    override fun serialize(encoder: Encoder, value: ProxyType) =
+        encoder.encodeString(requireNotNull(strings.find { it.first == value }?.second))
+}
+
+fun Server.toLibtremotesfServer() = org.equeim.libtremotesf.Server().also { s ->
+    s.name = name
+    s.address = address
+    s.port = port
+    s.apiPath = apiPath
+
+    s.proxyType = proxyType
+    s.proxyHostname = proxyHostname
+    s.proxyPort = proxyPort
+    s.proxyUser = proxyUser
+    s.proxyPassword = proxyPassword
+
+    s.https = httpsEnabled
+    s.selfSignedCertificateEnabled = selfSignedCertificateEnabled
+    s.selfSignedCertificate = selfSignedCertificate.toByteArray()
+    s.clientCertificateEnabled = clientCertificateEnabled
+    s.clientCertificate = clientCertificate.toByteArray()
+
+    s.authentication = authentication
+    s.username = username
+    s.password = password
+
+    s.updateInterval = updateInterval.inWholeSeconds.toInt()
+    s.timeout = timeout.inWholeSeconds.toInt()
 }

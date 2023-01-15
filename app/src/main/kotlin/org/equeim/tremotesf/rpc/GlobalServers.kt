@@ -25,7 +25,7 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
         AppForegroundTracker.appInForeground
             .dropWhile { !it }
             .filterNot { it }
-            .onEach { save() }
+            .onEach { saveCurrentServerLastTorrents() }
             .launchIn(scope)
     }
 

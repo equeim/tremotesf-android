@@ -45,7 +45,11 @@ private const val FILE_NAME = "servers.json"
 private const val TEMP_FILE_PREFIX = "servers"
 private const val TEMP_FILE_SUFFIX = ".json"
 
-abstract class Servers(protected val scope: CoroutineScope, protected val context: Context, private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
+abstract class Servers(
+    protected val scope: CoroutineScope,
+    protected val context: Context,
+    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
+) {
     private val _servers = MutableStateFlow<List<Server>>(emptyList())
     val servers: StateFlow<List<Server>> by ::_servers
 
@@ -55,18 +59,17 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
         .stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, false)
 
     // currentServer observers should not access servers or hasServers
-    private val _currentServer = MutableStateFlow<Server?>(null)
-    val currentServer: StateFlow<Server?> by ::_currentServer
+    private val _currentServerName = MutableStateFlow<String?>(null)
+    val currentServer: StateFlow<Server?> = combine(_servers, _currentServerName) { servers, name ->
+        servers.find { it.name == name }
+    }.stateIn(scope + Dispatchers.Unconfined, SharingStarted.Eagerly, null)
 
     internal var lastTorrentsProvider: LastTorrentsProvider? = null
 
+    private val json = Json { prettyPrint = true }
+
     init {
         load()
-    }
-
-    fun setCurrentServer(server: Server?) {
-        _currentServer.value = server
-        save()
     }
 
     private fun load() {
@@ -76,36 +79,43 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
             val fileData =
                 context.openFileInput(FILE_NAME).bufferedReader().use(BufferedReader::readText)
             val saveData = Json.decodeFromString(SaveData.serializer(), fileData)
-            for (server in saveData.servers) {
-                Timber.i("Reading server $server")
+            for (readServer in saveData.servers) {
+                Timber.i("Reading server $readServer")
+                var server = readServer
                 if (server.name.isBlank()) {
                     Timber.e("Server's name is empty, skip")
                     continue
                 }
                 if (server.port !in Server.portRange) {
                     Timber.e("Server's port is not in range, set default")
-                    server.port = Server.DEFAULT_PORT
+                    server = server.copy(port = Server.DEFAULT_PORT)
                 }
                 if (server.apiPath.isEmpty()) {
                     Timber.e("Server's API path can't be empty, set default")
-                    server.apiPath = Server.DEFAULT_API_PATH
+                    server = server.copy(apiPath = Server.DEFAULT_API_PATH)
                 }
                 if (server.updateInterval !in Server.updateIntervalRange) {
                     Timber.e("Server's update interval is not in range, set default")
-                    server.updateInterval = Server.DEFAULT_UPDATE_INTERVAL
+                    server = server.copy(updateInterval = Server.DEFAULT_UPDATE_INTERVAL)
                 }
                 if (server.timeout !in Server.timeoutRange) {
                     Timber.e("Server's timeout is not in range, set default")
-                    server.timeout = Server.DEFAULT_TIMEOUT
+                    server = server.copy(timeout = Server.DEFAULT_TIMEOUT)
                 }
                 servers.add(server)
             }
 
-            _currentServer.value = servers.find { it.name == saveData.currentServerName }
             _servers.value = servers
-
-            if (currentServer.value == null && servers.isNotEmpty()) {
-                _currentServer.value = servers.first()
+            var shouldSave = false
+            _currentServerName.value =
+                if (servers.find { it.name == saveData.currentServerName } != null) {
+                    saveData.currentServerName
+                } else {
+                    servers.firstOrNull()?.name.also {
+                        if (it != null) shouldSave = true
+                    }
+                }
+            if (shouldSave) {
                 save()
             }
         } catch (error: FileNotFoundException) {
@@ -118,23 +128,9 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
     }
 
     @AnyThread
-    fun save() {
+    private fun save() {
         Timber.i("save() called")
-        val currentServer = currentServer.value
-        val servers = servers.value
-
-        if (currentServer != null) {
-            lastTorrentsProvider?.lastTorrentsForCurrentServer()?.let {
-                currentServer.lastTorrents = it
-                Timber.i("save: updated last torrents")
-            }
-            Timber.i("save: last torrents count = ${currentServer.lastTorrents.torrents.size}")
-        }
-
-        val saveData = SaveData(
-            currentServer?.name,
-            servers.map { it.copy(lastTorrents = it.lastTorrents.copy()) }
-        )
+        val saveData = SaveData(_currentServerName.value, _servers.value)
         scope.launch(dispatchers.Main) { save(saveData) }
     }
 
@@ -153,7 +149,7 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
                 val temp = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX)
                 temp.bufferedWriter().use {
                     it.write(
-                        Json { prettyPrint = true }.encodeToString(
+                        json.encodeToString(
                             SaveData.serializer(),
                             data
                         )
@@ -171,63 +167,72 @@ abstract class Servers(protected val scope: CoroutineScope, protected val contex
         Timber.i("doSave: elapsed time = $elapsed ms")
     }
 
-    fun addServer(newServer: Server) {
-        val servers = this.servers.value.toMutableList()
+    fun addOrReplaceServer(newServer: Server, previousName: String? = null) {
+        Timber.d("addOrReplaceServer() called with: newServer = $newServer, previousName = $previousName")
 
-        val overwriteServerIndex = servers.indexOfFirst { it.name == newServer.name }
-        if (overwriteServerIndex == -1) {
-            servers.add(newServer)
-        } else {
-            servers[overwriteServerIndex] = newServer
-        }
+        val servers = _servers.value.toMutableList()
+        val removeNames = setOfNotNull(newServer.name, previousName)
+        servers.removeAll { removeNames.contains(it.name) }
+        servers.add(newServer)
 
-        if (servers.size == 1 || newServer.name == currentServer.value?.name) {
-            _currentServer.value = newServer
+        var current = _currentServerName.value
+        if (current == null ||
+            (previousName != null && newServer.name != previousName && previousName == current)
+        ) {
+            Timber.d("Setting current server as ${newServer.name}")
+            current = newServer.name
         }
 
         _servers.value = servers
+        _currentServerName.value = current
 
         save()
     }
 
-    fun setServer(server: Server, newServer: Server) {
-        val currentChanged = when (currentServer.value?.name) {
-            // editing current
-            server.name,
-                // overwriting current with another
-            newServer.name -> true
-            // nope
-            else -> false
+    fun removeServers(serverNames: Set<String>) {
+        Timber.d("removeServers() called with: serverNames = $serverNames")
+        val servers = _servers.value.toMutableList()
+        servers.removeAll { serverNames.contains(it.name) }
+        var current = _currentServerName.value
+        if (current != null && servers.find { it.name == current } == null) {
+            current = servers.firstOrNull()?.name
         }
-
-        val servers = this.servers.value.toMutableList()
-
-        if (newServer.name != server.name) {
-            // remove overwritten
-            servers.removeAll { it.name == newServer.name }
-        }
-
-        servers[servers.indexOf(server)] = newServer
-
-        if (currentChanged) {
-            _currentServer.value = newServer
-        }
-
         _servers.value = servers
-
+        _currentServerName.value = current
         save()
     }
 
-    fun removeServers(toRemove: List<Server>) {
-        val servers = this.servers.value.toMutableList()
-        servers.removeAll(toRemove)
+    fun setCurrentServer(serverName: String) {
+        Timber.d("setCurrentServer() called with: serverName = $serverName")
+        _currentServerName.value = serverName
+        save()
+    }
 
-        if (currentServer.value in toRemove) {
-            _currentServer.value = servers.firstOrNull()
+    fun saveCurrentServerLastTorrents() {
+        Timber.d("saveCurrentServerLastTorrents() called")
+        val current = currentServer.value
+        if (current == null) {
+            Timber.d("saveCurrentServerLastTorrents: no current server")
+            return
         }
-
-        _servers.value = servers
-
+        Timber.d("saveCurrentServerLastTorrents: current server = $current")
+        val lastTorrents = lastTorrentsProvider?.lastTorrentsForCurrentServer()
+        if (lastTorrents == null) {
+            Timber.e("saveCurrentServerLastTorrents: failed to get last torrents")
+            return
+        }
+        Timber.i("saveCurrentServerLastTorrents: last torrents count = ${lastTorrents.torrents.size}")
+        if (lastTorrents == current.lastTorrents) {
+            Timber.d("saveCurrentServerLastTorrents: last torrents did not change")
+            return
+        }
+        _servers.value = servers.value.map { server ->
+            if (server.name == current.name) {
+                server.copy(lastTorrents = lastTorrents)
+            } else {
+                server
+            }
+        }
         save()
     }
 

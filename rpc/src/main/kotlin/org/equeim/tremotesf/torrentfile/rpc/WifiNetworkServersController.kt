@@ -274,7 +274,7 @@ class WifiNetworkServersController(
                     Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
                     return if (server != currentServer) {
                         Timber.i("setCurrentServerFromWifiNetwork: setting current server")
-                        servers.setCurrentServer(server)
+                        servers.setCurrentServer(server.name)
                         true
                     } else {
                         Timber.i("setCurrentServerFromWifiNetwork: current server is already the same")
