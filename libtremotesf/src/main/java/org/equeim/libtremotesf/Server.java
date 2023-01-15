@@ -48,6 +48,12 @@ public class Server {
     }
   }
 
+  public boolean equals(Object obj) {
+    if (obj == this) return true;
+    if (obj instanceof Server) return swigEquals((Server) obj);
+    return false;
+  }
+
   public void setName(String value) {
     libtremotesfJNI.Server_name_set(swigCPtr, this, value);
   }
@@ -214,6 +220,10 @@ public class Server {
 
   public int getAutoReconnectInterval() {
     return libtremotesfJNI.Server_autoReconnectInterval_get(swigCPtr, this);
+  }
+
+  public boolean swigEquals(Server rhs) {
+    return libtremotesfJNI.Server_swigEquals(swigCPtr, this, Server.getCPtr(rhs), rhs);
   }
 
   public Server() {
