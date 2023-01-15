@@ -20,7 +20,7 @@
 
 Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
 
-Q_DECLARE_METATYPE(libtremotesf::Server)
+Q_DECLARE_METATYPE(libtremotesf::ConnectionConfiguration)
 Q_DECLARE_METATYPE(libtremotesf::TorrentFile::Priority)
 
 namespace libtremotesf
@@ -344,7 +344,7 @@ namespace libtremotesf
 
     JniRpc::JniRpc()
     {
-        qRegisterMetaType<Server>();
+        qRegisterMetaType<ConnectionConfiguration>();
         qRegisterMetaType<TorrentData::Priority>();
         qRegisterMetaType<TorrentData::RatioLimitMode>();
         qRegisterMetaType<TorrentData::IdleSeedingLimitMode>();
@@ -518,14 +518,16 @@ namespace libtremotesf
         logInfo("Initialized Rpc");
     }
 
-    void JniRpc::setServer(const Server& server)
+    void JniRpc::setConnectionConfiguration(const ConnectionConfiguration& configuration)
     {
-        runOnThread([=] { mRpc->setServer(server); });
+        runOnThread([=] {
+            mRpc->setConnectionConfiguration(configuration);
+        });
     }
 
-    void JniRpc::resetServer()
+    void JniRpc::resetConnectionConfiguration()
     {
-        runOnThread([=] { mRpc->resetServer(); });
+        runOnThread([=] { mRpc->resetConnectionConfiguration(); });
     }
 
     void JniRpc::connect()

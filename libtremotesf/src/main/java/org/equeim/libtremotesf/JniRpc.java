@@ -72,12 +72,12 @@ public class JniRpc {
     libtremotesfJNI.JniRpc_init(swigCPtr, this);
   }
 
-  public void setServer(Server server) {
-    libtremotesfJNI.JniRpc_setServer(swigCPtr, this, Server.getCPtr(server), server);
+  public void setConnectionConfiguration(ConnectionConfiguration configuration) {
+    libtremotesfJNI.JniRpc_setConnectionConfiguration(swigCPtr, this, ConnectionConfiguration.getCPtr(configuration), configuration);
   }
 
-  public void resetServer() {
-    libtremotesfJNI.JniRpc_resetServer(swigCPtr, this);
+  public void resetConnectionConfiguration() {
+    libtremotesfJNI.JniRpc_resetConnectionConfiguration(swigCPtr, this);
   }
 
   public void connect() {
