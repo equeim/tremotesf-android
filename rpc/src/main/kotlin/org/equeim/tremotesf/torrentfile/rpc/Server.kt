@@ -79,7 +79,9 @@ data class Server(
     @SerialName("lastTorrents")
     val lastTorrents: LastTorrents = LastTorrents(),
     @SerialName("addTorrentDialogDirectories")
-    val addTorrentDialogDirectories: List<String> = emptyList()
+    val lastDownloadDirectories: List<String> = emptyList(),
+    @SerialName("lastDownloadDirectory")
+    val lastDownloadDirectory: String? = null
 ) : Parcelable {
     override fun toString() = "Server(name=$name)"
 

@@ -206,11 +206,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             }
 
             if (status.isConnected) {
-                if (scrollView.visibility != View.VISIBLE) {
-                    downloadDirectoryLayout.downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory)
-                    startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
-                    scrollView.visibility = View.VISIBLE
-                }
+                scrollView.visibility = View.VISIBLE
                 placeholderLayout.visibility = View.GONE
                 addButton.show()
             } else {
