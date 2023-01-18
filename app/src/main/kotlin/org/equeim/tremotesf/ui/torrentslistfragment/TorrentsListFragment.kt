@@ -38,7 +38,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.RpcError

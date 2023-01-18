@@ -50,6 +50,7 @@ import org.equeim.libtremotesf.StringMap
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.*
 import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.statusString
 import org.equeim.tremotesf.ui.*
 import org.equeim.tremotesf.ui.utils.*
@@ -78,7 +79,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     GlobalRpc.serverSettings.canShowFreeSpaceForPath() -> {
                         GlobalRpc.nativeInstance.getFreeSpaceForPath(path)
                     }
-                    GlobalRpc.serverSettings.downloadDirectory == path -> {
+                    path == GlobalRpc.serverSettings.downloadDirectory -> {
                         GlobalRpc.nativeInstance.getDownloadDirFreeSpace()
                     }
                     else -> {
@@ -88,7 +89,15 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             if (savedInstanceState == null) {
-                downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
+                fragment.lifecycleScope.launch {
+                    downloadDirectoryEdit.setText(
+                        (if (Settings.rememberDownloadDirectory.get()) {
+                            GlobalServers.serversState.value.currentServer?.lastDownloadDirectory?.takeIf { it.isNotEmpty() }
+                        } else {
+                            null
+                        } ?: GlobalRpc.serverSettings.downloadDirectory).toNativeSeparators()
+                    )
+                }
             }
 
             val directoriesAdapter =
@@ -97,10 +106,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
             GlobalRpc.gotDownloadDirFreeSpaceEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
                 val text = downloadDirectoryEdit.text?.toString()?.normalizePath()
-                if (!text.isNullOrEmpty() && GlobalRpc.serverSettings.downloadDirectory?.contentEquals(
-                        text
-                    ) == true
-                ) {
+                if (text == GlobalRpc.serverSettings.downloadDirectory) {
                     downloadDirectoryLayout.helperText = fragment.getString(
                         R.string.free_space,
                         FormatUtils.formatByteSize(fragment.requireContext(), bytes)
@@ -236,10 +242,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
         val fd = model.detachFd() ?: return
         GlobalRpc.nativeInstance.addTorrentFile(
             fd,
-            infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString().normalizePath(),
+            infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString()
+                .normalizePath(),
             IntVector(priorities.unwantedFiles),
             IntVector(priorities.highPriorityFiles),
-                IntVector(priorities.lowPriorityFiles),
+            IntVector(priorities.lowPriorityFiles),
             StringMap().apply { putAll(model.renamedFiles) },
             priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())],
             infoFragment.binding.startDownloadingCheckBox.isChecked
@@ -419,11 +426,19 @@ class AddTorrentFileFragment : AddTorrentFragment(
             binding.filesView.apply {
                 adapter = this@FilesFragment.adapter
                 layoutManager = LinearLayoutManager(activity)
-                addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+                addItemDecoration(
+                    DividerItemDecoration(
+                        requireContext(),
+                        DividerItemDecoration.VERTICAL
+                    )
+                )
                 (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             }
 
-            mainFragment.model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, adapter::update)
+            mainFragment.model.filesTree.items.launchAndCollectWhenStarted(
+                viewLifecycleOwner,
+                adapter::update
+            )
 
             applyNavigationBarBottomInset()
         }

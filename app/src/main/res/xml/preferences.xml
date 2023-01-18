@@ -46,6 +46,12 @@
             android:key="@string/prefs_link_from_clipboard_key"
             android:title="@string/prefs_link_from_clipboard_title"
             app:singleLineTitle="false"/>
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/prefs_remember_download_directory_default_value"
+            android:key="@string/prefs_remember_download_directory_key"
+            android:title="@string/prefs_remember_download_directory_title"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">

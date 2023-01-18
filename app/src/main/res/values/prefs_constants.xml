@@ -85,4 +85,7 @@
     <string name="torrents_directory_filter_default_value" translatable="false"/>
 
     <string name="notification_permission_key" translatable="false">notificationPermission</string>
+
+    <string name="prefs_remember_download_directory_key" translatable="false">rememberDownloadDirectory</string>
+    <bool name="prefs_remember_download_directory_default_value">true</bool>
 </resources>

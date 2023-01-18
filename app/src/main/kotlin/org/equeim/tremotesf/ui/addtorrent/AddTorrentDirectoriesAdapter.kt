@@ -51,17 +51,12 @@ class AddTorrentDirectoriesAdapter(
         items = if (saved != null) {
             saved
         } else {
-            val comparator = AlphanumericComparator()
-            val sorted =
-                GlobalServers.serversState.value.currentServer?.addTorrentDialogDirectories
-                    ?.map { it.normalizePath().toNativeSeparators() }
-                    ?.toSortedSet(comparator)
-                    ?: sortedSetOf(comparator)
-            for (torrent in GlobalRpc.torrents.value) {
-                sorted.add(torrent.downloadDirectory.toNativeSeparators())
-            }
-            sorted.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
-            ArrayList(sorted)
+            val directories = sortedSetOf(AlphanumericComparator())
+            GlobalServers.serversState.value.currentServer?.lastDownloadDirectories
+                ?.mapTo(directories) { it.normalizePath().toNativeSeparators() }
+            GlobalRpc.torrents.value.mapTo(directories) { it.downloadDirectory.toNativeSeparators() }
+            directories.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
+            ArrayList(directories)
         }
     }
 
@@ -82,14 +77,19 @@ class AddTorrentDirectoriesAdapter(
     }
 
     fun save() {
-        val saved = ArrayList(items.map { it.normalizePath() })
+        val directories = items.mapTo(ArrayList(items.size)) { it.normalizePath() }
         val editPath = textEdit.text.toString().normalizePath()
-        if (!saved.contains(editPath)) {
-            saved.add(editPath)
+        if (!directories.contains(editPath)) {
+            directories.add(editPath)
         }
         GlobalServers.serversState.value.currentServer?.let { current ->
-            if (current.addTorrentDialogDirectories != saved) {
-                GlobalServers.addOrReplaceServer(current.copy(addTorrentDialogDirectories = saved))
+            if (current.lastDownloadDirectories != directories || current.lastDownloadDirectory != editPath) {
+                GlobalServers.addOrReplaceServer(
+                    current.copy(
+                        lastDownloadDirectories = directories,
+                        lastDownloadDirectory = editPath
+                    )
+                )
             }
         }
     }
