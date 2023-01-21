@@ -151,6 +151,22 @@
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:maxLines="2"
+            android:text="@string/active_web_seeders"
+            app:layout_columnWeight="1"/>
+
+        <TextView
+            android:id="@+id/web_seeders_text_view"
+            android:layout_width="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_columnWeight="2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:maxLines="2"
             android:text="@string/leechers"
             app:layout_columnWeight="1"/>
 

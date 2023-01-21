@@ -90,6 +90,7 @@
     <string name="trackers">Trackers</string>
     <string name="directories">Directories</string>
     <string name="peers">Peers</string>
+    <string name="web_seeders">Web seeders</string>
     <string name="limits">Limits</string>
 
     <string name="activity">Activity</string>
@@ -101,6 +102,7 @@
     <string name="download_speed">Download speed</string>
     <string name="upload_speed">Upload speed</string>
     <string name="seeders">Seeders</string>
+    <string name="active_web_seeders">Active web seeders</string>
     <string name="leechers">Leechers</string>
     <string name="last_activity">Last activity</string>
 
@@ -532,4 +534,6 @@
     <string name="request_notification_permission">Grant notification permission</string>
 
     <string name="date_time_with_relative">%1$s (%2$s)</string>
+
+    <string name="no_web_seeders">No web seeders</string>
 </resources>
