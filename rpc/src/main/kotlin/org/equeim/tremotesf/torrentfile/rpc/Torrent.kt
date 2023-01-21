@@ -20,11 +20,7 @@
 package org.equeim.tremotesf.torrentfile.rpc
 
 import mozilla.components.lib.publicsuffixlist.PublicSuffixList
-import org.equeim.libtremotesf.IntVector
-import org.equeim.libtremotesf.StringsVector
-import org.equeim.libtremotesf.TorrentData
-import org.equeim.libtremotesf.TorrentFile
-import org.equeim.libtremotesf.Tracker
+import org.equeim.libtremotesf.*
 import org.threeten.bp.Instant
 
 class Torrent private constructor(
@@ -156,9 +152,7 @@ class Torrent private constructor(
 
     internal companion object {
         suspend fun create(data: TorrentData, rpc: Rpc, prevTorrent: Torrent?, publicSuffixList: PublicSuffixList, trackerSitesCache: MutableMap<String, String?>): Torrent {
-            val trackerSites = if (prevTorrent != null && !data.trackersAnnounceUrlsChanged) {
-                prevTorrent.trackerSites
-            } else {
+            val trackerSites = if (prevTorrent == null || !libtremotesf.areAnnounceUrlsEqual(prevTorrent.data, data)) {
                 data.trackers.mapNotNull {
                     val hostInfo = it.announceHostInfo()
                     val host = hostInfo.host
@@ -170,6 +164,8 @@ class Torrent private constructor(
                         }
                     }
                 }
+            } else {
+                prevTorrent.trackerSites
             }
             return Torrent(data, trackerSites, rpc, prevTorrent)
         }
