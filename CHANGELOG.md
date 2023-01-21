@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 ### Added
-- Torrent link is automatically filled from clipboard when adding torrent (disabled by default)
-- Drag & drop suuport for adding torrents
+- Torrent link can be automatically filled from clipboard when adding torrent (disabled by default)
+- Drag & drop support for adding torrents
 - More efficient data transfer with Transmission server is used when Transmission version is at least 3.00
+- When adding torrent last download directory is now remembered (can be disabled in settings)
 
 ### Changed
 - When relative time displayed for torrent's added/created/last active dates, absolute date and time is also shown
