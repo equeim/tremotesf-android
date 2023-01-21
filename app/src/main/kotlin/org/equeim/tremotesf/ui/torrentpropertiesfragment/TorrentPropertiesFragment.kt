@@ -316,6 +316,7 @@ class TorrentPropertiesFragment : NavigationFragment(
                     Tab.Files -> R.string.files
                     Tab.Trackers -> R.string.trackers
                     Tab.Peers -> R.string.peers
+                    Tab.WebSeeders -> R.string.web_seeders
                     Tab.Limits -> R.string.limits
                 }
             }
@@ -326,6 +327,7 @@ class TorrentPropertiesFragment : NavigationFragment(
             Files,
             Trackers,
             Peers,
+            WebSeeders,
             Limits
         }
 
@@ -339,6 +341,7 @@ class TorrentPropertiesFragment : NavigationFragment(
                 Tab.Files -> TorrentFilesFragment()
                 Tab.Trackers -> TrackersFragment()
                 Tab.Peers -> PeersFragment()
+                Tab.WebSeeders -> WebSeedersFragment()
                 Tab.Limits -> TorrentLimitsFragment()
             }
         }
