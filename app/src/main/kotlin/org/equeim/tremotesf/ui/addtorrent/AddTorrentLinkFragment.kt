@@ -184,14 +184,15 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                     if (connectSnackbar == null) {
                         connectSnackbar = coordinatorLayout.showSnackbar(
                             message = "",
-                            length = Snackbar.LENGTH_INDEFINITE,
+                            duration = Snackbar.LENGTH_INDEFINITE,
                             actionText = R.string.connect,
                             action = GlobalRpc.nativeInstance::connect,
-                        ) {
-                            if (connectSnackbar == it) {
-                                connectSnackbar = null
+                            onDismissed = {
+                                if (connectSnackbar == it) {
+                                    connectSnackbar = null
+                                }
                             }
-                        }
+                        )
                     }
                 }
                 RpcConnectionState.Connecting -> {

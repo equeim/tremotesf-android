@@ -47,6 +47,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
@@ -215,7 +216,11 @@ fun Fragment.applyNavigationBarBottomInset() {
     val rootView = requireView()
     val paddingViews = rootView.findPaddingViews()
     val marginViews = rootView.findMarginViews()
-    (requireActivity() as NavigationActivity).windowInsets
+    applyNavigationBarBottomInset(paddingViews, marginViews)
+}
+
+fun Fragment.applyNavigationBarBottomInset(paddingViews: Map<View, Int>, marginViews: Map<View, Int>): Job {
+    return (requireActivity() as NavigationActivity).windowInsets
         .map { it.bottomNavigationBarInsetIfImeIsHidden() }
         .distinctUntilChanged()
         .launchAndCollectWhenStarted(viewLifecycleOwner) { inset ->

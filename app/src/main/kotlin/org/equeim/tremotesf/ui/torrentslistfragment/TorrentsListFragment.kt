@@ -145,19 +145,28 @@ class TorrentsListFragment : NavigationFragment(
         model.subtitleUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         model.showAddTorrentDuplicateError.handleAndReset {
-            binding.root.showSnackbar(R.string.torrent_duplicate, Snackbar.LENGTH_LONG)
+            binding.root.showSnackbar(
+                message = R.string.torrent_duplicate,
+                duration = Snackbar.LENGTH_LONG,
+                anchorViewId = R.id.bottom_toolbar
+            )
         }.launchAndCollectWhenStarted(viewLifecycleOwner)
 
         model.showAddTorrentError.handleAndReset {
-            binding.root.showSnackbar(R.string.torrent_add_error, Snackbar.LENGTH_LONG)
+            binding.root.showSnackbar(
+                message = R.string.torrent_add_error,
+                duration = Snackbar.LENGTH_LONG,
+                anchorViewId = R.id.bottom_toolbar
+            )
         }.launchAndCollectWhenStarted(viewLifecycleOwner)
 
         notificationPermissionLauncher?.let { launcher ->
             model.showNotificationPermissionRequest.handleAndReset {
                 binding.root.showSnackbar(
                     message = R.string.notification_permission_rationale,
-                    length = Snackbar.LENGTH_INDEFINITE,
+                    duration = Snackbar.LENGTH_INDEFINITE,
                     actionText = R.string.request_permission,
+                    anchorViewId = R.id.bottom_toolbar,
                     action = { model.notificationPermissionHelper?.requestPermission(this, launcher) }
                 )
             }.launchAndCollectWhenStarted(viewLifecycleOwner)

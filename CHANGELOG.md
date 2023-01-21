@@ -13,6 +13,7 @@
 ### Fixed
 - Fixed display of trackers' next update time
 - File paths are now displayed with correct separators when Transmission is running on Windows
+- Fix position of bottom messages when 3 button navigation is enabled
 
 ## [2.7.2] - 2022-11-12
 ### Fixed
