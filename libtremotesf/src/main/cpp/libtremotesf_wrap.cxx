@@ -5301,21 +5301,6 @@ SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_Torrent
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackersAnnounceUrlsChanged_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(libtremotesf::TorrentData **)&jarg1; 
-  result = (bool) ((arg1)->trackersAnnounceUrlsChanged);
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_TorrentData_1trackers_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
   libtremotesf::TorrentData *arg1 = (libtremotesf::TorrentData *) 0 ;
@@ -8757,6 +8742,32 @@ SWIGEXPORT jlong JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_moveFromVe
   } 
   result = libtremotesf::moveFromVector(*arg1);
   *(libtremotesf::Peer **)&jresult = new libtremotesf::Peer(SWIG_STD_MOVE(result)); 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_org_equeim_libtremotesf_libtremotesfJNI_areAnnounceUrlsEqual(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  libtremotesf::TorrentData *arg1 = 0 ;
+  libtremotesf::TorrentData *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(libtremotesf::TorrentData **)&jarg1;
+  if (!arg1) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData const & is null");
+    return 0;
+  } 
+  arg2 = *(libtremotesf::TorrentData **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "libtremotesf::TorrentData const & is null");
+    return 0;
+  } 
+  result = (bool)libtremotesf::areAnnounceUrlsEqual((libtremotesf::TorrentData const &)*arg1,(libtremotesf::TorrentData const &)*arg2);
+  jresult = (jboolean)result; 
   return jresult;
 }
 

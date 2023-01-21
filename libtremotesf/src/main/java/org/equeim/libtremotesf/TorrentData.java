@@ -208,10 +208,6 @@ public class TorrentData {
     return libtremotesfJNI.TorrentData_singleFile_get(swigCPtr, this);
   }
 
-  public boolean getTrackersAnnounceUrlsChanged() {
-    return libtremotesfJNI.TorrentData_trackersAnnounceUrlsChanged_get(swigCPtr, this);
-  }
-
   public TrackersVector getTrackers() {
     long cPtr = libtremotesfJNI.TorrentData_trackers_get(swigCPtr, this);
     return (cPtr == 0) ? null : new TrackersVector(cPtr, false);

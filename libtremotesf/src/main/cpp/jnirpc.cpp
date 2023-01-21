@@ -786,6 +786,16 @@ namespace libtremotesf
             }
         });
     }
+
+    bool areAnnounceUrlsEqual(const TorrentData& first, const TorrentData& second) {
+        if (first.trackers.size() != second.trackers.size()) return false;
+        for (size_t i = 0, max = first.trackers.size(); i < max; ++i) {
+            if (first.trackers[i].announce() != second.trackers[i].announce()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM*, void*)

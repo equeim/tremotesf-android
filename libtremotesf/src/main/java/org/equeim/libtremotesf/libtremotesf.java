@@ -21,4 +21,8 @@ public class libtremotesf {
     return new Peer(libtremotesfJNI.moveFromVector__SWIG_2(Peer.getCPtr(other), other), true);
   }
 
+  public static boolean areAnnounceUrlsEqual(TorrentData first, TorrentData second) {
+    return libtremotesfJNI.areAnnounceUrlsEqual(TorrentData.getCPtr(first), first, TorrentData.getCPtr(second), second);
+  }
+
 }

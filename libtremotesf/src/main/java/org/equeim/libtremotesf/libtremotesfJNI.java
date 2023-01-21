@@ -215,7 +215,6 @@ public class libtremotesfJNI {
   public final static native int TorrentData_bandwidthPriority_get(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_honorSessionLimits_get(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_singleFile_get(long jarg1, TorrentData jarg1_);
-  public final static native boolean TorrentData_trackersAnnounceUrlsChanged_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_trackers_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_webSeeders_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_activeWebSeeders_get(long jarg1, TorrentData jarg1_);
@@ -413,6 +412,7 @@ public class libtremotesfJNI {
   public final static native long moveFromVector__SWIG_0(long jarg1, TorrentData jarg1_);
   public final static native long moveFromVector__SWIG_1(long jarg1, TorrentFile jarg1_);
   public final static native long moveFromVector__SWIG_2(long jarg1, Peer jarg1_);
+  public final static native boolean areAnnounceUrlsEqual(long jarg1, TorrentData jarg1_, long jarg2, TorrentData jarg2_);
   public final static native long JniServerSettingsData_SWIGUpcast(long jarg1);
 
   public static void SwigDirector_JniRpc_onAboutToDisconnect(JniRpc jself) {
