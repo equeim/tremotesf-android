@@ -75,14 +75,15 @@ class ServerSettingsFragment : NavigationFragment(
             RpcConnectionState.Disconnected -> {
                 connectSnackbar = binding.root.showSnackbar(
                     message = "",
-                    length = Snackbar.LENGTH_INDEFINITE,
+                    duration = Snackbar.LENGTH_INDEFINITE,
                     actionText = R.string.connect,
-                    action = GlobalRpc.nativeInstance::connect
-                ) {
-                    if (connectSnackbar == it) {
-                        connectSnackbar = null
+                    action = GlobalRpc.nativeInstance::connect,
+                    onDismissed = {
+                        if (connectSnackbar == it) {
+                            connectSnackbar = null
+                        }
                     }
-                }
+                )
                 binding.placeholder.text = status.statusString
                 hideKeyboard()
             }
