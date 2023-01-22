@@ -392,6 +392,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 context.getText(R.string.torrent_downloading_stalled)
             }
         } else {
+            val seeders = this.seeders + this.activeWebSeeders
             if (hasError) {
                 context.resources.getQuantityString(
                     R.plurals.torrent_downloading_with_error,

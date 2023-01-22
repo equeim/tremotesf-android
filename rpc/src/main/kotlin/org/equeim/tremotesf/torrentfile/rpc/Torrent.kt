@@ -56,6 +56,7 @@ class Torrent private constructor(
     val ratio = data.ratio
 
     val seeders = data.seeders
+    val activeWebSeeders = data.activeWebSeeders
     val leechers = data.leechers
 
     val addedDate: Instant? = data.addedDate
