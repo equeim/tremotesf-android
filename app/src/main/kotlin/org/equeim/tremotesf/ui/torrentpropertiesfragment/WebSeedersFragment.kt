@@ -11,7 +11,7 @@ import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.WebSeedersFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
@@ -51,11 +51,8 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
     }
 }
 
-private class WebSeedersAdapter : StateRestoringListAdapter<String, WebSeedersAdapter.ViewHolder>(Callback()) {
+private class WebSeedersAdapter : AsyncLoadingListAdapter<String, WebSeedersAdapter.ViewHolder>(Callback()) {
     private val comparator = AlphanumericComparator()
-    private var torrent: Torrent? = null
-
-    override fun allowStateRestoring(): Boolean = torrent != null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         LayoutInflater.from(parent.context)
@@ -67,7 +64,6 @@ private class WebSeedersAdapter : StateRestoringListAdapter<String, WebSeedersAd
     }
 
     fun update(torrent: Torrent?) {
-        this.torrent = torrent
         submitList(torrent?.data?.webSeeders?.sortedWith(comparator))
     }
 

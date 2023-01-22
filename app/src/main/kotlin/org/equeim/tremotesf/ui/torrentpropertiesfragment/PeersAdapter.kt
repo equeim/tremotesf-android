@@ -24,16 +24,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.PeerListItemBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.databinding.PeerListItemBinding
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
-import java.util.Comparator
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 
 
-class PeersAdapter : StateRestoringListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
+class PeersAdapter : AsyncLoadingListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
     private val comparator = object : Comparator<Peer> {
         private val stringComparator = AlphanumericComparator()
         override fun compare(o1: Peer, o2: Peer) = stringComparator.compare(o1.address, o2.address)
@@ -53,12 +51,8 @@ class PeersAdapter : StateRestoringListAdapter<Peer, PeersAdapter.ViewHolder>(Ca
         holder.update(getItem(position))
     }
 
-    fun update(peers: List<Peer>) {
-        submitList(peers.sortedWith(comparator))
-    }
-
-    override fun allowStateRestoring(): Boolean {
-        return GlobalRpc.isConnected.value
+    fun update(peers: List<Peer>?) {
+        submitList(peers?.sortedWith(comparator))
     }
 
     class ViewHolder(private val binding: PeerListItemBinding) :

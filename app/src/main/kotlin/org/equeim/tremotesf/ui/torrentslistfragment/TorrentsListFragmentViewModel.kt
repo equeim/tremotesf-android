@@ -149,30 +149,49 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 (directoryFilter as String).isNotEmpty()
     }
 
-    private val filteredTorrents = combine(
+    private val torrentsIfConnected: Flow<List<Torrent>?> = combine(
         GlobalRpc.torrents,
+        GlobalRpc.isConnected
+    ) { torrents, isConnected ->
+        if (torrents.isEmpty() && !isConnected) null
+        else torrents
+    }//.flowOn(Dispatchers.Main)
+    private val filteredTorrents: Flow<Sequence<Torrent>?> = combine(
+        torrentsIfConnected,
         statusFilterMode,
         trackerFilter,
         directoryFilter,
         nameFilter.flow()
     ) { torrents, status, tracker, directory, name ->
-        torrents.asSequence().filter(createFilterPredicate(status, tracker, directory, name))
+        torrents?.asSequence()?.filter(createFilterPredicate(status, tracker, directory, name))
     }
-    val torrents = combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
-        torrents.sortedWith(createComparator(sortMode, sortOrder)).toList()
-        // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
-    }.stateIn(
-        viewModelScope + Dispatchers.Default,
-        SharingStarted.WhileSubscribed(500),
-        emptyList()
-    )
+    val torrents: StateFlow<List<Torrent>?> =
+        combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
+            torrents?.sortedWith(createComparator(sortMode, sortOrder))?.toList()
+            // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
+        }.stateIn(
+            viewModelScope + Dispatchers.Default,
+            SharingStarted.WhileSubscribed(500),
+            null
+        )
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 
-    val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(savedStateHandle, true)
+    val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(
+        savedStateHandle,
+        true
+    )
     val showSearchView: Flow<Boolean> = GlobalRpc.isConnected
-    val showTransmissionSettingsButton: Flow<Boolean> = combine(GlobalServers.hasServers, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
-    val showTorrentsFiltersButton: Flow<Boolean> = combine(GlobalRpc.isConnected, searchViewIsIconified.flow(), Boolean::and).distinctUntilChanged()
+    val showTransmissionSettingsButton: Flow<Boolean> = combine(
+        GlobalServers.hasServers,
+        searchViewIsIconified.flow(),
+        Boolean::and
+    ).distinctUntilChanged()
+    val showTorrentsFiltersButton: Flow<Boolean> = combine(
+        GlobalRpc.isConnected,
+        searchViewIsIconified.flow(),
+        Boolean::and
+    ).distinctUntilChanged()
     val showAddTorrentButton: Flow<Boolean> = showTorrentsFiltersButton
 
     enum class ConnectionButtonState {
@@ -181,7 +200,12 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Disconnect,
         Hidden
     }
-    val connectionButtonState: Flow<ConnectionButtonState> = combine(GlobalServers.hasServers, GlobalRpc.connectionState, searchViewIsIconified.flow()) { hasServers, connectionState, searchViewIsIconified ->
+
+    val connectionButtonState: Flow<ConnectionButtonState> = combine(
+        GlobalServers.hasServers,
+        GlobalRpc.connectionState,
+        searchViewIsIconified.flow()
+    ) { hasServers, connectionState, searchViewIsIconified ->
         when {
             !searchViewIsIconified -> ConnectionButtonState.Hidden
             !hasServers -> ConnectionButtonState.AddServer
@@ -191,9 +215,12 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }.distinctUntilChanged()
 
-    private val hasTorrents = torrents.map { it.isNotEmpty() }.distinctUntilChanged()
+    private val hasTorrents = torrents.map { it?.isNotEmpty() == true }.distinctUntilChanged()
+
     data class PlaceholderState(val status: Rpc.Status, val hasTorrents: Boolean)
-    val placeholderState: Flow<PlaceholderState> = combine(GlobalRpc.status, hasTorrents, ::PlaceholderState).distinctUntilChanged()
+
+    val placeholderState: Flow<PlaceholderState> =
+        combine(GlobalRpc.status, hasTorrents, ::PlaceholderState).distinctUntilChanged()
 
     val showAddTorrentDuplicateError = MutableStateFlow(false)
     val showAddTorrentError = MutableStateFlow(false)

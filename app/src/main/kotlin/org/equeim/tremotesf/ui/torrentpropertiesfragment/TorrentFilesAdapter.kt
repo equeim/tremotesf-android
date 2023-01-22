@@ -48,10 +48,6 @@ class TorrentFilesAdapter(
         return super.onCreateViewHolder(parent, viewType)
     }
 
-    override fun allowStateRestoring(): Boolean {
-        return model.state.value == TorrentFilesFragmentViewModel.State.TreeCreated
-    }
-
     override fun navigateToRenameDialog(path: String, name: String) {
         val torrent = model.torrent.value ?: return
         fragment.navigate(

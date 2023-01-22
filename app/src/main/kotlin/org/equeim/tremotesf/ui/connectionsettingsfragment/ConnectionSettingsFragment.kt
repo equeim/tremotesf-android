@@ -23,16 +23,11 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.view.ActionMode
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
@@ -43,7 +38,6 @@ import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.*
-import kotlin.coroutines.resume
 
 
 class ConnectionSettingsFragment : NavigationFragment(
@@ -75,19 +69,13 @@ class ConnectionSettingsFragment : NavigationFragment(
         GlobalServers.serversState.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    fun update(serversState: Servers.ServersState) {
-        lifecycleScope.launch {
-            adapter.update(serversState)
-            binding.placeholder.visibility = if (adapter.itemCount == 0) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        }
+    suspend fun update(serversState: Servers.ServersState) {
+        adapter.update(serversState)
+        binding.placeholder.isVisible = adapter.itemCount == 0
     }
 
     class ServersAdapter(fragment: Fragment) :
-        StateRestoringListAdapter<ServersAdapter.Item, ServersAdapter.ViewHolder>(DiffCallback()) {
+        ListAdapter<ServersAdapter.Item, ServersAdapter.ViewHolder>(DiffCallback()) {
         data class Item(val serverName: String, val current: Boolean)
 
         private val comparator = object : Comparator<Item> {
@@ -97,7 +85,7 @@ class ConnectionSettingsFragment : NavigationFragment(
 
         val selectionTracker = SelectionTracker.createForStringKeys(
             this,
-            false,
+            true,
             fragment,
             ::ActionModeCallback,
             R.plurals.servers_selected
@@ -119,18 +107,15 @@ class ConnectionSettingsFragment : NavigationFragment(
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
-        suspend fun update(serversState: Servers.ServersState): Unit = suspendCancellableCoroutine { continuation ->
+        suspend fun update(serversState: Servers.ServersState) {
             val items = serversState.servers
                 .map { Item(it.name, it.name == serversState.currentServerName) }
                 .sortedWith(comparator)
-            submitList(items) {
-                currentServerName = serversState.currentServerName
-                continuation.resume(Unit)
-            }
+            currentServerName = serversState.currentServerName
+            submitListAwait(items.nullIfEmpty())
+            selectionTracker.commitAdapterUpdate()
+            selectionTracker.restoreInstanceState()
         }
-
-        override fun allowStateRestoring() = true
-        override fun onStateRestored() = selectionTracker.restoreInstanceState()
 
         class ViewHolder(
             private val adapter: ServersAdapter,
