@@ -126,6 +126,14 @@ public class Tracker {
     return libtremotesfJNI.Tracker_peers(swigCPtr, this);
   }
 
+  public int seeders() {
+    return libtremotesfJNI.Tracker_seeders(swigCPtr, this);
+  }
+
+  public int leechers() {
+    return libtremotesfJNI.Tracker_leechers(swigCPtr, this);
+  }
+
   public @androidx.annotation.Nullable org.threeten.bp.Instant nextUpdateTime() { return org.equeim.libtremotesf.libtremotesfJNI.millisToInstant(libtremotesfJNI.Tracker_nextUpdateTime(swigCPtr, this)); }
 
   public enum Status {

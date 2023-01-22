@@ -70,9 +70,9 @@ class TorrentDetailsFragment :
             uploadSpeedTextView.text =
                 FormatUtils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
             etaTextView.text = FormatUtils.formatDuration(requireContext(), torrent.eta)
-            seedersTextView.text = torrent.seeders.toString()
-            webSeedersTextView.text = torrent.activeWebSeeders.toString()
-            leechersTextView.text = torrent.leechers.toString()
+            seedersTextView.text = torrent.activeSeedersCount.toString()
+            webSeedersTextView.text = torrent.activeWebSeedersCount.toString()
+            leechersTextView.text = torrent.activeLeechersCount.toString()
             lastActivityTextView.text =
                 torrent.data.activityDate?.toDisplayString()
 
