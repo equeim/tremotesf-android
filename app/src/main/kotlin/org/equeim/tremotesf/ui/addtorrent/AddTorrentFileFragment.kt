@@ -471,10 +471,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 return super.onCreateViewHolder(parent, viewType)
             }
 
-            override fun allowStateRestoring(): Boolean {
-                return model.parserStatus.value == AddTorrentFileModel.ParserStatus.Loaded
-            }
-
             override fun navigateToRenameDialog(path: String, name: String) {
                 activity.navigate(
                     AddTorrentFileFragmentDirections.toTorrentFileRenameDialog(

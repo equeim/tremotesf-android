@@ -29,15 +29,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
+import org.equeim.tremotesf.ui.utils.submitListAwait
 import java.lang.ref.WeakReference
 
 
 abstract class BaseTorrentFilesAdapter(
     private val filesTree: TorrentFilesTree,
     private val fragment: Fragment
-) : StateRestoringListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
+) : AsyncLoadingListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
     protected companion object {
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
@@ -85,10 +86,9 @@ abstract class BaseTorrentFilesAdapter(
         }
     }
 
-    fun update(items: List<TorrentFilesTree.Item?>) {
-        submitList(items) {
-            selectionTracker.commitAdapterUpdate()
-        }
+    suspend fun update(items: List<TorrentFilesTree.Item?>?) {
+        submitListAwait(items)
+        selectionTracker.commitAdapterUpdate()
     }
 
     override fun onStateRestored() {

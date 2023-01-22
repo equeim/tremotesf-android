@@ -44,7 +44,7 @@ class TorrentsAdapter(
     private val compactView: Boolean,
     private val multilineName: Boolean
 ) :
-    StateRestoringListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
+    AsyncLoadingListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = SelectionTracker.createForIntKeys(
         this,
         true,
@@ -80,14 +80,9 @@ class TorrentsAdapter(
         holder.update()
     }
 
-    fun update(torrents: List<Torrent>) {
-        submitList(torrents) {
-            selectionTracker.commitAdapterUpdate()
-        }
-    }
-
-    override fun allowStateRestoring(): Boolean {
-        return GlobalRpc.isConnected.value
+    suspend fun update(torrents: List<Torrent>?) {
+        submitListAwait(torrents)
+        selectionTracker.commitAdapterUpdate()
     }
 
     override fun onStateRestored() {

@@ -67,7 +67,7 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.tracke
         propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
     }
 
-    private fun update(torrent: Torrent?) {
+    private suspend fun update(torrent: Torrent?) {
         trackersAdapter.update(torrent)
         binding.placeholder.visibility = if ((trackersAdapter.itemCount == 0) && torrent != null) {
             View.VISIBLE

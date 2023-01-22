@@ -22,34 +22,36 @@ package org.equeim.tremotesf.ui.utils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import timber.log.Timber
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
-abstract class StateRestoringListAdapter<T : Any?, VH : RecyclerView.ViewHolder>(diffCallback: DiffUtil.ItemCallback<T>) :
+/**
+ * Restores state when non-null list is passed to [submitList]
+ */
+abstract class AsyncLoadingListAdapter<T : Any?, VH : RecyclerView.ViewHolder>(diffCallback: DiffUtil.ItemCallback<T>) :
     ListAdapter<T, VH>(diffCallback) {
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
     }
 
-    abstract fun allowStateRestoring(): Boolean
-
     override fun submitList(list: List<T>?) = submitList(list, null)
 
-    override fun submitList(list: List<T>?, commitCallback: Runnable?) {
-        val restore = allowStateRestoring()
+    override fun submitList(list: List<T>?, commitCallback: Runnable?) =
         super.submitList(list?.nullIfEmpty()) {
-            commitCallback?.run()
-            if (restore && stateRestorationPolicy == StateRestorationPolicy.PREVENT) {
-                Timber.i("commitCallback: restoring state")
+            if (list != null && stateRestorationPolicy == StateRestorationPolicy.PREVENT) {
                 stateRestorationPolicy = StateRestorationPolicy.ALLOW
                 onStateRestored()
             }
+            commitCallback?.run()
         }
-    }
 
     protected open fun onStateRestored() {}
-
-    private companion object {
-        fun <T> List<T>.nullIfEmpty() = ifEmpty { null }
-    }
 }
+
+suspend fun <T> ListAdapter<T, *>.submitListAwait(list: List<T>?): Unit =
+    suspendCancellableCoroutine { continuation ->
+        submitList(list) { continuation.resume(Unit) }
+    }
+
+fun <T> List<T>.nullIfEmpty(): List<T>? = ifEmpty { null }

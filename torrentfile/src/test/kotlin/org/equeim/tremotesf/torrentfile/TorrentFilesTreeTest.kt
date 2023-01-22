@@ -244,7 +244,7 @@ class TorrentFilesTreeTest {
             navigateDown(directory.item)
             runCurrent()
 
-            val oldItems = items.value
+            val oldItems = items.value!!
 
             var callbackCalled = false
             lateinit var checkItem: (TorrentFilesTree.Item) -> Unit
@@ -280,7 +280,7 @@ class TorrentFilesTreeTest {
             assertSame(otherFileItem, otherFile.item)
             assertEquals(otherFileItemCopy, otherFile.item)
 
-            oldItems.asSequence().zip(items.value.asSequence()).forEach { (old, new) ->
+            oldItems.asSequence().zip(items.value!!.asSequence()).forEach { (old, new) ->
                 when {
                     old == null -> assertNull(new)
                     old.nodePath.contentEquals(subdirectory.path) -> checkItem(new!!)
@@ -468,7 +468,7 @@ class TorrentFilesTreeTest {
 
             if (isInItems) {
                 assertNotEquals(oldItems, items.value)
-                assertTrue(items.value.contains(renamedNode.item))
+                assertTrue(items.value!!.contains(renamedNode.item))
             } else {
                 assertSame(oldItems, items.value)
             }

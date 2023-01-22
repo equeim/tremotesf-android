@@ -250,7 +250,7 @@ open class TorrentFilesTree(
         }
     }
 
-    protected val comparator = object : Comparator<Item?> {
+    private val comparator = object : Comparator<Item?> {
         private val nameComparator = AlphanumericComparator()
 
         override fun compare(item1: Item?, item2: Item?): Int {
@@ -286,8 +286,8 @@ open class TorrentFilesTree(
     protected var currentNode: DirectoryNode = rootNode
         private set
 
-    private val _items = MutableStateFlow(emptyList<Item?>())
-    val items: StateFlow<List<Item?>> by ::_items
+    private val _items = MutableStateFlow<List<Item?>?>(null)
+    val items: StateFlow<List<Item?>?> by ::_items
 
     fun destroy() {
         scope.cancel()
@@ -343,7 +343,7 @@ open class TorrentFilesTree(
     @WorkerThread
     private suspend fun updateItemsWithoutSorting() {
         val children = currentNode.children
-        val items = items.value.map { if (it == null) it else children[it.nodePath.last()].item }
+        val items = items.value?.map { it?.let { children[it.nodePath.last()].item } }
         coroutineContext.ensureActive()
         _items.value = items
     }
@@ -474,7 +474,7 @@ open class TorrentFilesTree(
         scope.coroutineContext.cancelChildren()
         rootNode = DirectoryNode.createRootNode()
         currentNode = rootNode
-        _items.value = emptyList()
+        _items.value = null
         inited = false
     }
 

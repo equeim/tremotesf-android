@@ -36,14 +36,14 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
-import org.equeim.tremotesf.ui.utils.StateRestoringListAdapter
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
+import org.equeim.tremotesf.ui.utils.submitListAwait
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import kotlin.time.Duration.Companion.seconds
@@ -78,7 +78,7 @@ data class TrackersAdapterItem(
 
 class TrackersAdapter(
     private val fragment: TrackersFragment
-) : StateRestoringListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
+) : AsyncLoadingListAdapter<TrackersAdapterItem, TrackersAdapter.ViewHolder>(Callback()) {
     private var torrent: Torrent? = null
     private var etaUpdateJob: Job? = null
 
@@ -114,7 +114,7 @@ class TrackersAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
 
-    fun update(torrent: Torrent?) {
+    suspend fun update(torrent: Torrent?) {
         etaUpdateJob?.cancel()
         etaUpdateJob = null
         if (torrent == null) {
@@ -127,11 +127,10 @@ class TrackersAdapter(
         }
         this.torrent = torrent
         val newTrackers = torrent.trackers.map(::TrackersAdapterItem)
-        submitList(newTrackers.sortedWith(comparator)) {
-            selectionTracker.commitAdapterUpdate()
-            if (newTrackers.any { it.nextUpdateTime != null }) {
-                updateEtaPeriodically()
-            }
+        submitListAwait(newTrackers.sortedWith(comparator))
+        selectionTracker.commitAdapterUpdate()
+        if (newTrackers.any { it.nextUpdateTime != null }) {
+            updateEtaPeriodically()
         }
     }
 
@@ -143,16 +142,10 @@ class TrackersAdapter(
                 while (currentCoroutineContext().isActive) {
                     delay(1.seconds)
                     val newTrackers = currentList.map(TrackersAdapterItem::withUpdatedNextUpdateEta)
-                    submitList(newTrackers.sortedWith(comparator)) {
-                        selectionTracker.commitAdapterUpdate()
-                    }
+                    submitList(newTrackers.sortedWith(comparator))
                 }
             }
         }
-    }
-
-    override fun allowStateRestoring(): Boolean {
-        return GlobalRpc.isConnected.value
     }
 
     override fun onStateRestored() {
