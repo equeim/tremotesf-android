@@ -156,12 +156,29 @@ public class TorrentData {
     return TorrentData.RatioLimitMode.swigToEnum(libtremotesfJNI.TorrentData_ratioLimitMode_get(swigCPtr, this));
   }
 
-  public int getSeeders() {
-    return libtremotesfJNI.TorrentData_seeders_get(swigCPtr, this);
+  public int getTotalSeedersFromTrackersCount() {
+    return libtremotesfJNI.TorrentData_totalSeedersFromTrackersCount_get(swigCPtr, this);
   }
 
-  public int getLeechers() {
-    return libtremotesfJNI.TorrentData_leechers_get(swigCPtr, this);
+  public int getActiveSeedersCount() {
+    return libtremotesfJNI.TorrentData_activeSeedersCount_get(swigCPtr, this);
+  }
+
+  public StringsVector getWebSeeders() {
+    long cPtr = libtremotesfJNI.TorrentData_webSeeders_get(swigCPtr, this);
+    return (cPtr == 0) ? null : new StringsVector(cPtr, false);
+  }
+
+  public int getActiveWebSeedersCount() {
+    return libtremotesfJNI.TorrentData_activeWebSeedersCount_get(swigCPtr, this);
+  }
+
+  public int getTotalLeechersFromTrackersCount() {
+    return libtremotesfJNI.TorrentData_totalLeechersFromTrackersCount_get(swigCPtr, this);
+  }
+
+  public int getActiveLeechersCount() {
+    return libtremotesfJNI.TorrentData_activeLeechersCount_get(swigCPtr, this);
   }
 
   public int getPeersLimit() {
@@ -213,13 +230,12 @@ public class TorrentData {
     return (cPtr == 0) ? null : new TrackersVector(cPtr, false);
   }
 
-  public StringsVector getWebSeeders() {
-    long cPtr = libtremotesfJNI.TorrentData_webSeeders_get(swigCPtr, this);
-    return (cPtr == 0) ? null : new StringsVector(cPtr, false);
+  public boolean hasError() {
+    return libtremotesfJNI.TorrentData_hasError(swigCPtr, this);
   }
 
-  public int getActiveWebSeeders() {
-    return libtremotesfJNI.TorrentData_activeWebSeeders_get(swigCPtr, this);
+  public boolean isFinished() {
+    return libtremotesfJNI.TorrentData_isFinished(swigCPtr, this);
   }
 
   public boolean isDownloadingStalled() {

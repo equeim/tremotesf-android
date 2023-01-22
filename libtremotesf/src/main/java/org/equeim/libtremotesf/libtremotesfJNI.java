@@ -171,6 +171,8 @@ public class libtremotesfJNI {
   public final static native int Tracker_status(long jarg1, Tracker jarg1_);
   public final static native String Tracker_errorMessage(long jarg1, Tracker jarg1_);
   public final static native int Tracker_peers(long jarg1, Tracker jarg1_);
+  public final static native int Tracker_seeders(long jarg1, Tracker jarg1_);
+  public final static native int Tracker_leechers(long jarg1, Tracker jarg1_);
   public final static native long Tracker_nextUpdateTime(long jarg1, Tracker jarg1_);
   public final static native void delete_Tracker(long jarg1);
   public final static native int TorrentData_id_get(long jarg1, TorrentData jarg1_);
@@ -200,8 +202,12 @@ public class libtremotesfJNI {
   public final static native double TorrentData_ratio_get(long jarg1, TorrentData jarg1_);
   public final static native double TorrentData_ratioLimit_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_ratioLimitMode_get(long jarg1, TorrentData jarg1_);
-  public final static native int TorrentData_seeders_get(long jarg1, TorrentData jarg1_);
-  public final static native int TorrentData_leechers_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_totalSeedersFromTrackersCount_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_activeSeedersCount_get(long jarg1, TorrentData jarg1_);
+  public final static native long TorrentData_webSeeders_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_activeWebSeedersCount_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_totalLeechersFromTrackersCount_get(long jarg1, TorrentData jarg1_);
+  public final static native int TorrentData_activeLeechersCount_get(long jarg1, TorrentData jarg1_);
   public final static native int TorrentData_peersLimit_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_addedDate_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_activityDate_get(long jarg1, TorrentData jarg1_);
@@ -216,8 +222,8 @@ public class libtremotesfJNI {
   public final static native boolean TorrentData_honorSessionLimits_get(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_singleFile_get(long jarg1, TorrentData jarg1_);
   public final static native long TorrentData_trackers_get(long jarg1, TorrentData jarg1_);
-  public final static native long TorrentData_webSeeders_get(long jarg1, TorrentData jarg1_);
-  public final static native int TorrentData_activeWebSeeders_get(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_hasError(long jarg1, TorrentData jarg1_);
+  public final static native boolean TorrentData_isFinished(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_isDownloadingStalled(long jarg1, TorrentData jarg1_);
   public final static native boolean TorrentData_isSeedingStalled(long jarg1, TorrentData jarg1_);
   public final static native void delete_TorrentData(long jarg1);

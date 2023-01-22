@@ -39,6 +39,7 @@
 #define Q_PROPERTY(T)
 #define Q_INVOKABLE
 #define signals private
+using qint64 = long long;
 
 #define SPECIALIZE_FORMATTER_FOR_Q_ENUM(T)
 #define FORMAT_CONST

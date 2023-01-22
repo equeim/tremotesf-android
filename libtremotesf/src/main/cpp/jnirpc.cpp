@@ -473,7 +473,7 @@ namespace libtremotesf
             for (int index : changedIndexes) {
                 changed.push_back(files[static_cast<size_t>(index)]);
             }
-            onTorrentFilesUpdated(torrent->id(), std::move(changed));
+            onTorrentFilesUpdated(torrent->data().id, std::move(changed));
         });
         QObject::connect(mRpc, &Rpc::torrentPeersUpdated, [=](const Torrent* torrent, const std::vector<std::pair<int, int>>& removedIndexRanges, const std::vector<std::pair<int, int>>& changedIndexRanges, int addedCount) {
             const auto& begin = torrent->peers().begin();
@@ -486,7 +486,7 @@ namespace libtremotesf
             std::vector<Peer> added{};
             added.reserve(static_cast<size_t>(addedCount));
             std::copy(end - addedCount, end, std::back_inserter(added));
-            onTorrentPeersUpdated(torrent->id(),
+            onTorrentPeersUpdated(torrent->data().id,
                                   std::vector(removedIndexRanges),
                                   std::move(changed),
                                   std::move(added));
@@ -497,10 +497,10 @@ namespace libtremotesf
         });
 
         QObject::connect(mRpc, &Rpc::torrentAdded, [=](const Torrent* torrent) {
-            onTorrentAdded(torrent->id(), torrent->hashString(), torrent->name());
+            onTorrentAdded(torrent->data().id, torrent->data().hashString, torrent->data().name);
         });
         QObject::connect(mRpc, &Rpc::torrentFinished, [=](const Torrent* torrent) {
-            onTorrentFinished(torrent->id(), torrent->hashString(), torrent->name());
+            onTorrentFinished(torrent->data().id, torrent->data().hashString, torrent->data().name);
         });
         QObject::connect(mRpc, &Rpc::torrentAddDuplicate, [=]() { onTorrentAddDuplicate(); });
         QObject::connect(mRpc, &Rpc::torrentAddError, [=]() { onTorrentAddError(); });
