@@ -102,8 +102,10 @@
     <string name="download_speed">Download speed</string>
     <string name="upload_speed">Upload speed</string>
     <string name="seeders">Seeders</string>
-    <string name="active_web_seeders">Active web seeders</string>
     <string name="leechers">Leechers</string>
+    <string name="peers_sending_to_us">Peers we\'re downloading from</string>
+    <string name="web_seeders_sending_to_us">Web seeders we\'re downloading from</string>
+    <string name="peers_getting_from_us">Peers we\'re uploading to</string>
     <string name="last_activity">Last activity</string>
 
     <string name="total_size">Total size</string>

@@ -10,6 +10,8 @@
 
 ### Changed
 - When relative time displayed for torrent's added/created/last active dates, absolute date and time is also shown
+- "Seeders" and "leechers" now refer to total number of seeders and leechers reported by trackers,
+  while number of peers that we are currently downloading from / uploading to is displayed separately
 
 ### Fixed
 - Fixed display of trackers' next update time
