@@ -49,21 +49,25 @@
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selezionato</item>
+        <item quantity="many">%d torrent selezionati</item>
         <item quantity="other">%d torrent selezionati</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one">%d file selezionato</item>
+        <item quantity="many">%d file selezionati</item>
         <item quantity="other">%d file selezionati</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one">%d server traccia selezionato</item>
+        <item quantity="many">%d server traccia selezionati</item>
         <item quantity="other">%d server traccia selezionati</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one">%d peer</item>
+        <item quantity="many">%d peer</item>
         <item quantity="other">%d peer</item>
     </plurals>
 
@@ -174,6 +178,7 @@
 
     <plurals name="servers_selected">
         <item quantity="one">%d server selezionato</item>
+        <item quantity="many">%d server selezionati</item>
         <item quantity="other">%d server selezionati</item>
     </plurals>
 
@@ -183,6 +188,7 @@
 
     <plurals name="remove_servers_message">
         <item quantity="one">Eliminare il server selezionato? %d</item>
+        <item quantity="many">Eliminare i server selezionati? %d</item>
         <item quantity="other">Eliminare i server selezionati? %d</item>
     </plurals>
 
@@ -284,14 +290,17 @@
 
     <plurals name="started_times">
         <item quantity="one">Lanciato %d volta</item>
+        <item quantity="many">Lanciato %d volte</item>
         <item quantity="other">Lanciato %d volte</item>
     </plurals>
 
     <string name="start">Avvia</string>
+    <string name="start_now">Inizia ora</string>
     <string name="pause">Pausa</string>
 
     <plurals name="remove_torrents_message">
         <item quantity="one">Rimuovere il torrent selezionato? %d</item>
+        <item quantity="many">Rimuovere i %d torrent selezionati?</item>
         <item quantity="other">Rimuovere i %d torrent selezionati?</item>
     </plurals>
     <string name="delete_files">Elimina anche i file sul disco</string>
@@ -306,20 +315,21 @@
     <string name="torrent_paused">In pausa</string>
     <plurals name="torrent_downloading">
         <item quantity="one">In scaricamento da %d peer</item>
+        <item quantity="many">In scaricamento da %d peer</item>
         <item quantity="other">In scaricamento da %d peer</item>
     </plurals>
     <string name="torrent_downloading_stalled">In scaricamento</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Seeding a %d peer</item>
+        <item quantity="many">Seeding a %d peer</item>
         <item quantity="other">Seeding a %d peer</item>
     </plurals>
     <string name="torrent_seeding_stalled">In seeding</string>
     <string name="torrent_queued">In coda</string>
-    <string name="torrent_checking">Controllo (%s%%)</string>
     <string name="torrent_queued_for_checking">In coda per il controllo</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Rimuovere il server traccia selezionato? %d</item>
+        <item quantity="many">Rimuovere i %d server traccia selezionati?</item>
         <item quantity="other">Rimuovere i %d server traccia selezionati?</item>
     </plurals>
 
@@ -361,8 +371,13 @@
     <string name="translators">Traduzioni</string>
     <string name="license">Licenza</string>
 
+    <string name="prefs_dark_theme_mode_title">Tema scuro</string>
+
     <string name="prefs_dark_theme_mode_auto_pre_q">Impostato dal Salva Batteria</string>
     <string name="prefs_dark_theme_mode_auto_q">Predefinito di Sistema</string>
+    <string name="prefs_dark_theme_mode_on">Acceso</string>
+    <string name="prefs_dark_theme_mode_off">Spento</string>
+
     <string name="prefs_torrent_compact_view_title">Usa vista compatta per i torrent</string>
     <string name="prefs_torrent_name_multiline_title">Mostra i nomi dei torrent su più righe</string>
 
@@ -373,10 +388,12 @@
     <string name="added_torrents_channel_name">Torrent aggiunti</string>
 
     <string name="appearance">Aspetto</string>
+    <string name="behaviour">Comportamento</string>
     <string name="torrents">Torrent</string>
 
-    <string name="prefs_delete_files_title">Elimina i file dal disco quando si rimuove il torrent</string>
+    <string name="quick_return_summary">Tocca la barra sopra per tornare all\'inizio</string>
 
+    <string name="prefs_delete_files_title">Elimina i file dal disco quando si rimuove il torrent</string>
     <string name="alternative_speed_limits">Limiti di velocità alternativi</string>
 
 
@@ -418,5 +435,12 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
+
+    <string name="auto_connect_on_wifi_network">Connettiti automaticamente a questo server quando ti connetti alla rete Wi-Fi</string>
+    <string name="wifi_ssid_hint">Rete Wi-Fi</string>
+    <string name="wifi_ssid_set_from_current">Imposta la rete Wi-Fi corrente</string>
+    <string name="location_permission_rationale">Tremotesf necessita di accedere alla posizione per ottenere le informazioni riguardo alla rete Wi-Fi</string>
+    <string name="request_location_permission">Permetti accesso alla posizione</string>
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>

@@ -93,6 +93,7 @@
     <string name="trackers">Трекеры</string>
     <string name="directories">Каталоги</string>
     <string name="peers">Пиры</string>
+    <string name="web_seeders">Веб-сиды</string>
     <string name="limits">Ограничения</string>
 
     <string name="activity">Активность</string>
@@ -105,6 +106,9 @@
     <string name="upload_speed">Скорость отдачи</string>
     <string name="seeders">Сиды</string>
     <string name="leechers">Личи</string>
+    <string name="peers_sending_to_us">Пиры с которых мы загружаем</string>
+    <string name="web_seeders_sending_to_us">Веб-сиды с которых мы загружаем</string>
+    <string name="peers_getting_from_us">Пиры которым мы отдаем</string>
     <string name="last_activity">Последняя активность</string>
 
     <string name="total_size">Общий размер</string>
@@ -135,6 +139,8 @@
     <string name="no_files">Нет файлов</string>
 
     <string name="tracker_inactive">Неактивен</string>
+    <string name="tracker_waiting_for_update">В ожидании обновления</string>
+    <string name="tracker_queued_for_update">В очереди на обновление</string>
     <string name="tracker_updating">Обновляется</string>
     <string name="tracker_error">Ошибка: %s</string>
 
@@ -321,23 +327,41 @@
     <string name="uploaded_string">%1$s, роздано %2$s</string>
 
     <string name="torrent_paused">Приостановлен</string>
+    <string name="torrent_paused_with_error">Приостановлен (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Загружается от %d пира</item>
         <item quantity="few">Загружается от %d пиров</item>
         <item quantity="many">Загружается от %d пиров</item>
         <item quantity="other">Загружается от %d пиров</item>
     </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="one">Загружается от %1$d пира (%2$s)</item>
+        <item quantity="few">Загружается от %1$d пиров (%2$s)</item>
+        <item quantity="many">Загружается от %1$d пиров (%2$s)</item>
+        <item quantity="other">Загружается от %1$d пиров (%2$s)</item>
+    </plurals>
     <string name="torrent_downloading_stalled">Загружается</string>
+    <string name="torrent_downloading_stalled_with_error">Загружается (%s)</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Раздается к %d пиру</item>
         <item quantity="few">Раздается к %d пирам</item>
         <item quantity="many">Раздается к %d пирам</item>
         <item quantity="other">Раздается к %d пирам</item>
     </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="one">Раздается к %1$d пиру (%2$s)</item>
+        <item quantity="few">Раздается к %1$d пирам (%2$s)</item>
+        <item quantity="many">Раздается к %1$d пирам (%2$s)</item>
+        <item quantity="other">Раздается к %1$d пирам (%2$s)</item>
+    </plurals>
     <string name="torrent_seeding_stalled">Раздается</string>
+    <string name="torrent_seeding_stalled_with_error">Раздается (%s)</string>
     <string name="torrent_queued">В очереди</string>
-    <string name="torrent_checking">Проверяется (%s%%)</string>
+    <string name="torrent_queued_with_error">В очереди (%s)</string>
+    <string name="torrent_checking">Проверяется: %s%%</string>
+    <string name="torrent_checking_with_error">Проверяется: %1$s%% (%2$s)</string>
     <string name="torrent_queued_for_checking">В очереди на проверку</string>
+    <string name="torrent_queued_for_checking_with_error">В очереди на проверку (%s)</string>
 
     <plurals name="remove_trackers_message">
         <item quantity="one">Вы уверены, что хотите удалить %d выбранный трекер?</item>
@@ -408,6 +432,8 @@
     <string name="quick_return_summary">Коснитесь верхней панели чтобы вернуться к началу</string>
 
     <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
+    <string name="prefs_link_from_clipboard_title">Автоматически копировать ссылку из буфера обмена при добавлении ссылки на торрент</string>
+    <string name="prefs_remember_download_directory_title">Запоминать последний каталог загрузки</string>
 
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 
@@ -495,4 +521,8 @@
     <string name="notification_permission_rationale">Для показа уведомлений о торрентах требуется разрешение</string>
     <string name="request_permission">Предоставить разрешение</string>
     <string name="request_notification_permission">Предоставить разрешение на показ уведомлений</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
+
+    <string name="no_web_seeders">Нет веб-сидов</string>
 </resources>

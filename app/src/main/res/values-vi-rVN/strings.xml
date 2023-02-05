@@ -236,7 +236,6 @@
     <string name="torrent_seeding_stalled">Đang seed</string>
     <string name="torrent_queued">Xếp hàng</string>
     <string name="torrent_queued_for_checking">Xếp hàng để kiểm tra</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="other">Bạn có chắc muốn xóa bỏ %d tracker đã chọn?</item>
     </plurals>
@@ -270,7 +269,6 @@
     <string name="torrents">Torrent</string>
 
     <string name="prefs_delete_files_title">Xóa tệp trên đĩa cứng khi xóa torrent</string>
-
     <string name="alternative_speed_limits">Giới hạn tốc độ thay thế</string>
 
 

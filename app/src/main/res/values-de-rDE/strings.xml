@@ -316,9 +316,7 @@
     </plurals>
     <string name="torrent_seeding_stalled">Seeden</string>
     <string name="torrent_queued">Eingereiht</string>
-    <string name="torrent_checking">Prüfe (%s %%)</string>
     <string name="torrent_queued_for_checking">Eingereiht zum Prüfen</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Sind Sie sich sicher, dass Sie den %d gewählten Tracker entfernen wollen</item>
         <item quantity="other">Sind Sie sich sicher, dass Sie %d gewählte Tracker entfernen wollen</item>
@@ -386,7 +384,6 @@
     <string name="quick_return_summary">Auf die obere Werkzeugleiste tippen um nach oben zu gelangen</string>
 
     <string name="prefs_delete_files_title">Lösche Dateien auf der Festplatte, wenn der Torrent gelöscht wird</string>
-
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 
 
@@ -473,4 +470,7 @@
     <string name="notification_permission_rationale">Tremotesf benötigt die Berechtigung für Benachrichtigung, um Benachrichtigungen über Torrents anzuzeigen</string>
     <string name="request_permission">Berechtigung erteilen</string>
     <string name="request_notification_permission">Berechtigung für Benachrichtung erteilen</string>
-</resources>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
+
+    </resources>

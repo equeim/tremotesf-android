@@ -310,9 +310,7 @@
     </plurals>
     <string name="torrent_seeding_stalled">Seeden</string>
     <string name="torrent_queued">In wachtrij</string>
-    <string name="torrent_checking">Controleren (%s%%)</string>
     <string name="torrent_queued_for_checking">In wachtrij voor controle</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Zijt ge zeker dat ge %d geselecteerden tracker wilt verwijderen?</item>
         <item quantity="other">Zijt ge zeker dat ge de %d geselecteerde trackers wilt verwijderen?</item>
@@ -369,7 +367,6 @@
     <string name="torrents">Torrents</string>
 
     <string name="prefs_delete_files_title">Bestanden op harde schijf verwijderen bij verwijderen van torrent</string>
-
     <string name="alternative_speed_limits">Alternatieve snelheidslimieten</string>
 
 
@@ -398,5 +395,7 @@
         <item>12 uur</item>
         <item>24 uur</item>
     </string-array>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>

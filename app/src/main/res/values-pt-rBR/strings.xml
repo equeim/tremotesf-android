@@ -49,21 +49,25 @@
 
     <plurals name="torrents_selected">
         <item quantity="one">%d torrent selecionado</item>
+        <item quantity="many">%d torrents selecionados</item>
         <item quantity="other">%d torrents selecionados</item>
     </plurals>
 
     <plurals name="files_selected">
         <item quantity="one">%d arquivo selecionado</item>
+        <item quantity="many">%d arquivos selecionados</item>
         <item quantity="other">%d arquivos selecionados</item>
     </plurals>
 
     <plurals name="trackers_selected">
         <item quantity="one">%d rastreador selecionado</item>
+        <item quantity="many">%d rastreadores selecionados</item>
         <item quantity="other">%d rastreadores selecionados</item>
     </plurals>
 
     <plurals name="peers_plural">
         <item quantity="one">%d par</item>
+        <item quantity="many">%d pares</item>
         <item quantity="other">%d pares</item>
     </plurals>
 
@@ -163,6 +167,7 @@
 
     <plurals name="servers_selected">
         <item quantity="one">%d servidor selecionado</item>
+        <item quantity="many">%d servidores selecionados</item>
         <item quantity="other">%d servidores selecionados</item>
     </plurals>
 
@@ -172,6 +177,7 @@
 
     <plurals name="remove_servers_message">
         <item quantity="one">Você tem certeza de que quer remover 1%d servidor(es) selecionado(s)?</item>
+        <item quantity="many">Tem certeza de que deseja remover %d torrents selecionados?</item>
         <item quantity="other">Tem certeza de que deseja remover %d torrents selecionados?</item>
     </plurals>
 
@@ -270,6 +276,7 @@
 
     <plurals name="started_times">
         <item quantity="one">Iniciado %d vez</item>
+        <item quantity="many">Iniciado %d vezes</item>
         <item quantity="other">Iniciado %d vezes</item>
     </plurals>
 
@@ -287,20 +294,21 @@
     <string name="torrent_paused">Pausado</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Baixando de %d par</item>
+        <item quantity="many">Baixando de %d pares</item>
         <item quantity="other">Baixando de %d pares</item>
     </plurals>
     <string name="torrent_downloading_stalled">Baixando</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Semeando para %d par</item>
+        <item quantity="many">Semeando para %d pares</item>
         <item quantity="other">Semeando para %d pares</item>
     </plurals>
     <string name="torrent_seeding_stalled">Semeando</string>
     <string name="torrent_queued">Na fila</string>
-    <string name="torrent_checking">Verificando (%s%%)</string>
     <string name="torrent_queued_for_checking">Na fila para verificação</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Você tem certeza que deseja remover %d rastreador selecionado?</item>
+        <item quantity="many">Você tem certeza que deseja remover %d rastreadores selecionados?</item>
         <item quantity="other">Você tem certeza que deseja remover %d rastreadores selecionados?</item>
     </plurals>
 
@@ -352,7 +360,6 @@
     <string name="torrents">Torrents</string>
 
     <string name="prefs_delete_files_title">Deletar arquivos no disco rígido ao remover torrent</string>
-
     <string name="alternative_speed_limits">Limites alternativos de velocidade</string>
 
 
@@ -367,5 +374,7 @@
     <string name="notify_on_added_since_last">Notificar sobre torrents adicionados desde a última conexão ao servidor</string>
 
     <string name="persistent_notification">Notificação persistente</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>

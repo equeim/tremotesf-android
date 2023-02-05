@@ -14,6 +14,13 @@
     <string name="server_is_too_new">服务端版本过新</string>
     <string name="server_is_too_old">服务端版本过旧</string>
 
+    <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
+
+    <string name="current_server_string">%1$s (%2$s)</string>
+
+    <string name="download_speed_string">\u2193 %s</string>
+    <string name="upload_speed_string">\u2191 %s</string>
+
     <string name="server">服务器</string>
     <string name="server_settings">服务器设置</string>
 
@@ -36,6 +43,10 @@
     <string name="torrents_checking">正在检查(%d)</string>
     <string name="torrents_errored">已出错(%d)</string>
 
+    <!-- e.g. "example.com (42)" -->
+    <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="directories_spinner_text">%1$s (%2$d)</string>
+
     <plurals name="torrents_selected">
         <item quantity="other">%d 种子已选择</item>
     </plurals>
@@ -45,7 +56,7 @@
     </plurals>
 
     <plurals name="trackers_selected">
-        <item quantity="other">%d Tracker已选择</item>
+        <item quantity="other">%d 跟踪服务器已选择</item>
     </plurals>
 
     <plurals name="peers_plural">
@@ -53,11 +64,11 @@
     </plurals>
 
     <string name="next_update">%s 后请求更多节点</string>
-    <string name="add_trackers">添加 tracker</string>
-    <string name="edit_tracker">编辑Tracker</string>
+    <string name="add_trackers">添加跟踪服务器</string>
+    <string name="edit_tracker">编辑跟踪服务器</string>
 
-    <string name="tracker_announce_url">Tracker 宣告地址</string>
-    <string name="trackers_announce_urls">Tracker 宣告地址</string>
+    <string name="tracker_announce_url">跟踪服务器宣告地址</string>
+    <string name="trackers_announce_urls">跟踪服务器宣告地址</string>
 
     <string name="torrent_finished">下载已完成</string>
     <string name="torrent_added">种子已添加</string>
@@ -67,7 +78,7 @@
 
     <string name="details">详细信息</string>
     <string name="files">文件</string>
-    <string name="trackers">Trackers</string>
+    <string name="trackers">跟踪服务器</string>
     <string name="directories">文件夹</string>
     <string name="peers">节点</string>
     <string name="limits">限制</string>
@@ -91,6 +102,12 @@
     <string name="created_on">创建于</string>
     <string name="comment">注释</string>
 
+    <string name="parent_directory_list_item_label">..</string>
+
+    <string name="progress_string">%s%%</string>
+
+    <string name="progress_string_with_dot">\u00b7 %s%%</string>
+
     <!-- e.g. "100 MiB of 200 MiB (50%)" -->
     <string name="completed_string">%1$s, 共 %2$s (%3$s%%)</string>
 
@@ -112,12 +129,13 @@
     <string name="loading">正在加载 \u2026</string>
     <string name="no_peers">无节点</string>
 
-    <string name="no_trackers">无 tracker</string>
+    <string name="no_trackers">无跟踪服务器</string>
 
     <string name="error">错误</string>
 
     <string name="speed">速度</string>
     <string name="honor_global_limits">以全局设置为准</string>
+    <string name="kbps">kB/s</string>
     <string name="download_noun">下载速度</string>
     <string name="upload_noun">上传速度</string>
 
@@ -159,7 +177,7 @@
     <string name="remove">移除</string>
 
     <plurals name="remove_servers_message">
-        <item quantity="other">你确定要移除 %d 个已选的服务端吗？</item>
+        <item quantity="other">您确定要移除 %d 个已选的服务端吗？</item>
     </plurals>
 
     <string name="no_servers">无服务器</string>
@@ -176,8 +194,8 @@
     <string name="authentication">验证</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
-    <string name="update_interval">刷新间隔， s</string>
-    <string name="timeout">超时， s</string>
+    <string name="update_interval">刷新间隔， 秒</string>
+    <string name="timeout">超时， 秒</string>
 
     <string name="empty_field_error">该项不可为空</string>
 
@@ -263,6 +281,7 @@
     </plurals>
 
     <string name="start">开始</string>
+    <string name="start_now">立即开始</string>
     <string name="pause">暂停</string>
 
     <plurals name="remove_torrents_message">
@@ -287,12 +306,35 @@
     </plurals>
     <string name="torrent_seeding_stalled">做种中</string>
     <string name="torrent_queued">已加入队列</string>
-    <string name="torrent_checking">正在检查 (%s%%)</string>
+    <string name="torrent_checking">正在检查：%s%%</string>
     <string name="torrent_queued_for_checking">已加入检查队列</string>
-
     <plurals name="remove_trackers_message">
-        <item quantity="other">你确定要移除 %d 个已选的Tracker吗？</item>
+        <item quantity="other">你确定要移除 %d 个已选的跟踪服务器吗？</item>
     </plurals>
+
+    <string-array name="size_units">
+        <item>%s B</item>
+        <item>%s KiB</item>
+        <item>%s MiB</item>
+        <item>%s GiB</item>
+        <item>%s TiB</item>
+        <item>%s PiB</item>
+        <item>%s EiB</item>
+        <item>%s ZiB</item>
+        <item>%s YiB</item>
+    </string-array>
+
+    <string-array name="speed_units">
+        <item>%s B/s</item>
+        <item>%s KiB/s</item>
+        <item>%s MiB/s</item>
+        <item>%s GiB/s</item>
+        <item>%s TiB/s</item>
+        <item>%s PiB/s</item>
+        <item>%s EiB/s</item>
+        <item>%s ZiB/s</item>
+        <item>%s YiB/s</item>
+    </string-array>
 
     <string name="remove_torrent_message">确定要移除这个种子吗</string>
 
@@ -308,8 +350,13 @@
     <string name="translators">翻译者</string>
     <string name="license">许可</string>
 
+    <string name="prefs_dark_theme_mode_title">暗色主题</string>
+
     <string name="prefs_dark_theme_mode_auto_pre_q">根据电量节省设定</string>
     <string name="prefs_dark_theme_mode_auto_q">跟随系统</string>
+    <string name="prefs_dark_theme_mode_on">开</string>
+    <string name="prefs_dark_theme_mode_off">关</string>
+
     <string name="prefs_torrent_compact_view_title">以紧凑视图查看种子</string>
     <string name="prefs_torrent_name_multiline_title">以多行显示种子名称</string>
 
@@ -320,10 +367,13 @@
     <string name="added_torrents_channel_name">已添加的种子</string>
 
     <string name="appearance">外观</string>
+    <string name="behaviour">行为</string>
     <string name="torrents">种子</string>
 
-    <string name="prefs_delete_files_title">当移除种子时同时删除硬盘中的文件</string>
+    <string name="quick_return_title">迅速返回顶部</string>
+    <string name="quick_return_summary">轻触顶部工具栏以回到顶部</string>
 
+    <string name="prefs_delete_files_title">当移除种子时同时删除硬盘中的文件</string>
     <string name="alternative_speed_limits">备选速度限制</string>
 
 
@@ -365,5 +415,52 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
+
+    <string name="auto_connect_on_wifi_network">当连接到 Wi-Fi 网络时自动连接到该服务器</string>
+    <string name="wifi_ssid_hint">Wi-Fi 网络 SSID</string>
+    <string name="wifi_ssid_set_from_current">设置为当前的 Wi-Fi 网络</string>
+    <string name="location_permission_rationale">Tremotesf 需要精确位置信息权限以获取 Wi-Fi SSID 信息</string>
+    <string name="request_location_permission">授予位置信息权限</string>
+    <string name="background_wifi_networks_explanation_fdroid">在应用设定中授予持久通知权限或后台位置信息权限，以在应用运行在后台时使用该功能。</string>
+    <string name="background_wifi_networks_explanation_google">在应用设定中授予持久通知权限，以在应用运行在后台时使用此功能。</string>
+    <string name="background_location_permission_rationale">在不使用持久通知权限的情况下，Tremotesf 需要后台位置信息权限以在后台获取 Wi-Fi SSID 信息</string>
+    <string name="request_background_location_permission">授予后台位置信息权限</string>
+    <string name="background_location_permission_granted">已获取后台位置信息权限</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">请在系统设定中授予此权限</string>
+    <string name="go_to_settings">打开系统设定</string>
+
+    <string name="current_ssid_error">当前 Wi-Fi 网络的 SSID 未知</string>
+
+    <string name="request_enable_location">请在系统设定中打开位置信息</string>
+    <string name="enable_location">启用位置信息</string>
+
+    <string name="storage_permission_rationale_torrent">Tremotesf 需要文件和媒体权限以打开此种子文件</string>
+
+    <string name="torrents_filters">筛选</string>
+    <string name="transmission_settings">Transmission 设定</string>
+
+    <string name="load_from_file">从文件载入</string>
+
+    <string name="free_space_in_download_directory">默认下载目录剩余空间</string>
+
+<string name="reset">重置</string>
+
+    <string name="directory_icon">文件夹图标</string>
+    <string name="file_icon">文件图标</string>
+
+    <string name="prefs_color_theme_title">颜色</string>
+    <string name="prefs_color_theme_system">系统颜色</string>
+    <string name="prefs_color_theme_red">红色</string>
+    <string name="prefs_color_theme_teal">青色</string>
+
+    <string name="see_detailed_error_message">查看详细错误信息</string>
+    <string name="detailed_error_message">详细错误信息</string>
+
+    <string name="notification_permission_rationale">Tremotesf 需要通知权限以显示关于种子的通知。</string>
+    <string name="request_permission">授予权限</string>
+    <string name="request_notification_permission">授予通知权限</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>
