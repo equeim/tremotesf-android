@@ -1,22 +1,22 @@
-Remote GUI for Transmission BitTorrent client.
+Transmission BitTorrent 客户端的远程图形用户界面
 
-Features:
- - View torrent list
- - Sort torrents
- - Filter torrents by name, status and trackers
- - Start/stop/verify/remove torrents with multi-selection
- - Add torrents from torrent files and magnet links
- - Select which files to download when adding torrent
- - Manage torrent files
- - Add and remove torrent trackers
- - View torrent peers
- - Set torrent limits
- - Change remote server settings
- - View server statistics
- - Multiple servers
- - Supports HTTPS connection
- - Can connect to servers with self-signed certificates (you need to add certificate to server settings)
- - Client certificate authentication
+功能：
+- 查看种子列表
+- 种子排序
+- 通过种子的名称、状态、跟踪服务器筛选种子
+- 批量开始/停止/校验/移除种子
+- 从种子文件或磁力链添加种子
+- 添加种子时选择要下载的文件
+- 管理种子文件
+- 添加、移除种子的跟踪服务器
+- 查看种子的对等节点
+- 设置种子的限制
+- 更改远程服务端的设定
+- 查看服务端统计数据
+- 管理多个服务端
+- 支持 HTTPS 连接
+- 可连接到使用自签名证书的服务器（你需要在服务端设定中手动添加证书）
+- 客户端证书认证
 
-Source code: https://github.com/equeim/tremotesf-android
-Translations: https://www.transifex.com/equeim/tremotesf-android
+源代码： https://github.com/equeim/tremotesf-android
+参与翻译： https://www.transifex.com/equeim/tremotesf-android

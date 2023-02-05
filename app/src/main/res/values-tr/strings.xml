@@ -315,9 +315,7 @@
     </plurals>
     <string name="torrent_seeding_stalled">Gönderiliyor</string>
     <string name="torrent_queued">Sıraya alındı</string>
-    <string name="torrent_checking">Denetliyor (%s%%)</string>
     <string name="torrent_queued_for_checking">Denetim için sıraya alındı</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Seçilen %d izleyiciyi kaldırmak istediğinizden emin misiniz?</item>
         <item quantity="other">Seçilen %d izleyiciyi kaldırmak istediğinizden emin misiniz?</item>
@@ -376,7 +374,6 @@
     <string name="torrents">Torrentler</string>
 
     <string name="prefs_delete_files_title">Torrent kaldırırken sabit diskteki dosyaları silin</string>
-
     <string name="alternative_speed_limits">Muadil hız sınırları</string>
 
 
@@ -415,5 +412,7 @@
         <item>HTTP</item>
         <item>SOCKS5</item>
     </string-array>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>

@@ -326,9 +326,7 @@
     </plurals>
     <string name="torrent_seeding_stalled">Partage</string>
     <string name="torrent_queued">En attente</string>
-    <string name="torrent_checking">Vérification (%s %%)</string>
     <string name="torrent_queued_for_checking">En attente de vérification</string>
-
     <plurals name="remove_trackers_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer %d traqueur sélectionné ?</item>
         <item quantity="many">Êtes-vous sûr de vouloir supprimer les %d traqueurs sélectionnés ?</item>
@@ -397,7 +395,6 @@
     <string name="quick_return_summary">Appuyez sur la barre d\'outils supérieure pour revenir en haut</string>
 
     <string name="prefs_delete_files_title">Supprimer les fichiers du disque lors de la suppression du torrent</string>
-
     <string name="alternative_speed_limits">Limites de vitesse alternatives</string>
 
 
@@ -443,6 +440,12 @@
     <string name="auto_connect_on_wifi_network">Se connecter automatiquement à ce serveur lors de la connexion au réseau Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID du réseau Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Définir à partir du réseau Wi-Fi actuel</string>
+    <string name="location_permission_rationale">Tremotesf a besoin d\'une autorisation de localisation précise pour obtenir des informations sur le SSID Wi-Fi</string>
+    <string name="request_location_permission">Accorder l\'autorisation de localisation</string>
+    <string name="background_wifi_networks_explanation_fdroid">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer une notification persistante dans les paramètres de l\'application ou accorder l\'autorisation de localisation en arrière-plan</string>
+    <string name="background_wifi_networks_explanation_google">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer la notification persistante dans les paramètres de l\'application</string>
+    <string name="background_location_permission_rationale">Tremotesf a besoin d\'une autorisation de localisation en arrière-plan pour obtenir des informations sur le SSID Wi-Fi en arrière-plan sans utiliser de notification persistante</string>
+    <string name="request_background_location_permission">Accorder l\'autorisation de localisation en arrière-plan</string>
     <string name="background_location_permission_granted">Autorisation de localisation en arrière-plan accordée</string>
 
     <string name="runtime_permission_go_to_settings_rationale">Veuillez accorder cette autorisation à partir des paramètres système</string>
@@ -452,6 +455,8 @@
 
     <string name="request_enable_location">Veuillez activer la localisation dans les paramètres système</string>
     <string name="enable_location">Activer la localisation</string>
+
+    <string name="storage_permission_rationale_torrent">Tremotesf a besoin d\'une autorisation d\'accès au stockage pour ouvrir ce fichier torrent</string>
 
     <string name="torrents_filters">Filtres</string>
     <string name="transmission_settings">Paramètres de Transmission</string>
@@ -469,5 +474,14 @@
     <string name="prefs_color_theme_system">Couleurs du système</string>
     <string name="prefs_color_theme_red">Rouge</string>
     <string name="prefs_color_theme_teal">Bleu sarcelle</string>
+
+    <string name="see_detailed_error_message">Voir le message d\'erreur détaillé</string>
+    <string name="detailed_error_message">Message d\'erreur détaillé</string>
+
+    <string name="notification_permission_rationale">Tremotesf a besoin d\'une autorisation de notification pour afficher des notifications sur les torrents</string>
+    <string name="request_permission">Accorder la permission</string>
+    <string name="request_notification_permission">Accorder l\'autorisation de notification</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>
