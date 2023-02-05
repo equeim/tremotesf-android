@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 name: CI
 
 on:
@@ -199,3 +203,14 @@ jobs:
             echo "Deleting $version"
             curl -s -u '${{ github.actor }}:${{ secrets.DELETE_PACKAGES_TOKEN }}' -X DELETE -H "Accept: application/vnd.github.v3+json" "https://api.github.com/user/packages/container/${{ env.CONTAINER_IMAGE_PACKAGE_NAME }}/versions/$version"
           done
+
+  reuse-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v3
+
+    - name: Check REUSE compliance
+      run: |
+        sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends --assume-yes install pipx
+        pipx run reuse lint

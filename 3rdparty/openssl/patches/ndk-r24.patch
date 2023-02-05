@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 --- a/Configurations/15-android.conf
 +++ b/Configurations/15-android.conf
 @@ -115,7 +115,10 @@

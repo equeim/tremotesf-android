@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 --- a/src/3rdparty/CMakeLists.txt
 +++ b/src/3rdparty/CMakeLists.txt
 @@ -20,7 +20,3 @@ if(QT_FEATURE_gui AND QT_FEATURE_harfbuzz AND NOT QT_FEATURE_system_harfbuzz)

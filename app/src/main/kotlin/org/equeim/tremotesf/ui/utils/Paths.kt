@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package org.equeim.tremotesf.ui.utils
 
 fun String.normalizePath(): String =

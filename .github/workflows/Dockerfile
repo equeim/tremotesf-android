@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 FROM opensuse/tumbleweed:latest
 
 RUN zypper --non-interactive in --no-recommends findutils git gcc gcc-c++ make patch cmake ninja ccache 'pkgconfig(zlib)' 'cmake(double-conversion)' 'pkgconfig(libb2)' 'pkgconfig(libpcre2-posix)' \
