@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: CC0-1.0
+
 plugins {
     alias(libs.plugins.android.application) apply(false)
     alias(libs.plugins.android.library) apply(false)

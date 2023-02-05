@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: CC0-1.0
+
 import java.lang.module.ModuleDescriptor
 import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
 import org.equeim.tremotesf.gradle.tasks.PatchTask

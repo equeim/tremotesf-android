@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # Add project specific ProGuard rules here.
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.

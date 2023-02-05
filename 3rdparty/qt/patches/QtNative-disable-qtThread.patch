@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 --- a/src/android/jar/src/org/qtproject/qt/android/QtNative.java
 +++ b/src/android/jar/src/org/qtproject/qt/android/QtNative.java
 @@ -117,7 +117,7 @@ public class QtNative

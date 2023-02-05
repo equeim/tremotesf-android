@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 </manifest>
