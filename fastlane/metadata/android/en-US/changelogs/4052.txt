@@ -1,0 +1,9 @@
+- Torrent link can be automatically filled from clipboard when adding torrent (disabled by default)
+- Drag & drop support for adding torrents
+- When adding torrent last download directory is now remembered (can be disabled in settings)
+- Information about web seeders is displayed on torrents' details screen
+- "Seeders" and "leechers" now refer to total number of seeders and leechers reported by trackers,
+  while number of peers that we are currently downloading from / uploading to is displayed separately
+- When relative time displayed for torrent's added/created/last active dates, absolute date and time is also shown
+- Fixed display of trackers' next update time
+- File paths are now displayed with correct separators when Transmission is running on Windows
