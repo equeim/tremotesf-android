@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.8.0] - 2023-02-06
 ### Added
 - Torrent link can be automatically filled from clipboard when adding torrent (disabled by default)
 - Drag & drop support for adding torrents
