@@ -9,9 +9,9 @@ import android.os.Build;
 import org.qtproject.qt.android.QtNative;
 import timber.log.Timber;
 
-public class LibTremotesf {
-    public static void init(ClassLoader classLoader) {
-        Timber.d("init() called with: classLoader = [" + classLoader + "]");
+public class LibTremotesfLoader {
+    public static void load(ClassLoader classLoader) {
+        Timber.d("load() called with: classLoader = [" + classLoader + "]");
 
         System.loadLibrary("c++_shared");
 
