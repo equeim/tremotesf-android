@@ -36,7 +36,7 @@ private class NativeCallbackException(methodName: String, cause: Throwable) : Ru
 
 abstract class Rpc(protected val servers: Servers, protected val scope: CoroutineScope, context: Context, protected val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) {
     init {
-        LibTremotesf.init(javaClass.classLoader)
+        LibTremotesfLoader.load(javaClass.classLoader)
     }
 
     val nativeInstance: JniRpc = object : JniRpc() {
