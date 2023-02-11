@@ -9,11 +9,11 @@ Source: https://github.com/equeim/tremotesf-android
 # Copyright: $YEAR $NAME <$CONTACT>
 # License: ...
 
-Files: CHANGELOG.md README.md app/src/main/res/raw*/*.html app/src/main/res/raw/translators fastlane/metadata/android/**/*.txt fastlane/metadata/android/**/*.png torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/*.torrent
+Files: CHANGELOG.md README.md app/src/main/res/raw-*/*.html app/src/main/res/raw/translators fastlane/metadata/android/**/*.txt fastlane/metadata/android/**/*.png torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/*.torrent
 Copyright: 2017-2022 Alexey Rochev
 License: CC0-1.0
 
-Files: app/src/main/res/*.svg app/src/main/res/ic_launcher-web.png app/src/main/res/*/ic_launcher.png libtremotesf/src/main/java/org/equeim/libtremotesf/*.java libtremotesf/src/main/cpp/libtremotesf_wrap.*
+Files: app/src/main/res/values-*/strings.xml app/src/main/res/*.svg app/src/main/res/ic_launcher-web.png app/src/main/res/*/ic_launcher.png libtremotesf/src/main/java/org/equeim/libtremotesf/*.java libtremotesf/src/main/cpp/libtremotesf_wrap.*
 Copyright: 2017-2022 Alexey Rochev
 License: GPL-3.0-or-later
 

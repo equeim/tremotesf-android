@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
-
-SPDX-License-Identifier: GPL-3.0-or-later
--->
-
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Bağlantı kesildi</string>
     <string name="connecting">Bağlanıyor\u2026</string>
