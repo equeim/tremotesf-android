@@ -5,8 +5,24 @@
 cmake_minimum_required(VERSION 3.22.1)
 cmake_policy(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION}..3.25)
 
-set(CMAKE_TOOLCHAIN_FILE "${QT_DIR}/install-${ANDROID_ABI}/lib/cmake/Qt6/qt.toolchain.cmake")
-list(APPEND CMAKE_FIND_ROOT_PATH "${OPENSSL_DIR}/install-${ANDROID_ABI}")
+set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "${ANDROID_NDK}/build/cmake/android.toolchain.cmake")
+
+message(STATUS "ANDROID_ABI is ${ANDROID_ABI}")
+if (ANDROID_ABI MATCHES "arm64-v8a")
+    set(VCPKG_TARGET_TRIPLET arm64-android)
+elseif(ANDROID_ABI MATCHES "armeabi-v7a")
+    set(VCPKG_TARGET_TRIPLET arm-neon-android)
+elseif(ANDROID_ABI MATCHES "x86_64")
+    set(VCPKG_TARGET_TRIPLET x64-android)
+elseif(ANDROID_ABI MATCHES "x86")
+    set(VCPKG_TARGET_TRIPLET x86-android)
+else()
+    message(FATAL_ERROR "Unknown ANDROID_ABI ${ANDROID_ABI}")
+endif()
+
+message(STATUS "VCPKG_TARGET_TRIPLET is ${VCPKG_TARGET_TRIPLET}")
+set(VCPKG_INSTALLED_DIR "${TREMOTESF_VCPKG_INSTALLED_DIR_PREFIX}${VCPKG_TARGET_TRIPLET}")
+message(STATUS "VCPKG_INSTALLED_DIR is ${VCPKG_INSTALLED_DIR}")
 
 project(tremotesf CXX)
 
@@ -17,8 +33,6 @@ find_library(log-lib log)
 find_package(Qt6 COMPONENTS Core Concurrent Network REQUIRED)
 set(Qt6QTlsBackendOpenSSLPlugin_DIR "${Qt6Network_DIR}")
 find_package(Qt6QTlsBackendOpenSSLPlugin REQUIRED)
-
-add_subdirectory(fmt EXCLUDE_FROM_ALL)
 
 set(TREMOTESF_QT6 ON CACHE BOOL "Build with Qt 6")
 include(libtremotesf/cmake/CommonOptions.cmake)

@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
+    id("org.jetbrains.kotlin.plugin.serialization") version embeddedKotlinVersion
 }
 
 group = "org.equeim"
@@ -35,9 +36,8 @@ dependencies {
     compileOnly(libs.kotlin.gradle.plugin) {
         excludeKotlinStdlib()
     }
-    implementation(libs.coroutines.gradle.core)
-    implementation(libs.coroutines.gradle.jdk8)
-    implementation(libs.commons.text)
+    implementation(libs.serialization.gradle.json)
+    implementation(libs.commons.lang)
 }
 
 fun ModuleDependency.excludeKotlinStdlib() {

@@ -16,7 +16,7 @@ sdk-cmake = "3.22.1"
 coroutines = "1.6.4"
 serialization = "1.4.1"
 # Gradle bundles Kotlin 1.6, make sure to not pull newer version through dependencies
-coroutines-gradle = "1.6.4"
+serialization-gradle = "1.3.3"
 
 androidx-annotation = "1.5.0"
 androidx-appcompat = "1.5.1"
@@ -33,7 +33,7 @@ androidx-swiperefreshlayout = "1.1.0"
 androidx-viewpager2 = "1.0.0"
 androidx-work = "2.7.1"
 
-commons-text = "1.9"
+commons-lang = "3.12.0"
 fastscroll = "2.1.0"
 leakcanary = "2.10"
 material = "1.7.0"
@@ -54,12 +54,11 @@ gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-coroutines-gradle-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-gradle" }
-coroutines-gradle-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "coroutines-gradle" }
 
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode", version.ref = "serialization-bencode" }
+serialization-gradle-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-gradle" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
@@ -81,7 +80,7 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "androidx-viewpager2" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
-commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
+commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscroll" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
