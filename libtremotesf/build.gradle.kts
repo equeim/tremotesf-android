@@ -2,55 +2,55 @@
 //
 // SPDX-License-Identifier: CC0-1.0
 
+import org.equeim.tremotesf.gradle.tasks.GenerateOverlayTripletsTask
+import org.equeim.tremotesf.gradle.tasks.RunVcpkgInstallTask
+import org.equeim.tremotesf.gradle.tasks.SetupVcpkgTask
+import org.equeim.tremotesf.gradle.utils.getCMakeInfoOrNull
+import org.equeim.tremotesf.gradle.utils.qtJar
+import org.equeim.tremotesf.gradle.utils.vcpkgCMakeArguments
 import java.lang.module.ModuleDescriptor
-import org.equeim.tremotesf.gradle.tasks.OpenSSLTask
-import org.equeim.tremotesf.gradle.tasks.PatchTask
-import org.equeim.tremotesf.gradle.tasks.QtTask
-import org.equeim.tremotesf.gradle.utils.*
-import org.gradle.kotlin.dsl.libs
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.tremotesf)
 }
 
-val sdkCmakeVersion: ModuleDescriptor.Version = ModuleDescriptor.Version.parse(libs.versions.sdk.cmake.get())
+val ndkVersionMajor = checkNotNull(android.ndkVersion).splitToSequence('.').first()
+
+val sdkCmakeVersion = ModuleDescriptor.Version.parse(libs.versions.sdk.cmake.get())!!
 logger.lifecycle("CMake version from SDK is $sdkCmakeVersion")
 
-val pathCmakeVersion: ModuleDescriptor.Version? = getCMakeInfoOrNull(null, logger)?.let { info ->
-    logger.lifecycle("CMake executable from PATH is ${info.executablePath}")
-    runCatching { ModuleDescriptor.Version.parse(info.version) }.getOrElse {
-        logger.error("Failed to parse version of CMake from PATH: {}", info.version)
-        null
-    }
+val pathCmakeInfo = getCMakeInfoOrNull(providers, logger)
+if (pathCmakeInfo != null) {
+    logger.lifecycle("CMake executable from PATH is ${pathCmakeInfo.executablePath}")
+    logger.lifecycle("CMake version from PATH is ${pathCmakeInfo.version}")
 }
-logger.lifecycle("CMake version from PATH is $pathCmakeVersion")
 
-val useCmakeFromPath = pathCmakeVersion?.let { it > sdkCmakeVersion } ?: false
-val cmakeVersion = if (useCmakeFromPath) {
+val cmakeVersion = if (pathCmakeInfo?.version?.let { it > sdkCmakeVersion } == true) {
     logger.lifecycle("Using CMake from PATH")
-    checkNotNull(pathCmakeVersion)
+    pathCmakeInfo.version
 } else {
     logger.lifecycle("Using CMake from SDK")
     sdkCmakeVersion
 }
 
-val MINIMUM_CMAKE_VERSION = ModuleDescriptor.Version.parse("3.20.0")
-if (cmakeVersion < MINIMUM_CMAKE_VERSION) {
-    throw GradleException("CMake version ${cmakeVersion} is less than minimum version ${MINIMUM_CMAKE_VERSION}", null as Throwable?)
-}
+val vcpkgManifestDirPath: String = layout.projectDirectory.dir("src/main/cpp/libtremotesf").asFile.path
 
 android {
     namespace = "org.equeim.libtremotesf"
 
-    defaultConfig.externalNativeBuild.cmake.arguments(
-        "-DANDROID_STL=c++_shared",
-        "-DANDROID_ARM_NEON=true",
-        "-DOPENSSL_DIR=${rootDir.resolve(OPENSSL_DIR)}",
-        "-DQT_DIR=${rootDir.resolve(QT_DIR)}",
-        // Fix CMake forcing gold linker
-        "-DCMAKE_ANDROID_NDK_VERSION=${libs.versions.sdk.ndk.get().splitToSequence('.').first()}"
-    )
+    defaultConfig.externalNativeBuild.cmake {
+        arguments(
+            "-DANDROID_STL=c++_shared",
+            "-DANDROID_ARM_NEON=true",
+            // Fix CMake forcing gold linker
+            "-DCMAKE_ANDROID_NDK_VERSION=${ndkVersionMajor}",
+        )
+        arguments.addAll(vcpkgCMakeArguments(
+            vcpkgManifestDirPath = vcpkgManifestDirPath,
+            projectLayout = layout
+        ))
+    }
 
     externalNativeBuild.cmake {
         path = file("src/main/cpp/CMakeLists.txt")
@@ -64,45 +64,36 @@ dependencies {
     implementation(libs.timber)
 }
 
-val openSSLPatches by tasks.registering(PatchTask::class) {
-    sourceDir.set(OpenSSLTask.sourceDir(rootDir))
-    patchesDir.set(OpenSSLTask.patchesDir(rootDir))
+val setupVcpkgTask by tasks.registering(SetupVcpkgTask::class) {
+    vcpkgManifestDirPath.set(this@Build_gradle.vcpkgManifestDirPath)
 }
 
-val openSSL by tasks.registering(OpenSSLTask::class) {
-    dependsOn(openSSLPatches)
-    rootDir.set(project.rootDir)
+val generateOverlayTripletsTask by tasks.registering(GenerateOverlayTripletsTask::class) {
+    dependsOn(setupVcpkgTask)
     minSdkVersion.set(libs.versions.sdk.platform.min)
-    ndkDir.set(android.ndkDirectory)
-    ndkVersion.set(android.ndkVersion)
+    ndkVersionMajor.set(this@Build_gradle.ndkVersionMajor)
 }
 
-val qtPatches by tasks.registering(PatchTask::class) {
-    sourceDir.set(QtTask.sourceDir(rootDir))
-    patchesDir.set(QtTask.patchesDir(rootDir))
-    substitutionMap.put("compileSdk", libs.versions.sdk.platform.compile)
+/**
+ * Run `vcpkg install` in a separate Gradle task instead of doing this automatically when CMake is configured
+ * because we need to depend on it for [qtJar] dependency (see below in [dependencies] block),
+ * and making it depend in configureCMake tasks will result in circular dependency error
+ */
+val runVcpkgInstallTask by tasks.registering(RunVcpkgInstallTask::class) {
+    dependsOn(generateOverlayTripletsTask)
+    vcpkgManifestDirPath.set(this@Build_gradle.vcpkgManifestDirPath)
+    androidSdkPath.set(android.sdkDirectory.path)
+    androidNdkPath.set(android.sdkDirectory.toPath().resolve("ndk/${android.ndkVersion}").toString())
 }
 
-val qt by tasks.registering(QtTask::class) {
-    dependsOn(qtPatches)
-    rootDir.set(project.rootDir)
-    minSdkVersion.set(libs.versions.sdk.platform.min)
-    cmakeVersion.set(this@Build_gradle.cmakeVersion.toString())
-    opensslInstallDirs.set(openSSL.map { it.installDirs.get() })
-    sdkDir.set(android.sdkDirectory)
-    ndkDir.set(android.ndkDirectory)
-    ndkVersion.set(android.ndkVersion)
-    if (!useCmakeFromPath) {
-        cmakeBinaryDir.set(android.sdkDirectory.resolve("cmake/$sdkCmakeVersion/bin"))
-    }
+val configureCMakeRegex = Regex("configureCMake[A-Za-z]+\\[[A-Za-z\\d-]+\\]")
+tasks.matching { configureCMakeRegex.matches(it.name) }.configureEach {
+    logger.lifecycle("Altering $this to depend on ${runVcpkgInstallTask.name}")
+    dependsOn(runVcpkgInstallTask)
 }
 
 dependencies {
-    implementation(files(QtTask.jar(rootDir)).builtBy(qt))
+    implementation(files(qtJar(layout)).builtBy(runVcpkgInstallTask))
     api(libs.androidx.annotation)
     api(libs.threetenabp)
-}
-
-tasks.named<Delete>("clean") {
-    delete(OpenSSLTask.dirsToClean(rootDir), QtTask.dirsToClean(rootDir))
 }

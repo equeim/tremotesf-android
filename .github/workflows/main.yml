@@ -13,81 +13,9 @@ on:
     - cron: '0 0 * * 0'
   workflow_dispatch:
 
-env:
-  CONTAINER_REGISTRY: ghcr.io
-  CONTAINER_IMAGE: ghcr.io/${{ github.repository_owner }}/tremotesf-android-build-environment
-  CONTAINER_IMAGE_PACKAGE_NAME: tremotesf-android-build-environment
-
 jobs:
-  build-environment:
-    runs-on: ubuntu-latest
-
-    outputs:
-      container-image: ${{ steps.meta.outputs.tags || format('{0}:{1}', env.CONTAINER_IMAGE, 'latest') }}
-
-    steps:
-      - name: Check out
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Determine whether we need to build image
-        id: build-image-check
-        run: |
-          if [[ $GITHUB_EVENT_NAME == schedule || $GITHUB_EVENT_NAME == workflow_dispatch ]]; then
-            echo 'Build container image'
-            echo 'build-image=true' >> "$GITHUB_OUTPUT"
-            exit
-          fi
-          if [[ $GITHUB_EVENT_NAME == push ]]; then
-            before=${{ github.event.before }}
-          elif [[ $GITHUB_EVENT_NAME == pull_request ]]; then
-            before=${{ github.event.pull_request.base.sha }}
-          else
-            echo "Unknown event '$GITHUB_EVENT_NAME'"
-            exit 1
-          fi
-          echo "Before commit is $before"
-          changed_files="$(git diff --name-only $before HEAD)"
-          echo "Changed files are $changed_files"
-          if [[ $changed_files == *.github/* ]]; then
-            echo 'Build container image'
-            echo 'build-image=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'Do not build container image'
-            echo 'build-image=false' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Log in to the container registry
-        if: steps.build-image-check.outputs.build-image == 'true'
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for container image
-        id: meta
-        if: steps.build-image-check.outputs.build-image == 'true'
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.CONTAINER_IMAGE }}
-          tags: ${{ github.event_name == 'pull_request' && 'type=ref,event=pr' || 'type=raw,value=latest' }}
-
-      - name: Create build environment container image
-        if: steps.build-image-check.outputs.build-image == 'true'
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: .github/workflows/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
   build-app:
-    needs: build-environment
     runs-on: ubuntu-latest
-    container: ${{ needs.build-environment.outputs.container-image }}
 
     steps:
       - name: Check out
@@ -96,70 +24,20 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Set Android SDK environment variables and compute cache key
-        id: android-sdk-variables
-        run: |
-          readonly sdk="$RUNNER_TEMP/android-sdk"
-          echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
-          echo "SDKMANAGER=$sdk/cmdline-tools/latest/bin/sdkmanager" >> "$GITHUB_ENV"
-
-          android_sdk_cache_key=''
-          readonly keys=(android-gradle-plugin sdk-platform-compile sdk-ndk)
-          for key in ${keys[@]}; do
-            android_sdk_cache_key+="$(tomlq -r ".versions[\"$key\"]" gradle/libs.versions.toml)\n"
-          done
-          echo -e "Android SDK cache key before hashing:\n$android_sdk_cache_key"
-          android_sdk_cache_key="android-sdk-$RUNNER_OS-$(echo -e "$android_sdk_cache_key" | sha256sum | head -c 64)"
-          echo -e "Android SDK cache key:\n$android_sdk_cache_key"
-          echo "cache-key=$android_sdk_cache_key" >> "$GITHUB_OUTPUT"
-
-      - name: Restore Android SDK from cache
-        id: android-sdk-cache
-        uses: equeim/cache@v3-altered
-        with:
-          path: ${{ env.ANDROID_SDK_ROOT }}
-          key: ${{ steps.android-sdk-variables.outputs.cache-key }}
-          save-cache: ${{ github.event_name != 'pull_request' }}
-
-      - name: Set up Android SDK
-        if:  steps.android-sdk-cache.outputs.cache-restored == 'false'
-        run: |
-          curl -o cmdline-tools.zip 'https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip'
-          unzip cmdline-tools.zip
-          rm cmdline-tools.zip
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          mv cmdline-tools "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          yes | "$SDKMANAGER" --licenses
-
-      - name: Compute ccache cache key
-        id: compute-ccache-key
-        run: |
-          ./.github/workflows/compute-ccache-key.sh '${{ hashFiles('**/*.gradle.kts', 'gradle-plugin/**/*.kt', '3rdparty/openssl/patches/*', '3rdparty/qt/patches/*') }}'
-
-      - name: Restore ccache directory from cache
-        uses: equeim/cache@v3-altered
-        with:
-          path: ${{ runner.temp }}/.ccache
-          key: ${{ steps.compute-ccache-key.outputs.cache-key }}
-          restore-keys: ${{ steps.compute-ccache-key.outputs.restore-keys }}
-          save-cache: ${{ github.event_name != 'pull_request' }}
-
       - name: Add Kotlin problem matcher
         uses: equeim/kotlin-problem-matcher@v1
+
+      - name: Restore vcpkg binary cache
+        uses: equeim/action-setup-vcpkg@v4
+        with:
+          run-setup: false
+          save-cache: ${{ github.event_name != 'pull_request' }}
 
       - name: Build the app
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: -P org.equeim.tremotesf.ccache=true build
+          arguments: build
           cache-read-only: ${{ github.event_name == 'pull_request' }}
-        env:
-          GRADLE_USER_HOME: ${{ runner.temp }}/.gradle
-          CCACHE_BASEDIR: ${{ github.workspace }}
-          CCACHE_DIR: ${{ runner.temp }}/.ccache
-          CCACHE_COMPRESS: true
-          CCACHE_COMPRESSLEVEL: 3
-          CCACHE_MAXSIZE: 1G
-          CCACHE_COMPILERCHECK: content
 
       - name: Archive debug APKs
         uses: actions/upload-artifact@v3
@@ -182,27 +60,13 @@ jobs:
             torrentfile/build/reports/*
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
-      - name: Archive native dependencies build logs
+      - name: Archive vcpkg logs
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: 3rdparty-build-logs
-          path: |
-            3rdparty/*/build*/tremotesf.*.log
-            3rdparty/*/build*/**/CMakeOutput.log
-            3rdparty/*/build*/**/CMakeError.log
+          name: vcpkg-logs
+          path: libtremotesf/.vcpkg/buildtrees/*/*.log
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
-
-      - name: Delete container image packages
-        id: package-versions-for-deletion
-        if: always()
-        run: |
-          package_versions="$(curl -s -u '${{ github.actor }}:${{ secrets.DELETE_PACKAGES_TOKEN }}' -H "Accept: application/vnd.github.v3+json" 'https://api.github.com/user/packages/container/${{ env.CONTAINER_IMAGE_PACKAGE_NAME }}/versions' | jq -r 'map(select(.metadata.container.tags != ["latest"])) | map(.id) | join(" ")')"
-          echo "Package versions to delete are $package_versions"
-          for version in $package_versions; do
-            echo "Deleting $version"
-            curl -s -u '${{ github.actor }}:${{ secrets.DELETE_PACKAGES_TOKEN }}' -X DELETE -H "Accept: application/vnd.github.v3+json" "https://api.github.com/user/packages/container/${{ env.CONTAINER_IMAGE_PACKAGE_NAME }}/versions/$version"
-          done
 
   reuse-lint:
     runs-on: ubuntu-latest
