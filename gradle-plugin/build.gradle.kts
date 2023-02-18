@@ -36,7 +36,9 @@ dependencies {
     compileOnly(libs.kotlin.gradle.plugin) {
         excludeKotlinStdlib()
     }
-    implementation(libs.serialization.gradle.json)
+    implementation(libs.serialization.gradle.json) {
+        excludeKotlinStdlib()
+    }
     implementation(libs.commons.lang)
 }
 
@@ -46,16 +48,12 @@ fun ModuleDependency.excludeKotlinStdlib() {
     }
 }
 
-kotlinDslPluginOptions {
-    jvmTarget.set(JavaVersion.VERSION_11.toString())
+val javaVersion = JavaVersion.VERSION_11
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = javaVersion.toString()
 }
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
-
-afterEvaluate {
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            apiVersion = "1.6"
-            languageVersion = "1.6"
-        }
-    }
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(javaVersion.majorVersion.toInt())
+    sourceCompatibility = javaVersion.toString()
+    targetCompatibility = javaVersion.toString()
 }

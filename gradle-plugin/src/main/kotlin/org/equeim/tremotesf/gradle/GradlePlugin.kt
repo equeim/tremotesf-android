@@ -47,16 +47,13 @@ class GradlePlugin : Plugin<Project> {
             disable.addAll(listOf("InvalidPackage", "SyntheticAccessor", "TypographyQuotes"))
         }
         when (this) {
-            is LibraryExtension -> configureLibraryProject(libs)
+            is LibraryExtension -> configureLibraryProject()
             is ApplicationExtension -> configureApplicationProject(libs)
         }
     }
 
-    private fun LibraryExtension.configureLibraryProject(libs: VersionCatalog) {
-        defaultConfig {
-            targetSdk = libs.targetSdk
-            consumerProguardFile("consumer-rules.pro")
-        }
+    private fun LibraryExtension.configureLibraryProject() {
+        defaultConfig.consumerProguardFile("consumer-rules.pro")
     }
 
     private fun ApplicationExtension.configureApplicationProject(libs: VersionCatalog) {
