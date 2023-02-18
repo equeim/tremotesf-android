@@ -12,7 +12,7 @@ gradle-versions-plugin = "0.45.0"
 sdk-platform-compile = "33"
 sdk-platform-min = "21"
 sdk-platform-target = "33"
-sdk-ndk = "25.1.8937393"
+sdk-ndk = "25.2.9519653"
 sdk-cmake = "3.22.1"
 
 coroutines = "1.6.4"
