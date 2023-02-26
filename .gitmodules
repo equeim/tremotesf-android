@@ -2,18 +2,9 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-[submodule "libtremotesf/src/main/cpp/fmt"]
-	path = libtremotesf/src/main/cpp/fmt
-	url = https://github.com/fmtlib/fmt.git
 [submodule "libtremotesf/src/main/cpp/libtremotesf"]
 	path = libtremotesf/src/main/cpp/libtremotesf
 	url = https://github.com/equeim/libtremotesf.git
 [submodule "bencode"]
 	path = bencode
 	url = https://github.com/equeim/kotlinx-serialization-bencode.git
-[submodule "3rdparty/qt/qtbase"]
-	path = 3rdparty/qt/qtbase
-	url = https://github.com/qt/qtbase.git
-[submodule "3rdparty/openssl/openssl"]
-	path = 3rdparty/openssl/openssl
-	url = https://github.com/openssl/openssl.git
