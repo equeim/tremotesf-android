@@ -178,7 +178,6 @@ namespace libtremotesf
     inline TorrentData moveFromVector(TorrentData& other) { return std::move(other); }
     inline TorrentFile moveFromVector(TorrentFile& other) { return std::move(other); }
     inline Peer moveFromVector(Peer& other) { return std::move(other); }
-    bool areAnnounceUrlsEqual(const TorrentData& first, const TorrentData& second);
 }
 
 #endif // LIBTREMOTESF_JNIRPC_H

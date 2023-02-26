@@ -4,13 +4,11 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
-import mozilla.components.lib.publicsuffixlist.PublicSuffixList
 import org.equeim.libtremotesf.*
 import org.threeten.bp.Instant
 
-class Torrent private constructor(
+class Torrent(
     val data: TorrentData,
-    val trackerSites: List<String>,
     private val rpc: Rpc,
     prevTorrent: Torrent?
 ) {
@@ -49,6 +47,7 @@ class Torrent private constructor(
     val downloadDirectory: String = data.downloadDirectory
 
     val trackers: List<Tracker> = data.trackers
+    val trackerSites: List<String> = trackers.map { it.site() }
 
     var filesEnabled: Boolean = prevTorrent?.filesEnabled ?: false
         @Synchronized get
@@ -134,26 +133,5 @@ class Torrent private constructor(
 
     fun removeTrackers(ids: IntArray) {
         rpc.nativeInstance.torrentRemoveTrackers(data, IntVector(ids))
-    }
-
-    internal companion object {
-        suspend fun create(data: TorrentData, rpc: Rpc, prevTorrent: Torrent?, publicSuffixList: PublicSuffixList, trackerSitesCache: MutableMap<String, String?>): Torrent {
-            val trackerSites = if (prevTorrent == null || !libtremotesf.areAnnounceUrlsEqual(prevTorrent.data, data)) {
-                data.trackers.mapNotNull {
-                    val hostInfo = it.announceHostInfo()
-                    val host = hostInfo.host
-                    trackerSitesCache.getOrPut(host) {
-                        when {
-                            host.isEmpty() -> null
-                            hostInfo.isIpAddress -> host
-                            else -> publicSuffixList.getPublicSuffixPlusOne(host).await()
-                        }
-                    }
-                }
-            } else {
-                prevTorrent.trackerSites
-            }
-            return Torrent(data, trackerSites, rpc, prevTorrent)
-        }
     }
 }

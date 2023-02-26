@@ -44,7 +44,7 @@ fun vcpkgCMakeArguments(
     "-DVCPKG_HOST_TRIPLET=${HOST_TRIPLET}",
     "-DVCPKG_MANIFEST_DIR=${vcpkgManifestDirPath}",
     "-DVCPKG_MANIFEST_INSTALL=OFF",
-    "-DTREMOTESF_VCPKG_INSTALLED_DIR_PREFIX=${vcpkgInstalledDirPrefix(projectLayout).pathString}",
+    "-DTREMOTESF_VCPKG_INSTALLED_DIR_PREFIX=${vcpkgInstalledDirPrefix(projectLayout).pathString}"
 )
 
 internal const val VCPKG_LOG_PREFIX = "VCPKG"
