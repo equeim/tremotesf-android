@@ -23,7 +23,5 @@ dependencies {
 
     implementation(libs.androidx.core)
 
-    implementation(libs.publicsuffixlist)
-
     implementation(libs.timber)
 }

@@ -51,7 +51,7 @@ abstract class RunVcpkgInstallTask : DefaultTask() {
                     "--triplet=$triplet",
                     "--host-triplet=$HOST_TRIPLET",
                     "--overlay-triplets=${overlayTripletsDir(projectLayout).get().pathString}",
-                    "--x-feature=qt6-tremotesf-android",
+                    "--x-feature=qt6",
                     "--clean-buildtrees-after-build",
                     "--clean-packages-after-build",
                     "--no-print-usage"
