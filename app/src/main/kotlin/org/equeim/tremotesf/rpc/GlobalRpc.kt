@@ -70,6 +70,8 @@ object GlobalRpc : Rpc(GlobalServers, @OptIn(DelicateCoroutinesApi::class) Globa
             .dropWhile { !it }
             .onEach(::onAppForegroundStateChanged)
             .launchIn(scope + dispatchers.Main)
+
+        initNativeInstance()
     }
 
     override fun onTorrentFinished(id: Int, hashString: String, name: String) {

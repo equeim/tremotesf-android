@@ -163,12 +163,6 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
         }
     }
 
-    init {
-        Timber.i("init: initializing native instance")
-        nativeInstance.init()
-        Timber.i("init: initialized native instance")
-    }
-
     @Volatile
     var serverSettings = JniServerSettingsData()
         private set
@@ -261,11 +255,14 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
                 null
             }
         }
+    }
 
+    protected fun initNativeInstance() {
+        Timber.d("initNativeInstance() called")
+        nativeInstance.init()
         servers.serversState.value.currentServer?.let {
             setConnectionConfiguration(it.toConnectionConfiguration())
         }
-
         servers.currentServer
             .map { it?.toConnectionConfiguration() }
             .distinctUntilChanged()
@@ -283,8 +280,7 @@ abstract class Rpc(protected val servers: Servers, protected val scope: Coroutin
                 }
             }
             .launchIn(scope)
-
-        Timber.i("init: finished initialization")
+        Timber.d("initNativeInstance() returned")
     }
 
     @AnyThread
