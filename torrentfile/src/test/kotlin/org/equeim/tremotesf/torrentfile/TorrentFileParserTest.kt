@@ -25,7 +25,7 @@ class TorrentFileParserTest {
     fun before() {
         Dispatchers.setMain(dispatcher)
     }
-    
+
     @After
     fun after() {
         Dispatchers.resetMain()
@@ -87,7 +87,42 @@ class TorrentFileParserTest {
         throw AssertionError("FileIsTooLargeException exception is not thrown")
     }
 
-    private fun assertTreeResultsAreSimilar(expected: TorrentFilesTreeBuildResult, actual: TorrentFilesTreeBuildResult) {
+    @Test
+    fun `Parsing and creating tree for torrent with multiple same top-level files`() = runTest {
+        try {
+            TorrentFileParser.createFilesTree(
+                TorrentFileParser.parseFile(
+                    getResource(
+                        torrentWithMultipleSameTopLevelFiles
+                    ), dispatchers
+                ), dispatchers
+            )
+        } catch (ignore: FileParseException) {
+            return@runTest
+        }
+        throw AssertionError("FileParseException exception is not thrown")
+    }
+
+    @Test
+    fun `Parsing and creating tree for torrent with multiple same files`() = runTest {
+        try {
+            TorrentFileParser.createFilesTree(
+                TorrentFileParser.parseFile(
+                    getResource(
+                        torrentWithMultipleSameFiles
+                    ), dispatchers
+                ), dispatchers
+            )
+        } catch (ignore: FileParseException) {
+            return@runTest
+        }
+        throw AssertionError("FileParseException exception is not thrown")
+    }
+
+    private fun assertTreeResultsAreSimilar(
+        expected: TorrentFilesTreeBuildResult,
+        actual: TorrentFilesTreeBuildResult
+    ) {
         assertNodesAreSimilar(expected.rootNode, actual.rootNode)
         assertNodesAreSimilar(expected.files, actual.files)
     }
@@ -203,5 +238,8 @@ class TorrentFileParserTest {
         }
 
         const val bigTorrent = "big.torrent"
+
+        const val torrentWithMultipleSameTopLevelFiles = "multiple_same_top_level_files.torrent"
+        const val torrentWithMultipleSameFiles = "multiple_same_files.torrent"
     }
 }

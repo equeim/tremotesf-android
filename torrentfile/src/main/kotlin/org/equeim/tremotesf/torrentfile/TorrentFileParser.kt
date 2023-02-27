@@ -34,36 +34,41 @@ object TorrentFileParser {
     }
 
     @VisibleForTesting
-    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers) =
+    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): TorrentFilesTreeBuildResult =
         withContext(dispatchers.Default) {
-            buildTorrentFilesTree {
-                val info = torrentFile.info
-                if (info.files == null) {
-                    addFile(
-                        0,
-                        listOf(info.name),
-                        info.length ?: throw FileParseException("Field 'length' must not be null for single-file torrent"),
-                        0,
-                        TorrentFilesTree.Item.WantedState.Wanted,
-                        TorrentFilesTree.Item.Priority.Normal
-                    )
-                } else {
-                    val fullPath = mutableListOf(info.name)
-                    info.files.forEachIndexed { index, file ->
-                        ensureActive()
-
-                        if (fullPath.size > 1) fullPath.subList(1, fullPath.size).clear()
-                        fullPath.addAll(file.path)
+            runCatching {
+                buildTorrentFilesTree {
+                    val info = torrentFile.info
+                    if (info.files == null) {
                         addFile(
-                            index,
-                            fullPath,
-                            file.length,
+                            0,
+                            listOf(info.name),
+                            info.length
+                                ?: throw FileParseException("Field 'length' must not be null for single-file torrent"),
                             0,
                             TorrentFilesTree.Item.WantedState.Wanted,
                             TorrentFilesTree.Item.Priority.Normal
                         )
+                    } else {
+                        val fullPath = mutableListOf(info.name)
+                        info.files.forEachIndexed { index, file ->
+                            ensureActive()
+
+                            if (fullPath.size > 1) fullPath.subList(1, fullPath.size).clear()
+                            fullPath.addAll(file.path)
+                            addFile(
+                                index,
+                                fullPath,
+                                file.length,
+                                0,
+                                TorrentFilesTree.Item.WantedState.Wanted,
+                                TorrentFilesTree.Item.Priority.Normal
+                            )
+                        }
                     }
                 }
+            }.getOrElse {
+                throw if (it is FileParseException) it else FileParseException(it)
             }
         }
 
