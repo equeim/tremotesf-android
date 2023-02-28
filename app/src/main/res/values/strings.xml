@@ -78,6 +78,16 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item quantity="other">%d peers</item>
     </plurals>
 
+    <plurals name="seeders_plural">
+        <item quantity="one">%d seeder</item>
+        <item quantity="other">%d seeders</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="one">%d leecher</item>
+        <item quantity="other">%d leechers</item>
+    </plurals>
+
     <string name="next_update">Next update after %s</string>
     <string name="add_trackers">Add trackers</string>
     <string name="edit_tracker">Edit tracker</string>
