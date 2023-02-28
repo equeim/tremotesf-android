@@ -5,7 +5,7 @@
 import org.equeim.tremotesf.gradle.tasks.GenerateOverlayTripletsTask
 import org.equeim.tremotesf.gradle.tasks.RunVcpkgInstallTask
 import org.equeim.tremotesf.gradle.tasks.SetupVcpkgTask
-import org.equeim.tremotesf.gradle.utils.getCMakeInfoOrNull
+import org.equeim.tremotesf.gradle.utils.getCMakeInfoFromPathOrNull
 import org.equeim.tremotesf.gradle.utils.qtJar
 import org.equeim.tremotesf.gradle.utils.vcpkgCMakeArguments
 import java.lang.module.ModuleDescriptor
@@ -20,7 +20,7 @@ val ndkVersionMajor = checkNotNull(android.ndkVersion).splitToSequence('.').firs
 val sdkCmakeVersion = ModuleDescriptor.Version.parse(libs.versions.sdk.cmake.get())!!
 logger.lifecycle("CMake version from SDK is $sdkCmakeVersion")
 
-val pathCmakeInfo = getCMakeInfoOrNull(providers, logger)
+val pathCmakeInfo = getCMakeInfoFromPathOrNull(providers, logger)
 if (pathCmakeInfo != null) {
     logger.lifecycle("CMake executable from PATH is ${pathCmakeInfo.executablePath}")
     logger.lifecycle("CMake version from PATH is ${pathCmakeInfo.version}")
