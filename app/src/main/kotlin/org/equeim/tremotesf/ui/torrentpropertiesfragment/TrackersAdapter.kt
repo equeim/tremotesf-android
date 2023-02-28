@@ -11,6 +11,7 @@ import android.text.format.DateUtils
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.DiffUtil
@@ -40,8 +41,15 @@ data class TrackersAdapterItem(
     val status: Tracker.Status,
     val errorMessage: String,
     val peers: Int,
+    val seeders: Int,
+    val leechers: Int,
     val nextUpdateTime: Instant?,
-    val nextUpdateEta: Duration? = nextUpdateTime?.let { Duration.between(Instant.now(), nextUpdateTime) }
+    val nextUpdateEta: Duration? = nextUpdateTime?.let {
+        Duration.between(
+            Instant.now(),
+            nextUpdateTime
+        )
+    }
 ) {
     constructor(rpcTracker: Tracker) : this(
         rpcTracker.id(),
@@ -49,6 +57,8 @@ data class TrackersAdapterItem(
         rpcTracker.status(),
         rpcTracker.errorMessage(),
         rpcTracker.peers(),
+        rpcTracker.seeders(),
+        rpcTracker.leechers(),
         rpcTracker.nextUpdateTime()
     )
 
@@ -56,7 +66,12 @@ data class TrackersAdapterItem(
         return if (nextUpdateTime == null) {
             this
         } else {
-            copy(nextUpdateEta = nextUpdateTime.let { Duration.between(Instant.now(), nextUpdateTime) })
+            copy(nextUpdateEta = nextUpdateTime.let {
+                Duration.between(
+                    Instant.now(),
+                    nextUpdateTime
+                )
+            })
         }
     }
 }
@@ -157,37 +172,50 @@ class TrackersAdapter(
             val tracker = bindingAdapterPositionOrNull?.let(::getItem) ?: return
             with(binding) {
                 nameTextView.text = tracker.announce
-                statusTextView.text = when (tracker.status) {
-                    Tracker.Status.Inactive -> if (tracker.errorMessage.isNotEmpty()) {
-                        context.getString(R.string.tracker_error, tracker.errorMessage)
-                    } else {
-                        context.getText(R.string.tracker_inactive)
+                statusTextView.text = context.getText(
+                    when (tracker.status) {
+                        Tracker.Status.Inactive -> R.string.tracker_inactive
+                        Tracker.Status.WaitingForUpdate -> R.string.tracker_waiting_for_update
+                        Tracker.Status.QueuedForUpdate -> R.string.tracker_queued_for_update
+                        Tracker.Status.Updating -> R.string.tracker_updating
                     }
-                    Tracker.Status.WaitingForUpdate -> context.getText(R.string.tracker_waiting_for_update)
-                    Tracker.Status.QueuedForUpdate -> context.getText(R.string.tracker_queued_for_update)
-                    Tracker.Status.Updating -> context.getText(R.string.tracker_updating)
+                )
+                nextUpdateTextView.apply {
+                    if (tracker.nextUpdateEta != null) {
+                        isVisible = true
+                        text = context.getString(
+                            R.string.next_update,
+                            DateUtils.formatElapsedTime(tracker.nextUpdateEta.seconds)
+                        )
+                    } else {
+                        isVisible = false
+                        text = null
+                    }
                 }
-
-                if (tracker.errorMessage.isNotEmpty()) {
-                    peersTextView.visibility = View.GONE
-                } else {
-                    peersTextView.text = context.resources.getQuantityString(
-                        R.plurals.peers_plural,
-                        tracker.peers,
-                        tracker.peers
-                    )
-                    peersTextView.visibility = View.VISIBLE
+                errorTextView.apply {
+                    if (tracker.errorMessage.isNotEmpty()) {
+                        isVisible = true
+                        text = context.getString(R.string.tracker_error, tracker.errorMessage)
+                    } else {
+                        isVisible = false
+                        text = null
+                    }
                 }
-
-                if (tracker.nextUpdateEta == null) {
-                    nextUpdateTextView.visibility = View.GONE
-                } else {
-                    nextUpdateTextView.text = context.getString(
-                        R.string.next_update,
-                        DateUtils.formatElapsedTime(tracker.nextUpdateEta.seconds)
-                    )
-                    nextUpdateTextView.visibility = View.VISIBLE
-                }
+                peersTextView.text = context.resources.getQuantityString(
+                    R.plurals.peers_plural,
+                    tracker.peers,
+                    tracker.peers
+                )
+                seedersTextView.text = context.resources.getQuantityString(
+                    R.plurals.seeders_plural,
+                    tracker.seeders,
+                    tracker.seeders
+                )
+                leechersTextView.text = context.resources.getQuantityString(
+                    R.plurals.leechers_plural,
+                    tracker.leechers,
+                    tracker.leechers
+                )
             }
         }
     }

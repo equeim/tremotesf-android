@@ -6,46 +6,97 @@ SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_item_selectable_background"
-    android:orientation="vertical"
     android:paddingHorizontal="@dimen/horizontal_edge_padding"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    app:columnCount="2">
 
     <TextView
         android:id="@+id/name_text_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
-        android:textAppearance="?attr/textAppearanceListItemSmall"/>
+        android:textAppearance="?attr/textAppearanceListItemSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="http://example.com" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall">
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
 
-        <TextView
-            android:id="@+id/status_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-        <TextView
-            android:id="@+id/peers_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-    </FrameLayout>
+    <TextView
+        android:id="@+id/status_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toStartOf="@id/guide"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_text_view"
+        tools:text="@string/tracker_waiting_for_update" />
 
     <TextView
         android:id="@+id/next_update_text_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"/>
-</LinearLayout>
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toStartOf="@id/guide"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_text_view"
+        tools:text="@string/next_update" />
+
+    <TextView
+        android:id="@+id/error_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?colorError"
+        app:layout_constraintEnd_toStartOf="@id/guide"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/next_update_text_view"
+        tools:text="@string/tracker_error" />
+
+    <TextView
+        android:id="@+id/peers_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guide"
+        app:layout_constraintTop_toBottomOf="@id/name_text_view"
+        tools:text="@plurals/peers_plural" />
+
+    <TextView
+        android:id="@+id/seeders_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guide"
+        app:layout_constraintTop_toBottomOf="@id/peers_text_view"
+        tools:text="@plurals/seeders_plural" />
+
+    <TextView
+        android:id="@+id/leechers_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guide"
+        app:layout_constraintTop_toBottomOf="@id/seeders_text_view"
+        tools:text="@plurals/leechers_plural" />
+</androidx.constraintlayout.widget.ConstraintLayout>
