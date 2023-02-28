@@ -43,5 +43,15 @@ internal fun ExecOperations.execWithLogPrefix(logger: Logger, logPrefix: String,
 
 @Suppress("UnstableApiUsage")
 internal fun ProviderFactory.execAndCaptureOutput(spec: ExecSpec.() -> Unit): String {
-    return exec(spec).apply { result.get() }.standardOutput.asText.get()
+    val output = exec {
+        spec()
+        isIgnoreExitValue = true
+    }
+    val result = output.result.get()
+    runCatching {
+        result.assertNormalExitValue()
+    }.onFailure {
+        throw RuntimeException("${it.message}:\n${output.standardError.asText.get()}")
+    }.getOrThrow()
+    return output.standardOutput.asText.get()
 }

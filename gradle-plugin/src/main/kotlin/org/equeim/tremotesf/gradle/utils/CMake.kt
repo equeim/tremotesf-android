@@ -12,7 +12,7 @@ import java.lang.module.ModuleDescriptor
 data class CMakeInfo(val executablePath: String, val version: ModuleDescriptor.Version)
 
 @Suppress("UnstableApiUsage")
-fun getCMakeInfoOrNull(
+fun getCMakeInfoFromPathOrNull(
     providersFactory: ProviderFactory,
     logger: Logger
 ): CMakeInfo? {
@@ -25,7 +25,7 @@ fun getCMakeInfoOrNull(
             }
         }.trim()
     }.getOrElse {
-        logger.error("Failed to determine CMake executable path", it)
+        logger.error("Failed to find CMake in PATH: $it")
         return null
     }
     val version = runCatching {
