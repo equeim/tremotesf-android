@@ -9,6 +9,7 @@ import org.equeim.tremotesf.gradle.utils.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.environment
@@ -19,9 +20,13 @@ import java.nio.file.Path
 import java.nio.file.attribute.FileTime
 import javax.inject.Inject
 import kotlin.io.path.*
+import kotlin.streams.toList
 
 @DisableCachingByDefault
 abstract class RunVcpkgInstallTask : DefaultTask() {
+    @get:Inject
+    protected abstract val providerFactory: ProviderFactory
+
     @get:Inject
     protected abstract val projectLayout: ProjectLayout
 
@@ -36,6 +41,8 @@ abstract class RunVcpkgInstallTask : DefaultTask() {
 
     @get:Input
     abstract val androidNdkPath: Property<String>
+
+    private val printVcpkgLogsOnError by lazy { providerFactory.gradleProperty(PRINT_VCPKG_LOGS_PROPERTY).map { it.toBoolean() } }
 
     @TaskAction
     fun runVcpkgInstall() {
@@ -69,7 +76,9 @@ abstract class RunVcpkgInstallTask : DefaultTask() {
             }
         }.onFailure {
             logger.error("Vcpkg install failed")
-            printLatestInstallLogs(vcpkgRoot)
+            if (printVcpkgLogsOnError.getOrElse(false)) {
+                printLatestInstallLogs(vcpkgRoot)
+            }
         }.getOrThrow()
     }
 
@@ -94,5 +103,6 @@ abstract class RunVcpkgInstallTask : DefaultTask() {
         } else {
             "vcpkg"
         }
+        const val PRINT_VCPKG_LOGS_PROPERTY = "org.equeim.tremotesf.print-vcpkg-logs-on-error"
     }
 }
