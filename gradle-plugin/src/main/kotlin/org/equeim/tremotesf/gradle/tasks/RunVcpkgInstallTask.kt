@@ -88,8 +88,13 @@ abstract class RunVcpkgInstallTask : DefaultTask() {
         val comparator = Comparator.reverseOrder<FileTime>()
         val latestLogs = Files.walk(vcpkgRoot.resolve("buildtrees"), 3)
             .filter { it.name.matches(filenameRegex) && it.isRegularFile() && it.fileSize() != 0L }
+            // Sort from newest to oldest
             .sorted { a, b -> comparator.compare(a.getLastModifiedTime(), b.getLastModifiedTime()) }
+            // Take first 3
             .limit(3)
+            // Then reverse, now they are sorted from oldest to newest
+            .toList()
+            .reversed()
         logger.error("Latest logs:")
         for (log in latestLogs) {
             logger.error("Contents of {}:", log)
