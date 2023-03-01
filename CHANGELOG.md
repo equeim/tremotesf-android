@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Number of seeders and leechers is shown per tracker
+
+### Changed
+- Vcpkg is used to build C++ dependencies (it is downloaded and set up automatically by Gradle task)
+- NDK is updated to r25c (25.2.9519653)
+
+### Fixed
+- Rare crash when opening app
+- Crashes when opening certain broken torrent files
+- Infinite connection indicator when connection fails
+
 ## [2.8.0] - 2023-02-06
 ### Added
 - Torrent link can be automatically filled from clipboard when adding torrent (disabled by default)
