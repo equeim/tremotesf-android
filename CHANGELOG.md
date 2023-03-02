@@ -7,6 +7,7 @@
 ### Changed
 - Vcpkg is used to build C++ dependencies (it is downloaded and set up automatically by Gradle task)
 - NDK is updated to r25c (25.2.9519653)
+- Notification permission request is not shown again if it was dismissed or permission was denied
 
 ### Fixed
 - Rare crash when opening app

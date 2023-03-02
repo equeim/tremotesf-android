@@ -190,9 +190,9 @@ class TorrentPropertiesFragment : NavigationFragment(
         snackbar = binding.coordinatorLayout.showSnackbar(
             message = R.string.torrent_removed,
             duration = Snackbar.LENGTH_INDEFINITE,
-            onDismissed = {
-                if (snackbar == it) {
-                    snackbar = null
+            onDismissed = { snackbar, _ ->
+                if (snackbar == this.snackbar) {
+                    this.snackbar = null
                 }
             }
         )
@@ -207,9 +207,9 @@ class TorrentPropertiesFragment : NavigationFragment(
                 duration = Snackbar.LENGTH_INDEFINITE,
                 actionText = R.string.connect,
                 action = GlobalRpc.nativeInstance::connect,
-                onDismissed = {
-                    if (snackbar == it) {
-                        snackbar = null
+                onDismissed = { snackbar, _ ->
+                    if (snackbar == this.snackbar) {
+                        this.snackbar = null
                     }
                 }
             )

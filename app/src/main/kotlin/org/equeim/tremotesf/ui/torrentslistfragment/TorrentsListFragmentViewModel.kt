@@ -26,6 +26,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.SavedStateFlowHolder
 import org.equeim.tremotesf.ui.utils.savedStateFlow
+import timber.log.Timber
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
@@ -229,23 +230,53 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             .onEach { showAddTorrentError.value = true }
             .launchIn(viewModelScope)
 
-        notificationPermissionHelper?.let { helper ->
-            val notificationsEnabled = combine(
-                Settings.notifyOnAdded.flow(),
-                Settings.notifyOnFinished.flow(),
-                Settings.notifyOnAddedSinceLastConnection.flow(),
-                Settings.notifyOnFinishedSinceLastConnection.flow(),
-                Settings.showPersistentNotification.flow()
-            ) { array -> array.any { it } }
+        notificationPermissionHelper?.permissionRequestResult?.filter { !it }?.onEach {
+            Timber.d("Notification permission denied")
+            onNotificationPermissionRequestDismissed()
+        }?.launchIn(viewModelScope)
+    }
 
-            combine(notificationsEnabled, GlobalRpc.isConnected, Boolean::and)
-                .distinctUntilChanged()
-                .onEach {
-                    if (!helper.checkPermission(application)) {
-                        showNotificationPermissionRequest.value = true
+    fun checkNotificationPermission() {
+        Timber.d("checkNotificationPermission() called")
+        val helper = notificationPermissionHelper ?: return
+        viewModelScope.launch {
+            if (Settings.userDismissedNotificationPermissionRequest.get()) {
+                Timber.d("checkNotificationPermission: user dismissed notification permission request, do nothing")
+                return@launch
+            }
+            val notificationsSettings = listOf(
+                Settings.notifyOnAdded,
+                Settings.notifyOnFinished,
+                Settings.notifyOnAddedSinceLastConnection,
+                Settings.notifyOnFinishedSinceLastConnection,
+                Settings.showPersistentNotification
+            )
+            val notificationsSettingsEnabled = combine(
+                notificationsSettings.map { property ->
+                    property.flow().onEach {
+                        Timber.d("${property.key} = $it")
                     }
                 }
-                .launchIn(viewModelScope)
+            ) { properties ->
+                properties.any { it }
+            }.first()
+            if (notificationsSettingsEnabled) {
+                if (helper.checkPermission(getApplication())) {
+                    Timber.d("checkNotificationPermission: notification permission is granted")
+                } else {
+                    Timber.d("checkNotificationPermission: notification permission is not granted, show snackbar")
+                    showNotificationPermissionRequest.value = true
+                }
+            } else {
+                Timber.d("checkNotificationPermission: notifications settings are disabled, do nothing")
+            }
+        }
+    }
+
+    fun onNotificationPermissionRequestDismissed() {
+        Timber.d("onNotificationPermissionRequestDismissed() called")
+        viewModelScope.launch {
+            Settings.userDismissedNotificationPermissionRequest.set(true)
         }
     }
 
