@@ -9,7 +9,7 @@ Source: https://github.com/equeim/tremotesf-android
 # Copyright: $YEAR $NAME <$CONTACT>
 # License: ...
 
-Files: CHANGELOG.md README.md app/src/main/res/raw-*/*.html app/src/main/res/raw/translators fastlane/metadata/android/**/*.txt fastlane/metadata/android/**/*.png torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/*.torrent
+Files: CHANGELOG.md README.md app/src/main/res/raw*/*.html app/src/main/res/raw/translators fastlane/metadata/android/**/*.txt fastlane/metadata/android/**/*.png torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/*.torrent
 Copyright: 2017-2022 Alexey Rochev
 License: CC0-1.0
 
