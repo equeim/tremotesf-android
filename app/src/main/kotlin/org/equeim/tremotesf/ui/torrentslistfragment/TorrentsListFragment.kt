@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_SWIPE
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -152,10 +153,20 @@ class TorrentsListFragment : NavigationFragment(
                     duration = Snackbar.LENGTH_INDEFINITE,
                     actionText = R.string.request_permission,
                     anchorViewId = R.id.bottom_toolbar,
-                    action = { model.notificationPermissionHelper?.requestPermission(this, launcher) }
+                    action = { model.notificationPermissionHelper?.requestPermission(this, launcher) },
+                    onDismissed = { _, event ->
+                        if (event == DISMISS_EVENT_SWIPE) {
+                            model.onNotificationPermissionRequestDismissed()
+                        }
+                    }
                 )
             }.launchAndCollectWhenStarted(viewLifecycleOwner)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        model.checkNotificationPermission()
     }
 
     private fun setupBottomBar() {

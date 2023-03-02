@@ -236,6 +236,12 @@ object Settings {
             R.bool.prefs_notify_on_added_since_last_default_value
         )
 
+    val userDismissedNotificationPermissionRequest: MutableProperty<Boolean> =
+        mutableProperty(
+            R.string.prefs_user_dismissed_notification_permission_request_key,
+            R.bool.prefs_user_dismissed_notification_permission_request_default_value
+        )
+
     val deleteFiles: Property<Boolean> =
         property(R.string.prefs_delete_files_key, R.bool.prefs_delete_files_default_value)
 

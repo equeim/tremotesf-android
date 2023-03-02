@@ -60,6 +60,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_notify_on_added_since_last_key" translatable="false">notifyOnAddedSinceLast</string>
     <bool name="prefs_notify_on_added_since_last_default_value">false</bool>
 
+    <string name="prefs_user_dismissed_notification_permission_request_key" translatable="false">userDismissedNotificationPermissionRequest</string>
+    <bool name="prefs_user_dismissed_notification_permission_request_default_value">false</bool>
+
     <string name="prefs_delete_files_key" translatable="false">deleteFiles</string>
     <bool name="prefs_delete_files_default_value">false</bool>
 

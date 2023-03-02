@@ -311,8 +311,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
                             duration = Snackbar.LENGTH_INDEFINITE,
                             actionText = R.string.connect,
                             action = GlobalRpc.nativeInstance::connect,
-                            onDismissed = {
-                                if (connectSnackbar == it) {
+                            onDismissed = { snackbar, _ ->
+                                if (connectSnackbar == snackbar) {
                                     connectSnackbar = null
                                 }
                             }
