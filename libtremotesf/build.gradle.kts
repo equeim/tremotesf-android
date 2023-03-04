@@ -69,7 +69,6 @@ val setupVcpkgTask by tasks.registering(SetupVcpkgTask::class) {
 }
 
 val generateOverlayTripletsTask by tasks.registering(GenerateOverlayTripletsTask::class) {
-    dependsOn(setupVcpkgTask)
     minSdkVersion.set(libs.versions.sdk.platform.min)
     ndkVersionMajor.set(this@Build_gradle.ndkVersionMajor)
 }
@@ -80,7 +79,7 @@ val generateOverlayTripletsTask by tasks.registering(GenerateOverlayTripletsTask
  * and making it depend in configureCMake tasks will result in circular dependency error
  */
 val runVcpkgInstallTask by tasks.registering(RunVcpkgInstallTask::class) {
-    dependsOn(generateOverlayTripletsTask)
+    dependsOn(setupVcpkgTask, generateOverlayTripletsTask)
     vcpkgManifestDirPath.set(this@Build_gradle.vcpkgManifestDirPath)
     androidSdkPath.set(android.sdkDirectory.path)
     androidNdkPath.set(android.sdkDirectory.toPath().resolve("ndk/${android.ndkVersion}").toString())
