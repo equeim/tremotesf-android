@@ -7,6 +7,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import org.equeim.libtremotesf.IntVector
 import org.equeim.tremotesf.R
@@ -33,7 +34,11 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
             defaultText = args.location.toNativeSeparators(),
             onInflatedView = {
                 it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
-                    directoriesAdapter = AddTorrentDirectoriesAdapter(edit, savedInstanceState)
+                    directoriesAdapter = AddTorrentDirectoriesAdapter(
+                        edit,
+                        viewLifecycleOwner.lifecycleScope,
+                        savedInstanceState
+                    )
                     edit.setAdapter(directoriesAdapter)
                 }
             },

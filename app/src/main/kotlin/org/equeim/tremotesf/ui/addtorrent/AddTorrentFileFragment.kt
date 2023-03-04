@@ -75,18 +75,27 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
             if (savedInstanceState == null) {
                 fragment.lifecycleScope.launch {
-                    downloadDirectoryEdit.setText(
-                        (if (Settings.rememberDownloadDirectory.get()) {
-                            GlobalServers.serversState.value.currentServer?.lastDownloadDirectory?.takeIf { it.isNotEmpty() }
-                        } else {
-                            null
-                        } ?: GlobalRpc.serverSettings.downloadDirectory).toNativeSeparators()
-                    )
+                    val downloadDirectory = if (Settings.rememberDownloadDirectory.get()) {
+                        GlobalServers.serversState.value.currentServer?.lastDownloadDirectory?.takeIf { it.isNotEmpty() }
+                    } else {
+                        null
+                    }
+
+                    if (downloadDirectory != null) {
+                        downloadDirectoryEdit.setText(downloadDirectory.toNativeSeparators())
+                    } else {
+                        GlobalRpc.isConnected.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) {
+                            downloadDirectoryEdit.setText(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
+                        }
+                    }
                 }
             }
 
-            val directoriesAdapter =
-                AddTorrentDirectoriesAdapter(downloadDirectoryEdit, savedInstanceState)
+            val directoriesAdapter = AddTorrentDirectoriesAdapter(
+                downloadDirectoryEdit,
+                fragment.viewLifecycleOwner.lifecycleScope,
+                savedInstanceState
+            )
             downloadDirectoryEdit.setAdapter(directoriesAdapter)
 
             GlobalRpc.gotDownloadDirFreeSpaceEvents.launchAndCollectWhenStarted(fragment.viewLifecycleOwner) { bytes ->
@@ -371,7 +380,9 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     savedInstanceState
                 )
 
-                startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
+                GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                    startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
+                }
             }
 
             applyNavigationBarBottomInset()

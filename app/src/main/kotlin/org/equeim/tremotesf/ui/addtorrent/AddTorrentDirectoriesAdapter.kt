@@ -8,6 +8,11 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
@@ -19,6 +24,7 @@ import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 class AddTorrentDirectoriesAdapter(
     private val textEdit: EditText,
+    lifecycleScope: LifecycleCoroutineScope,
     savedInstanceState: Bundle?
 ) : BaseDropdownAdapter(
     R.layout.download_directory_dropdown_item,
@@ -29,19 +35,25 @@ class AddTorrentDirectoriesAdapter(
             "org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter.items"
     }
 
-    private val items: ArrayList<String>
+    private var items = ArrayList<String>()
 
     init {
         val saved = savedInstanceState?.getStringArrayList(STATE_KEY)
-        items = if (saved != null) {
-            saved
+        if (saved != null) {
+            items = saved
         } else {
-            val directories = sortedSetOf(AlphanumericComparator())
-            GlobalServers.serversState.value.currentServer?.lastDownloadDirectories
-                ?.mapTo(directories) { it.normalizePath().toNativeSeparators() }
-            GlobalRpc.torrents.value.mapTo(directories) { it.downloadDirectory.toNativeSeparators() }
-            directories.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
-            ArrayList(directories)
+            lifecycleScope.launch {
+                // Wait until we are connected
+                GlobalRpc.isConnected.first { it }
+
+                val directories = sortedSetOf(AlphanumericComparator())
+                GlobalServers.serversState.value.currentServer?.lastDownloadDirectories
+                    ?.mapTo(directories) { it.normalizePath().toNativeSeparators() }
+                GlobalRpc.torrents.value.mapTo(directories) { it.downloadDirectory.toNativeSeparators() }
+                directories.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
+                items = ArrayList(directories)
+                notifyDataSetChanged()
+            }
         }
     }
 

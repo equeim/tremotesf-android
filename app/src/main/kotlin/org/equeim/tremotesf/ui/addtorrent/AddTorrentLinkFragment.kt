@@ -64,7 +64,6 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         with(binding) {
             priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
             priorityView.setText(R.string.normal_priority)
-            startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
         }
         directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(
             binding.downloadDirectoryLayout,
@@ -78,6 +77,10 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         if (setInitialTorrentLink) {
             lifecycleScope.launch {
                 model.getInitialTorrentLink()?.let(binding.torrentLinkEdit::setText)
+            }
+            GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                binding.startDownloadingCheckBox.isChecked =
+                    GlobalRpc.serverSettings.startAddedTorrents
             }
         }
         binding.addButton.apply {
