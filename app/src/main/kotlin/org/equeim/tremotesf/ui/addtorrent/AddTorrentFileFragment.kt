@@ -380,8 +380,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     savedInstanceState
                 )
 
-                GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                    startDownloadingCheckBox.isChecked = GlobalRpc.serverSettings.startAddedTorrents
+                if (savedInstanceState == null) {
+                    GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                        startDownloadingCheckBox.isChecked =
+                            GlobalRpc.serverSettings.startAddedTorrents
+                    }
                 }
             }
 
