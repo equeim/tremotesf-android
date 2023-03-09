@@ -71,6 +71,11 @@ abstract class GenerateOverlayTripletsTask : DefaultTask() {
                     set(VCPKG_CXX_FLAGS "${'$'}{VCPKG_CXX_FLAGS} -U_FORTIFY_SOURCE")
                 endif()
 
+                if(PORT STREQUAL "openssl")
+                    set(ENV{ANDROID_NDK_ROOT} "${'$'}ENV{ANDROID_NDK_HOME}")
+                    set(ENV{PATH} "${'$'}ENV{ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${'$'}ENV{PATH}")
+                endif()
+
                 # Needed for Qt port
                 set(ANDROID_SDK_ROOT "${'$'}ENV{ANDROID_SDK_HOME}")
             """.trimIndent()
