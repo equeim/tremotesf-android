@@ -35,7 +35,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     fun getAddTorrentDirections(intent: Intent): AddTorrentDirections? {
         if (intent.action != Intent.ACTION_VIEW) return null
         return intent.data
-            ?.toTorrentUri(getApplication(), checkContentUriType = false)
+            ?.toTorrentUri(getApplication(), validateUri = false)
             ?.let(::getAddTorrentDirections)
     }
 
