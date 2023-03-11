@@ -28,12 +28,12 @@ data class TorrentUri(val uri: Uri, val type: Type) {
     }
 }
 
-fun Uri.toTorrentUri(context: Context, checkContentUriType: Boolean): TorrentUri? =
-    getTorrentUriType(context, checkContentUriType)?.let { TorrentUri(this, it) }
+fun Uri.toTorrentUri(context: Context, validateUri: Boolean): TorrentUri? =
+    getTorrentUriType(context, validateUri)?.let { TorrentUri(this, it) }
 
-private fun Uri.getTorrentUriType(context: Context, checkContentUriType: Boolean): TorrentUri.Type? =
+private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): TorrentUri.Type? =
     when (scheme) {
-        ContentResolver.SCHEME_CONTENT -> if (checkContentUriType) {
+        ContentResolver.SCHEME_CONTENT -> if (validateUri) {
             if (context.contentResolver.getType(this) == TORRENT_FILE_MIME_TYPE) {
                 TorrentUri.Type.File
             } else {
@@ -42,21 +42,29 @@ private fun Uri.getTorrentUriType(context: Context, checkContentUriType: Boolean
         } else {
             TorrentUri.Type.File
         }
-        ContentResolver.SCHEME_FILE -> if (path?.endsWith(TORRENT_FILE_SUFFIX) == true) {
-            TorrentUri.Type.File
+        ContentResolver.SCHEME_FILE -> if (validateUri) {
+            if (path?.endsWith(TORRENT_FILE_SUFFIX) == true) {
+                TorrentUri.Type.File
+            } else {
+                null
+            }
         } else {
-            null
+            TorrentUri.Type.File
         }
         SCHEME_HTTP, SCHEME_HTTPS -> TorrentUri.Type.Link
         SCHEME_MAGNET -> {
-            val query = this.query
-            if (query != null &&
-                (query.startsWith(MAGNET_QUERY_PREFIX_V1) ||
-                        query.startsWith(MAGNET_QUERY_PREFIX_V2))
-            ) {
-                TorrentUri.Type.Link
+            if (validateUri) {
+                val query = this.query
+                if (query != null &&
+                    (query.contains(MAGNET_QUERY_PREFIX_V1) ||
+                            query.contains(MAGNET_QUERY_PREFIX_V2))
+                ) {
+                    TorrentUri.Type.Link
+                } else {
+                    null
+                }
             } else {
-                null
+                TorrentUri.Type.Link
             }
         }
         else -> null
@@ -81,7 +89,7 @@ fun ClipData.Item.getTorrentUri(context: Context): TorrentUri? {
                 Timber.d(" - Final URI is $it")
             }
         }
-        ?.toTorrentUri(context, checkContentUriType = true)
+        ?.toTorrentUri(context, validateUri = true)
         .also {
             if (BuildConfig.DEBUG) {
                 Timber.d(" - Torrent URI is $it")
