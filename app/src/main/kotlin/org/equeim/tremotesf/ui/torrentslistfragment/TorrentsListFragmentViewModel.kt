@@ -10,10 +10,8 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
@@ -160,6 +158,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             SharingStarted.WhileSubscribed(500),
             null
         )
+
+    val sortSettingsChanged: Flow<Unit> = combine(sortMode, sortOrder, ::Pair)
+        .drop(1)
+        .transform { emit(Unit) }
 
     val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
 

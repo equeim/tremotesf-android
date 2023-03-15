@@ -12,6 +12,9 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.DiffUtil
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.equeim.libtremotesf.IntVector
 import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
@@ -72,6 +75,16 @@ class TorrentsAdapter(
 
     override fun onStateRestored() {
         selectionTracker.restoreInstanceState()
+    }
+
+    private val _currentListChanged = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val currentListChanged: Flow<Unit> by ::_currentListChanged
+
+    override fun onCurrentListChanged(
+        previousList: MutableList<Torrent>,
+        currentList: MutableList<Torrent>
+    ) {
+        _currentListChanged.tryEmit(Unit)
     }
 
     inner class TorrentsViewHolder(

@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_SWIP
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.libtremotesf.RpcError
@@ -115,6 +117,13 @@ class TorrentsListFragment : NavigationFragment(
             )
             binding.torrentsView.adapter = torrentsAdapter
             model.torrents.launchAndCollectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
+
+            model.sortSettingsChanged
+                .onEach {
+                    torrentsAdapter.currentListChanged.first()
+                    binding.torrentsView.scrollToPosition(0)
+                }
+                .launchAndCollectWhenStarted(viewLifecycleOwner)
         }
 
         GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
