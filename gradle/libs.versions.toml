@@ -5,9 +5,9 @@
 [versions]
 # Remove android.experimental.legacyTransform.forceNonIncremental=true from gradle.properties
 # after upgrading to 8.0
-android-gradle-plugin = "7.4.1"
+android-gradle-plugin = "7.4.2"
 kotlin = "1.8.10"
-gradle-versions-plugin = "0.45.0"
+gradle-versions-plugin = "0.46.0"
 
 sdk-platform-compile = "33"
 sdk-platform-min = "21"
