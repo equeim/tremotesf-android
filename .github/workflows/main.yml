@@ -39,11 +39,11 @@ jobs:
           arguments: build
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Archive debug APKs
+      - name: Archive debug APK
         uses: actions/upload-artifact@v3
         with:
-          name: debug-apks
-          path: app/build/outputs/apk/*/debug/*.apk
+          name: debug-apk
+          path: app/build/outputs/apk/fdroid/debug/app-fdroid-debug.apk
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
       - name: Archive test and lint reports
