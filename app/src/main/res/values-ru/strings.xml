@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
@@ -73,6 +79,20 @@
         <item quantity="few">%d пира</item>
         <item quantity="many">%d пиров</item>
         <item quantity="other">%d пиров</item>
+    </plurals>
+
+    <plurals name="seeders_plural">
+        <item quantity="one">%d сид</item>
+        <item quantity="few">%d сида</item>
+        <item quantity="many">%d сидов</item>
+        <item quantity="other">%d сидов</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="one">%d лич</item>
+        <item quantity="few">%d лича</item>
+        <item quantity="many">%d личей</item>
+        <item quantity="other">%d личей</item>
     </plurals>
 
     <string name="next_update">Следующее обновление через %s</string>

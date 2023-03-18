@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Verbindung getrennt</string>
     <string name="connecting">Verbinden\u2026</string>
@@ -67,6 +73,16 @@
         <item quantity="other">%d Teilnehmer</item>
     </plurals>
 
+    <plurals name="seeders_plural">
+        <item quantity="one">%d Seeder</item>
+        <item quantity="other">%d Seeders</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="one">%d Leecher</item>
+        <item quantity="other">%d Leechers</item>
+    </plurals>
+
     <string name="next_update">Nächste Aktualisierung nach %s</string>
     <string name="add_trackers">Tracker hinzufügen</string>
     <string name="edit_tracker">Tracker editieren</string>
@@ -85,6 +101,7 @@
     <string name="trackers">Tracker</string>
     <string name="directories">Verzeichnisse</string>
     <string name="peers">Teilnehmer</string>
+    <string name="web_seeders">Web-Seeders</string>
     <string name="limits">Beschränkungen</string>
 
     <string name="activity">Aktivität</string>
@@ -97,6 +114,9 @@
     <string name="upload_speed">Hochladegeschwindigkeit</string>
     <string name="seeders">Seeder</string>
     <string name="leechers">Leecher</string>
+    <string name="peers_sending_to_us">Peers, von denen wir herunterladen</string>
+    <string name="web_seeders_sending_to_us">Web-Seeder, von denen wir herunterladen</string>
+    <string name="peers_getting_from_us">Peers, zu denen wir hochladen</string>
     <string name="last_activity">Letzte Aktivität</string>
 
     <string name="total_size">Gesamtgröße</string>
@@ -127,6 +147,8 @@
     <string name="no_files">Keine Dateien</string>
 
     <string name="tracker_inactive">Inaktiv</string>
+    <string name="tracker_waiting_for_update">Warten auf Aktualisierung</string>
+    <string name="tracker_queued_for_update">Wird gerade aktualisiert</string>
     <string name="tracker_updating">Aktualisieren</string>
     <string name="tracker_error">Fehler: %s</string>
 
@@ -305,18 +327,34 @@
     <string name="uploaded_string">%1$s, hochgeladen %2$s</string>
 
     <string name="torrent_paused">Pausiert</string>
+    <string name="torrent_paused_with_error">Pausiert (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Downloade von %d Teilnehmer</item>
         <item quantity="other">Downloade von %d Teilnehmern</item>
     </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="one">Lade von %1$d Peer (%2$s) herunter</item>
+        <item quantity="other">Lade von %1$d Peers (%2$s) herunter</item>
+    </plurals>
     <string name="torrent_downloading_stalled">Herunterladen</string>
+    <string name="torrent_downloading_stalled_with_error">(%s) wird heruntergeladen</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Seede zu %d Teilnehmer</item>
         <item quantity="other">Seede zu %d Teilnehmern</item>
     </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="one">Lade zu %1$d Peer (%2$s) hoch</item>
+        <item quantity="other">Lade zu %1$d Peers (%2$s) hoch</item>
+    </plurals>
     <string name="torrent_seeding_stalled">Seeden</string>
+    <string name="torrent_seeding_stalled_with_error">(%s) wird hochgeladen</string>
     <string name="torrent_queued">Eingereiht</string>
+    <string name="torrent_queued_with_error">(%s) in Warteschlange</string>
+    <string name="torrent_checking">Prüfung: %s%%</string>
+    <string name="torrent_checking_with_error">Prüfung: %1$s%% (%2$s)</string>
     <string name="torrent_queued_for_checking">Eingereiht zum Prüfen</string>
+    <string name="torrent_queued_for_checking_with_error">(%s) zur Überprüfung eingereiht</string>
+
     <plurals name="remove_trackers_message">
         <item quantity="one">Sind Sie sich sicher, dass Sie den %d gewählten Tracker entfernen wollen</item>
         <item quantity="other">Sind Sie sich sicher, dass Sie %d gewählte Tracker entfernen wollen</item>
@@ -384,6 +422,9 @@
     <string name="quick_return_summary">Auf die obere Werkzeugleiste tippen um nach oben zu gelangen</string>
 
     <string name="prefs_delete_files_title">Lösche Dateien auf der Festplatte, wenn der Torrent gelöscht wird</string>
+    <string name="prefs_link_from_clipboard_title">Beim Hinzufügen eines Torrent-Links automatisch den Link aus der Zwischenablage ausfüllen</string>
+    <string name="prefs_remember_download_directory_title">Letztes Download-Verzeichnis merken</string>
+
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 
 
@@ -473,4 +514,5 @@
 
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
-    </resources>
+    <string name="no_web_seeders">Keine Web-Seeder</string>
+</resources>
