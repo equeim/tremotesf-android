@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpc
@@ -140,44 +141,49 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
         }
 
         private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
-            val (torrentId, removedIndexRanges, changed, added) = data
+            try {
+                val (torrentId, removedIndexRanges, changed, added) = data
 
-            if (torrentId != torrent.value?.id) return
+                if (torrentId != torrent.value?.id) return
 
-            if (peers.value != null && removedIndexRanges.isEmpty() && changed.isEmpty() && added.isEmpty()) {
-                return
-            }
+                if (peers.value != null && removedIndexRanges.isEmpty() && changed.isEmpty() && added.isEmpty()) {
+                    return
+                }
 
-            val peers = this.peers.value?.toMutableList() ?: mutableListOf()
+                val peers = this.peers.value?.toMutableList() ?: mutableListOf()
 
-            for (range in removedIndexRanges) {
-                peers.subList(range.first, range.last).clear()
-            }
+                for (range in removedIndexRanges) {
+                    peers.subList(range.first, range.last).clear()
+                }
 
-            if (changed.isNotEmpty()) {
-                val changedIter = changed.iterator()
-                var changedPeer = changedIter.next()
-                var changedPeerAddress = changedPeer.address
-                val peersIter = peers.listIterator()
-                while (peersIter.hasNext()) {
-                    val peer = peersIter.next()
-                    if (peer.address == changedPeerAddress) {
-                        peersIter.set(peer.updatedFrom(changedPeer))
-                        if (changedIter.hasNext()) {
-                            changedPeer = changedIter.next()
-                            changedPeerAddress = changedPeer.address
-                        } else {
-                            break
+                if (changed.isNotEmpty()) {
+                    val changedIter = changed.iterator()
+                    var changedPeer = changedIter.next()
+                    var changedPeerAddress = changedPeer.address
+                    val peersIter = peers.listIterator()
+                    while (peersIter.hasNext()) {
+                        val peer = peersIter.next()
+                        if (peer.address == changedPeerAddress) {
+                            peersIter.set(peer.updatedFrom(changedPeer))
+                            if (changedIter.hasNext()) {
+                                changedPeer = changedIter.next()
+                                changedPeerAddress = changedPeer.address
+                            } else {
+                                break
+                            }
                         }
                     }
                 }
-            }
 
-            for (peer in added) {
-                peers.add(Peer(peer))
-            }
+                for (peer in added) {
+                    peers.add(Peer(peer))
+                }
 
-            _peers.value = peers
+                _peers.value = peers
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) throw RuntimeException("Peers list is in inconsistent state", e)
+                else Timber.e(e, "Peers list is in inconsistent state")
+            }
         }
     }
 }
