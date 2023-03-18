@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Déconnecté</string>
     <string name="connecting">Connexion\u2026</string>
@@ -89,6 +95,7 @@
     <string name="trackers">Traqueurs</string>
     <string name="directories">Répertoires</string>
     <string name="peers">Pairs</string>
+    <string name="web_seeders">Seeders web</string>
     <string name="limits">Limites</string>
 
     <string name="activity">Activité</string>
@@ -101,6 +108,9 @@
     <string name="upload_speed">Vitesse d\'envoi</string>
     <string name="seeders">Seeders</string>
     <string name="leechers">Leechers</string>
+    <string name="peers_sending_to_us">Les pairs à partir desquels nous téléchargeons</string>
+    <string name="web_seeders_sending_to_us">Seeders web à partir desquels nous téléchargeons</string>
+    <string name="peers_getting_from_us">Pairs vers lesquels nous téléversons</string>
     <string name="last_activity">Dernière activité</string>
 
     <string name="total_size">Taille totale</string>
@@ -131,6 +141,8 @@
     <string name="no_files">Aucun fichier</string>
 
     <string name="tracker_inactive">Inactif</string>
+    <string name="tracker_waiting_for_update">En attente de mise à jour</string>
+    <string name="tracker_queued_for_update">Sur le point de mettre à jour</string>
     <string name="tracker_updating">Mise à jour en cours</string>
     <string name="tracker_error">Erreur : %s</string>
 
@@ -313,20 +325,38 @@
     <string name="uploaded_string">%1$s, envoyé %2$s</string>
 
     <string name="torrent_paused">En pause</string>
+    <string name="torrent_paused_with_error">En pause (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Téléchargement depuis %d pair</item>
         <item quantity="many">Téléchargement depuis %d pairs</item>
         <item quantity="other">Téléchargement depuis %d pairs</item>
     </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="one">Téléchargement depuis %1$d pair (%2$s)</item>
+        <item quantity="many">Téléchargement depuis %1$d pairs (%2$s)</item>
+        <item quantity="other">Téléchargement depuis %1$d pairs (%2$s)</item>
+    </plurals>
     <string name="torrent_downloading_stalled">Téléchargement</string>
+    <string name="torrent_downloading_stalled_with_error">Téléchargement (%s)</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Partage à %d pair</item>
         <item quantity="many">Partage à %d pairs</item>
         <item quantity="other">Partage à %d pairs</item>
     </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="one">Partage à %1$d pair (%2$s)</item>
+        <item quantity="many">Partage à %1$d pairs (%2$s)</item>
+        <item quantity="other">Partage à %1$d pairs (%2$s)</item>
+    </plurals>
     <string name="torrent_seeding_stalled">Partage</string>
+    <string name="torrent_seeding_stalled_with_error">Partage (%s)</string>
     <string name="torrent_queued">En attente</string>
+    <string name="torrent_queued_with_error">En file d\'attente (%s)</string>
+    <string name="torrent_checking">Vérification : %s%%</string>
+    <string name="torrent_checking_with_error">Vérification : %1$s%% (%2$s)</string>
     <string name="torrent_queued_for_checking">En attente de vérification</string>
+    <string name="torrent_queued_for_checking_with_error">En file d\'attente pour vérification (%s)</string>
+
     <plurals name="remove_trackers_message">
         <item quantity="one">Êtes-vous sûr de vouloir supprimer %d traqueur sélectionné ?</item>
         <item quantity="many">Êtes-vous sûr de vouloir supprimer les %d traqueurs sélectionnés ?</item>
@@ -395,6 +425,9 @@
     <string name="quick_return_summary">Appuyez sur la barre d\'outils supérieure pour revenir en haut</string>
 
     <string name="prefs_delete_files_title">Supprimer les fichiers du disque lors de la suppression du torrent</string>
+    <string name="prefs_link_from_clipboard_title">Remplir automatiquement le lien depuis le presse-papiers lors de l\'ajout d\'un lien torrent</string>
+    <string name="prefs_remember_download_directory_title">Se souvenir du dernier répertoire de téléchargement</string>
+
     <string name="alternative_speed_limits">Limites de vitesse alternatives</string>
 
 
@@ -484,4 +517,5 @@
 
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
-    </resources>
+    <string name="no_web_seeders">Aucun seeder web</string>
+</resources>

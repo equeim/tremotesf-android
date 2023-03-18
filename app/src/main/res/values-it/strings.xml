@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Disconnesso</string>
     <string name="connecting">In connessione\n2026</string>
