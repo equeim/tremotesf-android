@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.9.0] - 2023-03-20
 ### Added
 - Number of seeders and leechers is shown per tracker
 
