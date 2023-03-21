@@ -9,7 +9,6 @@ import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.rpc.Torrent
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 import org.equeim.tremotesf.ui.utils.toNativeSeparators
@@ -19,50 +18,54 @@ class DirectoriesViewAdapter(
     private val context: Context,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
-    private data class DirectoryItem(val path: String, val displayPath: String, val torrents: Int)
+    private data class DirectoryItem(val path: String?, val displayPath: String?, val torrents: Int)
 
     private var directories = emptyList<DirectoryItem>()
     private val comparator = object : Comparator<DirectoryItem> {
         val pathComparator = AlphanumericComparator()
-        override fun compare(o1: DirectoryItem?, o2: DirectoryItem?): Int =
-            pathComparator.compare(o1?.displayPath, o2?.displayPath)
+        override fun compare(o1: DirectoryItem, o2: DirectoryItem): Int =
+            pathComparator.compare(o1.displayPath, o2.displayPath)
     }
 
-    private var currentDirectory: DirectoryItem? = null
+    private var currentDirectoryIndex: Int = 0
 
     override fun getItem(position: Int): String {
-        if (position == 0) {
-            return context.getString(R.string.torrents_all, GlobalRpc.torrents.value.size)
+        val directory = directories[position]
+        return if (directory.displayPath != null) {
+            context.getString(
+                R.string.directories_spinner_text,
+                directory.displayPath,
+                directory.torrents
+            )
+        } else {
+            context.getString(R.string.torrents_all, directory.torrents)
         }
-        val directory = directories[position - 1]
-        return context.getString(R.string.directories_spinner_text, directory.displayPath, directory.torrents)
     }
 
     override fun getCount(): Int {
-        return directories.size + 1
+        return directories.size
     }
 
     override fun getCurrentItem(): CharSequence {
-        val index = currentDirectory?.let {
-            directories.indexOf(it).takeIf { it != -1 }
-        } ?: 0
-        return getItem(index)
+        return getItem(currentDirectoryIndex)
     }
 
     fun getDirectoryPath(position: Int): String? {
-        return if (position == 0) {
-            null
-        } else {
-            directories[position - 1].path
-        }
+        return directories[position].path
     }
 
     fun update(torrents: List<Torrent>, currentDirectoryPath: String) {
         directories = torrents.groupingBy { it.downloadDirectory }
             .eachCount()
-            .map { (path, torrents) -> DirectoryItem(path, path.toNativeSeparators(), torrents) }
-            .sortedWith(comparator)
-        currentDirectory = directories.find { it.path == currentDirectoryPath }
+            .mapTo(
+                mutableListOf(DirectoryItem(null, null, torrents.size))
+            ) { (path, torrents) -> DirectoryItem(path, path.toNativeSeparators(), torrents) }
+            .apply { sortWith(comparator) }
+        currentDirectoryIndex = if (currentDirectoryPath.isEmpty()) {
+            0
+        } else {
+            directories.indexOfFirst { it.path == currentDirectoryPath }.takeUnless { it == -1 } ?: 0
+        }
         notifyDataSetChanged()
     }
 }
