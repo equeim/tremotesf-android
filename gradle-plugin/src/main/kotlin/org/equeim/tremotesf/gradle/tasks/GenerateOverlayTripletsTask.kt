@@ -51,16 +51,12 @@ abstract class GenerateOverlayTripletsTask : DefaultTask() {
 
                 set(VCPKG_BUILD_TYPE release)
                 set(VCPKG_CRT_LINKAGE dynamic)
-                # vcpkg's android toolchain file uses it to set ANDROID_NATIVE_API_LEVEL
+                # vcpkg's android toolchain file uses it to set ANDROID_PLATFORM
                 set(VCPKG_CMAKE_SYSTEM_VERSION ${minSdkVersion.get()})
                 set(
                     VCPKG_CMAKE_CONFIGURE_OPTIONS
-                    # Fix CMake forcing gold linker
+                    # Fix CMake forcing gold linker. Remove when CMake in SDK is updated to 3.25.3/3.26
                     -DCMAKE_ANDROID_NDK_VERSION=${ndkVersionMajor.get()}
-                    # These are needed for Qt port. Qt's CMake files intercept these values before vcpkg's toolchain file sets them,
-                    # so set them manually in advance
-                    -DANDROID_PLATFORM=${minSdkVersion.get()}
-                    -DANDROID_STL=c++_shared
                 )
                 set(VCPKG_CMAKE_CONFIGURE_OPTIONS_RELEASE -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON)
                 set(VCPKG_C_FLAGS_RELEASE "-Oz -flto=thin")
@@ -71,13 +67,16 @@ abstract class GenerateOverlayTripletsTask : DefaultTask() {
                     set(VCPKG_CXX_FLAGS "${'$'}{VCPKG_CXX_FLAGS} -U_FORTIFY_SOURCE")
                 endif()
 
-                if(PORT STREQUAL "openssl")
-                    set(ENV{ANDROID_NDK_ROOT} "${'$'}ENV{ANDROID_NDK_HOME}")
-                    set(ENV{PATH} "${'$'}ENV{ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${'$'}ENV{PATH}")
+                if(PORT STREQUAL qtbase-tremotesf-android)
+                    set(ANDROID_SDK_ROOT "${'$'}ENV{ANDROID_SDK_HOME}")
+                    list(APPEND VCPKG_CMAKE_CONFIGURE_OPTIONS
+                        # Qt's CMake files intercept these values before vcpkg's toolchain file sets them,
+                        # so set them manually in advance
+                        -DANDROID_PLATFORM=${minSdkVersion.get()}
+                        -DANDROID_NATIVE_API_LEVEL=${minSdkVersion.get()}
+                        -DANDROID_STL=c++_shared
+                    )
                 endif()
-
-                # Needed for Qt port
-                set(ANDROID_SDK_ROOT "${'$'}ENV{ANDROID_SDK_HOME}")
             """.trimIndent()
             writeOverlayTriplet(overlayTripletsDir.resolve("${triplet}.cmake"), text)
         }
