@@ -61,7 +61,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             trackersView.apply {
                 setAdapter(trackersViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    model.setTrackerFilter(trackersViewAdapter.getTrackerFilter(position))
+                    model.setTrackerFilter(trackersViewAdapter.getTrackerFilter(position).orEmpty())
                 }
             }
 
