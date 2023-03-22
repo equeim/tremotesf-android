@@ -17,48 +17,49 @@ class TrackersViewAdapter(
     private val context: Context,
     textView: AutoCompleteTextView
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
-    private val trackersMap = mutableMapOf<String, Int>()
-    val trackers = mutableListOf<String>()
-    private val comparator = AlphanumericComparator()
-
-    private var trackerFilter = ""
+    private data class TrackerItem(val tracker: String?, val torrents: Int)
+    private var trackers = emptyList<TrackerItem>()
+    private val comparator = object : Comparator<TrackerItem> {
+        val trackerComparator = AlphanumericComparator()
+        override fun compare(o1: TrackerItem, o2: TrackerItem): Int =
+            trackerComparator.compare(o1.tracker, o2.tracker)
+    }
+    private var currentTrackerIndex = 0
 
     override fun getItem(position: Int): String {
-        if (position == 0) {
-            return context.getString(R.string.torrents_all, GlobalRpc.torrents.value.size)
+        val tracker = trackers.getOrNull(position) ?: return ""
+        return if (tracker.tracker != null) {
+            context.getString(R.string.trackers_spinner_text, tracker.tracker, tracker.torrents)
+        } else {
+            context.getString(R.string.torrents_all, tracker.torrents)
         }
-        val tracker = trackers[position - 1]
-        val torrents = trackersMap[tracker]
-        return context.getString(R.string.trackers_spinner_text, tracker, torrents)
     }
 
     override fun getCount(): Int {
-        return trackers.size + 1
+        return trackers.size
     }
 
     override fun getCurrentItem(): CharSequence {
-        return getItem(trackers.indexOf(trackerFilter) + 1)
+        return getItem(currentTrackerIndex)
     }
 
-    fun getTrackerFilter(position: Int): String {
-        return if (position == 0) {
-            ""
-        } else {
-            trackers[position - 1]
-        }
+    fun getTrackerFilter(position: Int): String? {
+        return trackers[position].tracker
     }
 
     fun update(torrents: List<Torrent>, trackerFilter: String) {
-        this.trackerFilter = trackerFilter
-
-        trackersMap.clear()
-        for (torrent in torrents) {
-            for (tracker in torrent.trackerSites) {
-                trackersMap[tracker] = trackersMap.getOrElse(tracker) { 0 } + 1
-            }
+        trackers = torrents
+            .asSequence()
+            .flatMap { torrent -> torrent.trackerSites.asSequence().map { torrent to it } }
+            .groupingBy { (_, tracker) -> tracker }
+            .eachCount()
+            .mapTo(mutableListOf(TrackerItem(null, torrents.size))) { (tracker, torrents) -> TrackerItem(tracker, torrents) }
+            .apply { sortWith(comparator) }
+        currentTrackerIndex = if (trackerFilter.isEmpty()) {
+            0
+        } else {
+            trackers.indexOfFirst { it.tracker == trackerFilter }.takeUnless { it == -1 } ?: 0
         }
-        trackers.clear()
-        trackers.addAll(trackersMap.keys.sortedWith(comparator))
         notifyDataSetChanged()
     }
 }

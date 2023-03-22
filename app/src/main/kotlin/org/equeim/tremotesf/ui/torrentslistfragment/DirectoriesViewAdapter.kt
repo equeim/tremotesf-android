@@ -30,7 +30,7 @@ class DirectoriesViewAdapter(
     private var currentDirectoryIndex: Int = 0
 
     override fun getItem(position: Int): String {
-        val directory = directories[position]
+        val directory = directories.getOrNull(position) ?: return ""
         return if (directory.displayPath != null) {
             context.getString(
                 R.string.directories_spinner_text,
