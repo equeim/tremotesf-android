@@ -18,6 +18,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.withStarted
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -152,8 +153,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
             val launcher = registerWithFragment(this@AddTorrentFileFragment)
             if (model.needStoragePermission) {
                 if (!checkPermission(requireContext())) {
-                    lifecycleScope.launchWhenStarted {
-                        requestPermission(this@AddTorrentFileFragment, launcher)
+                    lifecycleScope.launch {
+                        lifecycle.withStarted {
+                            requestPermission(this@AddTorrentFileFragment, launcher)
+                        }
                     }
                 }
             }

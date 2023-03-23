@@ -10,9 +10,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 fun Activity.hideKeyboard() {
@@ -30,23 +34,27 @@ private const val IMM_IS_ACTIVE_CHECK_INTERVAL_MS = 50L
 fun EditText.showKeyboard() {
     val imm = context.getSystemService<InputMethodManager>() ?: return
     val lifecycleOwner = findViewTreeLifecycleOwner() ?: return
-    val job = lifecycleOwner.lifecycleScope.launchWhenStarted {
-        if (requestFocus()) {
-            while (isFocused && !imm.isActive(this@showKeyboard)) {
-                delay(IMM_IS_ACTIVE_CHECK_INTERVAL_MS)
+    val showKeyboardJob = lifecycleOwner.lifecycleScope.launch {
+        val showKeyboardScope = this
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (requestFocus()) {
+                while (isFocused && !imm.isActive(this@showKeyboard)) {
+                    delay(IMM_IS_ACTIVE_CHECK_INTERVAL_MS)
+                }
+                if (isFocused) {
+                    imm.showSoftInput(this@showKeyboard, InputMethodManager.SHOW_IMPLICIT)
+                }
+            } else {
+                Timber.w("showKeyboard: failed to request focus")
             }
-            if (isFocused) {
-                imm.showSoftInput(this@showKeyboard, InputMethodManager.SHOW_IMPLICIT)
-            }
-        } else {
-            Timber.w("showKeyboard: failed to request focus")
+            showKeyboardScope.cancel()
         }
     }
     val listener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) = Unit
-        override fun onViewDetachedFromWindow(v: View) = job.cancel()
+        override fun onViewDetachedFromWindow(v: View) = showKeyboardJob.cancel()
     }
-    job.invokeOnCompletion {
+    showKeyboardJob.invokeOnCompletion {
         removeOnAttachStateChangeListener(listener)
     }
     addOnAttachStateChangeListener(listener)
