@@ -36,7 +36,7 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
                 it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
                     directoriesAdapter = AddTorrentDirectoriesAdapter(
                         edit,
-                        viewLifecycleOwner.lifecycleScope,
+                        lifecycleScope,
                         savedInstanceState
                     )
                     edit.setAdapter(directoriesAdapter)
