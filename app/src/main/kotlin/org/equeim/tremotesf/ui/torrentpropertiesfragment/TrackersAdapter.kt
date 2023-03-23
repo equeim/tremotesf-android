@@ -12,8 +12,9 @@ import android.view.*
 import android.widget.TextView
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenStarted
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.*
@@ -138,7 +139,7 @@ class TrackersAdapter(
         etaUpdateJob?.cancel()
         val lifecycleOwner = fragment.viewLifecycleOwner
         etaUpdateJob = lifecycleOwner.lifecycleScope.launch {
-            lifecycleOwner.whenStarted {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (currentCoroutineContext().isActive) {
                     delay(1.seconds)
                     val newTrackers = currentList.map(TrackersAdapterItem::withUpdatedNextUpdateEta)
