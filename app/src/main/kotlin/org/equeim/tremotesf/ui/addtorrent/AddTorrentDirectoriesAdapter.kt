@@ -8,15 +8,13 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 import org.equeim.tremotesf.ui.utils.normalizePath
 import org.equeim.tremotesf.ui.utils.toNativeSeparators
@@ -24,7 +22,7 @@ import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 class AddTorrentDirectoriesAdapter(
     private val textEdit: EditText,
-    lifecycleScope: LifecycleCoroutineScope,
+    coroutineScope: CoroutineScope,
     savedInstanceState: Bundle?
 ) : BaseDropdownAdapter(
     R.layout.download_directory_dropdown_item,
@@ -42,7 +40,7 @@ class AddTorrentDirectoriesAdapter(
         if (saved != null) {
             items = saved
         } else {
-            lifecycleScope.launch {
+            coroutineScope.launch {
                 // Wait until we are connected
                 GlobalRpc.isConnected.first { it }
 
