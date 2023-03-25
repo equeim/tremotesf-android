@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.equeim.libtremotesf.TorrentFile
+import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.torrentfile.buildTorrentFilesTree
@@ -176,24 +177,32 @@ class RpcTorrentFilesTree(
     }
 
     fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {
-        val (rootNode, files) = buildTorrentFilesTree {
-            rpcFiles.forEach { rpcFile ->
-                ensureActive()
+        try {
+            val (rootNode, files) = buildTorrentFilesTree {
+                rpcFiles.forEach { rpcFile ->
+                    ensureActive()
 
-                val path = rpcFile.path
-                addFile(
-                    rpcFile.id,
-                    path,
-                    rpcFile.size,
-                    rpcFile.completedSize,
-                    Item.WantedState.fromBoolean(rpcFile.wanted),
-                    rpcFile.priority.toTreeItemPriority()
-                )
-                path.delete()
+                    val path = rpcFile.path
+                    addFile(
+                        rpcFile.id,
+                        path,
+                        rpcFile.size,
+                        rpcFile.completedSize,
+                        Item.WantedState.fromBoolean(rpcFile.wanted),
+                        rpcFile.priority.toTreeItemPriority()
+                    )
+                    path.delete()
+                }
             }
-        }
-        withContext(Dispatchers.Main) {
-            model.treeCreated(rootNode, files)
+            withContext(Dispatchers.Main) {
+                model.treeCreated(rootNode, files)
+            }
+        } catch (e: IllegalArgumentException) {
+            if (BuildConfig.DEBUG) {
+                throw e
+            } else {
+                Timber.e(e, "Failed to build torrent files tree")
+            }
         }
     }
 
