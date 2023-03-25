@@ -46,6 +46,13 @@ jobs:
           path: app/build/outputs/apk/fdroid/debug/app-fdroid-debug.apk
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
+      - name: Archive unsigned release APKs
+        uses: actions/upload-artifact@v3
+        with:
+          name: unsigned-release-apks
+          path: app/build/outputs/apk/*/release/*.apk
+          retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
+
       - name: Archive test and lint reports
         if: always()
         uses: actions/upload-artifact@v3
