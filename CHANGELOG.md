@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.9.1] - 2023-03-26
+### Fixed
+- Invalid display of download directory filter
+- Zero leechers count
+- Crashes
+
 ## [2.9.0] - 2023-03-20
 ### Added
 - Number of seeders and leechers is shown per tracker

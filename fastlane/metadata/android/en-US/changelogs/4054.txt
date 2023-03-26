@@ -1,0 +1,3 @@
+- Fixed Invalid display of download directory filter
+- Fixed zero leechers count
+- Fixed crashes
