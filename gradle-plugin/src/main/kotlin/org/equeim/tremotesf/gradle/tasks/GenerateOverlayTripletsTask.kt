@@ -85,7 +85,7 @@ abstract class GenerateOverlayTripletsTask : DefaultTask() {
             include("${'$'}{VCPKG_ROOT_DIR}/triplets/${HOST_TRIPLET}.cmake")
             set(VCPKG_BUILD_TYPE release)
         """.trimIndent()
-        writeOverlayTriplet(overlayTripletsDir.resolve("${HOST_TRIPLET}.cmale"), hostText)
+        writeOverlayTriplet(overlayTripletsDir.resolve("${HOST_TRIPLET}.cmake"), hostText)
 
         didWork = true
     }
