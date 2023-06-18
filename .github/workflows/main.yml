@@ -28,7 +28,7 @@ jobs:
         uses: equeim/kotlin-problem-matcher@v1
 
       - name: Restore vcpkg binary cache
-        uses: equeim/action-setup-vcpkg@v4
+        uses: equeim/action-setup-vcpkg@v6
         with:
           run-setup: false
           save-cache: ${{ github.event_name != 'pull_request' }}
