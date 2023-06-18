@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-          fetch-depth: 0
 
       - name: Add Kotlin problem matcher
         uses: equeim/kotlin-problem-matcher@v1
