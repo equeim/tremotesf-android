@@ -53,19 +53,13 @@ abstract class GenerateOverlayTripletsTask : DefaultTask() {
                 set(VCPKG_CRT_LINKAGE dynamic)
                 # vcpkg's android toolchain file uses it to set ANDROID_PLATFORM
                 set(VCPKG_CMAKE_SYSTEM_VERSION ${minSdkVersion.get()})
-                set(
-                    VCPKG_CMAKE_CONFIGURE_OPTIONS
+                list(APPEND VCPKG_CMAKE_CONFIGURE_OPTIONS
                     # Fix CMake forcing gold linker. Remove when CMake in SDK is updated to 3.25.3/3.26
                     -DCMAKE_ANDROID_NDK_VERSION=${ndkVersionMajor.get()}
+                    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
                 )
-                set(VCPKG_CMAKE_CONFIGURE_OPTIONS_RELEASE -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON)
-                set(VCPKG_C_FLAGS_RELEASE "-Oz -flto=thin")
-                set(VCPKG_CXX_FLAGS_RELEASE "-Oz -flto=thin")
-
-                if((PORT STREQUAL "libiconv") OR (PORT STREQUAL "libidn2"))
-                    set(VCPKG_C_FLAGS "${'$'}{VCPKG_C_FLAGS} -U_FORTIFY_SOURCE")
-                    set(VCPKG_CXX_FLAGS "${'$'}{VCPKG_CXX_FLAGS} -U_FORTIFY_SOURCE")
-                endif()
+                set(VCPKG_C_FLAGS "${'$'}{VCPKG_C_FLAGS} -Oz -flto=thin")
+                set(VCPKG_CXX_FLAGS "${'$'}{VCPKG_CXX_FLAGS} -Oz -flto=thin")
 
                 if(PORT STREQUAL qtbase-tremotesf-android)
                     set(ANDROID_SDK_ROOT "${'$'}ENV{ANDROID_SDK_HOME}")
