@@ -117,7 +117,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <style name="Widget.Tremotesf.AppBarLayout" parent="Widget.Material3.AppBarLayout">
         <item name="liftOnScroll">false</item>
-        <item name="android:elevation">@dimen/action_bar_elevation</item>
+        <item name="android:outlineAmbientShadowColor" tools:targetApi="p">@android:color/black</item>
+        <item name="android:outlineSpotShadowColor" tools:targetApi="p">@android:color/black</item>
     </style>
 
     <style name="Widget.Tremotesf.TimePickerItem" parent="android:Widget">
