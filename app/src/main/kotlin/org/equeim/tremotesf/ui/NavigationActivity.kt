@@ -246,7 +246,7 @@ class NavHostFragment : NavHostFragment() {
 
     @Suppress("OverridingDeprecatedMember", "OVERRIDE_DEPRECATION")
     override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
-        return FragmentNavigator(requireContext(), childFragmentManager, id, navController)
+        return FragmentNavigator(requireContext(), childFragmentManager, id, ::navController)
     }
 
     // NavController doesn't set any pop animations when handling deep links
@@ -256,7 +256,7 @@ class NavHostFragment : NavHostFragment() {
         context: Context,
         fragmentManager: FragmentManager,
         @IdRes containerId: Int,
-        private val navController: NavController
+        private val navControllerProvider: () -> NavController
     ) : androidx.navigation.fragment.FragmentNavigator(context, fragmentManager, containerId) {
         override fun navigate(
             entries: List<NavBackStackEntry>,
@@ -274,7 +274,7 @@ class NavHostFragment : NavHostFragment() {
         private fun NavOptions.overridePopAnimations() =
             NavOptions.Builder()
                 .apply {
-                    if (navController.currentDestination != null) {
+                    if (navControllerProvider().currentDestination != null) {
                         setPopEnterAnim(popEnterAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_enter_anim))
                         setPopExitAnim(popExitAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_exit_anim))
                     }
