@@ -4,11 +4,11 @@
 
 package org.equeim.tremotesf.ui
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.ScrollView
 import androidx.annotation.IdRes
@@ -33,6 +33,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
@@ -43,7 +47,7 @@ import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 open class NavigationFragment(
     @LayoutRes contentLayoutId: Int,
     @StringRes private val titleRes: Int = 0,
-    @MenuRes private val toolbarMenuRes: Int = 0
+    @MenuRes private val toolbarMenuRes: Int = 0,
 ) : Fragment(contentLayoutId), NavControllerProvider {
     val activity: NavigationActivity?
         get() = super.getActivity() as NavigationActivity?
@@ -88,6 +92,7 @@ open class NavigationFragment(
                         return true
                     }
                 }
+
                 is NavGraph -> {
                     if (findDestinationInGraph(destination, className)) {
                         return true
@@ -128,53 +133,57 @@ open class NavigationFragment(
     }
 
     private fun createStatusBarPlaceholder() {
-        var container = toolbar.parent as View
-        if (container is AppBarLayout) {
-            val appBarLayout = container
-            container = (container.parent as CoordinatorLayout)
-            val scrollingView =
-                container.children.find { (it.layoutParams as CoordinatorLayout.LayoutParams).behavior is AppBarLayout.ScrollingViewBehavior }
-            val placeholder = View(context).apply {
-                layoutParams =
-                    CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-                elevation = resources.getDimension(R.dimen.action_bar_elevation)
-                setBackgroundColor(
-                    ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(
-                        elevation
-                    )
-                )
-            }
+        val appBarLayout = toolbar.parent as? AppBarLayout ?: return
+
+        val coordinatorLayout = appBarLayout.parent as? CoordinatorLayout
+
+        val scrollingView = coordinatorLayout?.children
+            ?.find { (it.layoutParams as CoordinatorLayout.LayoutParams).behavior is AppBarLayout.ScrollingViewBehavior }
+
+        if (scrollingView == null) {
             requiredActivity.windowInsets.launchAndCollectWhenStarted(viewLifecycleOwner) { insets ->
                 val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-                if (appBarLayout.marginTop != topInset) {
-                    appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        topMargin = topInset
-                    }
-                }
-                if (scrollingView != null && scrollingView.marginBottom != topInset) {
-                    scrollingView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = topInset
-                    }
-                }
-                if (placeholder.layoutParams.height != topInset) {
-                    placeholder.updateLayoutParams {
-                        height = topInset
+                appBarLayout.apply {
+                    if (paddingTop != topInset) {
+                        updatePadding(top = topInset)
                     }
                 }
             }
-            container.addView(placeholder)
-        } else if (container.id == R.id.toolbar_container && container is FrameLayout && container.childCount == 1) {
-            container.setBackgroundColor(
+        } else {
+            // If toolbar is scrollable we want to draw something between toolbar and status bar
+            val statusBarBackgroundOverlay = ColorDrawable(
                 ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(
-                    resources.getDimension(R.dimen.action_bar_elevation)
+                    resources.getDimension(R.dimen.top_app_bar_elevation)
                 )
             )
-            requiredActivity.windowInsets.launchAndCollectWhenStarted(viewLifecycleOwner) { insets ->
-                val topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-                if (container.paddingTop != topInset) {
-                    container.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+            coordinatorLayout.overlay.add(statusBarBackgroundOverlay)
+
+            val screenWidthFlow = callbackFlow {
+                val listener =
+                    View.OnLayoutChangeListener { _, left, _, right, _, _, _, _, _ ->
+                        trySend(right - left)
+                    }
+                coordinatorLayout.addOnLayoutChangeListener(listener)
+                awaitClose { coordinatorLayout.removeOnLayoutChangeListener(listener) }
+            }.conflate().distinctUntilChanged()
+
+            val topInsetFlow = requiredActivity.windowInsets
+                .map { it.getInsets(WindowInsetsCompat.Type.systemBars()).top }
+                .distinctUntilChanged()
+
+            topInsetFlow.launchAndCollectWhenStarted(viewLifecycleOwner) { topInset ->
+                appBarLayout.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    topMargin = topInset
+                }
+                scrollingView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    bottomMargin = topInset
                 }
             }
+
+            combine(screenWidthFlow, topInsetFlow, ::Pair).distinctUntilChanged()
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (width, height) ->
+                    statusBarBackgroundOverlay.setBounds(0, 0, width, height)
+                }
         }
     }
 

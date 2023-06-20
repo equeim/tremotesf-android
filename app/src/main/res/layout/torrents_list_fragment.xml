@@ -86,7 +86,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             app:layout_scrollFlags="scroll|snap|enterAlways"
             app:subtitleCentered="true"
             app:titleCentered="true" />

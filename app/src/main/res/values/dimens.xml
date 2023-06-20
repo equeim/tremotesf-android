@@ -5,8 +5,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="action_bar_elevation">4dp</dimen>
-    
+    <!--  Should be the same as value that AppBarLayout sets internally (currently via its android:stateListAnimator)  -->
+    <dimen name="top_app_bar_elevation">3dp</dimen>
+
     <dimen name="horizontal_edge_padding">16dp</dimen>
     <dimen name="vertical_edge_padding">16dp</dimen>
 
@@ -21,7 +22,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <dimen name="linear_layout_vertical_spacing">8dp</dimen>
     <dimen name="linear_layout_vertical_spacing_double">16dp</dimen>
 
-    <integer name="config_navAnimTime" tools:ignore="UnusedResources">300</integer>
+    <integer name="config_navAnimTime" tools:override="true">300</integer>
 
     <dimen name="fastscroll_handle_width" tools:ignore="UnusedResources">6dp</dimen>
     <dimen name="fastscroll_handle_radius" tools:ignore="UnusedResources">3dp</dimen>

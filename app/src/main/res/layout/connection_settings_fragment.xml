@@ -11,14 +11,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/toolbar_container"
-        layout="@layout/toolbar" />
+    <include layout="@layout/toolbar" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_container">
+        android:layout_below="@id/toolbar">
 
         <TextView
             android:id="@+id/placeholder"
