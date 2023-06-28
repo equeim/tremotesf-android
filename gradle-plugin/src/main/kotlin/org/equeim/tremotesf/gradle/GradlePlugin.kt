@@ -19,7 +19,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
-@Suppress("UnstableApiUsage")
 class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.configureAndroidProject()
@@ -38,6 +37,7 @@ class GradlePlugin : Plugin<Project> {
 
     private fun CommonExtension<*, *, *, *>.configureAndroidProject(libs: VersionCatalog) {
         compileSdk = libs.compileSdk
+        @Suppress("UnstableApiUsage")
         ndkVersion = libs.ndk
         defaultConfig.minSdk = libs.minSdk
         lint.apply {
@@ -58,7 +58,7 @@ class GradlePlugin : Plugin<Project> {
 
     private fun ApplicationExtension.configureApplicationProject(libs: VersionCatalog) {
         defaultConfig.targetSdk = libs.targetSdk
-        packagingOptions.jniLibs.useLegacyPackaging = false
+        packaging.jniLibs.useLegacyPackaging = false
     }
 
     private fun KotlinJvmOptions.configureKotlin() {
