@@ -62,6 +62,8 @@ android {
         viewBinding = true
     }
 
+    testOptions.unitTests.all { it.useJUnitPlatform() }
+
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 
     flavorDimensions.add("freedom")
@@ -116,4 +118,5 @@ dependencies {
     debugImplementation(libs.leakcanary)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
 }

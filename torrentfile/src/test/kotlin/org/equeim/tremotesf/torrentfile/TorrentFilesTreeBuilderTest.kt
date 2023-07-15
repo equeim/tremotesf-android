@@ -4,9 +4,9 @@
 
 package org.equeim.tremotesf.torrentfile
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class TorrentFilesTreeBuilderTest {
     @Test
@@ -53,7 +53,7 @@ class TorrentFilesTreeBuilderTest {
 
     @Test
     fun `Fail to create tree with multiple top-level files`() {
-        assertThrows(IllegalArgumentException::class.java) {
+        assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
                 addFile(0, listOf("foo"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
                 addFile(0, listOf("bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -63,7 +63,7 @@ class TorrentFilesTreeBuilderTest {
 
     @Test
     fun `Fail to create tree with multiple top-level directories`() {
-        assertThrows(IllegalArgumentException::class.java) {
+        assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
                 addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
                 addFile(0, listOf("bar", "foo"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -73,7 +73,7 @@ class TorrentFilesTreeBuilderTest {
 
     @Test
     fun `Fail to create tree when trying to add file when one of its parent directories was already added as file`() {
-        assertThrows(IllegalArgumentException::class.java) {
+        assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
                 addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
                 addFile(0, listOf("foo", "bar", "foobar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
@@ -83,7 +83,7 @@ class TorrentFilesTreeBuilderTest {
 
     @Test
     fun `Fail to create tree when trying to add file when it was already added as directory`() {
-        assertThrows(IllegalArgumentException::class.java) {
+        assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
                 addFile(0, listOf("foo", "bar", "foobar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
                 addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)

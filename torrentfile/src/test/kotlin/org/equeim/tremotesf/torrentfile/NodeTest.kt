@@ -4,12 +4,12 @@
 
 package org.equeim.tremotesf.torrentfile
 
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotSame
-import org.junit.Assert.assertSame
-import org.junit.Assert.assertThrows
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 
 class NodeTest {
     @Test
@@ -49,7 +49,7 @@ class NodeTest {
         val node = rootNode.addDirectory("0")
 
         val expectedItem = expectedFileItem(-666, intArrayOf(0, 0))
-        assertThrows(IllegalArgumentException::class.java) {
+        assertFailsWith<IllegalArgumentException> {
             node.addFile(expectedItem.fileId, expectedItem.name, expectedItem.size, expectedItem.completedSize, expectedItem.wantedState, expectedItem.priority)
         }
     }
@@ -69,7 +69,7 @@ class NodeTest {
         val lastChild = node.children.last()
         assertEquals(lastChild, node.getChildByItemNameOrNull(expectedItem.name))
         assertEquals(expectedItem, lastChild.item)
-        assertArrayEquals(expectedItem.nodePath, lastChild.path)
+        assertContentEquals(expectedItem.nodePath, lastChild.path)
     }
 
     @Test

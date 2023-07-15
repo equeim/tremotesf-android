@@ -40,7 +40,7 @@ material = "1.9.0"
 timber = "5.0.1"
 threetenabp = "1.4.6"
 
-junit = "4.13.2"
+junit = "5.9.3"
 
 serialization-bencode = "0.1"
 tremotesf-plugin = "0.1"
@@ -86,7 +86,8 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 
-junit = { module = "junit:junit", version.ref = "junit" }
+junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
