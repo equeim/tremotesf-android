@@ -4,17 +4,17 @@
 
 package org.equeim.tremotesf.torrentfile
 
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNotSame
-import org.junit.Assert.assertSame
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 
 fun assertNodesAreSimilar(expected: TorrentFilesTree.Node, actual: TorrentFilesTree.Node?) {
     assertNotNull(actual)
-    assertEquals(expected::class, actual!!::class)
-    assertArrayEquals(expected.path, actual.path)
+    assertEquals(expected::class, actual::class)
+    assertContentEquals(expected.path, actual.path)
     assertEquals(expected.item, actual.item)
     if (expected is TorrentFilesTree.DirectoryNode && actual is TorrentFilesTree.DirectoryNode) {
         assertNodesAreSimilar(expected.children, actual.children)

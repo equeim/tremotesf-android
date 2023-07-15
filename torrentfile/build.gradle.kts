@@ -12,6 +12,7 @@ plugins {
 android {
     namespace = "org.equeim.tremotesf.torrentfile"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 
 dependencies {
@@ -23,5 +24,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.timber)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.coroutines.test)
 }

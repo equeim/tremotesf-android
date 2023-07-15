@@ -7,10 +7,10 @@ package org.equeim.tremotesf.torrentfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TorrentFileParserTest {
@@ -21,12 +21,12 @@ class TorrentFileParserTest {
         "Resource $name not found"
     }
 
-    @Before
+    @BeforeEach
     fun before() {
         Dispatchers.setMain(dispatcher)
     }
 
-    @After
+    @AfterEach
     fun after() {
         Dispatchers.resetMain()
     }

@@ -6,8 +6,8 @@ package org.equeim.tremotesf
 
 import org.equeim.tremotesf.ui.utils.normalizePath
 import org.equeim.tremotesf.ui.utils.toNativeSeparators
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class PathsTest {
     private data class NormalizeTestCase(val inputPath: String, val expectedNormalizedPath: String)
@@ -48,7 +48,7 @@ class PathsTest {
         )
         testCases.forEach {
             println(it)
-            Assert.assertEquals(it.expectedNormalizedPath, it.inputPath.normalizePath())
+            assertEquals(it.expectedNormalizedPath, it.inputPath.normalizePath())
         }
     }
 
@@ -67,10 +67,10 @@ class PathsTest {
             NativeSeparatorsTestCase("d:foo", "d:foo"),
             NativeSeparatorsTestCase("C::/wtf", "C::/wtf"),
             NativeSeparatorsTestCase("\\\\LOCALHOST\\c$\\home\\foo", "\\\\LOCALHOST\\c\$\\home\\foo")
-        );
+        )
         testCases.forEach {
             println(it)
-            Assert.assertEquals(it.expectedNativeSeparatorsPath, it.inputPath.toNativeSeparators())
+            assertEquals(it.expectedNativeSeparatorsPath, it.inputPath.toNativeSeparators())
         }
     }
 }
