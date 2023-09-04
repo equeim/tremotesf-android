@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
+// SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 // SPDX-FileCopyrightText: 2017 Kevin Richter <me@kevinrichter.nl>
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
