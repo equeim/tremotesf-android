@@ -6,11 +6,18 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.text.format.DateUtils
+import androidx.core.view.isVisible
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentDetails
+import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -25,58 +32,86 @@ class TorrentDetailsFragment :
         TorrentPropertiesFragment.PagerAdapter.Tab.Details
     ) {
 
+    private val torrentHashString: String by lazy { TorrentPropertiesFragment.getTorrentHashString(navController) }
+    private val model by TorrentPropertiesFragmentViewModel.from(this)
+
     private val dateTimeFormatter =
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
     private val binding by viewLifecycleObject(TorrentDetailsFragmentBinding::bind)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
-        binding.hashTextView.text = propertiesFragmentModel.args.hash
-        propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
+        binding.hashTextView.text = torrentHashString
+        model.torrentDetails.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> it.response?.let(::showDetails)
+                    ?: showPlaceholder(getString(R.string.torrent_not_found), showProgressBar = false)
+
+                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
+                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+            }
+        }
     }
 
-    private fun update(torrent: Torrent?) {
-        if (torrent == null) return
+    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+        with(binding) {
+            scrollView.isVisible = false
+            with(placeholderView) {
+                root.isVisible = true
+                progressBar.isVisible = showProgressBar
+                placeholder.text = text
+            }
+        }
+    }
+
+    private fun showDetails(details: TorrentDetails) {
+        with(binding) {
+            scrollView.isVisible = true
+            placeholderView.root.isVisible = false
+        }
+        update(details)
+    }
+
+    private fun update(torrentDetails: TorrentDetails) {
         with(binding) {
             completedTextView.text =
-                FormatUtils.formatByteSize(requireContext(), torrent.completedSize)
-            downloadedTextView.text = FormatUtils.formatByteSize(
+                FormatUtils.formatFileSize(requireContext(), torrentDetails.completedSize)
+            downloadedTextView.text = FormatUtils.formatFileSize(
                 requireContext(),
-                torrent.totalDownloaded
+                torrentDetails.totalDownloaded
             )
             uploadedTextView.text =
-                FormatUtils.formatByteSize(requireContext(), torrent.totalUploaded)
+                FormatUtils.formatFileSize(requireContext(), torrentDetails.totalUploaded)
 
-            ratioTextView.text = DecimalFormats.ratio.format(torrent.ratio)
+            ratioTextView.text = DecimalFormats.ratio.format(torrentDetails.ratio)
 
             downloadSpeedTextView.text =
-                FormatUtils.formatByteSpeed(requireContext(), torrent.downloadSpeed)
+                FormatUtils.formatTransferRate(requireContext(), torrentDetails.downloadSpeed)
             uploadSpeedTextView.text =
-                FormatUtils.formatByteSpeed(requireContext(), torrent.uploadSpeed)
-            etaTextView.text = FormatUtils.formatDuration(requireContext(), torrent.eta)
-            seedersTextView.text = torrent.data.totalSeedersFromTrackersCount.toString()
-            leechersTextView.text = torrent.data.totalLeechersFromTrackersCount.toString()
-            peersSendingToUsTextView.text = torrent.peersSendingToUsCount.toString()
-            webSeedersSendingToUsTextView.text = torrent.webSeedersSendingToUsCount.toString()
-            peersGettingFromUsTextView.text = torrent.peersGettingFromUsCount.toString()
+                FormatUtils.formatTransferRate(requireContext(), torrentDetails.uploadSpeed)
+            etaTextView.text = FormatUtils.formatDuration(requireContext(), torrentDetails.eta)
+            seedersTextView.text = torrentDetails.totalSeedersFromTrackers.toString()
+            leechersTextView.text = torrentDetails.totalLeechersFromTrackers.toString()
+            peersSendingToUsTextView.text = torrentDetails.peersSendingToUsCount.toString()
+            webSeedersSendingToUsTextView.text = torrentDetails.webSeedersSendingToUsCount.toString()
+            peersGettingFromUsTextView.text = torrentDetails.peersGettingFromUsCount.toString()
             lastActivityTextView.text =
-                torrent.data.activityDate?.toDisplayString()
+                torrentDetails.activityDate?.toDisplayString()
 
-            totalSizeTextView.text = FormatUtils.formatByteSize(requireContext(), torrent.totalSize)
+            totalSizeTextView.text = FormatUtils.formatFileSize(requireContext(), torrentDetails.totalSize)
 
-            val dir = torrent.downloadDirectory.toNativeSeparators()
+            val dir = torrentDetails.downloadDirectory.toNativeSeparators()
             if (!dir.contentEquals(locationTextView.text)) {
                 locationTextView.text = dir
             }
 
-            creatorTextView.text = torrent.data.creator
+            creatorTextView.text = torrentDetails.creator
             creationDateTextView.text =
-                torrent.data.creationDate?.toDisplayString()
+                torrentDetails.creationDate?.toDisplayString()
             addedDateTextView.text =
-                torrent.data.addedDate?.toDisplayString()
+                torrentDetails.addedDate?.toDisplayString()
 
-            val comment: String = torrent.data.comment
+            val comment: String = torrentDetails.comment
             if (!comment.contentEquals(commentTextView.text)) {
                 commentTextView.text = comment
             }

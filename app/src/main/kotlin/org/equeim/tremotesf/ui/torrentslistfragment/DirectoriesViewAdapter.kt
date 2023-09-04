@@ -9,10 +9,9 @@ import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
-import org.equeim.tremotesf.ui.utils.toNativeSeparators
-
 
 class DirectoriesViewAdapter(
     private val context: Context,
@@ -54,12 +53,12 @@ class DirectoriesViewAdapter(
         return directories[position].path
     }
 
-    fun update(torrents: List<Torrent>, currentDirectoryPath: String) {
+    fun update(torrents: List<Torrent>, allTorrentsCount: Int, currentDirectoryPath: String) {
         directories = torrents.groupingBy { it.downloadDirectory }
             .eachCount()
             .mapTo(
-                mutableListOf(DirectoryItem(null, null, torrents.size))
-            ) { (path, torrents) -> DirectoryItem(path, path.toNativeSeparators(), torrents) }
+                mutableListOf(DirectoryItem(null, null, allTorrentsCount))
+            ) { (path, torrents) -> DirectoryItem(path.value, path.toNativeSeparators(), torrents) }
             .apply { sortWith(comparator) }
         currentDirectoryIndex = if (currentDirectoryPath.isEmpty()) {
             0

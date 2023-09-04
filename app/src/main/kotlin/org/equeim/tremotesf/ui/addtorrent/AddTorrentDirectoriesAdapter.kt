@@ -9,19 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
+import org.equeim.tremotesf.torrentfile.rpc.normalizePath
+import org.equeim.tremotesf.torrentfile.rpc.requests.getDownloadDirectory
+import org.equeim.tremotesf.torrentfile.rpc.requests.getTorrentsDownloadDirectories
+import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
-import org.equeim.tremotesf.ui.utils.normalizePath
-import org.equeim.tremotesf.ui.utils.toNativeSeparators
+import timber.log.Timber
 
 
 class AddTorrentDirectoriesAdapter(
-    private val textEdit: EditText,
     coroutineScope: CoroutineScope,
     savedInstanceState: Bundle?
 ) : BaseDropdownAdapter(
@@ -41,14 +43,22 @@ class AddTorrentDirectoriesAdapter(
             items = saved
         } else {
             coroutineScope.launch {
-                // Wait until we are connected
-                GlobalRpc.isConnected.first { it }
-
                 val directories = sortedSetOf(AlphanumericComparator())
+                val torrentsDirectories = try {
+                    GlobalRpcClient.getTorrentsDownloadDirectories()
+                } catch (e: RpcRequestError) {
+                    Timber.e(e, "Failed to get torrents download directories")
+                    emptyList()
+                }
+                val serverCapabilities = GlobalRpcClient.serverCapabilities
+                torrentsDirectories.mapTo(directories) { it.toNativeSeparators() }
                 GlobalServers.serversState.value.currentServer?.lastDownloadDirectories
-                    ?.mapTo(directories) { it.normalizePath().toNativeSeparators() }
-                GlobalRpc.torrents.value.mapTo(directories) { it.downloadDirectory.toNativeSeparators() }
-                directories.add(GlobalRpc.serverSettings.downloadDirectory.toNativeSeparators())
+                    ?.mapTo(directories) { it.normalizePath(serverCapabilities).toNativeSeparators() }
+                try {
+                    directories.add(GlobalRpcClient.getDownloadDirectory().toNativeSeparators())
+                } catch (e: RpcRequestError) {
+                    Timber.e(e, "Failed to get default download directory")
+                }
                 items = ArrayList(directories)
                 notifyDataSetChanged()
             }
@@ -71,9 +81,10 @@ class AddTorrentDirectoriesAdapter(
         notifyDataSetChanged()
     }
 
-    fun save() {
-        val directories = items.mapTo(ArrayList(items.size)) { it.normalizePath() }
-        val editPath = textEdit.text.toString().normalizePath()
+    fun save(textEdit: EditText) {
+        val serverCapabilities = GlobalRpcClient.serverCapabilities
+        val directories = items.mapTo(ArrayList(items.size + 1)) { it.normalizePath(serverCapabilities).value }
+        val editPath = textEdit.text.toString().normalizePath(serverCapabilities).value
         if (!directories.contains(editPath)) {
             directories.add(editPath)
         }

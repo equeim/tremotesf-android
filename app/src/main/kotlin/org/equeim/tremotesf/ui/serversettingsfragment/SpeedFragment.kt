@@ -12,19 +12,47 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.annotation.AttrRes
 import androidx.core.content.withStyledAttributes
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import org.equeim.libtremotesf.ServerSettingsData
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcClient
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getSpeedServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeDownloadSpeedLimit
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsBeginTime
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsDays
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEnabled
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEndTime
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsScheduled
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeUploadSpeedLimit
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setDownloadSpeedLimit
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setDownloadSpeedLimited
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUploadSpeedLimit
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUploadSpeedLimited
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.setDependentViews
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -32,23 +60,29 @@ import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.WeekFields
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
 
-class SpeedFragment : ServerSettingsFragment.BaseFragment(
+class SpeedFragment : NavigationFragment(
     R.layout.server_settings_speed_fragment,
     R.string.server_settings_speed
 ) {
-    private val days = mutableListOf(
-        ServerSettingsData.AlternativeSpeedLimitsDays.All,
-        ServerSettingsData.AlternativeSpeedLimitsDays.Weekdays,
-        ServerSettingsData.AlternativeSpeedLimitsDays.Weekends
-    )
-    private val daysSpinnerItems = mutableListOf<String>()
+    private companion object {
+        val days = mutableListOf(
+            SpeedServerSettings.AlternativeLimitsDays.All,
+            SpeedServerSettings.AlternativeLimitsDays.Weekdays,
+            SpeedServerSettings.AlternativeLimitsDays.Weekends
+        )
+    }
+    private lateinit var daysSpinnerItems: List<String>
+
+    private val model by viewModels<SpeedFragmentViewModel>()
+    private val binding by viewLifecycleObject(ServerSettingsSpeedFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val daysSpinnerItems = mutableListOf<String>()
         daysSpinnerItems.add(getString(R.string.every_day))
         daysSpinnerItems.add(getString(R.string.weekdays))
         daysSpinnerItems.add(getString(R.string.weekends))
@@ -63,16 +97,18 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
             daysSpinnerItems.add(day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()))
             days.add(
                 when (day) {
-                    DayOfWeek.SUNDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Sunday
-                    DayOfWeek.MONDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Monday
-                    DayOfWeek.TUESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Tuesday
-                    DayOfWeek.WEDNESDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Wednesday
-                    DayOfWeek.THURSDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Thursday
-                    DayOfWeek.FRIDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Friday
-                    DayOfWeek.SATURDAY -> ServerSettingsData.AlternativeSpeedLimitsDays.Saturday
+                    DayOfWeek.SUNDAY -> SpeedServerSettings.AlternativeLimitsDays.Sunday
+                    DayOfWeek.MONDAY -> SpeedServerSettings.AlternativeLimitsDays.Monday
+                    DayOfWeek.TUESDAY -> SpeedServerSettings.AlternativeLimitsDays.Tuesday
+                    DayOfWeek.WEDNESDAY -> SpeedServerSettings.AlternativeLimitsDays.Wednesday
+                    DayOfWeek.THURSDAY -> SpeedServerSettings.AlternativeLimitsDays.Thursday
+                    DayOfWeek.FRIDAY -> SpeedServerSettings.AlternativeLimitsDays.Friday
+                    DayOfWeek.SATURDAY -> SpeedServerSettings.AlternativeLimitsDays.Saturday
                 }
             )
         }
+
+        this.daysSpinnerItems = daysSpinnerItems
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -80,96 +116,148 @@ class SpeedFragment : ServerSettingsFragment.BaseFragment(
 
         val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
 
-        with(ServerSettingsSpeedFragmentBinding.bind(requireView())) {
-            downloadSpeedLimitCheckBox.isChecked = GlobalRpc.serverSettings.downloadSpeedLimited
+        with(binding) {
             downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
-                GlobalRpc.serverSettings.downloadSpeedLimited = checked
+                onValueChanged { setDownloadSpeedLimited(checked) }
             }
 
             downloadSpeedLimitEdit.filters = limitsFilters
-            downloadSpeedLimitEdit.setText(GlobalRpc.serverSettings.downloadSpeedLimit.toString())
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.downloadSpeedLimit = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse download speed limit $it")
+                onValueChanged {
+                    try {
+                        setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse download speed limit $it")
+                    }
                 }
             }
 
-            uploadSpeedLimitCheckBox.isChecked = GlobalRpc.serverSettings.uploadSpeedLimited
             uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
-                GlobalRpc.serverSettings.uploadSpeedLimited = checked
+                onValueChanged { setUploadSpeedLimited(checked) }
             }
 
             uploadSpeedLimitEdit.filters = limitsFilters
-            uploadSpeedLimitEdit.setText(GlobalRpc.serverSettings.uploadSpeedLimit.toString())
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.uploadSpeedLimit = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse upload speed limit $it")
+                onValueChanged {
+                    try {
+                        setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse upload speed limit $it")
+                    }
                 }
             }
 
-            alternativeLimitsCheckBox.isChecked = GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
             alternativeLimitsCheckBox.setDependentViews(
                 alternativeDownloadSpeedLimitLayout,
                 alternativeUploadSpeedLimitLayout
             ) { checked ->
-                GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled = checked
+                onValueChanged { setAlternativeLimitsEnabled(checked) }
             }
 
             alternativeDownloadSpeedLimitEdit.filters = limitsFilters
-            alternativeDownloadSpeedLimitEdit.setText(GlobalRpc.serverSettings.alternativeDownloadSpeedLimit.toString())
             alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.alternativeDownloadSpeedLimit = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse alternative download speed limit $it")
+                onValueChanged {
+                    try {
+                        setAlternativeDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse alternative download speed limit $it")
+                    }
                 }
             }
 
             alternativeUploadSpeedLimitEdit.filters = limitsFilters
-            alternativeUploadSpeedLimitEdit.setText(GlobalRpc.serverSettings.alternativeUploadSpeedLimit.toString())
             alternativeUploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.alternativeUploadSpeedLimit = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse alternative upload speed limit $it")
+                onValueChanged {
+                    try {
+                        setAlternativeUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse alternative upload speed limit $it")
+                    }
                 }
             }
 
-            scheduleCheckBox.isChecked = GlobalRpc.serverSettings.alternativeSpeedLimitsScheduled
             scheduleCheckBox.setDependentViews(
                 beginTimeItem,
                 endTimeItem,
                 daysViewLayout
             ) { checked ->
-                GlobalRpc.serverSettings.alternativeSpeedLimitsScheduled = checked
+                onValueChanged { setAlternativeLimitsScheduled(checked) }
             }
 
             beginTimeItem.apply {
-                setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime)
                 onTimeChangedListener = {
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsBeginTime = it
+                    onValueChanged {
+                        setAlternativeLimitsBeginTime(it)
+                    }
                 }
             }
 
             endTimeItem.apply {
-                setTime(GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime)
                 onTimeChangedListener = {
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsEndTime = it
+                    onValueChanged {
+                        setAlternativeLimitsEndTime(it)
+                    }
                 }
             }
 
             daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
-            daysView.setText(
-                daysView.adapter.getItem(days.indexOf(GlobalRpc.serverSettings.alternativeSpeedLimitsDays))
-                    .toString()
-            )
             daysView.setOnItemClickListener { _, _, position, _ ->
-                GlobalRpc.serverSettings.alternativeSpeedLimitsDays = days[position]
+                onValueChanged { setAlternativeLimitsDays(days[position]) }
             }
+        }
+
+        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> showSettings(it.response)
+                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
+                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+            }
+        }
+    }
+
+    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+        hideKeyboard()
+        with (binding) {
+            scrollView.isVisible = false
+            with (placeholderView) {
+                root.isVisible = true
+                progressBar.isVisible = showProgressBar
+                placeholder.text = text
+            }
+        }
+    }
+
+    private fun showSettings(settings: SpeedServerSettings) {
+        with (binding) {
+            scrollView.isVisible = true
+            placeholderView.root.isVisible = false
+        }
+        if (model.shouldSetInitialState) {
+            updateViews(settings)
+            model.shouldSetInitialState = false
+        }
+    }
+
+    private fun updateViews(settings: SpeedServerSettings) = with(binding) {
+        downloadSpeedLimitCheckBox.isChecked = settings.downloadSpeedLimited
+        downloadSpeedLimitEdit.setText(settings.downloadSpeedLimit.kiloBytesPerSecond.toString())
+        uploadSpeedLimitCheckBox.isChecked = settings.uploadSpeedLimited
+        uploadSpeedLimitEdit.setText(settings.uploadSpeedLimit.kiloBytesPerSecond.toString())
+        alternativeLimitsCheckBox.isChecked = settings.alternativeLimitsEnabled
+        alternativeDownloadSpeedLimitEdit.setText(settings.alternativeDownloadSpeedLimit.kiloBytesPerSecond.toString())
+        alternativeUploadSpeedLimitEdit.setText(settings.alternativeUploadSpeedLimit.kiloBytesPerSecond.toString())
+        scheduleCheckBox.isChecked = settings.alternativeLimitsScheduled
+        beginTimeItem.setTime(settings.alternativeLimitsBeginTime)
+        endTimeItem.setTime(settings.alternativeLimitsEndTime)
+        daysView.setText(
+            daysView.adapter.getItem(days.indexOf(settings.alternativeLimitsDays))
+                .toString()
+        )
+    }
+
+    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
+        if (!model.shouldSetInitialState) {
+            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
         }
     }
 }
@@ -225,4 +313,12 @@ class TimePickerItem @JvmOverloads constructor(
             onTimeChangedListener?.invoke(time)
         }
     }
+}
+
+class SpeedFragmentViewModel : ViewModel() {
+    var shouldSetInitialState = true
+    val settings: StateFlow<RpcRequestState<SpeedServerSettings>> =
+        GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
+            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
+            .stateIn(GlobalRpcClient, viewModelScope)
 }

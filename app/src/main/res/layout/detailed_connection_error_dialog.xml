@@ -12,26 +12,42 @@ SPDX-License-Identifier: GPL-3.0-or-later
     android:layout_height="match_parent"
     android:paddingTop="@dimen/vertical_edge_padding">
 
-    <HorizontalScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="horizontal"
-        tools:ignore="UselessParent">
+        android:scrollbars="vertical">
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/text"
-                android:layout_width="wrap_content"
+                android:id="@+id/wrapped_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:paddingHorizontal="?dialogPreferredPadding"
-                android:paddingVertical="@dimen/vertical_edge_padding"
+                android:paddingTop="@dimen/vertical_edge_padding"
                 android:textAppearance="?textAppearanceBodyMedium"
                 android:textIsSelectable="true" />
-        </androidx.core.widget.NestedScrollView>
-    </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="horizontal"
+                tools:ignore="UselessParent">
+
+                <TextView
+                    android:id="@+id/unwrapped_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:paddingHorizontal="?dialogPreferredPadding"
+                    android:paddingBottom="@dimen/vertical_edge_padding"
+                    android:textAppearance="?textAppearanceBodyMedium"
+                    android:textIsSelectable="true" />
+            </HorizontalScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </FrameLayout>

@@ -10,16 +10,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/placeholder"
+    <include
+        android:id="@+id/placeholder_view"
+        layout="@layout/placeholder_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-        android:gravity="center_horizontal"
-        android:text="@string/no_trackers"
-        android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/trackers_view"

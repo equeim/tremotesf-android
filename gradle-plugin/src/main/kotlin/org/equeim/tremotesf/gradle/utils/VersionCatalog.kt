@@ -23,6 +23,3 @@ internal val VersionCatalog.minSdk: Int
 
 internal val VersionCatalog.targetSdk: Int
     get() = getVersion("sdk.platform.target").toInt()
-
-internal val VersionCatalog.ndk: String
-    get() = getVersion("sdk.ndk")

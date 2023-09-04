@@ -10,12 +10,9 @@ import androidx.annotation.MainThread
 import androidx.work.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.torrentfile.rpc.Servers
+import org.equeim.tremotesf.torrentfile.rpc.WifiNetworkServersController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
@@ -23,14 +20,12 @@ import java.util.concurrent.atomic.AtomicReference
 
 @SuppressLint("StaticFieldLeak")
 object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope, TremotesfApplication.instance) {
+    val wifiNetworkController = WifiNetworkServersController(this, AppForegroundTracker.appInForeground, scope, context)
+
     private val saveData = AtomicReference<ServersState>()
 
     init {
-        AppForegroundTracker.appInForeground
-            .dropWhile { !it }
-            .filterNot { it }
-            .onEach { saveCurrentServerLastTorrents() }
-            .launchIn(scope)
+        wifiNetworkController.setCurrentServerFromWifiNetwork()
     }
 
     @MainThread

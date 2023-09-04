@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,37 +20,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/placeholder_layout"
+        <include
+            android:id="@+id/placeholder_view"
+            layout="@layout/placeholder_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
-
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
-
-            <TextView
-                android:id="@+id/placeholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:gravity="center_horizontal"
-                android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder"/>
-        </LinearLayout>
+            android:visibility="gone" />
 
         <ScrollView
             android:id="@+id/scroll_view"
-            android:tag="@string/add_navigation_bar_padding"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="@dimen/extended_fab_content_padding"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical"
+            android:tag="@string/add_navigation_bar_padding">
 
             <LinearLayout
                 android:id="@+id/info_layout"
@@ -70,28 +53,28 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/torrent_link_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textUri"/>
+                        android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <include
-                    layout="@layout/download_directory_edit"
                     android:id="@+id/download_directory_layout"
+                    layout="@layout/download_directory_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"/>
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-                    android:hint="@string/priority"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                    android:hint="@string/priority">
 
                     <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                         android:id="@+id/priority_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:readOnly="true"/>
+                        app:readOnly="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
@@ -99,7 +82,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-                    android:text="@string/start_downloading_after_adding"/>
+                    android:text="@string/start_downloading_after_adding" />
             </LinearLayout>
         </ScrollView>
 
@@ -111,7 +94,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginBottom="@dimen/fab_margin"
             android:scrollbars="none"
             android:tag="@string/add_navigation_bar_margin"
-            app:icon="@drawable/ic_done_24dp"
-            android:text="@string/add" />
+            android:text="@string/add"
+            app:icon="@drawable/ic_done_24dp" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

@@ -5,80 +5,99 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.navigation.NavController
 import androidx.navigation.navGraphViewModels
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.startTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.startTorrentsNow
+import org.equeim.tremotesf.torrentfile.rpc.requests.stopTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentDetails
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentDetails
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.renameTorrentFile
+import org.equeim.tremotesf.torrentfile.rpc.requests.verifyTorrents
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
 
 class TorrentPropertiesFragmentViewModel(
     val args: TorrentPropertiesFragmentArgs,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
-    private val _torrent = MutableStateFlow<Torrent?>(null)
-    val torrent: StateFlow<Torrent?> by ::_torrent
+    private val refreshRequests = MutableSharedFlow<Unit>()
+    val torrentDetails: StateFlow<RpcRequestState<TorrentDetails?>> =
+        GlobalRpcClient.performPeriodicRequest(refreshRequests) {
+            getTorrentDetails(args.torrentHashString)
+        }.stateIn(GlobalRpcClient, viewModelScope)
 
-    val showTorrentRemovedMessage = MutableStateFlow(false)
+    data class TorrentFileRenamed(
+        val filePath: String,
+        val newName: String,
+    )
+    private val _torrentFileRenamedEvents = MutableSharedFlow<TorrentFileRenamed>()
+    val torrentFileRenamedEvents by ::_torrentFileRenamedEvents
 
-    init {
-        GlobalRpc.torrents
-            .map { torrents -> torrents.find { it.hashString == args.hash } }
-            .distinctUntilChanged()
-            .onEach { torrent ->
-                if (torrent == null && _torrent.value != null && GlobalRpc.isConnected.value) {
-                    showTorrentRemovedMessage.value = true
-                }
-                if ((torrent == null) != (_torrent.value == null)) {
-                    if (torrent != null) {
-                        Timber.i("Torrent appeared")
-                    } else {
-                        Timber.i("Torrent disappeared")
-                    }
-                } else {
-                    Timber.i("Torrent changed")
-                }
-                _torrent.value = torrent
+    fun renameTorrentFile(filePath: String, newName: String) {
+        Timber.d("renameTorrentFile() called with: filePath = $filePath, newName = $newName")
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.file_rename_error) { renameTorrentFile(args.torrentHashString, filePath, newName) }
+            if (ok) {
+                _torrentFileRenamedEvents.emit(TorrentFileRenamed(filePath, newName))
+                refreshRequests.emit(Unit)
             }
-            .launchIn(viewModelScope)
+        }
+    }
+
+    fun startTorrent(torrentId: Int, now: Boolean) {
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) {
+                if (now) {
+                    startTorrents(listOf(torrentId))
+                } else {
+                    startTorrentsNow(listOf(torrentId))
+                }
+            }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    fun pauseTorrent(torrentId: Int) {
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(listOf(torrentId)) }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    fun checkTorrent(torrentId: Int) {
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { verifyTorrents(listOf(torrentId)) }
+            if (ok) refreshRequests.emit(Unit)
+        }
     }
 
     companion object {
-        fun get(navController: NavController): TorrentPropertiesFragmentViewModel {
-            val entry = navController.getBackStackEntry(R.id.torrent_properties_fragment)
-            val factory = viewModelFactory {
-                initializer {
-                    val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
-                    TorrentPropertiesFragmentViewModel(args, createSavedStateHandle())
+        fun from(fragment: Fragment): Lazy<TorrentPropertiesFragmentViewModel> =
+            fragment.navGraphViewModels(R.id.torrent_properties_fragment) {
+                viewModelFactory {
+                    initializer {
+                        val entry = fragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
+                        val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
+                        TorrentPropertiesFragmentViewModel(args, createSavedStateHandle())
+                    }
                 }
             }
-            return ViewModelProvider(entry, factory)[TorrentPropertiesFragmentViewModel::class.java]
-        }
-
-        fun lazy(fragment: Fragment) = fragment.navGraphViewModels<TorrentPropertiesFragmentViewModel>(R.id.torrent_properties_fragment) {
-            viewModelFactory {
-                initializer {
-                    val entry = fragment.navController.getBackStackEntry(R.id.torrent_properties_fragment)
-                    val args = TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(entry.arguments))
-                    TorrentPropertiesFragmentViewModel(args, createSavedStateHandle())
-                }
-            }
-        }
-
-        fun StateFlow<Torrent?>.hasTorrent() = map { it != null }.distinctUntilChanged()
     }
 }

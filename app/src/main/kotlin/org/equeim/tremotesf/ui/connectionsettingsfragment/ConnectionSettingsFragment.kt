@@ -6,12 +6,20 @@ package org.equeim.tremotesf.ui.connectionsettingsfragment
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -22,7 +30,12 @@ import org.equeim.tremotesf.torrentfile.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.nullIfEmpty
+import org.equeim.tremotesf.ui.utils.safeNavigate
+import org.equeim.tremotesf.ui.utils.submitListAwait
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class ConnectionSettingsFragment : NavigationFragment(

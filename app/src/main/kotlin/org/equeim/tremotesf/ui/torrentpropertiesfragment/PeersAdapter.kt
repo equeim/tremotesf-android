@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.PeerListItemBinding
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.Peer
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 
 
 class PeersAdapter : AsyncLoadingListAdapter<Peer, PeersAdapter.ViewHolder>(Callback()) {
@@ -55,11 +56,11 @@ class PeersAdapter : AsyncLoadingListAdapter<Peer, PeersAdapter.ViewHolder>(Call
                 }
                 downloadSpeedTextView.text = context.getString(
                     R.string.download_speed_string,
-                    FormatUtils.formatByteSpeed(context, peer.downloadSpeed)
+                    FormatUtils.formatTransferRate(context, peer.downloadSpeed)
                 )
                 uploadSpeedTextView.text = context.getString(
                     R.string.upload_speed_string,
-                    FormatUtils.formatByteSpeed(context, peer.uploadSpeed)
+                    FormatUtils.formatTransferRate(context, peer.uploadSpeed)
                 )
                 progressTextView.text = context.getString(
                     R.string.progress_string,
@@ -70,14 +71,7 @@ class PeersAdapter : AsyncLoadingListAdapter<Peer, PeersAdapter.ViewHolder>(Call
     }
 
     private class Callback : DiffUtil.ItemCallback<Peer>() {
-        override fun areItemsTheSame(oldItem: Peer, newItem: Peer): Boolean {
-            return oldItem.address == newItem.address
-        }
-
-        override fun areContentsTheSame(oldItem: Peer, newItem: Peer): Boolean {
-            return oldItem.downloadSpeed == newItem.downloadSpeed &&
-                    oldItem.uploadSpeed == newItem.uploadSpeed &&
-                    oldItem.progress == newItem.progress
-        }
+        override fun areItemsTheSame(oldItem: Peer, newItem: Peer) = oldItem.address == newItem.address
+        override fun areContentsTheSame(oldItem: Peer, newItem: Peer) = oldItem == newItem
     }
 }

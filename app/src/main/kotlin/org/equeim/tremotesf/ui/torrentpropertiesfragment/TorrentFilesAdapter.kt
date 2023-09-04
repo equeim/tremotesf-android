@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
+import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate
@@ -34,10 +35,9 @@ class TorrentFilesAdapter(
     }
 
     override fun navigateToRenameDialog(path: String, name: String) {
-        val torrent = model.torrent.value ?: return
         fragment.navigate(
             TorrentPropertiesFragmentDirections
-                .toTorrentFileRenameDialog(path, name, torrent.id)
+                .toTorrentFileRenameDialog(path, name, model.torrentHashString)
         )
     }
 
@@ -54,13 +54,13 @@ class TorrentFilesAdapter(
                 val context = progressBar.context
                 progressTextView.text = context.getString(
                     R.string.completed_string,
-                    FormatUtils.formatByteSize(
+                    FormatUtils.formatFileSize(
                         context,
-                        item.completedSize
+                        FileSize.fromBytes(item.completedSize)
                     ),
-                    FormatUtils.formatByteSize(
+                    FormatUtils.formatFileSize(
                         context,
-                        item.size
+                        FileSize.fromBytes(item.size)
                     ),
                     DecimalFormats.generic.format(item.progress * 100)
                 )

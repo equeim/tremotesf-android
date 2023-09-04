@@ -13,17 +13,17 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
-import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.rpc.statusString
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.ServerStats
+import org.equeim.tremotesf.torrentfile.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import timber.log.Timber
+import kotlin.random.Random
 
 class NotificationsController(private val context: Context) {
     private val notificationManager = context.getSystemService<NotificationManager>().also {
@@ -31,6 +31,8 @@ class NotificationsController(private val context: Context) {
             Timber.e("NotificationManager is null")
         }
     }
+
+    private val random = Random(System.nanoTime())
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -69,7 +71,7 @@ class NotificationsController(private val context: Context) {
         }.get()
     }
 
-    private suspend fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
+    suspend fun isNotifyOnAddedEnabled(sinceLastConnection: Boolean): Boolean {
         return if (sinceLastConnection) {
             Settings.notifyOnAddedSinceLastConnection
         } else {
@@ -77,36 +79,21 @@ class NotificationsController(private val context: Context) {
         }.get()
     }
 
-    suspend fun showTorrentFinishedNotification(
-        torrentId: Int,
-        hashString: String,
-        torrentName: String,
-        sinceLastConnection: Boolean
-    ) {
-        if (isNotifyOnFinishedEnabled(sinceLastConnection)) {
-            showTorrentNotification(torrentId, hashString, torrentName, FINISHED_NOTIFICATION_CHANNEL_ID, R.string.torrent_finished)
-        }
+    fun showTorrentFinishedNotification(hashString: String, torrentName: String) {
+        showTorrentNotification(hashString, torrentName, FINISHED_NOTIFICATION_CHANNEL_ID, R.string.torrent_finished)
     }
 
-    suspend fun showTorrentAddedNotification(
-        torrentId: Int,
-        hashString: String,
-        torrentName: String,
-        sinceLastConnection: Boolean
-    ) {
-        if (isNotifyOnAddedEnabled(sinceLastConnection)) {
-            showTorrentNotification(torrentId, hashString, torrentName, ADDED_NOTIFICATION_CHANNEL_ID, R.string.torrent_added)
-        }
+    fun showTorrentAddedNotification(hashString: String, torrentName: String) {
+        showTorrentNotification(hashString, torrentName, ADDED_NOTIFICATION_CHANNEL_ID, R.string.torrent_added)
     }
 
     private fun showTorrentNotification(
-        torrentId: Int,
         hashString: String,
         torrentName: String,
         notificationChannel: String,
         @StringRes notificationTitle: Int
     ) {
-        Timber.i("showTorrentNotification() called with: torrentId = $torrentId, hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
+        Timber.i("showTorrentNotification() called with: hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
 
         if (notificationManager == null) {
             Timber.e("showTorrentNotification: NotificationManager is null")
@@ -114,7 +101,7 @@ class NotificationsController(private val context: Context) {
         }
 
         notificationManager.notify(
-            torrentId,
+            random.nextInt(),
             NotificationCompat.Builder(context, notificationChannel)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(context.getText(notificationTitle))
@@ -133,10 +120,8 @@ class NotificationsController(private val context: Context) {
     }
 
     fun buildPersistentNotification(
-        rpc: Rpc,
-        status: Rpc.Status = rpc.status.value,
-        currentServer: Server? = GlobalServers.serversState.value.currentServer,
-        serverStats: ServerStats = rpc.serverStats.value
+        currentServer: Server?,
+        sessionStats: RpcRequestState<SessionStatsResponseArguments>,
     ): Notification {
         val notificationBuilder =
             NotificationCompat.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
@@ -162,25 +147,25 @@ class NotificationsController(private val context: Context) {
             notificationBuilder.setContentTitle(context.getText(R.string.no_servers))
         }
 
-        if (status.isConnected) {
-            notificationBuilder.setContentText(
-                context.getString(
+        notificationBuilder.setContentText(
+            when (sessionStats) {
+                is RpcRequestState.Loading -> context.getText(R.string.connecting)
+                is RpcRequestState.Loaded -> context.getString(
                     R.string.main_activity_subtitle,
-                    FormatUtils.formatByteSpeed(
+                    FormatUtils.formatTransferRate(
                         context,
-                        serverStats.downloadSpeed
+                        sessionStats.response.downloadSpeed
                     ),
-                    FormatUtils.formatByteSpeed(
+                    FormatUtils.formatTransferRate(
                         context,
-                        serverStats.uploadSpeed
+                        sessionStats.response.uploadSpeed
                     )
                 )
-            )
-        } else {
-            notificationBuilder.setContentText(status.statusString)
-        }
+                is RpcRequestState.Error -> sessionStats.error.getErrorString(context)
+            }
+        )
 
-        if (status.connectionState == RpcConnectionState.Disconnected) {
+        if ((sessionStats as? RpcRequestState.Error)?.error is RpcRequestError.ConnectionDisabled) {
             notificationBuilder.addAction(
                 R.drawable.notification_connect,
                 context.getText(R.string.connect),
@@ -203,9 +188,9 @@ class NotificationsController(private val context: Context) {
         return notificationBuilder.build()
     }
 
-    fun updatePersistentNotification(rpc: Rpc, status: Rpc.Status, currentServer: Server?, serverStats: ServerStats) {
+    fun updatePersistentNotification(currentServer: Server?, sessionStats: RpcRequestState<SessionStatsResponseArguments>) {
         if (notificationManager != null) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(rpc, status, currentServer, serverStats))
+            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(currentServer, sessionStats))
         } else {
             Timber.e("updatePersistentNotification: NotificationManager is null")
         }

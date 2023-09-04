@@ -18,12 +18,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="disconnect">Disconnect</string>
     <string name="add">Add</string>
 
+    <string name="invalid_connection_configuration">Invalid connection configuration</string>
     <string name="timed_out">Connection timed out</string>
     <string name="connection_error">Connection error</string>
+    <string name="connection_error_with_cause">Connection error: %1$s</string>
     <string name="authentication_error">Authentication error</string>
-    <string name="parsing_error">Parsing error</string>
-    <string name="server_is_too_new">Server\'s version is too new</string>
-    <string name="server_is_too_old">Server\'s version is too old</string>
+    <string name="parsing_error">JSON parsing error</string>
+    <string name="unsupported_server_version">Transmission version \'%1$s\' is not supported</string>
+    <string name="server_returned_error_result">Server returned \'%1$s\'</string>
 
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
@@ -350,7 +352,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Check local data</string>
     <string name="reannounce">Reannounce</string>
     <string name="torrent_duplicate">This torrent is already added</string>
-    <string name="torrent_add_error">Error adding torrent</string>
+    <string name="torrents_remove_error">Failed to remove torrents: %1$s</string>
+    <string name="add_torrent_error">Failed to add torrent: %1$s</string>
+    <string name="torrent_set_location_error">Failed to move torrents: %1$s</string>
+    <string name="set_server_settings_error">Failed to update settings: %1$s</string>
+    <string name="set_torrent_limits_error">Failed to update torrent\'s limits: %1$s</string>
+    <string name="set_files_wanted_error">Failed to mark files for download: %1$s</string>
+    <string name="set_files_priority_error">Failed to set files\' priority: %1$s</string>
+    <string name="file_rename_error">Failed to rename torrent\'s file: %1$s</string>
+    <string name="torrents_start_error">Failed to start torrents: %1$s</string>
+    <string name="torrents_pause_error">Failed to pause torrents: %1$s</string>
+    <string name="torrents_check_error">Failed to check torrents: %1$s</string>
+    <string name="torrents_reannounce_error">Failed to reannounce torrents: %1$s</string>
+    <string name="trackers_add_error">Failed to add trackers: %1$s</string>
+    <string name="tracker_replace_error">Failed to replace tracker: %1$s</string>
+    <string name="trackers_remove_error">Failed to remove trackers: %1$s</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, uploaded %2$s</string>

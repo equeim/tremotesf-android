@@ -8,8 +8,8 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
-import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.NavigationFragment
 
 abstract class AddTorrentFragment(
@@ -19,9 +19,9 @@ abstract class AddTorrentFragment(
 ) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
     protected lateinit var priorityItems: Array<String>
     protected val priorityItemEnums = arrayOf(
-        TorrentData.Priority.High,
-        TorrentData.Priority.Normal,
-        TorrentData.Priority.Low
+        TorrentLimits.BandwidthPriority.High,
+        TorrentLimits.BandwidthPriority.Normal,
+        TorrentLimits.BandwidthPriority.Low
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

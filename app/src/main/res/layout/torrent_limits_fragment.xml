@@ -6,174 +6,188 @@ SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scroll_view"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scrollbars="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <include
+        android:id="@+id/placeholder_view"
+        layout="@layout/placeholder_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-        android:layout_marginVertical="@dimen/vertical_edge_padding"
-        android:orientation="vertical">
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/speed"
-            android:textAppearance="@style/HeaderTextAppearance"/>
-
-        <CheckBox
-            android:id="@+id/global_limits_check_box"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:text="@string/honor_global_limits"/>
+            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+            android:layout_marginVertical="@dimen/vertical_edge_padding"
+            android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/download_speed_limit_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:text="@string/download_noun"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/speed"
+                android:textAppearance="@style/HeaderTextAppearance" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/download_speed_limit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/kbps"
-            android:layout_marginStart="24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/download_speed_limit_edit"
+            <CheckBox
+                android:id="@+id/global_limits_check_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/honor_global_limits" />
 
-        <CheckBox
-            android:id="@+id/upload_speed_limit_check_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:text="@string/upload_noun"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/upload_speed_limit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:hint="@string/kbps">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/upload_speed_limit_edit"
+            <CheckBox
+                android:id="@+id/download_speed_limit_check_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number">
-            </com.google.android.material.textfield.TextInputEditText>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/download_noun" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:hint="@string/priority">
-
-            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
-                android:id="@+id/priority_view"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/download_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:readOnly="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="24dp"
+                android:hint="@string/kbps">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/seeding"
-            android:textAppearance="@style/HeaderTextAppearance"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/download_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:hint="@string/ratio_limit">
-
-            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
-                android:id="@+id/ratio_limit_mode_view"
+            <CheckBox
+                android:id="@+id/upload_speed_limit_check_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:readOnly="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:text="@string/upload_noun" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ratio_limit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ratio_limit_edit"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/upload_speed_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:digits="0123456789,."
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="24dp"
+                android:hint="@string/kbps">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:hint="@string/idle_seeding">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/upload_speed_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
-                android:id="@+id/idle_seeding_mode_view"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:readOnly="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/priority">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/idle_seeding_limit_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:hint="@string/min">
+                <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
+                    android:id="@+id/priority_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:readOnly="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/idle_seeding_limit_edit"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:text="@string/seeding"
+                android:textAppearance="@style/HeaderTextAppearance" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/ratio_limit">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/peers"
-            android:textAppearance="@style/HeaderTextAppearance"/>
+                <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
+                    android:id="@+id/ratio_limit_mode_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:readOnly="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:hint="@string/maximum_peers">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/maximum_peers_edit"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ratio_limit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ratio_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789,."
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:hint="@string/idle_seeding">
+
+                <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
+                    android:id="@+id/idle_seeding_mode_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:readOnly="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/idle_seeding_limit_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/min">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/idle_seeding_limit_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
+                android:text="@string/peers"
+                android:textAppearance="@style/HeaderTextAppearance" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                android:hint="@string/maximum_peers">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/maximum_peers_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

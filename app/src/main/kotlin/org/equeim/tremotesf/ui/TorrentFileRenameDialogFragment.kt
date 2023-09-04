@@ -11,12 +11,9 @@ import android.text.InputType
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.navArgs
 import kotlinx.parcelize.Parcelize
-
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 import org.equeim.tremotesf.ui.utils.parcelable
 
@@ -37,7 +34,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
                 RESULT_KEY,
                 bundleOf(
                     FILE_RENAME_REQUEST_KEY to FileRenameRequest(
-                        args.torrentId,
+                        args.torrentHashString,
                         args.filePath,
                         newName
                     )
@@ -49,7 +46,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
 
     @Parcelize
     data class FileRenameRequest(
-        val torrentId: Int,
+        val torrentHashString: String?,
         val filePath: String,
         val newName: String
     ) : Parcelable
@@ -58,13 +55,8 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
         private val RESULT_KEY = TorrentFileRenameDialogFragment::class.qualifiedName!!
         private val FILE_RENAME_REQUEST_KEY = FileRenameRequest::class.qualifiedName!!
 
-        fun setFragmentResultListenerForRpc(fragment: Fragment) =
-            setFragmentResultListener(fragment) { (torrentId, filePath, newName) ->
-                GlobalRpc.nativeInstance.renameTorrentFile(torrentId, filePath, newName)
-            }
-
         fun setFragmentResultListener(fragment: Fragment, listener: (FileRenameRequest) -> Unit) {
-            fragment.setFragmentResultListener(RESULT_KEY) { _, bundle ->
+            fragment.parentFragmentManager.setFragmentResultListener(RESULT_KEY, fragment.viewLifecycleOwner) { _, bundle ->
                 bundle.parcelable<FileRenameRequest>(FILE_RENAME_REQUEST_KEY)?.let(listener)
             }
         }

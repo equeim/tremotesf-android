@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
     <string name="connected">Подключено</string>
@@ -17,8 +17,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="connection_error">Ошибка соединения</string>
     <string name="authentication_error">Ошибка аутентификации</string>
     <string name="parsing_error">Ошибка разбора</string>
-    <string name="server_is_too_new">Версия сервера слишком новая</string>
-    <string name="server_is_too_old">Версия сервера слишком старая</string>
 
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
@@ -341,7 +339,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Проверить локальные данные</string>
     <string name="reannounce">Переанонсировать</string>
     <string name="torrent_duplicate">Этот торрент уже добавлен</string>
-    <string name="torrent_add_error">Ошибка добавления торрента</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, роздано %2$s</string>

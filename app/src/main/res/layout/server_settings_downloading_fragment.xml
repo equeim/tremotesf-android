@@ -14,71 +14,84 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <include layout="@layout/toolbar" />
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:tag="@string/add_navigation_bar_padding"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical">
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/placeholder_view"
+            layout="@layout/placeholder_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-            android:orientation="vertical"
-            android:paddingVertical="@dimen/vertical_edge_padding">
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-            <com.google.android.material.textfield.TextInputLayout
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:tag="@string/add_navigation_bar_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/download_directory">
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/download_directory_edit"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textUri"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="@string/download_directory">
 
-            <CheckBox
-                android:id="@+id/start_torrents_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:saveEnabled="false"
-                android:text="@string/start_added_torrents"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/download_directory_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <CheckBox
-                android:id="@+id/rename_incomplete_files_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:saveEnabled="false"
-                android:text="@string/rename_incomplete_files"/>
-
-            <CheckBox
-                android:id="@+id/incomplete_files_directory_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:saveEnabled="false"
-                android:text="@string/incomplete_files_directory"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/incomplete_files_directory_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/incomplete_files_directory_edit"
+                <CheckBox
+                    android:id="@+id/start_torrents_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textUri"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </ScrollView>
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/start_added_torrents"/>
+
+                <CheckBox
+                    android:id="@+id/rename_incomplete_files_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/rename_incomplete_files"/>
+
+                <CheckBox
+                    android:id="@+id/incomplete_files_directory_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/incomplete_files_directory"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/incomplete_files_directory_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/incomplete_files_directory_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
 </LinearLayout>

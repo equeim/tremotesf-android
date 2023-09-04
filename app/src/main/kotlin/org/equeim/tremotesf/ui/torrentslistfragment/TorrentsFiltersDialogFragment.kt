@@ -14,10 +14,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsFiltersDialogFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -78,19 +79,21 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                     updateSortView(sortOrder, sortMode)
                 }
 
-            combine(GlobalRpc.torrents, model.statusFilterMode, ::Pair)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, statusFilterMode) ->
-                    statusFilterViewAdapter.update(torrents, statusFilterMode)
+            val torrents = model.torrentsListState.map { (it as? RpcRequestState.Loaded)?.response.orEmpty() }
+
+            combine(torrents, model.allTorrentsCount, model.statusFilterMode, ::Triple)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, statusFilterMode) ->
+                    statusFilterViewAdapter.update(torrents, allTorrentsCount, statusFilterMode)
                 }
 
-            combine(GlobalRpc.torrents, model.trackerFilter, ::Pair)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, trackerFilter) ->
-                    trackersViewAdapter.update(torrents, trackerFilter)
+            combine(torrents, model.allTorrentsCount, model.trackerFilter, ::Triple)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, trackerFilter) ->
+                    trackersViewAdapter.update(torrents, allTorrentsCount, trackerFilter)
                 }
 
-            combine(GlobalRpc.torrents, model.directoryFilter, ::Pair)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, directoryFilter) ->
-                    directoriesViewAdapter.update(torrents, directoryFilter)
+            combine(torrents, model.allTorrentsCount, model.directoryFilter, ::Triple)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, directoryFilter) ->
+                    directoriesViewAdapter.update(torrents, allTorrentsCount, directoryFilter)
                 }
 
             TooltipCompat.setTooltipText(resetButton, resetButton.contentDescription)
@@ -108,7 +111,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             }
         }
 
-        GlobalRpc.isConnected.filter { !it }.launchAndCollectWhenStarted(viewLifecycleOwner) {
+        model.torrentsListState.filter { it !is RpcRequestState.Loaded }.launchAndCollectWhenStarted(viewLifecycleOwner) {
             navController.popBackStack()
         }
     }

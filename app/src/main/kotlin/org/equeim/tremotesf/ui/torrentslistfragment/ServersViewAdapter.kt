@@ -5,11 +5,10 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.widget.AutoCompleteTextView
-import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
-import java.util.Comparator
 
 
 class ServersViewAdapter(textView: AutoCompleteTextView) :

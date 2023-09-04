@@ -10,42 +10,77 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import org.equeim.libtremotesf.RpcConnectionState
-import org.equeim.libtremotesf.TorrentData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
+import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
+import org.equeim.tremotesf.torrentfile.rpc.requests.getTorrentsList
+import org.equeim.tremotesf.torrentfile.rpc.requests.removeTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.startTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.startTorrentsNow
+import org.equeim.tremotesf.torrentfile.rpc.requests.stopTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.renameTorrentFile
+import org.equeim.tremotesf.torrentfile.rpc.requests.verifyTorrents
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.SavedStateFlowHolder
 import org.equeim.tremotesf.ui.utils.savedStateFlow
+import org.threeten.bp.Instant
 import timber.log.Timber
+import kotlin.time.Duration
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
     companion object {
         fun statusFilterAcceptsTorrent(torrent: Torrent, filterMode: StatusFilterMode): Boolean {
             return when (filterMode) {
-                StatusFilterMode.Active -> (torrent.status == TorrentData.Status.Downloading && !torrent.isDownloadingStalled) ||
-                        (torrent.status == TorrentData.Status.Seeding && !torrent.isSeedingStalled)
+                StatusFilterMode.Active -> (torrent.status == TorrentStatus.Downloading && !torrent.isDownloadingStalled) ||
+                        (torrent.status == TorrentStatus.Seeding && !torrent.isSeedingStalled)
+
                 StatusFilterMode.Downloading -> when (torrent.status) {
-                    TorrentData.Status.Downloading,
-                    TorrentData.Status.QueuedForDownloading -> true
+                    TorrentStatus.Downloading,
+                    TorrentStatus.QueuedForDownloading,
+                    -> true
+
                     else -> false
                 }
+
                 StatusFilterMode.Seeding -> when (torrent.status) {
-                    TorrentData.Status.Seeding,
-                    TorrentData.Status.QueuedForSeeding -> true
+                    TorrentStatus.Seeding,
+                    TorrentStatus.QueuedForSeeding,
+                    -> true
+
                     else -> false
                 }
-                StatusFilterMode.Paused -> (torrent.status == TorrentData.Status.Paused)
-                StatusFilterMode.Checking -> (torrent.status == TorrentData.Status.Checking)
-                StatusFilterMode.Errored -> (torrent.hasError)
+
+                StatusFilterMode.Paused -> (torrent.status == TorrentStatus.Paused)
+                StatusFilterMode.Checking -> (torrent.status == TorrentStatus.Checking)
+                StatusFilterMode.Errored -> (torrent.error != null)
                 StatusFilterMode.All -> true
             }
         }
@@ -125,7 +160,6 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         trackerFilter,
         directoryFilter,
     ) { (sortMode, sortOrder, statusFilterMode, trackerFilter, directoryFilter) ->
-        @Suppress("cast_never_succeeds")
         sortMode != SortMode.DEFAULT ||
                 sortOrder != SortOrder.DEFAULT ||
                 statusFilterMode != StatusFilterMode.DEFAULT ||
@@ -133,50 +167,59 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 (directoryFilter as String).isNotEmpty()
     }
 
-    private val torrentsIfConnected: Flow<List<Torrent>?> = combine(
-        GlobalRpc.torrents,
-        GlobalRpc.isConnected
-    ) { torrents, isConnected ->
-        if (torrents.isEmpty() && !isConnected) null
-        else torrents
-    }//.flowOn(Dispatchers.Main)
-    private val filteredTorrents: Flow<Sequence<Torrent>?> = combine(
-        torrentsIfConnected,
-        statusFilterMode,
-        trackerFilter,
-        directoryFilter,
-        nameFilter.flow()
-    ) { torrents, status, tracker, directory, name ->
-        torrents?.asSequence()?.filter(createFilterPredicate(status, tracker, directory, name))
-    }
-    val torrents: StateFlow<List<Torrent>?> =
-        combine(filteredTorrents, sortMode, sortOrder) { torrents, sortMode, sortOrder ->
-            torrents?.sortedWith(createComparator(sortMode, sortOrder))?.toList()
-            // Stop filtering/sorting when there is no subscribers, but add timeout to account for configuration changes
-        }.stateIn(
-            viewModelScope + Dispatchers.Default,
-            SharingStarted.WhileSubscribed(500),
-            null
-        )
+    private val refreshRequests = MutableSharedFlow<Unit>()
+    private val _torrentsLoadedEvents = MutableSharedFlow<Unit>()
+    val torrentsLoadedEvents: Flow<Unit> by ::_torrentsLoadedEvents
+
+    private val allTorrents: StateFlow<RpcRequestState<List<Torrent>>> =
+        GlobalRpcClient.performPeriodicRequest(refreshRequests) { getTorrentsList() }
+            .onEach {
+                when (it) {
+                    is RpcRequestState.Loaded, is RpcRequestState.Error -> _torrentsLoadedEvents.emit(Unit)
+                    else -> Unit
+                }
+            }
+            .stateIn(GlobalRpcClient, viewModelScope)
+
+    val torrentsListState: StateFlow<RpcRequestState<List<Torrent>>> =
+        allTorrents.filterAndSortTorrents().stateIn(GlobalRpcClient, viewModelScope)
+
+    val allTorrentsCount: StateFlow<Int> = allTorrents
+        .map { (it as? RpcRequestState.Loaded)?.response?.size ?: 0 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), 0)
 
     val sortSettingsChanged: Flow<Unit> = combine(sortMode, sortOrder, ::Pair)
         .drop(1)
         .transform { emit(Unit) }
 
-    val subtitleUpdateData = GlobalRpc.serverStats.combine(GlobalRpc.isConnected, ::Pair)
+    data class SubtitleState(val downloadSpeed: TransferRate, val uploadSpeed: TransferRate)
+
+    val subtitleState: StateFlow<SubtitleState?> =
+        PeriodicServerStateUpdater.sessionStats
+            .map {
+                (it as? RpcRequestState.Loaded)?.let { stats ->
+                    SubtitleState(
+                        stats.response.downloadSpeed,
+                        stats.response.uploadSpeed
+                    )
+                }
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), null)
 
     val searchViewIsIconified: SavedStateFlowHolder<Boolean> by savedStateFlow(
         savedStateHandle,
         true
     )
-    val showSearchView: Flow<Boolean> = GlobalRpc.isConnected
+    private val torrentsLoaded: Flow<Boolean> =
+        torrentsListState.map { it is RpcRequestState.Loaded }.distinctUntilChanged()
+    val showSearchView: Flow<Boolean> = torrentsLoaded
     val showTransmissionSettingsButton: Flow<Boolean> = combine(
         GlobalServers.hasServers,
         searchViewIsIconified.flow(),
         Boolean::and
     ).distinctUntilChanged()
     val showTorrentsFiltersButton: Flow<Boolean> = combine(
-        GlobalRpc.isConnected,
+        torrentsLoaded,
         searchViewIsIconified.flow(),
         Boolean::and
     ).distinctUntilChanged()
@@ -190,28 +233,24 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     }
 
     val connectionButtonState: Flow<ConnectionButtonState> = combine(
-        GlobalServers.hasServers,
-        GlobalRpc.connectionState,
+        torrentsListState,
         searchViewIsIconified.flow()
-    ) { hasServers, connectionState, searchViewIsIconified ->
+    ) { torrentsListState, searchViewIsIconified ->
         when {
             !searchViewIsIconified -> ConnectionButtonState.Hidden
-            !hasServers -> ConnectionButtonState.AddServer
-            connectionState == RpcConnectionState.Disconnected -> ConnectionButtonState.Connect
-            connectionState == RpcConnectionState.Connecting -> ConnectionButtonState.Disconnect
-            else -> ConnectionButtonState.Hidden
+            else -> when (torrentsListState) {
+                is RpcRequestState.Error -> {
+                    when (torrentsListState.error) {
+                        is RpcRequestError.NoConnectionConfiguration -> ConnectionButtonState.AddServer
+                        is RpcRequestError.ConnectionDisabled -> ConnectionButtonState.Connect
+                        else -> ConnectionButtonState.Disconnect
+                    }
+                }
+                is RpcRequestState.Loading -> ConnectionButtonState.Disconnect
+                is RpcRequestState.Loaded -> ConnectionButtonState.Hidden
+            }
         }
     }.distinctUntilChanged()
-
-    private val hasTorrents = torrents.map { it?.isNotEmpty() == true }.distinctUntilChanged()
-
-    data class PlaceholderState(val status: Rpc.Status, val hasTorrents: Boolean)
-
-    val placeholderState: Flow<PlaceholderState> =
-        combine(GlobalRpc.status, hasTorrents, ::PlaceholderState).distinctUntilChanged()
-
-    val showAddTorrentDuplicateError = MutableStateFlow(false)
-    val showAddTorrentError = MutableStateFlow(false)
 
     val notificationPermissionHelper = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         RuntimePermissionHelper(
@@ -225,17 +264,17 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val showNotificationPermissionRequest = MutableStateFlow(false)
 
     init {
-        GlobalRpc.torrentAddDuplicateEvents
-            .onEach { showAddTorrentDuplicateError.value = true }
-            .launchIn(viewModelScope)
-        GlobalRpc.torrentAddErrorEvents
-            .onEach { showAddTorrentError.value = true }
-            .launchIn(viewModelScope)
-
-        notificationPermissionHelper?.permissionRequestResult?.filter { !it }?.onEach {
+        notificationPermissionHelper?.permissionRequestResult?.receiveAsFlow()?.filter { !it }?.onEach {
             Timber.d("Notification permission denied")
             onNotificationPermissionRequestDismissed()
         }?.launchIn(viewModelScope)
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            refreshRequests.emit(Unit)
+            PeriodicServerStateUpdater.sessionStateRefreshRequests.emit(Unit)
+        }
     }
 
     fun checkNotificationPermission() {
@@ -282,16 +321,90 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }
 
+    fun startTorrents(torrentIds: List<Int>, now: Boolean) {
+        Timber.d("startTorrents() called with: torrentIds = $torrentIds, now = $now")
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) {
+                if (now) {
+                    startTorrents(torrentIds)
+                } else {
+                    startTorrentsNow(torrentIds)
+                }
+            }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    fun pauseTorrents(torrentIds: List<Int>) {
+        Timber.d("pauseTorrents() called with: torrentIds = $torrentIds")
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(torrentIds) }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    fun checkTorrents(torrentIds: List<Int>) {
+        Timber.d("checkTorrents() called with: torrentIds = $torrentIds")
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { verifyTorrents(torrentIds) }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    fun renameTorrentFile(torrentHashString: String, filePath: String, newName: String) {
+        Timber.d(
+            "renameTorrentFile() called with: torrentHashString = $torrentHashString, filePath = $filePath, newName = $newName"
+        )
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.file_rename_error) {
+                renameTorrentFile(torrentHashString, filePath, newName)
+            }
+            if (ok && !torrentHashString.contains('/')) {
+                refreshRequests.emit(Unit)
+            }
+        }
+    }
+
+    fun removeTorrents(torrentHashStrings: List<String>, deleteFiles: Boolean) {
+        Timber.d("removeTorrents() called with: torrentHashStrings = $torrentHashStrings, deleteFiles = $deleteFiles")
+        viewModelScope.launch {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_remove_error) {
+                removeTorrents(torrentHashStrings, deleteFiles)
+            }
+            if (ok) refreshRequests.emit(Unit)
+        }
+    }
+
+    private fun Flow<RpcRequestState<List<Torrent>>>.filterAndSortTorrents(): Flow<RpcRequestState<List<Torrent>>> {
+        val filterPredicateFlow = combine(
+            statusFilterMode,
+            trackerFilter,
+            directoryFilter,
+            nameFilter.flow(),
+            ::createFilterPredicate
+        )
+        val comparatorFlow = combine(sortMode, sortOrder, ::createComparator)
+        return combine(this, filterPredicateFlow, comparatorFlow) { requestState, filterPredicate, comparator ->
+            if (requestState is RpcRequestState.Loaded) {
+                RpcRequestState.Loaded(
+                    requestState.response.asSequence().filter(filterPredicate).sortedWith(comparator).toList()
+                )
+            } else {
+                requestState
+            }
+        }
+    }
+
     private fun createFilterPredicate(
         statusFilterMode: StatusFilterMode,
         trackerFilter: String,
         directoryFilter: String,
-        nameFilter: String
+        nameFilter: String,
     ): (Torrent) -> Boolean {
         return { torrent: Torrent ->
             statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
                     (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
-                    (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter) &&
+                    (directoryFilter.isEmpty() || torrent.downloadDirectory.value == directoryFilter) &&
                     torrent.name.contains(nameFilter, true)
         }
     }
@@ -305,10 +418,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     SortMode.Name -> nameComparator.compare(o1.name, o2.name)
                     SortMode.Status -> o1.status.compareTo(o2.status)
                     SortMode.Progress -> o1.percentDone.compareTo(o2.percentDone)
-                    SortMode.Eta -> o1.eta.compareTo(o2.eta)
+                    SortMode.Eta -> nullsFirst<Duration>().compare(o1.eta, o2.eta)
                     SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
-                    SortMode.Size -> o1.totalSize.compareTo(o2.totalSize)
-                    SortMode.AddedDate -> o1.addedDate?.compareTo(o2.addedDate) ?: 0
+                    SortMode.Size -> o1.totalSize.bytes.compareTo(o2.totalSize.bytes)
+                    SortMode.AddedDate -> nullsFirst<Instant>().compare(o1.addedDate, o2.addedDate)
                 }
                 if (sortMode != SortMode.Name && compared == 0) {
                     compared = nameComparator.compare(o1.name, o2.name)

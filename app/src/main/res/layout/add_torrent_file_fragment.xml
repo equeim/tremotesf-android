@@ -36,29 +36,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <LinearLayout
-        android:id="@+id/placeholder_layout"
+    <include
+        android:id="@+id/placeholder_view"
+        layout="@layout/placeholder_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:id="@+id/placeholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:gravity="center_horizontal"
-            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder" />
-    </LinearLayout>
+        android:visibility="gone" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/add_button"

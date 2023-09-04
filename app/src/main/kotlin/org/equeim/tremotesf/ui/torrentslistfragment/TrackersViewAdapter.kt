@@ -7,11 +7,9 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
-
 
 class TrackersViewAdapter(
     private val context: Context,
@@ -47,13 +45,13 @@ class TrackersViewAdapter(
         return trackers[position].tracker
     }
 
-    fun update(torrents: List<Torrent>, trackerFilter: String) {
+    fun update(torrents: List<Torrent>, allTorrentsCount: Int, trackerFilter: String) {
         trackers = torrents
             .asSequence()
             .flatMap { torrent -> torrent.trackerSites.asSequence().map { torrent to it } }
             .groupingBy { (_, tracker) -> tracker }
             .eachCount()
-            .mapTo(mutableListOf(TrackerItem(null, torrents.size))) { (tracker, torrents) -> TrackerItem(tracker, torrents) }
+            .mapTo(mutableListOf(TrackerItem(null, allTorrentsCount))) { (tracker, torrents) -> TrackerItem(tracker, torrents) }
             .apply { sortWith(comparator) }
         currentTrackerIndex = if (trackerFilter.isEmpty()) {
             0

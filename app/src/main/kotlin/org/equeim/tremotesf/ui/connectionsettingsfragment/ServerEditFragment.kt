@@ -27,29 +27,46 @@ import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.equeim.libtremotesf.ConnectionConfiguration.ProxyType
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.ui.utils.IntFilter
+import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
+import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.savedState
+import org.equeim.tremotesf.ui.utils.setDependentViews
+import org.equeim.tremotesf.ui.utils.textInputLayout
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 import java.io.FileNotFoundException
+import java.net.Proxy
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -171,7 +188,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             }
 
             setSsidFromCurrentNetworkButton.setOnClickListener {
-                val ssid = GlobalRpc.wifiNetworkController.currentWifiSsid
+                val ssid = GlobalServers.wifiNetworkController.currentWifiSsid
 
                 if (ssid != null) {
                     wifiAutoConnectSsidEdit.setText(ssid)
@@ -184,6 +201,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
         model.locationPermissionHelper?.run {
             permissionRequestResult
+                .receiveAsFlow()
                 .filter { it }
                 .onEach {
                     if (!model.locationEnabled.value) {
@@ -554,9 +572,9 @@ class ServerProxySettingsFragment : NavigationFragment(
     private companion object {
         // Should match R.array.proxy_type_items
         val proxyTypeItems = arrayOf(
-            ProxyType.Default,
-            ProxyType.Http,
-            ProxyType.Socks5
+            null,
+            Proxy.Type.HTTP,
+            Proxy.Type.SOCKS
         )
     }
 
@@ -577,7 +595,7 @@ class ServerProxySettingsFragment : NavigationFragment(
         with(binding) {
             proxyTypeView.setAdapter(ArrayDropdownAdapter(proxyTypeItemValues))
             proxyTypeView.setOnItemClickListener { _, _, position, _ ->
-                setEditable(proxyTypeItems[position] != ProxyType.Default)
+                setEditable(proxyTypeItems[position] != null)
             }
 
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
@@ -592,7 +610,7 @@ class ServerProxySettingsFragment : NavigationFragment(
                     usernameEdit.setText(proxyUser)
                     passwordEdit.setText(proxyPassword)
 
-                    if (proxyType == ProxyType.Default) {
+                    if (proxyType == null) {
                         setEditable(false)
                     }
                 }
@@ -606,8 +624,7 @@ class ServerProxySettingsFragment : NavigationFragment(
             with(binding) {
                 mainModel.server = mainModel.server.copy(
                     proxyType = proxyTypeItemValues.indexOf(proxyTypeView.text.toString())
-                        .takeIf { it != -1 }?.let(proxyTypeItems::get)
-                        ?: ProxyType.Default,
+                        .takeIf { it != -1 }?.let(proxyTypeItems::get),
                     proxyHostname = addressEdit.text?.toString() ?: "",
                     proxyPort = portEdit.text?.toString()?.toIntOrNull() ?: 0,
                     proxyUser = usernameEdit.text?.toString() ?: "",

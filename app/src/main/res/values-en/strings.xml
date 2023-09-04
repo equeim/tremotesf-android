@@ -17,8 +17,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="connection_error">Connection error</string>
     <string name="authentication_error">Authentication error</string>
     <string name="parsing_error">Parsing error</string>
-    <string name="server_is_too_new">Server\'s version is too new</string>
-    <string name="server_is_too_old">Server\'s version is too old</string>
 
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
@@ -322,7 +320,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Also delete the files on the hard disk</string>
     <string name="check_local_data">Check local data</string>
     <string name="torrent_duplicate">This torrent is already added</string>
-    <string name="torrent_add_error">Error adding torrent</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, uploaded %2$s</string>

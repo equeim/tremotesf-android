@@ -5,7 +5,7 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.ui.navController
+import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
@@ -24,12 +23,14 @@ import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 class TorrentFilesFragment :
     TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Files) {
 
+    private val torrentPropertiesFragmentViewModel by TorrentPropertiesFragmentViewModel.from(this)
     private val model by viewModels<TorrentFilesFragmentViewModel>(::requireParentFragment) {
         viewModelFactory {
             initializer {
                 TorrentFilesFragmentViewModel(
-                    TorrentPropertiesFragmentViewModel.get(navController).torrent,
-                    createSavedStateHandle()
+                    torrentPropertiesFragmentViewModel.args.torrentHashString,
+                    createSavedStateHandle(),
+                    torrentPropertiesFragmentViewModel.torrentFileRenamedEvents
                 )
             }
         }
@@ -48,19 +49,12 @@ class TorrentFilesFragment :
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.state.launchAndCollectWhenStarted(viewLifecycleOwner) { state ->
-            updatePlaceholder(state)
-            updateProgressBar(state)
-        }
+        model.state.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
         model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, filesAdapter::update)
-
-        GlobalRpc.torrentFileRenamedEvents.launchAndCollectWhenStarted(viewLifecycleOwner) { (torrentId, filePath, newName) ->
-            if (torrentId == model.torrent.value?.id) {
-                model.filesTree.renameFile(filePath, newName)
-            }
-        }
     }
+
+    fun navigateUp(): Boolean = model.filesTree.navigateUp()
 
     override fun onToolbarClicked() {
         binding.filesView.scrollToPosition(0)
@@ -70,20 +64,29 @@ class TorrentFilesFragment :
         model.destroy()
     }
 
-    private fun updatePlaceholder(modelState: TorrentFilesFragmentViewModel.State) {
-        binding.placeholder.visibility =
-            if (modelState == TorrentFilesFragmentViewModel.State.TreeCreated && model.filesTree.isEmpty) {
-                View.VISIBLE
-            } else {
-                View.GONE
+    private fun updatePlaceholder(modelState: TorrentFilesFragmentViewModel.State) = with(binding.placeholderView) {
+        if (modelState is TorrentFilesFragmentViewModel.State.TreeCreated && !model.filesTree.isEmpty) {
+            root.isVisible = false
+        } else {
+            root.isVisible = true
+            when (modelState) {
+                is TorrentFilesFragmentViewModel.State.CreatingTree, is TorrentFilesFragmentViewModel.State.Loading -> {
+                    progressBar.isVisible = true
+                    placeholder.setText(R.string.loading)
+                }
+                is TorrentFilesFragmentViewModel.State.Error -> {
+                    progressBar.isVisible = false
+                    placeholder.text = modelState.error.getErrorString(requireContext())
+                }
+                is TorrentFilesFragmentViewModel.State.TorrentNotFound -> {
+                    progressBar.isVisible = false
+                    placeholder.setText(R.string.torrent_not_found)
+                }
+                is TorrentFilesFragmentViewModel.State.TreeCreated -> {
+                    progressBar.isVisible = false
+                    placeholder.setText(R.string.no_files)
+                }
             }
-    }
-
-    private fun updateProgressBar(modelState: TorrentFilesFragmentViewModel.State) {
-        binding.progressBar.visibility = when (modelState) {
-            TorrentFilesFragmentViewModel.State.Loading,
-            TorrentFilesFragmentViewModel.State.CreatingTree -> View.VISIBLE
-            else -> View.GONE
         }
     }
 }

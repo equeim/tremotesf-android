@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
@@ -15,51 +14,26 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import org.equeim.tremotesf.BuildConfig
+import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.Peer
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentPeers
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
 
-
-data class Peer(
-    val address: String,
-    val client: String,
-    var downloadSpeed: Long,
-    var uploadSpeed: Long,
-    var progress: Double
-) {
-    constructor(peer: org.equeim.libtremotesf.Peer) : this(
-        peer.address,
-        peer.client,
-        peer.downloadSpeed,
-        peer.uploadSpeed,
-        peer.progress
-    )
-
-    fun updatedFrom(peer: org.equeim.libtremotesf.Peer): Peer {
-        return this.copy(
-            downloadSpeed = peer.downloadSpeed,
-            uploadSpeed = peer.uploadSpeed,
-            progress = peer.progress
-        )
-    }
-}
-
-class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Peers) {
-    private val model: Model by viewModels {
+class PeersFragment :
+    TorrentPropertiesFragment.PagerFragment(R.layout.peers_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Peers) {
+    private val model: PeersFragmentViewModel by viewModels {
         viewModelFactory {
             initializer {
-                Model(TorrentPropertiesFragmentViewModel.get(navController).torrent)
+                PeersFragmentViewModel(TorrentPropertiesFragment.getTorrentHashString(navController))
             }
         }
     }
@@ -77,113 +51,63 @@ class PeersFragment : TorrentPropertiesFragment.PagerFragment(R.layout.peers_fra
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        model.peers.launchAndCollectWhenStarted(viewLifecycleOwner, peersAdapter::update)
+        model.peers.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> {
+                    val peers = it.response
+                    when {
+                        peers == null -> showPlaceholder(
+                            getString(R.string.torrent_not_found),
+                            showProgressBar = false,
+                            adapter = peersAdapter
+                        )
 
-        combine(model.torrent.hasTorrent(), model.peers, ::Pair)
-            .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrent, peers) ->
-                updatePlaceholder(torrent, peers)
+                        peers.isEmpty() -> showPlaceholder(
+                            getString(R.string.no_peers),
+                            showProgressBar = false,
+                            adapter = peersAdapter
+                        )
+
+                        else -> showPeers(peers, peersAdapter)
+                    }
+                }
+
+                is RpcRequestState.Loading -> showPlaceholder(
+                    getString(R.string.loading),
+                    showProgressBar = true,
+                    adapter = peersAdapter
+                )
+
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false,
+                    adapter = peersAdapter
+                )
             }
+        }
+    }
+
+    private fun showPlaceholder(text: String, showProgressBar: Boolean, adapter: PeersAdapter) {
+        with(binding.placeholderView) {
+            root.isVisible = true
+            progressBar.isVisible = showProgressBar
+            placeholder.text = text
+        }
+        adapter.update(null)
+    }
+
+    private fun showPeers(peers: List<Peer>, adapter: PeersAdapter) {
+        binding.placeholderView.root.isVisible = false
+        adapter.update(peers)
     }
 
     override fun onToolbarClicked() {
         binding.peersView.scrollToPosition(0)
     }
+}
 
-    override fun onNavigatedFromParent() {
-        model.destroy()
-    }
-
-    private fun updatePlaceholder(hasTorrent: Boolean, peers: List<Peer>?) = with(binding) {
-        if (!hasTorrent) {
-            progressBar.visibility = View.GONE
-            placeholder.visibility = View.GONE
-        } else {
-            progressBar.isVisible = peers == null
-            placeholder.isVisible = peers?.isEmpty() == true
-        }
-    }
-
-    private class Model(val torrent: StateFlow<Torrent?>) : ViewModel() {
-        private val _peers = MutableStateFlow<List<Peer>?>(null)
-        val peers: StateFlow<List<Peer>?> by ::_peers
-
-        init {
-            Timber.i("constructor called")
-
-            torrent.hasTorrent().onEach {
-                if (it) {
-                    Timber.i("Torrent appeared, setting peersEnabled to true")
-                    torrent.value?.peersEnabled = true
-                } else {
-                    Timber.i("Torrent appeared, resetting")
-                    reset()
-                }
-            }.launchIn(viewModelScope)
-
-            viewModelScope.launch { GlobalRpc.torrentPeersUpdatedEvents.collect(::onTorrentPeersUpdated) }
-        }
-
-        override fun onCleared() {
-            Timber.i("onCleared() called")
-            destroy()
-        }
-
-        fun destroy() {
-            Timber.i("destroy() called")
-            viewModelScope.cancel()
-            reset()
-        }
-
-        private fun reset() {
-            Timber.i("reset() called")
-            torrent.value?.peersEnabled = false
-            _peers.value = null
-        }
-
-        private fun onTorrentPeersUpdated(data: Rpc.TorrentPeersUpdatedData) {
-            try {
-                val (torrentId, removedIndexRanges, changed, added) = data
-
-                if (torrentId != torrent.value?.id) return
-
-                if (peers.value != null && removedIndexRanges.isEmpty() && changed.isEmpty() && added.isEmpty()) {
-                    return
-                }
-
-                val peers = this.peers.value?.toMutableList() ?: mutableListOf()
-
-                for (range in removedIndexRanges) {
-                    peers.subList(range.first, range.last).clear()
-                }
-
-                if (changed.isNotEmpty()) {
-                    val changedIter = changed.iterator()
-                    var changedPeer = changedIter.next()
-                    var changedPeerAddress = changedPeer.address
-                    val peersIter = peers.listIterator()
-                    while (peersIter.hasNext()) {
-                        val peer = peersIter.next()
-                        if (peer.address == changedPeerAddress) {
-                            peersIter.set(peer.updatedFrom(changedPeer))
-                            if (changedIter.hasNext()) {
-                                changedPeer = changedIter.next()
-                                changedPeerAddress = changedPeer.address
-                            } else {
-                                break
-                            }
-                        }
-                    }
-                }
-
-                for (peer in added) {
-                    peers.add(Peer(peer))
-                }
-
-                _peers.value = peers
-            } catch (e: Exception) {
-                if (BuildConfig.DEBUG) throw RuntimeException("Peers list is in inconsistent state", e)
-                else Timber.e(e, "Peers list is in inconsistent state")
-            }
-        }
-    }
+private class PeersFragmentViewModel(torrentHashString: String) : ViewModel() {
+    val peers: StateFlow<RpcRequestState<List<Peer>?>> =
+        GlobalRpcClient.performPeriodicRequest { getTorrentPeers(torrentHashString) }
+            .stateIn(GlobalRpcClient, viewModelScope)
 }

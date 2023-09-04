@@ -20,9 +20,9 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import org.equeim.libtremotesf.ConnectionConfiguration
-import org.equeim.libtremotesf.ConnectionConfiguration.ProxyType
+import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
 import timber.log.Timber
+import java.net.Proxy
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -42,7 +42,7 @@ data class Server(
     val apiPath: String = DEFAULT_API_PATH,
 
     @SerialName("proxyType")
-    val proxyType: ProxyType = ProxyType.Default,
+    val proxyType: Proxy.Type? = null,
     @SerialName("proxyHostname")
     val proxyHostname: String = "",
     @SerialName("proxyPort")
@@ -80,35 +80,29 @@ data class Server(
     @SerialName("autoConnectOnWifiNetworkSSID")
     val autoConnectOnWifiNetworkSSID: String = "",
 
-    @SerialName("lastTorrents")
-    val lastTorrents: LastTorrents = LastTorrents(),
+    @SerialName("lastTorrentsFinishedState")
+    val lastTorrentsFinishedState: Map<TorrentHashString, TorrentFinishedState>? = null,
     @SerialName("addTorrentDialogDirectories")
     val lastDownloadDirectories: List<String> = emptyList(),
     @SerialName("lastDownloadDirectory")
     val lastDownloadDirectory: String? = null
 ) : Parcelable {
-    override fun toString() = "Server(name=$name)"
+    override fun toString(): String =
+        "Server(name=$name, address=$address, port=$port, apiPath=$apiPath, httpsEnabled=$httpsEnabled)"
+
+    @JvmInline
+    @Serializable
+    @Parcelize
+    value class TorrentHashString(val value: String) : Parcelable
 
     @Serializable
     @Parcelize
-    data class Torrent(
-        @SerialName("id")
-        val id: Int,
-        @SerialName("hashString")
-        val hashString: String,
-        @SerialName("name")
-        val name: String,
-        @SerialName("finished")
-        val finished: Boolean
-    ) : Parcelable
-
-    @Serializable
-    @Parcelize
-    data class LastTorrents(
-        @SerialName("saved")
-        val saved: Boolean = false,
-        @SerialName("torrents")
-        val torrents: List<Torrent> = emptyList()
+    @TypeParceler<FileSize, FileSizeParceler>
+    data class TorrentFinishedState(
+        @SerialName("isFinished")
+        val isFinished: Boolean,
+        @SerialName("sizeWhenDone")
+        val sizeWhenDone: FileSize,
     ) : Parcelable
 
     companion object {
@@ -142,50 +136,31 @@ private object DurationParceler : Parceler<Duration> {
     override fun Duration.write(parcel: Parcel, flags: Int) = parcel.writeLong(inWholeMilliseconds)
 }
 
-private object ProxyTypeSerializer : KSerializer<ProxyType> {
+private object ProxyTypeSerializer : KSerializer<Proxy.Type?> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor(ProxyTypeSerializer::class.qualifiedName!!, PrimitiveKind.STRING)
 
     private val strings = arrayOf(
-        ProxyType.Default to "Default",
-        ProxyType.Http to "HTTP",
-        ProxyType.Socks5 to "SOCKS5"
+        null to "Default",
+        Proxy.Type.HTTP to "HTTP",
+        Proxy.Type.SOCKS to "SOCKS5"
     )
 
-    override fun deserialize(decoder: Decoder): ProxyType {
+    override fun deserialize(decoder: Decoder): Proxy.Type? {
         val typeString = decoder.decodeString()
-        if (typeString.isEmpty()) return ProxyType.Default
-        return strings.find { it.second == typeString }?.first ?: run {
+        if (typeString.isEmpty()) return null
+        val mapping = strings.find { it.second == typeString } ?: run {
             Timber.e("Unknown proxy type $typeString")
-            ProxyType.Default
+            return null
         }
+        return mapping.first
     }
 
-    override fun serialize(encoder: Encoder, value: ProxyType) =
+    override fun serialize(encoder: Encoder, value: Proxy.Type?) =
         encoder.encodeString(requireNotNull(strings.find { it.first == value }?.second))
 }
 
-fun Server.toConnectionConfiguration() = ConnectionConfiguration().also { s ->
-    s.address = address
-    s.port = port
-    s.apiPath = apiPath
-
-    s.proxyType = proxyType
-    s.proxyHostname = proxyHostname
-    s.proxyPort = proxyPort
-    s.proxyUser = proxyUser
-    s.proxyPassword = proxyPassword
-
-    s.https = httpsEnabled
-    s.selfSignedCertificateEnabled = selfSignedCertificateEnabled
-    s.selfSignedCertificate = selfSignedCertificate.toByteArray()
-    s.clientCertificateEnabled = clientCertificateEnabled
-    s.clientCertificate = clientCertificate.toByteArray()
-
-    s.authentication = authentication
-    s.username = username
-    s.password = password
-
-    s.updateInterval = updateInterval.inWholeSeconds.toInt()
-    s.timeout = timeout.inWholeSeconds.toInt()
+private object FileSizeParceler: Parceler<FileSize> {
+    override fun create(parcel: Parcel): FileSize = FileSize.fromBytes(parcel.readLong())
+    override fun FileSize.write(parcel: Parcel, flags: Int) = parcel.writeLong(bytes)
 }

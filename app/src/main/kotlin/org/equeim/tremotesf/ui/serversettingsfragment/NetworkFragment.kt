@@ -5,98 +5,187 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.os.Bundle
-import org.equeim.libtremotesf.ServerSettingsData
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsNetworkFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcClient
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.NetworkServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getNetworkServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setEncryptionMode
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setMaximumPeersGlobally
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setMaximumPeersPerTorrent
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setPeerPort
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUseDHT
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUseLPD
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUsePEX
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUsePortForwarding
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUseRandomPort
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUseUTP
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
 
-class NetworkFragment : ServerSettingsFragment.BaseFragment(
+class NetworkFragment : NavigationFragment(
     R.layout.server_settings_network_fragment,
     R.string.server_settings_network
 ) {
     private companion object {
         // Should match R.array.encryption_items
         val encryptionItems = arrayOf(
-            ServerSettingsData.EncryptionMode.Allowed,
-            ServerSettingsData.EncryptionMode.Preferred,
-            ServerSettingsData.EncryptionMode.Required
+            NetworkServerSettings.EncryptionMode.Allowed,
+            NetworkServerSettings.EncryptionMode.Preferred,
+            NetworkServerSettings.EncryptionMode.Required
         )
+    }
+
+    private val model by viewModels<NetworkFragmentViewModel>()
+    private val binding by viewLifecycleObject(ServerSettingsNetworkFragmentBinding::bind)
+
+    private lateinit var encryptionItemValues: Array<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        encryptionItemValues = resources.getStringArray(R.array.encryption_items)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        with(ServerSettingsNetworkFragmentBinding.bind(requireView())) {
+        with(binding) {
             peerPortEdit.filters = arrayOf(IntFilter(0..65535))
-            peerPortEdit.setText(GlobalRpc.serverSettings.peerPort.toString())
             peerPortEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.peerPort = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse peer port $it")
+                onValueChanged {
+                    try {
+                        setPeerPort(it.toString().toInt())
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse peer port $it")
+                    }
                 }
             }
 
-            randomPortCheckBox.isChecked = GlobalRpc.serverSettings.randomPortEnabled
             randomPortCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.randomPortEnabled = checked
+                onValueChanged { setUseRandomPort(checked) }
             }
 
-            portForwardingCheckBox.isChecked = GlobalRpc.serverSettings.portForwardingEnabled
             portForwardingCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.portForwardingEnabled = checked
+                onValueChanged { setUsePortForwarding(checked) }
             }
 
-            val encryptionItemValues = resources.getStringArray(R.array.encryption_items)
             encryptionView.setAdapter(ArrayDropdownAdapter(encryptionItemValues))
-            encryptionView.setText(encryptionItemValues[encryptionItems.indexOf(GlobalRpc.serverSettings.encryptionMode)])
             encryptionView.setOnItemClickListener { _, _, position, _ ->
-                GlobalRpc.serverSettings.encryptionMode = encryptionItems[position]
+                onValueChanged { setEncryptionMode(encryptionItems[position]) }
             }
 
-            utpCheckBox.isChecked = GlobalRpc.serverSettings.utpEnabled
             utpCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.utpEnabled = checked
+                onValueChanged { setUseUTP(checked) }
             }
 
-            pexCheckBox.isChecked = GlobalRpc.serverSettings.pexEnabled
             pexCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.pexEnabled = checked
+                onValueChanged { setUsePEX(checked) }
             }
 
-            dhtCheckBox.isChecked = GlobalRpc.serverSettings.dhtEnabled
             dhtCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.dhtEnabled = checked
+                onValueChanged { setUseDHT(checked) }
             }
 
-            lpdCheckBox.isChecked = GlobalRpc.serverSettings.lpdEnabled
             lpdCheckBox.setOnCheckedChangeListener { _, checked ->
-                GlobalRpc.serverSettings.lpdEnabled = checked
+                onValueChanged { setUseLPD(checked) }
             }
 
             peersPerTorrentEdit.filters = arrayOf(IntFilter(0..10000))
-            peersPerTorrentEdit.setText(GlobalRpc.serverSettings.maximumPeersPerTorrent.toString())
             peersPerTorrentEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.maximumPeersPerTorrent = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse maximum peers count $it")
+                onValueChanged {
+                    try {
+                        setMaximumPeersPerTorrent(it.toString().toInt())
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse maximum peers count $it")
+                    }
                 }
             }
 
             peersGloballyEdit.filters = arrayOf(IntFilter(0..10000))
-            peersGloballyEdit.setText(GlobalRpc.serverSettings.maximumPeersGlobally.toString())
             peersGloballyEdit.doAfterTextChangedAndNotEmpty {
-                try {
-                    GlobalRpc.serverSettings.maximumPeersGlobally = it.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse maximum peers count $it")
+                onValueChanged {
+                    try {
+                        setMaximumPeersGlobally(it.toString().toInt())
+                    } catch (e: NumberFormatException) {
+                        Timber.e(e, "Failed to parse maximum peers count $it")
+                    }
                 }
             }
         }
+
+        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> showSettings(it.response)
+                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
+                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+            }
+        }
     }
+
+    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+        hideKeyboard()
+        with (binding) {
+            scrollView.isVisible = false
+            with (placeholderView) {
+                root.isVisible = true
+                progressBar.isVisible = showProgressBar
+                placeholder.text = text
+            }
+        }
+    }
+
+    private fun showSettings(settings: NetworkServerSettings) {
+        with (binding) {
+            scrollView.isVisible = true
+            placeholderView.root.isVisible = false
+        }
+        if (model.shouldSetInitialState) {
+            updateViews(settings)
+            model.shouldSetInitialState = false
+        }
+    }
+
+    private fun updateViews(settings: NetworkServerSettings) = with(binding) {
+        peerPortEdit.setText(settings.peerPort.toString())
+        randomPortCheckBox.isChecked = settings.useRandomPort
+        portForwardingCheckBox.isChecked = settings.usePortForwarding
+        encryptionView.setText(encryptionItemValues[encryptionItems.indexOf(settings.encryptionMode)])
+        utpCheckBox.isChecked = settings.useUTP
+        pexCheckBox.isChecked = settings.usePEX
+        dhtCheckBox.isChecked = settings.useDHT
+        lpdCheckBox.isChecked = settings.useLPD
+        peersPerTorrentEdit.setText(settings.maximumPeersPerTorrent.toString())
+        peersGloballyEdit.setText(settings.maximumPeersGlobally.toString())
+    }
+
+    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
+        if (!model.shouldSetInitialState) {
+            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
+        }
+    }
+}
+
+class NetworkFragmentViewModel : ViewModel() {
+    var shouldSetInitialState = true
+    val settings: StateFlow<RpcRequestState<NetworkServerSettings>> =
+        GlobalRpcClient.performRecoveringRequest { getNetworkServerSettings() }
+            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
+            .stateIn(GlobalRpcClient, viewModelScope)
 }
