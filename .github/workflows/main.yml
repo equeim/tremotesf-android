@@ -19,18 +19,12 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Add Kotlin problem matcher
         uses: equeim/kotlin-problem-matcher@v1
-
-      - name: Restore vcpkg binary cache
-        uses: equeim/action-setup-vcpkg@v6
-        with:
-          run-setup: false
-          save-cache: ${{ github.event_name != 'pull_request' }}
 
       - name: Set up Java 17
         uses: actions/setup-java@v3
@@ -70,14 +64,6 @@ jobs:
             libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
-          retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
-
-      - name: Archive vcpkg logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: vcpkg-logs
-          path: libtremotesf/.vcpkg/buildtrees/*/*.log
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
   reuse-lint:

@@ -4,7 +4,8 @@
 
 package org.equeim.tremotesf.ui.utils
 
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty

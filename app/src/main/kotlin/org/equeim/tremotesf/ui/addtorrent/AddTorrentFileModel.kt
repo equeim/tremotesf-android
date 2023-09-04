@@ -10,21 +10,29 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
+import android.os.ParcelFileDescriptor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.torrentfile.*
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
+import org.equeim.tremotesf.torrentfile.FileParseException
+import org.equeim.tremotesf.torrentfile.FileReadException
+import org.equeim.tremotesf.torrentfile.TorrentFileParser
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
-import java.io.FileNotFoundException
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -46,8 +54,8 @@ interface AddTorrentFileModel {
 
     data class ViewUpdateData(
         val parserStatus: ParserStatus,
-        val rpcStatus: Rpc.Status,
-        val hasStoragePermission: Boolean
+        val downloadingSettings: RpcRequestState<DownloadingServerSettings>,
+        val hasStoragePermission: Boolean,
     )
 
     var rememberedPagerItem: Int
@@ -62,7 +70,12 @@ interface AddTorrentFileModel {
     val torrentName: String
     val renamedFiles: MutableMap<String, String>
 
-    fun detachFd(): Int?
+    var shouldSetInitialLocalInputs: Boolean
+    var shouldSetInitialRpcInputs: Boolean
+
+    suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String
+    suspend fun getFreeSpace(directory: String): FileSize?
+    fun detachFd(): ParcelFileDescriptor?
     fun getFilePriorities(): FilePriorities
 }
 
@@ -70,7 +83,7 @@ class AddTorrentFileModelImpl(
     private val args: AddTorrentFileFragmentArgs,
     application: Application,
     private val savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application), AddTorrentFileModel {
+) : BaseAddTorrentModel(application), AddTorrentFileModel {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
     override val needStoragePermission = args.uri.scheme == ContentResolver.SCHEME_FILE
@@ -84,7 +97,7 @@ class AddTorrentFileModelImpl(
 
     override val viewUpdateData = combine(
         parserStatus,
-        GlobalRpc.status,
+        downloadingSettings,
         storagePermissionHelper.permissionGranted
     ) { parserStatus, rpcStatus, hasPermission ->
         AddTorrentFileModel.ViewUpdateData(
@@ -119,15 +132,6 @@ class AddTorrentFileModelImpl(
         fd?.closeQuietly()
     }
 
-    private fun AssetFileDescriptor.closeQuietly() {
-        try {
-            Timber.i("closeQuietly: closing file descriptor")
-            close()
-        } catch (e: Exception) {
-            Timber.e(e, "closeQuietly: failed to close file descriptor")
-        }
-    }
-
     private fun load() {
         Timber.i("load: loading ${args.uri}")
         if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
@@ -138,13 +142,13 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    override fun detachFd(): Int? {
+    override fun detachFd(): ParcelFileDescriptor? {
         Timber.i("detachFd() called")
         val fd = this.fd
         return if (fd != null) {
             Timber.i("detachFd: detaching file descriptor")
             this.fd = null
-            fd.parcelFileDescriptor.detachFd()
+            fd.parcelFileDescriptor
         } else {
             Timber.e("detachFd: file descriptor is already detached")
             null
@@ -190,7 +194,6 @@ class AddTorrentFileModelImpl(
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
         }
-
         val fdAtomic = AtomicReference(fd)
         try {
             val (rootNode, files) = TorrentFileParser.createFilesTree(fd.fileDescriptor)
@@ -212,6 +215,17 @@ class AddTorrentFileModelImpl(
             return@withContext
         } finally {
             fdAtomic.get()?.closeQuietly()
+        }
+    }
+
+    private companion object {
+        fun AssetFileDescriptor.closeQuietly() {
+            try {
+                Timber.i("closeQuietly: closing file descriptor")
+                close()
+            } catch (e: Exception) {
+                Timber.e(e, "closeQuietly: failed to close file descriptor")
+            }
         }
     }
 }

@@ -11,9 +11,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.withStyledAttributes
-import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,19 +28,31 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.equeim.libtremotesf.RpcConnectionState
-import org.equeim.libtremotesf.RpcError
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.rpc.statusString
+import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.ServerStats
+import org.equeim.tremotesf.torrentfile.rpc.isRecoverable
+import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
+import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.addCustomCallback
+import org.equeim.tremotesf.ui.utils.handleAndReset
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.showSnackbar
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import timber.log.Timber
 
 
 class TorrentsListFragment : NavigationFragment(
@@ -53,8 +66,17 @@ class TorrentsListFragment : NavigationFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
         notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this)
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                PeriodicServerStateUpdater.showingTorrentsListScreen.value = true
+                suspendCancellableCoroutine {
+                    it.invokeOnCancellation {
+                        PeriodicServerStateUpdater.showingTorrentsListScreen.value = false
+                    }
+                }
+            }
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -81,25 +103,19 @@ class TorrentsListFragment : NavigationFragment(
             )
 
             setOnRefreshListener {
-                if (GlobalRpc.isConnected.value) {
-                    GlobalRpc.nativeInstance.updateData()
-                } else {
-                    binding.swipeRefreshLayout.isRefreshing = false
-                }
-            }
-            GlobalRpc.torrentsUpdatedEvent.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                isRefreshing = false
+                model.refresh()
             }
         }
 
         binding.torrentsView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-            fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
         }
 
         binding.detailedErrorMessageButton.setOnClickListener {
-            navigate(TorrentsListFragmentDirections.toDetailedConnectionErrorDialogFragment())
+            (model.torrentsListState.value as? RpcRequestState.Error)?.let { error ->
+                navigate(TorrentsListFragmentDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString()))
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -112,11 +128,14 @@ class TorrentsListFragment : NavigationFragment(
             }
             val torrentsAdapter = TorrentsAdapter(
                 this@TorrentsListFragment,
+                model,
                 compactView.await(),
                 multilineName.await()
             )
             binding.torrentsView.adapter = torrentsAdapter
-            model.torrents.launchAndCollectWhenStarted(viewLifecycleOwner, torrentsAdapter::update)
+            model.torrentsListState.launchAndCollectWhenStarted(viewLifecycleOwner) { updateList(it, torrentsAdapter) }
+            model.torrentsLoadedEvents
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { binding.swipeRefreshLayout.isRefreshing = false }
 
             model.sortSettingsChanged
                 .onEach {
@@ -126,34 +145,17 @@ class TorrentsListFragment : NavigationFragment(
                 .launchAndCollectWhenStarted(viewLifecycleOwner)
         }
 
-        GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner, ::onRpcConnectedChanged)
-
-        combine(model.showAddTorrentButton, model.connectionButtonState) { showAddTorrentButton, connectionButtonState ->
+        combine(
+            model.showAddTorrentButton,
+            model.connectionButtonState
+        ) { showAddTorrentButton, connectionButtonState ->
             showAddTorrentButton || connectionButtonState != TorrentsListFragmentViewModel.ConnectionButtonState.Hidden
         }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner) {
             binding.endButtonSpacer.isVisible = it
         }
 
-        model.placeholderState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
-
         GlobalServers.currentServer.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTitle)
-        model.subtitleUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
-
-        model.showAddTorrentDuplicateError.handleAndReset {
-            binding.root.showSnackbar(
-                message = R.string.torrent_duplicate,
-                duration = Snackbar.LENGTH_LONG,
-                anchorViewId = R.id.bottom_toolbar
-            )
-        }.launchAndCollectWhenStarted(viewLifecycleOwner)
-
-        model.showAddTorrentError.handleAndReset {
-            binding.root.showSnackbar(
-                message = R.string.torrent_add_error,
-                duration = Snackbar.LENGTH_LONG,
-                anchorViewId = R.id.bottom_toolbar
-            )
-        }.launchAndCollectWhenStarted(viewLifecycleOwner)
+        model.subtitleState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         notificationPermissionLauncher?.let { launcher ->
             model.showNotificationPermissionRequest.handleAndReset {
@@ -171,11 +173,27 @@ class TorrentsListFragment : NavigationFragment(
                 )
             }.launchAndCollectWhenStarted(viewLifecycleOwner)
         }
+
+        RemoveTorrentDialogFragment.setFragmentResultListener(this) {
+            model.removeTorrents(it.torrentHashStrings, it.deleteFiles)
+        }
+
+        TorrentFileRenameDialogFragment.setFragmentResultListener(this) {
+            if (it.torrentHashString != null) {
+                model.renameTorrentFile(it.torrentHashString, it.filePath, it.newName)
+            }
+        }
     }
 
     override fun onStart() {
+        Timber.d("onStart() called")
         super.onStart()
         model.checkNotificationPermission()
+    }
+
+    override fun onStop() {
+        Timber.d("onStop() called")
+        super.onStop()
     }
 
     private fun setupBottomBar() {
@@ -244,6 +262,50 @@ class TorrentsListFragment : NavigationFragment(
         }
     }
 
+    private suspend fun updateList(state: RpcRequestState<List<Torrent>>, adapter: TorrentsAdapter) {
+        binding.apply {
+            swipeRefreshLayout.isEnabled = ((state as? RpcRequestState.Error)?.error?.isRecoverable ?: true) == true
+
+            if (state is RpcRequestState.Loaded && state.response.isNotEmpty()) {
+                adapter.update(state.response)
+                progressBar.isVisible = false
+                statusString.isVisible = false
+                detailedErrorMessageButton.isVisible = false
+                bottomToolbar.hideOnScroll = true
+            } else {
+                adapter.update(null)
+                requiredActivity.actionMode?.finish()
+                statusString.isVisible = true
+                bottomToolbar.apply {
+                    hideOnScroll = false
+                    performShow()
+                }
+                when (state) {
+                    is RpcRequestState.Loading -> {
+                        progressBar.isVisible = true
+                        statusString.text = getText(R.string.connecting)
+                        detailedErrorMessageButton.isVisible = false
+                    }
+
+                    is RpcRequestState.Error -> {
+                        progressBar.isVisible = false
+                        statusString.text = state.error.getErrorString(requireContext())
+                        detailedErrorMessageButton.isVisible = when (state.error) {
+                            is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> false
+                            else -> true
+                        }
+                    }
+
+                    is RpcRequestState.Loaded -> {
+                        progressBar.isVisible = false
+                        statusString.text = getText(R.string.no_torrents)
+                        detailedErrorMessageButton.isVisible = false
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateConnectionButton(state: TorrentsListFragmentViewModel.ConnectionButtonState) {
         binding.connectionButton.apply {
             val text = when (state) {
@@ -251,14 +313,17 @@ class TorrentsListFragment : NavigationFragment(
                     setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
                     R.string.add_server
                 }
+
                 TorrentsListFragmentViewModel.ConnectionButtonState.Connect -> {
-                    setOnClickListener { GlobalRpc.nativeInstance.connect() }
+                    setOnClickListener { GlobalRpcClient.shouldConnectToServer.value = true }
                     R.string.connect
                 }
+
                 TorrentsListFragmentViewModel.ConnectionButtonState.Disconnect -> {
-                    setOnClickListener { GlobalRpc.nativeInstance.disconnect() }
+                    setOnClickListener { GlobalRpcClient.shouldConnectToServer.value = false }
                     R.string.disconnect
                 }
+
                 TorrentsListFragmentViewModel.ConnectionButtonState.Hidden -> {
                     setOnClickListener(null)
                     null
@@ -283,29 +348,6 @@ class TorrentsListFragment : NavigationFragment(
         return true
     }
 
-    private fun onRpcConnectedChanged(connected: Boolean) {
-        if (!connected) {
-            requiredActivity.actionMode?.finish()
-            when (navController.currentDestination?.id) {
-                R.id.transmission_settings_dialog_fragment,
-                R.id.detailed_connection_error_dialog_fragment -> Unit
-                else -> navController.popDialog()
-            }
-        }
-
-        with(binding) {
-            swipeRefreshLayout.apply {
-                isRefreshing = false
-                isEnabled = connected
-            }
-
-            bottomToolbar.apply {
-                hideOnScroll = connected
-                if (!connected) performShow()
-            }
-        }
-    }
-
     private fun updateTitle(currentServer: Server?) {
         toolbar.title = if (currentServer != null) {
             getString(
@@ -318,44 +360,15 @@ class TorrentsListFragment : NavigationFragment(
         }
     }
 
-    private fun updateSubtitle(subtitleData: Pair<ServerStats, Boolean>) {
-        val (stats, isConnected) = subtitleData
-        toolbar.subtitle = if (isConnected) {
+    private fun updateSubtitle(state: TorrentsListFragmentViewModel.SubtitleState?) {
+        toolbar.subtitle = if (state != null) {
             getString(
                 R.string.main_activity_subtitle,
-                FormatUtils.formatByteSpeed(requireContext(), stats.downloadSpeed),
-                FormatUtils.formatByteSpeed(requireContext(), stats.uploadSpeed)
+                FormatUtils.formatTransferRate(requireContext(), state.downloadSpeed),
+                FormatUtils.formatTransferRate(requireContext(), state.uploadSpeed)
             )
         } else {
             null
-        }
-    }
-
-    private fun updatePlaceholder(data: TorrentsListFragmentViewModel.PlaceholderState) = with(binding) {
-        val (status, hasTorrents) = data
-
-        progressBar.isVisible = status.connectionState == RpcConnectionState.Connecting && !hasTorrents
-        statusString.apply {
-            text = when {
-                hasTorrents -> null
-                (status.connectionState == RpcConnectionState.Connected) -> getString(R.string.no_torrents)
-                else -> status.statusString
-            }
-            isVisible = !text.isNullOrEmpty()
-        }
-        errorMessage.apply {
-            text = if (status.error.error == RpcError.ConnectionError) {
-                status.error.errorMessage
-            } else {
-                null
-            }
-            isVisible = !text.isNullOrEmpty()
-        }
-        detailedErrorMessageButton.apply {
-            isVisible = status.error.detailedErrorMessage.isNotEmpty()
-        }
-        placeholderView.apply {
-            isVisible = children.any { it.isVisible }
         }
     }
 }

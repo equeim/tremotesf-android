@@ -68,26 +68,32 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/torrent_properties_fragment"
         android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment">
         <argument
-            android:name="hash"
+            android:name="torrent_hash_string"
             app:argType="string" />
         <argument
-            android:name="name"
+            android:name="torrent_name"
             app:argType="string" />
         <action
             android:id="@+id/to_torrent_file_rename_dialog"
             app:destination="@id/torrent_file_rename_dialog" />
         <action
+            android:id="@+id/to_add_trackers_dialog"
+            app:destination="@id/add_trackers_dialog" />
+        <action
             android:id="@+id/to_edit_tracker_dialog"
             app:destination="@id/edit_tracker_dialog" />
         <action
-            android:id="@+id/to_remove_tracker_dialog"
-            app:destination="@id/remove_tracker_dialog" />
+            android:id="@+id/to_remove_trackers_dialog"
+            app:destination="@id/remove_trackers_dialog" />
         <action
             android:id="@+id/to_remove_torrent_dialog"
             app:destination="@id/remove_torrent_dialog" />
         <action
             android:id="@+id/to_torrent_set_location_dialog"
             app:destination="@id/torrent_set_location_dialog" />
+        <action
+            android:id="@+id/to_detailed_connection_error_dialog_fragment"
+            app:destination="@id/detailed_connection_error_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
@@ -241,44 +247,46 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/torrent_file_rename_dialog"
         android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment" >
         <argument
-            android:name="filePath"
+            android:name="file_path"
             app:argType="string" />
         <argument
-            android:name="fileName"
+            android:name="file_name"
             app:argType="string" />
         <argument
-            android:name="torrent_id"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:name="torrent_hash_string"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/add_trackers_dialog"
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.AddTrackersDialogFragment" >
     </dialog>
     <dialog
         android:id="@+id/edit_tracker_dialog"
         android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.EditTrackerDialogFragment" >
         <argument
             android:name="tracker_id"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            app:argType="integer" />
         <argument
-            android:name="announce"
-            app:argType="string"
-            android:defaultValue=""/>
+            android:name="announce_url"
+            app:argType="string" />
     </dialog>
     <dialog
         android:id="@+id/server_overwrite_dialog"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerOverwriteDialogFragment" />
     <dialog
-        android:id="@+id/remove_tracker_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.RemoveTrackerDialogFragment">
+        android:id="@+id/remove_trackers_dialog"
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.RemoveTrackersDialogFragment">
         <argument
-            android:name="ids"
+            android:name="tracker_ids"
             app:argType="integer[]" />
     </dialog>
     <dialog
         android:id="@+id/remove_torrent_dialog"
         android:name="org.equeim.tremotesf.ui.RemoveTorrentDialogFragment" >
         <argument
-            android:name="torrent_ids"
-            app:argType="integer[]" />
+            android:name="torrent_hash_strings"
+            app:argType="string[]" />
         <argument
             android:name="pop_back_stack"
             app:argType="boolean"
@@ -288,8 +296,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/torrent_set_location_dialog"
         android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment" >
         <argument
-            android:name="torrent_ids"
-            app:argType="integer[]" />
+            android:name="torrent_hash_strings"
+            app:argType="string[]" />
         <argument
             android:name="location"
             app:argType="string" />
@@ -385,5 +393,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <dialog
         android:id="@+id/detailed_connection_error_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.DetailedConnectionErrorDialogFragment" />
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.DetailedConnectionErrorDialogFragment">
+
+        <argument
+            android:name="error"
+            app:argType="org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestErrorString" />
+    </dialog>
 </navigation>

@@ -5,18 +5,30 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import org.equeim.libtremotesf.RpcConnectionState
+import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TransmissionSettingsDialogFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getSpeedServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEnabled
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 
 class TransmissionSettingsDialogFragment :
     NavigationBottomSheetDialogFragment(R.layout.transmission_settings_dialog_fragment) {
+
+    private val model by viewModels<TransmissionSettingsDialogFragmentViewModel>()
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -25,23 +37,18 @@ class TransmissionSettingsDialogFragment :
 
         with(binding) {
             connectButton.setOnClickListener {
-                if (GlobalRpc.connectionState.value == RpcConnectionState.Disconnected) {
-                    GlobalRpc.nativeInstance.connect()
-                } else {
-                    GlobalRpc.nativeInstance.disconnect()
-                }
+                GlobalRpcClient.shouldConnectToServer.value = !GlobalRpcClient.shouldConnectToServer.value
             }
-            combine(GlobalServers.hasServers, GlobalRpc.connectionState, ::Pair).launchAndCollectWhenStarted(
+            combine(GlobalServers.hasServers, GlobalRpcClient.shouldConnectToServer, ::Pair).launchAndCollectWhenStarted(
                 viewLifecycleOwner
-            ) { (hasServers, connectionState) ->
+            ) { (hasServers, shouldConnectToServer) ->
                 connectButton.apply {
                     isEnabled = hasServers
-                    text = when (connectionState) {
-                        RpcConnectionState.Disconnected -> getString(R.string.connect)
-                        RpcConnectionState.Connecting,
-                        RpcConnectionState.Connected -> getString(R.string.disconnect)
-                        else -> ""
-                    }
+                    setText(if (shouldConnectToServer) {
+                        R.string.disconnect
+                    } else {
+                        R.string.connect
+                    })
                 }
             }
 
@@ -67,12 +74,17 @@ class TransmissionSettingsDialogFragment :
                 navigate(TransmissionSettingsDialogFragmentDirections.toServerSettingsFragment())
             }
 
-            alternativeLimitsCheckBox.isChecked =
-                GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled
+            model.speedSettings.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                if (it is RpcRequestState.Loaded && model.shouldSetInitialState) {
+                    alternativeLimitsCheckBox.isChecked = it.response.alternativeLimitsEnabled
+                    model.shouldSetInitialState = false
+                }
+            }
             alternativeLimitsClickable.setOnClickListener {
                 alternativeLimitsCheckBox.apply {
-                    isChecked = !isChecked
-                    GlobalRpc.serverSettings.alternativeSpeedLimitsEnabled = isChecked
+                    val enabled = !isChecked
+                    isChecked = enabled
+                    GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) { setAlternativeLimitsEnabled(enabled) }
                 }
             }
 
@@ -85,16 +97,24 @@ class TransmissionSettingsDialogFragment :
                 )
             }
 
-            GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) { connected ->
+            GlobalRpcClient.shouldConnectToServer.launchAndCollectWhenStarted(viewLifecycleOwner) { shouldConnect ->
                 listOf(
                     serverSettings,
                     alternativeLimitsClickable,
                     alternativeLimitsCheckBox,
                     serverStats
                 ).forEach {
-                    it.isEnabled = connected
+                    it.isEnabled = shouldConnect
                 }
             }
         }
     }
+}
+
+class TransmissionSettingsDialogFragmentViewModel : ViewModel() {
+    var shouldSetInitialState = true
+    val speedSettings: StateFlow<RpcRequestState<SpeedServerSettings>> =
+        GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
+            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
+            .stateIn(GlobalRpcClient, viewModelScope)
 }

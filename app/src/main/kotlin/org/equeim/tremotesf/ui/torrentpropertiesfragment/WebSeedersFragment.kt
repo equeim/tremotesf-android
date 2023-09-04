@@ -6,14 +6,29 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.*
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.WebSeedersFragmentBinding
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentWebSeeders
+import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -23,6 +38,9 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
     R.layout.web_seeders_fragment,
     TorrentPropertiesFragment.PagerAdapter.Tab.WebSeeders
 ) {
+    private val model by viewModels<WebSeedersFragmentViewModel> {
+        viewModelFactory { initializer { WebSeedersFragmentViewModel(TorrentPropertiesFragment.getTorrentHashString(navController)) } }
+    }
     private val binding by viewLifecycleObject(WebSeedersFragmentBinding::bind)
     private val adapter by viewLifecycleObject { WebSeedersAdapter() }
 
@@ -41,17 +59,50 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        val propertiesFragmentModel = TorrentPropertiesFragmentViewModel.get(navController)
-        propertiesFragmentModel.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
+        model.webSeeders.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> {
+                    val webSeeders = it.response
+                    when {
+                        webSeeders == null -> showPlaceholder(
+                            getString(R.string.torrent_not_found),
+                            showProgressBar = false
+                        )
+
+                        webSeeders.isEmpty() -> showPlaceholder(
+                            getString(R.string.no_web_seeders),
+                            showProgressBar = false
+                        )
+
+                        else -> showWebSeeders(webSeeders)
+                    }
+                }
+
+                is RpcRequestState.Loading -> showPlaceholder(
+                    getString(R.string.loading),
+                    showProgressBar = true,
+                )
+
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false,
+                )
+            }
+        }
     }
 
-    private fun update(torrent: Torrent?) {
-        adapter.update(torrent)
-        binding.placeholder.visibility = if ((adapter.itemCount == 0) && torrent != null) {
-            View.VISIBLE
-        } else {
-            View.GONE
+    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+        with(binding.placeholderView) {
+            root.isVisible = true
+            progressBar.isVisible = showProgressBar
+            placeholder.text = text
         }
+        adapter.update(null)
+    }
+
+    private fun showWebSeeders(webSeeders: List<String>) {
+        binding.placeholderView.root.isVisible = false
+        adapter.update(webSeeders)
     }
 }
 
@@ -67,8 +118,8 @@ private class WebSeedersAdapter : AsyncLoadingListAdapter<String, WebSeedersAdap
         holder.textView.text = getItem(position)
     }
 
-    fun update(torrent: Torrent?) {
-        submitList(torrent?.data?.webSeeders?.sortedWith(comparator))
+    fun update(webSeeders: List<String>?) {
+        submitList(webSeeders?.sortedWith(comparator))
     }
 
     class ViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
@@ -77,4 +128,10 @@ private class WebSeedersAdapter : AsyncLoadingListAdapter<String, WebSeedersAdap
         override fun areItemsTheSame(oldItem: String, newItem: String): Boolean = oldItem == newItem
         override fun areContentsTheSame(oldItem: String, newItem: String): Boolean = true
     }
+}
+
+private class WebSeedersFragmentViewModel(torrentHashString: String) : ViewModel() {
+    val webSeeders: StateFlow<RpcRequestState<List<String>?>> = GlobalRpcClient.performPeriodicRequest {
+        getTorrentWebSeeders(torrentHashString)
+    }.stateIn(GlobalRpcClient, viewModelScope)
 }

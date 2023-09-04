@@ -10,13 +10,12 @@ import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.net.Uri
 import androidx.core.content.getSystemService
-import androidx.lifecycle.AndroidViewModel
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.ui.Settings
 import timber.log.Timber
 
-class AddTorrentLinkModel(private val initialUri: Uri?, application: Application) :
-    AndroidViewModel(application) {
+class AddTorrentLinkModel(private val initialUri: Uri?, application: Application) : BaseAddTorrentModel(application) {
+    var shouldSetTorrentLink = true
 
     suspend fun getInitialTorrentLink(): String? {
         initialUri?.let { return it.toString() }

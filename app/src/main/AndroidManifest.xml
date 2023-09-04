@@ -35,6 +35,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:localeConfig="@xml/locale_config"
         android:name=".TremotesfApplication"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme.Splash"
         android:requestLegacyExternalStorage="true"
         tools:targetApi="TIRAMISU">

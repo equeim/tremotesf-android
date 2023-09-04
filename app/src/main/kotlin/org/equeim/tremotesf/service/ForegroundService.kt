@@ -20,11 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
+import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.ServerStats
+import org.equeim.tremotesf.torrentfile.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.Utils
@@ -105,10 +106,7 @@ class ForegroundService : LifecycleService() {
         }
     }
 
-    private lateinit var rpc: Rpc
-    private lateinit var notificationsController: NotificationsController
-
-    var stopUpdatingNotification = false
+    private var stopUpdatingNotification = false
 
     override fun onCreate() {
         super.onCreate()
@@ -118,29 +116,25 @@ class ForegroundService : LifecycleService() {
 
         Timber.i("onCreate: stopRequested = $stopRequested")
 
-        rpc = GlobalRpc
-        notificationsController = GlobalRpc.notificationsController
-
         combine(
-            rpc.status,
             GlobalServers.currentServer,
-            rpc.serverStats,
-            ::Triple
+            PeriodicServerStateUpdater.sessionStats,
+            ::Pair
         )
             .drop(1)
-            .launchAndCollectWhenStarted(this) { (status, currentServer, serverStats) ->
-                updatePersistentNotification(status, currentServer, serverStats)
+            .launchAndCollectWhenStarted(this) { (currentServer, serverStats) ->
+                updatePersistentNotification(currentServer, serverStats)
             }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            GlobalRpc.wifiNetworkController.observingActiveWifiNetwork.launchAndCollectWhenStarted(
+            GlobalServers.wifiNetworkController.observingActiveWifiNetwork.launchAndCollectWhenStarted(
                 this,
                 ::startForegroundV29
             )
         } else {
             startForeground(
                 NotificationsController.PERSISTENT_NOTIFICATION_ID,
-                notificationsController.buildPersistentNotification(rpc)
+                PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(GlobalServers.serversState.value.currentServer, PeriodicServerStateUpdater.sessionStats.value)
             )
         }
     }
@@ -155,7 +149,7 @@ class ForegroundService : LifecycleService() {
         }
         startForeground(
             NotificationsController.PERSISTENT_NOTIFICATION_ID,
-            notificationsController.buildPersistentNotification(rpc),
+            PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(GlobalServers.serversState.value.currentServer, PeriodicServerStateUpdater.sessionStats.value),
             type
         )
     }
@@ -194,8 +188,8 @@ class ForegroundService : LifecycleService() {
         }
 
         when (intent?.action) {
-            NotificationsController.PersistentNotificationActions.CONNECT -> rpc.nativeInstance.connect()
-            NotificationsController.PersistentNotificationActions.DISCONNECT -> rpc.nativeInstance.disconnect()
+            NotificationsController.PersistentNotificationActions.CONNECT -> GlobalRpcClient.shouldConnectToServer.value = true
+            NotificationsController.PersistentNotificationActions.DISCONNECT -> GlobalRpcClient.shouldConnectToServer.value = false
         }
 
         return START_STICKY
@@ -214,17 +208,11 @@ class ForegroundService : LifecycleService() {
     }
 
     private fun updatePersistentNotification(
-        status: Rpc.Status,
         currentServer: Server?,
-        serverStats: ServerStats
+        sessionStats: RpcRequestState<SessionStatsResponseArguments>
     ) {
         if (!stopUpdatingNotification) {
-            notificationsController.updatePersistentNotification(
-                rpc,
-                status,
-                currentServer,
-                serverStats
-            )
+            PeriodicServerStateUpdater.notificationsController.updatePersistentNotification(currentServer, sessionStats)
         }
     }
 }

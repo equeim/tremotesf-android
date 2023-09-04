@@ -12,36 +12,42 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.FloatingWindow
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.equeim.libtremotesf.IntVector
-import org.equeim.libtremotesf.RpcConnectionState
-import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.rpc.statusString
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
+import org.equeim.tremotesf.torrentfile.rpc.requests.reannounceTorrents
+import org.equeim.tremotesf.torrentfile.rpc.requests.removeTorrents
+import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.NavigationFragment
+import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.addCustomCallback
+import org.equeim.tremotesf.ui.utils.findFragment
+import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.popDialog
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import timber.log.Timber
 
 
 class TorrentPropertiesFragment : NavigationFragment(
@@ -49,20 +55,14 @@ class TorrentPropertiesFragment : NavigationFragment(
     0,
     R.menu.torrent_properties_fragment_menu
 ) {
-    private val args: TorrentPropertiesFragmentArgs by navArgs()
-    private val model by TorrentPropertiesFragmentViewModel.lazy(this)
+    private val args by navArgs<TorrentPropertiesFragmentArgs>()
+    private val model by TorrentPropertiesFragmentViewModel.from(this)
 
     val binding by viewLifecycleObject(TorrentPropertiesFragmentBinding::bind)
-    private var snackbar: Snackbar? by viewLifecycleObjectNullable()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        TorrentFileRenameDialogFragment.setFragmentResultListenerForRpc(this)
-    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        toolbar.title = args.name
+        toolbar.title = args.torrentName
 
         viewLifecycleOwner.lifecycleScope.launch {
             if (Settings.quickReturn.get()) {
@@ -82,16 +82,13 @@ class TorrentPropertiesFragment : NavigationFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        val torrentFilesModel: TorrentFilesFragmentViewModel by viewModels {
-            viewModelFactory {
-                initializer {
-                    TorrentFilesFragmentViewModel(model.torrent, createSavedStateHandle())
-                }
-            }
-        }
         requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
-            binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal &&
-                    torrentFilesModel.filesTree.navigateUp()
+            if (binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal) {
+                val fragment = childFragmentManager.findFragment<TorrentFilesFragment>()
+                fragment?.navigateUp() ?: false
+            } else {
+                false
+            }
         }
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -116,22 +113,52 @@ class TorrentPropertiesFragment : NavigationFragment(
         binding.fab.apply {
             TooltipCompat.setTooltipText(this, contentDescription)
             setOnClickListener {
-                navigate(TorrentPropertiesFragmentDirections.toEditTrackerDialog())
+                navigate(TorrentPropertiesFragmentDirections.toAddTrackersDialog())
             }
         }
 
-        model.showTorrentRemovedMessage.handleAndReset(::showTorrentRemovedMessage)
-            .launchAndCollectWhenStarted(viewLifecycleOwner)
-
-        GlobalRpc.connectionState.launchAndCollectWhenStarted(viewLifecycleOwner, ::onConnectionStateChanged)
-
-        combine(GlobalRpc.status, model.torrent, ::Pair)
-            .launchAndCollectWhenStarted(viewLifecycleOwner) { (status, torrent) ->
-                updatePlaceholderText(status, torrent)
+        model.torrentDetails
+            .map { (it as? RpcRequestState.Loaded)?.response?.name }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .launchAndCollectWhenStarted(viewLifecycleOwner) {
+                toolbar.title = it
             }
+        model.torrentDetails
+            .map { state -> (state as? RpcRequestState.Loaded)?.response?.status?.let { it == TorrentStatus.Paused } }
+            .distinctUntilChanged()
+            .launchAndCollectWhenStarted(viewLifecycleOwner) {
+                updateMenu(it)
+            }
+        model.torrentDetails
+            .map { (it as? RpcRequestState.Loaded)?.response != null }
+            .distinctUntilChanged()
+            .launchAndCollectWhenStarted(viewLifecycleOwner) {
+                updateViewVisibility(it)
+                if (!it) {
+                    navController.popDialog()
+                }
+            }
+        model.torrentDetails.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            updatePlaceholder(it)
+        }
 
-        model.torrent.hasTorrent().launchAndCollectWhenStarted(viewLifecycleOwner, ::onHasTorrentChanged)
-        model.torrent.launchAndCollectWhenStarted(viewLifecycleOwner, ::onTorrentChanged)
+        RemoveTorrentDialogFragment.setFragmentResultListener(this) {
+            GlobalRpcClient.performBackgroundRpcRequest(R.string.torrents_remove_error) {
+                removeTorrents(
+                    it.torrentHashStrings,
+                    it.deleteFiles
+                )
+            }
+            lifecycleScope.launch {
+                navController.currentBackStackEntryFlow.first { it.destination.id == R.id.torrent_properties_fragment }
+                navController.popBackStack()
+            }
+        }
+
+        TorrentFileRenameDialogFragment.setFragmentResultListener(this) { (_, filePath, newName) ->
+            model.renameTorrentFile(filePath, newName)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -152,107 +179,72 @@ class TorrentPropertiesFragment : NavigationFragment(
     }
 
     override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
-        val torrent = model.torrent.value ?: return false
+        val torrentDetails = (model.torrentDetails.value as? RpcRequestState.Loaded)?.response ?: return false
         when (menuItem.itemId) {
-            R.id.start -> GlobalRpc.nativeInstance.startTorrents(IntVector(listOf(torrent.id)))
-            R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(IntVector(listOf(torrent.id)))
-            R.id.check -> GlobalRpc.nativeInstance.checkTorrents(IntVector(listOf(torrent.id)))
-            R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(IntVector(listOf(torrent.id)))
-            R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(IntVector(listOf(torrent.id)))
+            R.id.start -> model.startTorrent(torrentDetails.id, now = false)
+            R.id.pause -> model.pauseTorrent(torrentDetails.id)
+            R.id.check -> model.checkTorrent(torrentDetails.id)
+            R.id.start_now -> model.startTorrent(torrentDetails.id, now = true)
+            R.id.reannounce -> GlobalRpcClient.performBackgroundRpcRequest(R.string.torrents_reannounce_error) {
+                reannounceTorrents(
+                    listOf(torrentDetails.id)
+                )
+            }
+
             R.id.set_location -> navigate(
                 TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
-                    intArrayOf(torrent.id),
-                    torrent.downloadDirectory
+                    torrentHashStrings = arrayOf(args.torrentHashString),
+                    location = torrentDetails.downloadDirectory.toNativeSeparators()
                 )
             )
+
             R.id.rename -> navigate(
                 TorrentPropertiesFragmentDirections.toTorrentFileRenameDialog(
-                    torrent.name,
-                    torrent.name,
-                    torrent.id
+                    torrentDetails.name,
+                    torrentDetails.name,
+                    torrentDetails.hashString
                 )
             )
+
             R.id.remove -> navigate(
                 TorrentPropertiesFragmentDirections.toRemoveTorrentDialog(
-                    intArrayOf(torrent.id),
+                    arrayOf(args.torrentHashString),
                     true
                 )
             )
-            R.id.share -> Utils.shareTorrents(listOf(torrent.data.magnetLink), requireContext())
+
+            R.id.share -> Utils.shareTorrents(listOf(torrentDetails.magnetLink), requireContext())
             else -> return false
         }
         return true
     }
 
-    private fun showTorrentRemovedMessage() {
-        snackbar?.dismiss()
-        snackbar = null
-        snackbar = binding.coordinatorLayout.showSnackbar(
-            message = R.string.torrent_removed,
-            duration = Snackbar.LENGTH_INDEFINITE,
-            onDismissed = { snackbar, _ ->
-                if (snackbar == this.snackbar) {
-                    this.snackbar = null
-                }
-            }
-        )
-    }
-
-    private fun onConnectionStateChanged(connectionState: RpcConnectionState) {
-        snackbar?.dismiss()
-        snackbar = null
-        if (connectionState == RpcConnectionState.Disconnected) {
-            snackbar = binding.coordinatorLayout.showSnackbar(
-                message = "",
-                duration = Snackbar.LENGTH_INDEFINITE,
-                actionText = R.string.connect,
-                action = GlobalRpc.nativeInstance::connect,
-                onDismissed = { snackbar, _ ->
-                    if (snackbar == this.snackbar) {
-                        this.snackbar = null
-                    }
-                }
-            )
-        }
-
-        binding.progressBar.isVisible = connectionState == RpcConnectionState.Connecting
-    }
-
-    private fun updatePlaceholderText(status: Rpc.Status, torrent: Torrent?) {
-        with(binding.placeholder) {
-            when (status.connectionState) {
-                RpcConnectionState.Disconnected -> {
-                    text = status.statusString
-                }
-                RpcConnectionState.Connecting -> {
-                    text = getText(R.string.connecting)
-                }
-                RpcConnectionState.Connected -> {
-                    if (torrent == null) {
-                        text = getText(R.string.torrent_not_found)
-                    }
-                }
-            }
+    private fun updateMenu(torrentIsPaused: Boolean?) {
+        val menu = toolbar.menu
+        if (torrentIsPaused == null) {
+            toolbar.hideOverflowMenu()
+            menu.setGroupVisible(0, false)
+        } else {
+            menu.setGroupVisible(0, true)
+            if (torrentIsPaused) {
+                intArrayOf(R.id.pause)
+            } else {
+                intArrayOf(R.id.start, R.id.start_now)
+            }.forEach { menu.findItem(it).isVisible = false }
         }
     }
 
-    private fun onHasTorrentChanged(hasTorrent: Boolean) {
-        updateViewVisibility(hasTorrent)
-        if (!hasTorrent) {
-            navController.popDialog()
-        }
-    }
-
-    private fun updateViewVisibility(hasTorrent: Boolean) {
+    private fun updateViewVisibility(hasTorrentDetails: Boolean) {
+        Timber.d("updateViewVisibility() called with: hasTorrentDetails = $hasTorrentDetails")
         with(binding) {
-            if (hasTorrent) {
+            if (hasTorrentDetails) {
                 (toolbar.layoutParams as AppBarLayout.LayoutParams?)?.scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                 tabLayout.visibility = View.VISIBLE
                 pager.visibility = View.VISIBLE
-                placeholderLayout.visibility = View.GONE
+                placeholderView.root.visibility = View.GONE
 
                 if (model.rememberedPagerItem != -1) {
                     pager.setCurrentItem(model.rememberedPagerItem, false)
@@ -263,30 +255,24 @@ class TorrentPropertiesFragment : NavigationFragment(
                 tabLayout.visibility = View.GONE
                 pager.visibility = View.GONE
                 pager.currentItem = 0
-                placeholderLayout.visibility = View.VISIBLE
+                placeholderView.root.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun onTorrentChanged(torrent: Torrent?) {
-        updateMenu(torrent)
-        if (torrent != null) {
-            toolbar.title = torrent.name
-        }
-    }
+    private fun updatePlaceholder(requestState: RpcRequestState<*>) {
+        with(binding.placeholderView) {
+            progressBar.isVisible = requestState is RpcRequestState.Loading
+            placeholder.text = when (requestState) {
+                is RpcRequestState.Loading -> getText(R.string.loading)
+                is RpcRequestState.Loaded -> if (requestState.response == null) {
+                    getText(R.string.torrent_not_found)
+                } else {
+                    null
+                }
 
-    private fun updateMenu(torrent: Torrent?) {
-        val menu = toolbar.menu
-        if (torrent == null) {
-            toolbar.hideOverflowMenu()
-            menu.setGroupVisible(0, false)
-        } else {
-            menu.setGroupVisible(0, true)
-            if (torrent.status == TorrentData.Status.Paused) {
-                intArrayOf(R.id.pause)
-            } else {
-                intArrayOf(R.id.start, R.id.start_now)
-            }.forEach { menu.findItem(it).isVisible = false }
+                is RpcRequestState.Error -> requestState.error.getErrorString(requireContext())
+            }
         }
     }
 
@@ -332,7 +318,8 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
     }
 
-    abstract class PagerFragment(@LayoutRes contentLayoutId: Int, val tab: PagerAdapter.Tab) : Fragment(contentLayoutId) {
+    abstract class PagerFragment(@LayoutRes contentLayoutId: Int, val tab: PagerAdapter.Tab) :
+        Fragment(contentLayoutId) {
         open fun onNavigatedFromParent() = Unit
         open fun onToolbarClicked() = Unit
 
@@ -340,5 +327,10 @@ class TorrentPropertiesFragment : NavigationFragment(
             super.onViewStateRestored(savedInstanceState)
             applyNavigationBarBottomInset()
         }
+    }
+
+    companion object {
+        fun getTorrentHashString(navController: NavController): String =
+            TorrentPropertiesFragmentArgs.fromBundle(checkNotNull(navController.getBackStackEntry(R.id.torrent_properties_fragment).arguments)).torrentHashString
     }
 }

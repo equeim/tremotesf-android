@@ -14,85 +14,98 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <include layout="@layout/toolbar" />
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:tag="@string/add_navigation_bar_padding"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical">
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/placeholder_view"
+            layout="@layout/placeholder_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-            android:orientation="vertical"
-            android:paddingVertical="@dimen/vertical_edge_padding">
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-            <CheckBox
-                android:id="@+id/download_queue_check_box"
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:tag="@string/add_navigation_bar_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:saveEnabled="false"
-                android:text="@string/maximum_active_downloads"/>
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/download_queue_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/download_queue_edit"
+                <CheckBox
+                    android:id="@+id/download_queue_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:saveEnabled="false"
+                    android:text="@string/maximum_active_downloads"/>
 
-            <CheckBox
-                android:id="@+id/seed_queue_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:saveEnabled="false"
-                android:text="@string/maximum_active_uploads"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/seed_queue_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/seed_queue_edit"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/download_queue_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginStart="24dp">
 
-            <CheckBox
-                android:id="@+id/idle_queue_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:saveEnabled="false"
-                android:text="@string/ignore_queue"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/download_queue_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/idle_queue_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:hint="@string/min">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idle_queue_edit"
+                <CheckBox
+                    android:id="@+id/seed_queue_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </ScrollView>
+                    android:saveEnabled="false"
+                    android:text="@string/maximum_active_uploads"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/seed_queue_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/seed_queue_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/idle_queue_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/ignore_queue"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/idle_queue_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:hint="@string/min">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/idle_queue_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
 </LinearLayout>

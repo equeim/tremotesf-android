@@ -7,7 +7,7 @@ package org.equeim.tremotesf.gradle
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.named
-import java.util.*
+import java.util.Locale
 
 private const val GRADLE_VERSIONS_PLUGIN_ID = "com.github.ben-manes.versions"
 

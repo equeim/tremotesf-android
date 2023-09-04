@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-[submodule "libtremotesf/src/main/cpp/libtremotesf"]
-	path = libtremotesf/src/main/cpp/libtremotesf
-	url = https://github.com/equeim/libtremotesf.git
 [submodule "bencode"]
 	path = bencode
 	url = https://github.com/equeim/kotlinx-serialization-bencode.git

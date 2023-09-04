@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
+import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -93,7 +94,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         handleDropEvents()
 
         model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->
-            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+            val text = getString(error.errorContext, error.error.getErrorString(this))
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
             model.rpcErrorToastShown()
         }
 

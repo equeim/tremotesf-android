@@ -8,7 +8,10 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
-import org.equeim.tremotesf.gradle.utils.*
+import org.equeim.tremotesf.gradle.utils.compileSdk
+import org.equeim.tremotesf.gradle.utils.libs
+import org.equeim.tremotesf.gradle.utils.minSdk
+import org.equeim.tremotesf.gradle.utils.targetSdk
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,8 +40,6 @@ class GradlePlugin : Plugin<Project> {
 
     private fun CommonExtension<*, *, *, *>.configureAndroidProject(libs: VersionCatalog) {
         compileSdk = libs.compileSdk
-        @Suppress("UnstableApiUsage")
-        ndkVersion = libs.ndk
         defaultConfig.minSdk = libs.minSdk
         lint.apply {
             informational.add("MissingTranslation")

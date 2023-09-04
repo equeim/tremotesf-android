@@ -20,12 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.MutableEventFlow
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.navigate
 import timber.log.Timber
@@ -39,15 +38,14 @@ class RuntimePermissionHelper(
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
 
-    private val _permissionRequestResult = MutableEventFlow<Boolean>()
-    val permissionRequestResult: Flow<Boolean> by ::_permissionRequestResult
+    val permissionRequestResult = Channel<Boolean>(Channel.CONFLATED)
 
     fun registerWithFragment(fragment: Fragment, navigationFragment: Fragment = fragment): ActivityResultLauncher<Array<String>> {
         val launcher =
             fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
                 val granted = grantResults[requiredPermission] == true
                 _permissionGranted.value = granted
-                _permissionRequestResult.tryEmit(granted)
+                permissionRequestResult.trySend(granted)
                 if (granted) {
                     Timber.i("Permission $requiredPermission granted")
                 } else {
@@ -89,7 +87,7 @@ class RuntimePermissionHelper(
         navigationFragment: Fragment = fragment,
     ) {
         if (checkPermission(fragment.requireContext())) {
-            _permissionRequestResult.tryEmit(true)
+            permissionRequestResult.trySend(true)
             return
         }
         if (showRationaleBeforeRequesting && fragment.shouldShowRequestPermissionRationale(requiredPermission)) {

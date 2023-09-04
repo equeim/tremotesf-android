@@ -16,13 +16,19 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.ui.addtorrent.*
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
+import org.equeim.tremotesf.ui.addtorrent.TORRENT_FILE_MIME_TYPE
+import org.equeim.tremotesf.ui.addtorrent.TORRENT_LINK_MIME_TYPES
+import org.equeim.tremotesf.ui.addtorrent.TorrentUri
+import org.equeim.tremotesf.ui.addtorrent.getTorrentUri
+import org.equeim.tremotesf.ui.addtorrent.mimeTypes
+import org.equeim.tremotesf.ui.addtorrent.toTorrentUri
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
 
@@ -110,17 +116,15 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
         }
     }
 
-    private val _showRpcErrorToast = MutableStateFlow<String?>(null)
-    val showRpcErrorToast: StateFlow<String?> by ::_showRpcErrorToast
+    private val _showRpcErrorToast = MutableStateFlow<GlobalRpcClient.BackgroundRpcRequestError?>(null)
+    val showRpcErrorToast: StateFlow<GlobalRpcClient.BackgroundRpcRequestError?> by ::_showRpcErrorToast
     fun rpcErrorToastShown() {
         _showRpcErrorToast.value = null
     }
 
     init {
         viewModelScope.launch {
-            GlobalRpc.error.map { it.errorMessage }.filter { it.isNotEmpty() }.collect { error ->
-                _showRpcErrorToast.value = error
-            }
+            GlobalRpcClient.backgroundRpcRequestsErrors.receiveAsFlow().collect(_showRpcErrorToast)
         }
     }
 }

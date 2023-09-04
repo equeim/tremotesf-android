@@ -9,21 +9,30 @@ import android.view.DragEvent
 import android.view.View
 import android.view.View.OnDragListener
 import androidx.core.text.trimmedLength
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.equeim.libtremotesf.RpcConnectionState
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.rpc.statusString
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.requests.addTorrentLink
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
+import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
+import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.textInputLayout
+import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
 
@@ -46,41 +55,47 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
     private var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
-    private var connectSnackbar: Snackbar? by viewLifecycleObjectNullable()
-
-    private var setInitialTorrentLink = false
+    private var freeSpaceJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.i("onCreate: arguments = $arguments")
-        if (savedInstanceState == null) {
-            setInitialTorrentLink = true
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.torrentLinkEdit.text = null
-        with(binding) {
-            priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
-            priorityView.setText(R.string.normal_priority)
-        }
-        directoriesAdapter = AddTorrentFileFragment.setupDownloadDirectoryEdit(
-            binding.downloadDirectoryLayout,
-            this,
+
+        binding.priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
+
+        directoriesAdapter = AddTorrentDirectoriesAdapter(
+            viewLifecycleOwner.lifecycleScope,
             savedInstanceState
         )
+        binding.downloadDirectoryLayout.downloadDirectoryEdit.setAdapter(directoriesAdapter)
+
+        binding.downloadDirectoryLayout.downloadDirectoryEdit.doAfterTextChanged { path ->
+            freeSpaceJob?.cancel()
+            freeSpaceJob = null
+            if (!path.isNullOrBlank()) {
+                freeSpaceJob = lifecycleScope.launch {
+                    binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText = model.getFreeSpace(path.toString())?.let {
+                        getString(
+                            R.string.free_space,
+                            FormatUtils.formatFileSize(requireContext(), it)
+                        )
+                    }
+                    freeSpaceJob = null
+                }
+            }
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (setInitialTorrentLink) {
-            lifecycleScope.launch {
+        if (model.shouldSetTorrentLink) {
+            viewLifecycleOwner.lifecycleScope.launch {
                 model.getInitialTorrentLink()?.let(binding.torrentLinkEdit::setText)
-            }
-            GlobalRpc.isConnected.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                binding.startDownloadingCheckBox.isChecked =
-                    GlobalRpc.serverSettings.startAddedTorrents
+                model.shouldSetTorrentLink = false
             }
         }
         binding.addButton.apply {
@@ -88,7 +103,14 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
         }
         handleDragEvents()
-        GlobalRpc.status.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateView)
+
+        model.downloadingSettings.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            when (it) {
+                is RpcRequestState.Loaded -> showView(it.response)
+                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
+                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+            }
+        }
     }
 
     private fun handleDragEvents() {
@@ -151,64 +173,44 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             return
         }
 
-        GlobalRpc.nativeInstance.addTorrentLink(
-            torrentLinkEdit.text?.toString() ?: "",
-            downloadDirectoryEdit.text.toString(),
-            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
-            startDownloadingCheckBox.isChecked
-        )
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
+            addTorrentLink(
+                torrentLinkEdit.text?.toString().orEmpty(),
+                downloadDirectoryEdit.text.toString(),
+                priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
+                startDownloadingCheckBox.isChecked,
+            )
+        }
 
-        directoriesAdapter.save()
+        directoriesAdapter.save(binding.downloadDirectoryLayout.downloadDirectoryEdit)
 
         requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
 
-    private fun updateView(status: Rpc.Status) {
-        with(binding) {
-            when (status.connectionState) {
-                RpcConnectionState.Disconnected -> {
-                    placeholder.text = status.statusString
-                    hideKeyboard()
-                    if (connectSnackbar == null) {
-                        connectSnackbar = coordinatorLayout.showSnackbar(
-                            message = "",
-                            duration = Snackbar.LENGTH_INDEFINITE,
-                            actionText = R.string.connect,
-                            action = GlobalRpc.nativeInstance::connect,
-                            onDismissed = { snackbar, _ ->
-                                if (connectSnackbar == snackbar) {
-                                    connectSnackbar = null
-                                }
-                            }
-                        )
-                    }
-                }
-                RpcConnectionState.Connecting -> {
-                    connectSnackbar?.dismiss()
-                    connectSnackbar = null
-                    placeholder.text = getString(R.string.connecting)
-                }
-                RpcConnectionState.Connected -> {
-                    connectSnackbar?.dismiss()
-                    connectSnackbar = null
-                }
-            }
-
-            if (status.isConnected) {
-                scrollView.visibility = View.VISIBLE
-                placeholderLayout.visibility = View.GONE
-                addButton.show()
-            } else {
-                placeholderLayout.visibility = View.VISIBLE
-                scrollView.visibility = View.GONE
-                addButton.hide()
-            }
-
-            progressBar.visibility = if (status.connectionState == RpcConnectionState.Connecting) {
-                View.VISIBLE
-            } else {
-                View.GONE
+    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+        hideKeyboard()
+        with (binding) {
+            scrollView.isVisible = false
+            with (placeholderView) {
+                root.isVisible = true
+                progressBar.isVisible = showProgressBar
+                placeholder.text = text
             }
         }
+    }
+
+    private suspend fun showView(downloadingSettings: DownloadingServerSettings) = with(binding) {
+        if (model.shouldSetInitialRpcInputs) {
+            downloadDirectoryLayout.downloadDirectoryEdit.setText(model.getInitialDownloadDirectory(downloadingSettings))
+            startDownloadingCheckBox.isChecked = downloadingSettings.startAddedTorrents
+            model.shouldSetInitialRpcInputs = false
+        }
+        if (model.shouldSetInitialLocalInputs) {
+            torrentLinkEdit.setText(model.getInitialTorrentLink())
+            priorityView.setText(R.string.normal_priority)
+            model.shouldSetInitialLocalInputs = false
+        }
+        scrollView.isVisible = true
+        placeholderView.root.isVisible = false
     }
 }

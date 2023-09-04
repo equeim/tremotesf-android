@@ -54,8 +54,6 @@ abstract class Servers(
     val hasServers: Flow<Boolean> = _serversState.map { it.servers.isNotEmpty() }.distinctUntilChanged()
     val currentServer: Flow<Server?> = _serversState.map { it.currentServer }.distinctUntilChanged()
 
-    internal var lastTorrentsProvider: LastTorrentsProvider? = null
-
     private val json = Json { prettyPrint = true }
 
     init {
@@ -206,37 +204,24 @@ abstract class Servers(
         }
     }
 
-    fun saveCurrentServerLastTorrents() {
-        Timber.d("saveCurrentServerLastTorrents() called")
+    fun saveCurrentServerTorrentsFinishedState(newFinishedState: Map<Server.TorrentHashString, Server.TorrentFinishedState>) {
+        Timber.d("Saving finished state for ${newFinishedState.size} torrents")
         val state = _serversState.value
         val currentServer = state.currentServer
         if (currentServer == null) {
-            Timber.d("saveCurrentServerLastTorrents: no current server")
+            Timber.e("saveCurrentServerTorrentsFinishedState: no current server")
             return
         }
-        Timber.d("saveCurrentServerLastTorrents: current server = $currentServer")
-        val lastTorrents = lastTorrentsProvider?.lastTorrentsForCurrentServer()
-        if (lastTorrents == null) {
-            Timber.e("saveCurrentServerLastTorrents: failed to get last torrents")
-            return
-        }
-        Timber.i("saveCurrentServerLastTorrents: last torrents count = ${lastTorrents.torrents.size}")
-        if (lastTorrents == currentServer.lastTorrents) {
-            Timber.d("saveCurrentServerLastTorrents: last torrents did not change")
-            return
-        }
-        val servers = state.servers.map { server ->
-            if (server.name == currentServer.name) {
-                server.copy(lastTorrents = lastTorrents)
-            } else {
-                server
+        Timber.d("saveCurrentServerTorrentsFinishedState: current server = $currentServer")
+        _serversState.value = state.copy(
+            servers = state.servers.map {
+                if (it.name == currentServer.name) {
+                    it.copy(lastTorrentsFinishedState = newFinishedState)
+                } else {
+                    it
+                }
             }
-        }
-        _serversState.value = state.copy(servers = servers)
+        )
         save()
-    }
-
-    internal fun interface LastTorrentsProvider {
-        fun lastTorrentsForCurrentServer(): Server.LastTorrents?
     }
 }

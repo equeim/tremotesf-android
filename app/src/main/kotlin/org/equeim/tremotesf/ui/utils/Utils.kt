@@ -8,7 +8,7 @@ import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.NavigationActivity
 import timber.log.Timber
@@ -18,7 +18,7 @@ object Utils {
     fun shutdownApp(context: Context, stopService: Boolean = true) {
         Timber.i("Utils.shutdownApp()")
         NavigationActivity.finishAllActivities()
-        GlobalRpc.disconnectOnShutdown()
+        GlobalRpcClient.disconnectOnShutdown()
         if (stopService) {
             ForegroundService.stop(context)
         }

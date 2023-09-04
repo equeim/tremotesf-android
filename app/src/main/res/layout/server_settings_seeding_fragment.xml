@@ -6,75 +6,87 @@ SPDX-FileCopyrightText: 2017-2022 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:tag="@string/add_navigation_bar_padding"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical">
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <include
+            android:id="@+id/placeholder_view"
+            layout="@layout/placeholder_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-            android:orientation="vertical"
-            android:paddingVertical="@dimen/vertical_edge_padding">
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-            <CheckBox
-                android:id="@+id/ratio_limit_check_box"
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:tag="@string/add_navigation_bar_padding">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:saveEnabled="false"
-                android:text="@string/stop_seeding_at_ratio"/>
+                android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
+                android:orientation="vertical"
+                android:paddingVertical="@dimen/vertical_edge_padding">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/ratio_limit_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ratio_limit_edit"
+                <CheckBox
+                    android:id="@+id/ratio_limit_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits="0123456789,."
-                    android:inputType="numberDecimal"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:saveEnabled="false"
+                    android:text="@string/stop_seeding_at_ratio" />
 
-            <CheckBox
-                android:id="@+id/idle_seeding_check_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:saveEnabled="false"
-                android:text="@string/stop_seeding_if_idle_for"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/idle_seeding_limit_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:hint="@string/min">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/idle_seeding_limit_edit"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ratio_limit_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:saveEnabled="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-    </ScrollView>
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ratio_limit_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="0123456789,."
+                        android:inputType="numberDecimal"
+                        android:saveEnabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/idle_seeding_check_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:saveEnabled="false"
+                    android:text="@string/stop_seeding_if_idle_for" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/idle_seeding_limit_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:hint="@string/min">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/idle_seeding_limit_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:saveEnabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
 </LinearLayout>

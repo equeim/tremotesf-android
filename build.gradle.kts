@@ -15,14 +15,3 @@ plugins {
 tasks.register<Delete>("clean") {
     delete(rootProject.buildDir)
 }
-
-/**
- * Workaround to set up vcpkg when Android Studio runs project sync
- * In that case Gradle invokes CMake without running configureCMake tasks, and task dependencies set up
- * in libtremotesf/build.gradle.kts don't work
- */
-tasks.named("prepareKotlinBuildScriptModel") {
-    val dep = ":libtremotesf:runVcpkgInstallTask"
-    logger.lifecycle("Altering $this to depend on $dep")
-    dependsOn(dep)
-}

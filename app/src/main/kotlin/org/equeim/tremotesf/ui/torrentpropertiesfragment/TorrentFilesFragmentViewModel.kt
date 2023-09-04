@@ -8,69 +8,83 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import org.equeim.libtremotesf.TorrentFile
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.BuildConfig
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.hasSubscribersDebounced
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.torrentfile.buildTorrentFilesTree
-import org.equeim.tremotesf.torrentfile.rpc.Rpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.Companion.hasTorrent
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentFiles
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentFiles
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentFilesPriority
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentFilesWanted
 import timber.log.Timber
 
 class TorrentFilesFragmentViewModel(
-    val torrent: StateFlow<Torrent?>,
-    private val savedStateHandle: SavedStateHandle
+    val torrentHashString: String,
+    private val savedStateHandle: SavedStateHandle,
+    private val torrentFileRenamedEvents: Flow<TorrentPropertiesFragmentViewModel.TorrentFileRenamed>,
 ) : ViewModel() {
-    enum class State {
-        None,
-        Loading,
-        CreatingTree,
-        TreeCreated
+    sealed interface State {
+        object Loading : State
+        object CreatingTree : State
+        object TreeCreated : State
+
+        @JvmInline
+        value class Error(val error: RpcRequestError) : State
+        object TorrentNotFound : State
     }
 
-    private val _state = MutableStateFlow(State.None)
+    private val _state: MutableStateFlow<State> = MutableStateFlow(State.Loading)
     val state: StateFlow<State> by ::_state
 
     val filesTree = RpcTorrentFilesTree(this, viewModelScope)
 
     init {
-        Timber.i("constructor called")
-
-        torrent.hasTorrent().onEach {
-            if (it) {
-                Timber.i("Torrent appeared, setting filesEnabled to true")
-                torrent.value?.run {
-                    filesEnabled = true
-                    _state.value = State.Loading
-                }
-            } else {
-                Timber.i("Torrent disappeared, resetting")
-                reset()
-            }
-        }.launchIn(viewModelScope)
-
-        viewModelScope.launch { GlobalRpc.torrentFilesUpdatedEvents.collect(::onTorrentFilesUpdated) }
         viewModelScope.launch {
-            GlobalRpc.torrentFileRenamedEvents.collect { (torrentId, filePath, newName) ->
-                if (torrentId == torrent.value?.id) {
-                    filesTree.renameFile(filePath, newName)
+            _state
+                .hasSubscribersDebounced()
+                .collectLatest { hasSubscribers ->
+                    if (hasSubscribers) {
+                        val performRequest = GlobalRpcClient.performPeriodicRequest { getTorrentFiles(torrentHashString) }
+                        if (_state.value is State.TreeCreated) {
+                            performRequest.dropWhile { it is RpcRequestState.Loading }
+                        } else {
+                            performRequest
+                        }.collect(::onTorrentFilesUpdated)
+                    }
                 }
+        }
+
+        viewModelScope.launch {
+            torrentFileRenamedEvents.collect { (filePath, newName) ->
+                filesTree.renameFile(filePath, newName)
             }
         }
     }
 
-    private fun createTree(rpcFiles: List<TorrentFile>) {
-        if (rpcFiles.isEmpty()) {
-            _state.value = State.TreeCreated
+    private fun createTree(rpcFiles: TorrentFiles): State {
+        return if (rpcFiles.files.isEmpty()) {
+            Timber.d("Files are empty, creating tree immediately")
+            State.TreeCreated
         } else {
-            _state.value = State.CreatingTree
+            Timber.d("Start creating tree")
             filesTree.createTree(rpcFiles)
+            State.CreatingTree
         }
     }
 
@@ -87,33 +101,53 @@ class TorrentFilesFragmentViewModel(
     fun destroy() {
         Timber.i("destroy() called")
         viewModelScope.cancel()
-        reset()
         filesTree.destroy()
     }
 
-    private fun reset() {
-        Timber.i("reset() called")
-        torrent.value?.filesEnabled = false
-        if (state.value != State.None) {
+    private fun onTorrentFilesUpdated(requestState: RpcRequestState<TorrentFiles?>) {
+        Timber.d("onTorrentFilesUpdated() called with: requestState = ${requestState::class.simpleName}")
+        if (!(requestState is RpcRequestState.Loaded && _state.value is State.TreeCreated)) {
             filesTree.reset()
-            _state.value = State.None
         }
-    }
+        _state.value = when (requestState) {
+            is RpcRequestState.Loading -> {
+                State.Loading
+            }
 
-    private fun onTorrentFilesUpdated(data: Rpc.TorrentFilesUpdatedData) {
-        val (torrentId, changedFiles) = data
-        if (torrentId == torrent.value?.id) {
-            when (state.value) {
-                State.TreeCreated -> {
-                    if (filesTree.isEmpty && changedFiles.isNotEmpty()) {
-                        // Torrent's metadata was downloaded
-                        createTree(changedFiles)
-                    } else {
-                        filesTree.updateTree(changedFiles)
+            is RpcRequestState.Error -> {
+                State.Error(requestState.error)
+            }
+
+            is RpcRequestState.Loaded -> {
+                val rpcFiles = requestState.response
+                if (rpcFiles != null) {
+                    Timber.d("Current state is ${state.value::class.simpleName}, filesTree.isEmpty = ${filesTree.isEmpty}")
+                    when (state.value) {
+                        is State.TreeCreated -> {
+                            if (filesTree.isEmpty && rpcFiles.files.isNotEmpty()) {
+                                // Torrent's metadata was downloaded
+                                Timber.d("Creating tree")
+                                createTree(rpcFiles)
+                            } else {
+                                Timber.d("Updating tree")
+                                filesTree.updateTree(rpcFiles)
+                                State.TreeCreated
+                            }
+                        }
+
+                        is State.CreatingTree -> {
+                            Timber.d("Already creating tree")
+                            State.CreatingTree
+                        }
+
+                        else -> {
+                            Timber.d("Creating tree")
+                            createTree(rpcFiles)
+                            State.CreatingTree
+                        }
                     }
-                }
-                State.Loading -> createTree(changedFiles)
-                else -> {
+                } else {
+                    State.TorrentNotFound
                 }
             }
         }
@@ -122,33 +156,40 @@ class TorrentFilesFragmentViewModel(
 
 class RpcTorrentFilesTree(
     private val model: TorrentFilesFragmentViewModel,
-    parentScope: CoroutineScope
+    parentScope: CoroutineScope,
 ) : TorrentFilesTree(parentScope) {
     companion object {
-        private fun Item.updatedFrom(rpcFile: TorrentFile): Item {
-            return copy(
-                name = name,
-                completedSize = rpcFile.completedSize,
-                wantedState = Item.WantedState.fromBoolean(rpcFile.wanted),
-                priority = rpcFile.priority.toTreeItemPriority()
-            )
-        }
-
-        private fun TorrentFile.Priority.toTreeItemPriority(): Item.Priority {
-            return when (this) {
-                TorrentFile.Priority.Low -> Item.Priority.Low
-                TorrentFile.Priority.Normal -> Item.Priority.Normal
-                TorrentFile.Priority.High -> Item.Priority.High
-                else -> Item.Priority.Normal
+        private fun Item.updatedFromIfNeeded(file: TorrentFiles.File, fileStats: TorrentFiles.FileStats): Item? {
+            val newName = file.name
+            val newCompletedSize = fileStats.completedSize.bytes
+            val newWantedState = Item.WantedState.fromBoolean(fileStats.wanted)
+            val newPriority = fileStats.priority.toTreeItemPriority()
+            return if (newName != name || newCompletedSize != completedSize || newWantedState != wantedState || newPriority != priority) {
+                copy(
+                    name = newName,
+                    completedSize = newCompletedSize,
+                    wantedState = newWantedState,
+                    priority = newPriority
+                )
+            } else {
+                null
             }
         }
 
-        private fun Item.Priority.toTorrentFilePriority(): TorrentFile.Priority {
+        private fun TorrentFiles.FilePriority.toTreeItemPriority(): Item.Priority {
             return when (this) {
-                Item.Priority.Low -> TorrentFile.Priority.Low
-                Item.Priority.Normal -> TorrentFile.Priority.Normal
-                Item.Priority.High -> TorrentFile.Priority.High
-                else -> TorrentFile.Priority.Normal
+                TorrentFiles.FilePriority.Low -> Item.Priority.Low
+                TorrentFiles.FilePriority.High -> Item.Priority.High
+                TorrentFiles.FilePriority.Normal -> Item.Priority.Normal
+            }
+        }
+
+        private fun Item.Priority.toTorrentFilePriority(): TorrentFiles.FilePriority {
+            return when (this) {
+                Item.Priority.Low -> TorrentFiles.FilePriority.Low
+                Item.Priority.Normal -> TorrentFiles.FilePriority.Normal
+                Item.Priority.High -> TorrentFiles.FilePriority.High
+                else -> TorrentFiles.FilePriority.Normal
             }
         }
     }
@@ -159,39 +200,54 @@ class RpcTorrentFilesTree(
         get() = files.isEmpty()
 
     override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-        model.torrent.value?.setFilesWanted(ids, wanted)
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.set_files_wanted_error) {
+            GlobalRpcClient.setTorrentFilesWanted(
+                model.torrentHashString,
+                ids.asList(),
+                wanted
+            )
+        }
     }
 
     override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-        model.torrent.value?.setFilesPriority(ids, priority.toTorrentFilePriority())
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.set_files_priority_error) {
+            GlobalRpcClient.setTorrentFilesPriority(
+                model.torrentHashString,
+                ids.asList(),
+                priority.toTorrentFilePriority()
+            )
+        }
     }
 
     @MainThread
     fun init(
         rootNode: DirectoryNode,
         files: List<FileNode>,
-        savedStateHandle: SavedStateHandle
+        savedStateHandle: SavedStateHandle,
     ) {
+        Timber.d("Tree created, files.size = ${files.size}")
         init(rootNode, savedStateHandle)
         this.files = files
     }
 
-    fun createTree(rpcFiles: List<TorrentFile>) = scope.launch {
+    fun createTree(rpcFiles: TorrentFiles) = scope.launch {
         try {
             val (rootNode, files) = buildTorrentFilesTree {
-                rpcFiles.forEach { rpcFile ->
+                for (index in rpcFiles.files.indices) {
                     ensureActive()
 
-                    val path = rpcFile.path
+                    val file = rpcFiles.files[index]
+                    val fileStats = rpcFiles.fileStats[index]
+
+                    val path = file.name.splitToSequence('/').filter { it.isNotEmpty() }.toList()
                     addFile(
-                        rpcFile.id,
-                        path,
-                        rpcFile.size,
-                        rpcFile.completedSize,
-                        Item.WantedState.fromBoolean(rpcFile.wanted),
-                        rpcFile.priority.toTreeItemPriority()
+                        fileId = index,
+                        path = path,
+                        size = file.size.bytes,
+                        completedSize = fileStats.completedSize.bytes,
+                        wantedState = Item.WantedState.fromBoolean(fileStats.wanted),
+                        priority = fileStats.priority.toTreeItemPriority()
                     )
-                    path.delete()
                 }
             }
             withContext(Dispatchers.Main) {
@@ -206,16 +262,29 @@ class RpcTorrentFilesTree(
         }
     }
 
-    fun updateTree(changedFiles: List<TorrentFile>) {
-        if (changedFiles.isEmpty()) return
+    fun updateTree(rpcFiles: TorrentFiles) {
         scope.launch {
             val files = this@RpcTorrentFilesTree.files
-            val recalculated = recalculateNodesAndTheirParents(changedFiles.asSequence().mapNotNull { rpcFile ->
-                ensureActive()
-                files.getOrNull(rpcFile.id)?.apply {
-                    item = item.updatedFrom(rpcFile)
+            if (files.size != rpcFiles.files.size) {
+                Timber.e("New files have different count")
+                return@launch
+            }
+            val changedFiles = sequence {
+                for (i in files.indices) {
+                    ensureActive()
+
+                    val fileNode = files[i]
+                    val rpcFile = rpcFiles.files[i]
+                    val rpcFileStats = rpcFiles.fileStats[i]
+
+                    val newItem = fileNode.item.updatedFromIfNeeded(rpcFile, rpcFileStats)
+                    if (newItem != null) {
+                        fileNode.item = newItem
+                        yield(fileNode)
+                    }
                 }
-            })
+            }
+            val recalculated = recalculateNodesAndTheirParents(changedFiles)
             if (recalculated.contains(currentNode)) {
                 updateItemsWithSorting()
             }

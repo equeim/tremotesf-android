@@ -42,14 +42,13 @@ import timber.log.Timber
 
 class WifiNetworkServersController(
     private val servers: Servers,
+    appInForeground: Flow<Boolean>,
     scope: CoroutineScope,
     private val context: Context,
     private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
 ) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
-
-    val enabled = MutableStateFlow(false)
 
     private val _observingActiveWifiNetwork = MutableStateFlow(false)
     val observingActiveWifiNetwork: StateFlow<Boolean> by ::_observingActiveWifiNetwork
@@ -73,7 +72,7 @@ class WifiNetworkServersController(
                 has
             }
 
-        combine(hasServerWithWifiNetwork, enabled, Boolean::and)
+        combine(hasServerWithWifiNetwork, appInForeground, Boolean::and)
             .distinctUntilChanged()
             .dropWhile { !it }
             .onEach { shouldObserveWifiNetworks ->

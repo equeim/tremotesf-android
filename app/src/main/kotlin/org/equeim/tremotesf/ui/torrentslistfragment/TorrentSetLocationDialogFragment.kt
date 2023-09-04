@@ -9,15 +9,13 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import org.equeim.libtremotesf.IntVector
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentsLocation
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
-import org.equeim.tremotesf.ui.utils.normalizePath
-import org.equeim.tremotesf.ui.utils.toNativeSeparators
 
 class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
     private val args: TorrentSetLocationDialogFragmentArgs by navArgs()
@@ -31,24 +29,23 @@ class TorrentSetLocationDialogFragment : NavigationDialogFragment() {
             textFieldLayoutId = R.id.download_directory_layout,
             hint = getString(R.string.location),
             inputType = InputType.TYPE_TEXT_VARIATION_URI,
-            defaultText = args.location.toNativeSeparators(),
+            defaultText = args.location,
             onInflatedView = {
-                it.downloadDirectoryLayout.downloadDirectoryEdit.let { edit ->
-                    directoriesAdapter = AddTorrentDirectoriesAdapter(
-                        edit,
-                        lifecycleScope,
-                        savedInstanceState
-                    )
-                    edit.setAdapter(directoriesAdapter)
-                }
+                directoriesAdapter = AddTorrentDirectoriesAdapter(
+                    lifecycleScope,
+                    savedInstanceState
+                )
+                it.downloadDirectoryLayout.downloadDirectoryEdit.setAdapter(directoriesAdapter)
             },
             onAccepted = {
-                GlobalRpc.nativeInstance.setTorrentsLocation(
-                    IntVector(args.torrentIds),
-                    it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString().normalizePath(),
-                    it.moveFilesCheckBox.isChecked
-                )
-                directoriesAdapter?.save()
+                GlobalRpcClient.performBackgroundRpcRequest(R.string.torrent_set_location_error) {
+                    GlobalRpcClient.setTorrentsLocation(
+                        args.torrentHashStrings.asList(),
+                        it.downloadDirectoryLayout.downloadDirectoryEdit.text.toString(),
+                        it.moveFilesCheckBox.isChecked
+                    )
+                }
+                directoriesAdapter?.save(it.downloadDirectoryLayout.downloadDirectoryEdit)
             })
     }
 

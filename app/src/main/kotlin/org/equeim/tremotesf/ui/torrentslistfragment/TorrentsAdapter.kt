@@ -4,10 +4,13 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.view.ActionMode
@@ -15,29 +18,38 @@ import androidx.recyclerview.widget.DiffUtil
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import org.equeim.libtremotesf.IntVector
-import org.equeim.libtremotesf.TorrentData
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.mapToArray
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
-import org.equeim.tremotesf.rpc.GlobalRpc
-import org.equeim.tremotesf.torrentfile.rpc.Torrent
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
+import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
+import org.equeim.tremotesf.torrentfile.rpc.requests.reannounceTorrents
+import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.utils.*
+import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
+import org.equeim.tremotesf.ui.utils.DecimalFormats
+import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
+import org.equeim.tremotesf.ui.utils.fuzzyEquals
+import org.equeim.tremotesf.ui.utils.submitListAwait
 import java.lang.ref.WeakReference
 
 
 class TorrentsAdapter(
     private val fragment: TorrentsListFragment,
+    model: TorrentsListFragmentViewModel,
     private val compactView: Boolean,
-    private val multilineName: Boolean
+    private val multilineName: Boolean,
 ) :
     AsyncLoadingListAdapter<Torrent, TorrentsAdapter.BaseTorrentsViewHolder>(Callback()) {
     private val selectionTracker = SelectionTracker.createForIntKeys(
         this,
         true,
         fragment,
-        { ActionModeCallback(this, it) },
+        { ActionModeCallback(this, it, model) },
         R.plurals.torrents_selected
     ) {
         getItem(it).id
@@ -105,8 +117,8 @@ class TorrentsAdapter(
                         sizeTextView.text =
                             context.getString(
                                 R.string.uploaded_string,
-                                FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
-                                FormatUtils.formatByteSize(context, torrent.totalUploaded)
+                                FormatUtils.formatFileSize(context, torrent.sizeWhenDone),
+                                FormatUtils.formatFileSize(context, torrent.totalUploaded)
                             )
                     }
                 } else {
@@ -116,8 +128,8 @@ class TorrentsAdapter(
                     ) {
                         sizeTextView.text = context.getString(
                             R.string.completed_string,
-                            FormatUtils.formatByteSize(context, torrent.completedSize),
-                            FormatUtils.formatByteSize(context, torrent.sizeWhenDone),
+                            FormatUtils.formatFileSize(context, torrent.completedSize),
+                            FormatUtils.formatFileSize(context, torrent.sizeWhenDone),
                             DecimalFormats.generic.format(torrent.percentDone * 100)
                         )
                     }
@@ -132,7 +144,7 @@ class TorrentsAdapter(
                 if (oldTorrent?.downloadSpeed != torrent.downloadSpeed) {
                     downloadSpeedTextView.text = context.getString(
                         R.string.download_speed_string,
-                        FormatUtils.formatByteSpeed(
+                        FormatUtils.formatTransferRate(
                             context,
                             torrent.downloadSpeed
                         )
@@ -142,7 +154,7 @@ class TorrentsAdapter(
                 if (oldTorrent?.uploadSpeed != torrent.uploadSpeed) {
                     uploadSpeedTextView.text = context.getString(
                         R.string.upload_speed_string,
-                        FormatUtils.formatByteSpeed(
+                        FormatUtils.formatTransferRate(
                             context,
                             torrent.uploadSpeed
                         )
@@ -174,12 +186,12 @@ class TorrentsAdapter(
             val speedLabelsWereEmpty = downloadSpeedTextView.text.isEmpty() && uploadSpeedTextView.text.isEmpty()
 
             if (oldTorrent?.downloadSpeed != torrent.downloadSpeed) {
-                downloadSpeedTextView.text = if (torrent.downloadSpeed == 0L) {
+                downloadSpeedTextView.text = if (torrent.downloadSpeed.bytesPerSecond == 0L) {
                     ""
                 } else {
                     context.getString(
                         R.string.download_speed_string,
-                        FormatUtils.formatByteSpeed(
+                        FormatUtils.formatTransferRate(
                             context,
                             torrent.downloadSpeed
                         )
@@ -188,12 +200,12 @@ class TorrentsAdapter(
             }
 
             if (oldTorrent?.uploadSpeed != torrent.uploadSpeed) {
-                uploadSpeedTextView.text = if (torrent.uploadSpeed == 0L) {
+                uploadSpeedTextView.text = if (torrent.uploadSpeed.bytesPerSecond == 0L) {
                     ""
                 } else {
                     context.getString(
                         R.string.upload_speed_string,
-                        FormatUtils.formatByteSpeed(
+                        FormatUtils.formatTransferRate(
                             context,
                             torrent.uploadSpeed
                         )
@@ -207,7 +219,7 @@ class TorrentsAdapter(
                 !(oldTorrent?.percentDone fuzzyEquals torrent.percentDone)
             ) {
                 binding.progressTextView.text = context.getString(
-                    if (torrent.downloadSpeed != 0L || torrent.uploadSpeed != 0L) R.string.progress_string_with_dot else R.string.progress_string,
+                    if (torrent.downloadSpeed.bytesPerSecond != 0L || torrent.uploadSpeed.bytesPerSecond != 0L) R.string.progress_string_with_dot else R.string.progress_string,
                     DecimalFormats.generic.format(torrent.percentDone * 100)
                 )
             }
@@ -249,17 +261,17 @@ class TorrentsAdapter(
             if (oldTorrent?.name != torrent.name) {
                 nameTextView.text = torrent.name
             }
-            val resId = if (torrent.hasError) {
+            val resId = if (torrent.error != null) {
                 R.drawable.ic_error_24dp
             } else {
                 when (torrent.status) {
-                    TorrentData.Status.Paused -> R.drawable.ic_pause_24dp
-                    TorrentData.Status.Downloading,
-                    TorrentData.Status.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
-                    TorrentData.Status.Seeding,
-                    TorrentData.Status.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
-                    TorrentData.Status.Checking,
-                    TorrentData.Status.QueuedForChecking -> R.drawable.ic_refresh_24dp
+                    TorrentStatus.Paused -> R.drawable.ic_pause_24dp
+                    TorrentStatus.Downloading,
+                    TorrentStatus.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
+                    TorrentStatus.Seeding,
+                    TorrentStatus.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
+                    TorrentStatus.Checking,
+                    TorrentStatus.QueuedForChecking -> R.drawable.ic_refresh_24dp
                 }
             }
             if (resId != iconResId) {
@@ -281,7 +293,8 @@ class TorrentsAdapter(
 
     private class ActionModeCallback(
         adapter: TorrentsAdapter,
-        selectionTracker: SelectionTracker<Int>
+        selectionTracker: SelectionTracker<Int>,
+        private val model: TorrentsListFragmentViewModel,
     ) :
         SelectionTracker.ActionModeCallback<Int>(selectionTracker) {
 
@@ -296,7 +309,7 @@ class TorrentsAdapter(
             super.onPrepareActionMode(mode, menu)
 
             if (selectionTracker?.selectedCount == 1) {
-                val startEnabled = adapter.get()?.getFirstSelectedTorrent()?.status == TorrentData.Status.Paused
+                val startEnabled = adapter.get()?.getFirstSelectedTorrent()?.status == TorrentStatus.Paused
                 for (id in intArrayOf(R.id.start, R.id.start_now)) {
                     menu.findItem(id).isEnabled = startEnabled
                 }
@@ -317,16 +330,16 @@ class TorrentsAdapter(
             val adapter = this.adapter.get() ?: return false
 
             when (item.itemId) {
-                R.id.start -> GlobalRpc.nativeInstance.startTorrents(IntVector(selectionTracker.selectedKeys))
-                R.id.pause -> GlobalRpc.nativeInstance.pauseTorrents(IntVector(selectionTracker.selectedKeys))
-                R.id.check -> GlobalRpc.nativeInstance.checkTorrents(IntVector(selectionTracker.selectedKeys))
-                R.id.start_now -> GlobalRpc.nativeInstance.startTorrentsNow(IntVector(selectionTracker.selectedKeys))
-                R.id.reannounce -> GlobalRpc.nativeInstance.reannounceTorrents(IntVector(selectionTracker.selectedKeys))
+                R.id.start -> model.startTorrents(selectionTracker.selectedKeys.toList(), now = false)
+                R.id.pause -> model.pauseTorrents(selectionTracker.selectedKeys.toList())
+                R.id.check -> model.checkTorrents(selectionTracker.selectedKeys.toList())
+                R.id.start_now -> model.startTorrents(selectionTracker.selectedKeys.toList(), now = true)
+                R.id.reannounce -> GlobalRpcClient.performBackgroundRpcRequest(R.string.torrents_reannounce_error) { reannounceTorrents(selectionTracker.selectedKeys.toList()) }
                 R.id.set_location -> {
                     activity.navigate(
                         TorrentsListFragmentDirections.toTorrentSetLocationDialog(
-                            selectionTracker.selectedKeys.toIntArray(),
-                            adapter.getFirstSelectedTorrent().downloadDirectory
+                            selectionTracker.getSelectedPositionsUnsorted().mapToArray { adapter.getItem(it).hashString },
+                            adapter.getFirstSelectedTorrent().downloadDirectory.toNativeSeparators()
                         )
                     )
                 }
@@ -336,21 +349,20 @@ class TorrentsAdapter(
                         TorrentsListFragmentDirections.toTorrentFileRenameDialog(
                             torrent.name,
                             torrent.name,
-                            torrent.id
+                            torrent.hashString
                         )
                     )
                 }
                 R.id.remove -> activity.navigate(
                     TorrentsListFragmentDirections.toRemoveTorrentDialog(
-                        selectionTracker.selectedKeys.toIntArray()
+                        selectionTracker.getSelectedPositionsUnsorted().mapToArray { adapter.getItem(it).hashString }
                     )
                 )
                 R.id.share -> {
                     val magnetLinks =
-                        adapter.currentList.slice(
-                            selectionTracker.getSelectedPositionsUnsorted().sorted()
-                        )
-                            .map { it.data.magnetLink }
+                        adapter.currentList
+                            .slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
+                            .map { it.magnetLink }
                     Utils.shareTorrents(magnetLinks, activity)
                 }
                 else -> return false
@@ -369,29 +381,28 @@ class TorrentsAdapter(
             return oldItem.id == newItem.id
         }
 
-        @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(oldItem: Torrent, newItem: Torrent): Boolean {
-            return oldItem === newItem
+            return oldItem == newItem
         }
     }
 }
 
 private fun Torrent.getStatusString(context: Context): CharSequence {
     return when (status) {
-        TorrentData.Status.Paused -> if (hasError) {
+        TorrentStatus.Paused -> if (error != null) {
             context.getString(R.string.torrent_paused_with_error, errorString)
         } else {
             context.getText(R.string.torrent_paused)
         }
-        TorrentData.Status.Downloading -> if (isDownloadingStalled) {
-            if (hasError) {
+        TorrentStatus.Downloading -> if (isDownloadingStalled) {
+            if (error != null) {
                 context.getString(R.string.torrent_downloading_stalled_with_error, errorString)
             } else {
                 context.getText(R.string.torrent_downloading_stalled)
             }
         } else {
             val peers = this.peersSendingToUsCount + this.webSeedersSendingToUsCount
-            if (hasError) {
+            if (error != null) {
                 context.resources.getQuantityString(
                     R.plurals.torrent_downloading_with_error,
                     peers,
@@ -406,14 +417,14 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 )
             }
         }
-        TorrentData.Status.Seeding -> if (isSeedingStalled) {
-            if (hasError) {
+        TorrentStatus.Seeding -> if (isSeedingStalled) {
+            if (error != null) {
                 context.getString(R.string.torrent_seeding_stalled_with_error, errorString)
             } else {
                 context.getText(R.string.torrent_seeding_stalled)
             }
         } else {
-            if (hasError) {
+            if (error != null) {
                 context.resources.getQuantityString(
                     R.plurals.torrent_seeding_with_error,
                     peersGettingFromUsCount,
@@ -428,13 +439,13 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 )
             }
         }
-        TorrentData.Status.QueuedForDownloading,
-        TorrentData.Status.QueuedForSeeding -> if (hasError) {
+        TorrentStatus.QueuedForDownloading,
+        TorrentStatus.QueuedForSeeding -> if (error != null) {
             context.getString(R.string.torrent_queued_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued)
         }
-        TorrentData.Status.Checking -> if (hasError) {
+        TorrentStatus.Checking -> if (error != null) {
             context.getString(
                 R.string.torrent_checking_with_error,
                 DecimalFormats.generic.format(recheckProgress * 100),
@@ -446,7 +457,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 DecimalFormats.generic.format(recheckProgress * 100)
             )
         }
-        TorrentData.Status.QueuedForChecking -> if (hasError) {
+        TorrentStatus.QueuedForChecking -> if (error != null) {
             context.getString(R.string.torrent_queued_for_checking_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued_for_checking)

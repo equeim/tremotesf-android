@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
-import java.util.Comparator
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
 
