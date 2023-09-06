@@ -38,7 +38,7 @@ class GradlePlugin : Plugin<Project> {
         }
     }
 
-    private fun CommonExtension<*, *, *, *>.configureAndroidProject(libs: VersionCatalog) {
+    private fun CommonExtension<*, *, *, *, *>.configureAndroidProject(libs: VersionCatalog) {
         compileSdk = libs.compileSdk
         defaultConfig.minSdk = libs.minSdk
         lint.apply {
