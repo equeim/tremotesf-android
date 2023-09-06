@@ -4,43 +4,43 @@
 
 [versions]
 android-gradle-plugin = "8.1.1"
-kotlin = "1.8.22"
+kotlin = "1.9.10"
 gradle-versions-plugin = "0.47.0"
 
 sdk-platform-compile = "34"
 sdk-platform-min = "21"
 sdk-platform-target = "34"
 
-coroutines = "1.7.1"
-serialization = "1.5.1"
-# Gradle bundles Kotlin 1.8, make sure to not pull newer version through dependencies
-serialization-gradle = "1.5.1"
+coroutines = "1.7.3"
+serialization = "1.6.0"
+# Gradle bundles Kotlin 1.9, make sure to not pull newer version through dependencies
+serialization-gradle = "1.6.0"
 
 androidx-annotation = "1.6.0"
 androidx-appcompat = "1.6.1"
 androidx-collection = "1.2.0"
-androidx-core = "1.9.0"
+androidx-core = "1.12.0"
 androidx-coordinatorlayout = "1.2.0"
-androidx-fragment = "1.6.0"
+androidx-fragment = "1.6.1"
 androidx-gridlayout = "1.0.0"
-androidx-lifecycle = "2.6.1"
-androidx-navigation = "2.6.0"
-androidx-recyclerview = "1.3.0"
-androidx-preference = "1.2.0"
+androidx-lifecycle = "2.6.2"
+androidx-navigation = "2.7.2"
+androidx-recyclerview = "1.3.1"
+androidx-preference = "1.2.1"
 androidx-swiperefreshlayout = "1.1.0"
 androidx-viewpager2 = "1.0.0"
 androidx-work = "2.8.1"
 
 commons-lang = "3.12.0"
 fastscroll = "2.1.0"
-leakcanary = "2.11"
+leakcanary = "2.12"
 material = "1.9.0"
 timber = "5.0.1"
 threetenabp = "1.4.6"
 
 okhttp = "4.11.0"
 
-junit = "5.9.3"
+junit = "5.10.0"
 
 serialization-bencode = "0.1"
 tremotesf-plugin = "0.1"
