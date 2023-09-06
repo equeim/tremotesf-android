@@ -7,9 +7,9 @@ android-gradle-plugin = "8.1.1"
 kotlin = "1.8.22"
 gradle-versions-plugin = "0.47.0"
 
-sdk-platform-compile = "33"
+sdk-platform-compile = "34"
 sdk-platform-min = "21"
-sdk-platform-target = "33"
+sdk-platform-target = "34"
 
 coroutines = "1.7.1"
 serialization = "1.5.1"
