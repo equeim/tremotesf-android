@@ -9,7 +9,9 @@ import android.content.Context
 import androidx.annotation.MainThread
 import androidx.work.*
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.torrentfile.rpc.Servers
 import org.equeim.tremotesf.torrentfile.rpc.WifiNetworkServersController
@@ -25,7 +27,10 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
     private val saveData = AtomicReference<ServersState>()
 
     init {
-        wifiNetworkController.setCurrentServerFromWifiNetwork()
+        @OptIn(DelicateCoroutinesApi::class)
+        GlobalScope.launch(Dispatchers.Main.immediate) {
+            wifiNetworkController.setCurrentServerFromWifiNetwork()
+        }
     }
 
     @MainThread

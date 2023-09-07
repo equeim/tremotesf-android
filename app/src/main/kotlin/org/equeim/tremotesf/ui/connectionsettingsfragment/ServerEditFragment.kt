@@ -188,13 +188,14 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             }
 
             setSsidFromCurrentNetworkButton.setOnClickListener {
-                val ssid = GlobalServers.wifiNetworkController.currentWifiSsid
-
-                if (ssid != null) {
-                    wifiAutoConnectSsidEdit.setText(ssid)
-                } else {
-                    Toast.makeText(requireContext(), R.string.current_ssid_error, Toast.LENGTH_LONG)
-                        .show()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val ssid = GlobalServers.wifiNetworkController.getCurrentWifiSsid()
+                    if (ssid != null) {
+                        wifiAutoConnectSsidEdit.setText(ssid)
+                    } else {
+                        Toast.makeText(requireContext(), R.string.current_ssid_error, Toast.LENGTH_LONG)
+                            .show()
+                    }
                 }
             }
         }
