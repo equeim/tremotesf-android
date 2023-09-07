@@ -36,7 +36,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             sortView.apply {
                 setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
                 setOnItemClickListener { _, _, position, _ ->
-                    model.setSortMode(TorrentsListFragmentViewModel.SortMode.values()[position])
+                    model.setSortMode(TorrentsListFragmentViewModel.SortMode.entries[position])
                 }
             }
 
@@ -53,7 +53,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                 setAdapter(statusFilterViewAdapter)
                 setOnItemClickListener { _, _, position, _ ->
                     model.setStatusFilterMode(
-                        TorrentsListFragmentViewModel.StatusFilterMode.values()[position]
+                        TorrentsListFragmentViewModel.StatusFilterMode.entries[position]
                     )
                 }
             }

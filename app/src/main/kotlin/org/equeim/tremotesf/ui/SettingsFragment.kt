@@ -249,7 +249,7 @@ class SettingsColorThemeFragment : NavigationDialogFragment() {
         }
 
         val choiceList = checkNotNull(view.findViewById<LinearLayout>(R.id.choice_list))
-        for (theme in Settings.ColorTheme.values()) {
+        for (theme in Settings.ColorTheme.entries) {
             if (theme == Settings.ColorTheme.System && !DynamicColors.isDynamicColorAvailable()) {
                 continue
             }

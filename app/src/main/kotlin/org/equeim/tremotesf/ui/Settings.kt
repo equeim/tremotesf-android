@@ -27,7 +27,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.common.enumFromInt
 import org.equeim.tremotesf.ui.Settings.Property
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import timber.log.Timber
@@ -118,7 +117,7 @@ object Settings {
         companion object {
             inline fun <reified T> fromPrefsValueProvider(
                 @StringRes keyResId: Int,
-                @StringRes defaultValueResId: Int
+                @StringRes defaultValueResId: Int,
             ): (String) -> T where T : MappedPrefsEnum, T : Enum<T> {
                 val values = enumValues<T>()
                 return { prefsValue ->
@@ -134,7 +133,7 @@ object Settings {
 
     enum class ColorTheme(
         @StringRes prefsValueResId: Int,
-        @StyleRes val activityThemeResId: Int = 0
+        @StyleRes val activityThemeResId: Int = 0,
     ) : MappedPrefsEnum {
         System(R.string.prefs_color_theme_value_system),
         Red(R.string.prefs_color_theme_value_red, R.style.AppTheme),
@@ -256,7 +255,7 @@ object Settings {
             R.string.torrents_sort_mode_key,
             R.integer.torrents_sort_mode_default_value
         ).map(
-            transformGetter = { enumFromInt(it, TorrentsListFragmentViewModel.SortMode.DEFAULT) },
+            transformGetter = { TorrentsListFragmentViewModel.SortMode.entries.getOrElse(it) { TorrentsListFragmentViewModel.SortMode.DEFAULT } },
             transformSetter = { it.ordinal }
         )
 
@@ -265,7 +264,7 @@ object Settings {
             R.string.torrents_sort_order_key,
             R.integer.torrents_sort_order_default_value
         ).map(
-            transformGetter = { enumFromInt(it, TorrentsListFragmentViewModel.SortOrder.DEFAULT) },
+            transformGetter = { TorrentsListFragmentViewModel.SortOrder.entries.getOrElse(it) { TorrentsListFragmentViewModel.SortOrder.DEFAULT } },
             transformSetter = { it.ordinal }
         )
 
@@ -274,12 +273,7 @@ object Settings {
             R.string.torrents_status_filter_key,
             R.integer.torrents_status_filter_default_value
         ).map(
-            transformGetter = {
-                enumFromInt(
-                    it,
-                    TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT
-                )
-            },
+            transformGetter = { TorrentsListFragmentViewModel.StatusFilterMode.entries.getOrElse(it) { TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT } },
             transformSetter = { it.ordinal }
         )
 
@@ -297,7 +291,7 @@ object Settings {
         kClass: KClass<T>,
         @StringRes keyResId: Int,
         @AnyRes defaultValueResId: Int,
-        key: String = context.getString(keyResId)
+        key: String = context.getString(keyResId),
     ): Property<T> {
         @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
         val defaultValue = when (kClass) {
@@ -335,13 +329,13 @@ object Settings {
 
     private inline fun <reified T : Any> property(
         @StringRes keyResId: Int,
-        @AnyRes defaultValueResId: Int
+        @AnyRes defaultValueResId: Int,
     ): Property<T> = property(T::class, keyResId, defaultValueResId)
 
     private fun <T : Any> mutableProperty(
         kClass: KClass<T>,
         @StringRes keyResId: Int,
-        @AnyRes defaultValueResId: Int
+        @AnyRes defaultValueResId: Int,
     ): MutableProperty<T> {
         val key = context.getString(keyResId)
         val property = property(kClass, keyResId, defaultValueResId, key = key)
@@ -356,7 +350,7 @@ object Settings {
 
     private inline fun <reified T : Any> mutableProperty(
         @StringRes keyResId: Int,
-        @AnyRes defaultValueResId: Int
+        @AnyRes defaultValueResId: Int,
     ): MutableProperty<T> = mutableProperty(T::class, keyResId, defaultValueResId)
 
     interface Property<T : Any> {
@@ -417,7 +411,7 @@ private fun <T : Any, R : Any> Property<T>.map(transform: suspend (T) -> R) =
 
 private fun <T : Any, R : Any> Settings.MutableProperty<T>.map(
     transformGetter: suspend (T) -> R,
-    transformSetter: suspend (R) -> T
+    transformSetter: suspend (R) -> T,
 ) =
     object : Settings.MutableProperty<R> {
         override val key = this@map.key

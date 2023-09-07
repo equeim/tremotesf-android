@@ -37,11 +37,9 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
 
     private class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            private val tabs = Tab.values().toList()
-
             @StringRes
             fun getTitle(position: Int): Int {
-                return when (tabs[position]) {
+                return when (Tab.entries[position]) {
                     Tab.Main -> R.string.about
                     Tab.Authors -> R.string.authors
                     Tab.Translators -> R.string.translators
@@ -57,10 +55,10 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             License
         }
 
-        override fun getItemCount() = tabs.size
+        override fun getItemCount() = Tab.entries.size
 
         override fun createFragment(position: Int): Fragment {
-            return when (tabs[position]) {
+            return when (Tab.entries[position]) {
                 Tab.Main -> MainTabFragment()
                 Tab.Authors -> AuthorsTabFragment()
                 Tab.Translators -> TranslatorsTabFragment()

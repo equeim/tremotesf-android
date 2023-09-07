@@ -130,8 +130,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         viewLifecycleOwner.lifecycleScope.launch {
             if (Settings.quickReturn.get()) {
                 toolbar.setOnClickListener {
-                    Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.tabs[binding.pager.currentItem]}")
-                    if (PagerAdapter.tabs[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
+                    Timber.d("onViewStateRestored: clicked, current tab = ${PagerAdapter.Tab.entries[binding.pager.currentItem]}")
+                    if (PagerAdapter.Tab.entries[binding.pager.currentItem] == PagerAdapter.Tab.Files) {
                         childFragmentManager.fragments
                             .filterIsInstance<FilesFragment>()
                             .singleOrNull()
@@ -257,11 +257,9 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            val tabs = Tab.values()
-
             @StringRes
             fun getTitle(position: Int): Int {
-                return when (tabs[position]) {
+                return when (Tab.entries[position]) {
                     Tab.Info -> R.string.information
                     Tab.Files -> R.string.files
                 }
@@ -273,10 +271,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
             Files
         }
 
-        override fun getItemCount() = tabs.size
+        override fun getItemCount() = Tab.entries.size
 
         override fun createFragment(position: Int): Fragment {
-            return when (tabs[position]) {
+            return when (Tab.entries[position]) {
                 Tab.Info -> InfoFragment()
                 Tab.Files -> FilesFragment()
             }
