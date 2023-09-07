@@ -67,7 +67,7 @@ class TorrentPropertiesFragment : NavigationFragment(
         viewLifecycleOwner.lifecycleScope.launch {
             if (Settings.quickReturn.get()) {
                 toolbar.setOnClickListener {
-                    val tab = PagerAdapter.tabs[binding.pager.currentItem]
+                    val tab = PagerAdapter.Tab.entries[binding.pager.currentItem]
                     childFragmentManager.fragments
                         .asSequence()
                         .filterIsInstance<PagerFragment>()
@@ -278,11 +278,9 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         companion object {
-            val tabs = Tab.values()
-
             @StringRes
             fun getTitle(position: Int): Int {
-                return when (tabs[position]) {
+                return when (Tab.entries[position]) {
                     Tab.Details -> R.string.details
                     Tab.Files -> R.string.files
                     Tab.Trackers -> R.string.trackers
@@ -303,11 +301,11 @@ class TorrentPropertiesFragment : NavigationFragment(
         }
 
         override fun getItemCount(): Int {
-            return tabs.size
+            return Tab.entries.size
         }
 
         override fun createFragment(position: Int): Fragment {
-            return when (tabs[position]) {
+            return when (Tab.entries[position]) {
                 Tab.Details -> TorrentDetailsFragment()
                 Tab.Files -> TorrentFilesFragment()
                 Tab.Trackers -> TrackersFragment()
