@@ -28,11 +28,11 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-sealed interface RpcRequestState<T> {
-    class Loading<T> : RpcRequestState<T>
+sealed interface RpcRequestState<in T> {
+    data object Loading : RpcRequestState<Any?>
 
     @JvmInline
-    value class Error<T>(val error: RpcRequestError) : RpcRequestState<T>
+    value class Error(val error: RpcRequestError) : RpcRequestState<Any?>
 
     @JvmInline
     value class Loaded<T>(val response: T) : RpcRequestState<T>
@@ -46,13 +46,14 @@ fun <T> RpcClient.performRecoveringRequest(
 ): Flow<RpcRequestState<T>> =
     combine(
         getConnectionConfiguration(),
-        shouldConnectToServer
-    ) { conf, connect -> getInitialNonRecoverableError<T>(conf, connect) }
+        shouldConnectToServer,
+        ::getInitialNonRecoverableError
+    )
         .transformLatest { initialError ->
             if (initialError != null) {
                 emit(initialError)
             } else {
-                emit(RpcRequestState.Loading())
+                emit(RpcRequestState.Loading)
                 interruptingRefreshRequests.onStart { emit(Unit) }.collectLatest {
                     nonInterruptingRefreshRequests.onStart { emit(Unit) }.collect {
                         actuallyPerformRecoveringRequest(this, performRequest)
@@ -84,7 +85,7 @@ private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(collector: Fl
                 delay(waitFor)
                 delayedLoadingOnRetry = launch {
                     delay(RETRY_LOADING_STATE_DELAY)
-                    collector.emit(RpcRequestState.Loading())
+                    collector.emit(RpcRequestState.Loading)
                 }
             }
         }
@@ -111,10 +112,10 @@ fun <T> RpcClient.performPeriodicRequest(
     )
 }
 
-private fun <T> getInitialNonRecoverableError(
+private fun getInitialNonRecoverableError(
     configuration: Result<ConnectionConfiguration>?,
     shouldConnectToServer: Boolean,
-): RpcRequestState.Error<T>? =
+): RpcRequestState.Error? =
     when {
         configuration == null -> RpcRequestState.Error(RpcRequestError.NoConnectionConfiguration())
         configuration.isFailure -> RpcRequestState.Error(RpcRequestError.BadConnectionConfiguration(configuration.exceptionOrNull() as Exception))
@@ -131,7 +132,7 @@ fun <T> Flow<RpcRequestState<T>>.stateIn(
         getInitialNonRecoverableError(
             rpcClient.getConnectionConfiguration().value,
             rpcClient.shouldConnectToServer.value
-        ) ?: RpcRequestState.Loading()
+        ) ?: RpcRequestState.Loading
     )
     coroutineScope.launch {
         stateFlow
