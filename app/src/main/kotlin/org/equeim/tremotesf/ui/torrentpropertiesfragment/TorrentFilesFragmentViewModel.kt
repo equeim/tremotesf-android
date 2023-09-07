@@ -40,13 +40,13 @@ class TorrentFilesFragmentViewModel(
     private val torrentFileRenamedEvents: Flow<TorrentPropertiesFragmentViewModel.TorrentFileRenamed>,
 ) : ViewModel() {
     sealed interface State {
-        object Loading : State
-        object CreatingTree : State
-        object TreeCreated : State
+        data object Loading : State
+        data object CreatingTree : State
+        data object TreeCreated : State
 
         @JvmInline
         value class Error(val error: RpcRequestError) : State
-        object TorrentNotFound : State
+        data object TorrentNotFound : State
     }
 
     private val _state: MutableStateFlow<State> = MutableStateFlow(State.Loading)
