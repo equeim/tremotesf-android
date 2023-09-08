@@ -159,7 +159,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">Geschwindigkeit</string>
     <string name="honor_global_limits">Beachte globale Beschränkungen</string>
-    <string name="kbps">kB/s</string>
     <string name="download_noun">Herunterladen</string>
     <string name="upload_noun">Hochladen</string>
 
@@ -179,7 +178,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">min</string>
     <string name="maximum_peers">Maximale Teilnehmeranzahl</string>
 
     <string name="settings">Einstellungen</string>
@@ -253,8 +251,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignoriere Warteschlangenposition wenn inaktiv für</string>
     <string name="alternative_limits">Alternative Beschränkungen</string>
     <string name="enable">Aktivieren</string>
-    <string name="download_kbps">Download, kB/s</string>
-    <string name="upload_kbps">Upload, kB/s</string>
     <string name="scheduled">Geplant</string>
     <string name="from">Vom</string>
     <string name="to">Bis</string>

@@ -6,10 +6,10 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -96,7 +96,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:hint="@string/min">
+                    app:suffixText="@string/text_field_suffix_minutes">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/idle_queue_edit"

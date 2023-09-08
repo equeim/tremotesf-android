@@ -147,7 +147,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-                    android:hint="@string/update_interval">
+                    android:hint="@string/update_interval"
+                    app:suffixText="@string/text_field_suffix_seconds">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/update_interval_edit"
@@ -160,7 +161,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:hint="@string/timeout">
+                    android:hint="@string/timeout"
+                    app:suffixText="@string/text_field_suffix_seconds">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/timeout_edit"

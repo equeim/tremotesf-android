@@ -147,7 +147,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">Velocità</string>
     <string name="honor_global_limits">Segui i limiti globali</string>
-    <string name="kbps">kB/s</string>
     <string name="download_noun">Scaricamenti</string>
     <string name="upload_noun">Caricamenti</string>
 
@@ -167,7 +166,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">minuti</string>
     <string name="maximum_peers">Peer massimi</string>
 
     <string name="settings">Impostazioni</string>
@@ -243,8 +241,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignora la coda se fermo per</string>
     <string name="alternative_limits">Limiti alternativi</string>
     <string name="enable">Abilita</string>
-    <string name="download_kbps">Scaricamento, kB/s</string>
-    <string name="upload_kbps">Caricamento, kB/s</string>
     <string name="scheduled">Schedulato</string>
     <string name="from">Da</string>
     <string name="to">A</string>
