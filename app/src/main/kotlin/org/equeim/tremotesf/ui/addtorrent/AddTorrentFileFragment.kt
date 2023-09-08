@@ -84,13 +84,13 @@ class AddTorrentFileFragment : AddTorrentFragment(
         super.onCreate(savedInstanceState)
         Timber.i("onCreate: arguments = $arguments")
 
-        with(model.storagePermissionHelper) {
-            val launcher = registerWithFragment(this@AddTorrentFileFragment)
+        model.storagePermissionHelper?.let { helper ->
+            val launcher = helper.registerWithFragment(this@AddTorrentFileFragment)
             if (model.needStoragePermission) {
-                if (!checkPermission(requireContext())) {
+                if (!helper.checkPermission(requireContext())) {
                     lifecycleScope.launch {
                         lifecycle.withStarted {
-                            requestPermission(this@AddTorrentFileFragment, launcher)
+                            helper.requestPermission(this@AddTorrentFileFragment, launcher)
                         }
                     }
                 }
@@ -152,8 +152,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
     override fun onStart() {
         super.onStart()
         with(model) {
-            if (needStoragePermission && !storagePermissionHelper.permissionGranted.value) {
-                storagePermissionHelper.checkPermission(requireContext())
+            storagePermissionHelper?.let { helper ->
+                if (needStoragePermission && !helper.permissionGranted.value) {
+                    helper.checkPermission(requireContext())
+                }
             }
         }
     }
