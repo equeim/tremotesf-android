@@ -10,6 +10,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
+import android.os.Build
 import android.os.ParcelFileDescriptor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
@@ -61,7 +63,7 @@ interface AddTorrentFileModel {
     var rememberedPagerItem: Int
 
     val needStoragePermission: Boolean
-    val storagePermissionHelper: RuntimePermissionHelper
+    val storagePermissionHelper: RuntimePermissionHelper?
 
     val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
@@ -86,19 +88,23 @@ class AddTorrentFileModelImpl(
 ) : BaseAddTorrentModel(application), AddTorrentFileModel {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 
-    override val needStoragePermission = args.uri.scheme == ContentResolver.SCHEME_FILE
+    override val storagePermissionHelper = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+        RuntimePermissionHelper(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            R.string.storage_permission_rationale_torrent
+        )
+    } else {
+        null
+    }
 
-    override val storagePermissionHelper = RuntimePermissionHelper(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        R.string.storage_permission_rationale_torrent
-    )
+    override val needStoragePermission = args.uri.scheme == ContentResolver.SCHEME_FILE && storagePermissionHelper != null
 
     override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
 
     override val viewUpdateData = combine(
         parserStatus,
         downloadingSettings,
-        storagePermissionHelper.permissionGranted
+        storagePermissionHelper?.permissionGranted ?: flowOf(false)
     ) { parserStatus, rpcStatus, hasPermission ->
         AddTorrentFileModel.ViewUpdateData(
             parserStatus,
@@ -120,7 +126,7 @@ class AddTorrentFileModelImpl(
     init {
         if (needStoragePermission) {
             viewModelScope.launch {
-                storagePermissionHelper.permissionGranted.first { it }
+                checkNotNull(storagePermissionHelper).permissionGranted.first { it }
                 load()
             }
         } else {
