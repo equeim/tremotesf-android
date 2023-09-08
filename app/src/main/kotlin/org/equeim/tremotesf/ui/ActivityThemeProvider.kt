@@ -27,8 +27,11 @@ object ActivityThemeProvider {
         Timber.i("init() called")
 
         val (initialColorTheme, initialDarkThemeMode) = runBlocking {
-            val colors = async { Settings.colorTheme.get().also { Timber.i("Received initial value of color theme: $it") } }
-            val darkThemeMode = async { Settings.darkThemeMode.get().also { Timber.i("Received initial value of dark theme mode: $it") } }
+            val colors =
+                async { Settings.colorTheme.get().also { Timber.i("Received initial value of color theme: $it") } }
+            val darkThemeMode = async {
+                Settings.darkThemeMode.get().also { Timber.i("Received initial value of dark theme mode: $it") }
+            }
             colors.await() to darkThemeMode.await()
         }
 

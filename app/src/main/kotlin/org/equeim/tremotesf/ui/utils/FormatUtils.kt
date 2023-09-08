@@ -49,14 +49,23 @@ object FormatUtils {
         return formatBytes(speed.bytesPerSecond, speedUnits, R.array.speed_units, context)
     }
 
-    private fun formatBytes(bytes: Long, reference: AtomicReference<Array<String>>, @ArrayRes resId: Int, context: Context): String {
+    private fun formatBytes(
+        bytes: Long,
+        reference: AtomicReference<Array<String>>,
+        @ArrayRes resId: Int,
+        context: Context,
+    ): String {
         val (size, unit) = calculateSize(bytes)
         val numberString = DecimalFormats.generic.format(size)
         val units = reference.get() ?: updateByteUnits(reference, resId, context)
         return units?.get(unit)?.format(numberString) ?: ""
     }
 
-    private fun updateByteUnits(reference: AtomicReference<Array<String>>, @ArrayRes resId: Int, context: Context): Array<String>? {
+    private fun updateByteUnits(
+        reference: AtomicReference<Array<String>>,
+        @ArrayRes resId: Int,
+        context: Context,
+    ): Array<String>? {
         val units = context.resources.getStringArray(resId)
         return if (reference.compareAndSet(null, units)) {
             units

@@ -97,7 +97,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
-        android:name="org.equeim.tremotesf.ui.SettingsFragment" >
+        android:name="org.equeim.tremotesf.ui.SettingsFragment">
         <action
             android:id="@+id/to_persistent_notification_warning_dialog"
             app:destination="@id/persistent_notification_warning_dialog" />
@@ -107,8 +107,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </fragment>
     <fragment
         android:id="@+id/about_fragment"
-        android:name="org.equeim.tremotesf.ui.AboutFragment">
-    </fragment>
+        android:name="org.equeim.tremotesf.ui.AboutFragment"></fragment>
     <fragment
         android:id="@+id/connection_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment">
@@ -215,7 +214,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:name="server"
             app:argType="string"
             app:nullable="true"
-            android:defaultValue="@null"/>
+            android:defaultValue="@null" />
         <action
             android:id="@+id/to_overwrite_dialog"
             app:destination="@id/server_overwrite_dialog" />
@@ -232,8 +231,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </fragment>
     <fragment
         android:id="@+id/server_certificates_fragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment">
-    </fragment>
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment"></fragment>
     <dialog
         android:id="@+id/persistent_notification_warning_dialog"
         android:name="org.equeim.tremotesf.ui.SettingsPersistentNotificationWarningFragment" />
@@ -245,7 +243,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.RemoveServerDialogFragment" />
     <dialog
         android:id="@+id/torrent_file_rename_dialog"
-        android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment">
         <argument
             android:name="file_path"
             app:argType="string" />
@@ -259,11 +257,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </dialog>
     <dialog
         android:id="@+id/add_trackers_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.AddTrackersDialogFragment" >
-    </dialog>
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.AddTrackersDialogFragment"></dialog>
     <dialog
         android:id="@+id/edit_tracker_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.EditTrackerDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.EditTrackerDialogFragment">
         <argument
             android:name="tracker_id"
             app:argType="integer" />
@@ -283,7 +280,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </dialog>
     <dialog
         android:id="@+id/remove_torrent_dialog"
-        android:name="org.equeim.tremotesf.ui.RemoveTorrentDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.RemoveTorrentDialogFragment">
         <argument
             android:name="torrent_hash_strings"
             app:argType="string[]" />
@@ -294,7 +291,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </dialog>
     <dialog
         android:id="@+id/torrent_set_location_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment" >
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment">
         <argument
             android:name="torrent_hash_strings"
             app:argType="string[]" />
@@ -308,8 +305,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <fragment
         android:id="@+id/server_proxy_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerProxySettingsFragment"
-        android:label="ProxySettingsFragment" >
-    </fragment>
+        android:label="ProxySettingsFragment"></fragment>
 
     <dialog
         android:id="@+id/runtime_permission_rationale_dialog"

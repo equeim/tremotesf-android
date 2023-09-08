@@ -17,7 +17,10 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.RpcResponseWithoutArguments
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setTorrentsLocation(hashStrings: List<String>, newDownloadDirectory: String, moveFiles: Boolean) {
-    performRequest<RpcResponseWithoutArguments, _>(RpcMethod.TorrentSetLocation, SetLocationRequestArguments(hashStrings, NotNormalizedRpcPath(newDownloadDirectory), moveFiles))
+    performRequest<RpcResponseWithoutArguments, _>(
+        RpcMethod.TorrentSetLocation,
+        SetLocationRequestArguments(hashStrings, NotNormalizedRpcPath(newDownloadDirectory), moveFiles)
+    )
 }
 
 @Serializable

@@ -43,7 +43,13 @@ dependencies {
 }
 
 fun ModuleDependency.excludeKotlinStdlib() {
-    for (module in listOf("kotlin-stdlib-common", "kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect")) {
+    for (module in listOf(
+        "kotlin-stdlib-common",
+        "kotlin-stdlib",
+        "kotlin-stdlib-jdk7",
+        "kotlin-stdlib-jdk8",
+        "kotlin-reflect"
+    )) {
         exclude("org.jetbrains.kotlin", module)
     }
 }

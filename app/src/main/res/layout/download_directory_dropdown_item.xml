@@ -21,7 +21,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:padding="8dp"
         android:layout_gravity="center_vertical"
         android:contentDescription="@string/remove"
-        app:srcCompat="@drawable/ic_remove_24dp"/>
+        app:srcCompat="@drawable/ic_remove_24dp" />
 
     <TextView
         android:id="@android:id/text1"
@@ -31,5 +31,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_weight="1"
         android:padding="16dp"
         android:ellipsize="none"
-        android:textAppearance="?attr/textAppearanceSubtitle1"/>
+        android:textAppearance="?attr/textAppearanceSubtitle1" />
 </LinearLayout>

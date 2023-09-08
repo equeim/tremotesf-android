@@ -18,7 +18,14 @@ class NodeTest {
         val node = rootNode.addDirectory("0")
 
         val expectedItem = expectedFileItem(99, intArrayOf(0, 0))
-        node.addFile(expectedItem.fileId, expectedItem.name, expectedItem.size, expectedItem.completedSize, expectedItem.wantedState, expectedItem.priority)
+        node.addFile(
+            expectedItem.fileId,
+            expectedItem.name,
+            expectedItem.size,
+            expectedItem.completedSize,
+            expectedItem.wantedState,
+            expectedItem.priority
+        )
         checkLastChild(node, expectedItem)
     }
 
@@ -39,7 +46,14 @@ class NodeTest {
         node.addFile(98, "foo", 1, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
 
         val expectedItem = expectedFileItem(99, intArrayOf(0, 1))
-        node.addFile(expectedItem.fileId, expectedItem.name, expectedItem.size, expectedItem.completedSize, expectedItem.wantedState, expectedItem.priority)
+        node.addFile(
+            expectedItem.fileId,
+            expectedItem.name,
+            expectedItem.size,
+            expectedItem.completedSize,
+            expectedItem.wantedState,
+            expectedItem.priority
+        )
         checkLastChild(node, expectedItem)
     }
 
@@ -50,7 +64,14 @@ class NodeTest {
 
         val expectedItem = expectedFileItem(-666, intArrayOf(0, 0))
         assertFailsWith<IllegalArgumentException> {
-            node.addFile(expectedItem.fileId, expectedItem.name, expectedItem.size, expectedItem.completedSize, expectedItem.wantedState, expectedItem.priority)
+            node.addFile(
+                expectedItem.fileId,
+                expectedItem.name,
+                expectedItem.size,
+                expectedItem.completedSize,
+                expectedItem.wantedState,
+                expectedItem.priority
+            )
         }
     }
 
@@ -79,7 +100,14 @@ class NodeTest {
             addFile(98, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
             addFile(99, "bar", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
             addDirectory("1")
-                .addFile(100, "foo", 1, 42, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Low)
+                .addFile(
+                    100,
+                    "foo",
+                    1,
+                    42,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Low
+                )
         }
 
 
@@ -130,10 +158,10 @@ class NodeTest {
 
     @Test
     fun `Set wanted state recursively`() {
-       checkSetWantedStateOrPriority(
-           operation = { setItemWantedRecursively(false, it) },
-           itemAssert = { assertEquals(TorrentFilesTree.Item.WantedState.Unwanted, wantedState) }
-       )
+        checkSetWantedStateOrPriority(
+            operation = { setItemWantedRecursively(false, it) },
+            itemAssert = { assertEquals(TorrentFilesTree.Item.WantedState.Unwanted, wantedState) }
+        )
     }
 
     @Test
@@ -144,7 +172,10 @@ class NodeTest {
         )
     }
 
-    private fun checkSetWantedStateOrPriority(operation: TorrentFilesTree.Node.(MutableList<Int>) -> Unit, itemAssert: TorrentFilesTree.Item.() -> Unit) {
+    private fun checkSetWantedStateOrPriority(
+        operation: TorrentFilesTree.Node.(MutableList<Int>) -> Unit,
+        itemAssert: TorrentFilesTree.Item.() -> Unit,
+    ) {
         val (directory, _) = createDirectoryWithSubdirectory()
         directory.initiallyCalculateFromChildrenRecursively()
 
@@ -152,6 +183,7 @@ class NodeTest {
             items.add(node.item)
             (node as? TorrentFilesTree.DirectoryNode)?.children?.forEach { getItems(it, items) }
         }
+
         val oldItems = mutableListOf<TorrentFilesTree.Item>()
         getItems(directory, oldItems)
 

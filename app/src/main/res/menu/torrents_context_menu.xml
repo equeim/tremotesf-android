@@ -8,12 +8,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <item
         android:id="@+id/start"
         android:icon="@drawable/ic_play_arrow_24dp"
-        android:title="@string/start"/>
+        android:title="@string/start" />
 
     <item
         android:id="@+id/pause"
         android:icon="@drawable/ic_pause_24dp"
-        android:title="@string/pause"/>
+        android:title="@string/pause" />
 
     <item
         android:id="@+id/share"
@@ -23,30 +23,30 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <item
         android:id="@+id/start_now"
         android:icon="@drawable/ic_fast_forward_24"
-        android:title="@string/start_now"/>
+        android:title="@string/start_now" />
 
     <item
         android:id="@+id/check"
         android:icon="@drawable/ic_find_in_page_24dp"
-        android:title="@string/check_local_data"/>
+        android:title="@string/check_local_data" />
 
     <item
         android:id="@+id/reannounce"
         android:icon="@drawable/ic_sync_24dp"
-        android:title="@string/reannounce"/>
+        android:title="@string/reannounce" />
 
     <item
         android:id="@+id/set_location"
-        android:title="@string/set_location"/>
+        android:title="@string/set_location" />
 
     <item
         android:id="@+id/rename"
-        android:title="@string/rename"/>
+        android:title="@string/rename" />
 
     <item
         android:id="@+id/remove"
         android:icon="@drawable/ic_delete_24dp"
-        android:title="@string/remove"/>
+        android:title="@string/remove" />
 
     <item
         android:id="@+id/select_all"

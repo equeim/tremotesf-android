@@ -15,7 +15,7 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 class DirectoriesViewAdapter(
     private val context: Context,
-    textView: AutoCompleteTextView
+    textView: AutoCompleteTextView,
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private data class DirectoryItem(val path: String?, val displayPath: String?, val torrents: Int)
 

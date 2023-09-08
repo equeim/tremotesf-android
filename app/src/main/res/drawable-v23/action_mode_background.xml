@@ -13,9 +13,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
             <solid android:color="@color/elevation_overlay_color_4dp" />
         </shape>
     </item>
-    <item android:top="-3dp" android:right="-3dp" android:left="-3dp">
+    <item
+        android:top="-3dp"
+        android:right="-3dp"
+        android:left="-3dp">
         <shape android:shape="rectangle">
-            <stroke android:width="2dp" android:color="?colorPrimary"/>
+            <stroke
+                android:width="2dp"
+                android:color="?colorPrimary" />
         </shape>
     </item>
 </layer-list>

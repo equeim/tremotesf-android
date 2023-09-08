@@ -121,7 +121,7 @@ class TorrentFileParserTest {
 
     private fun assertTreeResultsAreSimilar(
         expected: TorrentFilesTreeBuildResult,
-        actual: TorrentFilesTreeBuildResult
+        actual: TorrentFilesTreeBuildResult,
     ) {
         assertNodesAreSimilar(expected.rootNode, actual.rootNode)
         assertNodesAreSimilar(expected.files, actual.files)

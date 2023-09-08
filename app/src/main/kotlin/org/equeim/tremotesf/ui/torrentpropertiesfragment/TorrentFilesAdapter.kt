@@ -20,7 +20,7 @@ import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 
 class TorrentFilesAdapter(
     private val model: TorrentFilesFragmentViewModel,
-    private val fragment: TorrentFilesFragment
+    private val fragment: TorrentFilesFragment,
 ) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == TYPE_ITEM) {
@@ -44,7 +44,7 @@ class TorrentFilesAdapter(
     private class ItemHolder(
         private val adapter: TorrentFilesAdapter,
         selectionTracker: SelectionTracker<Int>,
-        val binding: TorrentFileListItemBinding
+        val binding: TorrentFileListItemBinding,
     ) : BaseItemHolder(adapter, selectionTracker, binding.root) {
         override fun update() {
             super.update()

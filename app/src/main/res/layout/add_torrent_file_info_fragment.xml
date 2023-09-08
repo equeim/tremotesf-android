@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
@@ -22,7 +21,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_marginTop="@dimen/vertical_edge_padding"
         android:layout_marginBottom="@dimen/extended_fab_content_padding">
 
-        <include layout="@layout/download_directory_edit" android:id="@+id/download_directory_layout"/>
+        <include
+            layout="@layout/download_directory_edit"
+            android:id="@+id/download_directory_layout" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -35,7 +36,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:id="@+id/priority_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:readOnly="true"/>
+                app:readOnly="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
@@ -43,6 +44,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/start_downloading_after_adding"/>
+            android:text="@string/start_downloading_after_adding" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -6,9 +6,9 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   pull_request:
-    branches: [master]
+    branches: [ master ]
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
@@ -69,10 +69,10 @@ jobs:
   reuse-lint:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out
-      uses: actions/checkout@v3
+      - name: Check out
+        uses: actions/checkout@v3
 
-    - name: Check REUSE compliance
-      run: |
-        sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends --assume-yes install pipx
-        pipx run reuse lint
+      - name: Check REUSE compliance
+        run: |
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends --assume-yes install pipx
+          pipx run reuse lint

@@ -125,7 +125,11 @@ class WifiNetworkServersController(
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
-        constructor(wifiSsidChannel: SendChannel<String?>, flags: Int, connectivityManager: ConnectivityManager) : super(flags) {
+        constructor(
+            wifiSsidChannel: SendChannel<String?>,
+            flags: Int,
+            connectivityManager: ConnectivityManager,
+        ) : super(flags) {
             this.wifiSsidChannel = wifiSsidChannel
             this.connectivityManager = connectivityManager
         }

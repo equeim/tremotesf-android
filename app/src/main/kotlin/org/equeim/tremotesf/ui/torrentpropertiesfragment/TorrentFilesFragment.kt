@@ -21,7 +21,10 @@ import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
 class TorrentFilesFragment :
-    TorrentPropertiesFragment.PagerFragment(R.layout.torrent_files_fragment, TorrentPropertiesFragment.PagerAdapter.Tab.Files) {
+    TorrentPropertiesFragment.PagerFragment(
+        R.layout.torrent_files_fragment,
+        TorrentPropertiesFragment.PagerAdapter.Tab.Files
+    ) {
 
     private val torrentPropertiesFragmentViewModel by TorrentPropertiesFragmentViewModel.from(this)
     private val model by viewModels<TorrentFilesFragmentViewModel>(::requireParentFragment) {
@@ -74,14 +77,17 @@ class TorrentFilesFragment :
                     progressBar.isVisible = true
                     placeholder.setText(R.string.loading)
                 }
+
                 is TorrentFilesFragmentViewModel.State.Error -> {
                     progressBar.isVisible = false
                     placeholder.text = modelState.error.getErrorString(requireContext())
                 }
+
                 is TorrentFilesFragmentViewModel.State.TorrentNotFound -> {
                     progressBar.isVisible = false
                     placeholder.setText(R.string.torrent_not_found)
                 }
+
                 is TorrentFilesFragmentViewModel.State.TreeCreated -> {
                     progressBar.isVisible = false
                     placeholder.setText(R.string.no_files)

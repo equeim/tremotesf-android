@@ -48,7 +48,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
     data class FileRenameRequest(
         val torrentHashString: String?,
         val filePath: String,
-        val newName: String
+        val newName: String,
     ) : Parcelable
 
     companion object {
@@ -56,7 +56,10 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
         private val FILE_RENAME_REQUEST_KEY = FileRenameRequest::class.qualifiedName!!
 
         fun setFragmentResultListener(fragment: Fragment, listener: (FileRenameRequest) -> Unit) {
-            fragment.parentFragmentManager.setFragmentResultListener(RESULT_KEY, fragment.viewLifecycleOwner) { _, bundle ->
+            fragment.parentFragmentManager.setFragmentResultListener(
+                RESULT_KEY,
+                fragment.viewLifecycleOwner
+            ) { _, bundle ->
                 bundle.parcelable<FileRenameRequest>(FILE_RENAME_REQUEST_KEY)?.let(listener)
             }
         }

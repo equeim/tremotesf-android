@@ -48,7 +48,10 @@ class TorrentDetailsFragment :
                     ?: showPlaceholder(getString(R.string.torrent_not_found), showProgressBar = false)
 
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false
+                )
             }
         }
     }

@@ -85,7 +85,7 @@ data class Server(
     @SerialName("addTorrentDialogDirectories")
     val lastDownloadDirectories: List<String> = emptyList(),
     @SerialName("lastDownloadDirectory")
-    val lastDownloadDirectory: String? = null
+    val lastDownloadDirectory: String? = null,
 ) : Parcelable {
     override fun toString(): String =
         "Server(name=$name, address=$address, port=$port, apiPath=$apiPath, httpsEnabled=$httpsEnabled)"
@@ -160,7 +160,7 @@ private object ProxyTypeSerializer : KSerializer<Proxy.Type?> {
         encoder.encodeString(requireNotNull(strings.find { it.first == value }?.second))
 }
 
-private object FileSizeParceler: Parceler<FileSize> {
+private object FileSizeParceler : Parceler<FileSize> {
     override fun create(parcel: Parcel): FileSize = FileSize.fromBytes(parcel.readLong())
     override fun FileSize.write(parcel: Parcel, flags: Int) = parcel.writeLong(bytes)
 }

@@ -33,17 +33,35 @@ class PathsTest {
             NormalizeTestCase(input = "///home//fo\\o", onUnix = "/home/fo\\o", onWindows = "//home/fo/o"),
             NormalizeTestCase(input = "///home//fo  o", onUnix = "/home/fo  o", onWindows = "//home/fo  o"),
             NormalizeTestCase(input = "C:\\home\\fo o", onUnix = "C:\\home\\fo o", onWindows = "C:/home/fo o"),
-            NormalizeTestCase(input = "\\\\LOCALHOST\\c$\\home\\foo", onUnix = "\\\\LOCALHOST\\c\$\\home\\foo", onWindows = "//LOCALHOST/c$/home/foo"),
-            NormalizeTestCase(input = "\\\\LOCALHOST\\C$\\home\\foo", onUnix = "\\\\LOCALHOST\\C\$\\home\\foo", onWindows = "//LOCALHOST/C$/home/foo"),
-            NormalizeTestCase(input = "\\\\.\\c:\\home\\foo", onUnix = "\\\\.\\c:\\home\\foo", onWindows = "//./c:/home/foo"),
-            NormalizeTestCase(input = "\\\\.\\C:\\home\\foo", onUnix = "\\\\.\\C:\\home\\foo", onWindows = "//./C:/home/foo"),
+            NormalizeTestCase(
+                input = "\\\\LOCALHOST\\c$\\home\\foo",
+                onUnix = "\\\\LOCALHOST\\c\$\\home\\foo",
+                onWindows = "//LOCALHOST/c$/home/foo"
+            ),
+            NormalizeTestCase(
+                input = "\\\\LOCALHOST\\C$\\home\\foo",
+                onUnix = "\\\\LOCALHOST\\C\$\\home\\foo",
+                onWindows = "//LOCALHOST/C$/home/foo"
+            ),
+            NormalizeTestCase(
+                input = "\\\\.\\c:\\home\\foo",
+                onUnix = "\\\\.\\c:\\home\\foo",
+                onWindows = "//./c:/home/foo"
+            ),
+            NormalizeTestCase(
+                input = "\\\\.\\C:\\home\\foo",
+                onUnix = "\\\\.\\C:\\home\\foo",
+                onWindows = "//./C:/home/foo"
+            ),
             NormalizeTestCase(input = "d:", onUnix = "d:", onWindows = "d:"),
             NormalizeTestCase(input = "d:foo", onUnix = "d:foo", onWindows = "d:foo"),
             NormalizeTestCase(input = "C::\\wtf", onUnix = "C::\\wtf", onWindows = "C::/wtf"),
         )
 
-        val serverOsIsUnix = ServerCapabilities(rpcVersion = MINIMUM_RPC_VERSION, serverOs = ServerCapabilities.ServerOs.UnixLike)
-        val serverOsIsWindows = ServerCapabilities(rpcVersion = MINIMUM_RPC_VERSION, serverOs = ServerCapabilities.ServerOs.Windows)
+        val serverOsIsUnix =
+            ServerCapabilities(rpcVersion = MINIMUM_RPC_VERSION, serverOs = ServerCapabilities.ServerOs.UnixLike)
+        val serverOsIsWindows =
+            ServerCapabilities(rpcVersion = MINIMUM_RPC_VERSION, serverOs = ServerCapabilities.ServerOs.Windows)
         testCases.forEach {
             assertEquals(it.onUnix, it.input.normalizePath(serverOsIsUnix).value)
             assertEquals(it.onWindows, it.input.normalizePath(serverOsIsWindows).value)

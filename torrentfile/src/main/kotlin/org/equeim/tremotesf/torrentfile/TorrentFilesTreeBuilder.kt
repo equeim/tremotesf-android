@@ -11,13 +11,13 @@ interface TorrentFilesTreeBuilderScope {
         size: Long,
         completedSize: Long,
         wantedState: TorrentFilesTree.Item.WantedState,
-        priority: TorrentFilesTree.Item.Priority
+        priority: TorrentFilesTree.Item.Priority,
     )
 }
 
 data class TorrentFilesTreeBuildResult(
     val rootNode: TorrentFilesTree.DirectoryNode,
-    val files: List<TorrentFilesTree.FileNode>
+    val files: List<TorrentFilesTree.FileNode>,
 )
 
 fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): TorrentFilesTreeBuildResult {
@@ -31,7 +31,7 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
             size: Long,
             completedSize: Long,
             wantedState: TorrentFilesTree.Item.WantedState,
-            priority: TorrentFilesTree.Item.Priority
+            priority: TorrentFilesTree.Item.Priority,
         ) {
             var currentNode = rootNode
 
@@ -60,9 +60,11 @@ fun buildTorrentFilesTree(block: TorrentFilesTreeBuilderScope.() -> Unit): Torre
                             }
                             currentNode.addDirectory(part)
                         }
+
                         !is TorrentFilesTree.DirectoryNode -> {
                             throw IllegalArgumentException("Node that is expected to be directory was already added as file")
                         }
+
                         else -> childNode
                     }
                 }

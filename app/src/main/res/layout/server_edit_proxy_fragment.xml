@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -40,7 +39,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:id="@+id/proxy_type_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:readOnly="true"/>
+                    app:readOnly="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +53,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:id="@+id/address_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textUri"/>
+                    android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -68,7 +67,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:id="@+id/port_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"/>
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

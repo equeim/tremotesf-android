@@ -546,7 +546,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="free_space_in_download_directory">Free space in download directory</string>
 
-<!--    Override BottomSheetDialog's BottomSheetBehavior-->
+    <!--    Override BottomSheetDialog's BottomSheetBehavior-->
     <string name="bottom_sheet_behavior" translatable="false" tools:keep="@string/bottom_sheet_behavior">org.equeim.tremotesf.ui.ExpandedBottomSheetBehavior</string>
 
     <string name="reset">Reset</string>

@@ -15,7 +15,7 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 class StatusFilterViewAdapter(
     private val context: Context,
-    textView: AutoCompleteTextView
+    textView: AutoCompleteTextView,
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private var statusFilterMode = StatusFilterMode.DEFAULT
 

@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -51,7 +50,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textUri"
-                        android:saveEnabled="false"/>
+                        android:saveEnabled="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
@@ -60,7 +59,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                     android:saveEnabled="false"
-                    android:text="@string/start_added_torrents"/>
+                    android:text="@string/start_added_torrents" />
 
                 <CheckBox
                     android:id="@+id/rename_incomplete_files_check_box"
@@ -68,7 +67,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                     android:saveEnabled="false"
-                    android:text="@string/rename_incomplete_files"/>
+                    android:text="@string/rename_incomplete_files" />
 
                 <CheckBox
                     android:id="@+id/incomplete_files_directory_check_box"
@@ -76,7 +75,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                     android:saveEnabled="false"
-                    android:text="@string/incomplete_files_directory"/>
+                    android:text="@string/incomplete_files_directory" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/incomplete_files_directory_layout"
@@ -89,7 +88,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textUri"
-                        android:saveEnabled="false"/>
+                        android:saveEnabled="false" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>

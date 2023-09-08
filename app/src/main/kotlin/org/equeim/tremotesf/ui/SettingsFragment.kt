@@ -63,7 +63,8 @@ class SettingsFragment : NavigationFragment(
 
         override fun onCreate(savedInstanceState: Bundle?) {
             // super.onCreate() calls onCreatePreferences() so we need to setup launcher before that
-            notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this, requireParentFragment())
+            notificationPermissionLauncher =
+                model.notificationPermissionHelper?.registerWithFragment(this, requireParentFragment())
             model.notificationPermissionHelper?.checkPermission(requireContext())
             super.onCreate(savedInstanceState)
         }
@@ -136,12 +137,13 @@ class SettingsFragment : NavigationFragment(
 
         override fun onSharedPreferenceChanged(
             sharedPreferences: SharedPreferences?,
-            key: String?
+            key: String?,
         ) {
             when (key) {
                 Settings.notifyOnAdded.key,
                 Settings.notifyOnFinished.key,
-                Settings.showPersistentNotification.key -> updateBackgroundUpdatePreference()
+                Settings.showPersistentNotification.key,
+                -> updateBackgroundUpdatePreference()
             }
         }
 
@@ -184,7 +186,7 @@ class NotificationPermissionPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
-    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference
+    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference,
 ) : Preference(context, attrs, defStyleAttr, defStyleRes) {
     var onButtonClicked: (() -> Unit)? = null
 
@@ -202,7 +204,7 @@ class SettingsAppColorsPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
-    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference
+    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference,
 ) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
     init {
         // Set initial value so that height will remain fixed
@@ -215,11 +217,13 @@ class SettingsAppColorsPreference @JvmOverloads constructor(
         scope = MainScope()
         scope.launch {
             Settings.colorTheme.flow().collect {
-                setSummary(when (it) {
-                    Settings.ColorTheme.System -> R.string.prefs_color_theme_system
-                    Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
-                    Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
-                })
+                setSummary(
+                    when (it) {
+                        Settings.ColorTheme.System -> R.string.prefs_color_theme_system
+                        Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
+                        Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+                    }
+                )
             }
         }
     }
@@ -254,11 +258,13 @@ class SettingsColorThemeFragment : NavigationDialogFragment() {
                 continue
             }
             SettingsColorThemeChoiceView(requireContext()).apply {
-                setText(when (theme) {
-                    Settings.ColorTheme.System -> R.string.prefs_color_theme_system
-                    Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
-                    Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
-                })
+                setText(
+                    when (theme) {
+                        Settings.ColorTheme.System -> R.string.prefs_color_theme_system
+                        Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
+                        Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+                    }
+                )
                 if (theme != Settings.ColorTheme.System) {
                     setColorFromTheme(theme.activityThemeResId)
                 }
@@ -290,7 +296,7 @@ class SettingsColorThemeFragment : NavigationDialogFragment() {
 class SettingsColorThemeChoiceView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = R.attr.settingsColorThemeChoiceViewStyle
+    @AttrRes defStyleAttr: Int = R.attr.settingsColorThemeChoiceViewStyle,
 ) : AppCompatCheckedTextView(context, attrs, defStyleAttr) {
     fun setColorFromTheme(@StyleRes activityThemeResId: Int) {
         val color = MaterialColors.getColor(
@@ -298,9 +304,10 @@ class SettingsColorThemeChoiceView @JvmOverloads constructor(
             androidx.appcompat.R.attr.colorPrimary,
             SettingsColorThemeChoiceView::class.simpleName
         )
-        val colorDrawable = AppCompatResources.getDrawable(context, R.drawable.settings_color_theme_color_view_shape_48dp)?.apply {
-            colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
-        }
+        val colorDrawable =
+            AppCompatResources.getDrawable(context, R.drawable.settings_color_theme_color_view_shape_48dp)?.apply {
+                colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
+            }
         updateCompoundDrawables(end = colorDrawable)
     }
 }

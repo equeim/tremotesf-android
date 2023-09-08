@@ -17,7 +17,7 @@ import com.l4digital.fastscroll.FastScroller
 class FastScrollRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = 0
+    @AttrRes defStyleAttr: Int = 0,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     @SuppressLint("ResourceType")
@@ -32,7 +32,8 @@ class FastScrollRecyclerView @JvmOverloads constructor(
             setHandleColor(getColor(1, 0))
         }
     }
-    private val fastScrollerMarginBottom = context.resources.getDimensionPixelSize(com.l4digital.fastscroll.R.dimen.fastscroll_scrollbar_margin_bottom)
+    private val fastScrollerMarginBottom =
+        context.resources.getDimensionPixelSize(com.l4digital.fastscroll.R.dimen.fastscroll_scrollbar_margin_bottom)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

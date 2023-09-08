@@ -33,12 +33,12 @@ private const val TEMP_FILE_SUFFIX = ".json"
 abstract class Servers(
     protected val scope: CoroutineScope,
     protected val context: Context,
-    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
+    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
     @Serializable
     data class ServersState(
         @SerialName("servers") val servers: List<Server>,
-        @SerialName("current") val currentServerName: String?
+        @SerialName("current") val currentServerName: String?,
     ) {
         val currentServer: Server?
             get() = if (currentServerName != null) {

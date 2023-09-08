@@ -74,6 +74,7 @@ class SpeedFragment : NavigationFragment(
             SpeedServerSettings.AlternativeLimitsDays.Weekends
         )
     }
+
     private lateinit var daysSpinnerItems: List<String>
 
     private val model by viewModels<SpeedFragmentViewModel>()
@@ -210,16 +211,19 @@ class SpeedFragment : NavigationFragment(
             when (it) {
                 is RpcRequestState.Loaded -> showSettings(it.response)
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false
+                )
             }
         }
     }
 
     private fun showPlaceholder(text: String, showProgressBar: Boolean) {
         hideKeyboard()
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = false
-            with (placeholderView) {
+            with(placeholderView) {
                 root.isVisible = true
                 progressBar.isVisible = showProgressBar
                 placeholder.text = text
@@ -228,7 +232,7 @@ class SpeedFragment : NavigationFragment(
     }
 
     private fun showSettings(settings: SpeedServerSettings) {
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = true
             placeholderView.root.isVisible = false
         }
@@ -265,7 +269,7 @@ class SpeedFragment : NavigationFragment(
 class TimePickerItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle
+    @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle,
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     private var time: LocalTime = LocalTime.MIN

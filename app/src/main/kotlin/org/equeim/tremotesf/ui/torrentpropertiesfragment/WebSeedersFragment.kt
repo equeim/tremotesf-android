@@ -39,7 +39,15 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
     TorrentPropertiesFragment.PagerAdapter.Tab.WebSeeders
 ) {
     private val model by viewModels<WebSeedersFragmentViewModel> {
-        viewModelFactory { initializer { WebSeedersFragmentViewModel(TorrentPropertiesFragment.getTorrentHashString(navController)) } }
+        viewModelFactory {
+            initializer {
+                WebSeedersFragmentViewModel(
+                    TorrentPropertiesFragment.getTorrentHashString(
+                        navController
+                    )
+                )
+            }
+        }
     }
     private val binding by viewLifecycleObject(WebSeedersFragmentBinding::bind)
     private val adapter by viewLifecycleObject { WebSeedersAdapter() }

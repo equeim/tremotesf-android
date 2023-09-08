@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference
 
 abstract class BaseTorrentFilesAdapter(
     private val filesTree: TorrentFilesTree,
-    private val fragment: Fragment
+    private val fragment: Fragment,
 ) : AsyncLoadingListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
     protected companion object {
         const val TYPE_HEADER = 0
@@ -101,14 +101,14 @@ abstract class BaseTorrentFilesAdapter(
     private class ItemCallback : DiffUtil.ItemCallback<TorrentFilesTree.Item?>() {
         override fun areItemsTheSame(
             oldItem: TorrentFilesTree.Item,
-            newItem: TorrentFilesTree.Item
+            newItem: TorrentFilesTree.Item,
         ): Boolean {
             return oldItem === newItem || oldItem.nodePath.contentEquals(newItem.nodePath)
         }
 
         override fun areContentsTheSame(
             oldItem: TorrentFilesTree.Item,
-            newItem: TorrentFilesTree.Item
+            newItem: TorrentFilesTree.Item,
         ): Boolean {
             return oldItem == newItem
         }
@@ -127,7 +127,7 @@ abstract class BaseTorrentFilesAdapter(
     protected abstract class BaseItemHolder(
         private val adapter: BaseTorrentFilesAdapter,
         selectionTracker: SelectionTracker<Int>,
-        itemView: View
+        itemView: View,
     ) : SelectionTracker.ViewHolder<Int>(
         selectionTracker,
         itemView
@@ -268,6 +268,7 @@ abstract class BaseTorrentFilesAdapter(
                         val i = getItem(selectionTracker.getFirstSelectedPosition())!!
                         filesTree.getItemNamePath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
                     }
+
                     else -> ret = false
                 }
                 ret

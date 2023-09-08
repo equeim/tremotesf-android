@@ -79,7 +79,7 @@ fun OnBackPressedDispatcher.addCustomCallback(owner: LifecycleOwner, onBackPress
 
 inline fun CheckBox.setDependentViews(
     vararg views: View,
-    crossinline onCheckedChanged: (Boolean) -> Unit = {}
+    crossinline onCheckedChanged: (Boolean) -> Unit = {},
 ) {
     views.forEach { it.isEnabled = isChecked }
     setOnCheckedChangeListener { _, isChecked ->
@@ -97,7 +97,12 @@ inline fun TextView.doAfterTextChangedAndNotEmpty(crossinline action: (text: Edi
         }
     }
 
-fun TextView.updateCompoundDrawables(start: Drawable? = null, top: Drawable? = null, end: Drawable? = null, bottom: Drawable? = null) {
+fun TextView.updateCompoundDrawables(
+    start: Drawable? = null,
+    top: Drawable? = null,
+    end: Drawable? = null,
+    bottom: Drawable? = null,
+) {
     val drawables = compoundDrawablesRelative
     setCompoundDrawablesRelativeWithIntrinsicBounds(
         start ?: drawables[0],
@@ -119,12 +124,13 @@ val EditText.textInputLayout: TextInputLayout
         throw IllegalArgumentException("$this is not a child of TextInputLayout")
     }
 
-inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    getParcelable(key, T::class.java)
-} else {
-    @Suppress("DEPRECATION")
-    getParcelable(key)
-}
+inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelable(key, T::class.java)
+    } else {
+        @Suppress("DEPRECATION")
+        getParcelable(key)
+    }
 
 val RecyclerView.ViewHolder.bindingAdapterPositionOrNull: Int?
     get() = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }

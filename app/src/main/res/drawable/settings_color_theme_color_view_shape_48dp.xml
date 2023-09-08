@@ -9,7 +9,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:shape="oval">
-    <solid android:color="@android:color/transparent" tools:color="?colorPrimary" />
+    <solid
+        android:color="@android:color/transparent"
+        tools:color="?colorPrimary" />
     <size
         android:width="48dp"
         android:height="48dp" />

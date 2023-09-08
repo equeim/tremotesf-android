@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="android.widget.LinearLayout">
 
@@ -18,7 +17,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_marginStart="24dp"
         android:gravity="center_vertical"
         android:textAppearance="?attr/textAppearanceListItemSmall"
-        android:textColor="?android:attr/textColorSecondary"/>
+        android:textColor="?android:attr/textColorSecondary" />
 
     <TextView
         android:id="@+id/text_view"
@@ -26,5 +25,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
         android:gravity="center_vertical"
-        android:textAppearance="?attr/textAppearanceListItemSmall"/>
+        android:textAppearance="?attr/textAppearanceListItemSmall" />
 </merge>

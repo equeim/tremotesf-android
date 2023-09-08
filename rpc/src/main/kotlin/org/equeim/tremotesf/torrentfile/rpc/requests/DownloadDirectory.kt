@@ -15,7 +15,10 @@ import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getDownloadDirectory(): NormalizedRpcPath {
-    return performRequest<RpcResponse<DownloadDirectoryResponseArguments>>(DOWNLOAD_DIRECTORY_REQUEST, "getDownloadDirectory")
+    return performRequest<RpcResponse<DownloadDirectoryResponseArguments>>(
+        DOWNLOAD_DIRECTORY_REQUEST,
+        "getDownloadDirectory"
+    )
         .arguments
         .downloadDirectory
 }

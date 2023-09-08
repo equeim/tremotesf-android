@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -34,7 +33,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/server_uses_self_signed_certificate"/>
+                android:text="@string/server_uses_self_signed_certificate" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/self_signed_certificate_layout"
@@ -49,7 +48,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="128dp"
                     android:gravity="top|start"
                     android:inputType="textMultiLine|textUri"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -65,7 +64,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:text="@string/use_client_certificate_authentication"/>
+                android:text="@string/use_client_certificate_authentication" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/client_certificate_layout"
@@ -80,7 +79,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="128dp"
                     android:gravity="top|start"
                     android:inputType="textMultiLine|textUri"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button

@@ -49,7 +49,7 @@ interface AddTorrentFileModel {
     data class FilePriorities(
         val unwantedFiles: List<Int>,
         val lowPriorityFiles: List<Int>,
-        val highPriorityFiles: List<Int>
+        val highPriorityFiles: List<Int>,
     )
 
     data class ViewUpdateData(
@@ -82,7 +82,7 @@ interface AddTorrentFileModel {
 class AddTorrentFileModelImpl(
     private val args: AddTorrentFileFragmentArgs,
     application: Application,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : BaseAddTorrentModel(application), AddTorrentFileModel {
     override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
 

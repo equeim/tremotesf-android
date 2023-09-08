@@ -4,64 +4,63 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/start"
         android:icon="@drawable/ic_play_arrow_24dp"
         android:title="@string/start"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/pause"
         android:icon="@drawable/ic_pause_24dp"
         android:title="@string/pause"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/share"
         android:icon="@drawable/ic_baseline_share_24"
         android:title="@string/share"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/start_now"
         android:icon="@drawable/ic_fast_forward_24"
         android:title="@string/start_now"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/check"
         android:icon="@drawable/ic_find_in_page_24dp"
         android:orderInCategory="2"
         android:title="@string/check_local_data"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/reannounce"
         android:icon="@drawable/ic_sync_24dp"
         android:orderInCategory="2"
         android:title="@string/reannounce"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/set_location"
         android:orderInCategory="2"
         android:title="@string/set_location"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/rename"
         android:orderInCategory="2"
         android:title="@string/rename"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/remove"
         android:icon="@drawable/ic_delete_24dp"
         android:orderInCategory="2"
         android:title="@string/remove"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 </menu>

@@ -173,7 +173,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         val fd = model.detachFd() ?: return
         val priorities = model.getFilePriorities()
         val downloadDirectory = infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit.text.toString()
-        val bandwidthPriority = priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())]
+        val bandwidthPriority =
+            priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())]
         val renamedFiles = model.renamedFiles
         val startDownloading = infoFragment.binding.startDownloadingCheckBox.isChecked
         GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
@@ -234,7 +235,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     }
                 }
 
-                placeholderView.progressBar.isVisible = downloadingSettings is RpcRequestState.Loading || parserStatus == AddTorrentFileModel.ParserStatus.Loading
+                placeholderView.progressBar.isVisible =
+                    downloadingSettings is RpcRequestState.Loading || parserStatus == AddTorrentFileModel.ParserStatus.Loading
 
                 placeholderView.placeholderLayout.isVisible = true
 
@@ -301,12 +303,13 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     freeSpaceJob = null
                     if (!path.isNullOrBlank()) {
                         freeSpaceJob = lifecycleScope.launch {
-                            binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText = model.getFreeSpace(path.toString())?.let {
-                                getString(
-                                    R.string.free_space,
-                                    FormatUtils.formatFileSize(requireContext(), it)
-                                )
-                            }
+                            binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText =
+                                model.getFreeSpace(path.toString())?.let {
+                                    getString(
+                                        R.string.free_space,
+                                        FormatUtils.formatFileSize(requireContext(), it)
+                                    )
+                                }
                             freeSpaceJob = null
                         }
                     }
@@ -318,7 +321,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     with(binding) {
                         if (model.shouldSetInitialRpcInputs) {
                             val downloadingSettings = it.downloadingSettings.response
-                            downloadDirectoryLayout.downloadDirectoryEdit.setText(model.getInitialDownloadDirectory(downloadingSettings))
+                            downloadDirectoryLayout.downloadDirectoryEdit.setText(
+                                model.getInitialDownloadDirectory(
+                                    downloadingSettings
+                                )
+                            )
                             startDownloadingCheckBox.isChecked = downloadingSettings.startAddedTorrents
                             model.shouldSetInitialRpcInputs = false
                         }
@@ -392,11 +399,11 @@ class AddTorrentFileFragment : AddTorrentFragment(
         class Adapter(
             model: AddTorrentFileModel,
             fragment: Fragment,
-            private val activity: NavigationActivity
+            private val activity: NavigationActivity,
         ) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
             override fun onCreateViewHolder(
                 parent: ViewGroup,
-                viewType: Int
+                viewType: Int,
             ): RecyclerView.ViewHolder {
                 if (viewType == TYPE_ITEM) {
                     return ItemHolder(
@@ -425,7 +432,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             private class ItemHolder(
                 private val adapter: Adapter,
                 selectionTracker: SelectionTracker<Int>,
-                val binding: LocalTorrentFileListItemBinding
+                val binding: LocalTorrentFileListItemBinding,
             ) : BaseItemHolder(adapter, selectionTracker, binding.root) {
                 override fun update() {
                     super.update()

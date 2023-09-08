@@ -22,7 +22,7 @@ import org.equeim.tremotesf.R
 
 abstract class BaseDropdownAdapter(
     @LayoutRes private val resource: Int = R.layout.dropdown_menu_popup_item,
-    @IdRes private val textViewResourceId: Int = 0
+    @IdRes private val textViewResourceId: Int = 0,
 ) : BaseAdapter(), Filterable {
     protected open fun createViewHolder(view: View): BaseViewHolder = BaseViewHolder(view)
 

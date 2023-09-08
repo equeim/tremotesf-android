@@ -306,7 +306,14 @@ class TorrentFilesTreeTest {
     fun `Recalculate node and its parents when node is top-level file node`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
-        val file = rootNode.addFile(0, "", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file = rootNode.addFile(
+            0,
+            "",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         val mustNotChange = NodesThatMustNotChangeHelper(rootNode.getAllNodes())
 
@@ -323,14 +330,45 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        val file1 = subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        val file2 = subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file1 = subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        val file2 = subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         val subdirectory2 = directory.addDirectory("subdir2")
-        val file3 = subdirectory2.addFile(1, "file3", 1, 1, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file3 = subdirectory2.addFile(
+            1,
+            "file3",
+            1,
+            1,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         testWithTree(rootNode) {
-            file1.item = file1.item.copy(size = 42, completedSize = 1, wantedState = TorrentFilesTree.Item.WantedState.Unwanted, priority = TorrentFilesTree.Item.Priority.Low)
-            file2.item = file2.item.copy(size = 777, completedSize = 88, wantedState = TorrentFilesTree.Item.WantedState.Wanted, priority = TorrentFilesTree.Item.Priority.Low)
+            file1.item = file1.item.copy(
+                size = 42,
+                completedSize = 1,
+                wantedState = TorrentFilesTree.Item.WantedState.Unwanted,
+                priority = TorrentFilesTree.Item.Priority.Low
+            )
+            file2.item = file2.item.copy(
+                size = 777,
+                completedSize = 88,
+                wantedState = TorrentFilesTree.Item.WantedState.Wanted,
+                priority = TorrentFilesTree.Item.Priority.Low
+            )
 
             val mustChange = NodesThatMustChangeHelper(directory, subdirectory)
             val mustNotChange = NodesThatMustNotChangeHelper(rootNode, file1, file2, subdirectory2, file3)
@@ -360,13 +398,39 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        val file1 = subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        val file2 = subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file1 = subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        val file2 = subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         val subdirectory2 = directory.addDirectory("subdir2")
-        val file3 = subdirectory2.addFile(1, "file3", 1, 1, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file3 = subdirectory2.addFile(
+            1,
+            "file3",
+            1,
+            1,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         testWithTree(rootNode) {
-            file1.item = file1.item.copy(size = 42, completedSize = 1, wantedState = TorrentFilesTree.Item.WantedState.Unwanted, priority = TorrentFilesTree.Item.Priority.Low)
+            file1.item = file1.item.copy(
+                size = 42,
+                completedSize = 1,
+                wantedState = TorrentFilesTree.Item.WantedState.Unwanted,
+                priority = TorrentFilesTree.Item.Priority.Low
+            )
 
             val mustChange = NodesThatMustChangeHelper(directory, subdirectory)
             val mustNotChange = NodesThatMustNotChangeHelper(rootNode, file1, file2, subdirectory2, file3)
@@ -396,8 +460,22 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        val file2 = subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        val file2 = subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
             navigateDown(directory.item)
@@ -413,8 +491,22 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        val file2 = subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        val file2 = subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
             navigateDown(directory.item)
@@ -428,8 +520,22 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
             navigateDown(directory.item)
@@ -443,8 +549,22 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
             navigateDown(directory.item)
@@ -454,7 +574,12 @@ class TorrentFilesTreeTest {
         }
     }
 
-    private fun TestScope.renameFileCorrectly(rootNode: TorrentFilesTree.DirectoryNode, renamedNode: TorrentFilesTree.Node, path: String, navigate: TestTree.() -> Unit) {
+    private fun TestScope.renameFileCorrectly(
+        rootNode: TorrentFilesTree.DirectoryNode,
+        renamedNode: TorrentFilesTree.Node,
+        path: String,
+        navigate: TestTree.() -> Unit,
+    ) {
         val mustChange = NodesThatMustChangeHelper(renamedNode)
         val mustNotChange = NodesThatMustNotChangeHelper(rootNode.getAllNodes().minus(renamedNode))
 
@@ -504,8 +629,22 @@ class TorrentFilesTreeTest {
 
         val directory = rootNode.addDirectory("dir")
         val subdirectory = directory.addDirectory("subdir")
-        subdirectory.addFile(0, "file1", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-        subdirectory.addFile(1, "file2", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            0,
+            "file1",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
+        subdirectory.addFile(
+            1,
+            "file2",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
 
         val mustNotChange = NodesThatMustNotChangeHelper(rootNode.getAllNodes())
 
@@ -523,7 +662,14 @@ class TorrentFilesTreeTest {
     @Test
     fun `Get name path for top-level file`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
-        val file = rootNode.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file = rootNode.addFile(
+            1,
+            "foo",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         testWithTree(rootNode) {
             assertEquals(file.item.name, getItemNamePath(file.item))
         }
@@ -533,7 +679,14 @@ class TorrentFilesTreeTest {
     fun `Get name path for top-level directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
-        directory.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        directory.addFile(
+            1,
+            "foo",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         testWithTree(rootNode) {
             assertEquals(directory.item.name, getItemNamePath(directory.item))
         }
@@ -543,7 +696,14 @@ class TorrentFilesTreeTest {
     fun `Get name path for file`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
-        val file = directory.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        val file = directory.addFile(
+            1,
+            "foo",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         testWithTree(rootNode) {
             assertEquals("foo/foo", getItemNamePath(file.item))
         }
@@ -554,7 +714,14 @@ class TorrentFilesTreeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("foo")
         val subdirectory = directory.addDirectory("foo")
-        subdirectory.addFile(1, "foo", 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+        subdirectory.addFile(
+            1,
+            "foo",
+            0,
+            0,
+            TorrentFilesTree.Item.WantedState.Wanted,
+            TorrentFilesTree.Item.Priority.Normal
+        )
         testWithTree(rootNode) {
             assertEquals("foo/foo", getItemNamePath(subdirectory.item))
         }
@@ -562,7 +729,7 @@ class TorrentFilesTreeTest {
 
     private inline fun TestScope.testWithTree(
         rootNode: TorrentFilesTree.DirectoryNode,
-        block: TestTree.() -> Unit
+        block: TestTree.() -> Unit,
     ) {
         rootNode.children.forEach { (it as? TorrentFilesTree.DirectoryNode)?.initiallyCalculateFromChildrenRecursively() }
         TestTree(this).apply {

@@ -18,7 +18,10 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.RpcResponse
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getNetworkServerSettings(): NetworkServerSettings =
-    performRequest<RpcResponse<NetworkServerSettings>>(NETWORK_SERVER_SETTINGS_REQUEST_BODY, "getNetworkServerSettings").arguments
+    performRequest<RpcResponse<NetworkServerSettings>>(
+        NETWORK_SERVER_SETTINGS_REQUEST_BODY,
+        "getNetworkServerSettings"
+    ).arguments
 
 /**
  * @throws RpcRequestError
@@ -107,8 +110,10 @@ data class NetworkServerSettings(
     enum class EncryptionMode {
         @SerialName("tolerated")
         Allowed,
+
         @SerialName("preferred")
         Preferred,
+
         @SerialName("required")
         Required
     }
@@ -121,4 +126,5 @@ private data class NetworkServerSettingsRequestArguments(
     val fields: List<String> = NetworkServerSettings.serializer().descriptor.elementNames.toList(),
 )
 
-private val NETWORK_SERVER_SETTINGS_REQUEST_BODY = RpcRequestBody(RpcMethod.SessionGet, NetworkServerSettingsRequestArguments())
+private val NETWORK_SERVER_SETTINGS_REQUEST_BODY =
+    RpcRequestBody(RpcMethod.SessionGet, NetworkServerSettingsRequestArguments())

@@ -64,7 +64,10 @@ class RemoveTorrentDialogFragment : NavigationDialogFragment() {
         private val TORRENTS_REMOVE_REQUEST_KEY = TorrentsRemoveRequest::class.qualifiedName!!
 
         fun setFragmentResultListener(fragment: Fragment, listener: (TorrentsRemoveRequest) -> Unit) {
-            fragment.parentFragmentManager.setFragmentResultListener(RESULT_KEY, fragment.viewLifecycleOwner) { _, bundle ->
+            fragment.parentFragmentManager.setFragmentResultListener(
+                RESULT_KEY,
+                fragment.viewLifecycleOwner
+            ) { _, bundle ->
                 bundle.parcelable<TorrentsRemoveRequest>(TORRENTS_REMOVE_REQUEST_KEY)?.let(listener)
             }
         }

@@ -134,7 +134,10 @@ class ForegroundService : LifecycleService() {
         } else {
             startForeground(
                 NotificationsController.PERSISTENT_NOTIFICATION_ID,
-                PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(GlobalServers.serversState.value.currentServer, PeriodicServerStateUpdater.sessionStats.value)
+                PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(
+                    GlobalServers.serversState.value.currentServer,
+                    PeriodicServerStateUpdater.sessionStats.value
+                )
             )
         }
     }
@@ -149,7 +152,10 @@ class ForegroundService : LifecycleService() {
         }
         startForeground(
             NotificationsController.PERSISTENT_NOTIFICATION_ID,
-            PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(GlobalServers.serversState.value.currentServer, PeriodicServerStateUpdater.sessionStats.value),
+            PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(
+                GlobalServers.serversState.value.currentServer,
+                PeriodicServerStateUpdater.sessionStats.value
+            ),
             type
         )
     }
@@ -188,8 +194,11 @@ class ForegroundService : LifecycleService() {
         }
 
         when (intent?.action) {
-            NotificationsController.PersistentNotificationActions.CONNECT -> GlobalRpcClient.shouldConnectToServer.value = true
-            NotificationsController.PersistentNotificationActions.DISCONNECT -> GlobalRpcClient.shouldConnectToServer.value = false
+            NotificationsController.PersistentNotificationActions.CONNECT -> GlobalRpcClient.shouldConnectToServer.value =
+                true
+
+            NotificationsController.PersistentNotificationActions.DISCONNECT -> GlobalRpcClient.shouldConnectToServer.value =
+                false
         }
 
         return START_STICKY
@@ -209,7 +218,7 @@ class ForegroundService : LifecycleService() {
 
     private fun updatePersistentNotification(
         currentServer: Server?,
-        sessionStats: RpcRequestState<SessionStatsResponseArguments>
+        sessionStats: RpcRequestState<SessionStatsResponseArguments>,
     ) {
         if (!stopUpdatingNotification) {
             PeriodicServerStateUpdater.notificationsController.updatePersistentNotification(currentServer, sessionStats)

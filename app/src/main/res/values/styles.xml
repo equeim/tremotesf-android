@@ -7,15 +7,20 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
         <item name="android:statusBarColor">@color/status_bar_color</item>
         <item name="android:navigationBarColor">@color/navigation_bar_color</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/light_system_bars</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/light_system_bars
+        </item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars
+        </item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-<!--       Android removes background from our icon on splash screen. Override windowSplashScreenIconBackgroundColor to fix it -->
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/ic_launcher_background</item>
+        <!--       Android removes background from our icon on splash screen. Override windowSplashScreenIconBackgroundColor to fix it -->
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">
+            @color/ic_launcher_background
+        </item>
 
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorOnPrimary">@color/theme_red_onPrimary</item>
@@ -57,7 +62,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
         <item name="materialCardViewStyle">@style/Widget.Tremotesf.CardView</item>
-        <item name="settingsColorThemeChoiceViewStyle">@style/Widget.Tremotesf.SettingsColorThemeChoiceView</item>
+        <item name="settingsColorThemeChoiceViewStyle">
+            @style/Widget.Tremotesf.SettingsColorThemeChoiceView
+        </item>
     </style>
 
     <style name="AppTheme.Teal">
@@ -117,7 +124,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <style name="Widget.Tremotesf.AppBarLayout" parent="Widget.Material3.AppBarLayout">
         <item name="liftOnScroll">false</item>
-        <item name="android:outlineAmbientShadowColor" tools:targetApi="p">@android:color/black</item>
+        <item name="android:outlineAmbientShadowColor" tools:targetApi="p">@android:color/black
+        </item>
         <item name="android:outlineSpotShadowColor" tools:targetApi="p">@android:color/black</item>
     </style>
 
@@ -186,7 +194,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </style>
 
     <style name="Widget.Tremotesf.BottomAppBarActionButton" parent="Widget.Material3.Button">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Tremotesf.BottomAppBarActionButton</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Tremotesf.BottomAppBarActionButton
+        </item>
         <item name="android:minHeight">@dimen/bottom_app_bar_action_button_height</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetTop">0dp</item>

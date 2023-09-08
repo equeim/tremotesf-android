@@ -19,7 +19,7 @@ fun <T : Any> viewLifecycleObjectNullable(): ReadWriteProperty<Fragment, T?> =
     NullableViewLifecycleObjectProperty()
 
 private class NonNullableViewLifecycleObjectProperty<T : Any>(
-    private val initialValueProducer: ((View) -> T)?
+    private val initialValueProducer: ((View) -> T)?,
 ) : BaseViewLifecycleObjectProperty<T>() {
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
         val view = checkViewIsCreated(thisRef, property)

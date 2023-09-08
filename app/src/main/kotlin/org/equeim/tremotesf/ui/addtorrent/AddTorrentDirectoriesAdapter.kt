@@ -25,7 +25,7 @@ import timber.log.Timber
 
 class AddTorrentDirectoriesAdapter(
     coroutineScope: CoroutineScope,
-    savedInstanceState: Bundle?
+    savedInstanceState: Bundle?,
 ) : BaseDropdownAdapter(
     R.layout.download_directory_dropdown_item,
     android.R.id.text1

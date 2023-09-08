@@ -246,6 +246,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                         else -> ConnectionButtonState.Disconnect
                     }
                 }
+
                 is RpcRequestState.Loading -> ConnectionButtonState.Disconnect
                 is RpcRequestState.Loaded -> ConnectionButtonState.Hidden
             }
@@ -338,7 +339,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     fun pauseTorrents(torrentIds: List<Int>) {
         Timber.d("pauseTorrents() called with: torrentIds = $torrentIds")
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(torrentIds) }
+            val ok =
+                GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(torrentIds) }
             if (ok) refreshRequests.emit(Unit)
         }
     }
@@ -346,7 +348,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     fun checkTorrents(torrentIds: List<Int>) {
         Timber.d("checkTorrents() called with: torrentIds = $torrentIds")
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { verifyTorrents(torrentIds) }
+            val ok =
+                GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { verifyTorrents(torrentIds) }
             if (ok) refreshRequests.emit(Unit)
         }
     }

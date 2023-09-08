@@ -46,8 +46,10 @@ internal object MinutesToDurationSerializer : KSerializer<Duration> {
 internal object MinutesSinceStartOfDaySerializer : KSerializer<LocalTime> {
     override val descriptor =
         PrimitiveSerialDescriptor(MinutesSinceStartOfDaySerializer::class.qualifiedName!!, PrimitiveKind.LONG)
+
     override fun deserialize(decoder: Decoder): LocalTime = LocalTime.ofSecondOfDay(decoder.decodeLong() * 60)
-    override fun serialize(encoder: Encoder, value: LocalTime) = encoder.encodeLong((value.toSecondOfDay() / 60).toLong())
+    override fun serialize(encoder: Encoder, value: LocalTime) =
+        encoder.encodeLong((value.toSecondOfDay() / 60).toLong())
 }
 
 internal object UnixTimeToInstantSerializer : KSerializer<Instant?> {

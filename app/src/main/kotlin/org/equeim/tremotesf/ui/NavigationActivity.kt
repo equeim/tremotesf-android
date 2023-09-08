@@ -159,6 +159,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
                     Timber.d("Handling drag start event")
                     model.acceptDragStartEvent(event.clipDescription)
                 }
+
                 DragEvent.ACTION_DROP -> {
                     Timber.d("Handling drop event")
                     val directions = model.getAddTorrentDirections(event.clipData)
@@ -262,14 +263,14 @@ class NavHostFragment : NavHostFragment() {
         override fun navigate(
             entries: List<NavBackStackEntry>,
             navOptions: NavOptions?,
-            navigatorExtras: Navigator.Extras?
+            navigatorExtras: Navigator.Extras?,
         ) = super.navigate(entries, navOptions?.overridePopAnimations(), navigatorExtras)
 
         override fun navigate(
             destination: Destination,
             args: Bundle?,
             navOptions: NavOptions?,
-            navigatorExtras: Navigator.Extras?
+            navigatorExtras: Navigator.Extras?,
         ) = super.navigate(destination, args, navOptions?.overridePopAnimations(), navigatorExtras)
 
         private fun NavOptions.overridePopAnimations() =
@@ -293,7 +294,7 @@ class NavHostFragment : NavHostFragment() {
 private data class ActivityMargins(
     val left: Int,
     val right: Int,
-    val bottom: Int
+    val bottom: Int,
 )
 
 private fun WindowInsetsCompat.toActivityMargins(): ActivityMargins {

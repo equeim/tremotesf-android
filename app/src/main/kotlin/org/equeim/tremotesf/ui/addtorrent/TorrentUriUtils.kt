@@ -42,6 +42,7 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
         } else {
             TorrentUri.Type.File
         }
+
         ContentResolver.SCHEME_FILE -> if (validateUri) {
             if (path?.endsWith(TORRENT_FILE_SUFFIX) == true) {
                 TorrentUri.Type.File
@@ -51,6 +52,7 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
         } else {
             TorrentUri.Type.File
         }
+
         SCHEME_HTTP, SCHEME_HTTPS -> TorrentUri.Type.Link
         SCHEME_MAGNET -> {
             if (validateUri) {
@@ -67,6 +69,7 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
                 TorrentUri.Type.Link
             }
         }
+
         else -> null
     }
 

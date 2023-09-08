@@ -33,14 +33,17 @@ class RuntimePermissionHelper(
     private val requiredPermission: String,
     @StringRes private val permissionRationaleStringId: Int,
     private val showRationaleBeforeRequesting: Boolean = true,
-    private val requestPermissions: List<String> = listOf(requiredPermission)
+    private val requestPermissions: List<String> = listOf(requiredPermission),
 ) {
     private val _permissionGranted = MutableStateFlow(false)
     val permissionGranted: StateFlow<Boolean> by ::_permissionGranted
 
     val permissionRequestResult = Channel<Boolean>(Channel.CONFLATED)
 
-    fun registerWithFragment(fragment: Fragment, navigationFragment: Fragment = fragment): ActivityResultLauncher<Array<String>> {
+    fun registerWithFragment(
+        fragment: Fragment,
+        navigationFragment: Fragment = fragment,
+    ): ActivityResultLauncher<Array<String>> {
         val launcher =
             fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
                 val granted = grantResults[requiredPermission] == true

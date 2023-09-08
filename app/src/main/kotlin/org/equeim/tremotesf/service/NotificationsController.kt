@@ -91,7 +91,7 @@ class NotificationsController(private val context: Context) {
         hashString: String,
         torrentName: String,
         notificationChannel: String,
-        @StringRes notificationTitle: Int
+        @StringRes notificationTitle: Int,
     ) {
         Timber.i("showTorrentNotification() called with: hashString = $hashString, torrentName = $torrentName, notificationChannel = $notificationChannel, notificationTitle = $notificationTitle")
 
@@ -161,6 +161,7 @@ class NotificationsController(private val context: Context) {
                         sessionStats.response.uploadSpeed
                     )
                 )
+
                 is RpcRequestState.Error -> sessionStats.error.getErrorString(context)
             }
         )
@@ -188,9 +189,15 @@ class NotificationsController(private val context: Context) {
         return notificationBuilder.build()
     }
 
-    fun updatePersistentNotification(currentServer: Server?, sessionStats: RpcRequestState<SessionStatsResponseArguments>) {
+    fun updatePersistentNotification(
+        currentServer: Server?,
+        sessionStats: RpcRequestState<SessionStatsResponseArguments>,
+    ) {
         if (notificationManager != null) {
-            notificationManager.notify(PERSISTENT_NOTIFICATION_ID, buildPersistentNotification(currentServer, sessionStats))
+            notificationManager.notify(
+                PERSISTENT_NOTIFICATION_ID,
+                buildPersistentNotification(currentServer, sessionStats)
+            )
         } else {
             Timber.e("updatePersistentNotification: NotificationManager is null")
         }

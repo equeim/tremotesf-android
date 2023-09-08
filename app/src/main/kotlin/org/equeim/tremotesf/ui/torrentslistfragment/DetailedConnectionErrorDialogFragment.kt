@@ -22,7 +22,13 @@ class DetailedConnectionErrorDialogFragment : NavigationDialogFragment() {
         binding.unwrappedText.text = error.certificates
         return builder.setView(binding.root)
             .setTitle(R.string.detailed_error_message)
-            .setNeutralButton(R.string.share) { _, _ -> Utils.shareText(error.detailedError + error.certificates, requireContext().getText(R.string.share), requireContext()) }
+            .setNeutralButton(R.string.share) { _, _ ->
+                Utils.shareText(
+                    error.detailedError + error.certificates,
+                    requireContext().getText(R.string.share),
+                    requireContext()
+                )
+            }
             .setNegativeButton(R.string.close, null).create()
     }
 }

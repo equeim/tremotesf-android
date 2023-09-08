@@ -57,7 +57,7 @@ data class Tracker(
     @SerialName("leecherCount")
     val leechers: Int,
     @SerialName("nextAnnounceTime")
-    val nextUpdateTime: Instant?
+    val nextUpdateTime: Instant?,
 ) {
     val errorMessage: String?
         get() = if (!lastAnnounceSucceeded && lastAnnounceTime != null) lastAnnounceResult else null

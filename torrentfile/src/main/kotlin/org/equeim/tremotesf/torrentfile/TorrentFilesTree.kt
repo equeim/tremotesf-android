@@ -34,7 +34,7 @@ import kotlin.coroutines.coroutineContext
 open class TorrentFilesTree(
     parentScope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
-    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers
+    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
 
@@ -99,7 +99,7 @@ open class TorrentFilesTree(
             size: Long,
             completedSize: Long,
             wantedState: Item.WantedState,
-            priority: Item.Priority
+            priority: Item.Priority,
         ): FileNode {
             if (id < 0) throw IllegalArgumentException("fileId can't be less than zero")
             val path = this.path + children.size
@@ -147,7 +147,7 @@ open class TorrentFilesTree(
         var completedSize: Long = 0,
         var wantedState: WantedState = WantedState.Wanted,
         var priority: Priority = Priority.Normal,
-        val nodePath: IntArray = intArrayOf()
+        val nodePath: IntArray = intArrayOf(),
     ) {
         val isDirectory: Boolean
             get() = (fileId == -1)
@@ -336,7 +336,7 @@ open class TorrentFilesTree(
     private inline fun setItemsWantedOrPriority(
         nodeIndexes: List<Int>,
         crossinline nodeAction: Node.(MutableList<Int>) -> Unit,
-        crossinline fileIdsAction: (IntArray) -> Unit
+        crossinline fileIdsAction: (IntArray) -> Unit,
     ) {
         if (!inited) return
         scope.launch {
@@ -429,7 +429,7 @@ open class TorrentFilesTree(
     @MainThread
     fun init(
         rootNode: DirectoryNode,
-        savedStateHandle: SavedStateHandle
+        savedStateHandle: SavedStateHandle,
     ) {
         this.rootNode = rootNode
         currentNode = rootNode

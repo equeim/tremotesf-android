@@ -32,7 +32,7 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        with (binding) {
+        with(binding) {
             sortView.apply {
                 setAdapter(ArrayDropdownAdapter(resources.getStringArray(R.array.sort_spinner_items)))
                 setOnItemClickListener { _, _, position, _ ->
@@ -111,12 +111,16 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             }
         }
 
-        model.torrentsListState.filter { it !is RpcRequestState.Loaded }.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            navController.popBackStack()
-        }
+        model.torrentsListState.filter { it !is RpcRequestState.Loaded }
+            .launchAndCollectWhenStarted(viewLifecycleOwner) {
+                navController.popBackStack()
+            }
     }
 
-    private fun updateSortView(sortOrder: TorrentsListFragmentViewModel.SortOrder, sortMode: TorrentsListFragmentViewModel.SortMode) {
+    private fun updateSortView(
+        sortOrder: TorrentsListFragmentViewModel.SortOrder,
+        sortMode: TorrentsListFragmentViewModel.SortMode,
+    ) {
         with(binding) {
             val resId = if (sortOrder == TorrentsListFragmentViewModel.SortOrder.Descending) {
                 R.drawable.sort_descending

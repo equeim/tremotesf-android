@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -37,19 +36,19 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:ellipsize="end"
             android:maxLines="1"
             android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceListItemSmall"/>
+            android:textAppearance="?attr/textAppearanceListItemSmall" />
 
         <TextView
             android:id="@+id/size_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="@dimen/text_size_smaller"/>
+            android:textSize="@dimen/text_size_smaller" />
     </LinearLayout>
 
     <CheckBox
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical" />
 </LinearLayout>

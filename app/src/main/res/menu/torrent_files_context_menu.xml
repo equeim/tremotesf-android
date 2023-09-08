@@ -12,10 +12,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <menu>
             <item
                 android:id="@+id/download"
-                android:title="@string/download_verb"/>
+                android:title="@string/download_verb" />
             <item
                 android:id="@+id/not_download"
-                android:title="@string/not_download"/>
+                android:title="@string/not_download" />
         </menu>
     </item>
 
@@ -27,26 +27,26 @@ SPDX-License-Identifier: GPL-3.0-or-later
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/high_priority"
-                    android:title="@string/high_priority"/>
+                    android:title="@string/high_priority" />
                 <item
                     android:id="@+id/normal_priority"
-                    android:title="@string/normal_priority"/>
+                    android:title="@string/normal_priority" />
                 <item
                     android:id="@+id/low_priority"
-                    android:title="@string/low_pririty"/>
+                    android:title="@string/low_pririty" />
                 <item
                     android:id="@+id/mixed_priority"
-                    android:title="@string/mixed_priority"/>
+                    android:title="@string/mixed_priority" />
             </group>
         </menu>
     </item>
 
     <item
         android:id="@+id/rename"
-        android:title="@string/rename"/>
+        android:title="@string/rename" />
 
     <item
         android:id="@+id/select_all"
         android:icon="@drawable/ic_select_all_24dp"
-        android:title="@string/select_all"/>
+        android:title="@string/select_all" />
 </menu>

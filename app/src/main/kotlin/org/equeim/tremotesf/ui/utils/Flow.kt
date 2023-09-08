@@ -21,8 +21,9 @@ fun <T> Flow<T>.launchAndCollectWhenStarted(lifecycleOwner: LifecycleOwner) =
 
 fun <T> Flow<T>.launchAndCollectWhenStarted(
     lifecycleOwner: LifecycleOwner,
-    collector: FlowCollector<T>
-) = lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect(collector) } }
+    collector: FlowCollector<T>,
+) =
+    lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect(collector) } }
 
 inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit) =
     filter { it }.onEach {
