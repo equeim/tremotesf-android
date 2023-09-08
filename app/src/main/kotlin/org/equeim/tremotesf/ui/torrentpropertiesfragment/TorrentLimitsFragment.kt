@@ -127,7 +127,6 @@ class TorrentLimitsFragment :
 
             maximumPeersEdit.filters = arrayOf(IntFilter(0..MAX_PEERS))
 
-
             globalLimitsCheckBox.setOnCheckedChangeListener { _, checked ->
                 onValueChanged { setTorrentHonorSessionLimits(it, checked) }
             }
@@ -251,12 +250,14 @@ class TorrentLimitsFragment :
         priorityView.setText(priorityItemValues[priorityItems.indexOf(limits.bandwidthPriority)])
         ratioLimitModeView.setText(ratioLimitModeItemValues[ratioLimitModeItems.indexOf(limits.ratioLimitMode)])
         ratioLimitEdit.setText(DecimalFormats.ratio.format(limits.ratioLimit))
+        ratioLimitLayout.isEnabled = limits.ratioLimitMode == TorrentLimits.RatioLimitMode.Single
         idleSeedingModeView.setText(
             idleSeedingModeItemValues[idleSeedingModeItems.indexOf(
                 limits.idleSeedingLimitMode
             )]
         )
         idleSeedingLimitEdit.setText(limits.idleSeedingLimit.inWholeMinutes.toString())
+        idleSeedingLimitLayout.isEnabled = limits.idleSeedingLimitMode == TorrentLimits.IdleSeedingLimitMode.Single
 
         maximumPeersEdit.setText(limits.peersLimit.toString())
     }
