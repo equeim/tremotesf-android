@@ -60,7 +60,8 @@ class TorrentFilesFragmentViewModel(
                 .hasSubscribersDebounced()
                 .collectLatest { hasSubscribers ->
                     if (hasSubscribers) {
-                        val performRequest = GlobalRpcClient.performPeriodicRequest { getTorrentFiles(torrentHashString) }
+                        val performRequest =
+                            GlobalRpcClient.performPeriodicRequest { getTorrentFiles(torrentHashString) }
                         if (_state.value is State.TreeCreated) {
                             performRequest.dropWhile { it is RpcRequestState.Loading }
                         } else {

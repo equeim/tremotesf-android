@@ -30,7 +30,7 @@ fun createTextFieldDialog(
     inputType: Int,
     defaultText: String?,
     onInflatedView: ((TextFieldDialogBinding) -> Unit)?,
-    onAccepted: ((TextFieldDialogBinding) -> Unit)?
+    onAccepted: ((TextFieldDialogBinding) -> Unit)?,
 ): AlertDialog {
     return createTextFieldDialog(
         context,
@@ -57,7 +57,7 @@ fun <Binding : ViewBinding> createTextFieldDialog(
     inputType: Int,
     defaultText: String?,
     onInflatedView: ((Binding) -> Unit)?,
-    onAccepted: ((Binding) -> Unit)?
+    onAccepted: ((Binding) -> Unit)?,
 ): AlertDialog {
     val builder = MaterialAlertDialogBuilder(context)
 

@@ -34,7 +34,10 @@ object TorrentFileParser {
     }
 
     @VisibleForTesting
-    internal suspend fun createFilesTree(torrentFile: TorrentFile, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): TorrentFilesTreeBuildResult =
+    internal suspend fun createFilesTree(
+        torrentFile: TorrentFile,
+        dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
+    ): TorrentFilesTreeBuildResult =
         withContext(dispatchers.Default) {
             runCatching {
                 buildTorrentFilesTree {
@@ -79,7 +82,7 @@ object TorrentFileParser {
         data class Info(
             val files: List<File>? = null,
             val length: Long? = null,
-            val name: String
+            val name: String,
         )
 
         @Serializable
@@ -90,7 +93,10 @@ object TorrentFileParser {
         parseFile(FileInputStream(fd).buffered())
 
     @VisibleForTesting
-    internal suspend fun parseFile(inputStream: InputStream, dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers): TorrentFile =
+    internal suspend fun parseFile(
+        inputStream: InputStream,
+        dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
+    ): TorrentFile =
         withContext(dispatchers.IO) {
             @Suppress("BlockingMethodInNonBlockingContext")
             if (inputStream.available() > MAX_FILE_SIZE) {

@@ -18,7 +18,7 @@ import org.equeim.tremotesf.R
 class NonFilteringAutoCompleteTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = androidx.appcompat.R.attr.autoCompleteTextViewStyle
+    @AttrRes defStyleAttr: Int = androidx.appcompat.R.attr.autoCompleteTextViewStyle,
 ) : MaterialAutoCompleteTextView(context, attrs, defStyleAttr) {
     init {
         context.withStyledAttributes(

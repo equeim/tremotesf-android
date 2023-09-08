@@ -140,6 +140,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                                         )
                                     }
                                 }
+
                                 !locationEnabled -> {
                                     isVisible = true
                                     setText(R.string.enable_location)
@@ -147,6 +148,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                                         navigate(ServerEditFragmentDirections.toEnableLocationDialog())
                                     }
                                 }
+
                                 else -> isVisible = false
                             }
                         }
@@ -329,7 +331,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
     }
 }
 
-class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: Application, savedStateHandle: SavedStateHandle) :
+class ServerEditFragmentViewModel(
+    args: ServerEditFragmentArgs,
+    application: Application,
+    savedStateHandle: SavedStateHandle,
+) :
     AndroidViewModel(application) {
     companion object {
         fun get(navController: NavController): ServerEditFragmentViewModel {
@@ -359,7 +365,11 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
         private fun requestLocationPermissions(): List<String> {
             val sdk = Build.VERSION.SDK_INT
             return when {
-                sdk >= Build.VERSION_CODES.S -> listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                sdk >= Build.VERSION_CODES.S -> listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+
                 else -> requiredLocationPermission()?.let { listOf(it) } ?: emptyList()
             }
         }
@@ -368,6 +378,7 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
 
         fun canRequestBackgroundLocationPermission() =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
         private fun allowedToRequestBackgroundLocationPermission() = !BuildConfig.GOOGLE
     }
 
@@ -387,14 +398,15 @@ class ServerEditFragmentViewModel(args: ServerEditFragmentArgs, application: App
         )
     }
 
-    val backgroundLocationPermissionHelper = if (canRequestBackgroundLocationPermission() && allowedToRequestBackgroundLocationPermission()) {
-        RuntimePermissionHelper(
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            R.string.background_location_permission_rationale
-        )
-    } else {
-        null
-    }
+    val backgroundLocationPermissionHelper =
+        if (canRequestBackgroundLocationPermission() && allowedToRequestBackgroundLocationPermission()) {
+            RuntimePermissionHelper(
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                R.string.background_location_permission_rationale
+            )
+        } else {
+            null
+        }
 
     private val _locationEnabled = MutableStateFlow(isLocationEnabled())
     val locationEnabled: StateFlow<Boolean> by ::_locationEnabled
@@ -504,7 +516,10 @@ class ServerCertificatesFragment : NavigationFragment(
         super.onViewStateRestored(savedInstanceState)
 
         with(binding) {
-            selfSignedCertificateCheckBox.setDependentViews(selfSignedCertificateLayout, selfSignedCertificateLoadFromFile)
+            selfSignedCertificateCheckBox.setDependentViews(
+                selfSignedCertificateLayout,
+                selfSignedCertificateLoadFromFile
+            )
             clientCertificateCheckBox.setDependentViews(clientCertificateLayout, clientCertificateLoadFromFile)
 
             selfSignedCertificateLoadFromFile.setOnClickListener {
@@ -553,7 +568,10 @@ class ServerCertificatesFragment : NavigationFragment(
             return Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-pem-file", ClipDescription.MIMETYPE_TEXT_PLAIN))
+                .putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf("application/x-pem-file", ClipDescription.MIMETYPE_TEXT_PLAIN)
+                )
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

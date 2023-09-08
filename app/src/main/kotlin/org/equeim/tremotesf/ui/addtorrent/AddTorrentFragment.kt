@@ -15,7 +15,7 @@ import org.equeim.tremotesf.ui.NavigationFragment
 abstract class AddTorrentFragment(
     @LayoutRes contentLayoutId: Int,
     @StringRes titleRes: Int,
-    @MenuRes toolbarMenuRes: Int
+    @MenuRes toolbarMenuRes: Int,
 ) : NavigationFragment(contentLayoutId, titleRes, toolbarMenuRes) {
     protected lateinit var priorityItems: Array<String>
     protected val priorityItemEnums = arrayOf(

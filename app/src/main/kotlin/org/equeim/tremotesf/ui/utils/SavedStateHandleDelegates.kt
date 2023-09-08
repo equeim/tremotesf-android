@@ -13,13 +13,13 @@ import kotlin.reflect.KProperty
 
 fun <T> savedState(
     savedStateHandle: SavedStateHandle,
-    initialValueProducer: () -> T
+    initialValueProducer: () -> T,
 ): ReadWriteProperty<ViewModel, T> =
     SavedStateProperty(savedStateHandle, initialValueProducer)
 
 fun <T> savedState(
     savedStateHandle: SavedStateHandle,
-    initialValue: T
+    initialValue: T,
 ): ReadWriteProperty<ViewModel, T> = savedState(savedStateHandle) { initialValue }
 
 private class SavedStateProperty<T>(
@@ -54,20 +54,20 @@ private class SavedStateProperty<T>(
 
 fun <T> savedStateFlow(
     savedStateHandle: SavedStateHandle,
-    initialValueProducer: () -> T
+    initialValueProducer: () -> T,
 ): ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> =
     SavedStateFlowProperty(savedStateHandle, initialValueProducer)
 
 fun <T> savedStateFlow(
     savedStateHandle: SavedStateHandle,
-    initialValue: T
+    initialValue: T,
 ): ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> =
     savedStateFlow(savedStateHandle) { initialValue }
 
 class SavedStateFlowHolder<T>(
     private val savedStateHandle: SavedStateHandle,
     private val key: String,
-    private val initialValueProducer: () -> T
+    private val initialValueProducer: () -> T,
 ) {
     fun flow(): StateFlow<T> = savedStateHandle.getStateFlow(key, initialValueProducer())
     fun set(value: T) = savedStateHandle.set(key, value)
@@ -75,7 +75,7 @@ class SavedStateFlowHolder<T>(
 
 private class SavedStateFlowProperty<T>(
     private val savedStateHandle: SavedStateHandle,
-    private var initialValueProducer: () -> T
+    private var initialValueProducer: () -> T,
 ) : ReadOnlyProperty<ViewModel, SavedStateFlowHolder<T>> {
 
     private lateinit var holder: SavedStateFlowHolder<T>

@@ -6,12 +6,11 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/text1"
     android:layout_width="match_parent"
     android:layout_height="?attr/listPreferredItemHeightSmall"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:paddingHorizontal="@dimen/horizontal_edge_padding"
-    android:textAppearance="?attr/textAppearanceListItem"/>
+    android:textAppearance="?attr/textAppearanceListItem" />

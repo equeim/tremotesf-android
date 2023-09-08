@@ -28,7 +28,12 @@ internal fun createConnectionConfiguration(server: Server): ConnectionConfigurat
         .addInterceptor(LoggingInterceptor())
         .addNetworkInterceptor(RequestHeadersLoggingInterceptor())
         .callTimeout(server.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
-        .proxy(server.proxyType?.let { Proxy(it, InetSocketAddress.createUnresolved(server.proxyHostname, server.proxyPort)) })
+        .proxy(server.proxyType?.let {
+            Proxy(
+                it,
+                InetSocketAddress.createUnresolved(server.proxyHostname, server.proxyPort)
+            )
+        })
     if (server.clientCertificateEnabled || server.selfSignedCertificateEnabled) {
         val (sslSocketFactory, trustManager) = createSslSocketFactory(
             if (server.clientCertificateEnabled) server.clientCertificate else null,

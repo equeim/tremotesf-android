@@ -106,7 +106,8 @@ internal data class RpcResponse<Arguments : Any>(
     @Transient
     override lateinit var httpResponse: Response
 
-    class Serializer<Arguments : Any>(private val argumentsSerializer: KSerializer<Arguments>) : KSerializer<RpcResponse<Arguments>> {
+    class Serializer<Arguments : Any>(private val argumentsSerializer: KSerializer<Arguments>) :
+        KSerializer<RpcResponse<Arguments>> {
         private val delegate = JsonObject.serializer()
         override val descriptor: SerialDescriptor get() = delegate.descriptor
 

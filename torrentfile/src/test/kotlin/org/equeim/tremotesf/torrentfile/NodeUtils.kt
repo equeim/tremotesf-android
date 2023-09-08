@@ -28,7 +28,15 @@ fun assertNodesAreSimilar(expected: List<TorrentFilesTree.Node>, actual: List<To
 }
 
 fun expectedFileItem(fileId: Int, nodePath: IntArray): TorrentFilesTree.Item {
-    return TorrentFilesTree.Item(fileId, fileId.toString(), 666, 7, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal, nodePath)
+    return TorrentFilesTree.Item(
+        fileId,
+        fileId.toString(),
+        666,
+        7,
+        TorrentFilesTree.Item.WantedState.Wanted,
+        TorrentFilesTree.Item.Priority.Normal,
+        nodePath
+    )
 }
 
 fun expectedDirectoryItem(nodePath: IntArray): TorrentFilesTree.Item {
@@ -49,11 +57,12 @@ class NodesThatMustChangeHelper(val nodes: List<TorrentFilesTree.Node>) {
 
     private val oldItems = nodes.map { it.item }
 
-    fun assertThatItemsChanged(additionalChecks: (TorrentFilesTree.Item) -> Unit = {}) = nodes.asSequence().zip(oldItems.asSequence()).forEach { (node, oldItem) ->
-        assertNotSame(oldItem, node.item)
-        assertNotEquals(oldItem, node.item)
-        additionalChecks(node.item)
-    }
+    fun assertThatItemsChanged(additionalChecks: (TorrentFilesTree.Item) -> Unit = {}) =
+        nodes.asSequence().zip(oldItems.asSequence()).forEach { (node, oldItem) ->
+            assertNotSame(oldItem, node.item)
+            assertNotEquals(oldItem, node.item)
+            additionalChecks(node.item)
+        }
 }
 
 class NodesThatMustNotChangeHelper(val nodes: List<TorrentFilesTree.Node>) {

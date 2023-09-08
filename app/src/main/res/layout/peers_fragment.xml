@@ -7,8 +7,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/placeholder_view"
@@ -23,5 +23,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:tag="@string/add_navigation_bar_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical" />
 </FrameLayout>

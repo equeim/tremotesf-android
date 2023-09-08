@@ -16,7 +16,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
 
-fun ExtendedFloatingActionButton.extendWhenImeIsHidden(insets: Flow<WindowInsetsCompat>, lifecycleOwner: LifecycleOwner) {
+fun ExtendedFloatingActionButton.extendWhenImeIsHidden(
+    insets: Flow<WindowInsetsCompat>,
+    lifecycleOwner: LifecycleOwner,
+) {
     val marginEndWhenImeIsVisible = resources.getDimensionPixelSize(R.dimen.fab_margin)
     insets
         .map { it.isVisible(WindowInsetsCompat.Type.ime()) }
@@ -36,5 +39,5 @@ fun ExtendedFloatingActionButton.extendWhenImeIsHidden(insets: Flow<WindowInsets
                     0
                 }
             }
-    }
+        }
 }

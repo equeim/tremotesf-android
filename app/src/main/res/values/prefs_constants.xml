@@ -88,10 +88,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <integer name="torrents_status_filter_default_value">-1</integer>
 
     <string name="torrents_tracker_filter_key" translatable="false">torrentsTrackerFilter</string>
-    <string name="torrents_tracker_filter_default_value" translatable="false"/>
+    <string name="torrents_tracker_filter_default_value" translatable="false" />
 
     <string name="torrents_directory_filter_key" translatable="false">torrentsFolderFilter</string>
-    <string name="torrents_directory_filter_default_value" translatable="false"/>
+    <string name="torrents_directory_filter_default_value" translatable="false" />
 
     <string name="notification_permission_key" translatable="false">notificationPermission</string>
 

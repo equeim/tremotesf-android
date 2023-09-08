@@ -27,6 +27,7 @@ object GlobalRpcClient : RpcClient() {
     private var connectedOnce = false
 
     data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
+
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)
 
     init {
@@ -70,7 +71,10 @@ object GlobalRpcClient : RpcClient() {
     suspend fun awaitBackgroundRpcRequest(@StringRes errorContext: Int, block: suspend RpcClient.() -> Unit): Boolean =
         performBackgroundRpcRequestAsync(errorContext, block).await()
 
-    private fun performBackgroundRpcRequestAsync(@StringRes errorContext: Int, block: suspend RpcClient.() -> Unit): Deferred<Boolean> = coroutineScope.async {
+    private fun performBackgroundRpcRequestAsync(
+        @StringRes errorContext: Int,
+        block: suspend RpcClient.() -> Unit,
+    ): Deferred<Boolean> = coroutineScope.async {
         try {
             GlobalRpcClient.block()
             true
@@ -81,21 +85,21 @@ object GlobalRpcClient : RpcClient() {
     }
 }
 
-fun RpcRequestError.getErrorString(context: Context): String
-    = when (this) {
-        is RpcRequestError.NoConnectionConfiguration -> context.getString(R.string.no_servers)
-        is RpcRequestError.BadConnectionConfiguration -> context.getString(R.string.invalid_connection_configuration)
-        is RpcRequestError.ConnectionDisabled -> context.getString(R.string.disconnected)
-        is RpcRequestError.AuthenticationError -> context.getString(R.string.authentication_error)
-        is RpcRequestError.DeserializationError -> context.getString(R.string.parsing_error)
-        is RpcRequestError.NetworkError -> context.getString(R.string.connection_error_with_cause, cause)
-        is RpcRequestError.UnsuccessfulHttpStatusCode -> context.getString(R.string.connection_error_with_cause, message)
-        is RpcRequestError.UnknownError -> context.getString(R.string.connection_error)
-        is RpcRequestError.Timeout -> context.getString(R.string.timed_out)
-        is RpcRequestError.UnsuccessfulResultField -> if (result == DUPLICATE_TORRENT_RESULT) {
-            context.getString(R.string.torrent_duplicate)
-        } else {
-            context.getString(R.string.server_returned_error_result, result)
-        }
-        is RpcRequestError.UnsupportedServerVersion -> context.getString(R.string.unsupported_server_version, version)
+fun RpcRequestError.getErrorString(context: Context): String = when (this) {
+    is RpcRequestError.NoConnectionConfiguration -> context.getString(R.string.no_servers)
+    is RpcRequestError.BadConnectionConfiguration -> context.getString(R.string.invalid_connection_configuration)
+    is RpcRequestError.ConnectionDisabled -> context.getString(R.string.disconnected)
+    is RpcRequestError.AuthenticationError -> context.getString(R.string.authentication_error)
+    is RpcRequestError.DeserializationError -> context.getString(R.string.parsing_error)
+    is RpcRequestError.NetworkError -> context.getString(R.string.connection_error_with_cause, cause)
+    is RpcRequestError.UnsuccessfulHttpStatusCode -> context.getString(R.string.connection_error_with_cause, message)
+    is RpcRequestError.UnknownError -> context.getString(R.string.connection_error)
+    is RpcRequestError.Timeout -> context.getString(R.string.timed_out)
+    is RpcRequestError.UnsuccessfulResultField -> if (result == DUPLICATE_TORRENT_RESULT) {
+        context.getString(R.string.torrent_duplicate)
+    } else {
+        context.getString(R.string.server_returned_error_result, result)
     }
+
+    is RpcRequestError.UnsupportedServerVersion -> context.getString(R.string.unsupported_server_version, version)
+}

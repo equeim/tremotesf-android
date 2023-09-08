@@ -211,18 +211,23 @@ class TorrentLimitsFragment :
 
         model.limits.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
-                is RpcRequestState.Loaded -> it.response?.let(::showLimits) ?: showPlaceholder(getString(R.string.torrent_not_found), showProgressBar = false)
+                is RpcRequestState.Loaded -> it.response?.let(::showLimits)
+                    ?: showPlaceholder(getString(R.string.torrent_not_found), showProgressBar = false)
+
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false
+                )
             }
         }
     }
 
     private fun showPlaceholder(text: String, showProgressBar: Boolean) {
         hideKeyboard()
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = false
-            with (placeholderView) {
+            with(placeholderView) {
                 root.isVisible = true
                 progressBar.isVisible = showProgressBar
                 placeholder.text = text
@@ -231,7 +236,7 @@ class TorrentLimitsFragment :
     }
 
     private fun showLimits(limit: TorrentLimits) {
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = true
             placeholderView.root.isVisible = false
         }
@@ -265,7 +270,11 @@ class TorrentLimitsFragment :
     private fun onValueChanged(performRpcRequest: suspend RpcClient.(String) -> Unit) {
         if (!model.shouldSetInitialState) {
             val hashString = torrentHashString
-            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_torrent_limits_error) { performRpcRequest(hashString) }
+            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_torrent_limits_error) {
+                performRpcRequest(
+                    hashString
+                )
+            }
         }
     }
 }

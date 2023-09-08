@@ -73,7 +73,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     private fun createDeepLinkIntent(
         @IdRes destinationId: Int,
         arguments: Bundle?,
-        originalIntent: Intent
+        originalIntent: Intent,
     ): Intent {
         return NavDeepLinkBuilder(getApplication())
             .setGraph(R.navigation.nav_main)
@@ -109,6 +109,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                 R.id.add_torrent_file_fragment,
                 AddTorrentFileFragmentArgs(uri.uri).toBundle()
             )
+
             TorrentUri.Type.Link -> AddTorrentDirections(
                 R.id.add_torrent_link_fragment,
                 AddTorrentLinkFragmentArgs(uri.uri).toBundle()

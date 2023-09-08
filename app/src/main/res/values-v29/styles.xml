@@ -7,5 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources>
+
     <style name="AppTheme.Splash" parent="@style/AppTheme" />
 </resources>

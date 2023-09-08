@@ -28,7 +28,9 @@ value class TransferRate private constructor(val bytesPerSecond: Long) {
     val kiloBytesPerSecond: Long get() = bytesPerSecond / 1000
 
     object KiloBytesPerSecondSerializer : KSerializer<TransferRate> {
-        override val descriptor = PrimitiveSerialDescriptor(KiloBytesPerSecondSerializer::class.qualifiedName!!, PrimitiveKind.LONG)
+        override val descriptor =
+            PrimitiveSerialDescriptor(KiloBytesPerSecondSerializer::class.qualifiedName!!, PrimitiveKind.LONG)
+
         override fun deserialize(decoder: Decoder) = fromKiloBytesPerSecond(decoder.decodeLong())
         override fun serialize(encoder: Encoder, value: TransferRate) = encoder.encodeLong(value.kiloBytesPerSecond)
     }
@@ -39,20 +41,32 @@ value class TransferRate private constructor(val bytesPerSecond: Long) {
 }
 
 
-data class NormalizedRpcPath internal constructor(val value: String, internal val serverOs: ServerCapabilities.ServerOs?) {
-    internal class Serializer(private val serverCapabilities: () -> ServerCapabilities?) : KSerializer<NormalizedRpcPath> {
-        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(Serializer::class.qualifiedName!!, PrimitiveKind.STRING)
-        override fun deserialize(decoder: Decoder): NormalizedRpcPath = decoder.decodeString().normalizePath(serverCapabilities())
+data class NormalizedRpcPath internal constructor(
+    val value: String,
+    internal val serverOs: ServerCapabilities.ServerOs?,
+) {
+    internal class Serializer(private val serverCapabilities: () -> ServerCapabilities?) :
+        KSerializer<NormalizedRpcPath> {
+        override val descriptor: SerialDescriptor =
+            PrimitiveSerialDescriptor(Serializer::class.qualifiedName!!, PrimitiveKind.STRING)
+
+        override fun deserialize(decoder: Decoder): NormalizedRpcPath =
+            decoder.decodeString().normalizePath(serverCapabilities())
+
         override fun serialize(encoder: Encoder, value: NormalizedRpcPath) = encoder.encodeString(value.value)
     }
 }
 
 @JvmInline
 value class NotNormalizedRpcPath(val value: String) {
-    internal class Serializer(private val serverCapabilities: () -> ServerCapabilities?) : KSerializer<NotNormalizedRpcPath> {
-        override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(Serializer::class.qualifiedName!!, PrimitiveKind.STRING)
+    internal class Serializer(private val serverCapabilities: () -> ServerCapabilities?) :
+        KSerializer<NotNormalizedRpcPath> {
+        override val descriptor: SerialDescriptor =
+            PrimitiveSerialDescriptor(Serializer::class.qualifiedName!!, PrimitiveKind.STRING)
+
         override fun deserialize(decoder: Decoder): NotNormalizedRpcPath = NotNormalizedRpcPath(decoder.decodeString())
-        override fun serialize(encoder: Encoder, value: NotNormalizedRpcPath) = encoder.encodeString(value.value.normalizePath(serverCapabilities()).value)
+        override fun serialize(encoder: Encoder, value: NotNormalizedRpcPath) =
+            encoder.encodeString(value.value.normalizePath(serverCapabilities()).value)
     }
 }
 

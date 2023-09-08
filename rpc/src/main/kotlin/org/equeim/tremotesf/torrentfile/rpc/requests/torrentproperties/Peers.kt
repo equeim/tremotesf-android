@@ -64,6 +64,6 @@ private data class TorrentPeersResponseArguments(
     @Serializable
     data class TorrentFields(
         @SerialName("peers")
-        val peers: List<Peer>
+        val peers: List<Peer>,
     )
 }

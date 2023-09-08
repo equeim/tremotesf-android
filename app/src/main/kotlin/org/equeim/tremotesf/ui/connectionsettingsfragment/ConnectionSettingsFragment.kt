@@ -118,7 +118,7 @@ class ConnectionSettingsFragment : NavigationFragment(
         class ViewHolder(
             private val adapter: ServersAdapter,
             selectionTracker: SelectionTracker<String>,
-            val binding: ServerListItemBinding
+            val binding: ServerListItemBinding,
         ) : SelectionTracker.ViewHolder<String>(selectionTracker, binding.root) {
 
             init {
@@ -153,6 +153,7 @@ class ConnectionSettingsFragment : NavigationFragment(
         private class DiffCallback : DiffUtil.ItemCallback<Item>() {
             override fun areItemsTheSame(oldItem: Item, newItem: Item) =
                 oldItem.serverName == newItem.serverName
+
             override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
         }
 

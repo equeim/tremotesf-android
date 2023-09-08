@@ -4,8 +4,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -20,7 +19,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:id="@+id/text_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text">
-        </com.google.android.material.textfield.TextInputEditText>
+            android:inputType="text"></com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

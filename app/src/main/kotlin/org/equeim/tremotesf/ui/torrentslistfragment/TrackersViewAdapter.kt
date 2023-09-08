@@ -13,9 +13,10 @@ import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter
 
 class TrackersViewAdapter(
     private val context: Context,
-    textView: AutoCompleteTextView
+    textView: AutoCompleteTextView,
 ) : AutoCompleteTextViewDynamicAdapter(textView) {
     private data class TrackerItem(val tracker: String?, val torrents: Int)
+
     private var trackers = emptyList<TrackerItem>()
     private val comparator = object : Comparator<TrackerItem> {
         val trackerComparator = AlphanumericComparator()
@@ -51,7 +52,12 @@ class TrackersViewAdapter(
             .flatMap { torrent -> torrent.trackerSites.asSequence().map { torrent to it } }
             .groupingBy { (_, tracker) -> tracker }
             .eachCount()
-            .mapTo(mutableListOf(TrackerItem(null, allTorrentsCount))) { (tracker, torrents) -> TrackerItem(tracker, torrents) }
+            .mapTo(mutableListOf(TrackerItem(null, allTorrentsCount))) { (tracker, torrents) ->
+                TrackerItem(
+                    tracker,
+                    torrents
+                )
+            }
             .apply { sortWith(comparator) }
         currentTrackerIndex = if (trackerFilter.isEmpty()) {
             0

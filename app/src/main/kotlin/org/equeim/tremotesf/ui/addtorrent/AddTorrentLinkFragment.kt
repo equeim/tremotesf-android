@@ -78,12 +78,13 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             freeSpaceJob = null
             if (!path.isNullOrBlank()) {
                 freeSpaceJob = lifecycleScope.launch {
-                    binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText = model.getFreeSpace(path.toString())?.let {
-                        getString(
-                            R.string.free_space,
-                            FormatUtils.formatFileSize(requireContext(), it)
-                        )
-                    }
+                    binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText =
+                        model.getFreeSpace(path.toString())?.let {
+                            getString(
+                                R.string.free_space,
+                                FormatUtils.formatFileSize(requireContext(), it)
+                            )
+                        }
                     freeSpaceJob = null
                 }
             }
@@ -108,7 +109,10 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             when (it) {
                 is RpcRequestState.Loaded -> showView(it.response)
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false
+                )
             }
         }
     }
@@ -120,6 +124,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                     Timber.d("Handling drag start event on $view")
                     model.acceptDragStartEvent(event.clipDescription)
                 }
+
                 DragEvent.ACTION_DROP -> {
                     Timber.d("Handling drop event on $view")
                     model.getTorrentLinkFromDropEvent(event.clipData)?.let {
@@ -189,9 +194,9 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private fun showPlaceholder(text: String, showProgressBar: Boolean) {
         hideKeyboard()
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = false
-            with (placeholderView) {
+            with(placeholderView) {
                 root.isVisible = true
                 progressBar.isVisible = showProgressBar
                 placeholder.text = text

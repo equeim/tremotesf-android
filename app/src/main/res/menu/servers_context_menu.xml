@@ -8,10 +8,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <item
         android:id="@+id/remove"
         android:icon="@drawable/ic_delete_24dp"
-        android:title="@string/remove"/>
+        android:title="@string/remove" />
 
     <item
         android:id="@+id/select_all"
         android:icon="@drawable/ic_select_all_24dp"
-        android:title="@string/select_all"/>
+        android:title="@string/select_all" />
 </menu>

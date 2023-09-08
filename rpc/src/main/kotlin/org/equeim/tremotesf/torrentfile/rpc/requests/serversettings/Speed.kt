@@ -22,7 +22,10 @@ import org.threeten.bp.LocalTime
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getSpeedServerSettings(): SpeedServerSettings =
-    performRequest<RpcResponse<SpeedServerSettings>>(SPEED_SERVER_SETTINGS_REQUEST_BODY, "getSpeedServerSettings").arguments
+    performRequest<RpcResponse<SpeedServerSettings>>(
+        SPEED_SERVER_SETTINGS_REQUEST_BODY,
+        "getSpeedServerSettings"
+    ).arguments
 
 /**
  * @throws RpcRequestError
@@ -145,4 +148,5 @@ private data class SpeedServerSettingsRequestArguments(
     val fields: List<String> = SpeedServerSettings.serializer().descriptor.elementNames.toList(),
 )
 
-private val SPEED_SERVER_SETTINGS_REQUEST_BODY = RpcRequestBody(RpcMethod.SessionGet, SpeedServerSettingsRequestArguments())
+private val SPEED_SERVER_SETTINGS_REQUEST_BODY =
+    RpcRequestBody(RpcMethod.SessionGet, SpeedServerSettingsRequestArguments())

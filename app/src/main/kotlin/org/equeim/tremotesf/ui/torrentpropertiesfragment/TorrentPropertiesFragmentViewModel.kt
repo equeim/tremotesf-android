@@ -47,13 +47,20 @@ class TorrentPropertiesFragmentViewModel(
         val filePath: String,
         val newName: String,
     )
+
     private val _torrentFileRenamedEvents = MutableSharedFlow<TorrentFileRenamed>()
     val torrentFileRenamedEvents by ::_torrentFileRenamedEvents
 
     fun renameTorrentFile(filePath: String, newName: String) {
         Timber.d("renameTorrentFile() called with: filePath = $filePath, newName = $newName")
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.file_rename_error) { renameTorrentFile(args.torrentHashString, filePath, newName) }
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.file_rename_error) {
+                renameTorrentFile(
+                    args.torrentHashString,
+                    filePath,
+                    newName
+                )
+            }
             if (ok) {
                 _torrentFileRenamedEvents.emit(TorrentFileRenamed(filePath, newName))
                 refreshRequests.emit(Unit)
@@ -76,14 +83,19 @@ class TorrentPropertiesFragmentViewModel(
 
     fun pauseTorrent(torrentId: Int) {
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(listOf(torrentId)) }
+            val ok =
+                GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(listOf(torrentId)) }
             if (ok) refreshRequests.emit(Unit)
         }
     }
 
     fun checkTorrent(torrentId: Int) {
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { verifyTorrents(listOf(torrentId)) }
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) {
+                verifyTorrents(
+                    listOf(torrentId)
+                )
+            }
             if (ok) refreshRequests.emit(Unit)
         }
     }

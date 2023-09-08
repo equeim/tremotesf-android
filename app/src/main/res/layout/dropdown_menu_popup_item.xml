@@ -10,4 +10,4 @@ SPDX-License-Identifier: GPL-3.0-or-later
     android:padding="16dp"
     android:ellipsize="end"
     android:maxLines="1"
-    android:textAppearance="?attr/textAppearanceSubtitle1"/> 
+    android:textAppearance="?attr/textAppearanceSubtitle1" />

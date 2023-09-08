@@ -46,7 +46,7 @@ class SelectionTracker<K : Any> private constructor(
 
     private val activity: NavigationActivity,
     private val actionModeCallbackFactory: SelectionActionModeCallbackFactory<K>,
-    @PluralsRes private val titleStringId: Int
+    @PluralsRes private val titleStringId: Int,
 ) {
     private constructor(
         adapter: RecyclerView.Adapter<*>,
@@ -57,7 +57,7 @@ class SelectionTracker<K : Any> private constructor(
         getSelectedKeysFromBundle: (Bundle) -> Set<K>?,
         putSelectedKeysToBundle: Bundle.(Set<K>) -> Unit,
         actionModeCallbackFactory: SelectionActionModeCallbackFactory<K>,
-        @PluralsRes titleStringId: Int
+        @PluralsRes titleStringId: Int,
     ) : this(
         adapter,
         adapterCommitsUpdates,
@@ -83,7 +83,7 @@ class SelectionTracker<K : Any> private constructor(
             fragment: Fragment,
             actionModeCallbackFactory: SelectionActionModeCallbackFactory<Int>,
             @PluralsRes titleStringId: Int,
-            getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>
+            getSelectionKeyForPosition: AdapterSelectionKeyGetter<Int>,
         ): SelectionTracker<Int> {
             return SelectionTracker(
                 adapter,
@@ -104,7 +104,7 @@ class SelectionTracker<K : Any> private constructor(
             fragment: Fragment,
             actionModeCallbackFactory: SelectionActionModeCallbackFactory<String>,
             @PluralsRes titleStringId: Int,
-            getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>
+            getSelectionKeyForPosition: AdapterSelectionKeyGetter<String>,
         ): SelectionTracker<String> {
             return SelectionTracker(
                 adapter,
@@ -262,7 +262,7 @@ class SelectionTracker<K : Any> private constructor(
     @Suppress("LeakingThis")
     abstract class ViewHolder<K : Any>(
         protected val selectionTracker: SelectionTracker<K>,
-        itemView: View
+        itemView: View,
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
         init {
             itemView.setOnClickListener {
@@ -334,7 +334,7 @@ class SelectionTracker<K : Any> private constructor(
         private val selectionTracker: SelectionTracker<K>,
         private val adapter: RecyclerView.Adapter<*>,
         private val adapterCommitsUpdates: Boolean,
-        private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>
+        private val getSelectionKeyForPosition: AdapterSelectionKeyGetter<K>,
     ) {
         private val positionToKey = ArrayList<K?>()
         private val keyToPosition = mutableMapOf<K, Int>()
@@ -448,7 +448,7 @@ class SelectionTracker<K : Any> private constructor(
         private fun MutableList<*>.moveItems(
             fromPosition: Int,
             toPosition: Int,
-            itemCount: Int
+            itemCount: Int,
         ): IntRange {
             val changedFrom: Int
             val changedTo: Int

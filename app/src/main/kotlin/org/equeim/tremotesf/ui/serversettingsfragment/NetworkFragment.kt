@@ -134,16 +134,19 @@ class NetworkFragment : NavigationFragment(
             when (it) {
                 is RpcRequestState.Loaded -> showSettings(it.response)
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(it.error.getErrorString(requireContext()), showProgressBar = false)
+                is RpcRequestState.Error -> showPlaceholder(
+                    it.error.getErrorString(requireContext()),
+                    showProgressBar = false
+                )
             }
         }
     }
 
     private fun showPlaceholder(text: String, showProgressBar: Boolean) {
         hideKeyboard()
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = false
-            with (placeholderView) {
+            with(placeholderView) {
                 root.isVisible = true
                 progressBar.isVisible = showProgressBar
                 placeholder.text = text
@@ -152,7 +155,7 @@ class NetworkFragment : NavigationFragment(
     }
 
     private fun showSettings(settings: NetworkServerSettings) {
-        with (binding) {
+        with(binding) {
             scrollView.isVisible = true
             placeholderView.root.isVisible = false
         }

@@ -28,7 +28,7 @@ class IntFilter : InputFilter {
         end: Int,
         dest: Spanned,
         dstart: Int,
-        dend: Int
+        dend: Int,
     ): CharSequence? {
         if (source.isEmpty()) {
             return null
@@ -77,7 +77,7 @@ class DoubleFilter(private val range: ClosedFloatingPointRange<Double>) : InputF
         end: Int,
         dest: Spanned,
         dstart: Int,
-        dend: Int
+        dend: Int,
     ): CharSequence? {
         if (source.isEmpty()) {
             return null

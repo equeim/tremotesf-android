@@ -20,7 +20,10 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getSeedingServerSettings(): SeedingServerSettings =
-    performRequest<RpcResponse<SeedingServerSettings>>(SEEDING_SERVER_SETTINGS_REQUEST_BODY, "getSeedingServerSettings").arguments
+    performRequest<RpcResponse<SeedingServerSettings>>(
+        SEEDING_SERVER_SETTINGS_REQUEST_BODY,
+        "getSeedingServerSettings"
+    ).arguments
 
 /**
  * @throws RpcRequestError
@@ -66,4 +69,5 @@ private data class SeedingServerSettingsRequestArguments(
     val fields: List<String> = SeedingServerSettings.serializer().descriptor.elementNames.toList(),
 )
 
-private val SEEDING_SERVER_SETTINGS_REQUEST_BODY = RpcRequestBody(RpcMethod.SessionGet, SeedingServerSettingsRequestArguments())
+private val SEEDING_SERVER_SETTINGS_REQUEST_BODY =
+    RpcRequestBody(RpcMethod.SessionGet, SeedingServerSettingsRequestArguments())

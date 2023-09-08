@@ -55,8 +55,22 @@ class TorrentFilesTreeBuilderTest {
     fun `Fail to create tree with multiple top-level files`() {
         assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
-                addFile(0, listOf("foo"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-                addFile(0, listOf("bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+                addFile(
+                    0,
+                    listOf("foo"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    0,
+                    listOf("bar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
         }
     }
@@ -65,8 +79,22 @@ class TorrentFilesTreeBuilderTest {
     fun `Fail to create tree with multiple top-level directories`() {
         assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
-                addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-                addFile(0, listOf("bar", "foo"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+                addFile(
+                    0,
+                    listOf("foo", "bar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    0,
+                    listOf("bar", "foo"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
         }
     }
@@ -75,8 +103,22 @@ class TorrentFilesTreeBuilderTest {
     fun `Fail to create tree when trying to add file when one of its parent directories was already added as file`() {
         assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
-                addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-                addFile(0, listOf("foo", "bar", "foobar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+                addFile(
+                    0,
+                    listOf("foo", "bar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    0,
+                    listOf("foo", "bar", "foobar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
         }
     }
@@ -85,8 +127,22 @@ class TorrentFilesTreeBuilderTest {
     fun `Fail to create tree when trying to add file when it was already added as directory`() {
         assertFailsWith<IllegalArgumentException> {
             buildTorrentFilesTree {
-                addFile(0, listOf("foo", "bar", "foobar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
-                addFile(0, listOf("foo", "bar"), 0, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
+                addFile(
+                    0,
+                    listOf("foo", "bar", "foobar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+                addFile(
+                    0,
+                    listOf("foo", "bar"),
+                    0,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
             }
         }
     }

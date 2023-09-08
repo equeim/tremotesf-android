@@ -20,7 +20,10 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getQueueServerSettings(): QueueServerSettings =
-    performRequest<RpcResponse<QueueServerSettings>>(QUEUE_SERVER_SETTINGS_REQUEST_BODY, "getQueueServerSettings").arguments
+    performRequest<RpcResponse<QueueServerSettings>>(
+        QUEUE_SERVER_SETTINGS_REQUEST_BODY,
+        "getQueueServerSettings"
+    ).arguments
 
 /**
  * @throws RpcRequestError
@@ -82,4 +85,5 @@ private data class QueueServerSettingsRequestArguments(
     val fields: List<String> = QueueServerSettings.serializer().descriptor.elementNames.toList(),
 )
 
-private val QUEUE_SERVER_SETTINGS_REQUEST_BODY = RpcRequestBody(RpcMethod.SessionGet, QueueServerSettingsRequestArguments())
+private val QUEUE_SERVER_SETTINGS_REQUEST_BODY =
+    RpcRequestBody(RpcMethod.SessionGet, QueueServerSettingsRequestArguments())

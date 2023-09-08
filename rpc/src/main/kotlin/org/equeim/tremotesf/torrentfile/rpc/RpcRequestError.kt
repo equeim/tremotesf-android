@@ -12,7 +12,6 @@ import okhttp3.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.security.cert.CertPathValidatorException
-import kotlin.time.Duration.Companion.seconds
 
 sealed class RpcRequestError private constructor(
     internal open val response: Response?,
@@ -51,10 +50,11 @@ sealed class RpcRequestError private constructor(
         RpcRequestError(response, "Unexpected error", cause)
 }
 
-val RpcRequestError.isRecoverable: Boolean get() = when (this) {
-    is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.BadConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> false
-    else -> true
-}
+val RpcRequestError.isRecoverable: Boolean
+    get() = when (this) {
+        is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.BadConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> false
+        else -> true
+    }
 
 internal fun IOException.toRpcRequestError(call: Call, context: String, response: Response?): RpcRequestError =
     if (this is SocketTimeoutException || call.isCanceled()) {

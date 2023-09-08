@@ -20,7 +20,7 @@ fun CoordinatorLayout.showSnackbar(
     @IdRes anchorViewId: Int = 0,
     @StringRes actionText: Int = 0,
     action: (() -> Unit)? = null,
-    onDismissed: ((Snackbar, Int) -> Unit)? = null
+    onDismissed: ((Snackbar, Int) -> Unit)? = null,
 ) = Snackbar.make(this, message, duration).apply {
     if (actionText != 0 && action != null) {
         setAction(actionText) { action() }
@@ -29,7 +29,10 @@ fun CoordinatorLayout.showSnackbar(
         setAnchorView(anchorViewId)
         null
     } else {
-        findFragment<Fragment>().applyNavigationBarBottomInset(paddingViews = emptyMap(), marginViews = mapOf(view to view.marginBottom))
+        findFragment<Fragment>().applyNavigationBarBottomInset(
+            paddingViews = emptyMap(),
+            marginViews = mapOf(view to view.marginBottom)
+        )
     }
     addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
         override fun onDismissed(transientBottomBar: Snackbar, @DismissEvent event: Int) {
@@ -46,5 +49,5 @@ fun CoordinatorLayout.showSnackbar(
     @IdRes anchorViewId: Int = 0,
     @StringRes actionText: Int = 0,
     action: (() -> Unit)? = null,
-    onDismissed: ((Snackbar, Int) -> Unit)? = null
+    onDismissed: ((Snackbar, Int) -> Unit)? = null,
 ) = showSnackbar(resources.getString(message), duration, anchorViewId, actionText, action, onDismissed)

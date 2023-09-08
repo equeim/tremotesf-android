@@ -39,16 +39,22 @@ class TransmissionSettingsDialogFragment :
             connectButton.setOnClickListener {
                 GlobalRpcClient.shouldConnectToServer.value = !GlobalRpcClient.shouldConnectToServer.value
             }
-            combine(GlobalServers.hasServers, GlobalRpcClient.shouldConnectToServer, ::Pair).launchAndCollectWhenStarted(
+            combine(
+                GlobalServers.hasServers,
+                GlobalRpcClient.shouldConnectToServer,
+                ::Pair
+            ).launchAndCollectWhenStarted(
                 viewLifecycleOwner
             ) { (hasServers, shouldConnectToServer) ->
                 connectButton.apply {
                     isEnabled = hasServers
-                    setText(if (shouldConnectToServer) {
-                        R.string.disconnect
-                    } else {
-                        R.string.connect
-                    })
+                    setText(
+                        if (shouldConnectToServer) {
+                            R.string.disconnect
+                        } else {
+                            R.string.connect
+                        }
+                    )
                 }
             }
 
@@ -84,7 +90,11 @@ class TransmissionSettingsDialogFragment :
                 alternativeLimitsCheckBox.apply {
                     val enabled = !isChecked
                     isChecked = enabled
-                    GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) { setAlternativeLimitsEnabled(enabled) }
+                    GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) {
+                        setAlternativeLimitsEnabled(
+                            enabled
+                        )
+                    }
                 }
             }
 

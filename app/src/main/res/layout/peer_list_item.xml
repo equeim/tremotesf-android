@@ -6,8 +6,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -24,7 +23,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:maxLines="1"
         android:singleLine="true"
         android:textAppearance="?attr/textAppearanceListItemSmall"
-        android:textSize="@dimen/text_size_list_item_smaller"/>
+        android:textSize="@dimen/text_size_list_item_smaller" />
 
     <TextView
         android:id="@+id/download_speed_text_view"
@@ -32,7 +31,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="wrap_content"
         android:layout_below="@id/address_text_view"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="@dimen/text_size_smaller"/>
+        android:textSize="@dimen/text_size_smaller" />
 
     <TextView
         android:id="@+id/upload_speed_text_view"
@@ -40,7 +39,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="wrap_content"
         android:layout_below="@id/download_speed_text_view"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="@dimen/text_size_smaller"/>
+        android:textSize="@dimen/text_size_smaller" />
 
     <TextView
         android:id="@+id/progress_text_view"
@@ -49,7 +48,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_alignParentEnd="true"
         android:layout_below="@id/address_text_view"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="@dimen/text_size_smaller"/>
+        android:textSize="@dimen/text_size_smaller" />
 
     <TextView
         android:id="@+id/client_text_view"
@@ -58,5 +57,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_alignParentEnd="true"
         android:layout_below="@id/progress_text_view"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="@dimen/text_size_smaller"/>
+        android:textSize="@dimen/text_size_smaller" />
 </RelativeLayout>

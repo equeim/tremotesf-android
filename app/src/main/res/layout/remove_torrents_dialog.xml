@@ -4,8 +4,7 @@ SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/linear_layout_vertical_spacing"
@@ -15,5 +14,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/delete_files_check_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/delete_files"/>
+        android:text="@string/delete_files" />
 </FrameLayout>

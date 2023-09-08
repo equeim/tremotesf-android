@@ -265,6 +265,7 @@ class AddTrackersDialogFragment : NavigationDialogFragment() {
         val announceUrls: List<String>,
     ) : Parcelable {
         fun toBundle(): Bundle = bundleOf("" to this)
+
         companion object {
             fun fromBundle(bundle: Bundle): Result = requireNotNull(bundle.parcelable(""))
         }
@@ -296,6 +297,7 @@ class EditTrackerDialogFragment : NavigationDialogFragment() {
         val newAnnounceUrl: String,
     ) : Parcelable {
         fun toBundle(): Bundle = bundleOf("" to this)
+
         companion object {
             fun fromBundle(bundle: Bundle): Result = requireNotNull(bundle.parcelable(""))
         }
@@ -340,6 +342,7 @@ class RemoveTrackersDialogFragment : NavigationDialogFragment() {
         }
 
         fun toBundle(): Bundle = bundleOf("" to this)
+
         companion object {
             fun fromBundle(bundle: Bundle): Result = requireNotNull(bundle.parcelable(""))
         }

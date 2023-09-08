@@ -89,19 +89,20 @@ class TorrentsAdapter(
         selectionTracker.restoreInstanceState()
     }
 
-    private val _currentListChanged = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _currentListChanged =
+        MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val currentListChanged: Flow<Unit> by ::_currentListChanged
 
     override fun onCurrentListChanged(
         previousList: MutableList<Torrent>,
-        currentList: MutableList<Torrent>
+        currentList: MutableList<Torrent>,
     ) {
         _currentListChanged.tryEmit(Unit)
     }
 
     inner class TorrentsViewHolder(
         multilineName: Boolean,
-        private val binding: TorrentListItemBinding
+        private val binding: TorrentListItemBinding,
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         override fun update() {
             val oldTorrent = torrent
@@ -176,7 +177,7 @@ class TorrentsAdapter(
 
     inner class TorrentsViewHolderCompact(
         multilineName: Boolean,
-        private val binding: TorrentListItemCompactBinding
+        private val binding: TorrentListItemCompactBinding,
     ) : BaseTorrentsViewHolder(multilineName, binding.root) {
         override fun update() {
             val oldTorrent = torrent
@@ -228,7 +229,7 @@ class TorrentsAdapter(
 
     open inner class BaseTorrentsViewHolder(
         multilineName: Boolean,
-        itemView: View
+        itemView: View,
     ) : SelectionTracker.ViewHolder<Int>(selectionTracker, itemView) {
         protected var torrent: Torrent? = null
             private set
@@ -236,6 +237,7 @@ class TorrentsAdapter(
         protected val context: Context = itemView.context
 
         private val nameTextView = itemView.findViewById<TextView>(R.id.name_text_view)!!
+
         @DrawableRes
         private var iconResId = 0
         protected val downloadSpeedTextView =
@@ -267,11 +269,16 @@ class TorrentsAdapter(
                 when (torrent.status) {
                     TorrentStatus.Paused -> R.drawable.ic_pause_24dp
                     TorrentStatus.Downloading,
-                    TorrentStatus.QueuedForDownloading -> R.drawable.ic_arrow_downward_24dp
+                    TorrentStatus.QueuedForDownloading,
+                    -> R.drawable.ic_arrow_downward_24dp
+
                     TorrentStatus.Seeding,
-                    TorrentStatus.QueuedForSeeding -> R.drawable.ic_arrow_upward_24dp
+                    TorrentStatus.QueuedForSeeding,
+                    -> R.drawable.ic_arrow_upward_24dp
+
                     TorrentStatus.Checking,
-                    TorrentStatus.QueuedForChecking -> R.drawable.ic_refresh_24dp
+                    TorrentStatus.QueuedForChecking,
+                    -> R.drawable.ic_refresh_24dp
                 }
             }
             if (resId != iconResId) {
@@ -334,15 +341,22 @@ class TorrentsAdapter(
                 R.id.pause -> model.pauseTorrents(selectionTracker.selectedKeys.toList())
                 R.id.check -> model.checkTorrents(selectionTracker.selectedKeys.toList())
                 R.id.start_now -> model.startTorrents(selectionTracker.selectedKeys.toList(), now = true)
-                R.id.reannounce -> GlobalRpcClient.performBackgroundRpcRequest(R.string.torrents_reannounce_error) { reannounceTorrents(selectionTracker.selectedKeys.toList()) }
+                R.id.reannounce -> GlobalRpcClient.performBackgroundRpcRequest(R.string.torrents_reannounce_error) {
+                    reannounceTorrents(
+                        selectionTracker.selectedKeys.toList()
+                    )
+                }
+
                 R.id.set_location -> {
                     activity.navigate(
                         TorrentsListFragmentDirections.toTorrentSetLocationDialog(
-                            selectionTracker.getSelectedPositionsUnsorted().mapToArray { adapter.getItem(it).hashString },
+                            selectionTracker.getSelectedPositionsUnsorted()
+                                .mapToArray { adapter.getItem(it).hashString },
                             adapter.getFirstSelectedTorrent().downloadDirectory.toNativeSeparators()
                         )
                     )
                 }
+
                 R.id.rename -> {
                     val torrent = adapter.getFirstSelectedTorrent()
                     activity.navigate(
@@ -353,11 +367,13 @@ class TorrentsAdapter(
                         )
                     )
                 }
+
                 R.id.remove -> activity.navigate(
                     TorrentsListFragmentDirections.toRemoveTorrentDialog(
                         selectionTracker.getSelectedPositionsUnsorted().mapToArray { adapter.getItem(it).hashString }
                     )
                 )
+
                 R.id.share -> {
                     val magnetLinks =
                         adapter.currentList
@@ -365,6 +381,7 @@ class TorrentsAdapter(
                             .map { it.magnetLink }
                     Utils.shareTorrents(magnetLinks, activity)
                 }
+
                 else -> return false
             }
 
@@ -394,6 +411,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
         } else {
             context.getText(R.string.torrent_paused)
         }
+
         TorrentStatus.Downloading -> if (isDownloadingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_downloading_stalled_with_error, errorString)
@@ -417,6 +435,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 )
             }
         }
+
         TorrentStatus.Seeding -> if (isSeedingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_seeding_stalled_with_error, errorString)
@@ -439,12 +458,15 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 )
             }
         }
+
         TorrentStatus.QueuedForDownloading,
-        TorrentStatus.QueuedForSeeding -> if (error != null) {
+        TorrentStatus.QueuedForSeeding,
+        -> if (error != null) {
             context.getString(R.string.torrent_queued_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued)
         }
+
         TorrentStatus.Checking -> if (error != null) {
             context.getString(
                 R.string.torrent_checking_with_error,
@@ -457,6 +479,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
                 DecimalFormats.generic.format(recheckProgress * 100)
             )
         }
+
         TorrentStatus.QueuedForChecking -> if (error != null) {
             context.getString(R.string.torrent_queued_for_checking_with_error, errorString)
         } else {

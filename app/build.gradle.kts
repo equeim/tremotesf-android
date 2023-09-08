@@ -21,6 +21,7 @@ class KeystoreProperties(rootProject: Project) {
     val storeFile: String by properties
     val storePassword: String by properties
 }
+
 val keystoreProperties = try {
     KeystoreProperties(rootProject)
 } catch (e: Exception) {
@@ -52,7 +53,8 @@ android {
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
 
-        signingConfig = signingConfigs.findByName("release")
+        //signingConfig = signingConfigs.findByName("release")
+        signingConfig = signingConfigs.findByName("debug")
 
         ndk.debugSymbolLevel = "FULL"
     }

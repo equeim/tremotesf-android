@@ -21,7 +21,10 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.RpcResponse
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getDownloadingServerSettings(): DownloadingServerSettings =
-    performRequest<RpcResponse<DownloadingServerSettings>>(DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY, "getDownloadingServerSettings").arguments
+    performRequest<RpcResponse<DownloadingServerSettings>>(
+        DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY,
+        "getDownloadingServerSettings"
+    ).arguments
 
 /**
  * @throws RpcRequestError
@@ -66,7 +69,7 @@ data class DownloadingServerSettings(
     val incompleteDirectoryEnabled: Boolean,
     @Contextual
     @SerialName("incomplete-dir")
-    val incompleteDirectory: NormalizedRpcPath
+    val incompleteDirectory: NormalizedRpcPath,
 )
 
 @Serializable
@@ -76,4 +79,5 @@ private data class DownloadingServerSettingsRequestArguments(
     val fields: List<String> = DownloadingServerSettings.serializer().descriptor.elementNames.toList(),
 )
 
-private val DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY = RpcRequestBody(RpcMethod.SessionGet, DownloadingServerSettingsRequestArguments())
+private val DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY =
+    RpcRequestBody(RpcMethod.SessionGet, DownloadingServerSettingsRequestArguments())

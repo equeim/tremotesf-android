@@ -62,7 +62,10 @@ fun <T> RpcClient.performRecoveringRequest(
             }
         }
 
-private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(collector: FlowCollector<RpcRequestState<T>>, performRequest: suspend RpcClient.() -> T) {
+private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
+    collector: FlowCollector<RpcRequestState<T>>,
+    performRequest: suspend RpcClient.() -> T,
+) {
     coroutineScope {
         var delayedLoadingOnRetry: Job? = null
         var retryAttempts = 0

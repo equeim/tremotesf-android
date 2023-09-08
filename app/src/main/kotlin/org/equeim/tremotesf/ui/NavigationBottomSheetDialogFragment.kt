@@ -54,7 +54,7 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = inflater.inflate(contentLayoutId, container, false)
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -216,7 +216,7 @@ class ExpandedBottomSheetBehavior(context: Context, attrs: AttributeSet?) :
     override fun onLayoutChild(
         parent: CoordinatorLayout,
         child: View,
-        layoutDirection: Int
+        layoutDirection: Int,
     ): Boolean {
         return super.onLayoutChild(parent, child, layoutDirection).also {
             if (firstLayout) {
