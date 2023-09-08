@@ -153,7 +153,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">Vitesse</string>
     <string name="honor_global_limits">Respecter les limites globales</string>
-    <string name="kbps">ko/s</string>
     <string name="download_noun">Téléchargement</string>
     <string name="upload_noun">Envoi</string>
 
@@ -173,7 +172,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>Arrêter de partager si inactif pendant</item>
     </string-array>
 
-    <string name="min">min</string>
     <string name="maximum_peers">Nombre maximum de pairs</string>
 
     <string name="settings">Paramètres</string>
@@ -249,8 +247,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignorer la position dans la file si inactif depuis</string>
     <string name="alternative_limits">Limites alternatives</string>
     <string name="enable">Activer</string>
-    <string name="download_kbps">Téléchargement, ko/s</string>
-    <string name="upload_kbps">Envoi, ko/s</string>
     <string name="scheduled">Programmé</string>
     <string name="from">De</string>
     <string name="to">‭À</string>

@@ -171,7 +171,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">Скорость</string>
     <string name="honor_global_limits">Учитывать глобальные ограничения</string>
-    <string name="kbps">кБ/с</string>
     <string name="download_noun">Загрузка</string>
     <string name="upload_noun">Отдача</string>
 
@@ -191,7 +190,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">мин</string>
     <string name="maximum_peers">Максимальное количество пиров</string>
 
     <string name="settings">Настройки</string>
@@ -269,8 +267,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Игнорировать позицию в очереди при простое</string>
     <string name="alternative_limits">Альтернативные ограничения</string>
     <string name="enable">Включить</string>
-    <string name="download_kbps">Загрузка, кБ/с</string>
-    <string name="upload_kbps">Отдача, кБ/с</string>
     <string name="scheduled">По расписанию</string>
     <string name="from">С</string>
     <string name="to">до</string>

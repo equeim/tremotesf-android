@@ -143,7 +143,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">Hız</string>
     <string name="honor_global_limits">Evrensel saygınlık sınırları</string>
-    <string name="kbps">kB/s</string>
     <string name="download_noun">İndir</string>
     <string name="upload_noun">Yükle</string>
 
@@ -163,7 +162,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">dakika</string>
     <string name="maximum_peers">Azami Eşler</string>
 
     <string name="settings">Ayarlar</string>
@@ -237,8 +235,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Boşta kalırsa kuyruk konumunu yoksay</string>
     <string name="alternative_limits">Muadil sınırlar</string>
     <string name="enable">Etkinleştir</string>
-    <string name="download_kbps">İndirme, kB/s</string>
-    <string name="upload_kbps">Yükleme, kB/s</string>
     <string name="scheduled">Tarifeli</string>
     <string name="from">İtibaren</string>
     <string name="to">İçin</string>

@@ -139,7 +139,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="speed">速度</string>
     <string name="honor_global_limits">以全局设置为准</string>
-    <string name="kbps">kB/s</string>
     <string name="download_noun">下载速度</string>
     <string name="upload_noun">上传速度</string>
 
@@ -159,7 +158,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
-    <string name="min">分钟</string>
     <string name="maximum_peers">最大节点数</string>
 
     <string name="settings">设置</string>
@@ -231,8 +229,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">空闲该时段后忽略队列优先级</string>
     <string name="alternative_limits">备选限制</string>
     <string name="enable">启用</string>
-    <string name="download_kbps">下载， kB/s</string>
-    <string name="upload_kbps">上传， kB/s</string>
     <string name="scheduled">计划的</string>
     <string name="from">从</string>
     <string name="to">到</string>

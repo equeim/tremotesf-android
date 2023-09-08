@@ -60,7 +60,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:hint="@string/kbps">
+                app:suffixText="@string/text_field_suffix_kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/download_speed_limit_edit"
@@ -81,7 +81,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:hint="@string/kbps">
+                app:suffixText="@string/text_field_suffix_kbps">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/upload_speed_limit_edit"
@@ -160,7 +160,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:hint="@string/min">
+                app:suffixText="@string/text_field_suffix_minutes">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/idle_seeding_limit_edit"
