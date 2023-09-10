@@ -61,7 +61,6 @@ jobs:
             app/build/reports/*
             billing/build/reports/*
             common/build/reports/*
-            libtremotesf/build/reports/*
             rpc/build/reports/*
             torrentfile/build/reports/*
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
