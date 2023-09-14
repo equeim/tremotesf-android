@@ -13,7 +13,7 @@ Files: CHANGELOG.md README.md app/src/main/res/raw*/*.html app/src/main/res/raw/
 Copyright: 2017-2022 Alexey Rochev
 License: CC0-1.0
 
-Files: app/src/main/res/values-*/strings.xml app/src/main/res/*.svg app/src/main/res/ic_launcher-web.png app/src/main/res/*/ic_launcher.png
+Files: app/src/main/res/navigation/nav_main.xml app/src/main/res/values-*/strings.xml app/src/main/res/*.svg app/src/main/res/ic_launcher-web.png app/src/main/res/*/ic_launcher.png
 Copyright: 2017-2022 Alexey Rochev
 License: GPL-3.0-or-later
 
