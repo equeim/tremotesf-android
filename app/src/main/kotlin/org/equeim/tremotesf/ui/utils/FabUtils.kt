@@ -5,6 +5,8 @@
 package org.equeim.tremotesf.ui.utils
 
 import android.view.Gravity
+import android.view.ViewGroup.MarginLayoutParams
+import android.widget.FrameLayout
 import androidx.appcompat.widget.TooltipCompat
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
@@ -27,11 +29,16 @@ fun ExtendedFloatingActionButton.extendWhenImeIsHidden(
         .launchAndCollectWhenStarted(lifecycleOwner) { imeVisible ->
             isExtended = !imeVisible
             TooltipCompat.setTooltipText(this, if (imeVisible) text else null)
-            updateLayoutParams<CoordinatorLayout.LayoutParams> {
-                gravity = if (imeVisible) {
+            updateLayoutParams<MarginLayoutParams> {
+                val newGravity = if (imeVisible) {
                     Gravity.BOTTOM or Gravity.END
                 } else {
                     Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                }
+                when (this) {
+                    is FrameLayout.LayoutParams -> gravity = newGravity
+                    is CoordinatorLayout.LayoutParams -> gravity = newGravity
+                    else -> throw IllegalStateException("Unsupported layoutParams type ${this::class.qualifiedName}")
                 }
                 marginEnd = if (imeVisible) {
                     marginEndWhenImeIsVisible
