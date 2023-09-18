@@ -13,7 +13,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <include layout="@layout/toolbar" />
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -246,5 +246,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:tag="@string/add_navigation_bar_margin"
             app:icon="@drawable/ic_done_24dp"
             tools:text="@string/add" />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </FrameLayout>
 </LinearLayout>
