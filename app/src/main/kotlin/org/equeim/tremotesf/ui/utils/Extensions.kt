@@ -18,18 +18,22 @@ import android.view.ViewParent
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 val Context.application: Application get() = findConcreteContext()
 val Context.activity: Activity get() = findConcreteContext()
@@ -64,19 +68,6 @@ fun NavController.popDialog() {
     if (currentDestination is DialogFragmentNavigator.Destination) {
         popBackStack()
     }
-}
-
-fun OnBackPressedDispatcher.addCustomCallback(owner: LifecycleOwner, onBackPressed: () -> Boolean) {
-    val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (!onBackPressed()) {
-                isEnabled = false
-                this@addCustomCallback.onBackPressed()
-                isEnabled = true
-            }
-        }
-    }
-    addCallback(owner, callback)
 }
 
 inline fun CheckBox.setDependentViews(
@@ -136,3 +127,14 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? =
 
 val RecyclerView.ViewHolder.bindingAdapterPositionOrNull: Int?
     get() = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }
+
+val ViewPager2.currentItemFlow: Flow<Int> get() = callbackFlow {
+    send(currentItem)
+    val callback = object : OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            trySend(position)
+        }
+    }
+    registerOnPageChangeCallback(callback)
+    awaitClose { unregisterOnPageChangeCallback(callback) }
+}.conflate().distinctUntilChanged()

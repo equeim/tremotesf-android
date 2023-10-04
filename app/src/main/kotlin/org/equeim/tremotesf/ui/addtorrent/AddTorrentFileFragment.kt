@@ -7,6 +7,8 @@ package org.equeim.tremotesf.ui.addtorrent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.core.text.trimmedLength
 import androidx.core.view.isVisible
@@ -29,6 +31,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentFileFilesFragmentBinding
@@ -48,8 +52,8 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.addCustomCallback
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
+import org.equeim.tremotesf.ui.utils.currentItemFlow
 import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
@@ -78,7 +82,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     private val binding by viewLifecycleObject(AddTorrentFileFragmentBinding::bind)
 
-    private var done = false
+    private lateinit var backCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,11 +113,12 @@ class AddTorrentFileFragment : AddTorrentFragment(
         binding.addButton.setOnClickListener { addTorrentFile() }
         binding.addButton.extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
 
-        requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
-            !done &&
-                    binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal &&
-                    model.filesTree.navigateUp()
+        backCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            model.filesTree.navigateUp()
         }
+        combine(binding.pager.currentItemFlow, model.filesTree.isAtRoot) { tab, isAtRoot ->
+            tab == PagerAdapter.Tab.Files.ordinal && !isAtRoot
+        }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner, backCallback::isEnabled::set)
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1
@@ -192,7 +197,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             )
         }
         infoFragment.directoriesAdapter.save(infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit)
-        done = true
+        backCallback.remove()
         requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
 

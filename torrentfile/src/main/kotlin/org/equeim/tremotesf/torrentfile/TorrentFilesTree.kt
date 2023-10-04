@@ -270,6 +270,9 @@ open class TorrentFilesTree(
     protected var currentNode: DirectoryNode = rootNode
         private set
 
+    private val _isAtRoot = MutableStateFlow(true)
+    val isAtRoot: StateFlow<Boolean> by ::_isAtRoot
+
     private val _items = MutableStateFlow<List<Item?>?>(null)
     val items: StateFlow<List<Item?>?> by ::_items
 
@@ -303,6 +306,7 @@ open class TorrentFilesTree(
     private fun navigateTo(node: DirectoryNode) {
         scope.launch {
             currentNode = node
+            _isAtRoot.value = currentNode == rootNode
             updateItemsWithSorting()
         }
     }
@@ -458,6 +462,7 @@ open class TorrentFilesTree(
         scope.coroutineContext.cancelChildren()
         rootNode = DirectoryNode.createRootNode()
         currentNode = rootNode
+        _isAtRoot.value = true
         _items.value = null
         inited = false
     }
