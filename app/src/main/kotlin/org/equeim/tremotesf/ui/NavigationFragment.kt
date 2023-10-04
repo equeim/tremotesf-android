@@ -25,6 +25,7 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
@@ -214,14 +215,14 @@ fun Fragment.applyNavigationBarBottomInset() {
     val rootView = requireView()
     val paddingViews = rootView.findPaddingViews()
     val marginViews = rootView.findMarginViews()
-    applyNavigationBarBottomInset(paddingViews, marginViews)
+    applyNavigationBarBottomInset(paddingViews, marginViews, viewLifecycleOwner, requireActivity() as NavigationActivity)
 }
 
-fun Fragment.applyNavigationBarBottomInset(paddingViews: Map<View, Int>, marginViews: Map<View, Int>): Job {
-    return (requireActivity() as NavigationActivity).windowInsets
+fun applyNavigationBarBottomInset(paddingViews: Map<View, Int>, marginViews: Map<View, Int>, lifecycleOwner: LifecycleOwner, activity: NavigationActivity): Job {
+    return activity.windowInsets
         .map { it.bottomNavigationBarInsetIfImeIsHidden() }
         .distinctUntilChanged()
-        .launchAndCollectWhenStarted(viewLifecycleOwner) { inset ->
+        .launchAndCollectWhenStarted(lifecycleOwner) { inset ->
             paddingViews.forEach { (view, initialPadding) ->
                 view.applyNavigationBarBottomInsetAsPadding(inset, initialPadding)
             }

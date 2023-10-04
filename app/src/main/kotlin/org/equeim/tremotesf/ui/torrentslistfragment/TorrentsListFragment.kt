@@ -21,14 +21,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.Callback.DISMISS_EVENT_SWIPE
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
@@ -48,7 +49,6 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.addCustomCallback
-import org.equeim.tremotesf.ui.utils.handleAndReset
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
@@ -114,7 +114,7 @@ class TorrentsListFragment : NavigationFragment(
 
         binding.detailedErrorMessageButton.setOnClickListener {
             (model.torrentsListState.value as? RpcRequestState.Error)?.let { error ->
-                navigate(TorrentsListFragmentDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString()))
+                navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString()))
             }
         }
 
@@ -158,20 +158,23 @@ class TorrentsListFragment : NavigationFragment(
         model.subtitleState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
 
         notificationPermissionLauncher?.let { launcher ->
-            model.showNotificationPermissionRequest.handleAndReset {
-                binding.root.showSnackbar(
-                    message = R.string.notification_permission_rationale,
-                    duration = Snackbar.LENGTH_INDEFINITE,
-                    actionText = R.string.request_permission,
-                    anchorViewId = R.id.bottom_toolbar,
-                    action = { model.notificationPermissionHelper?.requestPermission(this, launcher) },
-                    onDismissed = { _, event ->
-                        if (event == DISMISS_EVENT_SWIPE) {
-                            model.onNotificationPermissionRequestDismissed()
-                        }
+            model.showNotificationPermissionRequest
+                .filter { it }
+                .launchAndCollectWhenStarted(viewLifecycleOwner) {
+                    val result = binding.root.showSnackbar(
+                        message = R.string.notification_permission_rationale,
+                        duration = Snackbar.LENGTH_INDEFINITE,
+                        lifecycleOwner = viewLifecycleOwner,
+                        activity = requiredActivity,
+                        actionText = R.string.request_permission,
+                        anchorViewId = R.id.bottom_toolbar,
+                        action = { model.notificationPermissionHelper?.requestPermission(this, launcher) }
+                    )
+                    model.showNotificationPermissionRequest.compareAndSet(it, false)
+                    if (result.event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
+                        model.onNotificationPermissionRequestDismissed()
                     }
-                )
-            }.launchAndCollectWhenStarted(viewLifecycleOwner)
+                }
         }
 
         RemoveTorrentDialogFragment.setFragmentResultListener(this) {

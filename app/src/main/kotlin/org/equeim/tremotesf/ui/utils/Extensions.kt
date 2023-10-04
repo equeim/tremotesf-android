@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.ui.utils
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
@@ -30,18 +31,19 @@ import androidx.navigation.fragment.DialogFragmentNavigator
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 
+val Context.application: Application get() = findConcreteContext()
+val Context.activity: Activity get() = findConcreteContext()
 
-val Context.application: Application
-    get() {
-        var context = applicationContext
-        while (context is ContextWrapper) {
-            if (context is Application) {
-                return context
-            }
-            context = context.baseContext
+private inline fun <reified T : Context> Context.findConcreteContext(): T {
+    var context = applicationContext
+    while (context is ContextWrapper) {
+        if (context is T) {
+            return context
         }
-        throw IllegalStateException()
+        context = context.baseContext
     }
+    throw IllegalStateException()
+}
 
 inline fun <reified T : Fragment> FragmentManager.findFragment(): T? {
     return fragments.find { it is T } as T?

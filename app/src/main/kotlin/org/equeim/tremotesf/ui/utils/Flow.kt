@@ -10,10 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 fun <T> Flow<T>.launchAndCollectWhenStarted(lifecycleOwner: LifecycleOwner) =
@@ -24,9 +21,3 @@ fun <T> Flow<T>.launchAndCollectWhenStarted(
     collector: FlowCollector<T>,
 ) =
     lifecycleOwner.lifecycleScope.launch { lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { collect(collector) } }
-
-inline fun MutableStateFlow<Boolean>.handleAndReset(crossinline action: suspend () -> Unit) =
-    filter { it }.onEach {
-        action()
-        compareAndSet(it, false)
-    }

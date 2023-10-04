@@ -12,7 +12,6 @@ import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
@@ -27,14 +26,18 @@ import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.service.ForegroundService
+import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.showSnackbar
 import timber.log.Timber
 
 
@@ -93,11 +96,19 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         handleDropEvents()
 
-        model.showRpcErrorToast.filterNotNull().launchAndCollectWhenStarted(this) { error ->
-            val text = getString(error.errorContext, error.error.getErrorString(this))
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
-            model.rpcErrorToastShown()
-        }
+        model.showRpcError
+            .filterNotNull()
+            .launchAndCollectWhenStarted(this) { error ->
+                binding.root.showSnackbar(
+                    message = getString(error.errorContext, error.error.getErrorString(this)),
+                    duration = Snackbar.LENGTH_LONG,
+                    lifecycleOwner = this,
+                    activity = this,
+                    actionText = R.string.see_detailed_error_message,
+                    action = { navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString())) }
+                )
+                model.rpcErrorDismissed()
+            }
 
         ForegroundService.startStopAutomatically()
 
