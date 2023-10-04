@@ -28,7 +28,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/downloaded"
             app:layout_columnWeight="1" />
 
@@ -38,13 +38,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/uploaded"
             app:layout_columnWeight="1" />
 
@@ -54,13 +54,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/ratio"
             app:layout_columnWeight="1" />
 
@@ -70,13 +70,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/duration"
             app:layout_columnWeight="1" />
 
@@ -86,7 +86,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
@@ -103,7 +103,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/downloaded"
             app:layout_columnWeight="1" />
 
@@ -113,13 +113,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/uploaded"
             app:layout_columnWeight="1" />
 
@@ -129,13 +129,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/ratio"
             app:layout_columnWeight="1" />
 
@@ -145,13 +145,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:maxLines="2"
+            android:maxLines="5"
             android:text="@string/duration"
             app:layout_columnWeight="1" />
 
@@ -161,7 +161,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
 
         <TextView
@@ -176,7 +176,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="5"
             app:layout_columnWeight="2" />
     </androidx.gridlayout.widget.GridLayout>
 </ScrollView>

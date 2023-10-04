@@ -60,8 +60,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:id="@+id/connection_settings"
             style="@style/Widget.Tremotesf.BottomSheetMenuItem"
             android:layout_width="match_parent"
-            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="5"
+            android:minHeight="?listPreferredItemHeightSmall"
             android:paddingHorizontal="@dimen/horizontal_edge_padding"
             android:text="@string/connection_settings" />
 
@@ -74,15 +77,18 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:id="@+id/server_settings"
             style="@style/Widget.Tremotesf.BottomSheetMenuItem"
             android:layout_width="match_parent"
-            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:ellipsize="end"
+            android:maxLines="5"
+            android:minHeight="?listPreferredItemHeightSmall"
             android:paddingHorizontal="@dimen/horizontal_edge_padding"
             android:text="@string/server_settings" />
 
         <FrameLayout
             android:id="@+id/alternative_limits_clickable"
             android:layout_width="match_parent"
-            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_height="wrap_content"
             android:background="?android:selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
@@ -91,9 +97,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
             <CheckedTextView
                 android:id="@+id/alternative_limits_check_box"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:checkMark="?android:listChoiceIndicatorMultiple"
-                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:maxLines="5"
+                android:minHeight="?listPreferredItemHeightSmall"
                 android:text="@string/alternative_speed_limits"
                 android:textAppearance="?textAppearanceBody1" />
         </FrameLayout>
@@ -102,7 +111,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:id="@+id/server_stats"
             style="@style/Widget.Tremotesf.BottomSheetMenuItem"
             android:layout_width="match_parent"
-            android:layout_height="?listPreferredItemHeightSmall"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="5"
+            android:minHeight="?listPreferredItemHeightSmall"
             android:paddingHorizontal="@dimen/horizontal_edge_padding"
             android:text="@string/server_stats" />
     </LinearLayout>

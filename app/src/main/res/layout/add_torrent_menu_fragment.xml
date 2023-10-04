@@ -20,7 +20,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/add_torrent_file"
         style="@style/Widget.Tremotesf.BottomSheetMenuItem"
         android:layout_width="match_parent"
-        android:layout_height="?listPreferredItemHeightSmall"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="5"
+        android:minHeight="?listPreferredItemHeightSmall"
         android:paddingHorizontal="@dimen/horizontal_edge_padding"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         android:text="@string/add_torrent_file" />
@@ -29,7 +32,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:id="@+id/add_torrent_link"
         style="@style/Widget.Tremotesf.BottomSheetMenuItem"
         android:layout_width="match_parent"
-        android:layout_height="?listPreferredItemHeightSmall"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="5"
+        android:minHeight="?listPreferredItemHeightSmall"
         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
         android:paddingHorizontal="@dimen/horizontal_edge_padding"
         android:text="@string/add_torrent_link" />

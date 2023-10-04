@@ -89,7 +89,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_marginStart="24dp"
             android:ellipsize="end"
             android:gravity="end"
-            android:maxLines="2"
+            android:maxLines="3"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="Nope" />
     </RelativeLayout>
