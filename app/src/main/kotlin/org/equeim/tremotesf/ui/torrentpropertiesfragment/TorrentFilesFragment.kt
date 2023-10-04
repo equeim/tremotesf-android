@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
 import org.equeim.tremotesf.rpc.getErrorString
@@ -57,6 +58,7 @@ class TorrentFilesFragment :
         model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, filesAdapter::update)
     }
 
+    fun isAtRootOfTree(): StateFlow<Boolean> = model.filesTree.isAtRoot
     fun navigateUp(): Boolean = model.filesTree.navigateUp()
 
     override fun onToolbarClicked() {

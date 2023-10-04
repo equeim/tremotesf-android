@@ -7,6 +7,7 @@ package org.equeim.tremotesf.ui.torrentpropertiesfragment
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.TooltipCompat
@@ -21,9 +22,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -41,7 +45,7 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.addCustomCallback
+import org.equeim.tremotesf.ui.utils.currentItemFlow
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -82,14 +86,18 @@ class TorrentPropertiesFragment : NavigationFragment(
             tab.setText(PagerAdapter.getTitle(position))
         }.attach()
 
-        requireActivity().onBackPressedDispatcher.addCustomCallback(viewLifecycleOwner) {
-            if (binding.pager.currentItem == PagerAdapter.Tab.Files.ordinal) {
-                val fragment = childFragmentManager.findFragment<TorrentFilesFragment>()
-                fragment?.navigateUp() ?: false
-            } else {
-                false
-            }
+        val backCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            childFragmentManager.findFragment<TorrentFilesFragment>()?.navigateUp()
         }
+        @OptIn(ExperimentalCoroutinesApi::class)
+        binding.pager.currentItemFlow.flatMapLatest { tab ->
+            if (tab == PagerAdapter.Tab.Files.ordinal) {
+                val fragment = childFragmentManager.findFragment<TorrentFilesFragment>()
+                fragment?.isAtRootOfTree()?.map { !it } ?: flowOf(false)
+            } else {
+                flowOf(false)
+            }
+        }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner, backCallback::isEnabled::set)
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             private var previousPage = -1

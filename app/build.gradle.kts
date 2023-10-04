@@ -94,6 +94,7 @@ dependencies {
 
     implementation(libs.coroutines.android)
 
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
     implementation(libs.androidx.coordinatorlayout)
