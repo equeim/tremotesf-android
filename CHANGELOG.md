@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Android 14 support
+- Predictive back gesture support
+
+### Changed
+- RPC client is rewritten to use OkHttp library instead of Qt
+
 ## [2.9.1] - 2023-03-26
 ### Fixed
 - Invalid display of download directory filter
