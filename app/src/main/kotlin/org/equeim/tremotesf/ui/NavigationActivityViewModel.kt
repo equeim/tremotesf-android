@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -117,15 +118,18 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
         }
     }
 
-    private val _showRpcErrorToast = MutableStateFlow<GlobalRpcClient.BackgroundRpcRequestError?>(null)
-    val showRpcErrorToast: StateFlow<GlobalRpcClient.BackgroundRpcRequestError?> by ::_showRpcErrorToast
-    fun rpcErrorToastShown() {
-        _showRpcErrorToast.value = null
+    private val _showRpcError = MutableStateFlow<GlobalRpcClient.BackgroundRpcRequestError?>(null)
+    val showRpcError: StateFlow<GlobalRpcClient.BackgroundRpcRequestError?> by ::_showRpcError
+    fun rpcErrorDismissed() {
+        _showRpcError.value = null
     }
 
     init {
         viewModelScope.launch {
-            GlobalRpcClient.backgroundRpcRequestsErrors.receiveAsFlow().collect(_showRpcErrorToast)
+            GlobalRpcClient.backgroundRpcRequestsErrors.receiveAsFlow().collect { error ->
+                _showRpcError.first { it == null }
+                _showRpcError.value = error
+            }
         }
     }
 }

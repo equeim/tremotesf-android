@@ -53,9 +53,6 @@
         <action
             android:id="@+id/to_transmission_settings_dialog_fragment"
             app:destination="@id/transmission_settings_dialog_fragment" />
-        <action
-            android:id="@+id/to_detailed_connection_error_dialog_fragment"
-            app:destination="@id/detailed_connection_error_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -84,9 +81,6 @@
         <action
             android:id="@+id/to_torrent_set_location_dialog"
             app:destination="@id/torrent_set_location_dialog" />
-        <action
-            android:id="@+id/to_detailed_connection_error_dialog_fragment"
-            app:destination="@id/detailed_connection_error_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
@@ -100,7 +94,7 @@
     </fragment>
     <fragment
         android:id="@+id/about_fragment"
-        android:name="org.equeim.tremotesf.ui.AboutFragment"></fragment>
+        android:name="org.equeim.tremotesf.ui.AboutFragment" />
     <fragment
         android:id="@+id/connection_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment">
@@ -388,4 +382,8 @@
             android:name="error"
             app:argType="org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestErrorString" />
     </dialog>
+
+    <action
+        android:id="@+id/to_detailed_connection_error_dialog_fragment"
+        app:destination="@id/detailed_connection_error_dialog_fragment" />
 </navigation>
