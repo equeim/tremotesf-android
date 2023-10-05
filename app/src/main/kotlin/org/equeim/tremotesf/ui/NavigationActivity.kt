@@ -12,6 +12,7 @@ import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
@@ -55,8 +56,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
     private lateinit var binding: NavigationActivityBinding
 
-    var actionMode: ActionMode? = null
-        private set
+    private val _actionMode = MutableStateFlow<ActionMode?>(null)
+    val actionMode: StateFlow<ActionMode?> by ::_actionMode
 
     override lateinit var navController: NavController
 
@@ -84,6 +85,13 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         setContentView(binding.root)
 
         handleWindowInsets()
+
+        val actionModeBackCallback = onBackPressedDispatcher.addCallback(this) {
+            actionMode.value?.finish()
+        }
+        actionMode.launchAndCollectWhenStarted(this) {
+            actionModeBackCallback.isEnabled = it != null
+        }
 
         navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
@@ -232,12 +240,12 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
     override fun onSupportActionModeStarted(mode: ActionMode) {
         super.onSupportActionModeStarted(mode)
-        actionMode = mode
+        _actionMode.value = mode
     }
 
     override fun onSupportActionModeFinished(mode: ActionMode) {
         super.onSupportActionModeFinished(mode)
-        actionMode = null
+        _actionMode.value = null
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {

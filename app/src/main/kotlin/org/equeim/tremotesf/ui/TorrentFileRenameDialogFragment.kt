@@ -40,7 +40,7 @@ class TorrentFileRenameDialogFragment : NavigationDialogFragment() {
                     )
                 )
             )
-            activity?.actionMode?.finish()
+            activity?.actionMode?.value?.finish()
         }
     }
 

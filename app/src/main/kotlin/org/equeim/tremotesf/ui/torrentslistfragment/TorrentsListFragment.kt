@@ -244,9 +244,9 @@ class TorrentsListFragment : NavigationFragment(
                 val backCallback = requiredActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     collapse()
                 }
-                model.searchViewIsIconified.flow().launchAndCollectWhenStarted(viewLifecycleOwner) {
-                    backCallback.isEnabled = !it
-                }
+                combine(model.searchViewIsIconified.flow(), requiredActivity.actionMode) { isIconified, actionMode ->
+                    !isIconified && actionMode == null
+                }.launchAndCollectWhenStarted(viewLifecycleOwner, backCallback::isEnabled::set)
             }
             model.showSearchView.launchAndCollectWhenStarted(viewLifecycleOwner) {
                 if (!it) searchView.collapse()
@@ -279,7 +279,7 @@ class TorrentsListFragment : NavigationFragment(
                 bottomToolbar.hideOnScroll = true
             } else {
                 adapter.update(null)
-                requiredActivity.actionMode?.finish()
+                requiredActivity.actionMode.value?.finish()
                 statusString.isVisible = true
                 bottomToolbar.apply {
                     hideOnScroll = false
