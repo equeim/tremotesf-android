@@ -5,6 +5,7 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.AttributeSet
@@ -32,6 +33,7 @@ import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
 import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings.AlternativeLimitsDays
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getSpeedServerSettings
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeDownloadSpeedLimit
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsBeginTime
@@ -67,15 +69,7 @@ class SpeedFragment : NavigationFragment(
     R.layout.server_settings_speed_fragment,
     R.string.server_settings_speed
 ) {
-    private companion object {
-        val days = mutableListOf(
-            SpeedServerSettings.AlternativeLimitsDays.All,
-            SpeedServerSettings.AlternativeLimitsDays.Weekdays,
-            SpeedServerSettings.AlternativeLimitsDays.Weekends
-        )
-    }
-
-    private lateinit var daysSpinnerItems: List<String>
+    private lateinit var daysSpinnerItems: List<Pair<String, AlternativeLimitsDays>>
 
     private val model by viewModels<SpeedFragmentViewModel>()
     private val binding by viewLifecycleObject(ServerSettingsSpeedFragmentBinding::bind)
@@ -83,29 +77,22 @@ class SpeedFragment : NavigationFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val daysSpinnerItems = mutableListOf<String>()
-        daysSpinnerItems.add(getString(R.string.every_day))
-        daysSpinnerItems.add(getString(R.string.weekdays))
-        daysSpinnerItems.add(getString(R.string.weekends))
+        val daysSpinnerItems = mutableListOf<Pair<String, AlternativeLimitsDays>>()
+        daysSpinnerItems.add(getString(R.string.every_day) to AlternativeLimitsDays.All)
+        daysSpinnerItems.add(getString(R.string.weekdays) to AlternativeLimitsDays.Weekdays)
+        daysSpinnerItems.add(getString(R.string.weekends) to AlternativeLimitsDays.Weekends)
 
-        val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
-        val daysOfWeek = generateSequence(firstDayOfWeek) {
-            val next = it + 1
-            if (next != firstDayOfWeek) next else null
+        // threetenbp WeekFields return incorrect firstDayOfWeek if it's changed in system settings on Android 14+
+        // Get it from java.time's WeekFields when it's available
+        val firstDayOfWeek = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DayOfWeek.of(java.time.temporal.WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
+        } else {
+            WeekFields.of(Locale.getDefault()).firstDayOfWeek
         }
-
+        val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
         for (day in daysOfWeek) {
-            daysSpinnerItems.add(day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()))
-            days.add(
-                when (day) {
-                    DayOfWeek.SUNDAY -> SpeedServerSettings.AlternativeLimitsDays.Sunday
-                    DayOfWeek.MONDAY -> SpeedServerSettings.AlternativeLimitsDays.Monday
-                    DayOfWeek.TUESDAY -> SpeedServerSettings.AlternativeLimitsDays.Tuesday
-                    DayOfWeek.WEDNESDAY -> SpeedServerSettings.AlternativeLimitsDays.Wednesday
-                    DayOfWeek.THURSDAY -> SpeedServerSettings.AlternativeLimitsDays.Thursday
-                    DayOfWeek.FRIDAY -> SpeedServerSettings.AlternativeLimitsDays.Friday
-                    DayOfWeek.SATURDAY -> SpeedServerSettings.AlternativeLimitsDays.Saturday
-                }
+            daysSpinnerItems.add(
+                day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) to day.toAlternativeSpeedLimitsDays()
             )
         }
 
@@ -201,13 +188,14 @@ class SpeedFragment : NavigationFragment(
                 }
             }
 
-            daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems))
+            daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems.map { it.first }))
             daysView.setOnItemClickListener { _, _, position, _ ->
-                onValueChanged { setAlternativeLimitsDays(days[position]) }
+                onValueChanged { setAlternativeLimitsDays(daysSpinnerItems[position].second) }
             }
         }
 
         model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            Timber.d("Settings are $it")
             when (it) {
                 is RpcRequestState.Loaded -> showSettings(it.response)
                 is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
@@ -254,7 +242,7 @@ class SpeedFragment : NavigationFragment(
         beginTimeItem.setTime(settings.alternativeLimitsBeginTime)
         endTimeItem.setTime(settings.alternativeLimitsEndTime)
         daysView.setText(
-            daysView.adapter.getItem(days.indexOf(settings.alternativeLimitsDays))
+            daysView.adapter.getItem(daysSpinnerItems.indexOfFirst { it.second == settings.alternativeLimitsDays })
                 .toString()
         )
     }
@@ -325,4 +313,14 @@ class SpeedFragmentViewModel : ViewModel() {
         GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
             .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
             .stateIn(GlobalRpcClient, viewModelScope)
+}
+
+private fun DayOfWeek.toAlternativeSpeedLimitsDays(): AlternativeLimitsDays = when (this) {
+    DayOfWeek.SUNDAY -> AlternativeLimitsDays.Sunday
+    DayOfWeek.MONDAY -> AlternativeLimitsDays.Monday
+    DayOfWeek.TUESDAY -> AlternativeLimitsDays.Tuesday
+    DayOfWeek.WEDNESDAY -> AlternativeLimitsDays.Wednesday
+    DayOfWeek.THURSDAY -> AlternativeLimitsDays.Thursday
+    DayOfWeek.FRIDAY -> AlternativeLimitsDays.Friday
+    DayOfWeek.SATURDAY -> AlternativeLimitsDays.Saturday
 }
