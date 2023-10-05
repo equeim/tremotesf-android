@@ -23,6 +23,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -93,7 +94,10 @@ class TorrentPropertiesFragment : NavigationFragment(
         binding.pager.currentItemFlow.flatMapLatest { tab ->
             if (tab == PagerAdapter.Tab.Files.ordinal) {
                 val fragment = childFragmentManager.findFragment<TorrentFilesFragment>()
-                fragment?.isAtRootOfTree()?.map { !it } ?: flowOf(false)
+                val isAtRootOfTree = fragment?.isAtRootOfTree() ?: flowOf(true)
+                combine(isAtRootOfTree, requiredActivity.actionMode) { isAtRoot, actionMode ->
+                    !isAtRoot && actionMode == null
+                }
             } else {
                 flowOf(false)
             }
@@ -105,7 +109,7 @@ class TorrentPropertiesFragment : NavigationFragment(
             override fun onPageSelected(position: Int) {
                 if (previousPage != -1) {
                     requiredActivity.apply {
-                        actionMode?.finish()
+                        actionMode.value?.finish()
                         hideKeyboard()
                     }
                 }

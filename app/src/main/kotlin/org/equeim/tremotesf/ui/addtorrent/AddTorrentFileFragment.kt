@@ -116,8 +116,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
         backCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             model.filesTree.navigateUp()
         }
-        combine(binding.pager.currentItemFlow, model.filesTree.isAtRoot) { tab, isAtRoot ->
-            tab == PagerAdapter.Tab.Files.ordinal && !isAtRoot
+        combine(binding.pager.currentItemFlow, model.filesTree.isAtRoot, requiredActivity.actionMode) { tab, isAtRoot, actionMode ->
+            tab == PagerAdapter.Tab.Files.ordinal && !isAtRoot && actionMode == null
         }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner, backCallback::isEnabled::set)
 
         binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
