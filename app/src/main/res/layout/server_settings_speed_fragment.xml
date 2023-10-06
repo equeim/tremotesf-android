@@ -57,7 +57,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                        android:saveEnabled="false"
                         android:text="@string/download_noun" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -72,8 +71,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                             android:id="@+id/download_speed_limit_edit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:saveEnabled="false" />
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
@@ -81,7 +79,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                        android:saveEnabled="false"
                         android:text="@string/upload_noun" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -96,8 +93,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                             android:id="@+id/upload_speed_limit_edit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:saveEnabled="false" />
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
@@ -112,7 +108,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                        android:saveEnabled="false"
                         android:text="@string/enable" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -128,8 +123,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                             android:id="@+id/alternative_download_speed_limit_edit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:saveEnabled="false" />
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -145,8 +139,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                             android:id="@+id/alternative_upload_speed_limit_edit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:saveEnabled="false" />
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
@@ -154,7 +147,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                        android:saveEnabled="false"
                         android:text="@string/scheduled" />
                 </LinearLayout>
 
@@ -190,7 +182,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                             android:id="@+id/days_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:saveEnabled="false"
                             app:readOnly="true" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </FrameLayout>

@@ -57,8 +57,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/peer_port_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
@@ -66,7 +65,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/random_port" />
 
                 <CheckBox
@@ -74,7 +72,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/port_forwarding" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -96,7 +93,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/enable_utp" />
 
                 <CheckBox
@@ -104,7 +100,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/enable_pex" />
 
                 <CheckBox
@@ -112,7 +107,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/enable_dht" />
 
                 <CheckBox
@@ -120,7 +114,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/enable_lpd" />
 
                 <TextView
@@ -140,8 +133,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/peers_per_torrent_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -154,8 +146,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/peers_globally_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>
