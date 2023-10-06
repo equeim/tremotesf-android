@@ -45,7 +45,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:id="@+id/download_queue_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:saveEnabled="false"
                     android:text="@string/maximum_active_downloads" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -58,15 +57,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/download_queue_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
                     android:id="@+id/seed_queue_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:saveEnabled="false"
                     android:text="@string/maximum_active_uploads" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -79,8 +76,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/seed_queue_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
@@ -88,7 +84,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/ignore_queue" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -102,8 +97,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/idle_queue_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>

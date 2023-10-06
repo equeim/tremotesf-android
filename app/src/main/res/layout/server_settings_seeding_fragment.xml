@@ -45,7 +45,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:id="@+id/ratio_limit_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:saveEnabled="false"
                     android:text="@string/stop_seeding_at_ratio" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -60,8 +59,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:digits="0123456789,."
-                        android:inputType="numberDecimal"
-                        android:saveEnabled="false" />
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <CheckBox
@@ -69,7 +67,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:saveEnabled="false"
                     android:text="@string/stop_seeding_if_idle_for" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -84,8 +81,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:id="@+id/idle_seeding_limit_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:saveEnabled="false" />
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </ScrollView>
