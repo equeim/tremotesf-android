@@ -36,8 +36,6 @@ import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
-import org.equeim.tremotesf.rpc.getErrorString
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.torrentfile.rpc.isRecoverable
@@ -50,6 +48,7 @@ import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
@@ -112,7 +111,7 @@ class TorrentsListFragment : NavigationFragment(
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        binding.detailedErrorMessageButton.setOnClickListener {
+        binding.placeholderView.detailedErrorMessageButton.setOnClickListener {
             (model.torrentsListState.value as? RpcRequestState.Error)?.let { error ->
                 navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString()))
             }
@@ -273,39 +272,19 @@ class TorrentsListFragment : NavigationFragment(
 
             if (state is RpcRequestState.Loaded && state.response.isNotEmpty()) {
                 adapter.update(state.response)
-                progressBar.isVisible = false
-                statusString.isVisible = false
-                detailedErrorMessageButton.isVisible = false
+                placeholderView.root.isVisible = false
                 bottomToolbar.hideOnScroll = true
             } else {
                 adapter.update(null)
                 requiredActivity.actionMode.value?.finish()
-                statusString.isVisible = true
                 bottomToolbar.apply {
                     hideOnScroll = false
                     performShow()
                 }
                 when (state) {
-                    is RpcRequestState.Loading -> {
-                        progressBar.isVisible = true
-                        statusString.text = getText(R.string.connecting)
-                        detailedErrorMessageButton.isVisible = false
-                    }
-
-                    is RpcRequestState.Error -> {
-                        progressBar.isVisible = false
-                        statusString.text = state.error.getErrorString(requireContext())
-                        detailedErrorMessageButton.isVisible = when (state.error) {
-                            is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> false
-                            else -> true
-                        }
-                    }
-
-                    is RpcRequestState.Loaded -> {
-                        progressBar.isVisible = false
-                        statusString.text = getText(R.string.no_torrents)
-                        detailedErrorMessageButton.isVisible = false
-                    }
+                    is RpcRequestState.Loading -> placeholderView.show(getText(R.string.connecting))
+                    is RpcRequestState.Error -> placeholderView.show(state.error)
+                    is RpcRequestState.Loaded -> placeholderView.show(getText(R.string.no_torrents))
                 }
             }
         }

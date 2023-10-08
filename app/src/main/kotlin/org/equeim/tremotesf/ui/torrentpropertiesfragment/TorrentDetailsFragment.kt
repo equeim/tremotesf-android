@@ -9,7 +9,6 @@ import android.text.format.DateUtils
 import androidx.core.view.isVisible
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentDetails
 import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
@@ -17,6 +16,7 @@ import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
@@ -45,25 +45,18 @@ class TorrentDetailsFragment :
         model.torrentDetails.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
                 is RpcRequestState.Loaded -> it.response?.let(::showDetails)
-                    ?: showPlaceholder(getString(R.string.torrent_not_found), showProgressBar = false)
+                    ?: showPlaceholder(getText(R.string.torrent_not_found))
 
-                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(
-                    it.error.getErrorString(requireContext()),
-                    showProgressBar = false
-                )
+                is RpcRequestState.Loading -> showPlaceholder(null)
+                is RpcRequestState.Error -> showPlaceholder(it.error)
             }
         }
     }
 
-    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+    private fun showPlaceholder(error: Any?) {
         with(binding) {
             scrollView.isVisible = false
-            with(placeholderView) {
-                root.isVisible = true
-                progressBar.isVisible = showProgressBar
-                placeholder.text = text
-            }
+            placeholderView.show(error)
         }
     }
 

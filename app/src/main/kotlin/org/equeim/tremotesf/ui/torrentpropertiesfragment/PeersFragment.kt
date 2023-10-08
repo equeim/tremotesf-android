@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PeersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
 import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.Peer
@@ -26,6 +25,7 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorren
 import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 class PeersFragment :
@@ -56,44 +56,31 @@ class PeersFragment :
                 is RpcRequestState.Loaded -> {
                     val peers = it.response
                     when {
-                        peers == null -> showPlaceholder(
-                            getString(R.string.torrent_not_found),
-                            showProgressBar = false,
-                            adapter = peersAdapter
-                        )
+                        peers == null -> {
+                            binding.placeholderView.show(getText(R.string.torrent_not_found))
+                            peersAdapter.update(null)
+                        }
 
-                        peers.isEmpty() -> showPlaceholder(
-                            getString(R.string.no_peers),
-                            showProgressBar = false,
-                            adapter = peersAdapter
-                        )
+                        peers.isEmpty() -> {
+                            binding.placeholderView.show(getText(R.string.no_peers))
+                            peersAdapter.update(null)
+                        }
 
                         else -> showPeers(peers, peersAdapter)
                     }
                 }
 
-                is RpcRequestState.Loading -> showPlaceholder(
-                    getString(R.string.loading),
-                    showProgressBar = true,
-                    adapter = peersAdapter
-                )
+                is RpcRequestState.Loading -> {
+                    binding.placeholderView.show(null)
+                    peersAdapter.update(null)
+                }
 
-                is RpcRequestState.Error -> showPlaceholder(
-                    it.error.getErrorString(requireContext()),
-                    showProgressBar = false,
-                    adapter = peersAdapter
-                )
+                is RpcRequestState.Error -> {
+                    binding.placeholderView.show(it.error)
+                    peersAdapter.update(null)
+                }
             }
         }
-    }
-
-    private fun showPlaceholder(text: String, showProgressBar: Boolean, adapter: PeersAdapter) {
-        with(binding.placeholderView) {
-            root.isVisible = true
-            progressBar.isVisible = showProgressBar
-            placeholder.text = text
-        }
-        adapter.update(null)
     }
 
     private fun showPeers(peers: List<Peer>, adapter: PeersAdapter) {

@@ -40,7 +40,6 @@ import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
 import org.equeim.tremotesf.torrentfile.rpc.requests.addTorrentFile
@@ -58,6 +57,7 @@ import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
 import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
@@ -226,26 +226,21 @@ class AddTorrentFileFragment : AddTorrentFragment(
                     model.rememberedPagerItem = -1
                 }
             } else {
-                placeholderView.placeholder.text = if (!hasStoragePermission && model.needStoragePermission) {
-                    getString(R.string.storage_permission_error)
+                if (!hasStoragePermission && model.needStoragePermission) {
+                    placeholderView.show(getText(R.string.storage_permission_error))
                 } else {
                     when (parserStatus) {
-                        AddTorrentFileModel.ParserStatus.Loading -> getString(R.string.loading)
-                        AddTorrentFileModel.ParserStatus.FileIsTooLarge -> getString(R.string.file_is_too_large)
-                        AddTorrentFileModel.ParserStatus.ReadingError -> getString(R.string.file_reading_error)
-                        AddTorrentFileModel.ParserStatus.ParsingError -> getString(R.string.file_parsing_error)
+                        AddTorrentFileModel.ParserStatus.Loading -> placeholderView.show(null)
+                        AddTorrentFileModel.ParserStatus.FileIsTooLarge -> placeholderView.show(getText(R.string.file_is_too_large))
+                        AddTorrentFileModel.ParserStatus.ReadingError -> placeholderView.show(getText(R.string.file_reading_error))
+                        AddTorrentFileModel.ParserStatus.ParsingError -> placeholderView.show(getText(R.string.file_parsing_error))
                         else -> when (downloadingSettings) {
-                            is RpcRequestState.Loading -> getString(R.string.loading)
-                            is RpcRequestState.Error -> downloadingSettings.error.getErrorString(requireContext())
-                            is RpcRequestState.Loaded -> null
+                            is RpcRequestState.Loading -> placeholderView.show(null)
+                            is RpcRequestState.Error -> placeholderView.show(downloadingSettings.error)
+                            is RpcRequestState.Loaded -> Unit
                         }
                     }
                 }
-
-                placeholderView.progressBar.isVisible =
-                    downloadingSettings is RpcRequestState.Loading || parserStatus == AddTorrentFileModel.ParserStatus.Loading
-
-                placeholderView.placeholderLayout.isVisible = true
 
                 addButton.hide()
 
@@ -259,7 +254,6 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 tabLayout.isVisible = false
                 pager.isVisible = false
                 pager.setCurrentItem(0, false)
-                placeholderView.placeholder.isVisible = true
             }
         }
     }
