@@ -24,7 +24,6 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.WebSeedersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
 import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentWebSeeders
@@ -32,6 +31,7 @@ import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
@@ -72,39 +72,19 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
                 is RpcRequestState.Loaded -> {
                     val webSeeders = it.response
                     when {
-                        webSeeders == null -> showPlaceholder(
-                            getString(R.string.torrent_not_found),
-                            showProgressBar = false
-                        )
-
-                        webSeeders.isEmpty() -> showPlaceholder(
-                            getString(R.string.no_web_seeders),
-                            showProgressBar = false
-                        )
-
+                        webSeeders == null -> showPlaceholder(getText(R.string.torrent_not_found))
+                        webSeeders.isEmpty() -> showPlaceholder(getText(R.string.no_web_seeders))
                         else -> showWebSeeders(webSeeders)
                     }
                 }
-
-                is RpcRequestState.Loading -> showPlaceholder(
-                    getString(R.string.loading),
-                    showProgressBar = true,
-                )
-
-                is RpcRequestState.Error -> showPlaceholder(
-                    it.error.getErrorString(requireContext()),
-                    showProgressBar = false,
-                )
+                is RpcRequestState.Loading -> showPlaceholder(null)
+                is RpcRequestState.Error -> showPlaceholder(it.error)
             }
         }
     }
 
-    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
-        with(binding.placeholderView) {
-            root.isVisible = true
-            progressBar.isVisible = showProgressBar
-            placeholder.text = text
-        }
+    private fun showPlaceholder(error: Any?) {
+        binding.placeholderView.show(error)
         adapter.update(null)
     }
 

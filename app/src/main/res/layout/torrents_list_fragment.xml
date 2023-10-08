@@ -34,41 +34,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <LinearLayout
+    <include
+        android:id="@+id/placeholder_view"
+        layout="@layout/placeholder_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/status_string"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-            android:gravity="center_horizontal"
-            android:textAppearance="@style/TextApperance.Tremotesf.EmptyPlaceholder"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/detailed_error_message_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:text="@string/see_detailed_error_message"
-            android:visibility="gone" />
-    </LinearLayout>
+        android:visibility="gone" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"

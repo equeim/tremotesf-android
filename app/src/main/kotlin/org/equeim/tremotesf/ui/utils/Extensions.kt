@@ -35,11 +35,12 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-val Context.application: Application get() = findConcreteContext()
+val Context.application: Application get() = applicationContext.findConcreteContext()
 val Context.activity: Activity get() = findConcreteContext()
 
 private inline fun <reified T : Context> Context.findConcreteContext(): T {
-    var context = applicationContext
+    if (this is T) return this
+    var context = this
     while (context is ContextWrapper) {
         if (context is T) {
             return context

@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
@@ -73,27 +73,11 @@ class TorrentFilesFragment :
         if (modelState is TorrentFilesFragmentViewModel.State.TreeCreated && !model.filesTree.isEmpty) {
             root.isVisible = false
         } else {
-            root.isVisible = true
             when (modelState) {
-                is TorrentFilesFragmentViewModel.State.CreatingTree, is TorrentFilesFragmentViewModel.State.Loading -> {
-                    progressBar.isVisible = true
-                    placeholder.setText(R.string.loading)
-                }
-
-                is TorrentFilesFragmentViewModel.State.Error -> {
-                    progressBar.isVisible = false
-                    placeholder.text = modelState.error.getErrorString(requireContext())
-                }
-
-                is TorrentFilesFragmentViewModel.State.TorrentNotFound -> {
-                    progressBar.isVisible = false
-                    placeholder.setText(R.string.torrent_not_found)
-                }
-
-                is TorrentFilesFragmentViewModel.State.TreeCreated -> {
-                    progressBar.isVisible = false
-                    placeholder.setText(R.string.no_files)
-                }
+                is TorrentFilesFragmentViewModel.State.CreatingTree, is TorrentFilesFragmentViewModel.State.Loading -> show(null)
+                is TorrentFilesFragmentViewModel.State.Error -> show(modelState.error)
+                is TorrentFilesFragmentViewModel.State.TorrentNotFound -> show(getText(R.string.torrent_not_found))
+                is TorrentFilesFragmentViewModel.State.TreeCreated -> show(getText(R.string.no_files))
             }
         }
     }

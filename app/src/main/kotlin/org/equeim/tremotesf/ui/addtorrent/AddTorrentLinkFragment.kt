@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.requests.addTorrentLink
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
@@ -31,6 +31,7 @@ import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
@@ -108,11 +109,8 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         model.downloadingSettings.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
                 is RpcRequestState.Loaded -> showView(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(
-                    it.error.getErrorString(requireContext()),
-                    showProgressBar = false
-                )
+                is RpcRequestState.Loading -> showPlaceholder(null)
+                is RpcRequestState.Error -> showPlaceholder(it.error)
             }
         }
     }
@@ -192,15 +190,11 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         requiredActivity.onBackPressedDispatcher.onBackPressed()
     }
 
-    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+    private fun showPlaceholder(error: RpcRequestError?) {
         hideKeyboard()
         with(binding) {
             scrollView.isVisible = false
-            with(placeholderView) {
-                root.isVisible = true
-                progressBar.isVisible = showProgressBar
-                placeholder.text = text
-            }
+            placeholderView.show(error)
         }
     }
 

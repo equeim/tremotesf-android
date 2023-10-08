@@ -27,8 +27,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcClient
+import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
 import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
@@ -54,6 +54,7 @@ import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.setDependentViews
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalTime
@@ -198,24 +199,17 @@ class SpeedFragment : NavigationFragment(
             Timber.d("Settings are $it")
             when (it) {
                 is RpcRequestState.Loaded -> showSettings(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(getString(R.string.loading), showProgressBar = true)
-                is RpcRequestState.Error -> showPlaceholder(
-                    it.error.getErrorString(requireContext()),
-                    showProgressBar = false
-                )
+                is RpcRequestState.Loading -> showPlaceholder(null)
+                is RpcRequestState.Error -> showPlaceholder(it.error)
             }
         }
     }
 
-    private fun showPlaceholder(text: String, showProgressBar: Boolean) {
+    private fun showPlaceholder(error: RpcRequestError?) {
         hideKeyboard()
         with(binding) {
             scrollView.isVisible = false
-            with(placeholderView) {
-                root.isVisible = true
-                progressBar.isVisible = showProgressBar
-                placeholder.text = text
-            }
+            placeholderView.show(error)
         }
     }
 

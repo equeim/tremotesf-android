@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.torrentfile.rpc.requests.reannounceTorrents
@@ -51,6 +50,7 @@ import org.equeim.tremotesf.ui.utils.findFragment
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.popDialog
+import org.equeim.tremotesf.ui.utils.show
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
@@ -274,16 +274,14 @@ class TorrentPropertiesFragment : NavigationFragment(
 
     private fun updatePlaceholder(requestState: RpcRequestState<*>) {
         with(binding.placeholderView) {
-            progressBar.isVisible = requestState is RpcRequestState.Loading
-            placeholder.text = when (requestState) {
-                is RpcRequestState.Loading -> getText(R.string.loading)
+            when (requestState) {
+                is RpcRequestState.Loading -> show(null)
                 is RpcRequestState.Loaded -> if (requestState.response == null) {
-                    getText(R.string.torrent_not_found)
+                    show(getText(R.string.torrent_not_found))
                 } else {
-                    null
+                    root.isVisible = false
                 }
-
-                is RpcRequestState.Error -> requestState.error.getErrorString(requireContext())
+                is RpcRequestState.Error -> show(requestState.error)
             }
         }
     }
