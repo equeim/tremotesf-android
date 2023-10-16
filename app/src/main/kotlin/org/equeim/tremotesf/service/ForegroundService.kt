@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.annotation.MainThread
-import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -133,35 +132,29 @@ class ForegroundService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             GlobalServers.wifiNetworkController.observingActiveWifiNetwork.launchAndCollectWhenStarted(
                 this,
-                ::startForegroundV29
+                ::startForeground
             )
         } else {
-            startForeground(
-                NotificationsController.PERSISTENT_NOTIFICATION_ID,
-                PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(
-                    GlobalServers.serversState.value.currentServer,
-                    PeriodicServerStateUpdater.sessionStats.value
-                )
-            )
+            startForeground(observingWifiNetworks = false)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun startForegroundV29(observingWifiNetworks: Boolean) {
+    private fun startForeground(observingWifiNetworks: Boolean) {
         Timber.i("startForeground() called with: observingWifiNetworks = $observingWifiNetworks")
-        val type = if (observingWifiNetworks) {
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-        } else {
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-        }
-        startForeground(
-            NotificationsController.PERSISTENT_NOTIFICATION_ID,
-            PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(
-                GlobalServers.serversState.value.currentServer,
-                PeriodicServerStateUpdater.sessionStats.value
-            ),
-            type
+        val notification = PeriodicServerStateUpdater.notificationsController.buildPersistentNotification(
+            GlobalServers.serversState.value.currentServer,
+            PeriodicServerStateUpdater.sessionStats.value
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val type = if (observingWifiNetworks) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+            } else {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            }
+            startForeground(NotificationsController.PERSISTENT_NOTIFICATION_ID, notification, type)
+        } else {
+            startForeground(NotificationsController.PERSISTENT_NOTIFICATION_ID, notification)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
