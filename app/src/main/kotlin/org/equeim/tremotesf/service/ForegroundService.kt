@@ -18,7 +18,11 @@ import androidx.lifecycle.LifecycleService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
@@ -199,6 +203,8 @@ class ForegroundService : LifecycleService() {
 
             NotificationsController.PersistentNotificationActions.DISCONNECT -> GlobalRpcClient.shouldConnectToServer.value =
                 false
+
+            NotificationsController.PersistentNotificationActions.STOP_UPDATING_NOTIFICATION -> stopUpdatingNotification = true
         }
 
         return START_STICKY
@@ -222,6 +228,8 @@ class ForegroundService : LifecycleService() {
     ) {
         if (!stopUpdatingNotification) {
             PeriodicServerStateUpdater.notificationsController.updatePersistentNotification(currentServer, sessionStats)
+        } else {
+            Timber.i("Not updating persistent notification")
         }
     }
 }

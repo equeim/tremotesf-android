@@ -134,6 +134,7 @@ class NotificationsController(private val context: Context) {
                 )
                 .setOngoing(true)
                 .setShowWhen(false)
+                .setDeleteIntent(ForegroundService.getPendingIntent(context, PersistentNotificationActions.STOP_UPDATING_NOTIFICATION))
 
         if (currentServer != null) {
             notificationBuilder.setContentTitle(
@@ -194,6 +195,7 @@ class NotificationsController(private val context: Context) {
         sessionStats: RpcRequestState<SessionStatsResponseArguments>,
     ) {
         if (notificationManager != null) {
+            Timber.d("Updating persistent notification")
             notificationManager.notify(
                 PERSISTENT_NOTIFICATION_ID,
                 buildPersistentNotification(currentServer, sessionStats)
@@ -215,5 +217,6 @@ class NotificationsController(private val context: Context) {
         const val CONNECT = "org.equeim.tremotesf.ACTION_CONNECT"
         const val DISCONNECT = "org.equeim.tremotesf.ACTION_DISCONNECT"
         const val SHUTDOWN_APP = "org.equeim.tremotesf.ACTION_SHUTDOWN_APP"
+        const val STOP_UPDATING_NOTIFICATION = "org.equeim.tremotesf.ACTION_STOP_UPDATING_NOTIFICATION"
     }
 }
