@@ -47,8 +47,10 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.Utils
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.showSnackbar
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
@@ -272,7 +274,7 @@ class TorrentsListFragment : NavigationFragment(
 
             if (state is RpcRequestState.Loaded && state.response.isNotEmpty()) {
                 adapter.update(state.response)
-                placeholderView.root.isVisible = false
+                placeholderView.hide()
                 bottomToolbar.hideOnScroll = true
             } else {
                 adapter.update(null)
@@ -282,9 +284,9 @@ class TorrentsListFragment : NavigationFragment(
                     performShow()
                 }
                 when (state) {
-                    is RpcRequestState.Loading -> placeholderView.show(getText(R.string.connecting))
-                    is RpcRequestState.Error -> placeholderView.show(state.error)
-                    is RpcRequestState.Loaded -> placeholderView.show(getText(R.string.no_torrents))
+                    is RpcRequestState.Loading -> placeholderView.showLoading(getText(R.string.connecting))
+                    is RpcRequestState.Error -> placeholderView.showError(state.error)
+                    is RpcRequestState.Loaded -> placeholderView.showError(getText(R.string.no_torrents))
                 }
             }
         }

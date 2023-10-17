@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
@@ -16,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
@@ -71,13 +72,13 @@ class TorrentFilesFragment :
 
     private fun updatePlaceholder(modelState: TorrentFilesFragmentViewModel.State) = with(binding.placeholderView) {
         if (modelState is TorrentFilesFragmentViewModel.State.TreeCreated && !model.filesTree.isEmpty) {
-            root.isVisible = false
+            hide()
         } else {
             when (modelState) {
-                is TorrentFilesFragmentViewModel.State.CreatingTree, is TorrentFilesFragmentViewModel.State.Loading -> show(null)
-                is TorrentFilesFragmentViewModel.State.Error -> show(modelState.error)
-                is TorrentFilesFragmentViewModel.State.TorrentNotFound -> show(getText(R.string.torrent_not_found))
-                is TorrentFilesFragmentViewModel.State.TreeCreated -> show(getText(R.string.no_files))
+                is TorrentFilesFragmentViewModel.State.CreatingTree, is TorrentFilesFragmentViewModel.State.Loading -> showLoading()
+                is TorrentFilesFragmentViewModel.State.Error -> showError(modelState.error)
+                is TorrentFilesFragmentViewModel.State.TorrentNotFound -> showError(getText(R.string.torrent_not_found))
+                is TorrentFilesFragmentViewModel.State.TreeCreated -> showError(getText(R.string.no_files))
             }
         }
     }

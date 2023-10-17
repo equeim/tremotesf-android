@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import android.os.Bundle
-import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.TrackersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
@@ -31,8 +31,10 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.removeTor
 import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.replaceTorrentTracker
 import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 
@@ -94,25 +96,25 @@ class TrackersFragment : TorrentPropertiesFragment.PagerFragment(
                 is RpcRequestState.Loaded -> {
                     val peers = it.response
                     when {
-                        peers == null -> showPlaceholder(getText(R.string.torrent_not_found))
-                        peers.isEmpty() -> showPlaceholder(getText(R.string.no_trackers))
+                        peers == null -> showPlaceholder { showError(getText(R.string.torrent_not_found)) }
+                        peers.isEmpty() -> showPlaceholder { showError(getText(R.string.no_trackers)) }
                         else -> showTrackers(peers)
                     }
                 }
 
-                is RpcRequestState.Loading -> showPlaceholder(getText(R.string.loading))
-                is RpcRequestState.Error -> showPlaceholder(it.error)
+                is RpcRequestState.Loading -> showPlaceholder { showLoading() }
+                is RpcRequestState.Error -> showPlaceholder { showError(it.error) }
             }
         }
     }
 
-    private suspend fun showPlaceholder(error: Any?) {
-        binding.placeholderView.show(error)
+    private suspend inline fun showPlaceholder(show: PlaceholderLayoutBinding.() -> Unit) {
+        binding.placeholderView.show()
         trackersAdapter.update(null)
     }
 
     private suspend fun showTrackers(peers: List<Tracker>) {
-        binding.placeholderView.root.isVisible = false
+        binding.placeholderView.hide()
         trackersAdapter.update(peers)
     }
 }

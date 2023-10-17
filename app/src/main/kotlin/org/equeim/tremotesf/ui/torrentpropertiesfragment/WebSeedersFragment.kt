@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.WebSeedersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
@@ -30,8 +30,10 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorren
 import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
 class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
@@ -72,24 +74,24 @@ class WebSeedersFragment : TorrentPropertiesFragment.PagerFragment(
                 is RpcRequestState.Loaded -> {
                     val webSeeders = it.response
                     when {
-                        webSeeders == null -> showPlaceholder(getText(R.string.torrent_not_found))
-                        webSeeders.isEmpty() -> showPlaceholder(getText(R.string.no_web_seeders))
+                        webSeeders == null -> showPlaceholder { showError(getText(R.string.torrent_not_found)) }
+                        webSeeders.isEmpty() -> showPlaceholder { showError(getText(R.string.no_web_seeders)) }
                         else -> showWebSeeders(webSeeders)
                     }
                 }
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
+                is RpcRequestState.Loading -> showPlaceholder { showLoading() }
+                is RpcRequestState.Error -> showPlaceholder { showError(it.error) }
             }
         }
     }
 
-    private fun showPlaceholder(error: Any?) {
-        binding.placeholderView.show(error)
+    private inline fun showPlaceholder(show: PlaceholderLayoutBinding.() -> Unit) {
+        binding.placeholderView.show()
         adapter.update(null)
     }
 
     private fun showWebSeeders(webSeeders: List<String>) {
-        binding.placeholderView.root.isVisible = false
+        binding.placeholderView.hide()
         adapter.update(webSeeders)
     }
 }

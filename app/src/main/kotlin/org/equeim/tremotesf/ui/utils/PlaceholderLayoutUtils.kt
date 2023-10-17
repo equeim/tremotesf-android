@@ -13,44 +13,52 @@ import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
 import org.equeim.tremotesf.ui.NavigationActivity
 
-fun PlaceholderLayoutBinding.show(error: RpcRequestError?) {
+fun PlaceholderLayoutBinding.showError(error: RpcRequestError) {
     root.isVisible = true
-    progressBar.isVisible = error == null
-    placeholderText.text = error?.getErrorString(root.context) ?: root.context.getString(R.string.loading)
+    progressBar.isVisible = false
+    placeholderText.text = error.getErrorString(root.context)
+    val showDetailedError = when (error) {
+        is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> false
+        else -> true
+    }
     detailedErrorMessageButton.apply {
-        when (error) {
-            null, is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> {
-                isVisible = false
-                setOnClickListener(null)
-            }
-
-            else -> {
-                isVisible = true
-                setOnClickListener {
-                    (context.activity as NavigationActivity).navigate(
-                        NavMainDirections.toDetailedConnectionErrorDialogFragment(
-                            error.makeDetailedErrorString()
-                        )
+        isVisible = showDetailedError
+        if (showDetailedError) {
+            setOnClickListener {
+                (context.activity as NavigationActivity).navigate(
+                    NavMainDirections.toDetailedConnectionErrorDialogFragment(
+                        error.makeDetailedErrorString()
                     )
-                }
+                )
             }
+        } else {
+            setOnClickListener(null)
         }
     }
 }
 
-fun PlaceholderLayoutBinding.show(error: CharSequence) {
+fun PlaceholderLayoutBinding.showError(errorText: CharSequence) {
     root.isVisible = true
     progressBar.isVisible = false
-    placeholderText.text = error
-    detailedErrorMessageButton.isVisible = false
-    detailedErrorMessageButton.setOnClickListener(null)
+    placeholderText.text = errorText
+    detailedErrorMessageButton.apply {
+        isVisible = false
+        setOnClickListener(null)
+    }
 }
 
-fun PlaceholderLayoutBinding.show(error: Any?) {
-    when (error) {
-        null -> show(null as RpcRequestError?)
-        is RpcRequestError -> show(error)
-        is CharSequence -> show(error)
-        else -> throw IllegalArgumentException()
+fun PlaceholderLayoutBinding.showLoading(loadingText: CharSequence = root.context.getText(R.string.loading)) {
+    root.isVisible = true
+    progressBar.isVisible = true
+    placeholderText.text = loadingText
+    detailedErrorMessageButton.apply {
+        isVisible = false
+        setOnClickListener(null)
     }
+}
+
+fun PlaceholderLayoutBinding.hide() {
+    root.isVisible = false
+    placeholderText.text = null
+    detailedErrorMessageButton.setOnClickListener(null)
 }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import androidx.core.view.isVisible
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentDetails
@@ -15,8 +16,10 @@ import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
@@ -45,25 +48,25 @@ class TorrentDetailsFragment :
         model.torrentDetails.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
                 is RpcRequestState.Loaded -> it.response?.let(::showDetails)
-                    ?: showPlaceholder(getText(R.string.torrent_not_found))
+                    ?: showPlaceholder { showError(getText(R.string.torrent_not_found)) }
 
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
+                is RpcRequestState.Loading -> showPlaceholder { showLoading() }
+                is RpcRequestState.Error -> showPlaceholder { showError(it.error) }
             }
         }
     }
 
-    private fun showPlaceholder(error: Any?) {
+    private inline fun showPlaceholder(show: PlaceholderLayoutBinding.() -> Unit) {
         with(binding) {
             scrollView.isVisible = false
-            placeholderView.show(error)
+            placeholderView.show()
         }
     }
 
     private fun showDetails(details: TorrentDetails) {
         with(binding) {
             scrollView.isVisible = true
-            placeholderView.root.isVisible = false
+            placeholderView.hide()
         }
         update(details)
     }

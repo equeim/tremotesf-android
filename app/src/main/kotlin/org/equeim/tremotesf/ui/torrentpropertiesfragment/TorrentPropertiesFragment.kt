@@ -47,10 +47,12 @@ import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.currentItemFlow
 import org.equeim.tremotesf.ui.utils.findFragment
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.popDialog
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 
@@ -256,7 +258,6 @@ class TorrentPropertiesFragment : NavigationFragment(
                             AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                 tabLayout.visibility = View.VISIBLE
                 pager.visibility = View.VISIBLE
-                placeholderView.root.visibility = View.GONE
 
                 if (model.rememberedPagerItem != -1) {
                     pager.setCurrentItem(model.rememberedPagerItem, false)
@@ -267,7 +268,6 @@ class TorrentPropertiesFragment : NavigationFragment(
                 tabLayout.visibility = View.GONE
                 pager.visibility = View.GONE
                 pager.currentItem = 0
-                placeholderView.root.visibility = View.VISIBLE
             }
         }
     }
@@ -275,13 +275,13 @@ class TorrentPropertiesFragment : NavigationFragment(
     private fun updatePlaceholder(requestState: RpcRequestState<*>) {
         with(binding.placeholderView) {
             when (requestState) {
-                is RpcRequestState.Loading -> show(null)
+                is RpcRequestState.Loading -> showLoading()
                 is RpcRequestState.Loaded -> if (requestState.response == null) {
-                    show(getText(R.string.torrent_not_found))
+                    showError(getText(R.string.torrent_not_found))
                 } else {
-                    root.isVisible = false
+                    hide()
                 }
-                is RpcRequestState.Error -> show(requestState.error)
+                is RpcRequestState.Error -> showError(requestState.error)
             }
         }
     }

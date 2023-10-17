@@ -29,8 +29,10 @@ import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 
 
 class ServerStatsDialogFragment : NavigationDialogFragment() {
@@ -68,14 +70,14 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
     private fun showPlaceholder(error: RpcRequestError?) {
         checkNotNull(binding).apply {
             scrollView.isVisible = false
-            placeholderView.show(error)
+            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
         }
     }
 
     private fun showStats(stats: SessionStatsResponseArguments, downloadDirFreeSpace: FileSize) {
         checkNotNull(binding).apply {
             scrollView.isVisible = true
-            placeholderView.root.isVisible = false
+            placeholderView.hide()
 
             val sessionStats = stats.currentSession
             sessionDownloadedTextView.text = FormatUtils.formatFileSize(
