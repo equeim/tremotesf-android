@@ -29,9 +29,11 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingS
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.textInputLayout
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
@@ -194,7 +196,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         hideKeyboard()
         with(binding) {
             scrollView.isVisible = false
-            placeholderView.show(error)
+            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
         }
     }
 
@@ -210,6 +212,6 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             model.shouldSetInitialLocalInputs = false
         }
         scrollView.isVisible = true
-        placeholderView.root.isVisible = false
+        placeholderView.hide()
     }
 }

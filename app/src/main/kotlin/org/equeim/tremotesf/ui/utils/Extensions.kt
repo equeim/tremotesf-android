@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import timber.log.Timber
 
 val Context.application: Application get() = applicationContext.findConcreteContext()
 val Context.activity: Activity get() = findConcreteContext()
@@ -61,7 +62,8 @@ inline fun <reified T : Fragment> Fragment.findFragment(): T? {
 fun NavController.safeNavigate(directions: NavDirections, navOptions: NavOptions? = null) {
     try {
         navigate(directions, navOptions)
-    } catch (ignore: IllegalArgumentException) {
+    } catch (e: IllegalArgumentException) {
+        Timber.e(e, "Failed to navigate")
     }
 }
 

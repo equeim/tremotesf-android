@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.torrentfile.rpc.RpcClient
@@ -40,10 +41,12 @@ import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.DoubleFilter
 import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.show
+import org.equeim.tremotesf.ui.utils.showError
+import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
@@ -212,26 +215,26 @@ class TorrentLimitsFragment :
         model.limits.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
                 is RpcRequestState.Loaded -> it.response?.let(::showLimits)
-                    ?: showPlaceholder(getText(R.string.torrent_not_found))
+                    ?: showPlaceholder { showError(getText(R.string.torrent_not_found)) }
 
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
+                is RpcRequestState.Loading -> showPlaceholder { showLoading() }
+                is RpcRequestState.Error -> showPlaceholder { showError(it.error) }
             }
         }
     }
 
-    private fun showPlaceholder(error: Any?) {
+    private inline fun showPlaceholder(show: PlaceholderLayoutBinding.() -> Unit) {
         hideKeyboard()
         with(binding) {
             scrollView.isVisible = false
-            placeholderView.show(error)
+            placeholderView.show()
         }
     }
 
     private fun showLimits(limit: TorrentLimits) {
         with(binding) {
             scrollView.isVisible = true
-            placeholderView.root.isVisible = false
+            placeholderView.hide()
         }
         if (model.shouldSetInitialState) {
             setInitialState(limit)
