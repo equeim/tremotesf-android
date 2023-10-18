@@ -4,6 +4,10 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
+import android.os.SystemClock
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonArray
@@ -26,6 +30,7 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.time.LocalTime
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -48,6 +53,8 @@ class RpcClientTest {
 
     @BeforeEach
     fun before() {
+        mockkStatic(SystemClock::class)
+        every { SystemClock.elapsedRealtime() } answers { System.nanoTime().nanoseconds.inWholeMilliseconds }
         Timber.plant(TestTree())
         server.start()
         client.setConnectionConfiguration(createTestServer())
@@ -56,6 +63,7 @@ class RpcClientTest {
 
     @AfterEach
     fun after() {
+        unmockkStatic(SystemClock::class)
         server.close()
         Timber.uprootAll()
     }

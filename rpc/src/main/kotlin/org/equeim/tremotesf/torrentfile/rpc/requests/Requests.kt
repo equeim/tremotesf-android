@@ -16,6 +16,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import okhttp3.Headers
 import okhttp3.Response
 
 @Serializable
@@ -92,6 +93,7 @@ internal data class RequestWithIds(
 internal interface BaseRpcResponse {
     val result: String
     var httpResponse: Response
+    var requestHeaders: Headers
 }
 
 internal val BaseRpcResponse.isSuccessful: Boolean get() = result == SUCCESS_RESULT
@@ -105,6 +107,8 @@ internal data class RpcResponse<Arguments : Any>(
 
     @Transient
     override lateinit var httpResponse: Response
+    @Transient
+    override lateinit var requestHeaders: Headers
 
     class Serializer<Arguments : Any>(private val argumentsSerializer: KSerializer<Arguments>) :
         KSerializer<RpcResponse<Arguments>> {
@@ -140,6 +144,8 @@ internal data class RpcResponseWithoutArguments(
 ) : BaseRpcResponse {
     @Transient
     override lateinit var httpResponse: Response
+    @Transient
+    override lateinit var requestHeaders: Headers
 }
 
 private const val SUCCESS_RESULT = "success"

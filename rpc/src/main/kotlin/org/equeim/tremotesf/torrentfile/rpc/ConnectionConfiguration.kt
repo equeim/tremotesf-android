@@ -25,8 +25,7 @@ internal data class ConnectionConfiguration(
 internal fun createConnectionConfiguration(server: Server): ConnectionConfiguration {
     val url = createUrl(server)
     val builder = OkHttpClient.Builder()
-        .addInterceptor(LoggingInterceptor())
-        .addNetworkInterceptor(RequestHeadersLoggingInterceptor())
+        .addNetworkInterceptor(RealRequestHeadersInterceptor())
         .callTimeout(server.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         .proxy(server.proxyType?.let {
             Proxy(

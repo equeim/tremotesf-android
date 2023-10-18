@@ -31,7 +31,6 @@ object GlobalRpcClient : RpcClient() {
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)
 
     init {
-        //setConnectionConfiguration(GlobalServers.serversState.value.currentServer)
         coroutineScope.launch {
             GlobalServers.currentServer
                 .distinctUntilChanged { old, new ->
@@ -93,7 +92,7 @@ fun RpcRequestError.getErrorString(context: Context): String = when (this) {
     is RpcRequestError.DeserializationError -> context.getString(R.string.parsing_error)
     is RpcRequestError.NetworkError -> context.getString(R.string.connection_error_with_cause, cause)
     is RpcRequestError.UnsuccessfulHttpStatusCode -> context.getString(R.string.connection_error_with_cause, message)
-    is RpcRequestError.UnknownError -> context.getString(R.string.connection_error)
+    is RpcRequestError.UnexpectedError -> context.getString(R.string.connection_error)
     is RpcRequestError.Timeout -> context.getString(R.string.timed_out)
     is RpcRequestError.UnsuccessfulResultField -> if (result == DUPLICATE_TORRENT_RESULT) {
         context.getString(R.string.torrent_duplicate)

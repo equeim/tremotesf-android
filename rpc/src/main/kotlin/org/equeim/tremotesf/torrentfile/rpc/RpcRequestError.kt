@@ -8,46 +8,86 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerializationException
 import okhttp3.Call
+import okhttp3.Headers
 import okhttp3.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.security.cert.CertPathValidatorException
 
 sealed class RpcRequestError private constructor(
-    internal open val response: Response?,
+    internal open val response: Response? = null,
+    internal val responseBody: String? = null,
+    internal open val requestHeaders: Headers? = null,
     message: String? = null,
     cause: Exception? = null,
 ) : Exception(message, cause) {
-    class NoConnectionConfiguration : RpcRequestError(null, "No connection configuration")
+    class NoConnectionConfiguration : RpcRequestError(message = "No connection configuration")
 
     class BadConnectionConfiguration(override val cause: Exception) :
-        RpcRequestError(null, "Bad connection configuration", cause)
+        RpcRequestError(
+            message = "Bad connection configuration",
+            cause = cause
+        )
 
-    class ConnectionDisabled : RpcRequestError(null, "Connection to server is disabled")
+    class ConnectionDisabled : RpcRequestError(message = "Connection to server is disabled")
 
-    class Timeout internal constructor(context: String, response: Response?) :
-        RpcRequestError(response, "Timed out when $context")
+    class Timeout internal constructor(response: Response?, requestHeaders: Headers?) :
+        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Timed out when performing HTTP request")
 
-    class NetworkError internal constructor(override val cause: IOException, context: String, response: Response?) :
-        RpcRequestError(response, "Network error when $context", cause)
+    class NetworkError internal constructor(
+        response: Response?,
+        requestHeaders: Headers?,
+        override val cause: IOException,
+    ) :
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Network error when performing HTTP request",
+            cause = cause
+        )
 
-    class UnsuccessfulHttpStatusCode internal constructor(override val response: Response) :
-        RpcRequestError(response, response.status)
+    class UnsuccessfulHttpStatusCode internal constructor(
+        override val response: Response,
+        responseBody: String?,
+        override val requestHeaders: Headers,
+    ) :
+        RpcRequestError(
+            response = response,
+            responseBody = responseBody,
+            requestHeaders = requestHeaders,
+            message = response.status
+        )
 
-    class DeserializationError(override val cause: SerializationException, override val response: Response) :
-        RpcRequestError(response, "Failed to deserialize server response", cause)
+    class DeserializationError internal constructor(
+        override val response: Response,
+        override val requestHeaders: Headers,
+        override val cause: SerializationException,
+    ) :
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Failed to deserialize server response",
+            cause = cause
+        )
 
-    class AuthenticationError internal constructor(override val response: Response) :
-        RpcRequestError(response, "Server requires HTTP authentication")
+    class AuthenticationError internal constructor(
+        override val response: Response,
+        override val requestHeaders: Headers,
+    ) :
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Server requires HTTP authentication"
+        )
 
-    class UnsupportedServerVersion internal constructor(val version: String, override val response: Response) :
-        RpcRequestError(response, "Transmission version $version is not supported")
+    class UnsupportedServerVersion internal constructor(val version: String, override val response: Response, override val requestHeaders: Headers) :
+        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Transmission version $version is not supported")
 
-    class UnsuccessfulResultField internal constructor(val result: String, override val response: Response) :
-        RpcRequestError(response, "Response result is '$result'")
+    class UnsuccessfulResultField internal constructor(val result: String, override val response: Response, override val requestHeaders: Headers) :
+        RpcRequestError(response = response, responseBody = "Response result is '$result'", requestHeaders = requestHeaders)
 
-    class UnknownError internal constructor(override val cause: Exception, override val response: Response) :
-        RpcRequestError(response, "Unexpected error", cause)
+    class UnexpectedError internal constructor(override val response: Response, override val requestHeaders: Headers, override val cause: Exception) :
+        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Unexpected error", cause = cause)
 }
 
 val RpcRequestError.isRecoverable: Boolean
@@ -56,11 +96,11 @@ val RpcRequestError.isRecoverable: Boolean
         else -> true
     }
 
-internal fun IOException.toRpcRequestError(call: Call, context: String, response: Response?): RpcRequestError =
+internal fun IOException.toRpcRequestError(call: Call, response: Response?, requestHeaders: Headers?): RpcRequestError =
     if (this is SocketTimeoutException || call.isCanceled()) {
-        RpcRequestError.Timeout(context, response)
+        RpcRequestError.Timeout(response = response, requestHeaders = requestHeaders)
     } else {
-        RpcRequestError.NetworkError(this, context, response)
+        RpcRequestError.NetworkError(response = response, requestHeaders = requestHeaders, cause = this)
     }
 
 @Parcelize
