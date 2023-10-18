@@ -42,6 +42,7 @@ threetenabp = "1.4.6"
 okhttp = "4.11.0"
 
 junit = "5.10.0"
+mockk = "1.13.7"
 
 serialization-bencode = "0.1"
 tremotesf-plugin = "0.1"
@@ -94,6 +95,7 @@ okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.
 serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "serialization" }
 
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 [plugins]

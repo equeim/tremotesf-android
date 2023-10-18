@@ -28,7 +28,7 @@ suspend fun RpcClient.addTorrentLink(
     )
     if (response.arguments.duplicateTorrent != null) {
         Timber.e("'torrent-duplicate' key is present, torrent is already added")
-        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse)
+        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
     }
 }
 

@@ -56,7 +56,7 @@ suspend fun RpcClient.addTorrentFile(
     }
     if (response.arguments.duplicateTorrent != null) {
         Timber.e("'torrent-duplicate' key is present, torrent is already added")
-        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse)
+        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
     }
     val torrentHashString = response.arguments.addedTorrent?.hasString ?: return
     renamedFiles.forEach { (path, newName) ->

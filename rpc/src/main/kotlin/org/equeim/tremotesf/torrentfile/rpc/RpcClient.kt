@@ -4,22 +4,16 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.serializer
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import org.equeim.tremotesf.torrentfile.rpc.requests.BaseRpcResponse
@@ -31,12 +25,8 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.RpcRequestBody
 import org.equeim.tremotesf.torrentfile.rpc.requests.RpcResponse
 import org.equeim.tremotesf.torrentfile.rpc.requests.SERVER_VERSION_REQUEST
 import org.equeim.tremotesf.torrentfile.rpc.requests.ServerVersionResponseArguments
-import org.equeim.tremotesf.torrentfile.rpc.requests.isSuccessful
 import timber.log.Timber
-import java.io.IOException
 import java.net.HttpURLConnection
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 open class RpcClient {
     private val connectionConfiguration = MutableStateFlow<Result<ConnectionConfiguration>?>(null)
@@ -153,82 +143,6 @@ open class RpcClient {
         }
     }
 
-    private class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
-        private val continuation: CancellableContinuation<RpcResponseT>,
-        private val json: Json,
-        private val responseBodySerializer: KSerializer<RpcResponseT>,
-        private val context: RpcRequestContext,
-    ) : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            if (continuation.isActive) {
-                resumeWithException(e.toRpcRequestError(call, "performing HTTP request", response = null))
-            }
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            response.body.use { body ->
-                if (!continuation.isActive) return
-                if (!response.isSuccessful) {
-                    resumeWithException(
-                        when (response.code) {
-                            HttpURLConnection.HTTP_UNAUTHORIZED -> RpcRequestError.AuthenticationError(response)
-                            else -> RpcRequestError.UnsuccessfulHttpStatusCode(response)
-                        }
-                    )
-                    return
-                }
-                if (body == null || body.contentLength() == 0L) {
-                    resumeWithException(
-                        RpcRequestError.DeserializationError(
-                            SerializationException("Response does not have a body"),
-                            response
-                        )
-                    )
-                    return
-                }
-                val rpcResponseOrError = try {
-                    @OptIn(ExperimentalSerializationApi::class)
-                    Result.success(json.decodeFromBufferedSource(responseBodySerializer, body.source()))
-                } catch (e: Exception) {
-                    Result.failure(e)
-                }
-                if (!continuation.isActive) return
-                rpcResponseOrError.onSuccess {
-                    if (it.isSuccessful) {
-                        resume(it, response)
-                    } else {
-                        resumeWithException(
-                            RpcRequestError.UnsuccessfulResultField(
-                                it.result,
-                                response
-                            )
-                        )
-                    }
-                }.onFailure {
-                    resumeWithException(
-                        when (it) {
-                            is IOException -> it.toRpcRequestError(call, "when reading response body", response)
-                            is SerializationException -> RpcRequestError.DeserializationError(it, response)
-                            is Exception -> RpcRequestError.UnknownError(it, response)
-                            else -> throw it
-                        }
-                    )
-                }
-            }
-        }
-
-        private fun resume(rpcResponse: RpcResponseT, httpResponse: Response) {
-            Timber.tag(RpcClient::class.simpleName!!).d("RPC request with method $context succeeded")
-            rpcResponse.httpResponse = httpResponse
-            continuation.resume(rpcResponse)
-        }
-
-        private fun resumeWithException(error: RpcRequestError) {
-            Timber.tag(RpcClient::class.simpleName!!).e(error.cause, "RPC request with $context failed: $error")
-            continuation.resumeWithException(error)
-        }
-    }
-
     private val checkingServerCapabilitiesMutex = Mutex()
 
     internal suspend fun checkServerCapabilities(force: Boolean, context: RpcRequestContext): ServerCapabilities {
@@ -262,8 +176,9 @@ open class RpcClient {
         if (!serverVersionResponse.arguments.isSupported) {
             Timber.e("Unsupported server version ${serverVersionResponse.arguments.version}")
             val error = RpcRequestError.UnsupportedServerVersion(
-                serverVersionResponse.arguments.version,
-                serverVersionResponse.httpResponse
+                version = serverVersionResponse.arguments.version,
+                response = serverVersionResponse.httpResponse,
+                requestHeaders = serverVersionResponse.requestHeaders,
             )
             serverCapabilitiesResult = Result.failure(error)
             throw error
@@ -296,7 +211,7 @@ open class RpcClient {
     }
 }
 
-internal data class RpcRequestContext(val method: RpcMethod, val callerContext: String?) {
+internal class RpcRequestContext(private val method: RpcMethod, private val callerContext: String?) {
     override fun toString(): String = if (callerContext != null) {
         "method '$method' and context '$callerContext'"
     } else {
