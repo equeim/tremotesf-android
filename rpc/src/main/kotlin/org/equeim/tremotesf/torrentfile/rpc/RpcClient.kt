@@ -50,7 +50,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
     private var serverCapabilitiesResult: Result<ServerCapabilities>? = null
     val serverCapabilities: ServerCapabilities? get() = serverCapabilitiesResult?.getOrNull()
 
-    val shouldConnectToServer = MutableStateFlow(false)
+    val shouldConnectToServer = MutableStateFlow(true)
 
     init {
         coroutineScope.launch {
