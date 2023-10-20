@@ -20,13 +20,14 @@ import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.requests.DUPLICATE_TORRENT_RESULT
 import org.equeim.tremotesf.torrentfile.rpc.shouldUpdateConnectionConfiguration
 import org.equeim.tremotesf.ui.AppForegroundTracker
+import java.util.concurrent.atomic.AtomicBoolean
 
 object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
-    private var connectedOnce = false
-
     data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
 
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)
+
+    private val connectAutomaticallyWhenInForeground = AtomicBoolean(true)
 
     init {
         coroutineScope.launch {
@@ -43,21 +44,16 @@ object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.
 
         coroutineScope.launch {
             AppForegroundTracker.appInForeground.collect { inForeground ->
-                if (inForeground) connectOnce()
+                if (inForeground && connectAutomaticallyWhenInForeground.getAndSet(false)) {
+                    shouldConnectToServer.value = true
+                }
             }
-        }
-    }
-
-    private fun connectOnce() {
-        if (!connectedOnce) {
-            shouldConnectToServer.value = true
-            connectedOnce = true
         }
     }
 
     fun disconnectOnShutdown() {
         shouldConnectToServer.value = false
-        connectedOnce = false
+        connectAutomaticallyWhenInForeground.set(true)
     }
 
     fun performBackgroundRpcRequest(@StringRes errorContext: Int, block: suspend RpcClient.() -> Unit) {
