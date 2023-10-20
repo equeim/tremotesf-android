@@ -4,8 +4,10 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -28,7 +30,7 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.ServerVersionResponseArgume
 import timber.log.Timber
 import java.net.HttpURLConnection
 
-open class RpcClient {
+open class RpcClient(protected val coroutineScope: CoroutineScope) {
     private val connectionConfiguration = MutableStateFlow<Result<ConnectionConfiguration>?>(null)
     internal fun getConnectionConfiguration(): StateFlow<Result<ConnectionConfiguration>?> = connectionConfiguration
 
@@ -49,6 +51,19 @@ open class RpcClient {
     val serverCapabilities: ServerCapabilities? get() = serverCapabilitiesResult?.getOrNull()
 
     val shouldConnectToServer = MutableStateFlow(false)
+
+    init {
+        coroutineScope.launch {
+            shouldConnectToServer.collect {
+                if (!it) {
+                    connectionConfiguration.value?.getOrNull()?.httpClient?.apply {
+                        dispatcher.cancelAll()
+                        connectionPool.evictAll()
+                    }
+                }
+            }
+        }
+    }
 
     @Synchronized
     fun setConnectionConfiguration(server: Server?) {
