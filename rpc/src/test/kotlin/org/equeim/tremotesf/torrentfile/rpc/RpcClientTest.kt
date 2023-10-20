@@ -8,7 +8,13 @@ import android.os.SystemClock
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -35,8 +41,9 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalSerializationApi::class)
 class RpcClientTest {
+    private val dispatcher = StandardTestDispatcher()
     private val server = MockWebServer()
-    private val client = RpcClient()
+    private val client = RpcClient(TestScope(dispatcher))
 
     private class TestTree : Timber.DebugTree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
@@ -51,19 +58,23 @@ class RpcClientTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeEach
     fun before() {
         mockkStatic(SystemClock::class)
         every { SystemClock.elapsedRealtime() } answers { System.nanoTime().nanoseconds.inWholeMilliseconds }
+        Dispatchers.setMain(dispatcher)
         Timber.plant(TestTree())
         server.start()
         client.setConnectionConfiguration(createTestServer())
         client.shouldConnectToServer.value = true
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @AfterEach
     fun after() {
         unmockkStatic(SystemClock::class)
+        Dispatchers.resetMain()
         server.close()
         Timber.uprootAll()
     }

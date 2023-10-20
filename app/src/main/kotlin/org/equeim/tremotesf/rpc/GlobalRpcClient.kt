@@ -21,9 +21,7 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.DUPLICATE_TORRENT_RESULT
 import org.equeim.tremotesf.torrentfile.rpc.shouldUpdateConnectionConfiguration
 import org.equeim.tremotesf.ui.AppForegroundTracker
 
-object GlobalRpcClient : RpcClient() {
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
+object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
     private var connectedOnce = false
 
     data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
