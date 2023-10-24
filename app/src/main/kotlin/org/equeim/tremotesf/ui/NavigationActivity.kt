@@ -261,8 +261,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 class NavHostFragment : NavHostFragment() {
     override fun onCreateNavHostController(navHostController: NavHostController) {
         super.onCreateNavHostController(navHostController)
-        navHostController.addOnDestinationChangedListener { _, destination, arguments ->
-            Timber.i("Destination changed: destination = $destination, arguments = $arguments")
+        navHostController.addOnDestinationChangedListener { _, destination, _ ->
+            Timber.i("Destination changed: destination = $destination")
         }
     }
 
