@@ -16,10 +16,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_height="match_parent"
         android:scrollbars="vertical">
 
-        <LinearLayout
-            android:id="@+id/items"
+        <TextView
+            android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:scrollHorizontally="true"
+            android:paddingHorizontal="?dialogPreferredPadding"
+            android:paddingVertical="@dimen/vertical_edge_padding"
+            android:textAppearance="?textAppearanceBodyMedium"
+            android:textIsSelectable="true" />
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

@@ -380,7 +380,26 @@
 
         <argument
             android:name="error"
-            app:argType="org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestErrorString" />
+            app:argType="org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestError" />
+
+        <action
+            android:id="@+id/to_expanded_error_dialog_fragment"
+            app:destination="@id/detailed_connection_error_expanded_dialog_fragment" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/detailed_connection_error_expanded_dialog_fragment"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.DetailedConnectionErrorExpandedDialogFragment">
+
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="text"
+            app:argType="string" />
+        <argument
+            android:name="monospace_and_unwrapped"
+            app:argType="boolean" />
     </dialog>
 
     <action

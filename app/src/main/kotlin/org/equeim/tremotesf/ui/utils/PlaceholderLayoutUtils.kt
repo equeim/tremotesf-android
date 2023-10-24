@@ -8,9 +8,10 @@ import androidx.core.view.isVisible
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
+import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
 import org.equeim.tremotesf.ui.NavigationActivity
 
 fun PlaceholderLayoutBinding.showError(error: RpcRequestError) {
@@ -27,7 +28,7 @@ fun PlaceholderLayoutBinding.showError(error: RpcRequestError) {
             setOnClickListener {
                 (context.activity as NavigationActivity).navigate(
                     NavMainDirections.toDetailedConnectionErrorDialogFragment(
-                        error.makeDetailedErrorString()
+                        error.makeDetailedError(GlobalRpcClient)
                     )
                 )
             }

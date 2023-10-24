@@ -33,9 +33,10 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
+import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showSnackbar
@@ -113,7 +114,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
                     lifecycleOwner = this,
                     activity = this,
                     actionText = R.string.see_detailed_error_message,
-                    action = { navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString())) }
+                    action = { navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedError(GlobalRpcClient))) }
                 )
                 model.rpcErrorDismissed()
             }

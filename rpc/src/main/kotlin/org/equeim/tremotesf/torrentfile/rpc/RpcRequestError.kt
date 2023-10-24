@@ -10,9 +10,11 @@ import kotlinx.serialization.SerializationException
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
+import org.equeim.tremotesf.common.causes
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.security.cert.CertPathValidatorException
+import java.security.cert.Certificate
 
 sealed class RpcRequestError private constructor(
     internal open val response: Response? = null,
@@ -32,7 +34,11 @@ sealed class RpcRequestError private constructor(
     class ConnectionDisabled : RpcRequestError(message = "Connection to server is disabled")
 
     class Timeout internal constructor(response: Response?, requestHeaders: Headers?) :
-        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Timed out when performing HTTP request")
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Timed out when performing HTTP request"
+        )
 
     class NetworkError internal constructor(
         response: Response?,
@@ -80,14 +86,39 @@ sealed class RpcRequestError private constructor(
             message = "Server requires HTTP authentication"
         )
 
-    class UnsupportedServerVersion internal constructor(val version: String, override val response: Response, override val requestHeaders: Headers) :
-        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Transmission version $version is not supported")
+    class UnsupportedServerVersion internal constructor(
+        val version: String,
+        override val response: Response,
+        override val requestHeaders: Headers,
+    ) :
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Transmission version $version is not supported"
+        )
 
-    class UnsuccessfulResultField internal constructor(val result: String, override val response: Response, override val requestHeaders: Headers) :
-        RpcRequestError(response = response, responseBody = "Response result is '$result'", requestHeaders = requestHeaders)
+    class UnsuccessfulResultField internal constructor(
+        val result: String,
+        override val response: Response,
+        override val requestHeaders: Headers,
+    ) :
+        RpcRequestError(
+            response = response,
+            responseBody = "Response result is '$result'",
+            requestHeaders = requestHeaders
+        )
 
-    class UnexpectedError internal constructor(override val response: Response, override val requestHeaders: Headers, override val cause: Exception) :
-        RpcRequestError(response = response, requestHeaders = requestHeaders, message = "Unexpected error", cause = cause)
+    class UnexpectedError internal constructor(
+        override val response: Response,
+        override val requestHeaders: Headers,
+        override val cause: Exception,
+    ) :
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = "Unexpected error",
+            cause = cause
+        )
 }
 
 val RpcRequestError.isRecoverable: Boolean
@@ -104,70 +135,53 @@ internal fun IOException.toRpcRequestError(call: Call, response: Response?, requ
     }
 
 @Parcelize
-data class DetailedRpcRequestErrorString(
-    val detailedError: String,
-    val certificates: String?,
-) : Parcelable
+data class DetailedRpcRequestError(
+    val error: RpcRequestError,
+    val suppressedErrors: List<Throwable>,
+    val responseInfo: ResponseInfo?,
+    val serverCertificates: List<Certificate>,
+    val clientCertificates: List<Certificate>,
+    val requestHeaders: List<Pair<String, String>>,
+) : Parcelable {
+    @Parcelize
+    data class ResponseInfo(
+        val status: String,
+        val protocol: String,
+        val tlsHandshakeInfo: TlsHandshakeInfo?,
+        val headers: List<Pair<String, String>>,
+    ) : Parcelable
 
-fun RpcRequestError.makeDetailedErrorString(): DetailedRpcRequestErrorString {
-    val suppressed = causes.flatMap { it.suppressed.asSequence() }.toList()
-    return DetailedRpcRequestErrorString(
-        detailedError = buildString {
-            append("Error:\n")
-            appendThrowable(this@makeDetailedErrorString)
-            if (suppressed.isNotEmpty()) {
-                append("Suppressed exceptions:\n")
-                suppressed.forEach(::appendThrowable)
-            }
-            response?.withPriorResponses?.forEach { response ->
-                append("HTTP request:\n")
-                append("- URL: ${response.request.url}\n")
-                append("HTTP Response:\n")
-                append("- Protocol: ${response.protocol}\n")
-                append("- Status: ${response.status}\n")
-                append("- Headers:\n")
-                response.headers.forEach { header ->
-                    val (name, value) = header.redactHeader()
-                    append("   $name: $value\n")
-                }
-                response.handshake?.let { handshake ->
-                    append("- TLS info:\n")
-                    append("  - Version: ${handshake.tlsVersion.javaName}\n")
-                    append("  - Cipher suite: ${handshake.cipherSuite.javaName}\n")
-                }
-            }
+    @Parcelize
+    data class TlsHandshakeInfo(val tlsVersion: String, val cipherSuite: String) : Parcelable
+}
+
+fun RpcRequestError.makeDetailedError(client: RpcClient): DetailedRpcRequestError {
+    return DetailedRpcRequestError(
+        error = this,
+        suppressedErrors = causes.flatMap { it.suppressed.asSequence() }.toList(),
+        responseInfo = response?.run {
+            DetailedRpcRequestError.ResponseInfo(
+                status = status,
+                protocol = protocol.toString(),
+                tlsHandshakeInfo = handshake?.run {
+                    DetailedRpcRequestError.TlsHandshakeInfo(
+                        tlsVersion = tlsVersion.javaName,
+                        cipherSuite = cipherSuite.javaName,
+                    )
+                },
+                headers = headers.toList(),
+            )
         },
-        certificates = run {
-            val clientCerts =
-                response?.withPriorResponses?.flatMap { it.handshake?.localCertificates.orEmpty() }?.toSet().orEmpty()
-            val serverCerts =
-                response?.withPriorResponses?.flatMap { it.handshake?.peerCertificates.orEmpty() }?.toSet()
-                    ?: causes.filterIsInstance<CertPathValidatorException>()
-                        .firstOrNull()?.certPath?.certificates.orEmpty()
-            if (clientCerts.isNotEmpty() || serverCerts.isNotEmpty()) {
-                buildString {
-                    if (clientCerts.isNotEmpty()) {
-                        append("Client certificates:\n")
-                        clientCerts.forEach { append(" $it\n") }
-                    }
-                    if (serverCerts.isNotEmpty()) {
-                        append("Server certificates:\n")
-                        serverCerts.forEach { append(" $it\n") }
-                    }
-                }
-            } else {
-                null
-            }
+        serverCertificates = response?.run {
+            withPriorResponses.flatMap { it.handshake?.peerCertificates.orEmpty() }.toSet().toList()
         }
+            ?: causes.filterIsInstance<CertPathValidatorException>().firstOrNull()?.certPath?.certificates.orEmpty(),
+        clientCertificates = response?.run {
+            withPriorResponses.flatMap { it.handshake?.localCertificates.orEmpty() }.toSet().toList()
+        }
+            ?: client.getConnectionConfiguration().value?.getOrNull()?.clientCertificates.orEmpty(),
+        requestHeaders = requestHeaders?.toList().orEmpty(),
     )
 }
 
-private fun StringBuilder.appendThrowable(e: Throwable) {
-    append("$e\n\n")
-    for (cause in e.causes) {
-        append("Caused by:\n$cause\n\n")
-    }
-}
-
-private val Throwable.causes: Sequence<Throwable> get() = generateSequence(cause, Throwable::cause)
 private val Response.withPriorResponses: Sequence<Response> get() = generateSequence(this) { it.priorResponse }

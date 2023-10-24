@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:maxLines="3"
+    android:ellipsize="end"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:textAppearance="?textAppearanceBodyMedium"
+    android:paddingHorizontal="?dialogPreferredPadding"
+    android:paddingVertical="@dimen/linear_layout_vertical_spacing_double"
+    app:drawableEndCompat="@drawable/outline_info_24" />
