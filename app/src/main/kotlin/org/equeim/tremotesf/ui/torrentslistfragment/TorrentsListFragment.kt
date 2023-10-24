@@ -39,7 +39,7 @@ import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.Server
 import org.equeim.tremotesf.torrentfile.rpc.isRecoverable
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedErrorString
+import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
 import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
@@ -115,7 +115,7 @@ class TorrentsListFragment : NavigationFragment(
 
         binding.placeholderView.detailedErrorMessageButton.setOnClickListener {
             (model.torrentsListState.value as? RpcRequestState.Error)?.let { error ->
-                navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedErrorString()))
+                navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedError(GlobalRpcClient)))
             }
         }
 
