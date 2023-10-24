@@ -9,6 +9,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.security.cert.Certificate
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
@@ -17,6 +18,7 @@ internal data class ConnectionConfiguration(
     val url: HttpUrl,
     val credentials: String?,
     val updateInterval: Duration,
+    val clientCertificates: List<Certificate>,
 )
 
 /**
@@ -33,21 +35,28 @@ internal fun createConnectionConfiguration(server: Server): ConnectionConfigurat
                 InetSocketAddress.createUnresolved(server.proxyHostname, server.proxyPort)
             )
         })
-    if (server.clientCertificateEnabled || server.selfSignedCertificateEnabled) {
-        val (sslSocketFactory, trustManager) = createSslSocketFactory(
-            if (server.clientCertificateEnabled) server.clientCertificate else null,
-            if (server.selfSignedCertificateEnabled) server.selfSignedCertificate else null
-        )
-        builder.sslSocketFactory(sslSocketFactory, trustManager)
-        if (server.selfSignedCertificateEnabled) {
-            builder.hostnameVerifier { hostname, _ -> hostname == url.host }
+    var clientCertificates: List<Certificate> = emptyList()
+    if (server.httpsEnabled) {
+        val clientCertificate = if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null
+        val serverCertificate = if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
+        if (clientCertificate != null || serverCertificate != null) {
+            val configuration = createTlsConfiguration(
+                if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null,
+                if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
+            )
+            builder.sslSocketFactory(configuration.sslSocketFactory, configuration.trustManager)
+            if (serverCertificate != null) {
+                builder.hostnameVerifier { hostname, _ -> hostname == url.host }
+            }
+            clientCertificates = configuration.clientCertificates
         }
     }
     return ConnectionConfiguration(
         httpClient = builder.build(),
         url = url,
         credentials = if (server.authentication) Credentials.basic(server.username, server.password) else null,
-        updateInterval = server.updateInterval
+        updateInterval = server.updateInterval,
+        clientCertificates = clientCertificates
     )
 }
 
