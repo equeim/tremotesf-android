@@ -15,8 +15,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import kotlinx.serialization.json.okio.decodeFromBufferedSource
+import okio.buffer
+import okio.source
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
@@ -63,19 +65,21 @@ abstract class Servers(
     @OptIn(ExperimentalSerializationApi::class)
     private fun load() {
         try {
-            val (servers, changed) = context.openFileInput(FILE_NAME).buffered().use {
-                json.decodeFromStream(ServersState.serializer(), it)
+            val (servers, changed) = context.openFileInput(FILE_NAME).use {
+                json.decodeFromBufferedSource(ServersState.serializer(), it.source().buffer())
             }.validateLoaded()
             _serversState.value = servers
             if (changed) {
                 save()
             }
         } catch (error: FileNotFoundException) {
-            Timber.w(error, "Servers file does not exist")
+            Timber.d("Servers file does not exist")
         } catch (error: IOException) {
             Timber.e(error, "Error reading servers file")
         } catch (error: SerializationException) {
             Timber.e(error, "Error parsing servers file")
+        } catch (error: Exception) {
+            Timber.e(error, "Unexpected error when parsing error file")
         }
     }
 

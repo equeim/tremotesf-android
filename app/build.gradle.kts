@@ -117,6 +117,7 @@ dependencies {
     implementation(libs.fastscroll)
     implementation(libs.timber)
     implementation(libs.threetenabp)
+    implementation(libs.serialization.json.okio)
 
     debugImplementation(libs.leakcanary)
 
