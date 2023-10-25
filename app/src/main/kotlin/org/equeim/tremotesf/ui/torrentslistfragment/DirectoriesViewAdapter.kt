@@ -53,11 +53,11 @@ class DirectoriesViewAdapter(
         return directories[position].path
     }
 
-    fun update(torrents: List<Torrent>, allTorrentsCount: Int, currentDirectoryPath: String) {
+    fun update(torrents: List<Torrent>, currentDirectoryPath: String) {
         directories = torrents.groupingBy { it.downloadDirectory }
             .eachCount()
             .mapTo(
-                mutableListOf(DirectoryItem(null, null, allTorrentsCount))
+                mutableListOf(DirectoryItem(null, null, torrents.size))
             ) { (path, torrents) -> DirectoryItem(path.value, path.toNativeSeparators(), torrents) }
             .apply { sortWith(comparator) }
         currentDirectoryIndex = if (currentDirectoryPath.isEmpty()) {

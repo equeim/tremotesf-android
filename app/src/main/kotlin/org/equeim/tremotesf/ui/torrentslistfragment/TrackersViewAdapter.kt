@@ -46,13 +46,13 @@ class TrackersViewAdapter(
         return trackers[position].tracker
     }
 
-    fun update(torrents: List<Torrent>, allTorrentsCount: Int, trackerFilter: String) {
+    fun update(torrents: List<Torrent>, trackerFilter: String) {
         trackers = torrents
             .asSequence()
             .flatMap { torrent -> torrent.trackerSites.asSequence().map { torrent to it } }
             .groupingBy { (_, tracker) -> tracker }
             .eachCount()
-            .mapTo(mutableListOf(TrackerItem(null, allTorrentsCount))) { (tracker, torrents) ->
+            .mapTo(mutableListOf(TrackerItem(null, torrents.size))) { (tracker, torrents) ->
                 TrackerItem(
                     tracker,
                     torrents

@@ -79,21 +79,21 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                     updateSortView(sortOrder, sortMode)
                 }
 
-            val torrents = model.torrentsListState.map { (it as? RpcRequestState.Loaded)?.response.orEmpty() }
+            val allTorrents = model.allTorrents.map { (it as? RpcRequestState.Loaded)?.response.orEmpty() }
 
-            combine(torrents, model.allTorrentsCount, model.statusFilterMode, ::Triple)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, statusFilterMode) ->
-                    statusFilterViewAdapter.update(torrents, allTorrentsCount, statusFilterMode)
+            combine(allTorrents, model.statusFilterMode, ::Pair)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, statusFilterMode) ->
+                    statusFilterViewAdapter.update(torrents, statusFilterMode)
                 }
 
-            combine(torrents, model.allTorrentsCount, model.trackerFilter, ::Triple)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, trackerFilter) ->
-                    trackersViewAdapter.update(torrents, allTorrentsCount, trackerFilter)
+            combine(allTorrents, model.trackerFilter, ::Pair)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, trackerFilter) ->
+                    trackersViewAdapter.update(torrents, trackerFilter)
                 }
 
-            combine(torrents, model.allTorrentsCount, model.directoryFilter, ::Triple)
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, allTorrentsCount, directoryFilter) ->
-                    directoriesViewAdapter.update(torrents, allTorrentsCount, directoryFilter)
+            combine(allTorrents, model.directoryFilter, ::Pair)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, directoryFilter) ->
+                    directoriesViewAdapter.update(torrents, directoryFilter)
                 }
 
             TooltipCompat.setTooltipText(resetButton, resetButton.contentDescription)
