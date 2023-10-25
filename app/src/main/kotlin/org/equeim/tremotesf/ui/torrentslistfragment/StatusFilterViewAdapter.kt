@@ -48,10 +48,10 @@ class StatusFilterViewAdapter(
         return getItem(statusFilterMode.ordinal)
     }
 
-    fun update(torrents: List<Torrent>, allTorrentsCount: Int, statusFilterMode: StatusFilterMode) {
+    fun update(torrents: List<Torrent>, statusFilterMode: StatusFilterMode) {
         this.statusFilterMode = statusFilterMode
 
-        allTorrents = allTorrentsCount
+        allTorrents = torrents.size
         activeTorrents = 0
         downloadingTorrents = 0
         seedingTorrents = 0

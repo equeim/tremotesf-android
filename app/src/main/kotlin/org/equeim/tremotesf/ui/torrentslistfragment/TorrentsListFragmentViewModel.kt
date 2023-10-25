@@ -171,7 +171,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     private val _torrentsLoadedEvents = MutableSharedFlow<Unit>()
     val torrentsLoadedEvents: Flow<Unit> by ::_torrentsLoadedEvents
 
-    private val allTorrents: StateFlow<RpcRequestState<List<Torrent>>> =
+    val allTorrents: StateFlow<RpcRequestState<List<Torrent>>> =
         GlobalRpcClient.performPeriodicRequest(refreshRequests) { getTorrentsList() }
             .onEach {
                 when (it) {
@@ -183,10 +183,6 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val torrentsListState: StateFlow<RpcRequestState<List<Torrent>>> =
         allTorrents.filterAndSortTorrents().stateIn(GlobalRpcClient, viewModelScope)
-
-    val allTorrentsCount: StateFlow<Int> = allTorrents
-        .map { (it as? RpcRequestState.Loaded)?.response?.size ?: 0 }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), 0)
 
     val sortSettingsChanged: Flow<Unit> = combine(sortMode, sortOrder, ::Pair)
         .drop(1)
