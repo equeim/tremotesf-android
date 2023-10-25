@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.torrentfile.rpc.requests
 
-import android.net.Uri
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -29,6 +28,9 @@ import org.equeim.tremotesf.torrentfile.rpc.RpcClient
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestContext
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.threeten.bp.Instant
+import timber.log.Timber
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration
 
@@ -180,10 +182,18 @@ private object TrackerSitesSerializer : JsonTransformingSerializer<List<String>>
             return JsonArray(element.jsonArray.map { arrayElement ->
                 val announceUrl = arrayElement.jsonObject.getValue("announce").jsonPrimitive
                 cache.getOrPut(announceUrl) {
-                    // We can't convert announceUrl to HttpUtl directly since announce URLs may have udp:// scheme
+                    // We can't convert announceUrl to HttpUrl directly since announce URLs may have udp:// scheme
                     // and HttpUrl supports only http:// and https://
-                    // Extract host using Uri and construct fake HttpUrl using http:// scheme instead
-                    Uri.parse(announceUrl.content).host?.let { host ->
+                    // Extract host using URI and construct fake HttpUrl using http:// scheme instead
+                    // android.net.Uri incorrectly parses URL wit IPv6 addresses on older Android versions,
+                    // so we use java.net.URI which works
+                    val uri = try {
+                        URI(announceUrl.content)
+                    } catch (e: URISyntaxException) {
+                        Timber.e(e, "Failed to parse URI from ${announceUrl.content}")
+                        null
+                    }
+                    uri?.host?.let { host ->
                         JsonPrimitive(HttpUrl.Builder().scheme("http").host(host).build().topPrivateDomain() ?: host)
                     } ?: announceUrl
                 }
