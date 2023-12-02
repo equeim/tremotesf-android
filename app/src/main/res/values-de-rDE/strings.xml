@@ -416,7 +416,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Lösche Dateien auf der Festplatte, wenn der Torrent gelöscht wird</string>
     <string name="prefs_link_from_clipboard_title">Beim Hinzufügen eines Torrent-Links automatisch den Link aus der Zwischenablage ausfüllen</string>
-    <string name="prefs_remember_download_directory_title">Letztes Download-Verzeichnis merken</string>
+    <string name="prefs_remember_add_torrent_parameters_title">Letztes Download-Verzeichnis merken</string>
 
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 

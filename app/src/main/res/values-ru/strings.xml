@@ -446,7 +446,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
     <string name="prefs_link_from_clipboard_title">Автоматически копировать ссылку из буфера обмена при добавлении ссылки на торрент</string>
-    <string name="prefs_remember_download_directory_title">Запоминать последний каталог загрузки</string>
+    <string name="prefs_remember_add_torrent_parameters_title">Запоминать последний каталог загрузки</string>
 
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 

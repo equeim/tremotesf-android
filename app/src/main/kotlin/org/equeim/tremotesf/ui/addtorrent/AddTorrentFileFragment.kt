@@ -70,7 +70,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
     0
 ) {
     private val args: AddTorrentFileFragmentArgs by navArgs()
-    val model: AddTorrentFileModel by viewModels<AddTorrentFileModelImpl> {
+    val model: AddTorrentFileModelImpl by viewModels {
         viewModelFactory {
             initializer {
                 AddTorrentFileModelImpl(
@@ -323,15 +323,14 @@ class AddTorrentFileFragment : AddTorrentFragment(
                         if (model.shouldSetInitialRpcInputs) {
                             val downloadingSettings = it.downloadingSettings.response
                             downloadDirectoryLayout.downloadDirectoryEdit.setText(
-                                model.getInitialDownloadDirectory(
-                                    downloadingSettings
-                                )
+                                model.getInitialDownloadDirectory(downloadingSettings)
                             )
-                            startDownloadingCheckBox.isChecked = downloadingSettings.startAddedTorrents
+                            startDownloadingCheckBox.isChecked = model.getInitialStartAfterAdding(downloadingSettings)
                             model.shouldSetInitialRpcInputs = false
                         }
                         if (model.shouldSetInitialLocalInputs) {
-                            priorityView.setText(R.string.normal_priority)
+                            val parent = requireParentFragment() as AddTorrentFileFragment
+                            priorityView.setText(parent.priorityItems[parent.priorityItemEnums.indexOf(model.getInitialPriority())])
                             model.shouldSetInitialLocalInputs = false
                         }
                     }

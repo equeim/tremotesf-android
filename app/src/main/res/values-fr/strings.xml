@@ -419,7 +419,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Supprimer les fichiers du disque lors de la suppression du torrent</string>
     <string name="prefs_link_from_clipboard_title">Remplir automatiquement le lien depuis le presse-papiers lors de l\'ajout d\'un lien torrent</string>
-    <string name="prefs_remember_download_directory_title">Se souvenir du dernier répertoire de téléchargement</string>
+    <string name="prefs_remember_add_torrent_parameters_title">Se souvenir du dernier répertoire de téléchargement</string>
 
     <string name="alternative_speed_limits">Limites de vitesse alternatives</string>
 

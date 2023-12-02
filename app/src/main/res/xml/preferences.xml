@@ -55,9 +55,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
             app:singleLineTitle="false" />
 
         <CheckBoxPreference
-            android:defaultValue="@bool/prefs_remember_download_directory_default_value"
-            android:key="@string/prefs_remember_download_directory_key"
-            android:title="@string/prefs_remember_download_directory_title"
+            android:defaultValue="@bool/prefs_remember_add_torrent_parameters_default_value"
+            android:key="@string/prefs_remember_add_torrent_parameters_key"
+            android:title="@string/prefs_remember_add_torrent_parameters_title"
             app:singleLineTitle="false" />
     </PreferenceCategory>
 

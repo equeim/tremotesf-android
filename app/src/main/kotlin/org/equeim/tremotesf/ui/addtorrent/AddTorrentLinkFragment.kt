@@ -203,12 +203,12 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     private suspend fun showView(downloadingSettings: DownloadingServerSettings) = with(binding) {
         if (model.shouldSetInitialRpcInputs) {
             downloadDirectoryLayout.downloadDirectoryEdit.setText(model.getInitialDownloadDirectory(downloadingSettings))
-            startDownloadingCheckBox.isChecked = downloadingSettings.startAddedTorrents
+            startDownloadingCheckBox.isChecked = model.getInitialStartAfterAdding(downloadingSettings)
             model.shouldSetInitialRpcInputs = false
         }
         if (model.shouldSetInitialLocalInputs) {
             torrentLinkEdit.setText(model.getInitialTorrentLink())
-            priorityView.setText(R.string.normal_priority)
+            priorityView.setText(priorityItems[priorityItemEnums.indexOf(model.getInitialPriority())])
             model.shouldSetInitialLocalInputs = false
         }
         scrollView.isVisible = true
