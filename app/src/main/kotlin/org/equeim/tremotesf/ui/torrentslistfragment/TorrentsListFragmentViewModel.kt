@@ -139,7 +139,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     val directoryFilter: Flow<String> = Settings.torrentsDirectoryFilter.flow()
     fun setDirectoryFilter(filter: String) = Settings.torrentsDirectoryFilter.setAsync(filter)
 
-    private fun <T : Any> Settings.MutableProperty<T>.setAsync(value: T) {
+    private fun <T : Any> Settings.Property<T>.setAsync(value: T) {
         viewModelScope.launch { set(value) }
     }
 
