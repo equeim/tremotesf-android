@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.combine
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerStatsDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
 import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
 import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
 import org.equeim.tremotesf.torrentfile.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.torrentfile.rpc.requests.getDownloadDirFreeSpace
+import org.equeim.tremotesf.torrentfile.rpc.requests.getSessionStats
 import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
@@ -120,10 +120,12 @@ class ServerStatsDialogFragment : NavigationDialogFragment() {
 }
 
 class ServerStatsDialogFragmentViewModel : ViewModel() {
+    private val sessionStats: Flow<RpcRequestState<SessionStatsResponseArguments>> =
+        GlobalRpcClient.performPeriodicRequest { getSessionStats() }
     private val downloadDirFreeSpace: Flow<RpcRequestState<FileSize>> =
         GlobalRpcClient.performPeriodicRequest { getDownloadDirFreeSpace() }
     val stats: StateFlow<RpcRequestState<Pair<SessionStatsResponseArguments, FileSize>>> =
-        combine(PeriodicServerStateUpdater.sessionStats, downloadDirFreeSpace) { stats, freeSpace ->
+        combine(sessionStats, downloadDirFreeSpace) { stats, freeSpace ->
             when {
                 stats is RpcRequestState.Loaded && freeSpace is RpcRequestState.Loaded -> RpcRequestState.Loaded(stats.response to freeSpace.response)
                 stats is RpcRequestState.Error -> stats
