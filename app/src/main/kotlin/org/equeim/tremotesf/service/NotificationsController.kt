@@ -35,8 +35,8 @@ class NotificationsController(private val context: Context) {
     private val random = Random(System.nanoTime())
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager?.createNotificationChannels(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
+            notificationManager.createNotificationChannels(
                 listOf(
                     NotificationChannel(
                         FINISHED_NOTIFICATION_CHANNEL_ID,
@@ -52,7 +52,7 @@ class NotificationsController(private val context: Context) {
                         PERSISTENT_NOTIFICATION_CHANNEL_ID,
                         context.getText(R.string.persistent_notification_channel_name),
                         NotificationManager.IMPORTANCE_LOW
-                    )
+                    ).apply { setShowBadge(false) }
                 )
             )
             Timber.i("init: created notification channels")
@@ -134,7 +134,12 @@ class NotificationsController(private val context: Context) {
                 )
                 .setOngoing(true)
                 .setShowWhen(false)
-                .setDeleteIntent(ForegroundService.getPendingIntent(context, PersistentNotificationActions.STOP_UPDATING_NOTIFICATION))
+                .setDeleteIntent(
+                    ForegroundService.getPendingIntent(
+                        context,
+                        PersistentNotificationActions.STOP_UPDATING_NOTIFICATION
+                    )
+                )
 
         if (currentServer != null) {
             notificationBuilder.setContentTitle(
