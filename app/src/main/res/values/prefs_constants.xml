@@ -95,6 +95,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="notification_permission_key" translatable="false">notificationPermission</string>
 
-    <string name="prefs_remember_download_directory_key" translatable="false">rememberDownloadDirectory</string>
-    <bool name="prefs_remember_download_directory_default_value">true</bool>
+    <string name="deprecated_prefs_remember_download_directory_key" translatable="false">rememberDownloadDirectory</string>
+
+    <string name="prefs_remember_add_torrent_parameters_key">rememberAddTorrentParameters</string>
+    <bool name="prefs_remember_add_torrent_parameters_default_value">true</bool>
+
+    <string name="prefs_last_add_torrent_start_after_adding_key">lastAddTorrentStartAfterAdding</string>
+    <string name="prefs_last_add_torrent_start_after_adding_default_value">unknown</string>
+
+    <string name="prefs_last_add_torrent_priority_key">lastAddTorrentPriority</string>
+    <string name="prefs_last_add_torrent_priority_default_value">normal</string>
 </resources>

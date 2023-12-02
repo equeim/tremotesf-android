@@ -19,6 +19,7 @@ import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
 import org.equeim.tremotesf.torrentfile.rpc.requests.getFreeSpaceInDirectory
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getDownloadingServerSettings
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.torrentfile.rpc.stateIn
 import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.Settings
@@ -34,7 +35,7 @@ abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(
             .stateIn(GlobalRpcClient, viewModelScope)
 
     suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String {
-        return if (Settings.rememberDownloadDirectory.get()) {
+        return if (Settings.rememberAddTorrentParameters.get()) {
             GlobalServers.serversState.value.currentServer
                 ?.lastDownloadDirectory
                 ?.takeIf { it.isNotEmpty() }
@@ -44,6 +45,24 @@ abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(
             settings.downloadDirectory
         }.toNativeSeparators()
     }
+
+    suspend fun getInitialStartAfterAdding(settings: DownloadingServerSettings): Boolean =
+        if (Settings.rememberAddTorrentParameters.get()) {
+            when (Settings.lastAddTorrentStartAfterAdding.get()) {
+                Settings.StartTorrentAfterAdding.Start -> true
+                Settings.StartTorrentAfterAdding.DontStart -> false
+                Settings.StartTorrentAfterAdding.Unknown -> settings.startAddedTorrents
+            }
+        } else {
+            settings.startAddedTorrents
+        }
+
+    suspend fun getInitialPriority(): TorrentLimits.BandwidthPriority =
+        if (Settings.rememberAddTorrentParameters.get()) {
+            Settings.lastAddTorrentPriority.get()
+        } else {
+            TorrentLimits.BandwidthPriority.Normal
+        }
 
     suspend fun getFreeSpace(directory: String): FileSize? = try {
         GlobalRpcClient.getFreeSpaceInDirectory(directory)

@@ -27,6 +27,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
+import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.Settings.Property
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import timber.log.Timber
@@ -106,30 +107,57 @@ object Settings {
                         putString(colorTheme.key, newValue)
                     }
                 }
+                context.getString(R.string.deprecated_prefs_remember_download_directory_key)
+                    .let { deprecatedRememberDownloadDirectoryKey ->
+                        if (preferences.contains(deprecatedRememberDownloadDirectoryKey)) {
+                            preferences.edit {
+                                putBoolean(
+                                    rememberAddTorrentParameters.key,
+                                    preferences.getBoolean(deprecatedRememberDownloadDirectoryKey, false)
+                                )
+                                remove(deprecatedRememberDownloadDirectoryKey)
+                            }
+                        }
+                    }
                 migrated = true
             }
         }
     }
 
-    private interface MappedPrefsEnum {
-        val prefsValue: String
+    private class EnumPrefsMapper<T : Enum<T>>(
+        private val enumClass: Class<T>,
+        @StringRes private val keyResId: Int,
+        @StringRes private val defaultValueResId: Int,
+        val enumToPrefsValue: (T) -> String,
+    ) {
+        private val enumValues = requireNotNull(enumClass.enumConstants)
 
-        companion object {
-            inline fun <reified T> fromPrefsValueProvider(
-                @StringRes keyResId: Int,
-                @StringRes defaultValueResId: Int,
-            ): (String) -> T where T : MappedPrefsEnum, T : Enum<T> {
-                val values = enumValues<T>()
-                return { prefsValue ->
-                    values.find { it.prefsValue == prefsValue } ?: run {
-                        Timber.e("Unknown value $prefsValue for key ${context.getString(keyResId)}")
-                        val defaultPrefsValue = context.getString(defaultValueResId)
-                        values.single { it.prefsValue == defaultPrefsValue }
-                    }
-                }
-            }
+        fun prefsValueToEnum(prefsValue: String): T {
+            enumValues.find { enumToPrefsValue(it) == prefsValue }?.let { return it }
+            val key = context.getString(keyResId)
+            Timber.e("Unknown prefs value $prefsValue for key $key and enum $enumClass")
+            val defaultPrefsValue = context.getString(defaultValueResId)
+            return enumValues.find { enumToPrefsValue(it) == defaultPrefsValue }
+                ?: throw IllegalStateException("Did not find value of enum $enumClass for default prefs value $defaultPrefsValue and key $key")
         }
     }
+
+    private inline fun <reified T : Enum<T>> EnumPrefsMapper(
+        @StringRes keyResId: Int,
+        @StringRes defaultValueResId: Int,
+        noinline enumToPrefsValue: (T) -> String,
+    ): EnumPrefsMapper<T> =
+        EnumPrefsMapper(T::class.java, keyResId, defaultValueResId, enumToPrefsValue)
+
+    private interface MappedPrefsEnum {
+        val prefsValue: String
+    }
+
+    private inline fun <reified T> EnumPrefsMapper(
+        @StringRes keyResId: Int,
+        @StringRes defaultValueResId: Int,
+    ): EnumPrefsMapper<T> where T : MappedPrefsEnum, T : Enum<T> =
+        EnumPrefsMapper(T::class.java, keyResId, defaultValueResId, MappedPrefsEnum::prefsValue)
 
     enum class ColorTheme(
         @StringRes prefsValueResId: Int,
@@ -140,20 +168,15 @@ object Settings {
         Teal(R.string.prefs_color_theme_value_teal, R.style.AppTheme_Teal);
 
         override val prefsValue = context.getString(prefsValueResId)
-
-        companion object {
-            val fromPrefsValue = MappedPrefsEnum.fromPrefsValueProvider<ColorTheme>(
-                R.string.prefs_color_theme_key,
-                R.string.prefs_color_theme_default_value
-            )
-        }
     }
 
+    private val colorThemeMapper =
+        EnumPrefsMapper<ColorTheme>(R.string.prefs_color_theme_key, R.string.prefs_color_theme_default_value)
     val colorTheme: MutableProperty<ColorTheme> = mutableProperty<String>(
         R.string.prefs_color_theme_key,
         R.string.prefs_color_theme_default_value
     ).map(
-        transformGetter = ColorTheme.fromPrefsValue,
+        transformGetter = colorThemeMapper::prefsValueToEnum,
         transformSetter = { it.prefsValue }
     )
 
@@ -171,20 +194,17 @@ object Settings {
         Off(R.string.prefs_dark_theme_mode_value_off, AppCompatDelegate.MODE_NIGHT_NO);
 
         override val prefsValue = context.getString(prefsValueResId)
-
-        companion object {
-            val fromPrefsValue = MappedPrefsEnum.fromPrefsValueProvider<DarkThemeMode>(
-                R.string.prefs_dark_theme_mode_key,
-                R.string.prefs_dark_theme_mode_default_value
-            )
-        }
     }
 
+    private val darkThemeModeMapper = EnumPrefsMapper<DarkThemeMode>(
+        R.string.prefs_dark_theme_mode_key,
+        R.string.prefs_dark_theme_mode_default_value
+    )
     val darkThemeMode: Property<DarkThemeMode> =
         property<String>(
             R.string.prefs_dark_theme_mode_key,
             R.string.prefs_dark_theme_mode_default_value
-        ).map(DarkThemeMode.fromPrefsValue)
+        ).map(darkThemeModeMapper::prefsValueToEnum)
 
     val torrentCompactView: Property<Boolean> = property(
         R.string.prefs_torrent_compact_view_key,
@@ -247,8 +267,47 @@ object Settings {
     val fillTorrentLinkFromKeyboard: Property<Boolean> =
         property(R.string.prefs_link_from_clipboard_key, R.bool.prefs_link_from_clipboard_default_value)
 
-    val rememberDownloadDirectory: Property<Boolean> =
-        property(R.string.prefs_remember_download_directory_key, R.bool.prefs_remember_download_directory_default_value)
+    val rememberAddTorrentParameters: Property<Boolean> =
+        property(
+            R.string.prefs_remember_add_torrent_parameters_key,
+            R.bool.prefs_remember_add_torrent_parameters_default_value
+        )
+
+    enum class StartTorrentAfterAdding(override val prefsValue: String) : MappedPrefsEnum {
+        Start("start"),
+        DontStart("dont_start"),
+        Unknown("unknown")
+    }
+
+    private val startTorrentAfterAddingMapper = EnumPrefsMapper<StartTorrentAfterAdding>(
+        R.string.prefs_last_add_torrent_start_after_adding_key,
+        R.string.prefs_last_add_torrent_start_after_adding_default_value
+    )
+    val lastAddTorrentStartAfterAdding: MutableProperty<StartTorrentAfterAdding> = mutableProperty<String>(
+        R.string.prefs_last_add_torrent_start_after_adding_key,
+        R.string.prefs_last_add_torrent_start_after_adding_default_value
+    ).map(
+        transformGetter = startTorrentAfterAddingMapper::prefsValueToEnum,
+        transformSetter = startTorrentAfterAddingMapper.enumToPrefsValue
+    )
+
+    private val bandwidthPriorityMapper = EnumPrefsMapper<TorrentLimits.BandwidthPriority>(
+        R.string.prefs_last_add_torrent_priority_key,
+        R.string.prefs_last_add_torrent_priority_default_value
+    ) {
+        when (it) {
+            TorrentLimits.BandwidthPriority.Low -> "low"
+            TorrentLimits.BandwidthPriority.Normal -> "normal"
+            TorrentLimits.BandwidthPriority.High -> "high"
+        }
+    }
+    val lastAddTorrentPriority: MutableProperty<TorrentLimits.BandwidthPriority> = mutableProperty<String>(
+        R.string.prefs_last_add_torrent_priority_key,
+        R.string.prefs_last_add_torrent_priority_default_value
+    ).map(
+        transformGetter = bandwidthPriorityMapper::prefsValueToEnum,
+        transformSetter = bandwidthPriorityMapper.enumToPrefsValue
+    )
 
     val torrentsSortMode: MutableProperty<TorrentsListFragmentViewModel.SortMode> =
         mutableProperty<Int>(

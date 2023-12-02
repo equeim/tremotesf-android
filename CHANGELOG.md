@@ -7,6 +7,7 @@
 
 ### Changed
 - RPC client is rewritten to use OkHttp library instead of Qt
+- All torrent adding parameters are now remembered together with download directory
 
 ## [2.9.1] - 2023-03-26
 ### Fixed
