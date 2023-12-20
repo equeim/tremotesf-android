@@ -39,3 +39,4 @@ Translations are managed on [Transifex](https://www.transifex.com/equeim/tremote
 
 ## Screenshots
 ![](http://i.imgur.com/tsmKQIV.png) ![](http://i.imgur.com/HMucsni.png) ![](http://i.imgur.com/EXc9CG0.png)
+Also check https://github.com/elonmasai7
