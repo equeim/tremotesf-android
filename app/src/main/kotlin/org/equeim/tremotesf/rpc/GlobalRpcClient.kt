@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.StringRes
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.torrentfile.rpc.RpcClient
 import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
 import org.equeim.tremotesf.torrentfile.rpc.requests.DUPLICATE_TORRENT_RESULT
@@ -22,7 +24,8 @@ import org.equeim.tremotesf.torrentfile.rpc.shouldUpdateConnectionConfiguration
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import java.util.concurrent.atomic.AtomicBoolean
 
-object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
+@SuppressLint("StaticFieldLeak")
+object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default), TremotesfApplication.instance) {
     data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
 
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)

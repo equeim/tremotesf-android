@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.torrentfile.rpc
 
+import android.content.Context
 import okhttp3.Credentials
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -24,7 +25,7 @@ internal data class ConnectionConfiguration(
 /**
  * @throws RuntimeException
  */
-internal fun createConnectionConfiguration(server: Server): ConnectionConfiguration {
+internal fun createConnectionConfiguration(server: Server, context: Context): ConnectionConfiguration {
     val url = createUrl(server)
     val builder = OkHttpClient.Builder()
         .addNetworkInterceptor(RealRequestHeadersInterceptor())
@@ -39,14 +40,16 @@ internal fun createConnectionConfiguration(server: Server): ConnectionConfigurat
     if (server.httpsEnabled) {
         val clientCertificate = if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null
         val serverCertificate = if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
-        if (clientCertificate != null || serverCertificate != null) {
-            val configuration = createTlsConfiguration(
-                if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null,
-                if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
-            )
+        val configuration = createTlsConfiguration(
+            clientCertificatesString = clientCertificate,
+            selfSignedCertificatesString = serverCertificate,
+            serverHostname = url.host,
+            context = context
+        )
+        if (configuration != null) {
             builder.sslSocketFactory(configuration.sslSocketFactory, configuration.trustManager)
-            if (serverCertificate != null) {
-                builder.hostnameVerifier { hostname, _ -> hostname == url.host }
+            configuration.hostnameVerifier?.let {
+                builder.hostnameVerifier(it)
             }
             clientCertificates = configuration.clientCertificates
         }
