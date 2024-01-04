@@ -33,7 +33,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.AddTrackersDialogBinding
 import org.equeim.tremotesf.databinding.TrackerListItemBinding
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.Tracker
+import org.equeim.tremotesf.rpc.requests.torrentproperties.Tracker
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate

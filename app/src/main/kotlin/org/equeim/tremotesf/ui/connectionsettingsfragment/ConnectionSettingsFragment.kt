@@ -26,7 +26,7 @@ import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
 import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.Servers
+import org.equeim.tremotesf.rpc.Servers
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.SelectionTracker

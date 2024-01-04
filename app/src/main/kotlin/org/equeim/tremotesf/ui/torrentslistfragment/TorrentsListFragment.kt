@@ -36,11 +36,11 @@ import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.isRecoverable
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
-import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.isRecoverable
+import org.equeim.tremotesf.rpc.makeDetailedError
+import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.Settings

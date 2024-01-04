@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.PeerListItemBinding
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.Peer
+import org.equeim.tremotesf.rpc.requests.torrentproperties.Peer
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils

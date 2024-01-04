@@ -7,7 +7,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.content.Context
 import android.widget.AutoCompleteTextView
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
+import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.Companion.statusFilterAcceptsTorrent
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.StatusFilterMode
 import org.equeim.tremotesf.ui.utils.AutoCompleteTextViewDynamicAdapter

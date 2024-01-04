@@ -17,24 +17,23 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.TorrentLimitsFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
-import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentLimits
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentBandwidthPriority
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentDownloadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentDownloadSpeedLimited
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentHonorSessionLimits
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentIdleSeedingLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentIdleSeedingLimitMode
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentPeersLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentRatioLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentRatioLimitMode
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentUploadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentUploadSpeedLimited
-import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.rpc.RpcClient
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.getTorrentLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentBandwidthPriority
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentDownloadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentDownloadSpeedLimited
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentHonorSessionLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentIdleSeedingLimit
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentIdleSeedingLimitMode
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentPeersLimit
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentRatioLimit
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentRatioLimitMode
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentUploadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentUploadSpeedLimited
+import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
@@ -140,7 +139,7 @@ class TorrentLimitsFragment :
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty { text ->
                 onValueChanged {
                     try {
-                        val transferRate = TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
+                        val transferRate = org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
                         setTorrentDownloadSpeedLimit(it, transferRate)
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse download speed limit $it")
@@ -154,7 +153,7 @@ class TorrentLimitsFragment :
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty { text ->
                 onValueChanged {
                     try {
-                        val transferRate = TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
+                        val transferRate = org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
                         setTorrentUploadSpeedLimit(it, transferRate)
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse upload speed limit $it")

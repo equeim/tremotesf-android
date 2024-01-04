@@ -25,13 +25,13 @@ import org.equeim.tremotesf.common.hasSubscribersDebounced
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.torrentfile.buildTorrentFilesTree
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentFiles
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentFiles
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentFilesPriority
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentFilesWanted
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performPeriodicRequest
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles
+import org.equeim.tremotesf.rpc.requests.torrentproperties.getTorrentFiles
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentFilesPriority
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentFilesWanted
 import timber.log.Timber
 
 class TorrentFilesFragmentViewModel(

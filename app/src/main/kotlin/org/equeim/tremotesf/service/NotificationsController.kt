@@ -15,10 +15,10 @@ import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.getErrorString
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.requests.SessionStatsResponseArguments
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
 import org.equeim.tremotesf.ui.utils.FormatUtils

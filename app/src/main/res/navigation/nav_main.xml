@@ -380,7 +380,7 @@
 
         <argument
             android:name="error"
-            app:argType="org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestError" />
+            app:argType="org.equeim.tremotesf.rpc.DetailedRpcRequestError" />
 
         <action
             android:id="@+id/to_expanded_error_dialog_fragment"

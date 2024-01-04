@@ -10,8 +10,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.getErrorString
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.ui.NavigationActivity
 
 fun PlaceholderLayoutBinding.showError(error: RpcRequestError) {

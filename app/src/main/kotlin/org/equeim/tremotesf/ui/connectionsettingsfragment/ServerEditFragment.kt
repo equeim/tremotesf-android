@@ -52,7 +52,7 @@ import org.equeim.tremotesf.databinding.ServerEditCertificatesFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditFragmentBinding
 import org.equeim.tremotesf.databinding.ServerEditProxyFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.Server
+import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
