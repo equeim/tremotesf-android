@@ -27,7 +27,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import timber.log.Timber
 import kotlin.reflect.KClass

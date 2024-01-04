@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFileListItemBinding
-import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.navigate

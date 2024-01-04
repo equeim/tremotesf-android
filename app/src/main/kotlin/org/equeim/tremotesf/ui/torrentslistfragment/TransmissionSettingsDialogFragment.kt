@@ -16,12 +16,12 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TransmissionSettingsDialogFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getSpeedServerSettings
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEnabled
-import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings
+import org.equeim.tremotesf.rpc.requests.serversettings.getSpeedServerSettings
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsEnabled
+import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 

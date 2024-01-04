@@ -12,7 +12,7 @@ import androidx.navigation.fragment.navArgs
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.SetLocationDialogBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.setTorrentsLocation
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentsLocation
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentDirectoriesAdapter
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog

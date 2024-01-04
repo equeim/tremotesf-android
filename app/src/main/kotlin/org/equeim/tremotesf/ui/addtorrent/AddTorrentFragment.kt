@@ -9,7 +9,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.NavigationFragment
 
 abstract class AddTorrentFragment(

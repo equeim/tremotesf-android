@@ -36,7 +36,7 @@ import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.torrentfile.rpc.makeDetailedError
+import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showSnackbar

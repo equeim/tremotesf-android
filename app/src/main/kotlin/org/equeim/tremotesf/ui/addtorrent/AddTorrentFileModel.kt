@@ -29,9 +29,9 @@ import org.equeim.tremotesf.torrentfile.FileParseException
 import org.equeim.tremotesf.torrentfile.FileReadException
 import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber

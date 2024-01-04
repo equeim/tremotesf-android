@@ -34,11 +34,11 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentPropertiesFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
-import org.equeim.tremotesf.torrentfile.rpc.requests.reannounceTorrents
-import org.equeim.tremotesf.torrentfile.rpc.requests.removeTorrents
-import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.requests.TorrentStatus
+import org.equeim.tremotesf.rpc.requests.reannounceTorrents
+import org.equeim.tremotesf.rpc.requests.removeTorrents
+import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
 import org.equeim.tremotesf.ui.Settings

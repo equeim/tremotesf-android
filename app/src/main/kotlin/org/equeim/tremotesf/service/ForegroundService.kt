@@ -26,9 +26,9 @@ import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.Server
-import org.equeim.tremotesf.torrentfile.rpc.requests.SessionStatsResponseArguments
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.Utils

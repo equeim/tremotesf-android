@@ -17,10 +17,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.torrentfile.rpc.RpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.requests.DUPLICATE_TORRENT_RESULT
-import org.equeim.tremotesf.torrentfile.rpc.shouldUpdateConnectionConfiguration
+import org.equeim.tremotesf.rpc.requests.DUPLICATE_TORRENT_RESULT
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import java.util.concurrent.atomic.AtomicBoolean
 

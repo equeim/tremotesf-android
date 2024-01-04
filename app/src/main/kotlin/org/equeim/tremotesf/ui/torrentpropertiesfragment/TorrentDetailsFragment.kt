@@ -10,9 +10,9 @@ import androidx.core.view.isVisible
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.TorrentDetailsFragmentBinding
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.TorrentDetails
-import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentDetails
+import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils

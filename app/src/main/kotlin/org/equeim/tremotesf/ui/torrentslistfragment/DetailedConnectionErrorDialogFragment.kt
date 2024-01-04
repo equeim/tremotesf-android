@@ -16,8 +16,8 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.causes
 import org.equeim.tremotesf.databinding.DetailedConnectionErrorDialogBinding
 import org.equeim.tremotesf.databinding.DetailedConnectionErrorExpandedDialogBinding
-import org.equeim.tremotesf.torrentfile.rpc.DetailedRpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.redactHeader
+import org.equeim.tremotesf.rpc.DetailedRpcRequestError
+import org.equeim.tremotesf.rpc.redactHeader
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.utils.Utils
 

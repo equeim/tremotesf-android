@@ -11,8 +11,8 @@ import android.content.IntentFilter
 import androidx.annotation.ArrayRes
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
-import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
+import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.TransferRate
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration

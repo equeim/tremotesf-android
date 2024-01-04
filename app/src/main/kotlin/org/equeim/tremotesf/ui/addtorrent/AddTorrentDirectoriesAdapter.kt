@@ -14,11 +14,11 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.normalizePath
-import org.equeim.tremotesf.torrentfile.rpc.requests.getDownloadDirectory
-import org.equeim.tremotesf.torrentfile.rpc.requests.getTorrentsDownloadDirectories
-import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.normalizePath
+import org.equeim.tremotesf.rpc.requests.getDownloadDirectory
+import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
+import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.utils.BaseDropdownAdapter
 import timber.log.Timber
 

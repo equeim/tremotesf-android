@@ -24,10 +24,10 @@ import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.databinding.PlaceholderLayoutBinding
 import org.equeim.tremotesf.databinding.WebSeedersFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.performPeriodicRequest
-import org.equeim.tremotesf.torrentfile.rpc.requests.torrentproperties.getTorrentWebSeeders
-import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performPeriodicRequest
+import org.equeim.tremotesf.rpc.requests.torrentproperties.getTorrentWebSeeders
+import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.hide

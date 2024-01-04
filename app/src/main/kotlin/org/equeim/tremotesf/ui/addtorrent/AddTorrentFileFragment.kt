@@ -40,9 +40,9 @@ import org.equeim.tremotesf.databinding.AddTorrentFileFragmentBinding
 import org.equeim.tremotesf.databinding.AddTorrentFileInfoFragmentBinding
 import org.equeim.tremotesf.databinding.LocalTorrentFileListItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.requests.FileSize
-import org.equeim.tremotesf.torrentfile.rpc.requests.addTorrentFile
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.addTorrentFile
 import org.equeim.tremotesf.ui.BaseTorrentFilesAdapter
 import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker

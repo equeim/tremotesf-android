@@ -27,26 +27,25 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
 import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.performRecoveringRequest
-import org.equeim.tremotesf.torrentfile.rpc.requests.TransferRate
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.SpeedServerSettings.AlternativeLimitsDays
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.getSpeedServerSettings
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeDownloadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsBeginTime
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsDays
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEnabled
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsEndTime
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeLimitsScheduled
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setAlternativeUploadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setDownloadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setDownloadSpeedLimited
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUploadSpeedLimit
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.setUploadSpeedLimited
-import org.equeim.tremotesf.torrentfile.rpc.stateIn
+import org.equeim.tremotesf.rpc.RpcClient
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings
+import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings.AlternativeLimitsDays
+import org.equeim.tremotesf.rpc.requests.serversettings.getSpeedServerSettings
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeDownloadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsBeginTime
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsDays
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsEnabled
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsEndTime
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsScheduled
+import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeUploadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadSpeedLimited
+import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimit
+import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimited
+import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.IntFilter
@@ -116,7 +115,7 @@ class SpeedFragment : NavigationFragment(
             downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 onValueChanged {
                     try {
-                        setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                        setDownloadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse download speed limit $it")
                     }
@@ -131,7 +130,7 @@ class SpeedFragment : NavigationFragment(
             uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 onValueChanged {
                     try {
-                        setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                        setUploadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse upload speed limit $it")
                     }
@@ -149,7 +148,7 @@ class SpeedFragment : NavigationFragment(
             alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 onValueChanged {
                     try {
-                        setAlternativeDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                        setAlternativeDownloadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse alternative download speed limit $it")
                     }
@@ -160,7 +159,7 @@ class SpeedFragment : NavigationFragment(
             alternativeUploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
                 onValueChanged {
                     try {
-                        setAlternativeUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
+                        setAlternativeUploadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
                     } catch (e: NumberFormatException) {
                         Timber.e(e, "Failed to parse alternative upload speed limit $it")
                     }

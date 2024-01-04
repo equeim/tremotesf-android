@@ -22,10 +22,10 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestError
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
-import org.equeim.tremotesf.torrentfile.rpc.requests.addTorrentLink
-import org.equeim.tremotesf.torrentfile.rpc.requests.serversettings.DownloadingServerSettings
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.requests.addTorrentLink
+import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden

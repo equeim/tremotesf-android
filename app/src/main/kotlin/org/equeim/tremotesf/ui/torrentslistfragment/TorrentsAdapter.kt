@@ -23,10 +23,10 @@ import org.equeim.tremotesf.common.mapToArray
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.torrentfile.rpc.requests.Torrent
-import org.equeim.tremotesf.torrentfile.rpc.requests.TorrentStatus
-import org.equeim.tremotesf.torrentfile.rpc.requests.reannounceTorrents
-import org.equeim.tremotesf.torrentfile.rpc.toNativeSeparators
+import org.equeim.tremotesf.rpc.requests.Torrent
+import org.equeim.tremotesf.rpc.requests.TorrentStatus
+import org.equeim.tremotesf.rpc.requests.reannounceTorrents
+import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.utils.AsyncLoadingListAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
@@ -406,13 +406,13 @@ class TorrentsAdapter(
 
 private fun Torrent.getStatusString(context: Context): CharSequence {
     return when (status) {
-        TorrentStatus.Paused -> if (error != null) {
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.Paused -> if (error != null) {
             context.getString(R.string.torrent_paused_with_error, errorString)
         } else {
             context.getText(R.string.torrent_paused)
         }
 
-        TorrentStatus.Downloading -> if (isDownloadingStalled) {
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.Downloading -> if (isDownloadingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_downloading_stalled_with_error, errorString)
             } else {
@@ -436,7 +436,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             }
         }
 
-        TorrentStatus.Seeding -> if (isSeedingStalled) {
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.Seeding -> if (isSeedingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_seeding_stalled_with_error, errorString)
             } else {
@@ -459,15 +459,15 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             }
         }
 
-        TorrentStatus.QueuedForDownloading,
-        TorrentStatus.QueuedForSeeding,
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForDownloading,
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForSeeding,
         -> if (error != null) {
             context.getString(R.string.torrent_queued_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued)
         }
 
-        TorrentStatus.Checking -> if (error != null) {
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.Checking -> if (error != null) {
             context.getString(
                 R.string.torrent_checking_with_error,
                 DecimalFormats.generic.format(recheckProgress * 100),
@@ -480,7 +480,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             )
         }
 
-        TorrentStatus.QueuedForChecking -> if (error != null) {
+        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForChecking -> if (error != null) {
             context.getString(R.string.torrent_queued_for_checking_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued_for_checking)

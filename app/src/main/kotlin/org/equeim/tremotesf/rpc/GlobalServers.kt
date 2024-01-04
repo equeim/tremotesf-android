@@ -13,8 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.torrentfile.rpc.Servers
-import org.equeim.tremotesf.torrentfile.rpc.WifiNetworkServersController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference

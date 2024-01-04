@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsFiltersDialogFragmentBinding
-import org.equeim.tremotesf.torrentfile.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.NavigationBottomSheetDialogFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
