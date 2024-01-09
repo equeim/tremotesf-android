@@ -569,4 +569,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     <string name="no_web_seeders">No web seeders</string>
+
+    <string name="source_code_url">Source code: %1$s</string>
+    <string name="translations_url">Translations: %1$s</string>
+    <string name="maintainer">Maintainer</string>
+    <string name="contributor">Contributor</string>
 </resources>
