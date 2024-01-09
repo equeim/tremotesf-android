@@ -16,6 +16,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AboutFragmentBaseTabFragmentBinding
 import org.equeim.tremotesf.databinding.AboutFragmentBinding
 import org.equeim.tremotesf.databinding.AboutFragmentLicenseTabFragmentBinding
+import timber.log.Timber
 
 
 class AboutFragment : NavigationFragment(R.layout.about_fragment) {
@@ -77,21 +78,59 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     class MainTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-            resources.openRawResource(R.raw.about).use { inputStream ->
-                with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
-                    textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
+            val html = buildString {
+                appendLine("""
+                    <!DOCTYPE html>
+                    <p>&#169; 2017-2024 Alexey Rochev &lt;<a href="mailto:equeim@gmail.com">equeim@gmail.com</a>&gt;</p>
+                """.trimIndent())
+                append("<p>")
+                append(getString(R.string.source_code_url, makeUrlTag(SOURCE_CODE_URL)))
+                appendLine("</p>")
+                append("<p>")
+                append(getString(R.string.translations_url, makeUrlTag(TRANSLATIONS_URL)))
+                appendLine("</p>")
+            }
+            with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
+                textView.text = try {
+                    HtmlCompat.fromHtml(html, 0)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to parse html")
+                    null
                 }
             }
+        }
+
+        private companion object {
+            const val SOURCE_CODE_URL = "https://github.com/equeim/tremotesf-android"
+            const val TRANSLATIONS_URL = "https://www.transifex.com/equeim/tremotesf-android"
+            fun makeUrlTag(url: String): String = """<a href="$url">$url</a>"""
         }
     }
 
     class AuthorsTabFragment : PagerFragment(R.layout.about_fragment_base_tab_fragment) {
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
-
-            resources.openRawResource(R.raw.authors).use { inputStream ->
-                with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
-                    textView.text = HtmlCompat.fromHtml(inputStream.reader().readText(), 0)
+            val maintainer = getString(R.string.maintainer)
+            val contributor = getString(R.string.contributor)
+            val html = """
+                <!DOCTYPE html>
+                <p>
+                    Alexey Rochev &lt;<a href="mailto:equeim@gmail.com">equeim@gmail.com</a>&gt;
+                    <br/>
+                    <i>$maintainer</i>
+                </p>
+                <p>
+                    Kevin Richter &lt;<a href="mailto:me@kevinrichter.nl">me@kevinrichter.nl</a>&gt;
+                    <br/>
+                    <i>$contributor</i>
+                </p>
+            """.trimIndent()
+            with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
+                textView.text = try {
+                    HtmlCompat.fromHtml(html, 0)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to parse html")
+                    null
                 }
             }
         }
