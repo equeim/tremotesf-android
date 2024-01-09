@@ -5,7 +5,9 @@
 package org.equeim.tremotesf.ui
 
 import androidx.appcompat.app.AppCompatDelegate
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +19,8 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 object ActivityThemeProvider {
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     val colorTheme: StateFlow<Settings.ColorTheme>
 
     /**
@@ -35,16 +39,14 @@ object ActivityThemeProvider {
             colors.await() to darkThemeMode.await()
         }
 
-        val scope = MainScope()
-
         colorTheme = Settings.colorTheme.flow()
-            .stateIn(scope, SharingStarted.Eagerly, initialColorTheme)
+            .stateIn(coroutineScope, SharingStarted.Eagerly, initialColorTheme)
 
         AppCompatDelegate.setDefaultNightMode(initialDarkThemeMode.nightMode)
         Settings.darkThemeMode.flow().dropWhile { it == initialDarkThemeMode }.onEach {
             Timber.i("Dark theme mode changed to $it")
             AppCompatDelegate.setDefaultNightMode(it.nightMode)
-        }.launchIn(scope)
+        }.launchIn(coroutineScope)
 
         Timber.i("init() returned")
     }
