@@ -111,6 +111,7 @@ class TorrentsListFragment : NavigationFragment(
         binding.torrentsView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
         }
 
         binding.placeholderView.detailedErrorMessageButton.setOnClickListener {
