@@ -1,0 +1,6 @@
+- Added Android 14 support
+- Added predictive back gesture support
+- RPC client is rewritten to use native Android network stack
+- All torrent adding parameters are now remembered together with download directory
+- Notifications badge in applications launcher is now not shown for persistent notification
+  (only for new installations, existing users can disable it in system notification settings)
