@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Bağlantı kesildi</string>
     <string name="connecting">Bağlanıyor\u2026</string>
     <string name="connected">Bağlandı</string>
@@ -16,8 +16,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timed_out">Bağlantı zaman aşımı</string>
     <string name="connection_error">Bağlantı hatası</string>
     <string name="authentication_error">Kimlik doğrulama hatası</string>
-    <string name="parsing_error">Ayrıştırma hatası</string>
-
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
     <string name="current_server_string">%1$s (%2$s)</string>
@@ -202,9 +200,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Kimlik doğrulama</string>
     <string name="username">Kullanıcı adı</string>
     <string name="password">Şifre</string>
-    <string name="update_interval">Güncelleme aralığı, saniye</string>
-    <string name="timeout">Zaman aşımı, saniye</string>
-
     <string name="empty_field_error">Bu alan boş olamaz</string>
 
     <string name="server_exists">Bu ada sahip sunucu zaten var</string>
@@ -235,6 +230,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Boşta kalırsa kuyruk konumunu yoksay</string>
     <string name="alternative_limits">Muadil sınırlar</string>
     <string name="enable">Etkinleştir</string>
+    <string name="text_field_suffix_kbps">kB/s</string>
     <string name="scheduled">Tarifeli</string>
     <string name="from">İtibaren</string>
     <string name="to">İçin</string>
@@ -298,7 +294,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Yerel verileri denetle</string>
     <string name="reannounce">Yeniden duyurma</string>
     <string name="torrent_duplicate">Bu torrent zaten eklenmiş</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s\'dan %2$s yüklendi</string>
 

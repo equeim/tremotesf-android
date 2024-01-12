@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">已断开</string>
     <string name="connecting">正在连接\u2026</string>
     <string name="connected">已连接</string>
@@ -16,8 +16,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timed_out">连接已超时</string>
     <string name="connection_error">连接出错</string>
     <string name="authentication_error">认证出错</string>
-    <string name="parsing_error">解析出错</string>
-
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
     <string name="current_server_string">%1$s (%2$s)</string>
@@ -67,6 +65,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item quantity="other">%d 节点</item>
     </plurals>
 
+    <plurals name="seeders_plural">
+        <item quantity="other">%d 做种者</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="other">%d 下载者</item>
+    </plurals>
+
     <string name="next_update">%s 后请求更多节点</string>
     <string name="add_trackers">添加跟踪服务器</string>
     <string name="edit_tracker">编辑跟踪服务器</string>
@@ -85,6 +91,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="trackers">跟踪服务器</string>
     <string name="directories">文件夹</string>
     <string name="peers">节点</string>
+    <string name="web_seeders">Web 源</string>
     <string name="limits">限制</string>
 
     <string name="activity">活动</string>
@@ -95,8 +102,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="uploaded">已上传</string>
     <string name="download_speed">下载速度</string>
     <string name="upload_speed">上传速度</string>
-    <string name="seeders">上传者</string>
+    <string name="seeders">做种者</string>
     <string name="leechers">下载者</string>
+    <string name="peers_sending_to_us">正在从其下载的节点数量</string>
+    <string name="web_seeders_sending_to_us">正在从其下载的 Web 源数量</string>
+    <string name="peers_getting_from_us">正在向其上传的节点数量</string>
     <string name="last_activity">最近活动</string>
 
     <string name="total_size">总大小</string>
@@ -127,6 +137,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="no_files">无文件</string>
 
     <string name="tracker_inactive">未活动</string>
+    <string name="tracker_waiting_for_update">等待更新</string>
+    <string name="tracker_queued_for_update">即将更新</string>
     <string name="tracker_updating">正在更新</string>
     <string name="tracker_error">错误：%s</string>
 
@@ -196,9 +208,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">验证</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
-    <string name="update_interval">刷新间隔， 秒</string>
-    <string name="timeout">超时， 秒</string>
-
     <string name="empty_field_error">该项不可为空</string>
 
     <string name="server_exists">已存在与该项同名的服务器</string>
@@ -229,6 +238,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">空闲该时段后忽略队列优先级</string>
     <string name="alternative_limits">备选限制</string>
     <string name="enable">启用</string>
+    <string name="text_field_suffix_kbps">kB/s</string>
     <string name="scheduled">计划的</string>
     <string name="from">从</string>
     <string name="to">到</string>
@@ -291,22 +301,34 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">校验本地数据</string>
     <string name="reannounce">重新宣告</string>
     <string name="torrent_duplicate">已经添加了该种子</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, 已上传 %2$s</string>
 
     <string name="torrent_paused">已暂停</string>
+    <string name="torrent_paused_with_error">已暂停 (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="other">正在从 %d 个节点下载</item>
     </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="other">正在从 %1$d 个节点下载 (%2$s)</item>
+    </plurals>
     <string name="torrent_downloading_stalled">正在下载</string>
+    <string name="torrent_downloading_stalled_with_error">正在下载 (%s)</string>
     <plurals name="torrent_seeding">
         <item quantity="other">正在向 %d 个节点上传</item>
     </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="other">正在向 %1$d 个节点上传 (%2$s)</item>
+    </plurals>
     <string name="torrent_seeding_stalled">做种中</string>
+    <string name="torrent_seeding_stalled_with_error">做种中 (%s)</string>
     <string name="torrent_queued">已加入队列</string>
+    <string name="torrent_queued_with_error">已加入队列 (%s)</string>
     <string name="torrent_checking">正在检查：%s%%</string>
+    <string name="torrent_checking_with_error">正在检查：%1$s%%(%2$s)</string>
     <string name="torrent_queued_for_checking">已加入检查队列</string>
+    <string name="torrent_queued_for_checking_with_error">已加入检查队列 (%s)</string>
+
     <plurals name="remove_trackers_message">
         <item quantity="other">你确定要移除 %d 个已选的跟踪服务器吗？</item>
     </plurals>
@@ -373,6 +395,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="quick_return_summary">轻触顶部工具栏以回到顶部</string>
 
     <string name="prefs_delete_files_title">当移除种子时同时删除硬盘中的文件</string>
+    <string name="prefs_link_from_clipboard_title">自动从剪贴板填充种子链接</string>
     <string name="alternative_speed_limits">备选速度限制</string>
 
 
@@ -443,7 +466,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="free_space_in_download_directory">默认下载目录剩余空间</string>
 
-<string name="reset">重置</string>
+    <string name="reset">重置</string>
 
     <string name="directory_icon">文件夹图标</string>
     <string name="file_icon">文件图标</string>
@@ -461,5 +484,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="request_notification_permission">授予通知权限</string>
 
     <string name="date_time_with_relative">%1$s (%2$s)</string>
+
+    <string name="no_web_seeders">暂无 Web 源(,,#ﾟДﾟ) ヽ </string>
 
     </resources>
