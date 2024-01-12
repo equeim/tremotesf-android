@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Verbindung getrennt</string>
     <string name="connecting">Verbinden\u2026</string>
     <string name="connected">Verbunden</string>
@@ -13,10 +13,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="disconnect">Verbindung trennen</string>
     <string name="add">Hinzufügen</string>
 
+    <string name="invalid_connection_configuration">Ungültige Verbindungskonfiguration</string>
     <string name="timed_out">Zeitüberschreitung</string>
     <string name="connection_error">Verbindungsfehler</string>
+    <string name="connection_error_with_cause">Verbindungsfehler: %1$s</string>
     <string name="authentication_error">Authentifizierungsfehler</string>
-    <string name="parsing_error">Analysefehler</string>
+    <string name="parsing_error">JSON-Analysefehler</string>
+    <string name="unsupported_server_version">Version \'%1$s\' von Transmission wird nicht unterstützt</string>
+    <string name="server_returned_error_result">Server antwortete \'%1$s\'</string>
 
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
@@ -178,6 +182,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
+    <string name="text_field_suffix_minutes">Minuten</string>
     <string name="maximum_peers">Maximale Teilnehmeranzahl</string>
 
     <string name="settings">Einstellungen</string>
@@ -218,8 +223,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Authentifizierung</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
-    <string name="update_interval">Aktualisierungsintervall, s</string>
-    <string name="timeout">Zeitüberschreitung, s</string>
+    <string name="update_interval">Aktualisierungsintervall</string>
+    <string name="text_field_suffix_seconds">Sekunden</string>
+    <string name="timeout">Zeitüberschreitung</string>
 
     <string name="empty_field_error">Dieses Feld darf nicht leer sein</string>
 
@@ -251,6 +257,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignoriere Warteschlangenposition wenn inaktiv für</string>
     <string name="alternative_limits">Alternative Beschränkungen</string>
     <string name="enable">Aktivieren</string>
+    <string name="text_field_suffix_kbps">kB/s</string>
     <string name="scheduled">Geplant</string>
     <string name="from">Vom</string>
     <string name="to">Bis</string>
@@ -315,6 +322,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Verifiziere lokale Daten</string>
     <string name="reannounce">Nochmal akündigen</string>
     <string name="torrent_duplicate">Dieser Torrent wurde bereits hinzugefügt</string>
+    <string name="torrents_remove_error">Entfernen von Torrents fehlgeschlagen: %1$s</string>
+    <string name="add_torrent_error">Hinzufügen von Torrent fehlgeschlagen: %1$s</string>
+    <string name="torrent_set_location_error">Verschieben von Torrents fehlgeschlagen: %1$s</string>
+    <string name="set_server_settings_error">Aktualisierung der Einstellungen fehlgeschlagen: %1$s</string>
+    <string name="set_torrent_limits_error">Aktualisierung der Torrentlimits fehlgeschlagen: %1$s</string>
+    <string name="set_files_wanted_error">Markieren von herunterzuladenden Dateien fehlgeschlagen: %1$s</string>
+    <string name="set_files_priority_error">Festlegen der Dateipriorität fehlgeschlagen: %1$s</string>
+    <string name="file_rename_error">Umbennenen von Torrentdatei fehlgeschlagen: %1$s</string>
+    <string name="torrents_start_error">Starten von Torrents fehlgeschlagen: %1$s</string>
+    <string name="torrents_pause_error">Anhalten von Torrents fehlgeschlagen: %1$s</string>
+    <string name="torrents_check_error">Prüfen von Torrents fehlgeschlagen: %1$s</string>
+    <string name="torrents_reannounce_error">Peer-Anforderung von Torrents fehlgeschlagen: %1$s</string>
+    <string name="trackers_add_error">Hinzufügen von Trackern fehlgeschlagen: %1$s</string>
+    <string name="tracker_replace_error">Ersetzen von Tracker fehlgeschlagen: %1$s</string>
+    <string name="trackers_remove_error">Entfernen von Trackern fehlgeschlagen: %1$s</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, hochgeladen %2$s</string>
@@ -416,7 +438,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Lösche Dateien auf der Festplatte, wenn der Torrent gelöscht wird</string>
     <string name="prefs_link_from_clipboard_title">Beim Hinzufügen eines Torrent-Links automatisch den Link aus der Zwischenablage ausfüllen</string>
-    <string name="prefs_remember_add_torrent_parameters_title">Letztes Download-Verzeichnis merken</string>
+    <string name="prefs_remember_add_torrent_parameters_title">Parameter des zuletzt hinzugefügten Torrents merken</string>
 
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 
@@ -488,7 +510,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="free_space_in_download_directory">Freier Speicher im Downloadverzeichnis</string>
 
-<string name="reset">Zurücksetzen</string>
+    <string name="reset">Zurücksetzen</string>
 
     <string name="directory_icon">Verzeichnissymbol</string>
     <string name="file_icon">Dateisymbol</string>
@@ -508,4 +530,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     <string name="no_web_seeders">Keine Web-Seeder</string>
-</resources>
+
+    </resources>

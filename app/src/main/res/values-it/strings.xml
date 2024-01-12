@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Disconnesso</string>
     <string name="connecting">In connessione\n2026</string>
     <string name="connected">Connesso</string>
@@ -15,9 +15,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="timed_out">Connessione scaduta</string>
     <string name="connection_error">Errore di connessione</string>
+    <string name="connection_error_with_cause">Errore di connessione: %1$s</string>
     <string name="authentication_error">Errore di autenticazione</string>
-    <string name="parsing_error">Errore di parsing</string>
-
+    <string name="parsing_error">Errore di parsing JSON</string>
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
     <string name="current_server_string">%1$s (%2$s)</string>
@@ -73,6 +73,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item quantity="one">%d peer</item>
         <item quantity="many">%d peer</item>
         <item quantity="other">%d peer</item>
+    </plurals>
+
+    <plurals name="seeders_plural">
+        <item quantity="one">%d seed</item>
+        <item quantity="many">%d seed</item>
+        <item quantity="other">%d seed</item>
     </plurals>
 
     <string name="next_update">Prossimo aggiornamento dopo %s</string>
@@ -208,9 +214,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Autenticazione</string>
     <string name="username">Nome utente</string>
     <string name="password">Password</string>
-    <string name="update_interval">Intervallo di aggiornamento, s</string>
-    <string name="timeout">Timeout, s</string>
-
     <string name="empty_field_error">Questo campo non può essere vuoto</string>
 
     <string name="server_exists">Un server con questo nome già esiste</string>
@@ -241,6 +244,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignora la coda se fermo per</string>
     <string name="alternative_limits">Limiti alternativi</string>
     <string name="enable">Abilita</string>
+    <string name="text_field_suffix_kbps">kB/s</string>
     <string name="scheduled">Schedulato</string>
     <string name="from">Da</string>
     <string name="to">A</string>
@@ -307,7 +311,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Controlla i dati locali</string>
     <string name="reannounce">Riannuncia</string>
     <string name="torrent_duplicate">Questo torrent è già stato aggiunto</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, caricato %2$s</string>
 

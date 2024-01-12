@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
     <string name="connected">Подключено</string>
@@ -13,10 +13,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="disconnect">Отключиться</string>
     <string name="add">Добавить</string>
 
+    <string name="invalid_connection_configuration">Недействительные параметры подключения</string>
     <string name="timed_out">Время соединения истекло</string>
     <string name="connection_error">Ошибка соединения</string>
+    <string name="connection_error_with_cause">Ошибка подключения: %1$s</string>
     <string name="authentication_error">Ошибка аутентификации</string>
-    <string name="parsing_error">Ошибка разбора</string>
+    <string name="parsing_error">Ошибка разбора JSON</string>
+    <string name="unsupported_server_version">Версия Transmission \'%1$s\' не поддерживается</string>
+    <string name="server_returned_error_result">Сервер ответил \'%1$s\'</string>
 
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
@@ -190,6 +194,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
+    <string name="text_field_suffix_minutes">минуты</string>
     <string name="maximum_peers">Максимальное количество пиров</string>
 
     <string name="settings">Настройки</string>
@@ -234,8 +239,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Аутентификация</string>
     <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
-    <string name="update_interval">Интервал обновления, с</string>
-    <string name="timeout">Таймаут, с</string>
+    <string name="update_interval">Интервал обновления</string>
+    <string name="text_field_suffix_seconds">секунды</string>
+    <string name="timeout">Таймаут</string>
 
     <string name="empty_field_error">Это поле должно быть заполнено</string>
 
@@ -267,6 +273,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Игнорировать позицию в очереди при простое</string>
     <string name="alternative_limits">Альтернативные ограничения</string>
     <string name="enable">Включить</string>
+    <string name="text_field_suffix_kbps">кБ/с</string>
     <string name="scheduled">По расписанию</string>
     <string name="from">С</string>
     <string name="to">до</string>
@@ -335,6 +342,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Проверить локальные данные</string>
     <string name="reannounce">Переанонсировать</string>
     <string name="torrent_duplicate">Этот торрент уже добавлен</string>
+    <string name="torrents_remove_error">Не удалось удалить торренты: %1$s</string>
+    <string name="add_torrent_error">Не удалось добавить торрент: %1$s</string>
+    <string name="torrent_set_location_error">Не удалось переместить торренты: %1$s</string>
+    <string name="set_server_settings_error">Не удалось сохранить настройки: %1$s</string>
+    <string name="set_torrent_limits_error">Не удалось сохранить ограничения торрента: %1$s</string>
+    <string name="set_files_wanted_error">Не удалось отметить файлы для загрузки: %1$s</string>
+    <string name="set_files_priority_error">Не удалось сохранить приоритет файлов: %1$s</string>
+    <string name="file_rename_error">Не удалось переименовать файл: %1$s</string>
+    <string name="torrents_start_error">Не удалось запустить торренты: %1$s</string>
+    <string name="torrents_pause_error">Не удалось приостановить торренты: %1$s</string>
+    <string name="torrents_check_error">Не удалось проверить торренты: %1$s</string>
+    <string name="torrents_reannounce_error">Не удалось переанонсировать торренты: %1$s</string>
+    <string name="trackers_add_error">Не удалось добавить трекеры: %1$s</string>
+    <string name="tracker_replace_error">Не удалось изменить трекер: %1$s</string>
+    <string name="trackers_remove_error">Не удалось удалить трекеры: %1$s</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, роздано %2$s</string>
@@ -446,7 +468,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Удалять файлы на жестком диске при удалении торрента</string>
     <string name="prefs_link_from_clipboard_title">Автоматически копировать ссылку из буфера обмена при добавлении ссылки на торрент</string>
-    <string name="prefs_remember_add_torrent_parameters_title">Запоминать последний каталог загрузки</string>
+    <string name="prefs_remember_add_torrent_parameters_title">Запоминать параметры добавленного торрента</string>
 
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 
@@ -518,7 +540,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="free_space_in_download_directory">Свободное место в каталоге загрузки</string>
 
-<string name="reset">Сбросить</string>
+    <string name="reset">Сбросить</string>
 
     <string name="directory_icon">Иконка каталога</string>
     <string name="file_icon">Иконка файла</string>
@@ -538,4 +560,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     <string name="no_web_seeders">Нет веб-сидов</string>
+
+    <string name="source_code_url">Исходный код: %1$s</string>
+    <string name="translations_url">Переводы: %1$s</string>
+    <string name="maintainer">Сопровождающий</string>
+    <string name="contributor">Участник</string>
 </resources>

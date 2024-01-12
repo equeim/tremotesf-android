@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2017-2023 Alexey Rochev <equeim@gmail.com>
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Déconnecté</string>
     <string name="connecting">Connexion\u2026</string>
     <string name="connected">Connecté</string>
@@ -16,8 +16,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timed_out">Délai de connexion dépassé</string>
     <string name="connection_error">Erreur de connexion</string>
     <string name="authentication_error">Erreur d\'authentification</string>
-    <string name="parsing_error">Erreur d\'analyse</string>
-
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
     <string name="current_server_string">%1$s (%2$s)</string>
@@ -73,6 +71,18 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item quantity="one">%d pair</item>
         <item quantity="many">%d pairs</item>
         <item quantity="other">%d pairs</item>
+    </plurals>
+
+    <plurals name="seeders_plural">
+        <item quantity="one">%d seeder</item>
+        <item quantity="many">%d seeders</item>
+        <item quantity="other">%d seeders</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="one">%d leecher</item>
+        <item quantity="many">%d leechers</item>
+        <item quantity="other">%d leechers</item>
     </plurals>
 
     <string name="next_update">Prochaine mise à jour dans %s</string>
@@ -214,9 +224,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Authentification</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="password">Mot de passe</string>
-    <string name="update_interval">Intervalle de rafraîchissement, s</string>
-    <string name="timeout">Expiration, s</string>
-
     <string name="empty_field_error">Ce champ ne peut pas être vide</string>
 
     <string name="server_exists">Un serveur avec ce nom existe déjà</string>
@@ -247,6 +254,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="ignore_queue">Ignorer la position dans la file si inactif depuis</string>
     <string name="alternative_limits">Limites alternatives</string>
     <string name="enable">Activer</string>
+    <string name="text_field_suffix_kbps">ko/s</string>
     <string name="scheduled">Programmé</string>
     <string name="from">De</string>
     <string name="to">‭À</string>
@@ -313,7 +321,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="check_local_data">Vérification données locales</string>
     <string name="reannounce">Redemander des pairs au traqueur</string>
     <string name="torrent_duplicate">Ce torrent est déjà présent</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, envoyé %2$s</string>
 
@@ -419,8 +426,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="prefs_delete_files_title">Supprimer les fichiers du disque lors de la suppression du torrent</string>
     <string name="prefs_link_from_clipboard_title">Remplir automatiquement le lien depuis le presse-papiers lors de l\'ajout d\'un lien torrent</string>
-    <string name="prefs_remember_add_torrent_parameters_title">Se souvenir du dernier répertoire de téléchargement</string>
-
     <string name="alternative_speed_limits">Limites de vitesse alternatives</string>
 
 
@@ -491,7 +496,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="free_space_in_download_directory">Espace libre dans le dossier de téléchargement</string>
 
-<string name="reset">Réinitialiser</string>
+    <string name="reset">Réinitialiser</string>
 
     <string name="directory_icon">Icône du répertoire</string>
     <string name="file_icon">Icône du fichier</string>
@@ -511,4 +516,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     <string name="no_web_seeders">Aucun seeder web</string>
-</resources>
+
+    </resources>
