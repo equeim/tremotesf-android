@@ -1,0 +1,1 @@
+- Fixed resetting connection settings on upgrade

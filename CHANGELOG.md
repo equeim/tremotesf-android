@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.10.1] - 2024-01-16
+### Fixed
+- Connection settings being wiped on upgrade
+
 ## [2.10.0] - 2024-01-13
 ### Added
 - Android 14 support
