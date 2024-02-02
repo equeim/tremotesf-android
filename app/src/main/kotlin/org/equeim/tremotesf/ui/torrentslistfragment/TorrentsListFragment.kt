@@ -11,7 +11,6 @@ import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.TooltipCompat
-import androidx.core.content.withStyledAttributes
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +19,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.elevation.ElevationOverlayProvider
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
@@ -94,15 +93,18 @@ class TorrentsListFragment : NavigationFragment(
         setupBottomBar()
 
         binding.swipeRefreshLayout.apply {
-            requireContext().withStyledAttributes(attrs = intArrayOf(androidx.appcompat.R.attr.colorPrimary)) {
-                setColorSchemeColors(getColor(0, 0))
-            }
-            val elevation = resources.getDimension(R.dimen.swipe_refresh_progress_bar_elevation)
-            setProgressBackgroundColorSchemeColor(
-                ElevationOverlayProvider(requireContext())
-                    .compositeOverlayWithThemeSurfaceColorIfNeeded(elevation)
+            setColorSchemeColors(
+                MaterialColors.getColor(
+                    binding.swipeRefreshLayout,
+                    com.google.android.material.R.attr.colorPrimary,
+                )
             )
-
+            setProgressBackgroundColorSchemeColor(
+                MaterialColors.getColor(
+                    binding.swipeRefreshLayout,
+                    com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                )
+            )
             setOnRefreshListener {
                 model.refresh()
             }

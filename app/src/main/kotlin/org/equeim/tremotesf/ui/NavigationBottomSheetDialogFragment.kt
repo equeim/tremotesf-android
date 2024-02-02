@@ -6,6 +6,7 @@ package org.equeim.tremotesf.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -19,15 +20,19 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.getSystemService
-import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.content.withStyledAttributes
-import androidx.core.view.*
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import org.equeim.tremotesf.R
@@ -113,10 +118,12 @@ open class NavigationBottomSheetDialogFragment(@LayoutRes private val contentLay
             com.google.android.material.R.style.Widget_MaterialComponents_BottomSheet_Modal,
             com.google.android.material.R.styleable.BottomSheetBehavior_Layout
         ) {
-            val elevation =
-                getDimensionOrThrow(com.google.android.material.R.styleable.BottomSheetBehavior_Layout_android_elevation)
-            val background =
-                MaterialShapeDrawable.createWithElevationOverlay(requireContext(), elevation)
+            val background = MaterialShapeDrawable()
+            background.fillColor = ColorStateList.valueOf(MaterialColors.getColor(
+                requireContext(),
+                com.google.android.material.R.attr.colorSurfaceContainerLow,
+                NavigationBottomSheetDialogFragment::class.simpleName!!
+            ))
 
             val shapeAppearanceResId =
                 getResourceIdOrThrow(com.google.android.material.R.styleable.BottomSheetBehavior_Layout_shapeAppearance)

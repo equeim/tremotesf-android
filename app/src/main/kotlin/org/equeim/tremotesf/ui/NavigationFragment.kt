@@ -36,7 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.elevation.ElevationOverlayProvider
+import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -157,8 +157,10 @@ open class NavigationFragment(
         } else {
             // If toolbar is scrollable we want to draw something between toolbar and status bar
             val statusBarBackgroundOverlay = ColorDrawable(
-                ElevationOverlayProvider(requireContext()).compositeOverlayWithThemeSurfaceColorIfNeeded(
-                    resources.getDimension(R.dimen.top_app_bar_elevation)
+                MaterialColors.getColor(
+                    requireContext(),
+                    com.google.android.material.R.attr.colorSurfaceContainer,
+                    NavigationFragment::class.simpleName!!
                 )
             )
             coordinatorLayout.overlay.add(statusBarBackgroundOverlay)
