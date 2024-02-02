@@ -27,26 +27,32 @@ jobs:
         uses: equeim/kotlin-problem-matcher@v1
 
       - name: Set up Java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build the app
-        uses: gradle/gradle-build-action@v2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
         with:
-          arguments: build
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
+      - name: Build the app
+        run: |
+          ./gradlew build
+
       - name: Archive debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/fdroid/debug/app-fdroid-debug.apk
           retention-days: ${{ github.event_name == 'pull_request' && 3 || github.retention_days }}
 
       - name: Archive unsigned release APKs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unsigned-release-apks
           path: app/build/outputs/apk/*/release/*.apk
@@ -54,7 +60,7 @@ jobs:
 
       - name: Archive test and lint reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: reports
           path: |
@@ -69,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check REUSE compliance
         run: |
