@@ -35,6 +35,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <color name="theme_red_background">@color/theme_red_background_night</color>
     <color name="theme_red_onBackground">#EDE0DE</color>
     <color name="theme_red_surface">#211A19</color>
+    <color name="theme_red_surfaceContainerLow">#2C2524</color>
+    <color name="theme_red_surfaceContainer">#302A29</color>
+    <color name="theme_red_surfaceContainerHigh">#332C2B</color>
     <color name="theme_red_onSurface">#EDE0DE</color>
     <color name="theme_red_surfaceVariant">#534341</color>
     <color name="theme_red_onSurfaceVariant">#D8C2BF</color>
@@ -62,6 +65,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <color name="theme_teal_background">#191C1B</color>
     <color name="theme_teal_onBackground">#E1E3E1</color>
     <color name="theme_teal_surface">#191C1B</color>
+    <color name="theme_teal_surfaceContainerLow">#242726</color>
+    <color name="theme_teal_surfaceContainer">#292C2B</color>
+    <color name="theme_teal_surfaceContainerHigh">#2B2E2D</color>
     <color name="theme_teal_onSurface">#E1E3E1</color>
     <color name="theme_teal_surfaceVariant">#3F4946</color>
     <color name="theme_teal_onSurfaceVariant">#BFC9C6</color>

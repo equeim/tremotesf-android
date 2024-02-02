@@ -41,6 +41,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="android:colorBackground">@color/theme_red_background</item>
         <item name="colorOnBackground">@color/theme_red_onBackground</item>
         <item name="colorSurface">@color/theme_red_surface</item>
+        <item name="colorSurfaceContainerLowest">?colorSurface</item>
+        <item name="colorSurfaceContainerLow">@color/theme_red_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/theme_red_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/theme_red_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/theme_red_surfaceVariant</item>
         <item name="colorOnSurface">@color/theme_red_onSurface</item>
         <item name="colorSurfaceVariant">@color/theme_red_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/theme_red_onSurfaceVariant</item>
@@ -87,6 +92,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="android:colorBackground">@color/theme_teal_background</item>
         <item name="colorOnBackground">@color/theme_teal_onBackground</item>
         <item name="colorSurface">@color/theme_teal_surface</item>
+        <item name="colorSurfaceContainerLow">@color/theme_teal_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/theme_teal_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/theme_teal_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/theme_teal_surfaceVariant</item>
         <item name="colorOnSurface">@color/theme_teal_onSurface</item>
         <item name="colorSurfaceVariant">@color/theme_teal_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/theme_teal_onSurfaceVariant</item>
