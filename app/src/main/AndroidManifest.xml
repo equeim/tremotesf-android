@@ -97,6 +97,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
         <service
             android:name=".service.ForegroundService"
-            android:foregroundServiceType="dataSync|location" />
+            android:foregroundServiceType="dataSync|location"
+            tools:ignore="ForegroundServicePermission" />
     </application>
 </manifest>
