@@ -6,7 +6,6 @@ package org.equeim.tremotesf.rpc
 
 import android.os.SystemClock
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +43,7 @@ import kotlin.time.Duration.Companion.seconds
 class RpcClientTest {
     private val dispatcher = StandardTestDispatcher()
     private val server = MockWebServer()
-    private val client = RpcClient(TestScope(dispatcher), mockk())
+    private val client = RpcClient(TestScope(dispatcher))
 
     private class TestTree : Timber.DebugTree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {

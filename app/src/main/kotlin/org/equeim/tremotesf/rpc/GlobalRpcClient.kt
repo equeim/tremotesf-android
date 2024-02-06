@@ -16,13 +16,12 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.requests.DUPLICATE_TORRENT_RESULT
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import java.util.concurrent.atomic.AtomicBoolean
 
 @SuppressLint("StaticFieldLeak")
-object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default), TremotesfApplication.instance) {
+object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
     data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
 
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)

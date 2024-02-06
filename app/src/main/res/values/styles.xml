@@ -7,12 +7,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
-        <item name="android:statusBarColor">@color/status_bar_color</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/navigation_bar_color</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">@bool/light_system_bars
+        <item name="android:windowLightStatusBar">@bool/light_system_bars
         </item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars
         </item>
@@ -57,7 +56,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
         <item name="elevationOverlayColor">@android:color/white</item>
 
-        <item name="android:importantForAutofill" tools:targetApi="26">noExcludeDescendants</item>
+        <item name="android:importantForAutofill" >noExcludeDescendants</item>
 
         <item name="searchViewStyle">@style/Widget.Tremotesf.SearchView</item>
         <item name="actionModeStyle">@style/Widget.Tremotesf.ActionMode</item>

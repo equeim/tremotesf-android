@@ -12,7 +12,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <color name="system_bars_semi_transparent_light">#e6ffffff</color>
     <color name="system_bars_semi_transparent_dark">#66000000</color>
 
-    <color name="status_bar_color">@color/system_bars_semi_transparent_dark</color>
     <color name="navigation_bar_color">@color/system_bars_semi_transparent_dark</color>
 
     <color name="icon_color_enabled_focused">#DE000000</color>

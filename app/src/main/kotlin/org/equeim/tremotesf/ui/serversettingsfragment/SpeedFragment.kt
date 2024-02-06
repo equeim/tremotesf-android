@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.serversettingsfragment
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.AttributeSet
@@ -62,7 +61,6 @@ import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
-import org.threeten.bp.temporal.WeekFields
 import timber.log.Timber
 import java.util.Locale
 
@@ -86,11 +84,8 @@ class SpeedFragment : NavigationFragment(
 
         // threetenbp WeekFields return incorrect firstDayOfWeek if it's changed in system settings on Android 14+
         // Get it from java.time's WeekFields when it's available
-        val firstDayOfWeek = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val firstDayOfWeek =
             DayOfWeek.of(java.time.temporal.WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
-        } else {
-            WeekFields.of(Locale.getDefault()).firstDayOfWeek
-        }
         val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
         for (day in daysOfWeek) {
             daysSpinnerItems.add(

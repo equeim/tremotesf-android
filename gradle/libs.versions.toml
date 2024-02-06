@@ -8,7 +8,7 @@ kotlin = "1.9.22"
 gradle-versions-plugin = "0.51.0"
 
 sdk-platform-compile = "34"
-sdk-platform-min = "21"
+sdk-platform-min = "26"
 sdk-platform-target = "34"
 
 coroutines = "1.7.3"

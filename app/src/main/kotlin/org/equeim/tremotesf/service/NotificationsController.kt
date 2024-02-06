@@ -8,16 +8,15 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
@@ -35,7 +34,7 @@ class NotificationsController(private val context: Context) {
     private val random = Random(System.nanoTime())
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
+        if (notificationManager != null) {
             notificationManager.createNotificationChannels(
                 listOf(
                     NotificationChannel(

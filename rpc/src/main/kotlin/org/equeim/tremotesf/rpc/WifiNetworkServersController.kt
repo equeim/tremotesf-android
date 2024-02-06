@@ -102,10 +102,9 @@ class WifiNetworkServersController(
                 NetworkCallback(
                     channel,
                     ConnectivityManager.NetworkCallback.FLAG_INCLUDE_LOCATION_INFO,
-                    connectivityManager
                 )
             } else {
-                NetworkCallback(channel, connectivityManager)
+                NetworkCallback(channel)
             }
             connectivityManager.registerNetworkCallback(request, callback)
             awaitClose {
@@ -117,34 +116,21 @@ class WifiNetworkServersController(
 
     private inner class NetworkCallback : ConnectivityManager.NetworkCallback {
         private val wifiSsidChannel: SendChannel<String?>
-        private val connectivityManager: ConnectivityManager
 
-        constructor(wifiSsidChannel: SendChannel<String?>, connectivityManager: ConnectivityManager) : super() {
+        constructor(wifiSsidChannel: SendChannel<String?>) : super() {
             this.wifiSsidChannel = wifiSsidChannel
-            this.connectivityManager = connectivityManager
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
         constructor(
             wifiSsidChannel: SendChannel<String?>,
             flags: Int,
-            connectivityManager: ConnectivityManager,
         ) : super(flags) {
             this.wifiSsidChannel = wifiSsidChannel
-            this.connectivityManager = connectivityManager
         }
 
         override fun onAvailable(network: Network) {
             Timber.i("onAvailable() called with: network = $network")
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                Timber.i("onAvailable: calling onCapabilitiesChanged manually for SDK < ${Build.VERSION_CODES.O}")
-                val capabilities = connectivityManager.getNetworkCapabilities(network)
-                if (capabilities != null) {
-                    onCapabilitiesChanged(network, capabilities)
-                } else {
-                    Timber.e("onAvailable: ConnectivityManager.getNetworkCapabilities() returned null")
-                }
-            }
         }
 
         override fun onLost(network: Network) {
