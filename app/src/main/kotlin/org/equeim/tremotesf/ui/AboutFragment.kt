@@ -5,9 +5,9 @@
 package org.equeim.tremotesf.ui
 
 import android.os.Bundle
+import android.text.Html
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
@@ -92,7 +92,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             }
             with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
                 textView.text = try {
-                    HtmlCompat.fromHtml(html, 0)
+                    Html.fromHtml(html, 0)
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to parse html")
                     null
@@ -127,7 +127,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             """.trimIndent()
             with(AboutFragmentBaseTabFragmentBinding.bind(requireView())) {
                 textView.text = try {
-                    HtmlCompat.fromHtml(html, 0)
+                    Html.fromHtml(html, 0)
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to parse html")
                     null

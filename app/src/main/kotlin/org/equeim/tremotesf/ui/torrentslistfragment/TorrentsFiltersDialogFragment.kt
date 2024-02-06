@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.torrentslistfragment
 
 import android.os.Bundle
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
@@ -96,7 +95,6 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                     directoriesViewAdapter.update(torrents, directoryFilter)
                 }
 
-            TooltipCompat.setTooltipText(resetButton, resetButton.contentDescription)
             resetButton.setOnClickListener { model.resetSortAndFilters() }
             resetButton.isInvisible = true
             model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {

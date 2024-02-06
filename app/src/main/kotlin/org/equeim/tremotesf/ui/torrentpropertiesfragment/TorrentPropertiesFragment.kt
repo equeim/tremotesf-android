@@ -10,7 +10,6 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -125,7 +124,6 @@ class TorrentPropertiesFragment : NavigationFragment(
         })
 
         binding.fab.apply {
-            TooltipCompat.setTooltipText(this, contentDescription)
             setOnClickListener {
                 navigate(TorrentPropertiesFragmentDirections.toAddTrackersDialog())
             }
