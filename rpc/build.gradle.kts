@@ -18,6 +18,7 @@ android {
 dependencies {
     implementation(project(":common"))
 
+    api(libs.androidx.annotation)
     api(libs.coroutines.core)
 
     api(libs.serialization.core)
