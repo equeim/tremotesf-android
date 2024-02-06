@@ -37,7 +37,6 @@ fastscroll = "2.1.0"
 leakcanary = "2.13"
 material = "1.11.0"
 timber = "5.0.1"
-threetenabp = "1.4.6"
 
 okhttp = "4.12.0"
 
@@ -87,7 +86,6 @@ fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscr
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }

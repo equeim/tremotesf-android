@@ -56,12 +56,13 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalTime
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.FormatStyle
-import org.threeten.bp.format.TextStyle
 import timber.log.Timber
+import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.Locale
 
 
@@ -82,10 +83,8 @@ class SpeedFragment : NavigationFragment(
         daysSpinnerItems.add(getString(R.string.weekdays) to AlternativeLimitsDays.Weekdays)
         daysSpinnerItems.add(getString(R.string.weekends) to AlternativeLimitsDays.Weekends)
 
-        // threetenbp WeekFields return incorrect firstDayOfWeek if it's changed in system settings on Android 14+
-        // Get it from java.time's WeekFields when it's available
         val firstDayOfWeek =
-            DayOfWeek.of(java.time.temporal.WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
+            DayOfWeek.of(WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
         val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
         for (day in daysOfWeek) {
             daysSpinnerItems.add(

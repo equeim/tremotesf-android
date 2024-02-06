@@ -5,7 +5,6 @@
 package org.equeim.tremotesf
 
 import android.app.Application
-import com.jakewharton.threetenabp.AndroidThreeTen
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,7 +19,6 @@ class TremotesfApplication : Application() {
         Timber.i("onCreate() called")
         instance = this
         super.onCreate()
-        AndroidThreeTen.init(this)
         Timber.i("onCreate() returned")
     }
 }

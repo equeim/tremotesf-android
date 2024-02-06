@@ -42,9 +42,9 @@ import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import org.equeim.tremotesf.ui.utils.createTextFieldDialog
 import org.equeim.tremotesf.ui.utils.parcelable
 import org.equeim.tremotesf.ui.utils.submitListAwait
-import org.threeten.bp.Duration
-import org.threeten.bp.Instant
 import timber.log.Timber
+import java.time.Duration
+import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 
 

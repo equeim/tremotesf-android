@@ -19,7 +19,6 @@ dependencies {
     implementation(project(":common"))
 
     api(libs.coroutines.core)
-    api(libs.threetenabp)
 
     api(libs.serialization.core)
     implementation(libs.serialization.json)
