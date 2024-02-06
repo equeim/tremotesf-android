@@ -10,7 +10,6 @@ import android.view.MenuItem
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -206,7 +205,6 @@ class TorrentsListFragment : NavigationFragment(
     private fun setupBottomBar() {
         with(binding) {
             transmissionSettings.apply {
-                TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment()) }
             }
             model.showTransmissionSettingsButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
@@ -214,7 +212,6 @@ class TorrentsListFragment : NavigationFragment(
             }
 
             torrentsFilters.apply {
-                TooltipCompat.setTooltipText(this, contentDescription)
                 setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
 
                 val badgeDrawable = (drawable as LayerDrawable).getDrawable(1)
@@ -257,7 +254,6 @@ class TorrentsListFragment : NavigationFragment(
                 searchView.isVisible = it
             }
 
-            TooltipCompat.setTooltipText(addTorrentButton, addTorrentButton.contentDescription)
             addTorrentButton.setOnClickListener {
                 navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
             }

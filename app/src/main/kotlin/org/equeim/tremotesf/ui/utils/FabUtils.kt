@@ -7,7 +7,6 @@ package org.equeim.tremotesf.ui.utils
 import android.view.Gravity
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
-import androidx.appcompat.widget.TooltipCompat
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -28,7 +27,7 @@ fun ExtendedFloatingActionButton.extendWhenImeIsHidden(
         .distinctUntilChanged()
         .launchAndCollectWhenStarted(lifecycleOwner) { imeVisible ->
             isExtended = !imeVisible
-            TooltipCompat.setTooltipText(this, if (imeVisible) text else null)
+            tooltipText = if (imeVisible) text else null
             updateLayoutParams<MarginLayoutParams> {
                 val newGravity = if (imeVisible) {
                     Gravity.BOTTOM or Gravity.END

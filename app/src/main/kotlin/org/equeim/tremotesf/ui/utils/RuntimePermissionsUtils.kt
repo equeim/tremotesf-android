@@ -15,7 +15,6 @@ import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -71,11 +70,7 @@ class RuntimePermissionHelper(
 
     fun checkPermission(context: Context): Boolean {
         Timber.i("Checking permission $requiredPermission")
-        if (ContextCompat.checkSelfPermission(
-                context,
-                requiredPermission
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (context.checkSelfPermission(requiredPermission) == PackageManager.PERMISSION_GRANTED) {
             Timber.i("Permission is already granted")
             _permissionGranted.value = true
             return true

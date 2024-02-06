@@ -61,6 +61,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:tag="@string/add_navigation_bar_margin"
         android:visibility="invisible"
         android:contentDescription="@string/add_trackers"
+        android:tooltipText="@string/add_trackers"
         app:fabSize="normal"
         app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
         app:srcCompat="@drawable/ic_add_24dp" />

@@ -19,7 +19,6 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.appcompat.view.ActionMode
-import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -200,7 +199,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
                     Timber.d("Handling drop event")
                     val directions = model.getAddTorrentDirections(event.clipData)
                     if (directions != null) {
-                        ActivityCompat.requestDragAndDropPermissions(this, event)
+                        requestDragAndDropPermissions(event)
                         navController.navigate(
                             directions.destinationId,
                             directions.arguments,

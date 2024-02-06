@@ -8,8 +8,8 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.drawable.Icon
 import androidx.annotation.StringRes
-import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
 import org.equeim.tremotesf.R
@@ -101,7 +101,7 @@ class NotificationsController(private val context: Context) {
 
         notificationManager.notify(
             random.nextInt(),
-            NotificationCompat.Builder(context, notificationChannel)
+            Notification.Builder(context, notificationChannel)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(context.getText(notificationTitle))
                 .setContentText(torrentName)
@@ -113,7 +113,6 @@ class NotificationsController(private val context: Context) {
                         .createPendingIntent()
                 )
                 .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
                 .build()
         )
     }
@@ -123,7 +122,7 @@ class NotificationsController(private val context: Context) {
         sessionStats: RpcRequestState<SessionStatsResponseArguments>,
     ): Notification {
         val notificationBuilder =
-            NotificationCompat.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
+            Notification.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(
                     NavDeepLinkBuilder(context)
@@ -173,22 +172,28 @@ class NotificationsController(private val context: Context) {
 
         if ((sessionStats as? RpcRequestState.Error)?.error is RpcRequestError.ConnectionDisabled) {
             notificationBuilder.addAction(
-                R.drawable.notification_connect,
-                context.getText(R.string.connect),
-                ForegroundService.getPendingIntent(context, PersistentNotificationActions.CONNECT)
+                Notification.Action.Builder(
+                    Icon.createWithResource(context, R.drawable.notification_connect),
+                    context.getText(R.string.connect),
+                    ForegroundService.getPendingIntent(context, PersistentNotificationActions.CONNECT)
+                ).build()
             )
         } else {
             notificationBuilder.addAction(
-                R.drawable.notification_disconnect,
-                context.getText(R.string.disconnect),
-                ForegroundService.getPendingIntent(context, PersistentNotificationActions.DISCONNECT)
+                Notification.Action.Builder(
+                    Icon.createWithResource(context, R.drawable.notification_disconnect),
+                    context.getText(R.string.disconnect),
+                    ForegroundService.getPendingIntent(context, PersistentNotificationActions.DISCONNECT)
+                ).build()
             )
         }
 
         notificationBuilder.addAction(
-            R.drawable.notification_quit,
-            context.getText(R.string.quit),
-            ForegroundService.getPendingIntent(context, PersistentNotificationActions.SHUTDOWN_APP)
+            Notification.Action.Builder(
+                Icon.createWithResource(context, R.drawable.notification_quit),
+                context.getText(R.string.quit),
+                ForegroundService.getPendingIntent(context, PersistentNotificationActions.SHUTDOWN_APP)
+            ).build()
         )
 
         return notificationBuilder.build()

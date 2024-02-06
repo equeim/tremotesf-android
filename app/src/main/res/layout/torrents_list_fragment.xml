@@ -93,6 +93,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_spacing"
                 android:contentDescription="@string/transmission_settings"
+                android:tooltipText="@string/transmission_settings"
                 app:srcCompat="@drawable/ic_transmission_settings_24dp" />
 
             <ImageButton
@@ -103,6 +104,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/bottom_app_bar_icon_spacing"
                 android:contentDescription="@string/torrents_filters"
+                android:tooltipText="@string/torrents_filters"
                 app:srcCompat="@drawable/ic_baseline_filter_list_highlighted_24" />
 
             <androidx.appcompat.widget.SearchView
@@ -125,6 +127,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/add_torrent"
+                android:tooltipText="@string/add_torrent"
                 app:icon="@drawable/ic_add_24dp" />
 
             <Button

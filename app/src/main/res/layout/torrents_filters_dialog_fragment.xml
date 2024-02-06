@@ -46,6 +46,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_alignParentBottom="true"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/reset"
+                android:tooltipText="@string/reset"
                 app:srcCompat="@drawable/ic_baseline_restore_24" />
         </RelativeLayout>
 

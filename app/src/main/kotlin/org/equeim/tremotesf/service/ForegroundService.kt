@@ -10,8 +10,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.annotation.MainThread
-import androidx.core.app.ServiceCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleService
 import kotlinx.coroutines.CoroutineScope
@@ -45,10 +43,7 @@ class ForegroundService : LifecycleService() {
         @MainThread
         fun start(context: Context) {
             Timber.i("start()")
-            ContextCompat.startForegroundService(
-                context,
-                Intent(context, ForegroundService::class.java)
-            )
+            context.startForegroundService(Intent(context, ForegroundService::class.java))
             startRequestInProgress = true
         }
 
@@ -188,7 +183,7 @@ class ForegroundService : LifecycleService() {
 
     override fun onDestroy() {
         Timber.i("onDestroy: state = ${lifecycle.currentState}")
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         instances.remove(this)
         super.onDestroy()
     }
