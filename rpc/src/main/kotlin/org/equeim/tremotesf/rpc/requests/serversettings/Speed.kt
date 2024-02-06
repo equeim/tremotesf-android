@@ -16,7 +16,7 @@ import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcRequestBody
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TransferRate
-import org.threeten.bp.LocalTime
+import java.time.LocalTime
 
 /**
  * @throws RpcRequestError

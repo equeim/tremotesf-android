@@ -50,8 +50,8 @@ import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.SavedStateFlowHolder
 import org.equeim.tremotesf.ui.utils.savedStateFlow
-import org.threeten.bp.Instant
 import timber.log.Timber
+import java.time.Instant
 import kotlin.time.Duration
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :

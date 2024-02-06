@@ -22,7 +22,7 @@ import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
-import org.threeten.bp.Instant
+import java.time.Instant
 import kotlin.time.Duration
 
 /**

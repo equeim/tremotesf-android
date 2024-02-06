@@ -27,10 +27,10 @@ import okhttp3.HttpUrl
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestContext
 import org.equeim.tremotesf.rpc.RpcRequestError
-import org.threeten.bp.Instant
 import timber.log.Timber
 import java.net.URI
 import java.net.URISyntaxException
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration
 
