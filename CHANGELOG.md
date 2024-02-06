@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Removed
+- Support of Android versions prior to 8.0
+
 ## [2.10.1] - 2024-01-16
 ### Fixed
 - Connection settings being wiped on upgrade
