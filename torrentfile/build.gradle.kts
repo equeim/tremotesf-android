@@ -17,6 +17,7 @@ android {
 
 dependencies {
     implementation(project(":common"))
+    api(libs.androidx.annotation)
     implementation(libs.serialization.bencode)
     api(libs.coroutines.core)
     implementation(libs.androidx.collection)
