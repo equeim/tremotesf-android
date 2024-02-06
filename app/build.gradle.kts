@@ -50,10 +50,7 @@ android {
         isShrinkResources = true
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
-
         signingConfig = signingConfigs.findByName("release")
-
-        ndk.debugSymbolLevel = "FULL"
     }
 
     buildFeatures {
@@ -78,12 +75,6 @@ android {
             dimension = "freedom"
             buildConfigField("boolean", "GOOGLE", "false")
         }
-    }
-}
-
-androidComponents {
-    onVariants(selector().withBuildType("debug")) {
-        it.packaging.jniLibs.keepDebugSymbols.add("**/*.so")
     }
 }
 
