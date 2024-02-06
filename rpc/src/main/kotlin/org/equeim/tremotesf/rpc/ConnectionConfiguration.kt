@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc
 
-import android.content.Context
 import okhttp3.Credentials
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -25,7 +24,7 @@ internal data class ConnectionConfiguration(
 /**
  * @throws RuntimeException
  */
-internal fun createConnectionConfiguration(server: Server, context: Context): ConnectionConfiguration {
+internal fun createConnectionConfiguration(server: Server): ConnectionConfiguration {
     val url = createUrl(server)
     val builder = OkHttpClient.Builder()
         .addNetworkInterceptor(RealRequestHeadersInterceptor())
@@ -44,7 +43,6 @@ internal fun createConnectionConfiguration(server: Server, context: Context): Co
             clientCertificatesString = clientCertificate,
             selfSignedCertificatesString = serverCertificate,
             serverHostname = url.host,
-            context = context
         )
         if (configuration != null) {
             builder.sslSocketFactory(configuration.sslSocketFactory, configuration.trustManager)

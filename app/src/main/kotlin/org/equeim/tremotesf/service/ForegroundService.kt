@@ -64,29 +64,12 @@ class ForegroundService : LifecycleService() {
             }
         }
 
-        fun getPendingIntent(context: Context, action: String): PendingIntent {
-            val intent = Intent(context, ForegroundService::class.java).setAction(action)
-            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            } else {
-                PendingIntent.FLAG_UPDATE_CURRENT
-            }
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PendingIntent.getForegroundService(
-                    context,
-                    0,
-                    intent,
-                    flags
-                )
-            } else {
-                PendingIntent.getService(
-                    context,
-                    0,
-                    intent,
-                    flags
-                )
-            }
-        }
+        fun getPendingIntent(context: Context, action: String): PendingIntent = PendingIntent.getForegroundService(
+            context,
+            0,
+            Intent(context, ForegroundService::class.java).setAction(action),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         private lateinit var startStopScope: CoroutineScope
 

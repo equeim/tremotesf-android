@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc
 
-import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +30,7 @@ import org.equeim.tremotesf.rpc.requests.ServerVersionResponseArguments
 import timber.log.Timber
 import java.net.HttpURLConnection
 
-open class RpcClient(protected val coroutineScope: CoroutineScope, private val context: Context) {
+open class RpcClient(protected val coroutineScope: CoroutineScope) {
     private val connectionConfiguration = MutableStateFlow<Result<ConnectionConfiguration>?>(null)
     internal fun getConnectionConfiguration(): StateFlow<Result<ConnectionConfiguration>?> = connectionConfiguration
 
@@ -71,7 +70,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope, private val c
         Timber.d("setConnectionConfiguration() called with: server = $server")
         val newConnectionConfiguration = server?.let {
             try {
-                Result.success(createConnectionConfiguration(it, context))
+                Result.success(createConnectionConfiguration(it))
             } catch (e: Exception) {
                 Timber.e(e, "Bad connection configuration")
                 Result.failure(e)

@@ -9,7 +9,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <resources>
     <color name="list_item_selected_color">#26ffffff</color>
 
-    <color name="status_bar_color">@android:color/transparent</color>
     <color name="navigation_bar_color">@color/system_bars_semi_transparent_dark</color>
 
     <color name="icon_color_enabled_focused">@color/icon_color_enabled_focused_night</color>
