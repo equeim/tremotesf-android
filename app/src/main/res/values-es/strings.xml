@@ -8,9 +8,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando…</string>
     <string name="connected">Conectado</string>
+
     <string name="connect">Conectar</string>
     <string name="disconnect">Desconectar</string>
     <string name="add">Agregar</string>
+
     <string name="invalid_connection_configuration">Configuración de conexión inválida</string>
     <string name="timed_out">Tiempo de conexión agotado</string>
     <string name="connection_error">Error de conexión</string>
@@ -19,20 +21,28 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="parsing_error">Error de parseo</string>
     <string name="unsupported_server_version">La versión de Transmission \'%1$s\' no es compatible</string>
     <string name="server_returned_error_result">El servidor devolvió \'%1$s\'</string>
+
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
+
     <string name="current_server_string">%1$s (%2$s)</string>
+
     <string name="download_speed_string">\u2193 %s</string>
     <string name="upload_speed_string">\u2191 %s</string>
+
     <string name="server">Servidor</string>
     <string name="server_settings">Configuración del servidor</string>
+
     <string name="sort">Ordenar</string>
     <string name="progress">Progreso</string>
     <string name="eta">Tiempo estimado</string>
     <string name="ratio">Ratio</string>
     <string name="size">Tamaño</string>
     <string name="added_date">Fecha de adición</string>
+
     <string name="status">Estado</string>
+
     <string name="no_torrents">Sin torrents</string>
+
     <string name="torrents_all">Todos (%d)</string>
     <string name="torrents_active">Activos (%d)</string>
     <string name="torrents_downloading">Descargando (%d)</string>
@@ -132,61 +142,83 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <!-- e.g. "100 MiB of 200 MiB (50%)" -->
     <string name="completed_string">%1$s de %2$s (%3$s%%)</string>
+
     <string name="priority">Prioridad</string>
     <string name="high_priority">Alta</string>
     <string name="normal_priority">Normal</string>
     <string name="low_pririty">Baja</string>
     <string name="mixed_priority">Mixta</string>
+
     <string name="download_verb">Descargar</string>
     <string name="not_download">No descargar</string>
+
     <string name="no_files">Sin archivos</string>
+
     <string name="tracker_inactive">Inactivo</string>
     <string name="tracker_waiting_for_update">Esperando actualización</string>
     <string name="tracker_queued_for_update">En cola para actualización</string>
     <string name="tracker_updating">Actualizando</string>
     <string name="tracker_error">Error: %s</string>
+
     <string name="loading">Cargando…</string>
     <string name="no_peers">Sin peers</string>
+
     <string name="no_trackers">Sin trackers</string>
+
     <string name="error">Error</string>
+
     <string name="speed">Velocidad</string>
     <string name="honor_global_limits">Respetar límites globales</string>
     <string name="download_noun">Descarga</string>
     <string name="upload_noun">Subida</string>
+
     <string name="seeding">Compartiendo</string>
+
     <string name="ratio_limit">Límite de ratio</string>
     <string-array name="ratio_limit_mode">
         <item>Usar ajustes globales</item>
         <item>Compartir independientemente del ratio</item>
         <item>Dejar de compartir al alcanzar ratio</item>
     </string-array>
+
     <string name="idle_seeding">Compartiendo durante inactividad</string>
     <string-array name="idle_seeding_mode">
         <item>Usar ajustes globales</item>
         <item>Compartir independientemente de la actividad</item>
         <item>Dejar de compartir si se está inactivo durante</item>
     </string-array>
+
     <string name="text_field_suffix_minutes">minutos</string>
     <string name="maximum_peers">Máximo número de peers</string>
+
     <string name="settings">Ajustes</string>
     <string name="notifications">Notificaciones</string>
+
     <string name="quit">Salir</string>
+
     <string name="select_all">Seleccionar todo</string>
+
     <string name="add_server">Añadir servidor</string>
     <string name="edit_server">Editar servidor</string>
+
     <plurals name="servers_selected">
         <item quantity="one">%d servidor seleccionado</item>
         <item quantity="many">%d servidores seleccionados</item>
         <item quantity="other">%d servidores seleccionados</item>
     </plurals>
+
     <string name="save">Guardar</string>
+
     <string name="remove">Eliminar</string>
+
     <plurals name="remove_servers_message">
         <item quantity="one">¿Estás seguro de que quieres eliminar %d servidor seleccionado?</item>
         <item quantity="many">¿Estás seguro de que quieres eliminar %d servidores seleccionados?</item>
         <item quantity="other">¿Estás seguro de que quieres eliminar %d servidores seleccionados?</item>
     </plurals>
+
     <string name="no_servers">No hay servidores</string>
+
     <string name="name">Nombre</string>
     <string name="address_edit_hint">Nombre de dominio o dirección IP</string>
     <string name="port">Puerto</string>
@@ -202,16 +234,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="update_interval">Intervalo de actualización</string>
     <string name="text_field_suffix_seconds">segundos</string>
     <string name="timeout">Tiempo de espera</string>
+
     <string name="empty_field_error">Este campo no puede estar vacío</string>
+
     <string name="server_exists">Ya existe un servidor con este nombre</string>
     <string name="overwrite">Sobrescribir</string>
+
     <string name="add_torrent">Añadir torrent</string>
     <string name="add_torrent_file">Añadir archivo torrent</string>
     <string name="storage_permission_error">Se necesita permiso para acceder a la memoria</string>
     <string name="file_is_too_large">El archivo es demasiado grande</string>
     <string name="file_reading_error">Error de lectura de archivo</string>
     <string name="file_parsing_error">Error al analizar el archivo</string>
+
     <string name="download_directory">Directorio de descargas</string>
+
     <string name="server_settings_downloading">Descargando</string>
     <string name="server_settings_seeding">Compartiendo</string>
     <string name="server_settings_queue">Cola</string>
