@@ -33,10 +33,13 @@ data class TorrentFiles(
     @Serializable
     data class File(
         @SerialName("name")
-        val name: String,
+        val path: String,
         @SerialName("length")
         val size: FileSize,
-    )
+    ) {
+        val pathSegments: Sequence<String>
+            get() = path.splitToSequence('/').filter { it.isNotEmpty() }
+    }
 
     @Serializable
     data class FileStats(

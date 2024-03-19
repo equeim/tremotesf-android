@@ -161,7 +161,7 @@ class RpcTorrentFilesTree(
 ) : TorrentFilesTree(parentScope) {
     companion object {
         private fun Item.updatedFromIfNeeded(file: TorrentFiles.File, fileStats: TorrentFiles.FileStats): Item? {
-            val newName = file.name
+            val newName = file.pathSegments.lastOrNull().orEmpty()
             val newCompletedSize = fileStats.completedSize.bytes
             val newWantedState = Item.WantedState.fromBoolean(fileStats.wanted)
             val newPriority = fileStats.priority.toTreeItemPriority()
@@ -240,10 +240,9 @@ class RpcTorrentFilesTree(
                     val file = rpcFiles.files[index]
                     val fileStats = rpcFiles.fileStats[index]
 
-                    val path = file.name.splitToSequence('/').filter { it.isNotEmpty() }.toList()
                     addFile(
                         fileId = index,
-                        path = path,
+                        path = file.pathSegments.toList(),
                         size = file.size.bytes,
                         completedSize = fileStats.completedSize.bytes,
                         wantedState = Item.WantedState.fromBoolean(fileStats.wanted),
