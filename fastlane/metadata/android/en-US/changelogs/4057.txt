@@ -1,0 +1,2 @@
+- Fixed incorrect file names in torrent's file list
+- Updated translations

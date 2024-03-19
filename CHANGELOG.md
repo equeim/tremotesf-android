@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [2.10.2] - 2024-03-20
+### Changed
+- Updated translations
+
 ### Fixed
 - Incorrect file names in torrent's file list
 
