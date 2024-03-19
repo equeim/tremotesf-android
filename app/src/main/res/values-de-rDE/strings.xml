@@ -531,4 +531,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_web_seeders">Keine Web-Seeder</string>
 
-    </resources>
+    <string name="source_code_url">Quelltext: %1$s</string>
+    <string name="translations_url">Übersetzungen: %1$s</string>
+    <string name="maintainer">Betreuer</string>
+    <string name="contributor">Mitwirkender</string>
+</resources>
