@@ -4,7 +4,7 @@
 
 [versions]
 android-gradle-plugin = "8.2.2"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 gradle-versions-plugin = "0.51.0"
 
 sdk-platform-compile = "34"
