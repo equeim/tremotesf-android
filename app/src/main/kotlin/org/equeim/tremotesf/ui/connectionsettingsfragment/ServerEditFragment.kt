@@ -100,7 +100,6 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
             certificatedButton.setOnClickListener {
                 navigate(ServerEditFragmentDirections.toCertificatesFragment())
             }
-            httpsCheckBox.setDependentViews(certificatedButton)
 
             authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
 

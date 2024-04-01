@@ -35,10 +35,9 @@ internal fun createTlsConfiguration(
     clientCertificatesString: String?,
     selfSignedCertificatesString: String?,
     serverHostname: String,
-): TlsConfiguration? {
-    // We need to set up ISRG Root X1 certificate for Android < 7.1
+): TlsConfiguration {
     if (clientCertificatesString == null && selfSignedCertificatesString == null) {
-        return null
+        throw IllegalArgumentException("Either clientCertificatesString or selfSignedCertificatesString must be provided")
     }
     return try {
         val certificateFactory = CertificateFactory.getInstance("X.509")
