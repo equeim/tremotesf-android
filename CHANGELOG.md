@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- Custom TLS certificates can now be configured without enabling HTTPS, to support HTTP to HTTPS redirection
+
 ### Removed
 - Support of Android versions prior to 8.0
 
