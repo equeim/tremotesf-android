@@ -93,6 +93,11 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
         with(binding) {
             portEdit.filters = arrayOf(IntFilter(Server.portRange))
 
+            httpsHint.isVisible = httpsCheckBox.isChecked
+            httpsCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                httpsHint.isVisible = isChecked
+            }
+
             proxySettingsButton.setOnClickListener {
                 navigate(ServerEditFragmentDirections.toProxySettingsFragment())
             }

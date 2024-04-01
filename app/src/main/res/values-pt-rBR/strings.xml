@@ -187,7 +187,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">Nome de domínio ou endereço IP</string>
     <string name="port">Porta</string>
     <string name="api_path">Caminho da API</string>
-    <string name="https">HTTPS</string>
+
     <string name="certificates">Certificados</string>
     <string name="server_uses_self_signed_certificate">Servidor usa certificado auto-assinado </string>
     <string name="certificate">Certificado no formato PEM</string>

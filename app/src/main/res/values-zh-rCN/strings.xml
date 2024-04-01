@@ -200,7 +200,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">域名或IP地址</string>
     <string name="port">端口</string>
     <string name="api_path">API路径</string>
-    <string name="https">HTTPS</string>
+
     <string name="certificates">证书</string>
     <string name="server_uses_self_signed_certificate">服务端使用自签名证书</string>
     <string name="certificate">PEM格式的证书</string>

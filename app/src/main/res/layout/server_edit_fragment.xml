@@ -71,10 +71,23 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <CheckBox
+                    android:id="@+id/https_check_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/use_https_protocol" />
+
+                <TextView
+                    android:id="@+id/https_hint"
+                    android:layout_width="match_parent"
+                    android:text="@string/https_hint"
+                    android:layout_height="wrap_content" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
                     android:hint="@string/api_path">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -92,13 +105,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
                     android:paddingVertical="@dimen/linear_layout_vertical_spacing"
                     android:text="@string/proxy_settings" />
-
-                <CheckBox
-                    android:id="@+id/https_check_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                    android:text="@string/https" />
 
                 <Button
                     android:id="@+id/certificated_button"
