@@ -59,7 +59,6 @@ class GradlePlugin : Plugin<Project> {
 
     private fun ApplicationExtension.configureApplicationProject(libs: VersionCatalog) {
         defaultConfig.targetSdk = libs.targetSdk
-        packaging.jniLibs.useLegacyPackaging = false
     }
 
     private fun KotlinJvmOptions.configureKotlin() {
