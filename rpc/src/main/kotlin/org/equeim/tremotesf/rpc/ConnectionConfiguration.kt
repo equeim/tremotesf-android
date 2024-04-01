@@ -36,21 +36,19 @@ internal fun createConnectionConfiguration(server: Server): ConnectionConfigurat
             )
         })
     var clientCertificates: List<Certificate> = emptyList()
-    if (server.httpsEnabled) {
-        val clientCertificate = if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null
-        val serverCertificate = if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
+    val clientCertificate = if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null
+    val serverCertificate = if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
+    if (clientCertificate != null || serverCertificate != null) {
         val configuration = createTlsConfiguration(
             clientCertificatesString = clientCertificate,
             selfSignedCertificatesString = serverCertificate,
             serverHostname = url.host,
         )
-        if (configuration != null) {
-            builder.sslSocketFactory(configuration.sslSocketFactory, configuration.trustManager)
-            configuration.hostnameVerifier?.let {
-                builder.hostnameVerifier(it)
-            }
-            clientCertificates = configuration.clientCertificates
+        builder.sslSocketFactory(configuration.sslSocketFactory, configuration.trustManager)
+        configuration.hostnameVerifier?.let {
+            builder.hostnameVerifier(it)
         }
+        clientCertificates = configuration.clientCertificates
     }
     return ConnectionConfiguration(
         httpClient = builder.build(),
