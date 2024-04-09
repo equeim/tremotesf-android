@@ -10,15 +10,20 @@ import kotlinx.coroutines.test.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.FileInputStream
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TorrentFileParserTest {
     private val dispatcher = StandardTestDispatcher()
     private val dispatchers = TestDispatchers(dispatcher)
 
-    private fun getResource(name: String) = requireNotNull(javaClass.getResourceAsStream(name)) {
-        "Resource $name not found"
+    private fun getResource(name: String): FileInputStream {
+        val url = assertNotNull(javaClass.getResource(name))
+        assertEquals("file", url.protocol)
+        return FileInputStream(url.path)
     }
 
     @BeforeEach
@@ -33,8 +38,9 @@ class TorrentFileParserTest {
 
     @Test
     fun `Parsing single file torrent`() = runTest {
-        val actual = TorrentFileParser.parseFile(getResource(singleFileTorrent), dispatchers)
-        assertEquals(singleFileTorrentParsed, actual)
+        val actual = TorrentFileParser.parseTorrentFile(getResource(singleFileTorrent), dispatchers)
+        assertEquals(singleFileTorrentParsed, actual.torrentFile)
+        assertEquals(singleFileTorrentInfoHash, actual.infoHash)
     }
 
     @Test
@@ -46,8 +52,9 @@ class TorrentFileParserTest {
 
     @Test
     fun `Parsing multiple file torrent`() = runTest {
-        val actual = TorrentFileParser.parseFile(getResource(multipleFileTorrent), dispatchers)
-        assertEquals(multipleFileTorrentParsed, actual)
+        val actual = TorrentFileParser.parseTorrentFile(getResource(multipleFileTorrent), dispatchers)
+        assertEquals(multipleFileTorrentParsed, actual.torrentFile)
+        assertEquals(multipleFileTorrentInfoHash, actual.infoHash)
     }
 
     @Test
@@ -59,11 +66,12 @@ class TorrentFileParserTest {
 
     @Test
     fun `Parsing multiple file torrent with subdirectories`() = runTest {
-        val actual = TorrentFileParser.parseFile(
+        val actual = TorrentFileParser.parseTorrentFile(
             getResource(multipleFileTorrentWithSubdirectories),
             dispatchers
         )
-        assertEquals(multipleFileTorrentWithSubdirectoriesParsed, actual)
+        assertEquals(multipleFileTorrentWithSubdirectoriesParsed, actual.torrentFile)
+        assertEquals(multipleFileTorrentWithSubdirectoriesInfoHash, actual.infoHash)
     }
 
     @Test
@@ -71,52 +79,39 @@ class TorrentFileParserTest {
         runTest {
             val actual =
                 TorrentFileParser.createFilesTree(
-                    multipleFileTorrentWithSubdirectoriesParsed,
-                    dispatchers
+                    torrentFile = multipleFileTorrentWithSubdirectoriesParsed,
+                    dispatchers = dispatchers
                 )
             assertTreeResultsAreSimilar(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
         }
 
     @Test
     fun `Parsing torrent that is too big`() = runTest {
-        try {
-            TorrentFileParser.parseFile(getResource(bigTorrent), dispatchers)
-        } catch (ignore: FileIsTooLargeException) {
-            return@runTest
+        assertFailsWith<FileIsTooLargeException> {
+            TorrentFileParser.parseTorrentFile(getResource(bigTorrent), dispatchers)
         }
-        throw AssertionError("FileIsTooLargeException exception is not thrown")
     }
 
     @Test
     fun `Parsing and creating tree for torrent with multiple same top-level files`() = runTest {
-        try {
-            TorrentFileParser.createFilesTree(
-                TorrentFileParser.parseFile(
-                    getResource(
-                        torrentWithMultipleSameTopLevelFiles
-                    ), dispatchers
-                ), dispatchers
+        assertFailsWith<FileParseException> {
+            val (_, torrentFile) = TorrentFileParser.parseTorrentFile(
+                getResource(torrentWithMultipleSameTopLevelFiles),
+                dispatchers
             )
-        } catch (ignore: FileParseException) {
-            return@runTest
+            TorrentFileParser.createFilesTree(torrentFile, dispatchers)
         }
-        throw AssertionError("FileParseException exception is not thrown")
     }
 
     @Test
     fun `Parsing and creating tree for torrent with multiple same files`() = runTest {
-        try {
-            TorrentFileParser.createFilesTree(
-                TorrentFileParser.parseFile(
-                    getResource(
-                        torrentWithMultipleSameFiles
-                    ), dispatchers
-                ), dispatchers
+        assertFailsWith<FileParseException> {
+            val (_, torrentFile) = TorrentFileParser.parseTorrentFile(
+                getResource(torrentWithMultipleSameFiles),
+                dispatchers
             )
-        } catch (ignore: FileParseException) {
-            return@runTest
+            TorrentFileParser.createFilesTree(torrentFile, dispatchers)
         }
-        throw AssertionError("FileParseException exception is not thrown")
     }
 
     private fun assertTreeResultsAreSimilar(
@@ -129,12 +124,13 @@ class TorrentFileParserTest {
 
     private companion object {
         const val singleFileTorrent = "debian-10.9.0-amd64-netinst.iso.torrent"
+        const val singleFileTorrentInfoHash = "9f292c93eb0dbdd7ff7a4aa551aaa1ea7cafe004"
         val singleFileTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
                 TorrentFileParser.TorrentFile.Info(
                     files = null,
                     length = 353370112,
-                    name = "debian-10.9.0-amd64-netinst.iso"
+                    name = "debian-10.9.0-amd64-netinst.iso",
                 )
             )
         }
@@ -152,6 +148,7 @@ class TorrentFileParserTest {
         }
 
         const val multipleFileTorrent = "Fedora-Workstation-Live-x86_64-34.torrent"
+        const val multipleFileTorrentInfoHash = "2046e45fb6cf298cd25e4c0decbea40c6603d91b"
         val multipleFileTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
                 TorrentFileParser.TorrentFile.Info(
@@ -166,7 +163,7 @@ class TorrentFileParserTest {
                         )
                     ),
                     length = null,
-                    name = "Fedora-Workstation-Live-x86_64-34"
+                    name = "Fedora-Workstation-Live-x86_64-34",
                 )
             )
         }
@@ -198,6 +195,7 @@ class TorrentFileParserTest {
         }
 
         const val multipleFileTorrentWithSubdirectories = "with_subdirectories.torrent"
+        const val multipleFileTorrentWithSubdirectoriesInfoHash = "17566bcae446da4167827f4e5ce970318a6fbd99"
         val multipleFileTorrentWithSubdirectoriesParsed by lazy {
             TorrentFileParser.TorrentFile(
                 TorrentFileParser.TorrentFile.Info(
@@ -212,7 +210,7 @@ class TorrentFileParserTest {
                         )
                     ),
                     length = null,
-                    name = "foo"
+                    name = "foo",
                 )
             )
         }

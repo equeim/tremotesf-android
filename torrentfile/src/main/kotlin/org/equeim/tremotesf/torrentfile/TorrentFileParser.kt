@@ -10,15 +10,18 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
+import org.equeim.bencode.ByteRange
+import org.equeim.bencode.ReportByteRange
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
-
 import timber.log.Timber
-
+import java.io.EOFException
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import kotlin.math.min
 
 
 class FileReadException(cause: Throwable) : Exception(cause)
@@ -28,9 +31,78 @@ class FileParseException : Exception {
     constructor(message: String) : super(message)
 }
 
+data class TorrentParseResult internal constructor(
+    val infoHash: String,
+    internal val torrentFile: TorrentFileParser.TorrentFile,
+)
+
 object TorrentFileParser {
-    suspend fun createFilesTree(fd: FileDescriptor): TorrentFilesTreeBuildResult {
-        return createFilesTree(parseFd(fd))
+    suspend fun parseTorrentFile(fd: FileDescriptor): TorrentParseResult {
+        val fileInput = FileInputStream(fd)
+        return parseTorrentFile(fileInput)
+    }
+
+    @VisibleForTesting
+    internal suspend fun parseTorrentFile(
+        inputStream: FileInputStream,
+        dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
+    ): TorrentParseResult =
+        withContext(dispatchers.IO) {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            if (inputStream.available() > MAX_FILE_SIZE) {
+                Timber.e("File is too large")
+                throw FileIsTooLargeException()
+            }
+            try {
+                val (torrentFile, infoByteRange) = Bencode.decode<TorrentFile>(inputStream.buffered())
+                infoByteRange ?: throw SerializationException("Failed to determine info dictionary byte range")
+                TorrentParseResult(computeInfoHashV1(inputStream, infoByteRange), torrentFile)
+            } catch (error: IOException) {
+                Timber.e(error, "Failed to read file")
+                throw FileReadException(error)
+            } catch (error: SerializationException) {
+                Timber.e(error, "Failed to parse bencode structure")
+                throw FileParseException(error)
+            }
+        }
+
+    @Serializable
+    @VisibleForTesting
+    internal data class TorrentFile(@ReportByteRange val info: Info) {
+        @Serializable
+        data class Info(
+            val files: List<File>? = null,
+            val length: Long? = null,
+            val name: String,
+        )
+
+        @Serializable
+        data class File(val length: Long, val path: List<String>)
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun computeInfoHashV1(inputStream: FileInputStream, byteRange: ByteRange): String {
+        try {
+            inputStream.channel.position(byteRange.offset.toLong())
+            val digestInputStream =
+                DigestInputStream(inputStream, MessageDigest.getInstance("SHA1"))
+            var remaining = byteRange.length
+            val buffer = ByteArray(8192)
+            while (remaining > 0) {
+                val len = min(buffer.size, remaining)
+                val n = digestInputStream.read(buffer, 0, len)
+                if (n == -1) throw EOFException()
+                remaining -= n
+            }
+            return digestInputStream.messageDigest.digest().toHexString()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to compute info hash")
+            throw e
+        }
+    }
+
+    suspend fun createFilesTree(parseResult: TorrentParseResult): TorrentFilesTreeBuildResult {
+        return createFilesTree(parseResult.torrentFile)
     }
 
     @VisibleForTesting
@@ -71,46 +143,8 @@ object TorrentFileParser {
                     }
                 }
             }.getOrElse {
+                Timber.e(it, "Failed to build file tree")
                 throw if (it is FileParseException) it else FileParseException(it)
-            }
-        }
-
-    @Serializable
-    @VisibleForTesting
-    internal data class TorrentFile(val info: Info) {
-        @Serializable
-        data class Info(
-            val files: List<File>? = null,
-            val length: Long? = null,
-            val name: String,
-        )
-
-        @Serializable
-        data class File(val length: Long, val path: List<String>)
-    }
-
-    private suspend fun parseFd(fd: FileDescriptor): TorrentFile =
-        parseFile(FileInputStream(fd).buffered())
-
-    @VisibleForTesting
-    internal suspend fun parseFile(
-        inputStream: InputStream,
-        dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
-    ): TorrentFile =
-        withContext(dispatchers.IO) {
-            @Suppress("BlockingMethodInNonBlockingContext")
-            if (inputStream.available() > MAX_FILE_SIZE) {
-                Timber.e("File is too large")
-                throw FileIsTooLargeException()
-            }
-            try {
-                Bencode.decode(inputStream)
-            } catch (error: IOException) {
-                Timber.e(error, "Failed to read file")
-                throw FileReadException(error)
-            } catch (error: SerializationException) {
-                Timber.e(error, "Failed to parse bencode structure")
-                throw FileParseException(error)
             }
         }
 
