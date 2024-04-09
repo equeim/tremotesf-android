@@ -234,6 +234,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                         AddTorrentFileModel.ParserStatus.FileIsTooLarge -> placeholderView.showError(getText(R.string.file_is_too_large))
                         AddTorrentFileModel.ParserStatus.ReadingError -> placeholderView.showError(getText(R.string.file_reading_error))
                         AddTorrentFileModel.ParserStatus.ParsingError -> placeholderView.showError(getText(R.string.file_parsing_error))
+                        AddTorrentFileModel.ParserStatus.TorrentIsAlreadyAdded -> placeholderView.showError(getText(R.string.torrent_duplicate))
                         else -> when (downloadingSettings) {
                             is RpcRequestState.Loading -> placeholderView.showLoading()
                             is RpcRequestState.Error -> placeholderView.showError(downloadingSettings.error)

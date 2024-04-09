@@ -24,14 +24,16 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.torrentfile.FileParseException
 import org.equeim.tremotesf.torrentfile.FileReadException
 import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
-import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.requests.FileSize
-import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
@@ -45,6 +47,7 @@ interface AddTorrentFileModel {
         FileIsTooLarge,
         ReadingError,
         ParsingError,
+        TorrentIsAlreadyAdded,
         Loaded
     }
 
@@ -188,6 +191,8 @@ class AddTorrentFileModelImpl(
     }
 
     private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
+        Timber.d("Parsing torrent file from URI $uri")
+
         val fd = try {
             context.contentResolver.openAssetFileDescriptor(uri, "r")
         } catch (e: Exception) {
@@ -201,15 +206,8 @@ class AddTorrentFileModelImpl(
             return@withContext
         }
         val fdAtomic = AtomicReference(fd)
-        try {
-            val (rootNode, files) = TorrentFileParser.createFilesTree(fd.fileDescriptor)
-            withContext(Dispatchers.Main) {
-                this@AddTorrentFileModelImpl.fd = fd
-                fdAtomic.set(null)
-                this@AddTorrentFileModelImpl.files = files
-                filesTree.init(rootNode, savedStateHandle)
-                parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
-            }
+        val parseResult = try {
+             TorrentFileParser.parseTorrentFile(fd.fileDescriptor)
         } catch (error: FileReadException) {
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
@@ -221,6 +219,28 @@ class AddTorrentFileModelImpl(
             return@withContext
         } finally {
             fdAtomic.get()?.closeQuietly()
+        }
+
+        Timber.d("Parsed torrent file from URI $uri, its info hash is ${parseResult.infoHash}")
+
+        if (GlobalServers.serversState.value.currentServer?.lastTorrentsFinishedState?.containsKey(Server.TorrentHashString(parseResult.infoHash)) == true) {
+            Timber.e("Torrent with info hash ${parseResult.infoHash} is already added")
+            parserStatus.value = AddTorrentFileModel.ParserStatus.TorrentIsAlreadyAdded
+            return@withContext
+        }
+
+        try {
+            val (rootNode, files) = TorrentFileParser.createFilesTree(parseResult)
+            withContext(Dispatchers.Main) {
+                this@AddTorrentFileModelImpl.fd = fd
+                fdAtomic.set(null)
+                this@AddTorrentFileModelImpl.files = files
+                filesTree.init(rootNode, savedStateHandle)
+                parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
+            }
+        } catch (error: FileParseException) {
+            parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+            return@withContext
         }
     }
 
