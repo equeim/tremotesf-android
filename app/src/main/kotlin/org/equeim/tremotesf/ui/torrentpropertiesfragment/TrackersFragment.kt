@@ -126,12 +126,10 @@ class TrackersFragmentViewModel(private val torrentHashString: String) : ViewMod
     }.stateIn(GlobalRpcClient, viewModelScope)
 
     fun addTrackers(announceUrls: List<String>) {
+        val trackers = (trackers.value as? RpcRequestState.Loaded)?.response ?: return
         viewModelScope.launch {
             val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.trackers_add_error) {
-                addTorrentTrackers(
-                    torrentHashString,
-                    announceUrls
-                )
+                addTorrentTrackers(torrentHashString, announceUrls, trackers)
             }
             if (ok) {
                 refreshRequests.emit(Unit)
@@ -140,12 +138,14 @@ class TrackersFragmentViewModel(private val torrentHashString: String) : ViewMod
     }
 
     fun replaceTracker(trackerId: Int, newAnnounceUrl: String) {
+        val trackers = (trackers.value as? RpcRequestState.Loaded)?.response ?: return
         viewModelScope.launch {
             val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.tracker_replace_error) {
                 replaceTorrentTracker(
                     torrentHashString,
                     trackerId,
-                    newAnnounceUrl
+                    newAnnounceUrl,
+                    trackers
                 )
             }
             if (ok) {
@@ -155,11 +155,13 @@ class TrackersFragmentViewModel(private val torrentHashString: String) : ViewMod
     }
 
     fun removeTrackers(trackerIds: List<Int>) {
+        val trackers = (trackers.value as? RpcRequestState.Loaded)?.response ?: return
         viewModelScope.launch {
             val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.trackers_remove_error) {
                 removeTorrentTrackers(
                     torrentHashString,
-                    trackerIds
+                    trackerIds,
+                    trackers
                 )
             }
             if (ok) {

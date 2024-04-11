@@ -7,7 +7,6 @@ package org.equeim.tremotesf.rpc.requests.torrentproperties
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.serializer
 import org.equeim.tremotesf.rpc.RpcClient
@@ -23,13 +22,13 @@ suspend fun RpcClient.setTorrentBandwidthPriority(torrentHashString: String, val
     setTorrentProperty(torrentHashString, "bandwidthPriority", value)
 
 suspend fun RpcClient.setTorrentDownloadSpeedLimit(torrentHashString: String, value: TransferRate) =
-    setTorrentProperty(torrentHashString, "downloadLimit", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setTorrentProperty(torrentHashString, "downloadLimit", value, TransferRate.KiloBytesPerSecondSerializer)
 
 suspend fun RpcClient.setTorrentDownloadSpeedLimited(torrentHashString: String, value: Boolean) =
     setTorrentProperty(torrentHashString, "downloadLimited", value)
 
 suspend fun RpcClient.setTorrentUploadSpeedLimit(torrentHashString: String, value: TransferRate) =
-    setTorrentProperty(torrentHashString, "uploadLimit", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setTorrentProperty(torrentHashString, "uploadLimit", value, TransferRate.KiloBytesPerSecondSerializer)
 
 suspend fun RpcClient.setTorrentUploadSpeedLimited(torrentHashString: String, value: Boolean) =
     setTorrentProperty(torrentHashString, "uploadLimited", value)
@@ -70,22 +69,10 @@ suspend fun RpcClient.setTorrentFilesPriority(
         }, fileIndices
     )
 
-suspend fun RpcClient.addTorrentTrackers(torrentHashString: String, trackerAnnounceUrls: List<String>) =
-    setTorrentProperty(torrentHashString, "trackerAdd", trackerAnnounceUrls)
-
-suspend fun RpcClient.replaceTorrentTracker(torrentHashString: String, trackerId: Int, newAnnounceUrl: String) =
-    setTorrentProperty(torrentHashString, "trackerReplace", buildJsonArray {
-        add(JsonPrimitive(trackerId))
-        add(JsonPrimitive(newAnnounceUrl))
-    })
-
-suspend fun RpcClient.removeTorrentTrackers(torrentHashString: String, trackerIds: List<Int>) =
-    setTorrentProperty(torrentHashString, "trackerRemove", trackerIds)
-
 /**
  * @throws RpcRequestError
  */
-private suspend inline fun <reified T> RpcClient.setTorrentProperty(
+internal suspend inline fun <reified T> RpcClient.setTorrentProperty(
     torrentHashString: String,
     property: String,
     value: T,
@@ -95,7 +82,7 @@ private suspend inline fun <reified T> RpcClient.setTorrentProperty(
 /**
  * @throws RpcRequestError
  */
-private suspend fun <T> RpcClient.setTorrentProperty(
+internal suspend fun <T> RpcClient.setTorrentProperty(
     torrentHashString: String,
     property: String,
     value: T,
