@@ -14,6 +14,7 @@ class ServerCapabilities internal constructor(
     val serverOs: ServerOs,
 ) {
     val hasTableMode: Boolean get() = rpcVersion >= 16
+    val hasTrackerListProperty get() = rpcVersion >= 17
 
     enum class ServerOs {
         UnixLike,
