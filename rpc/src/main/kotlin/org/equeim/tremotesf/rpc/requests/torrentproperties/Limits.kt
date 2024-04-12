@@ -7,12 +7,12 @@ package org.equeim.tremotesf.rpc.requests.torrentproperties
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.elementNames
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcEnum
+import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import kotlin.time.Duration
@@ -20,36 +20,13 @@ import kotlin.time.Duration
 /**
  * @throws RpcRequestError
  */
+@OptIn(ExperimentalSerializationApi::class)
 suspend fun RpcClient.getTorrentLimits(hashString: String): TorrentLimits? =
-    performRequest<RpcResponse<TorrentLimitsResponseArguments>, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentGet,
-        TorrentLimitsRequestArguments(hashString),
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentLimits>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, TorrentLimits.serializer().descriptor.elementNames.toList()),
         "getTorrentLimits"
     ).arguments.torrents.firstOrNull()
-
-@Serializable
-private data class TorrentLimitsRequestArguments(
-    @SerialName("ids")
-    val ids: List<String>,
-
-    @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
-    val fields: List<String> = TorrentLimits.serializer().descriptor.elementNames.toList(),
-) {
-    constructor(hashString: String) : this(ids = listOf(hashString))
-}
-
-@Serializable
-private data class TorrentLimitsResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<TorrentLimits>,
-) {
-    init {
-        if (torrents.size > 1) {
-            throw SerializationException("'torrents' array must not contain more than one element")
-        }
-    }
-}
 
 @Serializable
 data class TorrentLimits(

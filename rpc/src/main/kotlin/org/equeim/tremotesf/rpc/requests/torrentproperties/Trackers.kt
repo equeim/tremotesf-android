@@ -9,7 +9,6 @@ package org.equeim.tremotesf.rpc.requests.torrentproperties
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -31,9 +30,9 @@ import java.time.Instant
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentTrackers(hashString: String): List<Tracker>? =
-    performRequest<RpcResponse<TorrentTrackersResponseArguments>, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentGet,
-        TorrentTrackersRequestArguments(hashString),
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentTrackers>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, "trackerStats"),
         "getTorrentTrackers"
     ).arguments.torrents.firstOrNull()?.trackers
 
@@ -80,30 +79,7 @@ data class Tracker(
 }
 
 @Serializable
-private data class TorrentTrackersRequestArguments(
-    @SerialName("ids")
-    val ids: List<String>,
-
-    @SerialName("fields")
-    val fields: List<String> = listOf("trackerStats"),
-) {
-    constructor(hashString: String) : this(ids = listOf(hashString))
-}
-
-@Serializable
-private data class TorrentTrackersResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<TorrentFields>,
-) {
-    init {
-        if (torrents.size > 1) {
-            throw SerializationException("'torrents' array must not contain more than one element")
-        }
-    }
-
-    @Serializable
-    data class TorrentFields(@SerialName("trackerStats") val trackers: List<Tracker>)
-}
+private data class TorrentTrackers(@SerialName("trackerStats") val trackers: List<Tracker>)
 
 private object PeersCountSerializer : KSerializer<Int> {
     override val descriptor = PrimitiveSerialDescriptor(PeersCountSerializer::class.qualifiedName!!, PrimitiveKind.INT)

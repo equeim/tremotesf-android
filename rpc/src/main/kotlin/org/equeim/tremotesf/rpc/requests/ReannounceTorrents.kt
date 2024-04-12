@@ -11,5 +11,5 @@ import org.equeim.tremotesf.rpc.RpcRequestError
  * @throws RpcRequestError
  */
 suspend fun RpcClient.reannounceTorrents(ids: List<Int>) {
-    performRequest<RpcResponseWithoutArguments, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentReannounce, RequestWithIds(ids))
+    performRequest<RpcResponseWithoutArguments, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentReannounce, RequestWithTorrentsIds(ids))
 }
