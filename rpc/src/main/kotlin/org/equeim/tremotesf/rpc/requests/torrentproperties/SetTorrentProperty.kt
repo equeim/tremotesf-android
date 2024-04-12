@@ -13,6 +13,7 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles.FilePriority
 import kotlin.time.Duration
 
 suspend fun RpcClient.setTorrentHonorSessionLimits(torrentHashString: String, value: Boolean) =
@@ -59,13 +60,13 @@ suspend fun RpcClient.setTorrentFilesWanted(torrentHashString: String, fileIndic
 suspend fun RpcClient.setTorrentFilesPriority(
     torrentHashString: String,
     fileIndices: List<Int>,
-    priority: TorrentFiles.FilePriority,
+    priority: FilePriority,
 ) =
     setTorrentProperty(
         torrentHashString, when (priority) {
-            org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles.FilePriority.Low -> "priority-low"
-            org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles.FilePriority.Normal -> "priority-normal"
-            org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles.FilePriority.High -> "priority-high"
+            FilePriority.Low -> "priority-low"
+            FilePriority.Normal -> "priority-normal"
+            FilePriority.High -> "priority-high"
         }, fileIndices
     )
 

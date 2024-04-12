@@ -22,12 +22,12 @@ suspend fun RpcClient.getTorrentsDownloadDirectories(): List<NormalizedRpcPath> 
         ).hasTableMode
     ) {
         performRequest<RpcResponse<TorrentsDownloadDirectoriesTableResponseArguments>>(
-            org.equeim.tremotesf.rpc.requests.TORRENTS_DOWNLOAD_DIRECTORIES_TABLE_REQUEST,
+            TORRENTS_DOWNLOAD_DIRECTORIES_TABLE_REQUEST,
             "getTorrentsDownloadDirectories"
         ).arguments.torrents
     } else {
         performRequest<RpcResponse<TorrentsDownloadDirectoriesObjectsResponseArguments>>(
-            org.equeim.tremotesf.rpc.requests.TORRENTS_DOWNLOAD_DIRECTORIES_OBJECTS_REQUEST,
+            TORRENTS_DOWNLOAD_DIRECTORIES_OBJECTS_REQUEST,
             "getTorrentsDownloadDirectories"
         ).arguments.torrents
     }.map { it.downloadDirectory }

@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.NotNormalizedRpcPath
+import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
 
 /**
@@ -17,7 +18,7 @@ import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
  */
 suspend fun RpcClient.setTorrentsLocation(hashStrings: List<String>, newDownloadDirectory: String, moveFiles: Boolean) {
     performRequest<RpcResponseWithoutArguments, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentSetLocation,
+        RpcMethod.TorrentSetLocation,
         SetLocationRequestArguments(hashStrings, NotNormalizedRpcPath(newDownloadDirectory), moveFiles)
     )
 }

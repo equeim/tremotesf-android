@@ -10,7 +10,6 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.descriptors.elementNames
 import org.equeim.tremotesf.rpc.RpcClient
@@ -18,6 +17,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.OptionalSecondsToDurationSerializer
+import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -28,36 +28,13 @@ import kotlin.time.Duration
 /**
  * @throws RpcRequestError
  */
+@OptIn(ExperimentalSerializationApi::class)
 suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails? =
-    performRequest<RpcResponse<TorrentDetailsResponseArguments>, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentGet,
-        TorrentDetailsRequestArguments(hashString),
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentDetails>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, TorrentDetails.serializer().descriptor.elementNames.toList()),
         "getTorrentDetails"
     ).arguments.torrents.firstOrNull()
-
-@Serializable
-private data class TorrentDetailsRequestArguments(
-    @SerialName("ids")
-    val ids: List<String>,
-
-    @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
-    val fields: List<String> = TorrentDetails.serializer().descriptor.elementNames.toList(),
-) {
-    constructor(hashString: String) : this(ids = listOf(hashString))
-}
-
-@Serializable
-private data class TorrentDetailsResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<TorrentDetails>,
-) {
-    init {
-        if (torrents.size > 1) {
-            throw SerializationException("'torrents' array must not contain more than one element")
-        }
-    }
-}
 
 @Serializable
 data class TorrentDetails(

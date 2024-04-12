@@ -11,15 +11,16 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.RpcEnum
+import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentFiles(hashString: String): TorrentFiles? =
-    performRequest<RpcResponse<TorrentFilesResponseArguments>, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentGet,
-        TorrentFilesRequestArguments(hashString),
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentFiles>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, listOf("files", "fileStats")),
         "getTorrentFiles"
     ).arguments.torrents.firstOrNull()
 
@@ -30,6 +31,12 @@ data class TorrentFiles(
     @SerialName("fileStats")
     val fileStats: List<FileStats>,
 ) {
+    init {
+        if (files.size != fileStats.size) {
+            throw SerializationException("'files' and 'fileStats' arrays must have the same size")
+        }
+    }
+
     @Serializable
     data class File(
         @SerialName("name")
@@ -58,33 +65,5 @@ data class TorrentFiles(
         High(1);
 
         internal object Serializer : RpcEnum.Serializer<FilePriority>(FilePriority::class)
-    }
-}
-
-@Serializable
-private data class TorrentFilesRequestArguments(
-    @SerialName("ids")
-    val ids: List<String>,
-
-    @SerialName("fields")
-    val fields: List<String> = listOf("files", "fileStats"),
-) {
-    constructor(hashString: String) : this(ids = listOf(hashString))
-}
-
-@Serializable
-private data class TorrentFilesResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<TorrentFiles>,
-) {
-    init {
-        if (torrents.size > 1) {
-            throw SerializationException("'torrents' array must not contain more than one element")
-        }
-        torrents.firstOrNull()?.let {
-            if (it.files.size != it.fileStats.size) {
-                throw SerializationException("'files' and 'fileStats' arrays must have the same size")
-            }
-        }
     }
 }
