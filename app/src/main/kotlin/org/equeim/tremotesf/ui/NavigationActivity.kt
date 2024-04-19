@@ -120,18 +120,45 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
         handleDropEvents()
 
-        model.showRpcError
+        model.showSnackbarMessage
             .filterNotNull()
-            .launchAndCollectWhenStarted(this) { error ->
-                binding.root.showSnackbar(
-                    message = getString(error.errorContext, error.error.getErrorString(this)),
-                    duration = Snackbar.LENGTH_LONG,
-                    lifecycleOwner = this,
-                    activity = this,
-                    actionText = R.string.see_detailed_error_message,
-                    action = { navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedError(GlobalRpcClient))) }
-                )
-                model.rpcErrorDismissed()
+            .launchAndCollectWhenStarted(this) { message ->
+                when (message) {
+                    is NavigationActivityViewModel.SnackbarMessage.Error -> {
+                        val error = message.error
+                        binding.root.showSnackbar(
+                            message = getString(
+                                error.errorContext,
+                                error.error.getErrorString(this)
+                            ),
+                            duration = Snackbar.LENGTH_LONG,
+                            lifecycleOwner = this,
+                            activity = this,
+                            actionText = R.string.see_detailed_error_message,
+                            action = {
+                                navigate(
+                                    NavMainDirections.toDetailedConnectionErrorDialogFragment(
+                                        error.error.makeDetailedError(GlobalRpcClient)
+                                    )
+                                )
+                            }
+                        )
+                    }
+
+                    is NavigationActivityViewModel.SnackbarMessage.TextMessage -> {
+                        binding.root.showSnackbar(
+                            message = if (message.formatArgs.isNotEmpty()) {
+                                getString(message.message, *message.formatArgs.toTypedArray())
+                            } else {
+                                getText(message.message)
+                            },
+                            duration = Snackbar.LENGTH_SHORT,
+                            lifecycleOwner = this,
+                            activity = this
+                        )
+                    }
+                }
+                model.snackbarDismissed()
             }
 
         ForegroundService.startStopAutomatically()
@@ -321,7 +348,8 @@ class NavHostFragment : NavHostFragment() {
                 .build()
 
         private companion object {
-            fun Int.orDefault(@AnimatorRes defaultAnimator: Int): Int = if (this != -1) this else defaultAnimator
+            fun Int.orDefault(@AnimatorRes defaultAnimator: Int): Int =
+                if (this != -1) this else defaultAnimator
         }
     }
 }

@@ -276,6 +276,18 @@ object Settings {
         mappedToPrefs = bandwidthPriorityMapper.enumToPrefsValue
     )
 
+    val mergeTrackersWhenAddingExistingTorrent: Property<Boolean> =
+        PrefsProperty(
+            R.string.prefs_merge_trackers_when_adding_existing_torrent_key,
+            R.bool.prefs_merge_trackers_when_adding_existing_torrent_default_value
+        )
+
+    val askForMergingTrackersWhenAddingExistingTorrent: Property<Boolean> =
+        PrefsProperty(
+            R.string.prefs_ask_for_merging_trackers_when_adding_existing_torrent_key,
+            R.bool.prefs_ask_for_merging_trackers_when_adding_existing_torrent_default_value
+        )
+
     val torrentsSortMode: Property<TorrentsListFragmentViewModel.SortMode> =
         PrefsProperty<Int>(
             R.string.torrents_sort_mode_key,

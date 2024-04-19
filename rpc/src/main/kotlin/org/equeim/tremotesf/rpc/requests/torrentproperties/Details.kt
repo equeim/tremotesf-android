@@ -19,6 +19,8 @@ import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.OptionalSecondsToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
+import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer

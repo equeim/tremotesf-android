@@ -14,6 +14,8 @@ import org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
+import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import kotlin.time.Duration
 

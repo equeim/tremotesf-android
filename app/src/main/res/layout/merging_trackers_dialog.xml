@@ -1,0 +1,18 @@
+<!--
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/linear_layout_vertical_spacing"
+    android:paddingHorizontal="@dimen/dialog_horizontal_padding">
+
+    <CheckBox
+        android:id="@+id/dont_ask_check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/do_not_ask_again" />
+</FrameLayout>

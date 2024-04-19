@@ -18,13 +18,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
-import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.requests.addTorrentLink
 import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
@@ -96,12 +95,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (model.shouldSetTorrentLink) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                model.getInitialTorrentLink()?.let(binding.torrentLinkEdit::setText)
-                model.shouldSetTorrentLink = false
-            }
-        }
+
         binding.addButton.apply {
             setOnClickListener { addTorrentLink() }
             extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
@@ -113,6 +107,12 @@ class AddTorrentLinkFragment : AddTorrentFragment(
                 is RpcRequestState.Loaded -> showView(it.response)
                 is RpcRequestState.Loading -> showPlaceholder(null)
                 is RpcRequestState.Error -> showPlaceholder(it.error)
+            }
+        }
+
+        model.addTorrentState.launchAndCollectWhenStarted(viewLifecycleOwner) {
+            updateAddTorrentLinkState(it, currentCoroutineContext(), binding.addButton) { torrentName ->
+                AddTorrentLinkFragmentDirections.toMergingTrackersDialogFragment(torrentName, cancelable = true)
             }
         }
     }
@@ -155,19 +155,21 @@ class AddTorrentLinkFragment : AddTorrentFragment(
     private fun addTorrentLink(): Unit = with(binding) {
         var error = false
 
+        val torrentLink = torrentLinkEdit.text?.toString().orEmpty()
         torrentLinkEdit.textInputLayout.error =
-            if (torrentLinkEdit.text?.trimmedLength() == 0) {
+            if (torrentLink.trimmedLength() == 0) {
                 error = true
                 getString(R.string.empty_field_error)
             } else {
                 null
             }
 
-        val downloadDirectoryEdit = downloadDirectoryLayout.downloadDirectoryEdit
+        val downloadDirectory =
+            downloadDirectoryLayout.downloadDirectoryEdit.text?.toString().orEmpty()
         val downloadDirectoryLayout = downloadDirectoryLayout.downloadDirectoryLayout
 
         downloadDirectoryLayout.error =
-            if (downloadDirectoryEdit.text?.trimmedLength() == 0) {
+            if (downloadDirectory.trimmedLength() == 0) {
                 error = true
                 getString(R.string.empty_field_error)
             } else {
@@ -178,18 +180,12 @@ class AddTorrentLinkFragment : AddTorrentFragment(
             return
         }
 
-        GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
-            addTorrentLink(
-                torrentLinkEdit.text?.toString().orEmpty(),
-                downloadDirectoryEdit.text.toString(),
-                priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
-                startDownloadingCheckBox.isChecked,
-            )
-        }
-
-        directoriesAdapter.save(binding.downloadDirectoryLayout.downloadDirectoryEdit)
-
-        requiredActivity.onBackPressedDispatcher.onBackPressed()
+        model.addTorrentLink(
+            torrentLink,
+            downloadDirectory,
+            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
+            startDownloadingCheckBox.isChecked
+        )
     }
 
     private fun showPlaceholder(error: RpcRequestError?) {
@@ -202,16 +198,38 @@ class AddTorrentLinkFragment : AddTorrentFragment(
 
     private suspend fun showView(downloadingSettings: DownloadingServerSettings) = with(binding) {
         if (model.shouldSetInitialRpcInputs) {
-            downloadDirectoryLayout.downloadDirectoryEdit.setText(model.getInitialDownloadDirectory(downloadingSettings))
-            startDownloadingCheckBox.isChecked = model.getInitialStartAfterAdding(downloadingSettings)
+            downloadDirectoryLayout.downloadDirectoryEdit.setText(
+                model.getInitialDownloadDirectory(
+                    downloadingSettings
+                )
+            )
+            startDownloadingCheckBox.isChecked =
+                model.getInitialStartAfterAdding(downloadingSettings)
             model.shouldSetInitialRpcInputs = false
         }
         if (model.shouldSetInitialLocalInputs) {
-            torrentLinkEdit.setText(model.getInitialTorrentLink())
+            val initialTorrentLink = model.getInitialTorrentLink()
+            initialTorrentLink?.let(torrentLinkEdit::setText)
             priorityView.setText(priorityItems[priorityItemEnums.indexOf(model.getInitialPriority())])
             model.shouldSetInitialLocalInputs = false
+
+            if (initialTorrentLink != null) {
+                model.checkIfTorrentExistsForInitialLink(initialTorrentLink)
+            }
         }
         scrollView.isVisible = true
         placeholderView.hide()
+    }
+
+    override fun navigateBack() {
+        if (!model.shouldSetInitialRpcInputs) {
+            directoriesAdapter.save(binding.downloadDirectoryLayout.downloadDirectoryEdit)
+        }
+        super.navigateBack()
+    }
+
+    override fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
+        super.onMergeTrackersDialogResult(result)
+        model.onMergeTrackersDialogResult(result)
     }
 }

@@ -17,27 +17,31 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.addTorrentFile
+import org.equeim.tremotesf.rpc.requests.checkIfTorrentExists
 import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
+import org.equeim.tremotesf.rpc.requests.torrentproperties.addTorrentTrackers
 import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.torrentfile.FileParseException
 import org.equeim.tremotesf.torrentfile.FileReadException
 import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
+import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment.AddTorrentState
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
 import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicReference
 
 
 interface AddTorrentFileModel {
@@ -47,18 +51,12 @@ interface AddTorrentFileModel {
         FileIsTooLarge,
         ReadingError,
         ParsingError,
-        TorrentIsAlreadyAdded,
         Loaded
     }
 
-    data class FilePriorities(
-        val unwantedFiles: List<Int>,
-        val lowPriorityFiles: List<Int>,
-        val highPriorityFiles: List<Int>,
-    )
-
     data class ViewUpdateData(
         val parserStatus: ParserStatus,
+        val addTorrentState: AddTorrentState?,
         val downloadingSettings: RpcRequestState<DownloadingServerSettings>,
         val hasStoragePermission: Boolean,
     )
@@ -68,7 +66,6 @@ interface AddTorrentFileModel {
     val needStoragePermission: Boolean
     val storagePermissionHelper: RuntimePermissionHelper?
 
-    val parserStatus: StateFlow<ParserStatus>
     val viewUpdateData: Flow<ViewUpdateData>
 
     val filesTree: TorrentFilesTree
@@ -80,8 +77,12 @@ interface AddTorrentFileModel {
 
     suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String
     suspend fun getFreeSpace(directory: String): FileSize?
-    fun detachFd(): ParcelFileDescriptor?
-    fun getFilePriorities(): FilePriorities
+    fun addTorrentFile(
+        downloadDirectory: String,
+        bandwidthPriority: TorrentLimits.BandwidthPriority,
+        startDownloading: Boolean
+    )
+    fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result)
 }
 
 class AddTorrentFileModelImpl(
@@ -100,17 +101,22 @@ class AddTorrentFileModelImpl(
         null
     }
 
-    override val needStoragePermission = args.uri.scheme == ContentResolver.SCHEME_FILE && storagePermissionHelper != null
+    override val needStoragePermission =
+        args.uri.scheme == ContentResolver.SCHEME_FILE && storagePermissionHelper != null
 
-    override val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
+    private val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
+
+    private val addTorrentState = MutableStateFlow<AddTorrentState?>(null)
 
     override val viewUpdateData = combine(
         parserStatus,
+        addTorrentState,
         downloadingSettings,
         storagePermissionHelper?.permissionGranted ?: flowOf(false)
-    ) { parserStatus, rpcStatus, hasPermission ->
+    ) { parserStatus, addTorrentLinkState, rpcStatus, hasPermission ->
         AddTorrentFileModel.ViewUpdateData(
             parserStatus,
+            addTorrentLinkState,
             rpcStatus,
             hasPermission
         )
@@ -119,11 +125,13 @@ class AddTorrentFileModelImpl(
     private var fd: AssetFileDescriptor? = null
 
     override val filesTree = TorrentFilesTree(viewModelScope)
-    override val torrentName: String
-        get() = filesTree.rootNode.children.first().item.name
+    override lateinit var torrentName: String
+        private set
 
     override val renamedFiles = mutableMapOf<String, String>()
 
+    private lateinit var infoHashV1: String
+    private lateinit var trackers: List<Set<String>>
     private lateinit var files: List<TorrentFilesTree.FileNode>
 
     init {
@@ -151,45 +159,6 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    override fun detachFd(): ParcelFileDescriptor? {
-        Timber.i("detachFd() called")
-        val fd = this.fd
-        return if (fd != null) {
-            Timber.i("detachFd: detaching file descriptor")
-            this.fd = null
-            fd.parcelFileDescriptor
-        } else {
-            Timber.e("detachFd: file descriptor is already detached")
-            null
-        }
-    }
-
-    override fun getFilePriorities(): AddTorrentFileModel.FilePriorities {
-        val unwantedFiles = mutableListOf<Int>()
-        val lowPriorityFiles = mutableListOf<Int>()
-        val highPriorityFiles = mutableListOf<Int>()
-
-        for (file in files) {
-            val item = file.item
-            val id = item.fileId
-            if (item.wantedState == TorrentFilesTree.Item.WantedState.Unwanted) {
-                unwantedFiles.add(id)
-            }
-            when (item.priority) {
-                TorrentFilesTree.Item.Priority.Low -> lowPriorityFiles.add(id)
-                TorrentFilesTree.Item.Priority.High -> highPriorityFiles.add(id)
-                else -> {
-                }
-            }
-        }
-
-        return AddTorrentFileModel.FilePriorities(
-            unwantedFiles,
-            lowPriorityFiles,
-            highPriorityFiles
-        )
-    }
-
     private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
         Timber.d("Parsing torrent file from URI $uri")
 
@@ -205,43 +174,168 @@ class AddTorrentFileModelImpl(
             parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
             return@withContext
         }
-        val fdAtomic = AtomicReference(fd)
-        val parseResult = try {
-             TorrentFileParser.parseTorrentFile(fd.fileDescriptor)
-        } catch (error: FileReadException) {
-            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
-            return@withContext
-        } catch (error: FileIsTooLargeException) {
-            parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
-            return@withContext
-        } catch (error: FileParseException) {
-            parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-            return@withContext
-        } finally {
-            fdAtomic.get()?.closeQuietly()
-        }
-
-        Timber.d("Parsed torrent file from URI $uri, its info hash is ${parseResult.infoHash}")
-
-        if (GlobalServers.serversState.value.currentServer?.lastTorrentsFinishedState?.containsKey(Server.TorrentHashString(parseResult.infoHash)) == true) {
-            Timber.e("Torrent with info hash ${parseResult.infoHash} is already added")
-            parserStatus.value = AddTorrentFileModel.ParserStatus.TorrentIsAlreadyAdded
-            return@withContext
-        }
-
+        var closeFd = true
         try {
-            val (rootNode, files) = TorrentFileParser.createFilesTree(parseResult)
-            withContext(Dispatchers.Main) {
-                this@AddTorrentFileModelImpl.fd = fd
-                fdAtomic.set(null)
-                this@AddTorrentFileModelImpl.files = files
-                filesTree.init(rootNode, savedStateHandle)
-                parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
+            val parseResult = try {
+                TorrentFileParser.parseTorrentFile(fd.fileDescriptor)
+            } catch (error: FileReadException) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+                return@withContext
+            } catch (error: FileIsTooLargeException) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
+                return@withContext
+            } catch (error: FileParseException) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                return@withContext
             }
-        } catch (error: FileParseException) {
-            parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
-            return@withContext
+
+            Timber.d("Parsed torrent file from URI $uri, its info hash is ${parseResult.infoHashV1}")
+            torrentName = parseResult.name
+            infoHashV1 = parseResult.infoHashV1
+            trackers = parseResult.trackers
+
+            if (checkIfTorrentExists()) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.None
+                return@withContext
+            }
+
+            try {
+                val (rootNode, files) = TorrentFileParser.createFilesTree(parseResult)
+                withContext(Dispatchers.Main) {
+                    closeFd = false
+                    this@AddTorrentFileModelImpl.fd = fd
+                    this@AddTorrentFileModelImpl.files = files
+                    filesTree.init(rootNode, savedStateHandle)
+                    parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
+                }
+            } catch (error: FileParseException) {
+                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+                return@withContext
+            }
+        } finally {
+            if (closeFd) {
+                fd.closeQuietly()
+            }
         }
+    }
+
+    override fun addTorrentFile(
+        downloadDirectory: String,
+        bandwidthPriority: TorrentLimits.BandwidthPriority,
+        startDownloading: Boolean
+    ) {
+        Timber.d(
+            "addTorrentFile() called with: downloadDirectory = $downloadDirectory, bandwidthPriority = $bandwidthPriority, startDownloading = $startDownloading"
+        )
+        val fd = detachFd() ?: return
+        val priorities = getFilePriorities()
+        val renamedFiles = renamedFiles.toMap()
+        viewModelScope.launch {
+            addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
+            if (!checkIfTorrentExists()) {
+                GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
+                    addTorrentFile(
+                        torrentFile = fd,
+                        downloadDirectory = downloadDirectory,
+                        bandwidthPriority = bandwidthPriority,
+                        unwantedFiles = priorities.unwantedFiles,
+                        highPriorityFiles = priorities.highPriorityFiles,
+                        lowPriorityFiles = priorities.lowPriorityFiles,
+                        renamedFiles = renamedFiles,
+                        start = startDownloading
+                    )
+                }
+                addTorrentState.value = AddTorrentState.AddedTorrent
+            }
+        }
+    }
+
+    private suspend fun checkIfTorrentExists(): Boolean {
+        val alreadyExists = try {
+            GlobalRpcClient.checkIfTorrentExists(infoHashV1) != null
+        } catch (e: RpcRequestError) {
+            Timber.e(
+                e,
+                "checkIfTorrentExists: failed to check whether torrent with info hash $infoHashV1 exists"
+            )
+            false
+        }
+        if (alreadyExists) {
+            when {
+                Settings.askForMergingTrackersWhenAddingExistingTorrent.get() ->
+                    addTorrentState.value =
+                        AddTorrentState.AskingForMergingTrackers(torrentName)
+
+                Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
+                    mergeTrackersWithExistingTorrent(afterAsking = false)
+
+                else -> addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = false)
+            }
+        }
+        return alreadyExists
+    }
+
+    private fun detachFd(): ParcelFileDescriptor? {
+        Timber.i("detachFd() called")
+        val fd = this.fd
+        return if (fd != null) {
+            Timber.i("detachFd: detaching file descriptor")
+            this.fd = null
+            fd.parcelFileDescriptor
+        } else {
+            Timber.e("detachFd: file descriptor is already detached")
+            null
+        }
+    }
+
+    data class FilePriorities(
+        val unwantedFiles: List<Int>,
+        val lowPriorityFiles: List<Int>,
+        val highPriorityFiles: List<Int>,
+    )
+
+    private fun getFilePriorities(): FilePriorities {
+        val unwantedFiles = mutableListOf<Int>()
+        val lowPriorityFiles = mutableListOf<Int>()
+        val highPriorityFiles = mutableListOf<Int>()
+
+        for (file in files) {
+            val item = file.item
+            val id = item.fileId
+            if (item.wantedState == TorrentFilesTree.Item.WantedState.Unwanted) {
+                unwantedFiles.add(id)
+            }
+            when (item.priority) {
+                TorrentFilesTree.Item.Priority.Low -> lowPriorityFiles.add(id)
+                TorrentFilesTree.Item.Priority.High -> highPriorityFiles.add(id)
+                else -> Unit
+            }
+        }
+
+        return FilePriorities(
+            unwantedFiles,
+            lowPriorityFiles,
+            highPriorityFiles
+        )
+    }
+
+    override fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
+        Timber.d("onMergeTrackersDialogResult() called with: result = $result")
+        if ((result as? MergingTrackersDialogFragment.Result.ButtonClicked)?.merge == true) {
+            mergeTrackersWithExistingTorrent(afterAsking = true)
+        } else {
+            addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = true)
+        }
+    }
+
+    private fun mergeTrackersWithExistingTorrent(afterAsking: Boolean) {
+        Timber.d("mergeTrackersWithExistingTorrent() called with: afterAsking = $afterAsking")
+        val infoHash = this.infoHashV1
+        val trackers = this.trackers
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.merging_trackers_error) {
+            addTorrentTrackers(infoHash, trackers)
+        }
+        addTorrentState.value = AddTorrentState.MergedTrackers(torrentName, afterAsking)
     }
 
     private companion object {

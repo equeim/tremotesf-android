@@ -27,6 +27,7 @@ suspend fun CoordinatorLayout.showSnackbar(
     action: (() -> Unit)? = null,
 ): SnackbarDismissResult = suspendCancellableCoroutine { continuation ->
     Snackbar.make(this, message, duration).apply {
+        setTextMaxLines(5)
         if (actionText != 0 && action != null) {
             setAction(actionText) { action() }
         }

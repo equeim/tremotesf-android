@@ -129,7 +129,7 @@ class TrackersFragmentViewModel(private val torrentHashString: String) : ViewMod
         val trackers = (trackers.value as? RpcRequestState.Loaded)?.response ?: return
         viewModelScope.launch {
             val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.trackers_add_error) {
-                addTorrentTrackers(torrentHashString, announceUrls, trackers)
+                addTorrentTrackers(torrentHashString, announceUrls.map { setOf(it) }, trackers)
             }
             if (ok) {
                 refreshRequests.emit(Unit)
