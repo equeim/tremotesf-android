@@ -6,7 +6,10 @@ package org.equeim.tremotesf.torrentfile
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,7 +43,7 @@ class TorrentFileParserTest {
     fun `Parsing single file torrent`() = runTest {
         val actual = TorrentFileParser.parseTorrentFile(getResource(singleFileTorrent), dispatchers)
         assertEquals(singleFileTorrentParsed, actual.torrentFile)
-        assertEquals(singleFileTorrentInfoHash, actual.infoHash)
+        assertEquals(singleFileTorrentInfoHash, actual.infoHashV1)
     }
 
     @Test
@@ -54,7 +57,7 @@ class TorrentFileParserTest {
     fun `Parsing multiple file torrent`() = runTest {
         val actual = TorrentFileParser.parseTorrentFile(getResource(multipleFileTorrent), dispatchers)
         assertEquals(multipleFileTorrentParsed, actual.torrentFile)
-        assertEquals(multipleFileTorrentInfoHash, actual.infoHash)
+        assertEquals(multipleFileTorrentInfoHash, actual.infoHashV1)
     }
 
     @Test
@@ -71,7 +74,7 @@ class TorrentFileParserTest {
             dispatchers
         )
         assertEquals(multipleFileTorrentWithSubdirectoriesParsed, actual.torrentFile)
-        assertEquals(multipleFileTorrentWithSubdirectoriesInfoHash, actual.infoHash)
+        assertEquals(multipleFileTorrentWithSubdirectoriesInfoHash, actual.infoHashV1)
     }
 
     @Test
@@ -83,6 +86,27 @@ class TorrentFileParserTest {
                     dispatchers = dispatchers
                 )
             assertTreeResultsAreSimilar(multipleFileTorrentWithSubdirectoriesTreeResult, actual)
+        }
+
+    @Test
+    fun `Parsing multiple trackers torrent`() = runTest {
+        val actual = TorrentFileParser.parseTorrentFile(
+            getResource(multipleTrackersTorrent),
+            dispatchers
+        )
+        assertEquals(multipleTrackersTorrentParsed, actual.torrentFile)
+        assertEquals(multipleTrackersTorrentInfoHash, actual.infoHashV1)
+    }
+
+    @Test
+    fun `Creating tree for multiple trackers torrent`() =
+        runTest {
+            val actual =
+                TorrentFileParser.createFilesTree(
+                    torrentFile = multipleTrackersTorrentParsed,
+                    dispatchers = dispatchers
+                )
+            assertTreeResultsAreSimilar(multipleTrackersTorrentTreeResult, actual)
         }
 
     @Test
@@ -127,11 +151,12 @@ class TorrentFileParserTest {
         const val singleFileTorrentInfoHash = "9f292c93eb0dbdd7ff7a4aa551aaa1ea7cafe004"
         val singleFileTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
-                TorrentFileParser.TorrentFile.Info(
+                info = TorrentFileParser.TorrentFile.Info(
                     files = null,
-                    length = 353370112,
-                    name = "debian-10.9.0-amd64-netinst.iso",
-                )
+                    singleFileSize = 353370112,
+                    nameOfDirectoryOrSingleFile = "debian-10.9.0-amd64-netinst.iso",
+                ),
+                singleTrackerAnnounceUrl = "http://bttracker.debian.org:6969/announce"
             )
         }
         val singleFileTorrentTreeResult by lazy {
@@ -151,7 +176,7 @@ class TorrentFileParserTest {
         const val multipleFileTorrentInfoHash = "2046e45fb6cf298cd25e4c0decbea40c6603d91b"
         val multipleFileTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
-                TorrentFileParser.TorrentFile.Info(
+                info = TorrentFileParser.TorrentFile.Info(
                     files = listOf(
                         TorrentFileParser.TorrentFile.File(
                             1062,
@@ -162,9 +187,10 @@ class TorrentFileParserTest {
                             listOf("Fedora-Workstation-Live-x86_64-34-1.2.iso")
                         )
                     ),
-                    length = null,
-                    name = "Fedora-Workstation-Live-x86_64-34",
-                )
+                    singleFileSize = null,
+                    nameOfDirectoryOrSingleFile = "Fedora-Workstation-Live-x86_64-34",
+                ),
+                singleTrackerAnnounceUrl = "http://torrent.fedoraproject.org:6969/announce"
             )
         }
         val multipleFileTorrentTreeResult by lazy {
@@ -198,7 +224,7 @@ class TorrentFileParserTest {
         const val multipleFileTorrentWithSubdirectoriesInfoHash = "17566bcae446da4167827f4e5ce970318a6fbd99"
         val multipleFileTorrentWithSubdirectoriesParsed by lazy {
             TorrentFileParser.TorrentFile(
-                TorrentFileParser.TorrentFile.Info(
+                info = TorrentFileParser.TorrentFile.Info(
                     files = listOf(
                         TorrentFileParser.TorrentFile.File(
                             153488,
@@ -209,9 +235,10 @@ class TorrentFileParserTest {
                             listOf("debian", "debian-10.9.0-amd64-netinst.iso.torrent")
                         )
                     ),
-                    length = null,
-                    name = "foo",
-                )
+                    singleFileSize = null,
+                    nameOfDirectoryOrSingleFile = "foo",
+                ),
+                singleTrackerAnnounceUrl = null
             )
         }
         val multipleFileTorrentWithSubdirectoriesTreeResult by lazy {
@@ -228,6 +255,38 @@ class TorrentFileParserTest {
                     1,
                     listOf("foo", "debian", "debian-10.9.0-amd64-netinst.iso.torrent"),
                     27506,
+                    0,
+                    TorrentFilesTree.Item.WantedState.Wanted,
+                    TorrentFilesTree.Item.Priority.Normal
+                )
+            }
+        }
+
+        const val multipleTrackersTorrent = "enwiki-20231220-pages-articles-multistream.xml.bz2.torrent"
+        const val multipleTrackersTorrentInfoHash = "80fb3b384728e950f2fd09e5929970d3d576270d"
+        val multipleTrackersTorrentParsed by lazy {
+            TorrentFileParser.TorrentFile(
+                info = TorrentFileParser.TorrentFile.Info(
+                    files = null,
+                    singleFileSize = 22711545577,
+                    nameOfDirectoryOrSingleFile = "enwiki-20231220-pages-articles-multistream.xml.bz2",
+                ),
+                singleTrackerAnnounceUrl = "http://tracker.opentrackr.org:1337/announce",
+                trackersAnnounceUrls = listOf(
+                    setOf("http://tracker.opentrackr.org:1337/announce"),
+                    setOf("udp://tracker.opentrackr.org:1337"),
+                    setOf("udp://tracker.openbittorrent.com:80/announce"),
+                    setOf("http://fosstorrents.com:6969/announce"),
+                    setOf("udp://fosstorrents.com:6969/announce")
+                )
+            )
+        }
+        val multipleTrackersTorrentTreeResult by lazy {
+            buildTorrentFilesTree {
+                addFile(
+                    0,
+                    listOf("enwiki-20231220-pages-articles-multistream.xml.bz2"),
+                    22711545577,
                     0,
                     TorrentFilesTree.Item.WantedState.Wanted,
                     TorrentFilesTree.Item.Priority.Normal

@@ -11,6 +11,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import org.equeim.tremotesf.BuildConfig
+import org.equeim.tremotesf.torrentfile.SCHEME_MAGNET
+import org.equeim.tremotesf.torrentfile.parseMagnetLink
 import timber.log.Timber
 import java.net.URI
 
@@ -56,13 +58,10 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
         SCHEME_HTTP, SCHEME_HTTPS -> TorrentUri.Type.Link
         SCHEME_MAGNET -> {
             if (validateUri) {
-                val query = this.query
-                if (query != null &&
-                    (query.contains(MAGNET_QUERY_PREFIX_V1) ||
-                            query.contains(MAGNET_QUERY_PREFIX_V2))
-                ) {
+                try {
+                    parseMagnetLink(this)
                     TorrentUri.Type.Link
-                } else {
+                } catch (e: IllegalArgumentException) {
                     null
                 }
             } else {
@@ -114,6 +113,3 @@ fun ClipDescription.mimeTypes(): List<String> = (0 until mimeTypeCount).map(::ge
 private const val TORRENT_FILE_SUFFIX = ".torrent"
 private const val SCHEME_HTTP = "http"
 private const val SCHEME_HTTPS = "https"
-private const val SCHEME_MAGNET = "magnet"
-private const val MAGNET_QUERY_PREFIX_V1 = "xt=urn:btih:"
-private const val MAGNET_QUERY_PREFIX_V2 = "xt=urn:btmh:"

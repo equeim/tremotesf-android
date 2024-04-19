@@ -7,6 +7,7 @@ package org.equeim.tremotesf.torrentfile
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.equeim.bencode.Bencode
@@ -32,9 +33,16 @@ class FileParseException : Exception {
 }
 
 data class TorrentParseResult internal constructor(
-    val infoHash: String,
+    val infoHashV1: String,
     internal val torrentFile: TorrentFileParser.TorrentFile,
-)
+) {
+    val name: String
+        get() = torrentFile.info.nameOfDirectoryOrSingleFile
+
+    val trackers: List<Set<String>>
+        get() = torrentFile.trackersAnnounceUrls
+            ?: torrentFile.singleTrackerAnnounceUrl?.let { listOf(setOf(it)) }.orEmpty()
+}
 
 object TorrentFileParser {
     suspend fun parseTorrentFile(fd: FileDescriptor): TorrentParseResult {
@@ -55,7 +63,8 @@ object TorrentFileParser {
             }
             try {
                 val (torrentFile, infoByteRange) = Bencode.decode<TorrentFile>(inputStream.buffered())
-                infoByteRange ?: throw SerializationException("Failed to determine info dictionary byte range")
+                infoByteRange
+                    ?: throw SerializationException("Failed to determine info dictionary byte range")
                 TorrentParseResult(computeInfoHashV1(inputStream, infoByteRange), torrentFile)
             } catch (error: IOException) {
                 Timber.e(error, "Failed to read file")
@@ -68,16 +77,32 @@ object TorrentFileParser {
 
     @Serializable
     @VisibleForTesting
-    internal data class TorrentFile(@ReportByteRange val info: Info) {
+    internal data class TorrentFile(
+        @ReportByteRange
+        @SerialName("info")
+        val info: Info,
+        @SerialName("announce")
+        val singleTrackerAnnounceUrl: String? = null,
+        @SerialName("announce-list")
+        val trackersAnnounceUrls: List<Set<String>>? = null
+    ) {
         @Serializable
         data class Info(
+            @SerialName("files")
             val files: List<File>? = null,
-            val length: Long? = null,
-            val name: String,
+            @SerialName("length")
+            val singleFileSize: Long? = null,
+            @SerialName("name")
+            val nameOfDirectoryOrSingleFile: String,
         )
 
         @Serializable
-        data class File(val length: Long, val path: List<String>)
+        data class File(
+            @SerialName("length")
+            val size: Long,
+            @SerialName("path")
+            val pathSegments: List<String>
+        )
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -117,24 +142,24 @@ object TorrentFileParser {
                     if (info.files == null) {
                         addFile(
                             0,
-                            listOf(info.name),
-                            info.length
+                            listOf(info.nameOfDirectoryOrSingleFile),
+                            info.singleFileSize
                                 ?: throw FileParseException("Field 'length' must not be null for single-file torrent"),
                             0,
                             TorrentFilesTree.Item.WantedState.Wanted,
                             TorrentFilesTree.Item.Priority.Normal
                         )
                     } else {
-                        val fullPath = mutableListOf(info.name)
+                        val fullPath = mutableListOf(info.nameOfDirectoryOrSingleFile)
                         info.files.forEachIndexed { index, file ->
                             ensureActive()
 
                             if (fullPath.size > 1) fullPath.subList(1, fullPath.size).clear()
-                            fullPath.addAll(file.path)
+                            fullPath.addAll(file.pathSegments)
                             addFile(
                                 index,
                                 fullPath,
-                                file.length,
+                                file.size,
                                 0,
                                 TorrentFilesTree.Item.WantedState.Wanted,
                                 TorrentFilesTree.Item.Priority.Normal

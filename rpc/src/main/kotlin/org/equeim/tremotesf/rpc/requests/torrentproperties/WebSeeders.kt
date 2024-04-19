@@ -10,6 +10,8 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
+import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
 
 /**
  * @throws RpcRequestError

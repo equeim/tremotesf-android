@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 package org.equeim.tremotesf.rpc
 
 import kotlinx.serialization.json.Json
@@ -31,7 +35,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
     @Test
     fun `TieredTrackersAnnounceUrlsSerializer deserialize single tracker`() {
         assertEquals(
-            listOf(listOf("http://foo.bar")),
+            listOf(setOf("http://foo.bar")),
             Json.decodeFromString(TieredTrackersAnnounceUrlsSerializer, """
                 "http://foo.bar"
             """.trimIndent())
@@ -41,7 +45,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
     @Test
     fun `TieredTrackersAnnounceUrlsSerializer deserialize two trackers in one tier`() {
         assertEquals(
-            listOf(listOf("http://foo.bar", "http://bar.foo")),
+            listOf(setOf("http://foo.bar", "http://bar.foo")),
             Json.decodeFromString(TieredTrackersAnnounceUrlsSerializer, """
                 "http://foo.bar\nhttp://bar.foo"
             """.trimIndent())
@@ -51,7 +55,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
     @Test
     fun `TieredTrackersAnnounceUrlsSerializer deserialize two trackers in two tiers`() {
         assertEquals(
-            listOf(listOf("http://foo.bar"), listOf("http://bar.foo")),
+            listOf(setOf("http://foo.bar"), setOf("http://bar.foo")),
             Json.decodeFromString(TieredTrackersAnnounceUrlsSerializer, """
                 "http://foo.bar\n\nhttp://bar.foo"
             """.trimIndent())
@@ -61,7 +65,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
     @Test
     fun `TieredTrackersAnnounceUrlsSerializer deserialize two trackers in two tiers, with trailing newline`() {
         assertEquals(
-            listOf(listOf("http://foo.bar"), listOf("http://bar.foo")),
+            listOf(setOf("http://foo.bar"), setOf("http://bar.foo")),
             Json.decodeFromString(TieredTrackersAnnounceUrlsSerializer, """
                 "http://foo.bar\n\nhttp://bar.foo\n"
             """.trimIndent())
@@ -84,7 +88,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
             """
                 "http://foo.bar"
             """.trimIndent(),
-            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(listOf("http://foo.bar")))
+            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(setOf("http://foo.bar")))
         )
     }
 
@@ -94,7 +98,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
             """
                 "http://foo.bar\nhttp://bar.foo"
             """.trimIndent(),
-            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(listOf("http://foo.bar", "http://bar.foo")))
+            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(setOf("http://foo.bar", "http://bar.foo")))
         )
     }
 
@@ -104,7 +108,7 @@ class TieredTrackersAnnounceUrlsSerializerTest {
             """
                 "http://foo.bar\n\nhttp://bar.foo"
             """.trimIndent(),
-            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(listOf("http://foo.bar"), listOf("http://bar.foo")))
+            Json.encodeToString(TieredTrackersAnnounceUrlsSerializer, listOf(setOf("http://foo.bar"), setOf("http://bar.foo")))
         )
     }
 }

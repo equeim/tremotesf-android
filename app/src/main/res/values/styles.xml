@@ -224,4 +224,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="colorOnContainer">?colorOnPrimaryContainer</item>
         <item name="colorContainer">?colorPrimaryContainer</item>
     </style>
+
+    <style name="Widget.Tremotesf.FABCircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="indicatorColor">?colorOnPrimaryContainer</item>
+    </style>
 </resources>

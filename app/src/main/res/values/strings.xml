@@ -351,7 +351,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Also delete the files on the hard disk</string>
     <string name="check_local_data">Check local data</string>
     <string name="reannounce">Reannounce</string>
-    <string name="torrent_duplicate">This torrent is already added</string>
     <string name="torrents_remove_error">Failed to remove torrents: %1$s</string>
     <string name="add_torrent_error">Failed to add torrent: %1$s</string>
     <string name="torrent_set_location_error">Failed to move torrents: %1$s</string>
@@ -476,6 +475,18 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_delete_files_title">Delete files on the hard disk when removing torrent</string>
     <string name="prefs_link_from_clipboard_title">Automatically fill link from clipboard when adding torrent link</string>
     <string name="prefs_remember_add_torrent_parameters_title">Remember parameters of last added torrent</string>
+
+    <string name="prefs_merge_trackers_when_adding_existing_torrent_title">Merge trackers when adding existing torrent</string>
+    <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Ask for merging trackers when adding existing torrent</string>
+
+    <string name="torrent_duplicate">This torrent is already added</string>
+    <string name="torrent_duplicate_merging_trackers">Merging trackers for «%1$s» torrent</string>
+    <string name="torrent_duplicate_merging_trackers_question">Torrent «%1$s» is already added, merge trackers?</string>
+    <string name="torrent_duplicate_merging_trackers_question_without_name">This torrent is already added, merge trackers?</string>
+    <string name="merging_trackers_error">Failed to merge trackers: %1$s</string>
+    <string name="merge_no">Do not merge</string>
+    <string name="merge_yes">Merge</string>
+    <string name="do_not_ask_again">Do not ask again</string>
 
     <string name="alternative_speed_limits">Alternative speed limits</string>
 

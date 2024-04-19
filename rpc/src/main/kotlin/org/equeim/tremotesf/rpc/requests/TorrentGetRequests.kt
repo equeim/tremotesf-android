@@ -1,8 +1,14 @@
-package org.equeim.tremotesf.rpc.requests.torrentproperties
+// SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+package org.equeim.tremotesf.rpc.requests
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import org.equeim.tremotesf.rpc.RpcClient
+import org.equeim.tremotesf.rpc.RpcRequestError
 
 @Suppress("DataClassPrivateConstructor")
 @Serializable
@@ -28,3 +34,20 @@ internal data class TorrentGetResponseForFields<FieldsObject : Any>(
         }
     }
 }
+
+/**
+ * @return Torrent's name, if it exists
+ * @throws RpcRequestError
+ */
+suspend fun RpcClient.checkIfTorrentExists(hashString: String): String? =
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentExistsFields>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, "name"),
+        "checkIfTorrentExists"
+    ).arguments.torrents.firstOrNull()?.name
+
+@Serializable
+private data class TorrentExistsFields(
+    @SerialName("name")
+    val name: String
+)

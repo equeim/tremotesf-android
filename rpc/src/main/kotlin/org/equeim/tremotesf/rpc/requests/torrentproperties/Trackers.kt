@@ -6,6 +6,7 @@
 
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,7 +24,10 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
+import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
+import timber.log.Timber
 import java.time.Instant
 
 /**
@@ -82,28 +86,100 @@ data class Tracker(
 private data class TorrentTrackers(@SerialName("trackerStats") val trackers: List<Tracker>)
 
 private object PeersCountSerializer : KSerializer<Int> {
-    override val descriptor = PrimitiveSerialDescriptor(PeersCountSerializer::class.qualifiedName!!, PrimitiveKind.INT)
+    override val descriptor =
+        PrimitiveSerialDescriptor(PeersCountSerializer::class.qualifiedName!!, PrimitiveKind.INT)
+
     override fun deserialize(decoder: Decoder): Int = decoder.decodeInt().coerceAtLeast(0)
     override fun serialize(encoder: Encoder, value: Int) = encoder.encodeInt(value)
 }
 
-suspend fun RpcClient.addTorrentTrackers(torrentHashString: String, trackerAnnounceUrls: List<String>, allTrackers: List<Tracker>) {
+suspend fun RpcClient.addTorrentTrackers(
+    torrentHashString: String,
+    trackersToAdd: List<Set<String>>,
+    existingTrackers: List<Tracker>
+) {
+    addTorrentTrackersImpl(
+        torrentHashString,
+        trackersToAdd
+    ) { existingTrackers.toTieredAnnounceUrls() }
+}
+
+/**
+ * @throws RpcRequestError
+ */
+suspend fun RpcClient.addTorrentTrackers(
+    torrentHashString: String,
+    trackersToAdd: List<Set<String>>
+) {
+    addTorrentTrackersImpl(torrentHashString, trackersToAdd) {
+        getTorrentTieredTrackersAnnounceUrls(torrentHashString).orEmpty()
+    }
+}
+
+/**
+ * @throws RpcRequestError
+ */
+private suspend fun RpcClient.addTorrentTrackersImpl(
+    torrentHashString: String,
+    trackersToAdd: List<Set<String>>,
+    existingTrackersProvider: suspend () -> List<Set<String>>
+) {
     val capabilities = checkServerCapabilities(
         force = false,
         RpcRequestContext(RpcMethod.SessionSet, "addTorrentTrackers")
     )
     if (capabilities.hasTrackerListProperty) {
-        val tieredAnnounceUrls = allTrackers.asSequence().toTieredAnnounceUrls()
-        for (tracker in trackerAnnounceUrls) {
-            tieredAnnounceUrls.add(mutableListOf(tracker))
+        val existingTrackers = existingTrackersProvider()
+        Timber.d("Merging existing trackers $existingTrackers with $trackersToAdd")
+        val merged = existingTrackers.mergeWith(trackersToAdd)
+        Timber.d("Result is $merged")
+        if (merged != existingTrackers) {
+            Timber.d("Replacing trackers")
+            setTieredTrackerList(torrentHashString, merged)
+        } else {
+            Timber.d("Result is the same, do nothing")
         }
-        setTieredTrackerList(torrentHashString, tieredAnnounceUrls)
     } else {
-        setTorrentProperty(torrentHashString, "trackerAdd", trackerAnnounceUrls)
+        // Transmission adds each announce URL to each own tier when using trackerAdd property, so take first URL from each tier
+        addTorrentTrackersOldMethod(
+            torrentHashString,
+            trackersToAdd.mapNotNull { it.firstOrNull() })
     }
 }
 
-suspend fun RpcClient.replaceTorrentTracker(torrentHashString: String, trackerId: Int, newAnnounceUrl: String, allTrackers: List<Tracker>) {
+/**
+ * @throws RpcRequestError
+ */
+private suspend fun RpcClient.getTorrentTieredTrackersAnnounceUrls(hashString: String): List<Set<String>>? =
+    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentTieredTrackersAnnounceUrls>>, _>(
+        RpcMethod.TorrentGet,
+        TorrentGetRequestForFields(hashString, "trackerList"),
+        "getTorrentTieredTrackersAnnounceUrls"
+    ).arguments.torrents.firstOrNull()?.trackers
+
+@Serializable
+private data class TorrentTieredTrackersAnnounceUrls(
+    @Serializable(TieredTrackersAnnounceUrlsSerializer::class)
+    @SerialName("trackerList")
+    val trackers: List<Set<String>>
+)
+
+/**
+ * @throws RpcRequestError
+ */
+private suspend fun RpcClient.addTorrentTrackersOldMethod(
+    torrentHashString: String,
+    trackersToAdd: List<String>
+) {
+    setTorrentProperty(torrentHashString, "trackerAdd", trackersToAdd)
+}
+
+suspend fun RpcClient.replaceTorrentTracker(
+    torrentHashString: String,
+    trackerId: Int,
+    newAnnounceUrl: String,
+    allTrackers: List<Tracker>
+) {
     val capabilities = checkServerCapabilities(
         force = false,
         RpcRequestContext(RpcMethod.SessionSet, "replaceTorrentTracker")
@@ -125,41 +201,76 @@ suspend fun RpcClient.replaceTorrentTracker(torrentHashString: String, trackerId
     }
 }
 
-suspend fun RpcClient.removeTorrentTrackers(torrentHashString: String, trackerIds: List<Int>, allTrackers: List<Tracker>) {
+suspend fun RpcClient.removeTorrentTrackers(
+    torrentHashString: String,
+    trackerIds: List<Int>,
+    allTrackers: List<Tracker>
+) {
     val capabilities = checkServerCapabilities(
         force = false,
         RpcRequestContext(RpcMethod.SessionSet, "replaceTorrentTracker")
     )
     if (capabilities.hasTrackerListProperty) {
-        setTieredTrackerList(torrentHashString, allTrackers.asSequence().filterNot { trackerIds.contains(it.id) }.toTieredAnnounceUrls())
+        setTieredTrackerList(
+            torrentHashString,
+            allTrackers.asSequence().filterNot { trackerIds.contains(it.id) }.toTieredAnnounceUrls()
+        )
     } else {
         setTorrentProperty(torrentHashString, "trackerRemove", trackerIds)
     }
 }
 
-private suspend fun RpcClient.setTieredTrackerList(torrentHashString: String, tieredAnnounceUrls: List<List<String>>) =
-    setTorrentProperty(torrentHashString, "trackerList", tieredAnnounceUrls, TieredTrackersAnnounceUrlsSerializer)
-
-private fun Sequence<Tracker>.toTieredAnnounceUrls(): MutableList<List<String>> {
-    val tieredAnnounceUrls = sortedMapOf<Int, MutableList<String>>()
-    groupByTo(
-        destination = tieredAnnounceUrls,
-        keySelector = Tracker::tier,
-        valueTransform = Tracker::announceUrl
+private suspend fun RpcClient.setTieredTrackerList(
+    torrentHashString: String,
+    tieredAnnounceUrls: List<Set<String>>
+) =
+    setTorrentProperty(
+        torrentHashString,
+        "trackerList",
+        tieredAnnounceUrls,
+        TieredTrackersAnnounceUrlsSerializer
     )
-    return tieredAnnounceUrls.values.toMutableList()
+
+private fun Sequence<Tracker>.toTieredAnnounceUrls(): List<Set<String>> {
+    return groupingBy(Tracker::tier).fold(mutableSetOf<String>()) { tier, tracker ->
+        tier.add(
+            tracker.announceUrl
+        ); tier
+    }.values.toList()
 }
 
-private object TieredTrackersAnnounceUrlsSerializer : KSerializer<List<List<String>>> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(TieredTrackersAnnounceUrlsSerializer::class.qualifiedName!!, PrimitiveKind.STRING)
+private fun Iterable<Tracker>.toTieredAnnounceUrls(): List<Set<String>> =
+    asSequence().toTieredAnnounceUrls()
 
-    override fun deserialize(decoder: Decoder): List<List<String>> {
-        val tiers = mutableListOf<List<String>>()
-        var lastTier: MutableList<String>? = null
+@VisibleForTesting
+internal fun List<Set<String>>.mergeWith(newTrackers: List<Set<String>>): List<Set<String>> {
+    Timber.d("Merging $this with $newTrackers")
+    val merged = MutableList(size) { get(it).toMutableSet() }
+    for (newTier in newTrackers) {
+        val existingTier = merged.find { tier -> newTier.any(tier::contains) }
+        if (existingTier != null) {
+            existingTier.addAll(newTier)
+        } else {
+            merged.add(newTier.toMutableSet())
+        }
+    }
+    return merged
+}
+
+@VisibleForTesting
+internal object TieredTrackersAnnounceUrlsSerializer : KSerializer<List<Set<String>>> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
+        TieredTrackersAnnounceUrlsSerializer::class.qualifiedName!!,
+        PrimitiveKind.STRING
+    )
+
+    override fun deserialize(decoder: Decoder): List<Set<String>> {
+        val tiers = mutableListOf<Set<String>>()
+        var lastTier: MutableSet<String>? = null
         for (line in decoder.decodeString().lineSequence()) {
             if (line.isNotEmpty()) {
                 if (lastTier == null) {
-                    lastTier = mutableListOf()
+                    lastTier = mutableSetOf()
                     tiers.add(lastTier)
                 }
                 lastTier.add(line)
@@ -170,13 +281,13 @@ private object TieredTrackersAnnounceUrlsSerializer : KSerializer<List<List<Stri
         return tiers
     }
 
-    override fun serialize(encoder: Encoder, value: List<List<String>>) {
+    override fun serialize(encoder: Encoder, value: List<Set<String>>) {
         encoder.encodeString(buildString {
-            for ((index, announceUrls) in value.withIndex()) {
+            for ((index, tier) in value.withIndex()) {
                 if (index > 0) {
                     append("\n\n")
                 }
-                announceUrls.joinTo(
+                tier.joinTo(
                     buffer = this,
                     separator = "\n",
                 )

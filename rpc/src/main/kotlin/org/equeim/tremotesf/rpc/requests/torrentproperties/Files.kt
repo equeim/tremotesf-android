@@ -13,6 +13,8 @@ import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
+import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
 
 /**
  * @throws RpcRequestError

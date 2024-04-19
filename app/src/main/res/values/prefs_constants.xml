@@ -97,12 +97,18 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="deprecated_prefs_remember_download_directory_key" translatable="false">rememberDownloadDirectory</string>
 
-    <string name="prefs_remember_add_torrent_parameters_key">rememberAddTorrentParameters</string>
+    <string name="prefs_remember_add_torrent_parameters_key" translatable="false">rememberAddTorrentParameters</string>
     <bool name="prefs_remember_add_torrent_parameters_default_value">true</bool>
 
-    <string name="prefs_last_add_torrent_start_after_adding_key">lastAddTorrentStartAfterAdding</string>
-    <string name="prefs_last_add_torrent_start_after_adding_default_value">unknown</string>
+    <string name="prefs_last_add_torrent_start_after_adding_key" translatable="false">lastAddTorrentStartAfterAdding</string>
+    <string name="prefs_last_add_torrent_start_after_adding_default_value" translatable="false">unknown</string>
 
-    <string name="prefs_last_add_torrent_priority_key">lastAddTorrentPriority</string>
-    <string name="prefs_last_add_torrent_priority_default_value">normal</string>
+    <string name="prefs_last_add_torrent_priority_key" translatable="false">lastAddTorrentPriority</string>
+    <string name="prefs_last_add_torrent_priority_default_value" translatable="false">normal</string>
+
+    <string name="prefs_merge_trackers_when_adding_existing_torrent_key" translatable="false">mergeTrackersWhenAddingExistingTorrent</string>
+    <bool name="prefs_merge_trackers_when_adding_existing_torrent_default_value">true</bool>
+
+    <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_key" translatable="false">askForMergingTrackersWhenAddingExistingTorrent</string>
+    <bool name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_default_value">true</bool>
 </resources>

@@ -59,6 +59,20 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:key="@string/prefs_remember_add_torrent_parameters_key"
             android:title="@string/prefs_remember_add_torrent_parameters_title"
             app:singleLineTitle="false" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/prefs_ask_for_merging_trackers_when_adding_existing_torrent_default_value"
+            android:key="@string/prefs_ask_for_merging_trackers_when_adding_existing_torrent_key"
+            android:title="@string/prefs_ask_for_merging_trackers_when_adding_existing_torrent_title"
+            app:singleLineTitle="false"
+            app:disableDependentsState="true" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/prefs_merge_trackers_when_adding_existing_torrent_default_value"
+            android:key="@string/prefs_merge_trackers_when_adding_existing_torrent_key"
+            android:title="@string/prefs_merge_trackers_when_adding_existing_torrent_title"
+            app:singleLineTitle="false"
+            app:dependency="@string/prefs_ask_for_merging_trackers_when_adding_existing_torrent_key" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">
