@@ -236,6 +236,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="update_interval">Update interval</string>
+    <string name="update_interval_hint">This update interval is used only when application is in foreground, or persistent notification is active. Background update interval can be configured in application settings.</string>
     <string name="text_field_suffix_seconds">seconds</string>
     <string name="timeout">Timeout</string>
 
@@ -503,7 +504,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="persistent_notification">Persistent notification</string>
 
-    <string name="persistent_notification_warning">Enabling persistent notification will prevent application from switching to background update mode and may cause excessive battery drain</string>
+    <string name="persistent_notification_warning">Enabling persistent notification will cause application to update data with the interval configured in connection settings even when it\'s in the background, which can cause excessive battery drain</string>
 
     <string name="prefs_background_update_interval_title">Background update interval</string>
     <string-array name="prefs_background_update_interval_entries">
