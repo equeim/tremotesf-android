@@ -163,10 +163,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/update_interval_hint"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/update_interval_hint"
+                    android:layout_height="wrap_content" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
                     android:hint="@string/timeout"
                     app:suffixText="@string/text_field_suffix_seconds">
 
