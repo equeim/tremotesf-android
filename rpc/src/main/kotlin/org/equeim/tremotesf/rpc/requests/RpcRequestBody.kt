@@ -11,12 +11,19 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
+import java.io.IOException
 
 internal class RpcRequestBody internal constructor(
     internal val method: RpcMethod,
     encodeToString: () -> String,
 ) : RequestBody() {
-    private val body: ByteArray by lazy { encodeToString().encodeToByteArray() }
+    private val body: ByteArray by lazy {
+        try {
+            encodeToString().encodeToByteArray()
+        } catch (e: Exception) {
+            throw IOException("Failed to serialize request body", e)
+        }
+    }
 
     override fun contentType(): MediaType = JSON_MEDIA_TYPE
     override fun contentLength(): Long = body.size.toLong()
