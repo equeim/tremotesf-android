@@ -11,9 +11,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,13 +25,11 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.rpc.PeriodicServerStateUpdater
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.isRecoverable
@@ -66,16 +62,6 @@ class TorrentsListFragment : NavigationFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this)
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                PeriodicServerStateUpdater.showingTorrentsListScreen.value = true
-                suspendCancellableCoroutine {
-                    it.invokeOnCancellation {
-                        PeriodicServerStateUpdater.showingTorrentsListScreen.value = false
-                    }
-                }
-            }
-        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

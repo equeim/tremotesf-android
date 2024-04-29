@@ -55,20 +55,20 @@ object PeriodicServerStateUpdater {
         GlobalRpcClient.performPeriodicRequest(sessionStateRefreshRequests) { getSessionStats() }
             .stateIn(GlobalRpcClient, coroutineScope)
 
-    val showingTorrentsListScreen = MutableStateFlow(false)
+    val updatingTorrentsOnTorrentsListScreen = MutableStateFlow(false)
 
     private val updatedTorrentsSinceEnablingConnection = AtomicBoolean(false)
     private val onTorrentsUpdatedMutex = Mutex()
 
     init {
         coroutineScope.launch {
-            AppForegroundTracker.hasStartedActivity.collectLatest {
-                if (it) {
-                    showingTorrentsListScreen.collectLatest { showingTorrentsListScreen ->
-                        if (showingTorrentsListScreen) {
-                            Timber.d("Showing torrents list screen, not performing torrents finished state requests")
+            AppForegroundTracker.appInForeground.collectLatest { inForeground ->
+                if (inForeground) {
+                    updatingTorrentsOnTorrentsListScreen.collectLatest { updatingTorrentsOnTorrentsListScreen ->
+                        if (updatingTorrentsOnTorrentsListScreen) {
+                            Timber.d("Updating torrents on torrents list screen, don't perform torrents finished state requests")
                         } else {
-                            Timber.d("Not showing torrents list screen, performing torrents finished state requests")
+                            Timber.d("Not updating torrents on torrents list screen, perform torrents finished state requests")
                             GlobalRpcClient.performPeriodicRequest { getTorrentsFinishedState() }
                                 .mapNotNull { (it as? RpcRequestState.Loaded)?.response }
                                 .collect(::onTorrentsUpdated)
@@ -120,7 +120,7 @@ object PeriodicServerStateUpdater {
         }
     }
 
-    private suspend fun onTorrentsUpdated(torrents: List<RpcTorrentFinishedState>) =
+    suspend fun onTorrentsUpdated(torrents: List<RpcTorrentFinishedState>) =
         onTorrentsUpdatedMutex.withLock {
             Timber.d("Updating finished state for ${torrents.size} torrents")
             val firstUpdate = updatedTorrentsSinceEnablingConnection.compareAndSet(false, true)
