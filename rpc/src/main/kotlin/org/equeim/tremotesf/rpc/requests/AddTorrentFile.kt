@@ -55,7 +55,7 @@ suspend fun RpcClient.addTorrentFile(
     }
     if (response.arguments.duplicateTorrent != null) {
         Timber.e("'torrent-duplicate' key is present, torrent is already added")
-        throw org.equeim.tremotesf.rpc.RpcRequestError.UnsuccessfulResultField(org.equeim.tremotesf.rpc.requests.DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
+        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
     }
     val torrentHashString = response.arguments.addedTorrent?.hasString ?: return
     renamedFiles.forEach { (path, newName) ->

@@ -40,12 +40,12 @@ import kotlin.time.Duration
 suspend fun RpcClient.getTorrentsList(): List<Torrent> = if (
     checkServerCapabilities(force = false, RpcRequestContext(RpcMethod.TorrentGet, "getTorrentsList")).hasTableMode) {
     performRequest<RpcResponse<TorrentsListTableResponseArguments>>(
-        org.equeim.tremotesf.rpc.requests.TORRENTS_LIST_TABLE_REQUEST,
+        TORRENTS_LIST_TABLE_REQUEST,
         "getTorrentsList"
     ).arguments.torrents
 } else {
     performRequest<RpcResponse<TorrentsListObjectsResponseArguments>>(
-        org.equeim.tremotesf.rpc.requests.TORRENTS_LIST_OBJECTS_REQUEST,
+        TORRENTS_LIST_OBJECTS_REQUEST,
         "getTorrentsList"
     ).arguments.torrents
 }

@@ -333,8 +333,7 @@ class RemoveTrackersDialogFragment : NavigationDialogFragment() {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
             other as Result
-            if (!trackerIds.contentEquals(other.trackerIds)) return false
-            return true
+            return trackerIds.contentEquals(other.trackerIds)
         }
 
         override fun hashCode(): Int {

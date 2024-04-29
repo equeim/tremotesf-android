@@ -19,7 +19,7 @@ import org.equeim.tremotesf.rpc.requests.RpcResponse
  */
 suspend fun RpcClient.getNetworkServerSettings(): NetworkServerSettings =
     performRequest<RpcResponse<NetworkServerSettings>>(
-        org.equeim.tremotesf.rpc.requests.serversettings.NETWORK_SERVER_SETTINGS_REQUEST_BODY,
+        NETWORK_SERVER_SETTINGS_REQUEST_BODY,
         "getNetworkServerSettings"
     ).arguments
 
