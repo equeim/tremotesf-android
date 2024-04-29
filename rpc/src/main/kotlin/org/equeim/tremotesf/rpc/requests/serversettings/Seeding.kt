@@ -47,7 +47,7 @@ suspend fun RpcClient.setServerIdleSeedingLimited(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setServerIdleSeedingLimit(value: Duration) =
-    setSessionProperty("idle-seeding-limit", value, org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer)
+    setSessionProperty("idle-seeding-limit", value, MinutesToDurationSerializer)
 
 @Serializable
 data class SeedingServerSettings(

@@ -22,7 +22,7 @@ import org.equeim.tremotesf.rpc.requests.RpcResponse
  */
 suspend fun RpcClient.getDownloadingServerSettings(): DownloadingServerSettings =
     performRequest<RpcResponse<DownloadingServerSettings>>(
-        org.equeim.tremotesf.rpc.requests.serversettings.DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY,
+        DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY,
         "getDownloadingServerSettings"
     ).arguments
 

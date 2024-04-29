@@ -23,12 +23,12 @@ suspend fun RpcClient.getTorrentsFinishedState(): List<TorrentFinishedState> =
         ).hasTableMode
     ) {
         performRequest<RpcResponse<TorrentsFinishedStateTableResponseArguments>>(
-            org.equeim.tremotesf.rpc.requests.TORRENTS_FINISHED_STATE_TABLE_REQUEST,
+            TORRENTS_FINISHED_STATE_TABLE_REQUEST,
             "getTorrentsFinishedState"
         ).arguments.torrents
     } else {
         performRequest<RpcResponse<TorrentsFinishedStateObjectsResponseArguments>>(
-            org.equeim.tremotesf.rpc.requests.TORRENTS_FINISHED_STATE_OBJECTS_REQUEST,
+            TORRENTS_FINISHED_STATE_OBJECTS_REQUEST,
             "getTorrentsFinishedState"
         ).arguments.torrents
     }

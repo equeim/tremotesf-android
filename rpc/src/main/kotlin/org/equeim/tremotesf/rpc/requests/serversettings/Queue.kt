@@ -21,7 +21,7 @@ import kotlin.time.Duration
  */
 suspend fun RpcClient.getQueueServerSettings(): QueueServerSettings =
     performRequest<RpcResponse<QueueServerSettings>>(
-        org.equeim.tremotesf.rpc.requests.serversettings.QUEUE_SERVER_SETTINGS_REQUEST_BODY,
+        QUEUE_SERVER_SETTINGS_REQUEST_BODY,
         "getQueueServerSettings"
     ).arguments
 
@@ -59,7 +59,7 @@ suspend fun RpcClient.setIgnoreQueueIfIdle(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setIgnoreQueueIfIdleFor(value: Duration) =
-    setSessionProperty("queue-stalled-minutes", value, org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer)
+    setSessionProperty("queue-stalled-minutes", value, MinutesToDurationSerializer)
 
 @Serializable
 data class QueueServerSettings(

@@ -15,7 +15,7 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getSessionStats(): SessionStatsResponseArguments =
-    performRequest<RpcResponse<SessionStatsResponseArguments>>(org.equeim.tremotesf.rpc.requests.SESSION_STATS_REQUEST).arguments
+    performRequest<RpcResponse<SessionStatsResponseArguments>>(SESSION_STATS_REQUEST).arguments
 
 private val SESSION_STATS_REQUEST = RpcRequestBody(RpcRequestWithoutArguments(RpcMethod.SessionStats))
 

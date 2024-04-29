@@ -23,7 +23,7 @@ import java.time.LocalTime
  */
 suspend fun RpcClient.getSpeedServerSettings(): SpeedServerSettings =
     performRequest<RpcResponse<SpeedServerSettings>>(
-        org.equeim.tremotesf.rpc.requests.serversettings.SPEED_SERVER_SETTINGS_REQUEST_BODY,
+        SPEED_SERVER_SETTINGS_REQUEST_BODY,
         "getSpeedServerSettings"
     ).arguments
 
@@ -37,7 +37,7 @@ suspend fun RpcClient.setDownloadSpeedLimited(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setDownloadSpeedLimit(value: TransferRate) =
-    setSessionProperty("speed-limit-down", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setSessionProperty("speed-limit-down", value, TransferRate.KiloBytesPerSecondSerializer)
 
 /**
  * @throws RpcRequestError
@@ -49,7 +49,7 @@ suspend fun RpcClient.setUploadSpeedLimited(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setUploadSpeedLimit(value: TransferRate) =
-    setSessionProperty("speed-limit-up", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setSessionProperty("speed-limit-up", value, TransferRate.KiloBytesPerSecondSerializer)
 
 /**
  * @throws RpcRequestError
@@ -61,13 +61,13 @@ suspend fun RpcClient.setAlternativeLimitsEnabled(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setAlternativeDownloadSpeedLimit(value: TransferRate) =
-    setSessionProperty("alt-speed-down", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setSessionProperty("alt-speed-down", value, TransferRate.KiloBytesPerSecondSerializer)
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setAlternativeUploadSpeedLimit(value: TransferRate) =
-    setSessionProperty("alt-speed-down", value, org.equeim.tremotesf.rpc.requests.TransferRate.KiloBytesPerSecondSerializer)
+    setSessionProperty("alt-speed-down", value, TransferRate.KiloBytesPerSecondSerializer)
 
 /**
  * @throws RpcRequestError
@@ -80,14 +80,14 @@ suspend fun RpcClient.setAlternativeLimitsScheduled(value: Boolean) =
  */
 suspend fun RpcClient.setAlternativeLimitsBeginTime(value: LocalTime) =
     setSessionProperty("alt-speed-time-begin", value,
-        org.equeim.tremotesf.rpc.requests.MinutesSinceStartOfDaySerializer
+        MinutesSinceStartOfDaySerializer
     )
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setAlternativeLimitsEndTime(value: LocalTime) =
-    setSessionProperty("alt-speed-time-end", value, org.equeim.tremotesf.rpc.requests.MinutesSinceStartOfDaySerializer)
+    setSessionProperty("alt-speed-time-end", value, MinutesSinceStartOfDaySerializer)
 
 /**
  * @throws RpcRequestError

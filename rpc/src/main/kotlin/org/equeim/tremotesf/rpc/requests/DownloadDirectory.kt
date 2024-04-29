@@ -16,7 +16,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
  */
 suspend fun RpcClient.getDownloadDirectory(): NormalizedRpcPath {
     return performRequest<RpcResponse<DownloadDirectoryResponseArguments>>(
-        org.equeim.tremotesf.rpc.requests.DOWNLOAD_DIRECTORY_REQUEST,
+        DOWNLOAD_DIRECTORY_REQUEST,
         "getDownloadDirectory"
     )
         .arguments
