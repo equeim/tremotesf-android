@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.StringRes
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,7 +30,8 @@ object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.
     private val connectAutomaticallyWhenInForeground = AtomicBoolean(true)
 
     init {
-        coroutineScope.launch {
+        // Ensure that connection configuration is set immediately by using CoroutineStart.UNDISPATCHED
+        coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
             GlobalServers.currentServer
                 .distinctUntilChanged { old, new ->
                     if (old != null && new != null) {
