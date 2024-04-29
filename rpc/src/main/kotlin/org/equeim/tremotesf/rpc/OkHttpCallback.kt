@@ -87,6 +87,7 @@ internal class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
                     resumeWithException(
                         RpcRequestError.UnsuccessfulResultField(
                             result = it.result,
+                            rawArguments = it.rawArguments,
                             response = response,
                             requestHeaders = requestHeaders
                         )
@@ -121,7 +122,7 @@ internal class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
                 Timber.tag(TAG).e("Response headers:")
                 it.headers.logOnError()
             }
-            error.responseBody?.let {
+            (error as? RpcRequestError.UnsuccessfulHttpStatusCode)?.responseBody?.let {
                 Timber.tag(TAG).e("Response body:\n$it")
             }
             error.requestHeaders?.let {

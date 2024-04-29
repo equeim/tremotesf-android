@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Verbinding verbroken</string>
     <string name="connecting">Verbinden\u2026</string>
     <string name="connected">Verbonden</string>
@@ -288,7 +288,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Bestanden ook verwijderen van harde schijf</string>
     <string name="check_local_data">Lokale gegevens controleren</string>
     <string name="reannounce">Heraankondiging</string>
-    <string name="torrent_duplicate">Dezen torrent is al toegevoegd</string>
+
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, %2$s g’upload</string>
 

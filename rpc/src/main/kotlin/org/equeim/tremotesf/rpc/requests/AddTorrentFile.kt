@@ -16,6 +16,9 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.decodeFromJsonElement
+import okhttp3.Headers
+import okhttp3.Response
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
@@ -27,6 +30,7 @@ import java.io.IOException
 
 /**
  * @throws RpcRequestError
+ * @throws TorrentAlreadyExists
  */
 suspend fun RpcClient.addTorrentFile(
     torrentFile: ParcelFileDescriptor,
@@ -38,26 +42,24 @@ suspend fun RpcClient.addTorrentFile(
     renamedFiles: Map<String, String>,
     start: Boolean,
 ) {
-    val response = torrentFile.use {
-        performRequest<RpcResponse<AddTorrentFileResponseArguments>, _>(
-            org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
-            AddTorrentFileRequestArguments(
-                torrentFile,
-                NotNormalizedRpcPath(downloadDirectory),
-                unwantedFiles,
-                highPriorityFiles,
-                lowPriorityFiles,
-                bandwidthPriority,
-                !start
-            ),
-            "addTorrentFile"
-        )
+    val response = handleDuplicateTorrentError(AddTorrentFileResponseArguments::duplicateTorrent) {
+        torrentFile.use {
+            performRequest<RpcResponse<AddTorrentFileResponseArguments>, _>(
+                org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
+                AddTorrentFileRequestArguments(
+                    torrentFile,
+                    NotNormalizedRpcPath(downloadDirectory),
+                    unwantedFiles,
+                    highPriorityFiles,
+                    lowPriorityFiles,
+                    bandwidthPriority,
+                    !start
+                ),
+                "addTorrentFile"
+            )
+        }
     }
-    if (response.arguments.duplicateTorrent != null) {
-        Timber.e("'torrent-duplicate' key is present, torrent is already added")
-        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
-    }
-    val torrentHashString = response.arguments.addedTorrent?.hasString ?: return
+    val torrentHashString = response.arguments.addedTorrent?.hashString ?: return
     renamedFiles.forEach { (path, newName) ->
         renameTorrentFile(torrentHashString, path, newName)
     }
@@ -85,7 +87,10 @@ private data class AddTorrentFileRequestArguments(
 
 private object TorrentFileSerializer : KSerializer<ParcelFileDescriptor> {
     override val descriptor =
-        PrimitiveSerialDescriptor(TorrentFileSerializer::class.qualifiedName!!, PrimitiveKind.STRING)
+        PrimitiveSerialDescriptor(
+            TorrentFileSerializer::class.qualifiedName!!,
+            PrimitiveKind.STRING
+        )
 
     override fun deserialize(decoder: Decoder): ParcelFileDescriptor = throw NotImplementedError()
 
@@ -120,10 +125,72 @@ private data class AddTorrentFileResponseArguments(
     @SerialName("torrent-added")
     val addedTorrent: AddedTorrent? = null,
     @SerialName("torrent-duplicate")
-    val duplicateTorrent: Unit? = null,
+    val duplicateTorrent: DuplicateTorrent? = null,
 ) {
     @Serializable
-    data class AddedTorrent(@SerialName("hashString") val hasString: String)
+    data class AddedTorrent(@SerialName("hashString") val hashString: String)
 }
 
-const val DUPLICATE_TORRENT_RESULT = "duplicate torrent"
+private const val DUPLICATE_TORRENT_RESULT = "duplicate torrent"
+
+@Serializable
+internal data class DuplicateTorrentResponseArguments(
+    @SerialName("torrent-duplicate")
+    val duplicateTorrent: DuplicateTorrent
+)
+
+@Serializable
+internal data class DuplicateTorrent(
+    @SerialName("hashString")
+    val hashString: String,
+    @SerialName("name")
+    val name: String,
+)
+
+internal inline fun <ResponseArguments : Any> RpcClient.handleDuplicateTorrentError(
+    duplicateTorrentFromResponse: ResponseArguments.() -> DuplicateTorrent?,
+    performRequest: () -> RpcResponse<ResponseArguments>
+): RpcResponse<ResponseArguments> {
+    val response = try {
+        performRequest()
+    } catch (e: RpcRequestError.UnsuccessfulResultField) {
+        throw if (e.result == DUPLICATE_TORRENT_RESULT && e.rawArguments != null) {
+            try {
+                TorrentAlreadyExists(
+                    duplicateTorrent = json.decodeFromJsonElement<DuplicateTorrentResponseArguments>(
+                        e.rawArguments
+                    ).duplicateTorrent,
+                    response = e.response,
+                    requestHeaders = e.requestHeaders
+                )
+            } catch (duplicateTorrentParsingError: SerializationException) {
+                Timber.e(duplicateTorrentParsingError, "Failed to parse duplicate torrent response")
+                e
+            }
+        } else {
+            e
+        }
+    }
+    response.arguments.duplicateTorrentFromResponse()?.let {
+        Timber.e("'torrent-duplicate' key is present, torrent is already added")
+        throw TorrentAlreadyExists(
+            duplicateTorrent = it,
+            response = response.httpResponse,
+            requestHeaders = response.requestHeaders
+        )
+    }
+    return response
+}
+
+class TorrentAlreadyExists internal constructor(
+    duplicateTorrent: DuplicateTorrent,
+    response: Response,
+    requestHeaders: Headers,
+) :
+    RpcRequestError.RequestSpecificError(
+        response = response,
+        requestHeaders = requestHeaders,
+        message = "Torrent with info hash ${duplicateTorrent.hashString} and name \"${duplicateTorrent.name}\" already exists"
+    ) {
+        val torrentName: String = duplicateTorrent.name
+    }

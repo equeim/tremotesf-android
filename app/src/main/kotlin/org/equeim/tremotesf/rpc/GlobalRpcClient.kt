@@ -17,7 +17,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.requests.DUPLICATE_TORRENT_RESULT
+import org.equeim.tremotesf.rpc.requests.TorrentAlreadyExists
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -89,11 +89,10 @@ fun RpcRequestError.getErrorString(context: Context): String = when (this) {
     is RpcRequestError.UnsuccessfulHttpStatusCode -> context.getString(R.string.connection_error_with_cause, message)
     is RpcRequestError.UnexpectedError -> context.getString(R.string.connection_error)
     is RpcRequestError.Timeout -> context.getString(R.string.timed_out)
-    is RpcRequestError.UnsuccessfulResultField -> if (result == DUPLICATE_TORRENT_RESULT) {
-        context.getString(R.string.torrent_duplicate)
-    } else {
-        context.getString(R.string.server_returned_error_result, result)
-    }
-
+    is RpcRequestError.UnsuccessfulResultField -> context.getString(R.string.server_returned_error_result, result)
     is RpcRequestError.UnsupportedServerVersion -> context.getString(R.string.unsupported_server_version, version)
+    is RpcRequestError.RequestSpecificError -> when (this) {
+        is TorrentAlreadyExists -> context.getString(R.string.torrent_duplicate_not_merging_trackers, torrentName)
+        else -> context.getString(R.string.connection_error)
+    }
 }

@@ -120,12 +120,12 @@ abstract class AddTorrentFragment(
         }
     }
 
-    private fun showMessageWhenTorrentAlreadyExists() {
+    private fun showMessageWhenTorrentAlreadyExists(torrentName: String) {
         val inOtherAppsTask = !requiredActivity.isTaskRoot
         if (!inOtherAppsTask) {
-            activityModel.showSnackbarMessage(R.string.torrent_duplicate)
+            activityModel.showSnackbarMessage(R.string.torrent_duplicate_not_merging_trackers, torrentName)
         } else {
-            Toast.makeText(requireContext(), R.string.torrent_duplicate, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.torrent_duplicate_not_merging_trackers, torrentName), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -164,7 +164,7 @@ abstract class AddTorrentFragment(
                         showMessageWhenMergingTrackers(state.torrentName)
                     }
                     is AddTorrentState.DidNotMergeTrackers -> if (!state.afterAsking) {
-                        showMessageWhenTorrentAlreadyExists()
+                        showMessageWhenTorrentAlreadyExists(state.torrentName)
                     }
                     else -> Unit
                 }
@@ -192,7 +192,7 @@ abstract class AddTorrentFragment(
         data object AddedTorrent : AddTorrentState
         data class AskingForMergingTrackers(val torrentName: String) : AddTorrentState
         data class MergedTrackers(val torrentName: String, val afterAsking: Boolean) : AddTorrentState
-        data class DidNotMergeTrackers(val afterAsking: Boolean) : AddTorrentState
+        data class DidNotMergeTrackers(val torrentName: String, val afterAsking: Boolean) : AddTorrentState
     }
 }
 

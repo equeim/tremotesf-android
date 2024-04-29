@@ -15,6 +15,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.Headers
 import okhttp3.Response
@@ -92,6 +93,7 @@ internal data class RequestWithTorrentsIds(
 
 internal interface BaseRpcResponse {
     val result: String
+    val rawArguments: JsonObject?
     var httpResponse: Response
     var requestHeaders: Headers
 }
@@ -101,12 +103,14 @@ internal val BaseRpcResponse.isSuccessful: Boolean get() = result == SUCCESS_RES
 @Serializable(RpcResponse.Serializer::class)
 internal data class RpcResponse<Arguments : Any>(
     override val result: String,
-    private val _arguments: Arguments?,
+    override val rawArguments: JsonObject?,
+    private val successArguments: Arguments?,
 ) : BaseRpcResponse {
-    val arguments: Arguments get() = checkNotNull(_arguments)
+    val arguments: Arguments get() = checkNotNull(successArguments)
 
     @Transient
     override lateinit var httpResponse: Response
+
     @Transient
     override lateinit var requestHeaders: Headers
 
@@ -117,15 +121,22 @@ internal data class RpcResponse<Arguments : Any>(
 
         override fun deserialize(decoder: Decoder): RpcResponse<Arguments> = try {
             val response = decoder.decodeSerializableValue(delegate)
-            val result = response.getValue("result").jsonPrimitive.content
+            val result = response.getOrElse("result") {
+                throw SerializationException("Missing \"result\" key in the response")
+            }.jsonPrimitive.content
+            val arguments = response["arguments"]?.jsonObject
             if (result == SUCCESS_RESULT) {
-                val arguments = response.getValue("arguments")
+                if (arguments == null) throw SerializationException("Missing \"arguments\" key in the response")
                 RpcResponse(
-                    result,
-                    (decoder as JsonDecoder).json.decodeFromJsonElement(argumentsSerializer, arguments)
+                    result = result,
+                    rawArguments = arguments,
+                    successArguments = (decoder as JsonDecoder).json.decodeFromJsonElement(
+                        argumentsSerializer,
+                        arguments
+                    ),
                 )
             } else {
-                RpcResponse(result, null)
+                RpcResponse(result = result, rawArguments = arguments, successArguments = null)
             }
         } catch (e: SerializationException) {
             throw e
@@ -133,7 +144,8 @@ internal data class RpcResponse<Arguments : Any>(
             throw SerializationException(e)
         }
 
-        override fun serialize(encoder: Encoder, value: RpcResponse<Arguments>) = throw NotImplementedError()
+        override fun serialize(encoder: Encoder, value: RpcResponse<Arguments>) =
+            throw NotImplementedError()
     }
 }
 
@@ -141,9 +153,12 @@ internal data class RpcResponse<Arguments : Any>(
 internal data class RpcResponseWithoutArguments(
     @SerialName("result")
     override val result: String,
+    @SerialName("arguments")
+    override val rawArguments: JsonObject?
 ) : BaseRpcResponse {
     @Transient
     override lateinit var httpResponse: Response
+
     @Transient
     override lateinit var requestHeaders: Headers
 }
