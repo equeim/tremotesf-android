@@ -1,6 +1,9 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Merging trackers when adding already existing torrent
+
 ### Changed
 - Custom TLS certificates can now be configured without enabling HTTPS, to support HTTP to HTTPS redirection
 
