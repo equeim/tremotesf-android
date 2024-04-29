@@ -24,7 +24,6 @@ import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
 
 /**
  * @throws RpcRequestError
@@ -113,16 +112,6 @@ private object TorrentFileSerializer : KSerializer<ParcelFileDescriptor> {
         } catch (e: IOException) {
             throw SerializationException("Failed to read torrent file", e)
         }
-    }
-
-    fun InputStream.readToBuffer(b: ByteArray): Int {
-        var n = 0
-        while (n < b.size) {
-            val count: Int = read(b, n, b.size - n)
-            if (count < 0) break
-            n += count
-        }
-        return n
     }
 }
 
