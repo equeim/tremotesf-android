@@ -7,6 +7,9 @@
 ### Changed
 - Custom TLS certificates can now be configured without enabling HTTPS, to support HTTP to HTTPS redirection
 
+### Fixed
+- Notifications not being shown when app is in foreground and on main screen, or when it is in background and persistent notification is active
+
 ### Removed
 - Support of Android versions prior to 8.0
 

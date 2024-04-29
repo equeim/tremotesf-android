@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
@@ -173,7 +175,12 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val allTorrents: StateFlow<RpcRequestState<List<Torrent>>> =
         GlobalRpcClient.performPeriodicRequest(refreshRequests) { getTorrentsList() }
+            .onStart { PeriodicServerStateUpdater.updatingTorrentsOnTorrentsListScreen.value = true }
+            .onCompletion { PeriodicServerStateUpdater.updatingTorrentsOnTorrentsListScreen.value = false }
             .onEach {
+                if (it is RpcRequestState.Loaded) {
+                    PeriodicServerStateUpdater.onTorrentsUpdated(it.response)
+                }
                 when (it) {
                     is RpcRequestState.Loaded, is RpcRequestState.Error -> _torrentsLoadedEvents.emit(Unit)
                     else -> Unit
