@@ -161,7 +161,7 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
                     mergeTrackersWithExistingTorrent(afterAsking = false)
 
-                else -> _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = false)
+                else -> _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(existingTorrentName, afterAsking = false)
             }
         }
         return existingTorrentName != null
@@ -169,11 +169,16 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
 
     fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
         Timber.d("onMergeTrackersDialogResult() called with: result = $result")
+        val existingTorrentName = existingTorrentName
+        if (existingTorrentName == null) {
+            Timber.e("onMergeTrackersDialogResult: existingTorrentName must not be null")
+            return
+        }
         when (result) {
             is MergingTrackersDialogFragment.Result.ButtonClicked -> if (result.merge) {
                 mergeTrackersWithExistingTorrent(afterAsking = true)
             } else {
-                _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = true)
+                _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(existingTorrentName, afterAsking = true)
             }
             is MergingTrackersDialogFragment.Result.Cancelled -> _addTorrentState.value = null
         }

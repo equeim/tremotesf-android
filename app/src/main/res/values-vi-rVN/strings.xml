@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Ngắt kết nối</string>
     <string name="connecting">Đang kết nối\u2026</string>
     <string name="connected">Đã kết nối</string>
@@ -221,7 +221,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </plurals>
     <string name="delete_files">Cũng đồng thời xóa các tập tin trên đĩa cứng</string>
     <string name="check_local_data">Kiểm tra dữ liệu nội bộ</string>
-    <string name="torrent_duplicate">Torrent này đã thêm rồi</string>
+
     <string name="torrent_paused">Tạm dừng</string>
     <plurals name="torrent_downloading">
         <item quantity="other">Đang tải tử %d peer</item>

@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">已断开</string>
     <string name="connecting">正在连接\u2026</string>
     <string name="connected">已连接</string>
@@ -300,7 +300,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">同时删除硬盘中的文件</string>
     <string name="check_local_data">校验本地数据</string>
     <string name="reannounce">重新宣告</string>
-    <string name="torrent_duplicate">已经添加了该种子</string>
+
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, 已上传 %2$s</string>
 

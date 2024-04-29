@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando…</string>
     <string name="connected">Conectado</string>
@@ -331,7 +331,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Eliminar los archivos en disco también</string>
     <string name="check_local_data">Verificar datos locales</string>
     <string name="reannounce">Reanunciar</string>
-    <string name="torrent_duplicate">Este torrent ya se ha añadido</string>
+
     <string name="torrents_remove_error">No se pudo eliminar los torrents: %1$s</string>
     <string name="add_torrent_error">No se pudo añadir el torrent: %1$s</string>
     <string name="torrent_set_location_error">No se pudo mover los torrents: %1$s</string>

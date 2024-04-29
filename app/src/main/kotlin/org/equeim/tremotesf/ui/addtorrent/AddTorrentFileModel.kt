@@ -269,7 +269,7 @@ class AddTorrentFileModelImpl(
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
                     mergeTrackersWithExistingTorrent(afterAsking = false)
 
-                else -> addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = false)
+                else -> addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, afterAsking = false)
             }
         }
         return alreadyExists
@@ -324,7 +324,7 @@ class AddTorrentFileModelImpl(
         if ((result as? MergingTrackersDialogFragment.Result.ButtonClicked)?.merge == true) {
             mergeTrackersWithExistingTorrent(afterAsking = true)
         } else {
-            addTorrentState.value = AddTorrentState.DidNotMergeTrackers(afterAsking = true)
+            addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, afterAsking = true)
         }
     }
 

@@ -7,6 +7,7 @@ package org.equeim.tremotesf.rpc
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonObject
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.Response
@@ -18,7 +19,6 @@ import java.security.cert.Certificate
 
 sealed class RpcRequestError private constructor(
     internal open val response: Response? = null,
-    internal val responseBody: String? = null,
     internal open val requestHeaders: Headers? = null,
     message: String? = null,
     cause: Exception? = null,
@@ -54,12 +54,11 @@ sealed class RpcRequestError private constructor(
 
     class UnsuccessfulHttpStatusCode internal constructor(
         override val response: Response,
-        responseBody: String?,
         override val requestHeaders: Headers,
+        internal val responseBody: String?,
     ) :
         RpcRequestError(
             response = response,
-            responseBody = responseBody,
             requestHeaders = requestHeaders,
             message = response.status
         )
@@ -99,13 +98,14 @@ sealed class RpcRequestError private constructor(
 
     class UnsuccessfulResultField internal constructor(
         val result: String,
+        internal val rawArguments: JsonObject?,
         override val response: Response,
         override val requestHeaders: Headers,
     ) :
         RpcRequestError(
             response = response,
-            responseBody = "Response result is '$result'",
-            requestHeaders = requestHeaders
+            requestHeaders = requestHeaders,
+            message = "Response result is \"$result\", arguments are $rawArguments",
         )
 
     class UnexpectedError internal constructor(
@@ -118,6 +118,17 @@ sealed class RpcRequestError private constructor(
             requestHeaders = requestHeaders,
             message = "Unexpected error",
             cause = cause
+        )
+
+    abstract class RequestSpecificError(
+        override val response: Response,
+        override val requestHeaders: Headers,
+        message: String,
+    ):
+        RpcRequestError(
+            response = response,
+            requestHeaders = requestHeaders,
+            message = message,
         )
 }
 

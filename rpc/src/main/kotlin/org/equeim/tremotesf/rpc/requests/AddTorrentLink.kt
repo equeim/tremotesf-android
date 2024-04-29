@@ -10,7 +10,6 @@ import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
-import timber.log.Timber
 
 /**
  * @throws RpcRequestError
@@ -21,14 +20,12 @@ suspend fun RpcClient.addTorrentLink(
     bandwidthPriority: TorrentLimits.BandwidthPriority,
     start: Boolean,
 ) {
-    val response = performRequest<RpcResponse<AddTorrentLinkResponseArguments>, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
-        AddTorrentLinkRequestArguments(url, NotNormalizedRpcPath(downloadDirectory), bandwidthPriority, !start),
-        "addTorrentLink"
-    )
-    if (response.arguments.duplicateTorrent != null) {
-        Timber.e("'torrent-duplicate' key is present, torrent is already added")
-        throw RpcRequestError.UnsuccessfulResultField(DUPLICATE_TORRENT_RESULT, response.httpResponse, response.requestHeaders)
+    handleDuplicateTorrentError(AddTorrentLinkResponseArguments::duplicateTorrent) {
+        performRequest<RpcResponse<AddTorrentLinkResponseArguments>, _>(
+            org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
+            AddTorrentLinkRequestArguments(url, NotNormalizedRpcPath(downloadDirectory), bandwidthPriority, !start),
+            "addTorrentLink"
+        )
     }
 }
 
@@ -48,5 +45,5 @@ private data class AddTorrentLinkRequestArguments(
 @Serializable
 private data class AddTorrentLinkResponseArguments(
     @SerialName("torrent-duplicate")
-    val duplicateTorrent: Unit? = null,
+    val duplicateTorrent: DuplicateTorrent? = null,
 )

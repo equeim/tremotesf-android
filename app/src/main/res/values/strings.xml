@@ -479,7 +479,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_merge_trackers_when_adding_existing_torrent_title">Merge trackers when adding existing torrent</string>
     <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Ask for merging trackers when adding existing torrent</string>
 
-    <string name="torrent_duplicate">This torrent is already added</string>
+    <string name="torrent_duplicate_not_merging_trackers">Not adding existing torrent «%1$s»</string>
     <string name="torrent_duplicate_merging_trackers">Merging trackers for «%1$s» torrent</string>
     <string name="torrent_duplicate_merging_trackers_question">Torrent «%1$s» is already added, merge trackers?</string>
     <string name="torrent_duplicate_merging_trackers_question_without_name">This torrent is already added, merge trackers?</string>
