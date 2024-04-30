@@ -177,16 +177,15 @@ class WifiNetworkServersController(
         }
     }
 
-    private fun setCurrentServerFromWifiNetwork(ssid: String): Boolean {
+    private fun setCurrentServerFromWifiNetwork(ssid: String) {
         Timber.i("setCurrentServerFromWifiNetwork() called")
-        for (server in servers.serversState.value.servers) {
-            if (server.autoConnectOnWifiNetworkEnabled && server.autoConnectOnWifiNetworkSSID == ssid) {
-                Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
-                return servers.setCurrentServer(server.name)
-            }
+        val server = servers.serversState.value.servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID == ssid }
+        if (server != null) {
+            Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
+            servers.setCurrentServer(server.name)
+        } else {
+            Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
         }
-        Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
-        return false
     }
 
     @Suppress("DEPRECATION")
