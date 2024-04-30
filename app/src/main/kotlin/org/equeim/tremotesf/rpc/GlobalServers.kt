@@ -6,10 +6,14 @@ package org.equeim.tremotesf.rpc
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.annotation.MainThread
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.await
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.TremotesfApplication
@@ -25,23 +29,25 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
     private val saveData = AtomicReference<ServersState>()
 
     init {
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(Dispatchers.Main.immediate) {
+        scope.launch {
             wifiNetworkController.setCurrentServerFromWifiNetwork()
         }
     }
 
-    @MainThread
-    override suspend fun save(serversState: ServersState) {
+    override fun save(serversState: ServersState) {
         this.saveData.set(serversState)
-        try {
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                SaveWorker.UNIQUE_WORK_NAME,
-                ExistingWorkPolicy.APPEND,
-                OneTimeWorkRequestBuilder<SaveWorker>().build()
-            ).await()
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to schedule save worker")
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
+            try {
+                Timber.d("Scheduling save worker")
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    SaveWorker.UNIQUE_WORK_NAME,
+                    ExistingWorkPolicy.APPEND,
+                    OneTimeWorkRequestBuilder<SaveWorker>().build()
+                ).await()
+                Timber.d("Scheduled save worker")
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to schedule save worker")
+            }
         }
     }
 

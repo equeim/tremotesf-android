@@ -12,7 +12,6 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
-import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import kotlinx.coroutines.CoroutineScope
@@ -161,7 +160,6 @@ class WifiNetworkServersController(
         }
     }
 
-    @MainThread
     private fun onCurrentWifiSsidChanged(ssid: String?) {
         Timber.i("onCurrentWifiSsidChanged() called with: ssid = $ssid")
         if (ssid != null) {
@@ -179,7 +177,6 @@ class WifiNetworkServersController(
         }
     }
 
-    @MainThread
     private fun setCurrentServerFromWifiNetwork(ssid: String): Boolean {
         Timber.i("setCurrentServerFromWifiNetwork() called")
         val serversState = servers.serversState.value
