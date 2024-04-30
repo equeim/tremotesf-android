@@ -147,7 +147,7 @@ abstract class Servers(
     }
 
     @MainThread
-    protected abstract fun save(serversState: ServersState)
+    protected abstract suspend fun save(serversState: ServersState)
 
     @OptIn(ExperimentalSerializationApi::class)
     protected fun doSave(serversState: ServersState) {
