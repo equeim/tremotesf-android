@@ -26,14 +26,11 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
-import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 
 
@@ -42,7 +39,6 @@ class WifiNetworkServersController(
     appInForeground: Flow<Boolean>,
     scope: CoroutineScope,
     context: Context,
-    dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
@@ -60,13 +56,17 @@ class WifiNetworkServersController(
                     Timber.i("There are no servers with Wi-Fi networks configured")
                 }
             }
-        scope.launch(dispatchers.Main) {
+        scope.launch {
             combine(hasServersWithWifiNetwork, appInForeground, Boolean::and)
                 .distinctUntilChanged()
-                .dropWhile { !it }
                 .collectLatest { shouldObserveWifiNetworks ->
                     _observingActiveWifiNetwork.value = shouldObserveWifiNetworks
-                    observeActiveWifiNetwork().collect(::onCurrentWifiSsidChanged)
+                    if (shouldObserveWifiNetworks) {
+                        Timber.i("Start observing active Wi-Fi network")
+                        observeActiveWifiNetwork().collect(::onCurrentWifiSsidChanged)
+                    } else {
+                        Timber.i("Don't observe active Wi-Fi network")
+                    }
                 }
         }
     }
