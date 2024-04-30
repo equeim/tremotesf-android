@@ -87,7 +87,6 @@ class WifiNetworkServersController(
             Timber.e("observeActiveWifiNetwork: ConnectivityManager is null")
             return flowOf(null)
         }
-        @Suppress("EXPERIMENTAL_API_USAGE")
         return callbackFlow {
             Timber.i("observeActiveWifiNetwork: registering network callback")
             val request = NetworkRequest.Builder()
