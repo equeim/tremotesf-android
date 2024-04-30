@@ -32,13 +32,17 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
     }
 
     @MainThread
-    override fun save(serversState: ServersState) {
+    override suspend fun save(serversState: ServersState) {
         this.saveData.set(serversState)
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            SaveWorker.UNIQUE_WORK_NAME,
-            ExistingWorkPolicy.APPEND,
-            OneTimeWorkRequestBuilder<SaveWorker>().build()
-        )
+        try {
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                SaveWorker.UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.APPEND,
+                OneTimeWorkRequestBuilder<SaveWorker>().build()
+            ).await()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to schedule save worker")
+        }
     }
 
     class SaveWorker(context: Context, workerParameters: WorkerParameters) :

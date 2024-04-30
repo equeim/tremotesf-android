@@ -6,36 +6,31 @@ package org.equeim.tremotesf.rpc
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.asFlow
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.Operation
-import androidx.work.Operation.State.FAILURE
-import androidx.work.Operation.State.SUCCESS
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.await
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.equeim.tremotesf.TremotesfApplication
-import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.rpc.requests.RpcTorrentFinishedState
 import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.rpc.requests.getSessionStats
 import org.equeim.tremotesf.rpc.requests.getTorrentsFinishedState
+import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import timber.log.Timber
@@ -90,10 +85,12 @@ object PeriodicServerStateUpdater {
             AppForegroundTracker.appInForeground.collect { inForeground ->
                 if (inForeground) {
                     Timber.d("Cancelling background notifications job")
-                    workManager.cancelUniqueWork(BackgroundNotificationsWorker::class.qualifiedName!!)
-                        .observe().collect {
-                            Timber.d("Cancelling background notifications worker: $it")
-                        }
+                    try {
+                        workManager.cancelUniqueWork(BackgroundNotificationsWorker::class.qualifiedName!!).await()
+                        Timber.d("Cancelled background notifications job")
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to cancel background notifications job")
+                    }
                 } else {
                     val interval = Settings.backgroundUpdateInterval.get()
                     if (interval > 0 && notificationsController.isTorrentNotificationsEnabled(false)) {
@@ -105,12 +102,15 @@ object PeriodicServerStateUpdater {
                                 .setConstraints(constraints)
                                 .build()
                         Timber.d("Scheduling background notifications job, interval = $interval minutes")
-                        workManager.enqueueUniquePeriodicWork(
-                            BackgroundNotificationsWorker::class.qualifiedName!!,
-                            ExistingPeriodicWorkPolicy.KEEP,
-                            request
-                        ).observe().collect {
-                            Timber.d("Scheduling background notifications job: $it")
+                        try {
+                            workManager.enqueueUniquePeriodicWork(
+                                BackgroundNotificationsWorker::class.qualifiedName!!,
+                                ExistingPeriodicWorkPolicy.KEEP,
+                                request
+                            ).await()
+                            Timber.d("Scheduled background notifications job")
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to schedule background notifications job")
                         }
                     } else {
                         Timber.i("Not scheduling job, disabled in settings")
@@ -199,12 +199,5 @@ class BackgroundNotificationsWorker(context: Context, workerParameters: WorkerPa
         }.also {
             Timber.i("doWork() returned $it")
         }
-    }
-}
-
-private fun Operation.observe(): Flow<Operation.State> = state.asFlow().takeWhile {
-    when (it) {
-        is SUCCESS, is FAILURE -> false
-        else -> true
     }
 }
