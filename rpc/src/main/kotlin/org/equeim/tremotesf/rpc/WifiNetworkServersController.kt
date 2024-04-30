@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
@@ -51,20 +52,16 @@ class WifiNetworkServersController(
 
     init {
         Timber.i("init")
-
-        val hasServerWithWifiNetwork = servers.servers.map { servers ->
-            val has =
-                servers.find { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() } != null
-            if (has) {
-                Timber.i("There are servers with Wi-Fi networks configured")
-            } else {
-                Timber.i("There are no servers with Wi-Fi networks configured")
+        val hasServersWithWifiNetwork =
+            servers.serversState.map(Servers.ServersState::hasServersWithWifiNetwork).onEach {
+                if (it) {
+                    Timber.i("There are servers with Wi-Fi networks configured")
+                } else {
+                    Timber.i("There are no servers with Wi-Fi networks configured")
+                }
             }
-            has
-        }
-
         scope.launch(dispatchers.Main) {
-            combine(hasServerWithWifiNetwork, appInForeground, Boolean::and)
+            combine(hasServersWithWifiNetwork, appInForeground, Boolean::and)
                 .distinctUntilChanged()
                 .dropWhile { !it }
                 .collectLatest { shouldObserveWifiNetworks ->
@@ -168,24 +165,25 @@ class WifiNetworkServersController(
     }
 
     suspend fun setCurrentServerFromWifiNetwork() {
-        Timber.d("setCurrentServerFromWifiNetwork() called")
-        val ssid = getCurrentWifiSsid()
-        if (ssid != null) {
-            setCurrentServerFromWifiNetwork(ssid)
+        Timber.i("setCurrentServerFromWifiNetwork() called")
+        if (servers.serversState.value.hasServersWithWifiNetwork()) {
+            val ssid = getCurrentWifiSsid()
+            if (ssid != null) {
+                setCurrentServerFromWifiNetwork(ssid)
+            } else {
+                Timber.e("setCurrentServerFromWifiNetwork: SSID is null")
+            }
         } else {
-            Timber.e("setCurrentServerFromWifiNetwork: SSID is null")
+            Timber.i("setCurrentServerFromWifiNetwork: there are no servers with Wi-Fi networks configured")
         }
     }
 
     private fun setCurrentServerFromWifiNetwork(ssid: String): Boolean {
         Timber.i("setCurrentServerFromWifiNetwork() called")
-        val serversState = servers.serversState.value
-        for (server in serversState.servers) {
-            if (server.autoConnectOnWifiNetworkEnabled) {
-                if (server.autoConnectOnWifiNetworkSSID == ssid) {
-                    Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
-                    return servers.setCurrentServer(server.name)
-                }
+        for (server in servers.serversState.value.servers) {
+            if (server.autoConnectOnWifiNetworkEnabled && server.autoConnectOnWifiNetworkSSID == ssid) {
+                Timber.i("setCurrentServerFromWifiNetwork: server with name = ${server.name}, address = ${server.address}, port = ${server.port} matches Wi-Fi SSID = '$ssid'")
+                return servers.setCurrentServer(server.name)
             }
         }
         Timber.i("setCurrentServerFromWifiNetwork: no matching servers found")
@@ -205,6 +203,9 @@ class WifiNetworkServersController(
         }
     }
 }
+
+private fun Servers.ServersState.hasServersWithWifiNetwork(): Boolean =
+    servers.any { it.autoConnectOnWifiNetworkEnabled && it.autoConnectOnWifiNetworkSSID.isNotBlank() }
 
 private val wifiNetworkCapabilities = arrayOf(
     NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED,
