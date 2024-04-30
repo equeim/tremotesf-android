@@ -29,7 +29,7 @@ object GlobalServers : Servers(@OptIn(DelicateCoroutinesApi::class) GlobalScope,
     private val saveData = AtomicReference<ServersState>()
 
     init {
-        scope.launch {
+        scope.launch(start = CoroutineStart.UNDISPATCHED) {
             wifiNetworkController.setCurrentServerFromWifiNetwork()
         }
     }
