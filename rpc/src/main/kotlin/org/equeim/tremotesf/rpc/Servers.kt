@@ -5,15 +5,14 @@
 package org.equeim.tremotesf.rpc
 
 import android.content.Context
-import androidx.annotation.AnyThread
-import androidx.annotation.MainThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,8 +22,6 @@ import kotlinx.serialization.json.encodeToStream
 import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import okio.buffer
 import okio.source
-import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
-import org.equeim.tremotesf.common.TremotesfDispatchers
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -39,7 +36,6 @@ private const val TEMP_FILE_SUFFIX = ".json"
 abstract class Servers(
     protected val scope: CoroutineScope,
     protected val context: Context,
-    private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
     @Serializable
     data class ServersState(
@@ -139,15 +135,12 @@ abstract class Servers(
         return newServer
     }
 
-    @AnyThread
     private fun save() {
         Timber.i("save() called")
-        val servers = _serversState.value
-        scope.launch(dispatchers.Main) { save(servers) }
+        save(_serversState.value)
     }
 
-    @MainThread
-    protected abstract suspend fun save(serversState: ServersState)
+    protected abstract fun save(serversState: ServersState)
 
     @OptIn(ExperimentalSerializationApi::class)
     protected fun doSave(serversState: ServersState) {
@@ -171,42 +164,47 @@ abstract class Servers(
 
     fun addOrReplaceServer(newServer: Server, previousName: String? = null) {
         Timber.d("addOrReplaceServer() called with: newServer = $newServer, previousName = $previousName")
-
-        val state = _serversState.value
-        val servers = state.servers.toMutableList()
-        val removeNames = setOfNotNull(newServer.name, previousName)
-        servers.removeAll { removeNames.contains(it.name) }
-        servers.add(newServer)
-
-        var currentServerName = state.currentServerName
-        if (currentServerName == null ||
-            (previousName != null && newServer.name != previousName && previousName == currentServerName)
-        ) {
-            Timber.d("Setting current server as ${newServer.name}")
-            currentServerName = newServer.name
+        _serversState.update { state ->
+            val servers = state.servers.toMutableList()
+            val removeNames = setOfNotNull(newServer.name, previousName)
+            servers.removeAll { removeNames.contains(it.name) }
+            servers.add(newServer)
+            var currentServerName = state.currentServerName
+            if (currentServerName == null ||
+                (previousName != null && newServer.name != previousName && previousName == currentServerName)
+            ) {
+                Timber.d("Setting current server as ${newServer.name}")
+                currentServerName = newServer.name
+            }
+            ServersState(servers, currentServerName)
         }
-        _serversState.value = ServersState(servers, currentServerName)
         save()
     }
 
     fun removeServers(serverNames: Set<String>) {
         Timber.d("removeServers() called with: serverNames = $serverNames")
-        val state = _serversState.value
-        val servers = state.servers.toMutableList()
-        servers.removeAll { serverNames.contains(it.name) }
-        var currentServerName = state.currentServerName
-        if (currentServerName != null && servers.find { it.name == currentServerName } == null) {
-            currentServerName = servers.firstOrNull()?.name
+        _serversState.update { state ->
+            val servers = state.servers.toMutableList()
+            servers.removeAll { serverNames.contains(it.name) }
+            var currentServerName = state.currentServerName
+            if (currentServerName != null && servers.find { it.name == currentServerName } == null) {
+                currentServerName = servers.firstOrNull()?.name
+            }
+            ServersState(servers, currentServerName)
         }
-        _serversState.value = ServersState(servers, currentServerName)
         save()
     }
 
     fun setCurrentServer(serverName: String): Boolean {
         Timber.d("setCurrentServer() called with: serverName = $serverName")
-        val state = _serversState.value
-        return if (serverName != state.currentServerName) {
-            _serversState.value = state.copy(currentServerName = serverName)
+        val oldState = _serversState.getAndUpdate { state ->
+            if (serverName != state.currentServerName && state.servers.find { it.name == serverName } != null) {
+                state.copy(currentServerName = serverName)
+            } else {
+                state
+            }
+        }
+        return if (oldState.currentServerName != serverName) {
             save()
             true
         } else {
@@ -217,22 +215,24 @@ abstract class Servers(
 
     fun saveCurrentServerTorrentsFinishedState(newFinishedState: Map<Server.TorrentHashString, Server.TorrentFinishedState>) {
         Timber.d("Saving finished state for ${newFinishedState.size} torrents")
-        val state = _serversState.value
-        val currentServer = state.currentServer
-        if (currentServer == null) {
-            Timber.e("saveCurrentServerTorrentsFinishedState: no current server")
-            return
-        }
-        Timber.d("saveCurrentServerTorrentsFinishedState: current server = $currentServer")
-        _serversState.value = state.copy(
-            servers = state.servers.map {
-                if (it.name == currentServer.name) {
-                    it.copy(lastTorrentsFinishedState = newFinishedState)
-                } else {
-                    it
-                }
+        _serversState.update { state ->
+            val currentServer = state.currentServer
+            if (currentServer != null) {
+                Timber.d("saveCurrentServerTorrentsFinishedState: current server = $currentServer")
+                state.copy(
+                    servers = state.servers.map {
+                        if (it.name == currentServer.name) {
+                            it.copy(lastTorrentsFinishedState = newFinishedState)
+                        } else {
+                            it
+                        }
+                    }
+                )
+            } else {
+                Timber.e("saveCurrentServerTorrentsFinishedState: no current server")
+                state
             }
-        )
+        }
         save()
     }
 }
