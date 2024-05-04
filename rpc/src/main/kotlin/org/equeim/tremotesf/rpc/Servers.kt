@@ -195,7 +195,7 @@ abstract class Servers(
         save()
     }
 
-    fun setCurrentServer(serverName: String): Boolean {
+    fun setCurrentServer(serverName: String) {
         Timber.d("setCurrentServer() called with: serverName = $serverName")
         val oldState = _serversState.getAndUpdate { state ->
             if (serverName != state.currentServerName && state.servers.find { it.name == serverName } != null) {
@@ -206,10 +206,8 @@ abstract class Servers(
         }
         return if (oldState.currentServerName != serverName) {
             save()
-            true
         } else {
             Timber.d("setCurrentServer: current server did not change")
-            false
         }
     }
 
