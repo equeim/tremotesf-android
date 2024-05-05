@@ -312,8 +312,6 @@ class TorrentsAdapter(
         }
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            super.onPrepareActionMode(mode, menu)
-
             if (selectionTracker?.selectedCount == 1) {
                 val startEnabled = adapter.get()?.getFirstSelectedTorrent()?.status == TorrentStatus.Paused
                 for (id in intArrayOf(R.id.start, R.id.start_now)) {
