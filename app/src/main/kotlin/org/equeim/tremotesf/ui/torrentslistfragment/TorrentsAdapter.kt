@@ -19,7 +19,6 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.mapToArray
 import org.equeim.tremotesf.databinding.TorrentListItemBinding
 import org.equeim.tremotesf.databinding.TorrentListItemCompactBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
@@ -348,36 +347,38 @@ class TorrentsAdapter(
                 }
 
                 R.id.set_location -> {
-                    activity.navigate(
-                        TorrentsListFragmentDirections.toTorrentSetLocationDialog(
-                            selectionTracker.getSelectedPositionsUnsorted()
-                                .mapToArray { adapter.getItem(it).hashString },
-                            adapter.getFirstSelectedTorrent().downloadDirectory.toNativeSeparators()
+                    adapter.getFirstSelectedTorrent()?.let { firstTorrent ->
+                        activity.navigate(
+                            TorrentsListFragmentDirections.toTorrentSetLocationDialog(
+                                selectionTracker.mapSelectedPositionsToArray { adapter.getItem(it).hashString },
+                                firstTorrent.downloadDirectory.toNativeSeparators()
+                            )
                         )
-                    )
+                    }
                 }
 
                 R.id.rename -> {
-                    val torrent = adapter.getFirstSelectedTorrent()
-                    activity.navigate(
-                        TorrentsListFragmentDirections.toTorrentFileRenameDialog(
-                            torrent.name,
-                            torrent.name,
-                            torrent.hashString
+                    adapter.getFirstSelectedTorrent()?.let { torrent ->
+                        activity.navigate(
+                            TorrentsListFragmentDirections.toTorrentFileRenameDialog(
+                                torrent.name,
+                                torrent.name,
+                                torrent.hashString
+                            )
                         )
-                    )
+                    }
                 }
 
                 R.id.remove -> activity.navigate(
                     TorrentsListFragmentDirections.toRemoveTorrentDialog(
-                        selectionTracker.getSelectedPositionsUnsorted().mapToArray { adapter.getItem(it).hashString }
+                        selectionTracker.mapSelectedPositionsToArray { adapter.getItem(it).hashString }
                     )
                 )
 
                 R.id.share -> {
                     val magnetLinks =
                         adapter.currentList
-                            .slice(selectionTracker.getSelectedPositionsUnsorted().sorted())
+                            .slice(selectionTracker.getSelectedPositionsUnsorted().sorted().asIterable())
                             .map { it.magnetLink }
                     Utils.shareTorrents(magnetLinks, activity)
                 }
@@ -388,9 +389,8 @@ class TorrentsAdapter(
             return true
         }
 
-        private fun TorrentsAdapter.getFirstSelectedTorrent(): Torrent {
-            return getItem(selectionTracker.getFirstSelectedPosition())
-        }
+        private fun TorrentsAdapter.getFirstSelectedTorrent(): Torrent? =
+            selectionTracker.getFirstSelectedPosition()?.let(::getItem)
     }
 
     private class Callback : DiffUtil.ItemCallback<Torrent>() {
@@ -406,13 +406,13 @@ class TorrentsAdapter(
 
 private fun Torrent.getStatusString(context: Context): CharSequence {
     return when (status) {
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.Paused -> if (error != null) {
+        TorrentStatus.Paused -> if (error != null) {
             context.getString(R.string.torrent_paused_with_error, errorString)
         } else {
             context.getText(R.string.torrent_paused)
         }
 
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.Downloading -> if (isDownloadingStalled) {
+        TorrentStatus.Downloading -> if (isDownloadingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_downloading_stalled_with_error, errorString)
             } else {
@@ -436,7 +436,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             }
         }
 
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.Seeding -> if (isSeedingStalled) {
+        TorrentStatus.Seeding -> if (isSeedingStalled) {
             if (error != null) {
                 context.getString(R.string.torrent_seeding_stalled_with_error, errorString)
             } else {
@@ -459,15 +459,15 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             }
         }
 
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForDownloading,
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForSeeding,
+        TorrentStatus.QueuedForDownloading,
+        TorrentStatus.QueuedForSeeding,
         -> if (error != null) {
             context.getString(R.string.torrent_queued_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued)
         }
 
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.Checking -> if (error != null) {
+        TorrentStatus.Checking -> if (error != null) {
             context.getString(
                 R.string.torrent_checking_with_error,
                 DecimalFormats.generic.format(recheckProgress * 100),
@@ -480,7 +480,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
             )
         }
 
-        org.equeim.tremotesf.rpc.requests.TorrentStatus.QueuedForChecking -> if (error != null) {
+        TorrentStatus.QueuedForChecking -> if (error != null) {
             context.getString(R.string.torrent_queued_for_checking_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued_for_checking)

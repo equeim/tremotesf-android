@@ -23,7 +23,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Collections
 
 
 private const val BUNDLE_KEY = "org.equeim.tremotesf.ui.SelectionTracker"
@@ -152,12 +152,27 @@ class SelectionTracker<K : Any> private constructor(
         })
     }
 
-    fun getSelectedPositionsUnsorted(): List<Int> {
-        return selectedKeys.map(selectionKeysProvider::getPositionForKey)
+    fun getSelectedPositionsUnsorted(): Sequence<Int> {
+        return selectedKeys.asSequence().map(selectionKeysProvider::getPositionForKey)
     }
 
-    fun getFirstSelectedPosition(): Int {
-        return getSelectedPositionsUnsorted().minOrNull() ?: -1
+    inline fun <reified R> mapSelectedPositionsToList(transform: (Int) -> R): List<R> {
+        val list = ArrayList<R>(selectedCount)
+        getSelectedPositionsUnsorted().mapTo(list, transform)
+        return list
+    }
+
+    inline fun <reified R> mapSelectedPositionsToArray(transform: (Int) -> R): Array<R> {
+        val array = arrayOfNulls<R>(selectedCount)
+        for ((i, position) in getSelectedPositionsUnsorted().withIndex()) {
+            array[i] = transform(position)
+        }
+        @Suppress("UNCHECKED_CAST")
+        return array as Array<R>
+    }
+
+    fun getFirstSelectedPosition(): Int? {
+        return getSelectedPositionsUnsorted().minOrNull()
     }
 
     fun isSelected(key: K): Boolean {
