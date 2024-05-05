@@ -72,9 +72,9 @@ class TorrentPropertiesFragmentViewModel(
         viewModelScope.launch {
             val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) {
                 if (now) {
-                    startTorrents(listOf(torrentId))
-                } else {
                     startTorrentsNow(listOf(torrentId))
+                } else {
+                    startTorrents(listOf(torrentId))
                 }
             }
             if (ok) refreshRequests.emit(Unit)
