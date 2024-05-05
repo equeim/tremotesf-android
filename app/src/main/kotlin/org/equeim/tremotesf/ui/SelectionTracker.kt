@@ -195,7 +195,7 @@ class SelectionTracker<K : Any> private constructor(
         adapter.notifyItemChanged(position)
 
         if (hasSelection) {
-            updateActionMode()
+            updateActionModeOnSelectedCountChange()
         } else {
             actionMode?.finish()
         }
@@ -212,7 +212,7 @@ class SelectionTracker<K : Any> private constructor(
 
         adapter.notifyItemRangeChanged(0, selectedKeys.size)
 
-        updateActionMode()
+        updateActionModeOnSelectedCountChange()
     }
 
     fun clearSelection(finishActionMode: Boolean = true) {
@@ -232,18 +232,26 @@ class SelectionTracker<K : Any> private constructor(
 
     fun startActionMode() {
         actionMode = activity.startSupportActionMode(actionModeCallbackFactory(this))
-        updateActionMode()
+        actionMode?.updateTitle()
     }
 
-    private fun updateActionMode() {
+    fun invalidateActionMode() {
+        actionMode?.invalidate()
+    }
+
+    private fun updateActionModeOnSelectedCountChange() {
         actionMode?.apply {
-            title = context.resources.getQuantityString(
-                titleStringId,
-                selectedCount,
-                selectedCount
-            )
+            updateTitle()
             invalidate()
         }
+    }
+
+    private fun ActionMode.updateTitle() {
+        title = context.resources.getQuantityString(
+            titleStringId,
+            selectedCount,
+            selectedCount
+        )
     }
 
     private fun removeSelectionInProgress(key: K) {
@@ -252,7 +260,7 @@ class SelectionTracker<K : Any> private constructor(
 
     private fun finishRemovingSelection() {
         if (hasSelection) {
-            handler.postUpdateActionMode()
+            handler.postUpdateActionModeOnSelectedCountChange()
         } else {
             actionMode?.finish()
         }
@@ -487,17 +495,17 @@ class SelectionTracker<K : Any> private constructor(
     private class SelectionTrackerHandler(selectionTracker: SelectionTracker<*>) :
         Handler(Looper.getMainLooper()) {
         private val selectionTrackerWeak = WeakReference(selectionTracker)
-        private val msgUpdateActionMode = 0
+        private val msgUpdateActionModeOnSelectedCountChange = 0
 
         override fun handleMessage(msg: Message) {
-            if (msg.what == msgUpdateActionMode) {
-                selectionTrackerWeak.get()?.updateActionMode()
+            if (msg.what == msgUpdateActionModeOnSelectedCountChange) {
+                selectionTrackerWeak.get()?.updateActionModeOnSelectedCountChange()
             }
         }
 
-        fun postUpdateActionMode() {
-            if (!hasMessages(msgUpdateActionMode)) {
-                sendEmptyMessage(msgUpdateActionMode)
+        fun postUpdateActionModeOnSelectedCountChange() {
+            if (!hasMessages(msgUpdateActionModeOnSelectedCountChange)) {
+                sendEmptyMessage(msgUpdateActionModeOnSelectedCountChange)
             }
         }
     }

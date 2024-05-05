@@ -78,6 +78,7 @@ abstract class BaseTorrentFilesAdapter(
     suspend fun update(items: List<TorrentFilesTree.Item?>?) {
         submitListAwait(items)
         selectionTracker.commitAdapterUpdate()
+        selectionTracker.invalidateActionMode()
     }
 
     override fun onStateRestored() {
