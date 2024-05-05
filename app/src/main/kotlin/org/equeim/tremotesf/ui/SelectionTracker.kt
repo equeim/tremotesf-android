@@ -332,10 +332,12 @@ class SelectionTracker<K : Any> private constructor(
             return false
         }
 
+        @CallSuper
         override fun onDestroyActionMode(mode: ActionMode) {
             selectionTracker?.clearSelection(false)
         }
 
+        @CallSuper
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
             if (item.itemId == R.id.select_all) {
                 selectionTracker?.selectAll()

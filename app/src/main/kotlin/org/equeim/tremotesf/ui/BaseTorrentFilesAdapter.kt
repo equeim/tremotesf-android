@@ -210,36 +210,53 @@ abstract class BaseTorrentFilesAdapter(
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             val selectionTracker = this.selectionTracker
             if (selectionTracker?.hasSelection != true) {
-                return super.onPrepareActionMode(mode, menu)
+                return false
             }
-
-            super.onPrepareActionMode(mode, menu)
-
             val adapter = this.adapter.get() ?: return false
 
-            if (selectionTracker.selectedCount == 1) {
-                val first = adapter.getItem(selectionTracker.getFirstSelectedPosition()!!)!!
-                val wanted = (first.wantedState == TorrentFilesTree.Item.WantedState.Wanted)
-                downloadItem!!.isEnabled = !wanted
-                notDownloadItem!!.isEnabled = wanted
-                when (first.priority) {
-                    TorrentFilesTree.Item.Priority.Low -> lowPriorityItem
-                    TorrentFilesTree.Item.Priority.Normal -> normalPriorityItem
-                    TorrentFilesTree.Item.Priority.High -> highPriorityItem
-                    TorrentFilesTree.Item.Priority.Mixed -> mixedPriorityItem
-                }!!.isChecked = true
-                mixedPriorityItem!!.isVisible =
-                    (first.priority == TorrentFilesTree.Item.Priority.Mixed)
-                renameItem!!.isEnabled = true
-            } else {
-                downloadItem!!.isEnabled = true
-                notDownloadItem!!.isEnabled = true
-                mixedPriorityItem!!.isVisible = true
-                mixedPriorityItem!!.isChecked = true
-                renameItem!!.isEnabled = false
+            val (wantedState, priority) = computeWantedStateAndPriority(selectionTracker, adapter)
+
+            downloadItem!!.isEnabled = when (wantedState) {
+                TorrentFilesTree.Item.WantedState.Unwanted, TorrentFilesTree.Item.WantedState.Mixed -> true
+                TorrentFilesTree.Item.WantedState.Wanted -> false
             }
+            notDownloadItem!!.isEnabled = when (wantedState) {
+                TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.WantedState.Mixed -> true
+                TorrentFilesTree.Item.WantedState.Unwanted -> false
+            }
+            when (priority) {
+                TorrentFilesTree.Item.Priority.Low -> lowPriorityItem
+                TorrentFilesTree.Item.Priority.Normal -> normalPriorityItem
+                TorrentFilesTree.Item.Priority.High -> highPriorityItem
+                TorrentFilesTree.Item.Priority.Mixed -> mixedPriorityItem
+            }!!.isChecked = true
+            mixedPriorityItem!!.isVisible = priority == TorrentFilesTree.Item.Priority.Mixed
+            renameItem!!.isEnabled = selectionTracker.selectedCount == 1
 
             return true
+        }
+
+        private fun computeWantedStateAndPriority(selectionTracker: SelectionTracker<Int>, adapter: BaseTorrentFilesAdapter): Pair<TorrentFilesTree.Item.WantedState, TorrentFilesTree.Item.Priority> {
+            var wantedState: TorrentFilesTree.Item.WantedState? = null
+            var priority: TorrentFilesTree.Item.Priority? = null
+            for (position in selectionTracker.getSelectedPositionsUnsorted()) {
+                val item = adapter.getItem(position)!!
+                if (wantedState == null) {
+                    wantedState = item.wantedState
+                    priority = item.priority
+                } else {
+                    if (item.priority != priority) {
+                        priority = TorrentFilesTree.Item.Priority.Mixed
+                    }
+                    if (item.wantedState != wantedState) {
+                        wantedState = TorrentFilesTree.Item.WantedState.Mixed
+                    }
+                    if (priority == TorrentFilesTree.Item.Priority.Mixed && wantedState == TorrentFilesTree.Item.WantedState.Mixed) {
+                        break
+                    }
+                }
+            }
+            return wantedState!! to priority!!
         }
 
         override fun onDestroyActionMode(mode: ActionMode) {
