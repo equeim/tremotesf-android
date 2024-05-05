@@ -67,7 +67,7 @@ suspend fun RpcClient.setAlternativeDownloadSpeedLimit(value: TransferRate) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setAlternativeUploadSpeedLimit(value: TransferRate) =
-    setSessionProperty("alt-speed-down", value, TransferRate.KiloBytesPerSecondSerializer)
+    setSessionProperty("alt-speed-up", value, TransferRate.KiloBytesPerSecondSerializer)
 
 /**
  * @throws RpcRequestError
