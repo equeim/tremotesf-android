@@ -86,13 +86,13 @@ abstract class BaseTorrentFilesAdapter(
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
         val nodeIndexes =
-            selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.last() }
         filesTree.setItemsWanted(nodeIndexes, wanted)
     }
 
     private fun setSelectedItemsPriority(priority: TorrentFilesTree.Item.Priority) {
         val nodeIndexes =
-            selectionTracker.getSelectedPositionsUnsorted().map { getItem(it)!!.nodePath.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.last() }
         filesTree.setItemsPriority(nodeIndexes, priority)
     }
 
@@ -215,8 +215,10 @@ abstract class BaseTorrentFilesAdapter(
 
             super.onPrepareActionMode(mode, menu)
 
+            val adapter = this.adapter.get() ?: return false
+
             if (selectionTracker.selectedCount == 1) {
-                val first = adapter.get()?.getItem(selectionTracker.getFirstSelectedPosition())!!
+                val first = adapter.getItem(selectionTracker.getFirstSelectedPosition()!!)!!
                 val wanted = (first.wantedState == TorrentFilesTree.Item.WantedState.Wanted)
                 downloadItem!!.isEnabled = !wanted
                 notDownloadItem!!.isEnabled = wanted
@@ -265,8 +267,9 @@ abstract class BaseTorrentFilesAdapter(
                     R.id.normal_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Normal)
                     R.id.low_priority -> setSelectedItemsPriority(TorrentFilesTree.Item.Priority.Low)
                     R.id.rename -> {
-                        val i = getItem(selectionTracker.getFirstSelectedPosition())!!
-                        filesTree.getItemNamePath(i)?.let { path -> navigateToRenameDialog(path, i.name) }
+                        selectionTracker.getFirstSelectedPosition()?.let(::getItem)?.let { firstItem ->
+                            filesTree.getItemNamePath(firstItem)?.let { path -> navigateToRenameDialog(path, firstItem.name) }
+                        }
                     }
 
                     else -> ret = false

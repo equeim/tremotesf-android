@@ -199,7 +199,7 @@ class RemoveServerDialogFragment : NavigationDialogFragment() {
             .setPositiveButton(R.string.remove) { _, _ ->
                 selectionTracker?.apply {
                     GlobalServers.removeServers(
-                        adapter.currentList.slice(getSelectedPositionsUnsorted()).mapTo(
+                        adapter.currentList.slice(getSelectedPositionsUnsorted().asIterable()).mapTo(
                             mutableSetOf(),
                             ConnectionSettingsFragment.ServersAdapter.Item::serverName
                         )
