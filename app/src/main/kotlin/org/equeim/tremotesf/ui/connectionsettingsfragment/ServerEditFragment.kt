@@ -56,9 +56,10 @@ import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.ui.NavigationDialogFragment
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.IntFilter
 import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
+import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
 import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.savedState
 import org.equeim.tremotesf.ui.utils.setDependentViews
@@ -91,7 +92,12 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
         super.onViewStateRestored(savedInstanceState)
 
         with(binding) {
-            portEdit.filters = arrayOf(IntFilter(Server.portRange))
+            nameEdit.doAfterTextChangedAndNotEmpty { nameEdit.textInputLayout.error = null }
+            addressEdit.doAfterTextChangedAndNotEmpty { addressEdit.textInputLayout.error = null }
+
+            portEdit.handleNumberRangeError(Server.portRange)
+
+            apiPathEdit.doAfterTextChangedAndNotEmpty { apiPathEdit.textInputLayout.error = null }
 
             httpsHint.isVisible = httpsCheckBox.isChecked
             httpsCheckBox.setOnCheckedChangeListener { _, isChecked ->
@@ -108,10 +114,8 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
 
             authenticationCheckBox.setDependentViews(usernameEditLayout, passwordEditLayout)
 
-            updateIntervalEdit.filters =
-                arrayOf(IntFilter(Server.MINIMUM_UPDATE_INTERVAL.inWholeSeconds.rangeTo(Server.MAXIMUM_UPDATE_INTERVAL.inWholeSeconds)))
-            timeoutEdit.filters =
-                arrayOf(IntFilter(Server.MINIMUM_TIMEOUT.inWholeSeconds.rangeTo(Server.MAXIMUM_TIMEOUT.inWholeSeconds)))
+            updateIntervalEdit.handleNumberRangeError(Server.updateIntervalRangeInSeconds)
+            timeoutEdit.handleNumberRangeError(Server.timeoutRangeInSeconds)
 
             wifiAutoConnectCheckbox.setOnClickListener {
                 if (wifiAutoConnectCheckbox.isChecked) {
@@ -258,36 +262,23 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
     }
 
     private fun onDone(): Boolean {
-        val error = getString(R.string.empty_field_error)
-        val checkLength: (EditText) -> Boolean = { edit ->
-            val ret: Boolean
-            edit.textInputLayout.error = if (edit.text.trimmedLength() == 0) {
-                ret = false
-                error
-            } else {
-                ret = true
-                null
-            }
-            ret
-        }
-
         with(binding) {
-            val nameOk = checkLength(nameEdit)
-            val addressOk = checkLength(addressEdit)
-            val portOk = checkLength(portEdit)
-            val apiPathOk = checkLength(apiPathEdit)
-            val updateIntervalOk = checkLength(updateIntervalEdit)
-            val timeoutOk = checkLength(timeoutEdit)
+            val emptyFieldError = getText(R.string.empty_field_error)
+            nameEdit.checkLength(emptyFieldError)
+            addressEdit.checkLength(emptyFieldError)
+            portEdit.checkLength(emptyFieldError)
+            apiPathEdit.checkLength(emptyFieldError)
+            updateIntervalEdit.checkLength(emptyFieldError)
+            timeoutEdit.checkLength(emptyFieldError)
 
-            val nameEditText = nameEdit.text?.toString() ?: ""
-
-            if (nameOk &&
-                addressOk &&
-                portOk &&
-                apiPathOk &&
-                updateIntervalOk &&
-                timeoutOk
+            if (nameEdit.dontHaveError &&
+                addressEdit.dontHaveError &&
+                portEdit.dontHaveError &&
+                apiPathEdit.dontHaveError &&
+                updateIntervalEdit.dontHaveError &&
+                timeoutEdit.dontHaveError
             ) {
+                val nameEditText = nameEdit.text?.toString() ?: ""
                 val editingServer = model.editingServer
                 if ((editingServer == null || nameEditText != editingServer.name) &&
                     GlobalServers.serversState.value.servers.find { it.name == nameEditText } != null
@@ -609,7 +600,7 @@ class ServerProxySettingsFragment : NavigationFragment(
                 setEditable(proxyTypeItems[position] != null)
             }
 
-            portEdit.filters = arrayOf(IntFilter(Server.portRange))
+            portEdit.handleNumberRangeError(Server.portRange)
 
             val model =
                 ViewModelProvider(this@ServerProxySettingsFragment)[ServerProxySettingsFragmentModel::class.java]
@@ -658,3 +649,13 @@ class ServerProxySettingsFragment : NavigationFragment(
 class ServerProxySettingsFragmentModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     var populatedUiFromServer by savedState(savedStateHandle, false)
 }
+
+private fun EditText.checkLength(emptyFieldError: CharSequence) {
+    when {
+        text.trimmedLength() == 0 -> textInputLayout.error = emptyFieldError
+        textInputLayout.error == emptyFieldError -> textInputLayout.error = null
+    }
+}
+
+private val EditText.dontHaveError: Boolean
+    get() = textInputLayout.error == null

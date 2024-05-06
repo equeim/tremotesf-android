@@ -241,6 +241,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timeout">Timeout</string>
 
     <string name="empty_field_error">This field can\'t be empty</string>
+    <string name="number_range_error">The value must be in range of %1$d - %2$d</string>
+    <string name="number_range_error_float">The value must be in range of %1$.1f - %2$.1f</string>
 
     <string name="server_exists">Server with this name already exists</string>
     <string name="overwrite">Overwrite</string>

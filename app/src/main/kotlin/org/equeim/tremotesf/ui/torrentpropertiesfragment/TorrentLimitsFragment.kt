@@ -20,6 +20,7 @@ import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.rpc.requests.torrentproperties.getTorrentLimits
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentBandwidthPriority
@@ -37,9 +38,7 @@ import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.navController
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.DoubleFilter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -47,7 +46,6 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -97,8 +95,6 @@ class TorrentLimitsFragment :
     private lateinit var ratioLimitModeItemValues: Array<String>
     private lateinit var idleSeedingModeItemValues: Array<String>
 
-    private lateinit var doubleFilter: DoubleFilter
-
     private val binding by viewLifecycleObject(TorrentLimitsFragmentBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +102,6 @@ class TorrentLimitsFragment :
         priorityItemValues = resources.getStringArray(R.array.priority_items)
         ratioLimitModeItemValues = resources.getStringArray(R.array.ratio_limit_mode)
         idleSeedingModeItemValues = resources.getStringArray(R.array.idle_seeding_mode)
-        doubleFilter = DoubleFilter(0.0..MAX_RATIO_LIMIT)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -115,20 +110,6 @@ class TorrentLimitsFragment :
         with(binding) {
             scrollView.isEnabled = false
 
-            downloadSpeedLimitEdit.filters = arrayOf(IntFilter(0 until MAX_SPEED_LIMIT))
-
-            uploadSpeedLimitEdit.filters = arrayOf(IntFilter(0 until MAX_SPEED_LIMIT))
-
-            priorityView.setAdapter(ArrayDropdownAdapter(priorityItemValues))
-
-            ratioLimitModeView.setAdapter(ArrayDropdownAdapter(ratioLimitModeItemValues))
-            ratioLimitEdit.filters = arrayOf(doubleFilter)
-
-            idleSeedingModeView.setAdapter(ArrayDropdownAdapter(idleSeedingModeItemValues))
-            idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..MAX_IDLE_SEEDING_LIMIT))
-
-            maximumPeersEdit.filters = arrayOf(IntFilter(0..MAX_PEERS))
-
             globalLimitsCheckBox.setOnCheckedChangeListener { _, checked ->
                 onValueChanged { setTorrentHonorSessionLimits(it, checked) }
             }
@@ -136,37 +117,31 @@ class TorrentLimitsFragment :
             downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 onValueChanged { setTorrentDownloadSpeedLimited(it, checked) }
             }
-            downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty { text ->
+            downloadSpeedLimitEdit.handleNumberRangeError(0..MAX_SPEED_LIMIT) { limit ->
                 onValueChanged {
-                    try {
-                        val transferRate = org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
-                        setTorrentDownloadSpeedLimit(it, transferRate)
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse download speed limit $it")
-                    }
+                    val transferRate = TransferRate.fromKiloBytesPerSecond(limit.toLong())
+                    setTorrentDownloadSpeedLimit(it, transferRate)
                 }
             }
 
             uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
                 onValueChanged { setTorrentUploadSpeedLimited(it, checked) }
             }
-            uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty { text ->
+            uploadSpeedLimitEdit.handleNumberRangeError(0..MAX_SPEED_LIMIT) { limit ->
                 onValueChanged {
-                    try {
-                        val transferRate = org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(text.toString().toLong())
-                        setTorrentUploadSpeedLimit(it, transferRate)
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse upload speed limit $it")
-                    }
+                    val transferRate = TransferRate.fromKiloBytesPerSecond(limit.toLong())
+                    setTorrentUploadSpeedLimit(it, transferRate)
                 }
             }
 
+            priorityView.setAdapter(ArrayDropdownAdapter(priorityItemValues))
             priorityView.setOnItemClickListener { _, _, position, _ ->
                 onValueChanged {
                     setTorrentBandwidthPriority(it, priorityItems[position])
                 }
             }
 
+            ratioLimitModeView.setAdapter(ArrayDropdownAdapter(ratioLimitModeItemValues))
             ratioLimitModeView.setOnItemClickListener { _, _, position, _ ->
                 val mode = ratioLimitModeItems[position]
                 ratioLimitLayout.isEnabled = mode == TorrentLimits.RatioLimitMode.Single
@@ -174,14 +149,9 @@ class TorrentLimitsFragment :
                     setTorrentRatioLimitMode(it, mode)
                 }
             }
-            ratioLimitEdit.doAfterTextChangedAndNotEmpty { text ->
+            ratioLimitEdit.handleNumberRangeError(0.0..MAX_RATIO_LIMIT) { limit ->
                 onValueChanged {
-                    val limit = doubleFilter.parseOrNull(text.toString())
-                    if (limit != null) {
-                        setTorrentRatioLimit(it, limit)
-                    } else {
-                        Timber.e("Failed to parse ratio limit $it")
-                    }
+                    setTorrentRatioLimit(it, limit)
                 }
             }
 
@@ -190,23 +160,16 @@ class TorrentLimitsFragment :
                 idleSeedingLimitLayout.isEnabled = mode == TorrentLimits.IdleSeedingLimitMode.Single
                 onValueChanged { setTorrentIdleSeedingLimitMode(it, mode) }
             }
-            idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty { text ->
+            idleSeedingModeView.setAdapter(ArrayDropdownAdapter(idleSeedingModeItemValues))
+            idleSeedingLimitEdit.handleNumberRangeError(0..MAX_IDLE_SEEDING_LIMIT) { limit ->
                 onValueChanged {
-                    try {
-                        setTorrentIdleSeedingLimit(it, text.toString().toInt().minutes)
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse idle seeding limit $it")
-                    }
+                    setTorrentIdleSeedingLimit(it, limit.minutes)
                 }
             }
 
-            maximumPeersEdit.doAfterTextChangedAndNotEmpty { text ->
+            maximumPeersEdit.handleNumberRangeError(0..MAX_PEERS) { limit ->
                 onValueChanged {
-                    try {
-                        setTorrentPeersLimit(it, text.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse peers limit $it")
-                    }
+                    setTorrentPeersLimit(it, limit)
                 }
             }
         }

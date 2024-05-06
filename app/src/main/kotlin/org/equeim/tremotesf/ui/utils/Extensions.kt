@@ -34,7 +34,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.equeim.tremotesf.R
 import timber.log.Timber
+import java.text.DecimalFormat
+import java.text.ParsePosition
 
 val Context.application: Application get() = applicationContext.findConcreteContext()
 val Context.activity: Activity get() = findConcreteContext()
@@ -120,6 +123,54 @@ val EditText.textInputLayout: TextInputLayout
         throw IllegalArgumentException("$this is not a child of TextInputLayout")
     }
 
+fun EditText.handleNumberRangeError(range: IntRange, onValidValue: ((Int) -> Unit)? = null) {
+    doAfterTextChanged {
+        val value = it?.toString()?.let { text ->
+            try {
+                text.toInt()
+            } catch (e: NumberFormatException) {
+                Timber.e(e, "Failed to parse \"$text\" as Int")
+                null
+            }
+        }
+        textInputLayout.error = if (value == null || value !in range) {
+            context.getString(R.string.number_range_error, range.first, range.last)
+        } else {
+            onValidValue?.invoke(value)
+            null
+        }
+    }
+}
+
+fun EditText.handleNumberRangeError(
+    range: ClosedFloatingPointRange<Double>,
+    onValidValue: ((Double) -> Unit)? = null
+) {
+    val decimalFormat = DecimalFormat()
+    doAfterTextChanged {
+        val value = it?.toString()?.let { text ->
+            val position = ParsePosition(0)
+            val parsed = decimalFormat.parse(text, position)
+            if (parsed != null && position.index == text.length) {
+                parsed.toDouble()
+            } else {
+                try {
+                    text.toDouble()
+                } catch (e: NumberFormatException) {
+                    Timber.e(e, "Failed to parse \"$text\" as Double")
+                    null
+                }
+            }
+        }
+        textInputLayout.error = if (value == null || value !in range) {
+            context.getString(R.string.number_range_error_float, range.start, range.endInclusive)
+        } else {
+            onValidValue?.invoke(value)
+            null
+        }
+    }
+}
+
 inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelable(key, T::class.java)
@@ -131,13 +182,14 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String?): T? =
 val RecyclerView.ViewHolder.bindingAdapterPositionOrNull: Int?
     get() = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }
 
-val ViewPager2.currentItemFlow: Flow<Int> get() = callbackFlow {
-    send(currentItem)
-    val callback = object : OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            trySend(position)
+val ViewPager2.currentItemFlow: Flow<Int>
+    get() = callbackFlow {
+        send(currentItem)
+        val callback = object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                trySend(position)
+            }
         }
-    }
-    registerOnPageChangeCallback(callback)
-    awaitClose { unregisterOnPageChangeCallback(callback) }
-}.conflate().distinctUntilChanged()
+        registerOnPageChangeCallback(callback)
+        awaitClose { unregisterOnPageChangeCallback(callback) }
+    }.conflate().distinctUntilChanged()

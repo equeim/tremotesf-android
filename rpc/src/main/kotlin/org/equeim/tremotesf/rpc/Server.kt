@@ -113,14 +113,16 @@ data class Server(
 
         const val DEFAULT_API_PATH = "/transmission/rpc"
 
-        val MINIMUM_UPDATE_INTERVAL = 1.seconds
-        val MAXIMUM_UPDATE_INTERVAL = 1.hours
-        val updateIntervalRange get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
+        private val MINIMUM_UPDATE_INTERVAL = 1.seconds
+        private val MAXIMUM_UPDATE_INTERVAL = 1.hours
+        val updateIntervalRange: ClosedRange<Duration> get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
+        val updateIntervalRangeInSeconds: IntRange get() = (MINIMUM_UPDATE_INTERVAL.inWholeSeconds.toInt())..(MAXIMUM_UPDATE_INTERVAL.inWholeSeconds.toInt())
         val DEFAULT_UPDATE_INTERVAL = 5.seconds
 
-        val MINIMUM_TIMEOUT = 5.seconds
-        val MAXIMUM_TIMEOUT = 60.seconds
-        val timeoutRange get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
+        private val MINIMUM_TIMEOUT = 5.seconds
+        private val MAXIMUM_TIMEOUT = 60.seconds
+        val timeoutRange: ClosedRange<Duration> get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
+        val timeoutRangeInSeconds: IntRange get() = (MINIMUM_TIMEOUT.inWholeSeconds.toInt())..(MAXIMUM_TIMEOUT.inWholeSeconds.toInt())
         val DEFAULT_TIMEOUT = 30.seconds
     }
 }
