@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -186,10 +187,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     else -> Unit
                 }
             }
-            .stateIn(GlobalRpcClient, viewModelScope)
+            .stateIn(GlobalRpcClient, viewModelScope, Dispatchers.Default)
 
     val torrentsListState: StateFlow<RpcRequestState<List<Torrent>>> =
-        allTorrents.filterAndSortTorrents().stateIn(GlobalRpcClient, viewModelScope)
+        allTorrents.filterAndSortTorrents().stateIn(GlobalRpcClient, viewModelScope, Dispatchers.Default)
 
     val sortSettingsChanged: Flow<Unit> = combine(sortMode, sortOrder, ::Pair)
         .drop(1)
@@ -392,9 +393,10 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         val comparatorFlow = combine(sortMode, sortOrder, ::createComparator)
         return combine(this, filterPredicateFlow, comparatorFlow) { requestState, filterPredicate, comparator ->
             if (requestState is RpcRequestState.Loaded) {
-                RpcRequestState.Loaded(
-                    requestState.response.asSequence().filter(filterPredicate).sortedWith(comparator).toList()
-                )
+                val torrents = ArrayList<Torrent>(requestState.response.size)
+                requestState.response.filterTo(torrents, filterPredicate)
+                torrents.sortWith(comparator)
+                RpcRequestState.Loaded(torrents)
             } else {
                 requestState
             }

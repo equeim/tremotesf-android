@@ -24,6 +24,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.common.hasSubscribersDebounced
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -129,6 +131,7 @@ private fun getInitialNonRecoverableError(
 fun <T> Flow<RpcRequestState<T>>.stateIn(
     rpcClient: RpcClient,
     coroutineScope: CoroutineScope,
+    coroutineContext: CoroutineContext = EmptyCoroutineContext
 ): StateFlow<RpcRequestState<T>> {
     val originalFlow = this
     val stateFlow = MutableStateFlow<RpcRequestState<T>>(
@@ -137,7 +140,7 @@ fun <T> Flow<RpcRequestState<T>>.stateIn(
             rpcClient.shouldConnectToServer.value
         ) ?: RpcRequestState.Loading
     )
-    coroutineScope.launch {
+    coroutineScope.launch(coroutineContext) {
         stateFlow
             .hasSubscribersDebounced()
             .collectLatest { hasSubscribers ->
