@@ -208,10 +208,7 @@ class MergingTrackersDialogFragment : NavigationDialogFragment() {
         val builder = MaterialAlertDialogBuilder(requireContext())
         val binding = MergingTrackersDialogBinding.inflate(LayoutInflater.from(builder.context))
         return builder
-            .setMessage(
-                if (args.torrentName != null) getString(R.string.torrent_duplicate_merging_trackers_question, args.torrentName)
-                else getText(R.string.torrent_duplicate_merging_trackers_question_without_name)
-            )
+            .setMessage(getString(R.string.torrent_duplicate_merging_trackers_question, args.torrentName))
             .setView(binding.root)
             .setNegativeButton(R.string.merge_no) { _, _ ->
                 setFragmentResult(

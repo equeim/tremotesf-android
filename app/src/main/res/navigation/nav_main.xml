@@ -415,8 +415,7 @@
         android:name="org.equeim.tremotesf.ui.addtorrent.MergingTrackersDialogFragment">
         <argument
             android:name="torrent_name"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string" />
         <argument
             android:name="cancelable"
             app:argType="boolean" />
