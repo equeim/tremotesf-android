@@ -27,9 +27,7 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setServerRatioLimited
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.DoubleFilter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -37,7 +35,6 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 
 class SeedingFragment : NavigationFragment(
@@ -54,29 +51,16 @@ class SeedingFragment : NavigationFragment(
                 onValueChanged { setServerRatioLimited(checked) }
             }
 
-            val doubleFilter = DoubleFilter(0.0..10000.0)
-            ratioLimitEdit.filters = arrayOf(doubleFilter)
-            ratioLimitEdit.doAfterTextChangedAndNotEmpty {
-                val limit = doubleFilter.parseOrNull(it.toString())
-                if (limit != null) {
-                    onValueChanged { setServerRatioLimit(limit) }
-                } else {
-                    Timber.e("Failed to parse ratio limit $it")
-                }
+            ratioLimitEdit.handleNumberRangeError(0.0..10000.0) { limit ->
+                onValueChanged { setServerRatioLimit(limit) }
             }
 
             idleSeedingCheckBox.setDependentViews(idleSeedingLimitLayout) { checked ->
                 onValueChanged { setServerIdleSeedingLimited(checked) }
             }
 
-            idleSeedingLimitEdit.filters = arrayOf(IntFilter(0..10000))
-            idleSeedingLimitEdit.doAfterTextChangedAndNotEmpty {
-                val limit = it.toString().toInt().minutes
-                try {
-                    onValueChanged { setServerIdleSeedingLimit(limit) }
-                } catch (e: NumberFormatException) {
-                    Timber.e(e, "Failed to parse idle seeding limit $it")
-                }
+            idleSeedingLimitEdit.handleNumberRangeError(0..10000) { limit ->
+                onValueChanged { setServerIdleSeedingLimit(limit.minutes) }
             }
         }
 

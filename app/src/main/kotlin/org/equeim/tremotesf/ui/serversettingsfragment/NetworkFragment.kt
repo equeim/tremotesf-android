@@ -17,6 +17,7 @@ import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.performRecoveringRequest
 import org.equeim.tremotesf.rpc.requests.serversettings.NetworkServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.getNetworkServerSettings
@@ -33,15 +34,13 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setUseUTP
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
 
 
 class NetworkFragment : NavigationFragment(
@@ -70,15 +69,8 @@ class NetworkFragment : NavigationFragment(
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         with(binding) {
-            peerPortEdit.filters = arrayOf(IntFilter(0..65535))
-            peerPortEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setPeerPort(it.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse peer port $it")
-                    }
-                }
+            peerPortEdit.handleNumberRangeError(Server.portRange) { port ->
+                onValueChanged { setPeerPort(port) }
             }
 
             randomPortCheckBox.setOnCheckedChangeListener { _, checked ->
@@ -110,26 +102,12 @@ class NetworkFragment : NavigationFragment(
                 onValueChanged { setUseLPD(checked) }
             }
 
-            peersPerTorrentEdit.filters = arrayOf(IntFilter(0..10000))
-            peersPerTorrentEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setMaximumPeersPerTorrent(it.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse maximum peers count $it")
-                    }
-                }
+            peersPerTorrentEdit.handleNumberRangeError(0..10000) { limit ->
+                onValueChanged { setMaximumPeersPerTorrent(limit) }
             }
 
-            peersGloballyEdit.filters = arrayOf(IntFilter(0..10000))
-            peersGloballyEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setMaximumPeersGlobally(it.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse maximum peers count $it")
-                    }
-                }
+            peersGloballyEdit.handleNumberRangeError(0..10000) { limit ->
+                onValueChanged { setMaximumPeersGlobally(limit) }
             }
         }
 

@@ -28,8 +28,7 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueEnabled
 import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueSize
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -37,7 +36,6 @@ import org.equeim.tremotesf.ui.utils.setDependentViews
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -55,45 +53,24 @@ class QueueFragment : NavigationFragment(
                 onValueChanged { setDownloadQueueEnabled(checked) }
             }
 
-            downloadQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            downloadQueueEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setDownloadQueueSize(it.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse download queue size $it")
-                    }
-                }
+            downloadQueueEdit.handleNumberRangeError(0..10000) { queueSize ->
+                onValueChanged { setDownloadQueueSize(queueSize) }
             }
 
             seedQueueCheckBox.setDependentViews(seedQueueLayout) { checked ->
                 onValueChanged { setSeedQueueEnabled(checked) }
             }
 
-            seedQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            seedQueueEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setSeedQueueSize(it.toString().toInt())
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse seed queue size $it")
-                    }
-                }
+            seedQueueEdit.handleNumberRangeError(0..10000) { queueSize ->
+                onValueChanged { setSeedQueueSize(queueSize) }
             }
 
             idleQueueCheckBox.setDependentViews(idleQueueLayout) { checked ->
                 onValueChanged { setIgnoreQueueIfIdle(checked) }
             }
 
-            idleQueueEdit.filters = arrayOf(IntFilter(0..10000))
-            idleQueueEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setIgnoreQueueIfIdleFor(it.toString().toInt().minutes)
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse idle queue limit $it")
-                    }
-                }
+            idleQueueEdit.handleNumberRangeError(0..10000) { limit ->
+                onValueChanged { setIgnoreQueueIfIdleFor(limit.minutes) }
             }
         }
 

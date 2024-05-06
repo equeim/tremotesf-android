@@ -30,6 +30,7 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings.AlternativeLimitsDays
 import org.equeim.tremotesf.rpc.requests.serversettings.getSpeedServerSettings
@@ -47,8 +48,7 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimited
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.NavigationFragment
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.IntFilter
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
+import org.equeim.tremotesf.ui.utils.handleNumberRangeError
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.hideKeyboard
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -98,37 +98,23 @@ class SpeedFragment : NavigationFragment(
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        val limitsFilters = arrayOf(IntFilter(0 until 4 * 1024 * 1024))
+        val speedLimitRange = 0..(4 * 1024 * 1024)
 
         with(binding) {
             downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
                 onValueChanged { setDownloadSpeedLimited(checked) }
             }
 
-            downloadSpeedLimitEdit.filters = limitsFilters
-            downloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setDownloadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse download speed limit $it")
-                    }
-                }
+            downloadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
+                onValueChanged { setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
             }
 
             uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
                 onValueChanged { setUploadSpeedLimited(checked) }
             }
 
-            uploadSpeedLimitEdit.filters = limitsFilters
-            uploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setUploadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse upload speed limit $it")
-                    }
-                }
+            uploadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
+                onValueChanged { setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
             }
 
             alternativeLimitsCheckBox.setDependentViews(
@@ -138,26 +124,12 @@ class SpeedFragment : NavigationFragment(
                 onValueChanged { setAlternativeLimitsEnabled(checked) }
             }
 
-            alternativeDownloadSpeedLimitEdit.filters = limitsFilters
-            alternativeDownloadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setAlternativeDownloadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse alternative download speed limit $it")
-                    }
-                }
+            alternativeDownloadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
+                onValueChanged { setAlternativeDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
             }
 
-            alternativeUploadSpeedLimitEdit.filters = limitsFilters
-            alternativeUploadSpeedLimitEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged {
-                    try {
-                        setAlternativeUploadSpeedLimit(org.equeim.tremotesf.rpc.requests.TransferRate.fromKiloBytesPerSecond(it.toString().toLong()))
-                    } catch (e: NumberFormatException) {
-                        Timber.e(e, "Failed to parse alternative upload speed limit $it")
-                    }
-                }
+            alternativeUploadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
+                onValueChanged { setAlternativeUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
             }
 
             scheduleCheckBox.setDependentViews(
