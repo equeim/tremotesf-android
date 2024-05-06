@@ -174,5 +174,5 @@ object TorrentFileParser {
         }
 
     // 10 MiB
-    private const val MAX_FILE_SIZE = 10 * 1024 * 1024
+    private const val MAX_FILE_SIZE = 20 * 1024 * 1024
 }
