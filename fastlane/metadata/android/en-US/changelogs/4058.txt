@@ -1,0 +1,8 @@
+- Added support of merging trackers when adding already existing torrent
+- Removed support of Android versions prior to 8.0
+- Custom TLS certificates can now be configured without enabling HTTPS, to support HTTP to HTTPS redirection
+- Limit on size of torrent files is increased to 20 MiB
+- Fixed notifications not being shown when app is in foreground and on main screen, or when it is in background and persistent notification is active
+- Fixed changing alternative upload speed limit
+- Fixed selection toolbar in the list of torrent's files
+- Fixed Start / Start now actions being inverted
