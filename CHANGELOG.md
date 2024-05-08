@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.11.0] - 2024-05-08
 ### Added
 - Merging trackers when adding already existing torrent
 
