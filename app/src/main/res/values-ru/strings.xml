@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
     <string name="connected">Подключено</string>
@@ -231,7 +231,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">Доменное имя или IP-адрес</string>
     <string name="port">Порт</string>
     <string name="api_path">Путь API</string>
-
+    <string name="use_https_protocol">Использовать HTTPS протокол</string>
+    <string name="https_hint">Удостоверьтесь что выбранный порт ожидает HTTPS соединение. При использовании переадресации с HTTP на HTTPS эта опция должна быть отключена</string>
     <string name="certificates">Сертификаты</string>
     <string name="server_uses_self_signed_certificate">Сервер использует самоподписанный сертификат</string>
     <string name="certificate">Сертификат в PEM-формате</string>
@@ -240,6 +241,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
     <string name="update_interval">Интервал обновления</string>
+    <string name="update_interval_hint">Этот интервал обновления используется только когда приложение активно, либо при включенном постоянном уведомлении. Фоновый интервал обновления можно изменить в настройках приложения.</string>
     <string name="text_field_suffix_seconds">секунды</string>
     <string name="timeout">Таймаут</string>
 
@@ -341,7 +343,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Также удалить файлы на жестком диске</string>
     <string name="check_local_data">Проверить локальные данные</string>
     <string name="reannounce">Переанонсировать</string>
-
     <string name="torrents_remove_error">Не удалось удалить торренты: %1$s</string>
     <string name="add_torrent_error">Не удалось добавить торрент: %1$s</string>
     <string name="torrent_set_location_error">Не удалось переместить торренты: %1$s</string>
@@ -470,6 +471,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_link_from_clipboard_title">Автоматически копировать ссылку из буфера обмена при добавлении ссылки на торрент</string>
     <string name="prefs_remember_add_torrent_parameters_title">Запоминать параметры добавленного торрента</string>
 
+    <string name="prefs_merge_trackers_when_adding_existing_torrent_title">Объединять трекеры при добавлении существующего торрента</string>
+    <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Спрашивать об объединении трекеров при добавлении существующего торрента</string>
+
+    <string name="torrent_duplicate_not_merging_trackers">Торрент уже существует: %1$s</string>
+    <string name="torrent_duplicate_merging_trackers">Объединены трекеры для «%1$s» торрента</string>
+    <string name="torrent_duplicate_merging_trackers_question">Торрент «%1$s» уже добавлен, объединить трекеры?</string>
+    <string name="merging_trackers_error">Не удалось объединить трекеры: %1$s</string>
+    <string name="merge_no">Не объединять</string>
+    <string name="merge_yes">Объединить</string>
+    <string name="do_not_ask_again">Больше не спрашивать</string>
+
     <string name="alternative_speed_limits">Альтернативные ограничения скорости</string>
 
 
@@ -485,7 +497,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="persistent_notification">Постоянное уведомление</string>
 
-    <string name="persistent_notification_warning">Включение постоянного уведомления не позволит приложению переходить в режим фонового обновления и может вызвать повышенный расход батареи</string>
+    <string name="persistent_notification_warning">При включенном постоянном уведомлении приложение будет обновлять данные с частотой указанной в настройках подключения даже если приложение в фоне, что может привести к повышенному энергопотреблению</string>
 
     <string name="prefs_background_update_interval_title">Интервал фонового обновления</string>
     <string-array name="prefs_background_update_interval_entries">

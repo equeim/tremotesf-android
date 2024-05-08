@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">已断开</string>
     <string name="connecting">正在连接\u2026</string>
     <string name="connected">已连接</string>
@@ -200,7 +200,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">域名或IP地址</string>
     <string name="port">端口</string>
     <string name="api_path">API路径</string>
-
     <string name="certificates">证书</string>
     <string name="server_uses_self_signed_certificate">服务端使用自签名证书</string>
     <string name="certificate">PEM格式的证书</string>
@@ -300,7 +299,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">同时删除硬盘中的文件</string>
     <string name="check_local_data">校验本地数据</string>
     <string name="reannounce">重新宣告</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, 已上传 %2$s</string>
 
@@ -410,8 +408,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="notify_on_added_since_last">通知自上次连接至服务器添加的种子</string>
 
     <string name="persistent_notification">持久通知</string>
-
-    <string name="persistent_notification_warning">启用持久通知将会阻止应用进入后台刷新模式并可能造成额外的电量消耗</string>
 
     <string name="prefs_background_update_interval_title">后台刷新间隔</string>
     <string-array name="prefs_background_update_interval_entries">

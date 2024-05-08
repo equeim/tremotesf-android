@@ -1,0 +1,532 @@
+<!--
+SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="disconnected">연결 해제</string>
+    <string name="connecting">연결\u2026</string>
+    <string name="connected">연결됨</string>
+
+    <string name="connect">연결</string>
+    <string name="disconnect">연결 해제</string>
+    <string name="add">추가</string>
+
+    <string name="invalid_connection_configuration">잘못된 연결 구성</string>
+    <string name="timed_out">연결 시간 초과</string>
+    <string name="connection_error">연결 오류</string>
+    <string name="connection_error_with_cause">연결 오류: %1$s</string>
+    <string name="authentication_error">인증 오류</string>
+    <string name="parsing_error">JSON 구문 분석 오류</string>
+    <string name="unsupported_server_version">트랜스미션 버전 \'%1$s\'가 지원 안됨</string>
+    <string name="server_returned_error_result">서버 반환 \'%1$s\'</string>
+
+    <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
+
+    <string name="current_server_string">%1$s (%2$s)</string>
+
+    <string name="download_speed_string">\u2193 %s</string>
+    <string name="upload_speed_string">\u2191 %s</string>
+
+    <string name="server">서버</string>
+    <string name="server_settings">서버 설정</string>
+
+    <string name="sort">정렬</string>
+    <string name="progress">진행 상황</string>
+    <string name="eta">ETA</string>
+    <string name="ratio">비율</string>
+    <string name="size">크기</string>
+    <string name="added_date">추가된 날짜</string>
+
+    <string name="status">상태</string>
+
+    <string name="no_torrents">토렌트 없음</string>
+
+    <string name="torrents_all">모두 (%d)</string>
+    <string name="torrents_active">활성 (%d)</string>
+    <string name="torrents_downloading">다운로드 (%d)</string>
+    <string name="torrents_seeding">시딩 (%d)</string>
+    <string name="torrents_paused">일시중지됨 (%d)</string>
+    <string name="torrents_checking">확인 (%d)</string>
+    <string name="torrents_errored">오류 (%d)</string>
+
+    <!-- e.g. "example.com (42)" -->
+    <string name="trackers_spinner_text">%1$s (%2$d)</string>
+    <string name="directories_spinner_text">%1$s (%2$d)</string>
+
+    <plurals name="torrents_selected">
+        <item quantity="other">%d 토렌트 선택</item>
+    </plurals>
+
+    <plurals name="files_selected">
+        <item quantity="other">%d 선택한 파일</item>
+    </plurals>
+
+    <plurals name="trackers_selected">
+        <item quantity="other">%d 선택한 트래커</item>
+    </plurals>
+
+    <plurals name="peers_plural">
+        <item quantity="other">%d 피어</item>
+    </plurals>
+
+    <plurals name="seeders_plural">
+        <item quantity="other">%d 시더</item>
+    </plurals>
+
+    <plurals name="leechers_plural">
+        <item quantity="other">%d 리처</item>
+    </plurals>
+
+    <string name="next_update">다음 업데이트 후 %s</string>
+    <string name="add_trackers">트래커 추가</string>
+    <string name="edit_tracker">트래커 편집</string>
+
+    <string name="tracker_announce_url">트래커 어나운스 주소</string>
+    <string name="trackers_announce_urls">트래커 어나운스 주소들</string>
+
+    <string name="torrent_finished">토렌트 완료</string>
+    <string name="torrent_added">토렌트 추가</string>
+
+    <string name="torrent_not_found">토렌트를 찾을 수 없음</string>
+    <string name="torrent_removed">토렌트 제거</string>
+
+    <string name="details">세부 정보</string>
+    <string name="files">파일</string>
+    <string name="trackers">트래커</string>
+    <string name="directories">디렉토리</string>
+    <string name="peers">피어</string>
+    <string name="web_seeders">웹 시더</string>
+    <string name="limits">제한</string>
+
+    <string name="activity">활성</string>
+    <string name="information">정보</string>
+
+    <string name="completed">완료</string>
+    <string name="downloaded">다운로드</string>
+    <string name="uploaded">업로드</string>
+    <string name="download_speed">다운로드 속도</string>
+    <string name="upload_speed">업로드 속도</string>
+    <string name="seeders">시더</string>
+    <string name="leechers">리처</string>
+    <string name="peers_sending_to_us">피어로부터 다운로드</string>
+    <string name="web_seeders_sending_to_us">웹 시더로부터 다운로드</string>
+    <string name="peers_getting_from_us">피어에게 업로드 중</string>
+    <string name="last_activity">마지막 활성</string>
+
+    <string name="total_size">총 크기</string>
+    <string name="location">위치</string>
+    <string name="hash">해시</string>
+    <string name="created_by">생성 도구</string>
+    <string name="created_on">생성 시간</string>
+    <string name="comment">코멘트</string>
+
+    <string name="parent_directory_list_item_label">..</string>
+
+    <string name="progress_string">%s%%</string>
+
+    <string name="progress_string_with_dot">\u00b7 %s%%</string>
+
+    <!-- e.g. "100 MiB of 200 MiB (50%)" -->
+    <string name="completed_string">%2$s 의 %1$s (%3$s%%)</string>
+
+    <string name="priority">우선 순위</string>
+    <string name="high_priority">높음</string>
+    <string name="normal_priority">보통</string>
+    <string name="low_pririty">낮음</string>
+    <string name="mixed_priority">혼합</string>
+
+    <string name="download_verb">다운로드</string>
+    <string name="not_download">다운로드 안 함</string>
+
+    <string name="no_files">파일 없음</string>
+
+    <string name="tracker_inactive">비활성</string>
+    <string name="tracker_waiting_for_update">업데이트 대기 중</string>
+    <string name="tracker_queued_for_update">업데이트 예정</string>
+    <string name="tracker_updating">업데이트</string>
+    <string name="tracker_error">오류: %s</string>
+
+    <string name="loading">로딩\u2026</string>
+    <string name="no_peers">피어 없음</string>
+
+    <string name="no_trackers">트래커 없음</string>
+
+    <string name="error">오류</string>
+
+    <string name="speed">속도</string>
+    <string name="honor_global_limits">전역 제한 준수</string>
+    <string name="download_noun">다운로드</string>
+    <string name="upload_noun">업로드</string>
+
+    <string name="seeding">시딩</string>
+
+    <string name="ratio_limit">비율 제한</string>
+    <string-array name="ratio_limit_mode">
+        <item>전역 설정 사용</item>
+        <item>비율에 관계없이 시딩</item>
+        <item>@string/stop_seeding_at_ratio</item>
+    </string-array>
+
+    <string name="idle_seeding">유휴 시딩</string>
+    <string-array name="idle_seeding_mode">
+        <item>전역 설정 사용</item>
+        <item>활성과 관계없이 시딩</item>
+        <item>@string/stop_seeding_if_idle_for</item>
+    </string-array>
+
+    <string name="text_field_suffix_minutes">분</string>
+    <string name="maximum_peers">최대 피어</string>
+
+    <string name="settings">설정</string>
+    <string name="notifications">알림</string>
+
+    <string name="quit">종료</string>
+
+    <string name="select_all">모두 선택</string>
+
+    <string name="add_server">서버 추가</string>
+    <string name="edit_server">서버 편집</string>
+
+    <plurals name="servers_selected">
+        <item quantity="other">%d 선택한 서버</item>
+    </plurals>
+
+    <string name="save">저장</string>
+
+    <string name="remove">제거</string>
+
+    <plurals name="remove_servers_message">
+        <item quantity="other">선택한 서버 %d 개를 제거하시겠습니까?</item>
+    </plurals>
+
+    <string name="no_servers">서버 없음</string>
+
+    <string name="name">이름</string>
+    <string name="address_edit_hint">도메인 이름 또는 IP 주소</string>
+    <string name="port">포트</string>
+    <string name="api_path">API 경로</string>
+    <string name="use_https_protocol">HTTPS 프로토콜 사용</string>
+    <string name="https_hint">이 포트에서 수신 대기 중인 서버가 HTTPS 연결을 기대하는지 확인하세요. HTTP에서 HTTPS로 리디렉션을 사용하는 경우 이 옵션을 선택 취소해야 합니다</string>
+    <string name="certificates">인증서</string>
+    <string name="server_uses_self_signed_certificate">서버에서 자체 서명된 인증서 사용</string>
+    <string name="certificate">PEM 형식의 인증서</string>
+    <string name="use_client_certificate_authentication">클라이언트 인증서 인증 사용</string>
+    <string name="authentication">인증</string>
+    <string name="username">사용자 이름</string>
+    <string name="password">비밀번호</string>
+    <string name="update_interval">업데이트 간격</string>
+    <string name="text_field_suffix_seconds">초</string>
+    <string name="timeout">시간 초과</string>
+
+    <string name="empty_field_error">이 필드는 비워 둘 수 없습니다</string>
+
+    <string name="server_exists">이 이름의 서버가 이미 존재합니다</string>
+    <string name="overwrite">덮어쓰기</string>
+
+    <string name="add_torrent">토렌트 추가</string>
+    <string name="add_torrent_file">토렌트 파일 추가</string>
+    <string name="storage_permission_error">저장소 권한이 필요합니다</string>
+    <string name="file_is_too_large">파일이 너무 큽니다</string>
+    <string name="file_reading_error">파일 읽기 오류</string>
+    <string name="file_parsing_error">파일 구문 분석 오류</string>
+
+    <string name="download_directory">다운로드 디렉토리</string>
+
+    <string name="server_settings_downloading">다운로드</string>
+    <string name="server_settings_seeding">시딩</string>
+    <string name="server_settings_queue">대기열</string>
+    <string name="server_settings_speed">속도</string>
+    <string name="server_settings_network">네트워크</string>
+
+    <string name="start_added_torrents">토렌트 추가 시작</string>
+    <string name="rename_incomplete_files">불완전한 파일 이름에 \'.part\'를 추가합니다</string>
+    <string name="incomplete_files_directory">불완전한 파일을 위한 디렉토리</string>
+    <string name="stop_seeding_at_ratio">비율로 시딩 중지</string>
+    <string name="stop_seeding_if_idle_for">유휴 상태인 경우 시딩 중지</string>
+    <string name="maximum_active_downloads">최대 활성 다운로드</string>
+    <string name="maximum_active_uploads">최대 활성 업로드</string>
+    <string name="ignore_queue">유휴 상태인 경우 대기열 무시</string>
+    <string name="alternative_limits">대체 제한</string>
+    <string name="enable">활성화</string>
+    <string name="text_field_suffix_kbps">kB/s</string>
+    <string name="scheduled">스케줄</string>
+    <string name="from">시작</string>
+    <string name="to">종료</string>
+    <string name="every_day">매일</string>
+    <string name="weekdays">평일</string>
+    <string name="weekends">주말</string>
+    <string name="connection">연결</string>
+    <string name="peer_port">피어 포트</string>
+    <string name="random_port">트랜스미션 시작시 랜덤 포트</string>
+    <string name="port_forwarding">포트 포워딩 활성화</string>
+    <string name="encryption">암호화</string>
+    <string-array name="encryption_items">
+        <item>허용</item>
+        <item>선호</item>
+        <item>필요</item>
+    </string-array>
+    <string name="enable_utp">uTP 활성화</string>
+    <string name="enable_pex">PEX 활성화</string>
+    <string name="enable_dht">DHT 활성화</string>
+    <string name="enable_lpd">LPD 활성화</string>
+    <string name="peer_limits">피어 제한</string>
+    <string name="maximum_peers_per_torrent">토렌트당 최대 피어 수</string>
+    <string name="maximum_peers_globally">전체 최대 피어</string>
+
+    <string name="start_downloading_after_adding">추가 후 다운로드 시작</string>
+
+    <string name="torrent_link">토렌트 링크</string>
+    <string name="add_torrent_link">토렌트 링크 추가</string>
+
+    <string name="current_session">현재 세션</string>
+    <string name="total">합계</string>
+    <string name="duration">기간</string>
+    <string name="close">닫기</string>
+    <string name="server_stats">서버 통계</string>
+
+    <!-- e.g. "5 d 21 h" -->
+    <string name="duration_days">%1$d 일 %2$d 시</string>
+
+    <!-- e.g. "5 h 21 m" -->
+    <string name="duration_hours">%1$d 시 %2$d 분</string>
+
+    <!-- e.g. "5 m 21 s" -->
+    <string name="duration_minutes">%1$d 분 %2$d 초</string>
+
+    <!-- e.g. "21 s" -->
+    <string name="duration_seconds">%d 초</string>
+
+    <plurals name="started_times">
+        <item quantity="other">%d 번 시작됨</item>
+    </plurals>
+
+    <string name="start">시작</string>
+    <string name="start_now">지금 시작</string>
+    <string name="pause">일시중지</string>
+
+    <plurals name="remove_torrents_message">
+        <item quantity="other">선택한 토렌트 %d 를 제거하시겠습니까?</item>
+    </plurals>
+    <string name="delete_files">하드 디스크의 파일도 삭제합니다</string>
+    <string name="check_local_data">로컬 데이터 확인</string>
+    <string name="reannounce">리어나운스</string>
+    <string name="torrents_remove_error">토렌트 제거 실패: %1$s</string>
+    <string name="add_torrent_error">토렌트 추가 실패: %1$s</string>
+    <string name="torrent_set_location_error">토렌트 이동 실패: %1$s</string>
+    <string name="set_server_settings_error">설정 업데이트 실패: %1$s</string>
+    <string name="set_torrent_limits_error">토렌트 제한 업데이트 실패: %1$s</string>
+    <string name="set_files_wanted_error">다운로드할 파일 표시 실패: %1$s</string>
+    <string name="set_files_priority_error">파일 우선순위 설정 실패: %1$s</string>
+    <string name="file_rename_error">토렌트 파일 이름 변경 실패: %1$s</string>
+    <string name="torrents_start_error">토렌트 시작 실패: %1$s</string>
+    <string name="torrents_pause_error">토렌트 일시중지 실패: %1$s</string>
+    <string name="torrents_check_error">토렌트 확인 실패: %1$s</string>
+    <string name="torrents_reannounce_error">토렌트 어나운스 실패: %1$s</string>
+    <string name="trackers_add_error">트래커 추가 실패: %1$s</string>
+    <string name="tracker_replace_error">트래커 교체 실패: %1$s</string>
+    <string name="trackers_remove_error">트래커 제거 실패: %1$s</string>
+
+    <!-- e.g. "100 MiB, uploaded 200 MiB" -->
+    <string name="uploaded_string">%1$s, 업로드 됨 %2$s</string>
+
+    <string name="torrent_paused">일시중지</string>
+    <string name="torrent_paused_with_error">일시중지 (%s)</string>
+    <plurals name="torrent_downloading">
+        <item quantity="other"> %d 피어로부터 다운로드</item>
+    </plurals>
+    <plurals name="torrent_downloading_with_error">
+        <item quantity="other">%1$d 피어로부터 다운로드 중 (%2$s)</item>
+    </plurals>
+    <string name="torrent_downloading_stalled">다운로드</string>
+    <string name="torrent_downloading_stalled_with_error">다운로드 (%s)</string>
+    <plurals name="torrent_seeding">
+        <item quantity="other">%d 피어에게 시딩</item>
+    </plurals>
+    <plurals name="torrent_seeding_with_error">
+        <item quantity="other">%1$d 피어에게 시딩 (%2$s)</item>
+    </plurals>
+    <string name="torrent_seeding_stalled">시딩</string>
+    <string name="torrent_seeding_stalled_with_error">시딩 (%s)</string>
+    <string name="torrent_queued">대기 중</string>
+    <string name="torrent_queued_with_error">대기 중 (%s)</string>
+    <string name="torrent_checking">확인 중: %s%%</string>
+    <string name="torrent_checking_with_error">확인 중: %1$s%% (%2$s)</string>
+    <string name="torrent_queued_for_checking">확인 대기 중</string>
+    <string name="torrent_queued_for_checking_with_error">확인 대기 중 (%s)</string>
+
+    <plurals name="remove_trackers_message">
+        <item quantity="other">선택한 %d 개의 트래커를 제거하시겠습니까?</item>
+    </plurals>
+
+    <string-array name="size_units">
+        <item>%s B</item>
+        <item>%s KiB</item>
+        <item>%s MiB</item>
+        <item>%s GiB</item>
+        <item>%s TiB</item>
+        <item>%s PiB</item>
+        <item>%s EiB</item>
+        <item>%s ZiB</item>
+        <item>%s YiB</item>
+    </string-array>
+
+    <string-array name="speed_units">
+        <item>%s B/s</item>
+        <item>%s KiB/s</item>
+        <item>%s MiB/s</item>
+        <item>%s GiB/s</item>
+        <item>%s TiB/s</item>
+        <item>%s PiB/s</item>
+        <item>%s EiB/s</item>
+        <item>%s ZiB/s</item>
+        <item>%s YiB/s</item>
+    </string-array>
+
+    <string name="remove_torrent_message">이 토렌트를 정말 제거하시겠습니까?</string>
+
+    <string name="set_location">위치 설정</string>
+    <string name="move_files">현재 디렉토리에서 파일 이동</string>
+
+    <string name="rename">이름 바꾸기</string>
+
+    <string name="file_name">파일 이름</string>
+
+    <string name="about">정보</string>
+    <string name="authors">작성자</string>
+    <string name="translators">번역가</string>
+    <string name="license">라이센스</string>
+
+    <string name="prefs_dark_theme_mode_title">다크 테마</string>
+
+    <string name="prefs_dark_theme_mode_auto_pre_q">배터리 절약 모드로 설정</string>
+    <string name="prefs_dark_theme_mode_auto_q">시스템 기본값</string>
+    <string name="prefs_dark_theme_mode_on">켬</string>
+    <string name="prefs_dark_theme_mode_off">끔</string>
+
+    <string name="prefs_torrent_compact_view_title">컴팩트 보기 사용</string>
+    <string name="prefs_torrent_name_multiline_title">여러 줄에 토렌트 이름 표시</string>
+
+    <string name="prefs_persistent_notification_title">지속적인 알림 표시</string>
+
+    <string name="persistent_notification_channel_name">지속적인 알림</string>
+    <string name="finished_torrents_channel_name">완료된 토렌트</string>
+    <string name="added_torrents_channel_name">토렌트 추가됨</string>
+
+    <string name="appearance">모양</string>
+    <string name="behaviour">행동</string>
+    <string name="torrents">토렌트</string>
+
+    <string name="quick_return_title">빠른 이동</string>
+    <string name="quick_return_summary">상단으로 돌아가려면 상단 툴바를 탭하세요</string>
+
+    <string name="prefs_delete_files_title">토렌트 제거 시 하드디스크의 파일 삭제</string>
+    <string name="prefs_link_from_clipboard_title">토렌트 링크 추가 시 클립보드에서 자동으로 링크 채우기</string>
+    <string name="prefs_remember_add_torrent_parameters_title">마지막으로 추가된 토렌트의 매개변수 기억</string>
+
+    <string name="prefs_merge_trackers_when_adding_existing_torrent_title">기존 토렌트 추가 시 트래커 병합</string>
+    <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">기존 토렌트를 추가할 때 트래커 병합을 묻기</string>
+
+    <string name="torrent_duplicate_not_merging_trackers">기존 토렌트 추가하지 않기 «%1$s»</string>
+    <string name="torrent_duplicate_merging_trackers">«%1$s» 토렌트의 트래커 병합</string>
+    <string name="torrent_duplicate_merging_trackers_question">토렌트 «%1$s» 가 이미 추가되었습니다, 트래커를 병합하시겠습니까?</string>
+    <string name="merging_trackers_error">트래커 병합 실패: %1$s</string>
+    <string name="merge_no">병합하지 않음</string>
+    <string name="merge_yes">병합</string>
+    <string name="do_not_ask_again">다시 묻지 않기</string>
+
+    <string name="alternative_speed_limits">대체 속도 제한</string>
+
+
+    <string name="free_space">여유 공간: %s</string>
+    <string name="free_space_error">여유 공간을 확보하는 중에 오류 발생</string>
+
+    <string name="notify_on_finished">완료된 토렌트에 대해 알림</string>
+    <string name="notify_on_added">추가된 토렌트에 대해 알림</string>
+
+    <string name="notifications_on_connect">서버에 연결할 때 알림</string>
+    <string name="notify_on_finished_since_last">서버에 마지막으로 연결한 이후 완료된 토렌트에 대해 알림</string>
+    <string name="notify_on_added_since_last">서버에 마지막으로 연결한 이후 추가된 토렌트에 대해 알림</string>
+
+    <string name="persistent_notification">지속적인 알림</string>
+
+    <string name="prefs_background_update_interval_title">백그라운드 업데이트 간격</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>비활성화</item>
+        <item>15 분</item>
+        <item>30 분</item>
+        <item>1 시</item>
+        <item>3 시</item>
+        <item>6 시</item>
+        <item>12 시</item>
+        <item>24 시</item>
+    </string-array>
+
+    <string name="connection_settings">연결 설정</string>
+
+    <string name="proxy_settings">포록시 설정</string>
+    <string name="proxy_type">프록시 유형</string>
+    <string name="share">공유</string>
+    <string name="share_torrent">토렌트 공유</string>
+
+    <string-array name="proxy_type_items">
+        <item>기본</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
+    </string-array>
+
+    <string name="auto_connect_on_wifi_network">Wi-Fi 네트워크에 연결되면 자동으로 이 서버에 연결됩니다</string>
+    <string name="wifi_ssid_hint">Wi-Fi 네트워크 SSID</string>
+    <string name="wifi_ssid_set_from_current">현재 Wi-Fi 네트워크에서 설정</string>
+    <string name="location_permission_rationale">Tremotesf는 Wi-Fi SSID에 대한 정보를 얻으려면 정확한 위치 권한이 필요합니다</string>
+    <string name="request_location_permission">위치 권한 부여</string>
+    <string name="background_wifi_networks_explanation_fdroid">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하거나 백그라운드 위치 권한을 부여하세요</string>
+    <string name="background_wifi_networks_explanation_google">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하세요</string>
+    <string name="background_location_permission_rationale">Tremotesf는 지속적인 알림을 사용하지 않고 백그라운드에서 Wi-Fi SSID에 대한 정보를 얻으려면 백그라운드 위치 권한이 필요합니다</string>
+    <string name="request_background_location_permission">백그라운드 위치 권한 부여</string>
+    <string name="background_location_permission_granted">백그라운드 위치 권한이 부여됨</string>
+
+    <string name="runtime_permission_go_to_settings_rationale">시스템 설정에서 이 권한을 부여하세요</string>
+    <string name="go_to_settings">설정으로 이동</string>
+
+    <string name="current_ssid_error">현재 Wi-Fi 네트워크의 SSID를 알 수 없습니다</string>
+
+    <string name="request_enable_location">시스템 설정에서 위치를 활성화하세요</string>
+    <string name="enable_location">위치 활성화</string>
+
+    <string name="storage_permission_rationale_torrent">이 토렌트 파일을 열려면 Tremotesf에 저장소 액세스 권한이 필요합니다</string>
+
+    <string name="torrents_filters">필터</string>
+    <string name="transmission_settings">트랜스미션 설정</string>
+
+    <string name="load_from_file">파일에서 로드</string>
+
+    <string name="free_space_in_download_directory">다운로드 디렉토리의 여유 공간</string>
+
+    <string name="reset">초기화</string>
+
+    <string name="directory_icon">디렉토리 아이콘</string>
+    <string name="file_icon">파일 아이콘</string>
+
+    <string name="prefs_color_theme_title">색상</string>
+    <string name="prefs_color_theme_system">시스템 색상</string>
+    <string name="prefs_color_theme_red">빨강</string>
+    <string name="prefs_color_theme_teal">청록</string>
+
+    <string name="see_detailed_error_message">자세한 오류 메시지 보기</string>
+    <string name="detailed_error_message">자세한 오류 메시지</string>
+
+    <string name="notification_permission_rationale">토렌트에 대한 알림을 표시하려면 Tremotesf 알림 권한이 필요합니다.</string>
+    <string name="request_permission">권한 부여</string>
+    <string name="request_notification_permission">알림 권한 부여</string>
+
+    <string name="date_time_with_relative">%1$s (%2$s)</string>
+
+    <string name="no_web_seeders">웹 시더 없음</string>
+
+    <string name="source_code_url">소스 코드: %1$s</string>
+    <string name="translations_url">번역: %1$s</string>
+    <string name="maintainer">유지 관리자</string>
+    <string name="contributor">기여자</string>
+</resources>

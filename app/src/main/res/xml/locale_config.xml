@@ -12,6 +12,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <locale android:name="es" />
     <locale android:name="fr" />
     <locale android:name="it" />
+    <locale android:name="ko-KR" />
     <locale android:name="nl" />
     <locale android:name="nl-BE" />
     <locale android:name="pt-BR" />

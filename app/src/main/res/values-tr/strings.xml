@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Bağlantı kesildi</string>
     <string name="connecting">Bağlanıyor\u2026</string>
     <string name="connected">Bağlandı</string>
@@ -192,7 +192,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">Alan adı veya IP adresi</string>
     <string name="port">Bağlantı noktası</string>
     <string name="api_path">API yolu</string>
-
     <string name="certificates">Sertifikalar</string>
     <string name="server_uses_self_signed_certificate">Sunucu kendinden imzalı sertifika kullanıyor</string>
     <string name="certificate">PEM biçiminde sertifika</string>
@@ -293,7 +292,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Ayrıca sabit diskteki dosyaları da silin</string>
     <string name="check_local_data">Yerel verileri denetle</string>
     <string name="reannounce">Yeniden duyurma</string>
-
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s\'dan %2$s yüklendi</string>
 
@@ -382,8 +380,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="notify_on_added_since_last">Sunucuya son bağlantıdan bu yana eklenen torrentleri bildir</string>
 
     <string name="persistent_notification">Kalıcı bildirim</string>
-
-    <string name="persistent_notification_warning">Kalıcı bildirimin etkinleştirilmesi uygulamanın arka plan güncelleme moduna geçmesini önler ve pilin aşırı boşalmasına neden olabilir</string>
 
     <string name="prefs_background_update_interval_title">Arka plan güncelleme aralığı</string>
     <string-array name="prefs_background_update_interval_entries">
