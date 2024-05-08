@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando…</string>
     <string name="connected">Conectado</string>
@@ -223,7 +223,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">Nombre de dominio o dirección IP</string>
     <string name="port">Puerto</string>
     <string name="api_path">Ruta API</string>
-
     <string name="certificates">Certificados</string>
     <string name="server_uses_self_signed_certificate">El servidor utiliza un certificado firmado por sí mismo</string>
     <string name="certificate">Certificado en formato PEM</string>
@@ -331,7 +330,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="delete_files">Eliminar los archivos en disco también</string>
     <string name="check_local_data">Verificar datos locales</string>
     <string name="reannounce">Reanunciar</string>
-
     <string name="torrents_remove_error">No se pudo eliminar los torrents: %1$s</string>
     <string name="add_torrent_error">No se pudo añadir el torrent: %1$s</string>
     <string name="torrent_set_location_error">No se pudo mover los torrents: %1$s</string>
@@ -469,8 +467,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="notify_on_added_since_last">Notificar sobre torrents añadidos desde la última conexión</string>
 
     <string name="persistent_notification">Notificación persistente</string>
-
-    <string name="persistent_notification_warning">Activar la notificación persistente evitará que la aplicación haga una actualización en segundo plano y puede conducir a un consumo de batería aumentado</string>
 
     <string name="prefs_background_update_interval_title">Intervalo de actualización en segundo plano</string>
     <string-array name="prefs_background_update_interval_entries">

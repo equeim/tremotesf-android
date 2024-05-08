@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando\u2026</string>
     <string name="connected">Conectado</string>
@@ -13,9 +13,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="disconnect">Desconectar</string>
     <string name="add">Adicionar</string>
 
+    <string name="invalid_connection_configuration">Configuração de conexão inválida</string>
     <string name="timed_out">Conexão expirada</string>
     <string name="connection_error">Erro de conexão</string>
+    <string name="connection_error_with_cause">Erro de conexão: %1$s</string>
     <string name="authentication_error">Erro de autenticação</string>
+    <string name="parsing_error">Erro de análise JSON</string>
+    <string name="unsupported_server_version">Não há suporte para a versão \'%1$s\' do Transmission</string>
+    <string name="server_returned_error_result">O servidor retornou \'%1$s\'</string>
+
     <string name="main_activity_subtitle">\u2193 %1$s    \u2191 %2$s</string>
 
     <string name="current_server_string">%1$s (%2$s)</string>
@@ -74,6 +80,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     </plurals>
 
     <string name="next_update">Próxima atualização em %s</string>
+    <string name="add_trackers">Adicionar rastreadores</string>
     <string name="edit_tracker">Editar rastreador</string>
 
     <string name="tracker_announce_url">URL de anúncio do rastreador</string>
@@ -119,6 +126,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="high_priority">Alta</string>
     <string name="normal_priority">Normal</string>
     <string name="low_pririty">Baixa</string>
+    <string name="mixed_priority">Mista</string>
+
     <string name="download_verb">Baixar</string>
     <string name="not_download">Não baixar</string>
 
@@ -130,6 +139,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="loading">Carregando\u2026</string>
     <string name="no_peers">Sem pares</string>
+
+    <string name="no_trackers">Sem rastreadores</string>
 
     <string name="error">Erro</string>
 
@@ -153,6 +164,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item>@string/stop_seeding_if_idle_for</item>
     </string-array>
 
+    <string name="text_field_suffix_minutes">minutos</string>
     <string name="maximum_peers">Máximo de pares</string>
 
     <string name="settings">Configurações</string>
@@ -187,7 +199,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="address_edit_hint">Nome de domínio ou endereço IP</string>
     <string name="port">Porta</string>
     <string name="api_path">Caminho da API</string>
-
+    <string name="use_https_protocol">Usar o protocolo HTTPS</string>
     <string name="certificates">Certificados</string>
     <string name="server_uses_self_signed_certificate">Servidor usa certificado auto-assinado </string>
     <string name="certificate">Certificado no formato PEM</string>
@@ -195,6 +207,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="authentication">Autenticação</string>
     <string name="username">Usuário</string>
     <string name="password">Senha</string>
+    <string name="update_interval">Intervalo de atualização</string>
+    <string name="text_field_suffix_seconds">segundos</string>
     <string name="empty_field_error">Este campo não pode estar vazio</string>
 
     <string name="server_exists">Servidor com este nome já existe</string>
@@ -283,24 +297,33 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="delete_files">Também excluir arquivos no disco rígido</string>
     <string name="check_local_data">Verificar dados locais</string>
-
+    <string name="torrents_remove_error">Falha ao remover torrents: %1$s</string>
+    <string name="add_torrent_error">Falha ao adicionar torrent: %1$s</string>
+    <string name="set_server_settings_error">Falha ao atualizar configurações: %1$s</string>
+    <string name="torrents_start_error">Falha ao iniciar torrents: %1$s</string>
+    <string name="torrents_check_error">Falha ao verificar torrents: %1$s</string>
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
     <string name="uploaded_string">%1$s, enviado %2$s</string>
 
     <string name="torrent_paused">Pausado</string>
+    <string name="torrent_paused_with_error">Pausado (%s)</string>
     <plurals name="torrent_downloading">
         <item quantity="one">Baixando de %d par</item>
         <item quantity="many">Baixando de %d pares</item>
         <item quantity="other">Baixando de %d pares</item>
     </plurals>
     <string name="torrent_downloading_stalled">Baixando</string>
+    <string name="torrent_downloading_stalled_with_error">Baixando (%s)</string>
     <plurals name="torrent_seeding">
         <item quantity="one">Semeando para %d par</item>
         <item quantity="many">Semeando para %d pares</item>
         <item quantity="other">Semeando para %d pares</item>
     </plurals>
     <string name="torrent_seeding_stalled">Semeando</string>
+    <string name="torrent_seeding_stalled_with_error">Semeando (%s)</string>
     <string name="torrent_queued">Na fila</string>
+    <string name="torrent_checking">Verificando: %s%% </string>
+    <string name="torrent_checking_with_error">Verificando: %1$s%% (%2$s)</string>
     <string name="torrent_queued_for_checking">Na fila para verificação</string>
     <plurals name="remove_trackers_message">
         <item quantity="one">Você tem certeza que deseja remover %d rastreador selecionado?</item>
@@ -346,6 +369,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="translators">Tradutores</string>
     <string name="license">Licença</string>
 
+    <string name="prefs_dark_theme_mode_title">Tema escuro</string>
+
+    <string name="prefs_dark_theme_mode_auto_q">Padrão do sistema</string>
     <string name="prefs_persistent_notification_title">Mostrar notificação persistente</string>
 
     <string name="persistent_notification_channel_name">Notificação persistente</string>
@@ -353,6 +379,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="added_torrents_channel_name">Torrents adicionados</string>
 
     <string name="appearance">Aparência</string>
+    <string name="behaviour">Comportamento</string>
     <string name="torrents">Torrents</string>
 
     <string name="prefs_delete_files_title">Deletar arquivos no disco rígido ao remover torrent</string>
@@ -371,6 +398,56 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="persistent_notification">Notificação persistente</string>
 
+    <string name="prefs_background_update_interval_title">Intervalo de atualização em segundo plano</string>
+    <string-array name="prefs_background_update_interval_entries">
+        <item>Desativado</item>
+        <item>15 minutos</item>
+        <item>30 minutos</item>
+        <item>1 hora</item>
+        <item>3 horas</item>
+        <item>6 horas</item>
+        <item>12 horas</item>
+        <item>24 horas</item>
+    </string-array>
+
+    <string name="connection_settings">Configurações de conexão</string>
+
+    <string name="proxy_settings">Configurações de proxy</string>
+    <string name="proxy_type">Tipo de proxy</string>
+    <string name="share">Compartilhar</string>
+    <string name="share_torrent">Compartilhar torrent</string>
+
+    <string-array name="proxy_type_items">
+        <item>Padrão</item>
+        <item>HTTP</item>
+        <item>SOCKS5</item>
+    </string-array>
+
+    <string name="request_location_permission">Conceder permissão de localização</string>
+    <string name="request_background_location_permission">Conceder permissão de localização em segundo plano</string>
+    <string name="enable_location">Habilitar localização</string>
+
+    <string name="torrents_filters">Filtros</string>
+    <string name="transmission_settings">Configurações do Transmission</string>
+
+    <string name="load_from_file">Carregar de arquivo</string>
+
+    <string name="file_icon">Ícone de arquivo</string>
+
+    <string name="prefs_color_theme_title">Cores</string>
+    <string name="prefs_color_theme_system">Cores do sistema</string>
+    <string name="prefs_color_theme_red">Vermelho</string>
+    <string name="prefs_color_theme_teal">Turquesa</string>
+
+    <string name="detailed_error_message">Mensagem de erro detalhada</string>
+
+    <string name="request_permission">Conceder permissão</string>
+    <string name="request_notification_permission">Conceder permissão de notificação</string>
+
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
-    </resources>
+    <string name="source_code_url">Código-fonte: %1$s</string>
+    <string name="translations_url">Traduções: %1$s</string>
+    <string name="maintainer">Mantenedor</string>
+    <string name="contributor">Contribuidor</string>
+</resources>

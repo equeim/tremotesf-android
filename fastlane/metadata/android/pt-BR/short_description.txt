@@ -1,1 +1,1 @@
-Remote-control Transmission BitTorrent client
+Cliente de controle remoto do Transmission BitTorrent
