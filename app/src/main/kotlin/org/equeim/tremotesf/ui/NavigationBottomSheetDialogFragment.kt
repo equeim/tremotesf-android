@@ -193,7 +193,8 @@ class ExpandedBottomSheetBehavior(context: Context, attrs: AttributeSet?) :
     private val callbacks = mutableListOf<BottomSheetCallback>()
     private var firstLayout = true
 
-    @Suppress("deprecation")
+    @Suppress("DEPRECATION")
+    @Deprecated("It's deprecated")
     override fun setBottomSheetCallback(callback: BottomSheetCallback?) {
         super.setBottomSheetCallback(callback)
         callbacks.clear()

@@ -19,8 +19,6 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
 class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -30,11 +28,11 @@ class GradlePlugin : Plugin<Project> {
 
     private fun Project.configureAndroidProject() {
         plugins.withType<AndroidBasePlugin> {
-            extensions.getByType(CommonExtension::class).configureAndroidProject(libs)
-        }
-        plugins.withType<KotlinAndroidPluginWrapper> {
-            val androidExtension = extensions.getByType(CommonExtension::class) as ExtensionAware
-            androidExtension.extensions.getByType(KotlinJvmOptions::class).configureKotlin()
+            val androidExtension = extensions.getByType(CommonExtension::class)
+            androidExtension.configureAndroidProject(libs)
+            @Suppress("DEPRECATION")
+            (androidExtension as ExtensionAware).extensions.getByType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions::class)
+                .configureKotlin()
         }
     }
 
@@ -61,7 +59,8 @@ class GradlePlugin : Plugin<Project> {
         defaultConfig.targetSdk = libs.targetSdk
     }
 
-    private fun KotlinJvmOptions.configureKotlin() {
+    @Suppress("DEPRECATION")
+    private fun org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions.configureKotlin() {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }

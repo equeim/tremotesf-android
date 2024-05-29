@@ -33,7 +33,7 @@ dependencies {
     compileOnly(libs.android.gradle.plugin.api) {
         excludeKotlinStdlib()
     }
-    compileOnly(libs.kotlin.gradle.plugin) {
+    compileOnly(libs.kotlin.gradle.plugin.api) {
         excludeKotlinStdlib()
     }
     implementation(libs.serialization.gradle.json) {

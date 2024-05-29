@@ -4,7 +4,7 @@
 
 [versions]
 android-gradle-plugin = "8.2.2"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 gradle-versions-plugin = "0.51.0"
 
 sdk-platform-compile = "34"
@@ -48,7 +48,7 @@ tremotesf-plugin = "0.1"
 
 [libraries]
 android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
 gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradle-versions-plugin" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
