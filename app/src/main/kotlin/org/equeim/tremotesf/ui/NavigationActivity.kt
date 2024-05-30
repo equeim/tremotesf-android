@@ -27,6 +27,7 @@ import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.PredictiveBackControl
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -89,6 +90,10 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
         Timber.i("onCreate: intent = $intent")
+
+        // https://issuetracker.google.com/issues/342919181
+        @OptIn(PredictiveBackControl::class)
+        FragmentManager.enablePredictiveBack(false)
 
         super.onCreate(savedInstanceState)
         createdActivities.add(this)
