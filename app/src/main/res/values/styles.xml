@@ -113,10 +113,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="android:textColor">?android:attr/textColorHint</item>
     </style>
 
-    <style name="TextApperance.Tremotesf.EmptyPlaceholder.Small" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textColor">?android:attr/textColorHint</item>
-    </style>
-
     <style name="HeaderTextAppearance" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>

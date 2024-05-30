@@ -7,7 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
-    <string name="connected">Подключено</string>
 
     <string name="connect">Подключиться</string>
     <string name="disconnect">Отключиться</string>
@@ -108,7 +107,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="torrent_added">Торрент добавлен</string>
 
     <string name="torrent_not_found">Торрент не найден</string>
-    <string name="torrent_removed">Торрент удален</string>
 
     <string name="details">Сведения</string>
     <string name="files">Файлы</string>
@@ -171,7 +169,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">Нет трекеров</string>
 
-    <string name="error">Ошибка</string>
 
     <string name="speed">Скорость</string>
     <string name="honor_global_limits">Учитывать глобальные ограничения</string>

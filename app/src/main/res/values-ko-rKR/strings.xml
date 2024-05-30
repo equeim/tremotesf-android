@@ -7,7 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">연결 해제</string>
     <string name="connecting">연결\u2026</string>
-    <string name="connected">연결됨</string>
 
     <string name="connect">연결</string>
     <string name="disconnect">연결 해제</string>
@@ -90,7 +89,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="torrent_added">토렌트 추가</string>
 
     <string name="torrent_not_found">토렌트를 찾을 수 없음</string>
-    <string name="torrent_removed">토렌트 제거</string>
 
     <string name="details">세부 정보</string>
     <string name="files">파일</string>
@@ -153,7 +151,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">트래커 없음</string>
 
-    <string name="error">오류</string>
 
     <string name="speed">속도</string>
     <string name="honor_global_limits">전역 제한 준수</string>
