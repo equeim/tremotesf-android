@@ -261,7 +261,7 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
         }
     }
 
-    private fun onDone(): Boolean {
+    private fun onDone() {
         with(binding) {
             val emptyFieldError = getText(R.string.empty_field_error)
             nameEdit.checkLength(emptyFieldError)
@@ -289,8 +289,6 @@ class ServerEditFragment : NavigationFragment(R.layout.server_edit_fragment, 0) 
                 }
             }
         }
-
-        return true
     }
 
     fun save() {
