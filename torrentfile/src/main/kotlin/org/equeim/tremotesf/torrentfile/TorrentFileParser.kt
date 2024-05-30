@@ -56,7 +56,6 @@ object TorrentFileParser {
         dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
     ): TorrentParseResult =
         withContext(dispatchers.IO) {
-            @Suppress("BlockingMethodInNonBlockingContext")
             if (inputStream.available() > MAX_FILE_SIZE) {
                 Timber.e("File is too large")
                 throw FileIsTooLargeException()
