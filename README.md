@@ -32,7 +32,7 @@ cd tremotesf-android
 git submodule update --init
 ```
 2. Download and install latest Android Studio.
-5. Build APK in Android Studio.
+3. Build APK in Android Studio.
 
 ## Translations
 Translations are managed on [Transifex](https://www.transifex.com/equeim/tremotesf-android).
