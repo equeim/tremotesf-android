@@ -7,7 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Bağlantı kesildi</string>
     <string name="connecting">Bağlanıyor\u2026</string>
-    <string name="connected">Bağlandı</string>
 
     <string name="connect">Bağlan</string>
     <string name="disconnect">Bağlantıyı kes</string>
@@ -80,7 +79,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="torrent_added">Torrent eklendi</string>
 
     <string name="torrent_not_found">Torrent bulunamadı</string>
-    <string name="torrent_removed">Torrent kaldırıldı</string>
 
     <string name="details">Ayrıntılar</string>
     <string name="files">Dosyalar</string>
@@ -137,7 +135,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">İzleyici yok</string>
 
-    <string name="error">Hata</string>
 
     <string name="speed">Hız</string>
     <string name="honor_global_limits">Evrensel saygınlık sınırları</string>

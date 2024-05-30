@@ -12,7 +12,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="disconnected">Disconnected</string>
     <string name="connecting">Connecting\u2026</string>
-    <string name="connected">Connected</string>
 
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
@@ -101,7 +100,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="torrent_added">Torrent added</string>
 
     <string name="torrent_not_found">Torrent not found</string>
-    <string name="torrent_removed">Torrent removed</string>
 
     <string name="details">Details</string>
     <string name="files">Files</string>
@@ -163,8 +161,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="no_peers">No peers</string>
 
     <string name="no_trackers">No trackers</string>
-
-    <string name="error">Error</string>
 
     <string name="speed">Speed</string>
     <string name="honor_global_limits">Honor global limits</string>
