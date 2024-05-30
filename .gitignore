@@ -2,18 +2,14 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-.gradle
-/local.properties
 /.idea
-.DS_Store
+/.kotlin
 /captures
-*.log
+/local.properties
 /keystore.properties
-/app/build
 /app/fdroid
 /app/google
-/build
-/common/build
-/gradle-plugin/build
-/rpc/build
-/torrentfile/build
+.gradle
+build
+*.log
+.DS_Store
