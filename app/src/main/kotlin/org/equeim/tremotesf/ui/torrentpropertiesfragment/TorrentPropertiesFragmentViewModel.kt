@@ -84,14 +84,14 @@ class TorrentPropertiesFragmentViewModel(
     fun pauseTorrent(torrentId: Int) {
         viewModelScope.launch {
             val ok =
-                GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) { stopTorrents(listOf(torrentId)) }
+                GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_pause_error) { stopTorrents(listOf(torrentId)) }
             if (ok) refreshRequests.emit(Unit)
         }
     }
 
     fun checkTorrent(torrentId: Int) {
         viewModelScope.launch {
-            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_start_error) {
+            val ok = GlobalRpcClient.awaitBackgroundRpcRequest(R.string.torrents_check_error) {
                 verifyTorrents(
                     listOf(torrentId)
                 )

@@ -341,7 +341,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
                                         R.string.free_space,
                                         FormatUtils.formatFileSize(requireContext(), it)
                                     )
-                                }
+                                } ?: getText(R.string.free_space_error)
                             freeSpaceJob = null
                         }
                     }
