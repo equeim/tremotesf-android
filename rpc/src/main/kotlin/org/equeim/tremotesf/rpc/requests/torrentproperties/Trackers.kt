@@ -96,54 +96,36 @@ private object PeersCountSerializer : KSerializer<Int> {
 suspend fun RpcClient.addTorrentTrackers(
     torrentHashString: String,
     trackersToAdd: List<Set<String>>,
-    existingTrackers: List<Tracker>
-) {
-    addTorrentTrackersImpl(
-        torrentHashString,
-        trackersToAdd
-    ) { existingTrackers.toTieredAnnounceUrls() }
-}
-
-/**
- * @throws RpcRequestError
- */
-suspend fun RpcClient.addTorrentTrackers(
-    torrentHashString: String,
-    trackersToAdd: List<Set<String>>
-) {
-    addTorrentTrackersImpl(torrentHashString, trackersToAdd) {
-        getTorrentTieredTrackersAnnounceUrls(torrentHashString).orEmpty()
-    }
-}
-
-/**
- * @throws RpcRequestError
- */
-private suspend fun RpcClient.addTorrentTrackersImpl(
-    torrentHashString: String,
-    trackersToAdd: List<Set<String>>,
-    existingTrackersProvider: suspend () -> List<Set<String>>
+    existingTrackersMaybe: List<Tracker>? = null
 ) {
     val capabilities = checkServerCapabilities(
         force = false,
         RpcRequestContext(RpcMethod.SessionSet, "addTorrentTrackers")
     )
     if (capabilities.hasTrackerListProperty) {
-        val existingTrackers = existingTrackersProvider()
-        Timber.d("Merging existing trackers $existingTrackers with $trackersToAdd")
-        val merged = existingTrackers.mergeWith(trackersToAdd)
-        Timber.d("Result is $merged")
-        if (merged != existingTrackers) {
-            Timber.d("Replacing trackers")
-            setTieredTrackerList(torrentHashString, merged)
-        } else {
-            Timber.d("Result is the same, do nothing")
-        }
+        addTorrentTrackersNewMethod(torrentHashString, trackersToAdd, existingTrackersMaybe)
     } else {
-        // Transmission adds each announce URL to each own tier when using trackerAdd property, so take first URL from each tier
-        addTorrentTrackersOldMethod(
-            torrentHashString,
-            trackersToAdd.mapNotNull { it.firstOrNull() })
+        addTorrentTrackersOldMethod(torrentHashString, trackersToAdd, existingTrackersMaybe)
+    }
+}
+
+/**
+ * @throws RpcRequestError
+ */
+private suspend fun RpcClient.addTorrentTrackersNewMethod(
+    torrentHashString: String,
+    trackersToAdd: List<Set<String>>,
+    existingTrackersMaybe: List<Tracker>?,
+) {
+    val existingTrackers = existingTrackersMaybe?.toTieredAnnounceUrls() ?: getTorrentTieredTrackersAnnounceUrls(torrentHashString).orEmpty()
+    Timber.d("Merging existing trackers $existingTrackers with $trackersToAdd")
+    val merged = existingTrackers.mergeWith(trackersToAdd)
+    Timber.d("Result is $merged")
+    if (merged != existingTrackers) {
+        Timber.d("Replacing trackers")
+        setTieredTrackerList(torrentHashString, merged)
+    } else {
+        Timber.d("Result is the same, do nothing")
     }
 }
 
@@ -169,10 +151,26 @@ private data class TorrentTieredTrackersAnnounceUrls(
  */
 private suspend fun RpcClient.addTorrentTrackersOldMethod(
     torrentHashString: String,
-    trackersToAdd: List<String>
+    trackersToAddTiered: List<Set<String>>,
+    existingTrackersMaybe: List<Tracker>?,
 ) {
-    setTorrentProperty(torrentHashString, "trackerAdd", trackersToAdd)
+    // Transmission adds each announce URL to each own tier when using trackerAdd property, so take first URL from each tier
+    val existingTrackers = (existingTrackersMaybe ?: getTorrentTrackers(torrentHashString).orEmpty())
+        .toTieredAnnounceUrls()
+        .firstFromTiers()
+        .toSet()
+    val trackersToAdd = trackersToAddTiered.firstFromTiers()
+    Timber.d("Merging existing trackers $existingTrackers with $trackersToAdd")
+    val trackersToAddFiltered = trackersToAdd// - existingTrackers
+    if (trackersToAddFiltered.isNotEmpty()) {
+        Timber.d("Adding trackers $trackersToAddFiltered")
+        setTorrentProperty(torrentHashString, "trackerAdd", trackersToAddFiltered)
+    } else {
+        Timber.d("Nothing to add")
+    }
 }
+
+private fun List<Set<String>>.firstFromTiers(): List<String> = mapNotNull { it.firstOrNull() }
 
 suspend fun RpcClient.replaceTorrentTracker(
     torrentHashString: String,
