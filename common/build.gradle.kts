@@ -5,7 +5,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.tremotesf)
+    alias(libs.plugins.tremotesf.common.settings)
 }
 
 android.namespace = "org.equeim.tremotesf.common"

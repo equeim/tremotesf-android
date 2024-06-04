@@ -14,8 +14,6 @@ sdk-platform-target = "34"
 
 coroutines = "1.8.1"
 serialization = "1.6.3"
-# Gradle bundles Kotlin 1.9, make sure to not pull newer version through dependencies
-serialization-gradle = "1.6.3"
 
 androidx-activity = "1.9.0"
 androidx-annotation = "1.8.0"
@@ -33,7 +31,6 @@ androidx-swiperefreshlayout = "1.1.0"
 androidx-viewpager2 = "1.1.0"
 androidx-work = "2.9.0"
 
-commons-lang = "3.14.0"
 fastscroll = "2.1.0"
 leakcanary = "2.14"
 material = "1.12.0"
@@ -45,12 +42,10 @@ junit = "5.10.2"
 mockk = "1.13.11"
 
 serialization-bencode = "0.1"
-tremotesf-plugin = "0.1"
 
 [libraries]
 android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
 kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
-gradle-versions-plugin = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradle-versions-plugin" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -59,7 +54,6 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 serialization-bencode = { module = "org.equeim:kotlinx-serialization-bencode", version.ref = "serialization-bencode" }
-serialization-gradle-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-gradle" }
 
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
@@ -82,7 +76,6 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "androidx-viewpager2" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 
-commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscroll" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
@@ -104,4 +97,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-navigation = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
-tremotesf = { id = "org.equeim.tremotesf", version.ref = "tremotesf-plugin" }
+gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions-plugin" }
+tremotesf-common-settings = { id = "org.equeim.tremotesf.common-settings" }
