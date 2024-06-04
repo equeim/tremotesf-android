@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.plugin.parcelize)
     alias(libs.plugins.androidx.navigation)
-    alias(libs.plugins.tremotesf)
+    alias(libs.plugins.tremotesf.common.settings)
 }
 
 class KeystoreProperties(rootProject: Project) {
