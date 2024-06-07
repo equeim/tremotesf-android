@@ -13,7 +13,7 @@ sdk-platform-min = "26"
 sdk-platform-target = "34"
 
 coroutines = "1.8.1"
-serialization = "1.6.3"
+serialization = "1.7.0"
 
 androidx-activity = "1.9.0"
 androidx-annotation = "1.8.0"
