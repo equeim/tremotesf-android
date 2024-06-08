@@ -278,7 +278,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
         }
 
-        updateAddTorrentLinkState(addTorrentLinkState, coroutineContext, binding.addButton) { torrentName ->
+        updateAddTorrentState(addTorrentLinkState, coroutineContext, binding.addButton) { torrentName ->
             AddTorrentFileFragmentDirections.toMergingTrackersDialogFragment(torrentName, cancelable = false)
         }
     }

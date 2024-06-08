@@ -111,7 +111,7 @@ class AddTorrentLinkFragment : AddTorrentFragment(
         }
 
         model.addTorrentState.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            updateAddTorrentLinkState(it, currentCoroutineContext(), binding.addButton) { torrentName ->
+            updateAddTorrentState(it, currentCoroutineContext(), binding.addButton) { torrentName ->
                 AddTorrentLinkFragmentDirections.toMergingTrackersDialogFragment(torrentName, cancelable = true)
             }
         }
