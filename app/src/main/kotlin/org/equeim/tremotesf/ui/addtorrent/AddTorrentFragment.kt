@@ -129,7 +129,7 @@ abstract class AddTorrentFragment(
         }
     }
 
-    protected fun updateAddTorrentLinkState(
+    protected fun updateAddTorrentState(
         state: AddTorrentState?,
         coroutineContext: CoroutineContext,
         addButton: ExtendedFloatingActionButton,
