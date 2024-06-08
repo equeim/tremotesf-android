@@ -33,7 +33,11 @@ sealed class RpcRequestError private constructor(
 
     class ConnectionDisabled : RpcRequestError(message = "Connection to server is disabled")
 
-    class Timeout internal constructor(response: Response?, requestHeaders: Headers?) :
+    class Timeout internal constructor(
+        response: Response?,
+        requestHeaders: Headers?,
+        override val cause: IOException
+    ) :
         RpcRequestError(
             response = response,
             requestHeaders = requestHeaders,
@@ -124,7 +128,7 @@ sealed class RpcRequestError private constructor(
         override val response: Response,
         override val requestHeaders: Headers,
         message: String,
-    ):
+    ) :
         RpcRequestError(
             response = response,
             requestHeaders = requestHeaders,
@@ -138,11 +142,19 @@ val RpcRequestError.isRecoverable: Boolean
         else -> true
     }
 
-internal fun IOException.toRpcRequestError(call: Call, response: Response?, requestHeaders: Headers?): RpcRequestError =
+internal fun IOException.toRpcRequestError(
+    call: Call,
+    response: Response?,
+    requestHeaders: Headers?
+): RpcRequestError =
     if (this is SocketTimeoutException || call.isCanceled()) {
-        RpcRequestError.Timeout(response = response, requestHeaders = requestHeaders)
+        RpcRequestError.Timeout(response = response, requestHeaders = requestHeaders, cause = this)
     } else {
-        RpcRequestError.NetworkError(response = response, requestHeaders = requestHeaders, cause = this)
+        RpcRequestError.NetworkError(
+            response = response,
+            requestHeaders = requestHeaders,
+            cause = this
+        )
     }
 
 @Parcelize
