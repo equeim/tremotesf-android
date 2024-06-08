@@ -10,8 +10,8 @@ import okhttp3.OkHttpClient
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.security.cert.Certificate
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 internal data class ConnectionConfiguration(
     val httpClient: OkHttpClient,
@@ -26,9 +26,13 @@ internal data class ConnectionConfiguration(
  */
 internal fun createConnectionConfiguration(server: Server): ConnectionConfiguration {
     val url = createUrl(server)
+    val timeout = server.timeout.toJavaDuration()
     val builder = OkHttpClient.Builder()
         .addNetworkInterceptor(RealRequestHeadersInterceptor())
-        .callTimeout(server.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+        .connectTimeout(timeout)
+        .readTimeout(timeout)
+        .writeTimeout(timeout)
+        .callTimeout(timeout)
         .proxy(server.proxyType?.let {
             Proxy(
                 it,
