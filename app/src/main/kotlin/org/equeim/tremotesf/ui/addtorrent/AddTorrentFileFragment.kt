@@ -185,7 +185,7 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     override fun navigateBack() {
         backCallback.remove()
-        if (model.shouldSetInitialRpcInputs) {
+        if (!model.shouldSetInitialRpcInputs) {
             val infoFragment = findFragment<InfoFragment>()
             infoFragment?.directoriesAdapter?.save(infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit)
         }
