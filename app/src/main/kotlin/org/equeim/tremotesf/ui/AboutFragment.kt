@@ -13,6 +13,8 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import com.google.android.material.tabs.TabLayoutMediator
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
@@ -166,9 +168,18 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
             resources.openRawResource(R.raw.license).use {
-                AboutFragmentLicenseTabFragmentBinding.bind(requireView()).webView.loadData(
-                    it.reader().readText(), "text/html", null
-                )
+                AboutFragmentLicenseTabFragmentBinding.bind(requireView()).webView.apply {
+                    try {
+                        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                            WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true)
+                        }
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Failed to enable algorithmic darkening on WebView")
+                    }
+                    loadData(
+                        it.reader().readText(), "text/html", null
+                    )
+                }
             }
         }
     }
