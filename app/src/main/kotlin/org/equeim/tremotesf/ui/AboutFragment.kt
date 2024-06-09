@@ -6,6 +6,9 @@ package org.equeim.tremotesf.ui
 
 import android.os.Bundle
 import android.text.Html
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
@@ -147,6 +150,19 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
     }
 
     class LicenseTabFragment : PagerFragment(R.layout.about_fragment_license_tab_fragment) {
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View? {
+            return try {
+                super.onCreateView(inflater, container, savedInstanceState)
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create WebView")
+                null
+            }
+        }
+
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
             resources.openRawResource(R.raw.license).use {
