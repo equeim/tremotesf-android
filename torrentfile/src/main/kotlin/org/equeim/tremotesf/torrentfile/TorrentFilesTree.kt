@@ -9,7 +9,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.collection.SimpleArrayMap
+import androidx.collection.MutableScatterMap
 import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
@@ -65,20 +65,30 @@ open class TorrentFilesTree(
     }
 
     class DirectoryNode private constructor(item: Item, path: IntArray) : Node(item, path) {
-        private val _children = mutableListOf<Node>()
+        private val _children = ArrayList<Node>()
         val children: List<Node>
             get() = _children
-        private val childrenMap = SimpleArrayMap<String, Node>()
+        private var namesToChildrenCache: MutableScatterMap<String, Node>? = MutableScatterMap()
 
         override fun toString() = "DirectoryNode(item=$item)"
 
-        fun getChildByItemNameOrNull(name: String) = childrenMap[name]
+        fun getChildByItemNameOrNull(name: String): Node? {
+            val map = namesToChildrenCache
+            return if (map != null) {
+                map[name]
+            } else {
+                children.find { it.item.name == name }
+            }
+        }
 
         fun recalculateFromChildren() {
             item = item.recalculatedFromChildren(children)
         }
 
         internal fun initiallyCalculateFromChildrenRecursively() {
+            _children.trimToSize()
+            // getChildByItemNameOrNull() will be used rarely after creating tree, so we don't need to keep namesToChildrenCache in memory
+            namesToChildrenCache = null
             children.forEach { (it as? DirectoryNode)?.initiallyCalculateFromChildrenRecursively() }
             item.calculateFromChildren(children)
         }
@@ -128,11 +138,13 @@ open class TorrentFilesTree(
         }
 
         private fun addChild(name: String, node: Node) {
-            val put = childrenMap.putIfAbsent(name, node)
-            if (put != null && put !== node) {
-                throw IllegalArgumentException("Child with this name already exists")
-            }
             _children.add(node)
+            checkNotNull(namesToChildrenCache).compute(name) { _, existingNode ->
+                if (existingNode != null) {
+                    throw IllegalArgumentException("Child with this name already exists")
+                }
+                node
+            }
         }
 
         companion object {
