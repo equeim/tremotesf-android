@@ -87,7 +87,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">Không có tracker</string>
 
-
     <string name="speed">Tốc độ</string>
     <string name="honor_global_limits">Theo các giới hạn chung</string>
     <string name="download_noun">Tải về</string>
@@ -146,7 +145,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Tên người dùng</string>
     <string name="password">Mật khẩu</string>
     <string name="empty_field_error">Trường này không thể bỏ trống</string>
-
     <string name="server_exists">Máy chủ có tên này đã tồn tại</string>
     <string name="overwrite">Ghi đè</string>
 

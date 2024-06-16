@@ -163,7 +163,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">Sin trackers</string>
 
-
     <string name="speed">Velocidad</string>
     <string name="honor_global_limits">Respetar límites globales</string>
     <string name="download_noun">Descarga</string>
@@ -232,7 +231,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timeout">Tiempo de espera</string>
 
     <string name="empty_field_error">Este campo no puede estar vacío</string>
-
     <string name="server_exists">Ya existe un servidor con este nombre</string>
     <string name="overwrite">Sobrescribir</string>
 

@@ -145,7 +145,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">无跟踪服务器</string>
 
-
     <string name="speed">速度</string>
     <string name="honor_global_limits">以全局设置为准</string>
     <string name="download_noun">下载速度</string>
@@ -205,7 +204,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="empty_field_error">该项不可为空</string>
-
     <string name="server_exists">已存在与该项同名的服务器</string>
     <string name="overwrite">覆盖</string>
 

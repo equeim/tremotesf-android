@@ -130,7 +130,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="loading">Laden\u2026</string>
     <string name="no_peers">Geen peers</string>
 
-
     <string name="speed">Snelheid</string>
     <string name="honor_global_limits">Algemene limieten aanhouden</string>
     <string name="download_noun">Download</string>
@@ -192,7 +191,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
     <string name="empty_field_error">Dit veld kan niet leeg zijn</string>
-
     <string name="server_exists">Server met deze naam bestaat al</string>
     <string name="overwrite">Overschrijven</string>
 

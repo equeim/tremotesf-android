@@ -135,7 +135,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">İzleyici yok</string>
 
-
     <string name="speed">Hız</string>
     <string name="honor_global_limits">Evrensel saygınlık sınırları</string>
     <string name="download_noun">İndir</string>
@@ -197,7 +196,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Kullanıcı adı</string>
     <string name="password">Şifre</string>
     <string name="empty_field_error">Bu alan boş olamaz</string>
-
     <string name="server_exists">Bu ada sahip sunucu zaten var</string>
     <string name="overwrite">Üzerine Yaz</string>
 
