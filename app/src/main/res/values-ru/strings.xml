@@ -169,7 +169,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">Нет трекеров</string>
 
-
     <string name="speed">Скорость</string>
     <string name="honor_global_limits">Учитывать глобальные ограничения</string>
     <string name="download_noun">Загрузка</string>
@@ -243,6 +242,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="timeout">Таймаут</string>
 
     <string name="empty_field_error">Это поле должно быть заполнено</string>
+    <string name="number_range_error">Значение должно быть в диапазоне %1$d - %2$d</string>
+    <string name="number_range_error_float">Значение должно быть в диапазоне %1$.1f - %2$.1f</string>
 
     <string name="server_exists">Сервер с эти именем уже существует</string>
     <string name="overwrite">Перезаписать</string>

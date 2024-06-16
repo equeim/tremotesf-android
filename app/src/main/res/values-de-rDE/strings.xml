@@ -157,7 +157,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">Keine Tracker</string>
 
-
     <string name="speed">Geschwindigkeit</string>
     <string name="honor_global_limits">Beachte globale Beschränkungen</string>
     <string name="download_noun">Herunterladen</string>
@@ -222,11 +221,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
     <string name="update_interval">Aktualisierungsintervall</string>
+    <string name="update_interval_hint">Dieses Aktualisierungsintervall wird nur verwendet, wenn sich die Anwendung im Vordergrund befindet oder die dauerhafte Benachrichtigung aktiv ist. Das Hintergrundaktualisierungsintervall kann in den Anwendungseinstellungen konfiguriert werden.</string>
     <string name="text_field_suffix_seconds">Sekunden</string>
     <string name="timeout">Zeitüberschreitung</string>
 
     <string name="empty_field_error">Dieses Feld darf nicht leer sein</string>
-
     <string name="server_exists">ein Server mit diesem Namen exisiert bereits</string>
     <string name="overwrite">Überschreiben</string>
 
@@ -437,6 +436,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_link_from_clipboard_title">Beim Hinzufügen eines Torrent-Links automatisch den Link aus der Zwischenablage ausfüllen</string>
     <string name="prefs_remember_add_torrent_parameters_title">Parameter des zuletzt hinzugefügten Torrents merken</string>
 
+    <string name="prefs_merge_trackers_when_adding_existing_torrent_title">Beim Hinzufügen vorhandener Torrents die Tracker zusammenführen</string>
+    <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Wenn existierende Torrents hinzugefügt werden, fragen ob die Tracker zusammengeführt werden sollen</string>
+
+    <string name="torrent_duplicate_not_merging_trackers">Vorhandenen Torrent «%1$s» nicht hinzufügen</string>
+    <string name="torrent_duplicate_merging_trackers">Tracker für Torrent «%1$s» werden zusammengeführt</string>
+    <string name="torrent_duplicate_merging_trackers_question">Torrent «%1$s» ist bereits hinzugefügt. Tracker zusammenführen?</string>
+    <string name="merging_trackers_error">Tracker konnten nicht zusammengeführt werden: %1$s</string>
+    <string name="merge_no">Nicht zusammenführen</string>
+    <string name="merge_yes">Zusammenführen</string>
+    <string name="do_not_ask_again">Nicht erneut fragen</string>
+
     <string name="alternative_speed_limits">Alternative Geschwindigkeitslimitierungen</string>
 
 
@@ -451,6 +461,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="notify_on_added_since_last">Benachrichtige bei hinzugefügten Torrents seit der letzten Verbindung</string>
 
     <string name="persistent_notification">Permanente Benachrichtigung</string>
+
+    <string name="persistent_notification_warning">Wenn Sie die dauerhafte Benachrichtigung aktivieren, aktualisiert die Anwendung Daten mit dem in den Verbindungseinstellungen konfigurierten Intervall, auch wenn sie im Hintergrund läuft, was zu einer übermäßigen Batterieentladung führen kann</string>
 
     <string name="prefs_background_update_interval_title">Hintergrund-Aktualisierungsinterval</string>
     <string-array name="prefs_background_update_interval_entries">

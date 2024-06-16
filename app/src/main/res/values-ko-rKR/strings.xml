@@ -78,7 +78,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item quantity="other">%d 리처</item>
     </plurals>
 
-    <string name="next_update">다음 업데이트 후 %s</string>
+    <string name="next_update">다음 업데이트 %s 후</string>
     <string name="add_trackers">트래커 추가</string>
     <string name="edit_tracker">트래커 편집</string>
 
@@ -151,7 +151,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="no_trackers">트래커 없음</string>
 
-
     <string name="speed">속도</string>
     <string name="honor_global_limits">전역 제한 준수</string>
     <string name="download_noun">다운로드</string>
@@ -214,11 +213,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="username">사용자 이름</string>
     <string name="password">비밀번호</string>
     <string name="update_interval">업데이트 간격</string>
+    <string name="update_interval_hint">이 업데이트 간격은 애플리케이션을 사용중이거나 지속적인 알림이 활성화된 경우에만 사용됩니다. 사용중이지 않을때의 간격은 애플리케이션 설정에서 설정할 수 있습니다.</string>
     <string name="text_field_suffix_seconds">초</string>
     <string name="timeout">시간 초과</string>
 
     <string name="empty_field_error">이 필드는 비워 둘 수 없습니다</string>
-
     <string name="server_exists">이 이름의 서버가 이미 존재합니다</string>
     <string name="overwrite">덮어쓰기</string>
 
@@ -326,7 +325,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="trackers_remove_error">트래커 제거 실패: %1$s</string>
 
     <!-- e.g. "100 MiB, uploaded 200 MiB" -->
-    <string name="uploaded_string">%1$s, 업로드 됨 %2$s</string>
+    <string name="uploaded_string">%1$s, %2$s 업로드 됨</string>
 
     <string name="torrent_paused">일시중지</string>
     <string name="torrent_paused_with_error">일시중지 (%s)</string>
@@ -412,7 +411,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="added_torrents_channel_name">토렌트 추가됨</string>
 
     <string name="appearance">모양</string>
-    <string name="behaviour">행동</string>
+    <string name="behaviour">동작</string>
     <string name="torrents">토렌트</string>
 
     <string name="quick_return_title">빠른 이동</string>
@@ -447,6 +446,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="notify_on_added_since_last">서버에 마지막으로 연결한 이후 추가된 토렌트에 대해 알림</string>
 
     <string name="persistent_notification">지속적인 알림</string>
+
+    <string name="persistent_notification_warning">지속적인 알림을 활성화하면 애플리케이션을 사용하지 않을 경우에도 연결 설정에 설정된 간격으로 데이터를 업데이트하여 과도한 배터리 소모를 유발할 수 있습니다</string>
 
     <string name="prefs_background_update_interval_title">백그라운드 업데이트 간격</string>
     <string-array name="prefs_background_update_interval_entries">
