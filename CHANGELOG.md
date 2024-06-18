@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.11.1] - 2024-06-19
+### Fixed
+- Error when merging trackers with Transmission older than 4.0
+- Custom connection timeout not working properly
+- Saving last used download directory when adding torrent
+
 ## [2.11.0] - 2024-05-08
 ### Added
 - Merging trackers when adding already existing torrent

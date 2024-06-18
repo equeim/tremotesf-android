@@ -1,0 +1,3 @@
+- Fixed error when merging trackers with Transmission older than 4.0
+- Fixed custom connection timeout not working properly
+- Fixed saving last used download directory when adding torrent
