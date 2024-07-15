@@ -161,7 +161,7 @@ private suspend fun RpcClient.addTorrentTrackersOldMethod(
         .toSet()
     val trackersToAdd = trackersToAddTiered.firstFromTiers()
     Timber.d("Merging existing trackers $existingTrackers with $trackersToAdd")
-    val trackersToAddFiltered = trackersToAdd// - existingTrackers
+    val trackersToAddFiltered = trackersToAdd - existingTrackers
     if (trackersToAddFiltered.isNotEmpty()) {
         Timber.d("Adding trackers $trackersToAddFiltered")
         setTorrentProperty(torrentHashString, "trackerAdd", trackersToAddFiltered)
