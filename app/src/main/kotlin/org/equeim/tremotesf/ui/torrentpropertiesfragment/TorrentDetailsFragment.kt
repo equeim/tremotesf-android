@@ -115,7 +115,7 @@ class TorrentDetailsFragment :
                 commentTextView.text = comment
             }
 
-            labelsTextView.text = torrentDetails.labels.orEmpty().joinToString(", ")
+            labelsTextView.text = torrentDetails.labels.joinToString(", ")
         }
     }
 
