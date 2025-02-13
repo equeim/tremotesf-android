@@ -167,11 +167,11 @@ class TorrentsAdapter(
                     }
                 }
 
-                if (torrent.labels.isNullOrEmpty()) {
-                    labelsTextView.visibility = View.GONE
-                } else {
+                if (torrent.labels.isNotEmpty()) {
                     labelsTextView.visibility = View.VISIBLE
-                    labelsTextView.text = torrent.labels!!.joinToString(", ")
+                    labelsTextView.text = torrent.labels.joinToString(", ")
+                } else {
+                    labelsTextView.visibility = View.GONE
                 }
             }
         }

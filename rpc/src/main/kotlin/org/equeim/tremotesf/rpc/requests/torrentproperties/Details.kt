@@ -77,7 +77,7 @@ data class TorrentDetails(
     @SerialName("addedDate")
     val addedDate: Instant?,
     @SerialName("labels")
-    val labels: List<String>?,
+    val labels: List<String> = emptyList(),
 
     @SerialName("downloadedEver")
     val totalDownloaded: FileSize,
