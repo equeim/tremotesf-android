@@ -74,6 +74,8 @@ data class TorrentDetails(
     val webSeedersSendingToUsCount: Int,
     @SerialName("addedDate")
     val addedDate: Instant?,
+    @SerialName("labels")
+    val labels: List<String>?,
 
     @SerialName("downloadedEver")
     val totalDownloaded: FileSize,

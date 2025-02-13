@@ -114,6 +114,8 @@ class TorrentDetailsFragment :
             if (!comment.contentEquals(commentTextView.text)) {
                 commentTextView.text = comment
             }
+
+            labelsTextView.text = torrentDetails.labels.orEmpty().joinToString(", ")
         }
     }
 

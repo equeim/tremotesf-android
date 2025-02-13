@@ -166,6 +166,13 @@ class TorrentsAdapter(
                         statusTextView.text = it
                     }
                 }
+
+                if (torrent.labels.isNullOrEmpty()) {
+                    labelsTextView.visibility = View.GONE
+                } else {
+                    labelsTextView.visibility = View.VISIBLE
+                    labelsTextView.text = torrent.labels!!.joinToString(", ")
+                }
             }
         }
 
