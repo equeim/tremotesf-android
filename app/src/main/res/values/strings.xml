@@ -130,6 +130,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Created by</string>
     <string name="created_on">Created on</string>
     <string name="comment">Comment</string>
+    <string name="labels">Labels</string>
 
     <string name="parent_directory_list_item_label">..</string>
 

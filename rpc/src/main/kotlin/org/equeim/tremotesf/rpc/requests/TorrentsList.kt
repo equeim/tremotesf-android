@@ -140,6 +140,8 @@ data class Torrent(
     @Serializable(TrackerSitesSerializer::class)
     @SerialName("trackers")
     val trackerSites: List<String>,
+    @SerialName("labels")
+    val labels: List<String>?,
 ) : RpcTorrentFinishedState {
     override val isFinished: Boolean get() = leftUntilDone.bytes == 0L
     val isDownloadingStalled: Boolean get() = peersSendingToUsCount == 0 && webSeedersSendingToUsCount == 0
