@@ -181,6 +181,12 @@ class ForegroundService : LifecycleService() {
         return START_STICKY
     }
 
+    override fun onTimeout(startId: Int, fgsType: Int) {
+        Timber.i("onTimeout() called with: startId = $startId, fgsType = $fgsType")
+        stopSelfAndNotification()
+        super.onTimeout(startId, fgsType)
+    }
+
     override fun onDestroy() {
         Timber.i("onDestroy: state = ${lifecycle.currentState}")
         stopForeground(STOP_FOREGROUND_REMOVE)

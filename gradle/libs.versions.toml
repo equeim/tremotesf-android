@@ -10,7 +10,7 @@ gradle-versions-plugin = "0.52.0"
 
 sdk-platform-compile = "35"
 sdk-platform-min = "26"
-sdk-platform-target = "34"
+sdk-platform-target = "35"
 
 coroutines = "1.10.2"
 serialization = "1.8.1"
