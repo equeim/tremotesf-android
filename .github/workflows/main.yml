@@ -26,17 +26,14 @@ jobs:
       - name: Add Kotlin problem matcher
         uses: equeim/kotlin-problem-matcher@v1
 
-      - name: Set up Java 17
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
-
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
+          java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}

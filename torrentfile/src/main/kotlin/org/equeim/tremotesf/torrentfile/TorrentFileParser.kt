@@ -32,6 +32,7 @@ class FileParseException : Exception {
     constructor(message: String) : super(message)
 }
 
+@ConsistentCopyVisibility
 data class TorrentParseResult internal constructor(
     val infoHashV1: String,
     internal val torrentFile: TorrentFileParser.TorrentFile,

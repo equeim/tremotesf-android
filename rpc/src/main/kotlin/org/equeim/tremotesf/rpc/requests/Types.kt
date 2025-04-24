@@ -41,6 +41,7 @@ value class TransferRate private constructor(val bytesPerSecond: Long) {
 }
 
 
+@ConsistentCopyVisibility
 data class NormalizedRpcPath internal constructor(
     val value: String,
     internal val serverOs: ServerCapabilities.ServerOs?,

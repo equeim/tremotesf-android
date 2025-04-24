@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.torrentfile
 
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.AnyThread
 import androidx.annotation.CallSuper
@@ -396,7 +397,12 @@ open class TorrentFilesTree(
     fun recalculateNodesAndTheirParents(nodes: Sequence<Node>): Set<Node> {
         val recalculateNodes = LinkedHashSet<DirectoryNode>()
         nodes.forEach { recalculateParentNodesAddToSet(it, recalculateNodes) }
-        for (node in recalculateNodes.reversed()) {
+        val reversed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            recalculateNodes.reversed()
+        } else {
+            recalculateNodes.toMutableList().apply { reverse() }
+        }
+        for (node in reversed) {
             node.recalculateFromChildren()
         }
         return recalculateNodes

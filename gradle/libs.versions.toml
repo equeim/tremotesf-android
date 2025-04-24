@@ -4,33 +4,33 @@
 
 [versions]
 # Can't update due to https://issuetracker.google.com/issues/327670497
-android-gradle-plugin = "8.2.2"
-kotlin = "2.0.0"
-gradle-versions-plugin = "0.51.0"
+android-gradle-plugin = "8.9.2"
+kotlin = "2.1.20"
+gradle-versions-plugin = "0.52.0"
 
-sdk-platform-compile = "34"
+sdk-platform-compile = "35"
 sdk-platform-min = "26"
 sdk-platform-target = "34"
 
-coroutines = "1.8.1"
-serialization = "1.7.0"
+coroutines = "1.10.2"
+serialization = "1.8.1"
 
-androidx-activity = "1.9.0"
-androidx-annotation = "1.8.0"
+androidx-activity = "1.10.1"
+androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
-androidx-collection = "1.4.0"
-androidx-core = "1.13.1"
-androidx-coordinatorlayout = "1.2.0"
-androidx-fragment = "1.7.1"
-androidx-gridlayout = "1.0.0"
-androidx-lifecycle = "2.8.1"
-androidx-navigation = "2.7.7"
-androidx-recyclerview = "1.3.2"
+androidx-collection = "1.5.0"
+androidx-core = "1.16.0"
+androidx-coordinatorlayout = "1.3.0"
+androidx-fragment = "1.8.6"
+androidx-gridlayout = "1.1.0"
+androidx-lifecycle = "2.8.7"
+androidx-navigation = "2.8.9"
+androidx-recyclerview = "1.4.0"
 androidx-preference = "1.2.1"
 androidx-swiperefreshlayout = "1.1.0"
 androidx-viewpager2 = "1.1.0"
-androidx-webkit = "1.11.0"
-androidx-work = "2.9.0"
+androidx-webkit = "1.13.0"
+androidx-work = "2.10.1"
 
 fastscroll = "2.1.0"
 leakcanary = "2.14"
@@ -39,8 +39,8 @@ timber = "5.0.1"
 
 okhttp = "4.12.0"
 
-junit = "5.10.2"
-mockk = "1.13.11"
+junit = "5.12.2"
+mockk = "1.14.0"
 
 serialization-bencode = "0.1"
 
