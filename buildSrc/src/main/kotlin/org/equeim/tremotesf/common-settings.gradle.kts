@@ -10,6 +10,7 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
 
 val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
+val javaVersion = JavaVersion.VERSION_11
 
 private fun getSdkVersion(alias: String): Int =
     libs.findVersion(alias).get().requiredVersion.toInt()
@@ -22,10 +23,14 @@ plugins.withType<AndroidBasePlugin> {
         .configureKotlin()
 }
 
-private fun CommonExtension<*, *, *, *, *>.configureAndroidProject() {
+private fun CommonExtension<*, *, *, *, *, *>.configureAndroidProject() {
     compileSdk = getSdkVersion("sdk.platform.compile")
     defaultConfig.minSdk = getSdkVersion("sdk.platform.min")
-    lint.apply {
+    compileOptions {
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+    lint {
         informational.add("MissingTranslation")
         quiet = false
         checkAllWarnings = true
@@ -48,5 +53,5 @@ private fun ApplicationExtension.configureApplicationProject() {
 
 @Suppress("DEPRECATION")
 private fun org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions.configureKotlin() {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = javaVersion.toString()
 }

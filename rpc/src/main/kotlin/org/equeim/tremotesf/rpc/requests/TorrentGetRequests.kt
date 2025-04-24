@@ -10,6 +10,7 @@ import kotlinx.serialization.SerializationException
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 
+@ConsistentCopyVisibility
 @Suppress("DataClassPrivateConstructor")
 @Serializable
 internal data class TorrentGetRequestForFields private constructor(

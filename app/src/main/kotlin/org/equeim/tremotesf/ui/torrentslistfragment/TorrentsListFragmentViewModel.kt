@@ -156,6 +156,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         setDirectoryFilter("")
     }
 
+    @Suppress("TYPE_INTERSECTION_AS_REIFIED_WARNING")
     val sortOrFiltersEnabled = combine(
         sortMode,
         sortOrder,
