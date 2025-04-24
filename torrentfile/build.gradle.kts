@@ -11,7 +11,6 @@ plugins {
 
 android {
     namespace = "org.equeim.tremotesf.torrentfile"
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     testOptions.unitTests.all { it.useJUnitPlatform() }
 }
 
