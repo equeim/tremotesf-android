@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc.requests.serversettings
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -146,7 +145,6 @@ data class SpeedServerSettings(
 @Serializable
 private data class SpeedServerSettingsRequestArguments(
     @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
     val fields: List<String> = SpeedServerSettings.serializer().descriptor.elementNames.toList(),
 )
 

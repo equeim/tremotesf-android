@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.rpc.requests
 
 import kotlinx.serialization.Contextual
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -50,7 +49,6 @@ suspend fun RpcClient.getTorrentsList(): List<Torrent> = if (
     ).arguments.torrents
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 private val FIELDS = Torrent.serializer().descriptor.elementNames.toList()
 
 @Serializable

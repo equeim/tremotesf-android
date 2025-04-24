@@ -7,7 +7,6 @@
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
 import kotlinx.serialization.Contextual
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -30,7 +29,6 @@ import kotlin.time.Duration
 /**
  * @throws RpcRequestError
  */
-@OptIn(ExperimentalSerializationApi::class)
 suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails? =
     performRequest<RpcResponse<TorrentGetResponseForFields<TorrentDetails>>, _>(
         RpcMethod.TorrentGet,

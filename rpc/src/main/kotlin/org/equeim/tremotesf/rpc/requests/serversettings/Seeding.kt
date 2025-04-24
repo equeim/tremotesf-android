@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc.requests.serversettings
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -65,7 +64,6 @@ data class SeedingServerSettings(
 @Serializable
 private data class SeedingServerSettingsRequestArguments(
     @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
     val fields: List<String> = SeedingServerSettings.serializer().descriptor.elementNames.toList(),
 )
 

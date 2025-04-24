@@ -4,14 +4,12 @@
 
 package org.equeim.tremotesf.rpc.requests
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
 
 @Serializable
 private data class ServerVersionRequestArguments(
-    @OptIn(ExperimentalSerializationApi::class)
     @SerialName("fields")
     val fields: List<String> = ServerVersionResponseArguments.serializer().descriptor.elementNames.toList(),
 )

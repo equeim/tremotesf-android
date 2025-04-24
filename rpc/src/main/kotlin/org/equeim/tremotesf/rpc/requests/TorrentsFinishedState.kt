@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc.requests
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -54,7 +53,6 @@ data class TorrentFinishedState(
     override val isFinished: Boolean get() = leftUntilDone.bytes == 0L
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 private val FIELDS = TorrentFinishedState.serializer().descriptor.elementNames.toList()
 
 @Serializable
