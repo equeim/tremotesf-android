@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.rpc.requests.serversettings
 
 import kotlinx.serialization.Contextual
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -75,7 +74,6 @@ data class DownloadingServerSettings(
 @Serializable
 private data class DownloadingServerSettingsRequestArguments(
     @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
     val fields: List<String> = DownloadingServerSettings.serializer().descriptor.elementNames.toList(),
 )
 

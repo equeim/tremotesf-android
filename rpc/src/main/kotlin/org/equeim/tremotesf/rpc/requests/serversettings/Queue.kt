@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc.requests.serversettings
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -81,7 +80,6 @@ data class QueueServerSettings(
 @Serializable
 private data class QueueServerSettingsRequestArguments(
     @SerialName("fields")
-    @OptIn(ExperimentalSerializationApi::class)
     val fields: List<String> = QueueServerSettings.serializer().descriptor.elementNames.toList(),
 )
 

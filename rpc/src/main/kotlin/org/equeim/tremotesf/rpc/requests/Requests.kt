@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.rpc.requests
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -81,7 +80,6 @@ internal enum class RpcMethod {
     @SerialName("free-space")
     FreeSpace;
 
-    @OptIn(ExperimentalSerializationApi::class)
     override fun toString(): String = serializer().descriptor.getElementName(ordinal)
 }
 
