@@ -60,8 +60,6 @@ android {
 
     testOptions.unitTests.all { it.useJUnitPlatform() }
 
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-
     // https://issuetracker.google.com/issues/306442914
     lint.disable.add("NewerVersionAvailable")
 
