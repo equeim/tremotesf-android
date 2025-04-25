@@ -10,11 +10,11 @@ Source: https://github.com/equeim/tremotesf-android
 # License: ...
 
 Files: CHANGELOG.md README.md app/src/main/res/raw*/*.html app/src/main/res/raw/translators fastlane/metadata/android/**/*.txt fastlane/metadata/android/**/*.png rpc/src/main/res/raw/isrgrootx1.pem torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/*.torrent
-Copyright: 2017-2024 Alexey Rochev
+Copyright: 2017-2025 Alexey Rochev
 License: CC0-1.0
 
 Files: app/src/main/res/navigation/nav_main.xml app/src/main/res/values-*/strings.xml app/src/main/res/*.svg app/src/main/res/ic_launcher-web.png app/src/main/res/*/ic_launcher.png
-Copyright: 2017-2024 Alexey Rochev
+Copyright: 2017-2025 Alexey Rochev
 License: GPL-3.0-or-later
 
 Files: gradlew gradlew.bat gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.properties
