@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017-2024 Alexey Rochev <equeim@gmail.com>
+// SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -86,7 +86,7 @@ class AboutFragment : NavigationFragment(R.layout.about_fragment) {
             val html = buildString {
                 appendLine("""
                     <!DOCTYPE html>
-                    <p>&#169; 2017-2024 Alexey Rochev &lt;<a href="mailto:equeim@gmail.com">equeim@gmail.com</a>&gt;</p>
+                    <p>&#169; 2017-2025 Alexey Rochev &lt;<a href="mailto:equeim@gmail.com">equeim@gmail.com</a>&gt;</p>
                 """.trimIndent())
                 append("<p>")
                 append(getString(R.string.source_code_url, makeUrlTag(SOURCE_CODE_URL)))
