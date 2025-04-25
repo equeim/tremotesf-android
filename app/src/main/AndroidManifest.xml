@@ -48,6 +48,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Splash"
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="TIRAMISU">
 
         <activity
