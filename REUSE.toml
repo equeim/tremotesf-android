@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version = 1
+SPDX-PackageName = "Tremotesf"
+SPDX-PackageSupplier = "Alexey Rochev <equeim@gmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/equeim/tremotesf-android"
+
+[[annotations]]
+path = ["CHANGELOG.md", "README.md", "app/src/main/res/raw**/**.html", "app/src/main/res/raw/translators", "fastlane/metadata/android/**/**.txt", "fastlane/metadata/android/**/**.png", "rpc/src/main/res/raw/isrgrootx1.pem", "torrentfile/src/test/resources/org/equeim/tremotesf/torrentfile/**.torrent"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2017-2025 Alexey Rochev"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["app/src/main/res/navigation/nav_main.xml", "app/src/main/res/values-**/strings.xml", "app/src/main/res/**.svg", "app/src/main/res/ic_launcher-web.png", "app/src/main/res/**/ic_launcher.png"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2017-2025 Alexey Rochev"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["gradle/wrapper/gradle-wrapper.jar", "gradle/wrapper/gradle-wrapper.properties"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015-2021 the original authors"
+SPDX-License-Identifier = "Apache-2.0"
