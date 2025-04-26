@@ -382,8 +382,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
                 android:layout_width="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
-                android:autoLink="web"
-                android:textIsSelectable="true"
                 app:layout_columnWeight="2" />
         </androidx.gridlayout.widget.GridLayout>
     </androidx.core.widget.NestedScrollView>

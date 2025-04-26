@@ -20,6 +20,7 @@ import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showError
 import org.equeim.tremotesf.ui.utils.showLoading
+import org.equeim.tremotesf.ui.utils.updateLabelsText
 import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 import java.time.Duration
 import java.time.Instant
@@ -115,7 +116,7 @@ class TorrentDetailsFragment :
                 commentTextView.text = comment
             }
 
-            labelsTextView.text = torrentDetails.labels.joinToString(", ")
+            updateLabelsText(labelsTextView, torrentDetails.labels)
         }
     }
 
