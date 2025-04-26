@@ -5,8 +5,11 @@
 package org.equeim.tremotesf.rpc
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -38,17 +41,19 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
         ignoreUnknownKeys = true
         encodeDefaults = true
         serializersModule = SerializersModule {
-            contextual(NormalizedRpcPath.Serializer { serverCapabilitiesResult?.getOrNull() })
-            contextual(NotNormalizedRpcPath.Serializer { serverCapabilitiesResult?.getOrNull() })
+            contextual(NormalizedRpcPath.Serializer(::serverCapabilities))
+            contextual(NotNormalizedRpcPath.Serializer(::serverCapabilities))
         }
     }
 
     @Volatile
     private var sessionId: String? = null
 
-    @Volatile
-    private var serverCapabilitiesResult: Result<ServerCapabilities>? = null
-    val serverCapabilities: ServerCapabilities? get() = serverCapabilitiesResult?.getOrNull()
+    private val serverCapabilitiesResult = MutableStateFlow<Result<ServerCapabilities>?>(null)
+    val serverCapabilities: ServerCapabilities? get() = serverCapabilitiesResult.value?.getOrNull()
+    val serverCapabilitiesFlow: Flow<ServerCapabilities?> get() = serverCapabilitiesResult
+        .map { it?.getOrNull() }
+        .distinctUntilChanged()
 
     val shouldConnectToServer = MutableStateFlow(true)
 
@@ -82,7 +87,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
             connectionPool.evictAll()
         }
         sessionId = null
-        serverCapabilitiesResult = null
+        serverCapabilitiesResult.value = null
         connectionConfiguration.value = newConnectionConfiguration
     }
 
@@ -166,9 +171,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
         }
         checkingServerCapabilitiesMutex.withLock {
             if (!force) {
-                serverCapabilitiesResult?.let {
-                    return it.getOrThrow()
-                }
+                serverCapabilitiesResult.value?.let { return it.getOrThrow() }
             }
             Timber.d("Checking server capabilities before RPC request with $context")
             return try {
@@ -195,7 +198,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
                 response = serverVersionResponse.httpResponse,
                 requestHeaders = serverVersionResponse.requestHeaders,
             )
-            serverCapabilitiesResult = Result.failure(error)
+            serverCapabilitiesResult.value = Result.failure(error)
             throw error
         }
         val serverOs = try {
@@ -213,7 +216,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
         Timber.d("Assuming that server's OS is $serverOs")
         val capabilities = ServerCapabilities(serverVersionResponse.arguments.rpcVersion, serverOs)
         Timber.d("Successfully checked server capabilities: $capabilities")
-        serverCapabilitiesResult = Result.success(capabilities)
+        serverCapabilitiesResult.value = Result.success(capabilities)
         return capabilities
     }
 

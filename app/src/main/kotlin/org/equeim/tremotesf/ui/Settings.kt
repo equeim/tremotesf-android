@@ -315,6 +315,11 @@ object Settings {
             mappedToPrefs = { it.ordinal }
         )
 
+    val torrentsLabelFilter: Property<String> = PrefsProperty(
+        R.string.torrents_label_filter_key,
+        R.string.torrents_label_filter_default_value
+    )
+
     val torrentsTrackerFilter: Property<String> = PrefsProperty(
         R.string.torrents_tracker_filter_key,
         R.string.torrents_tracker_filter_default_value

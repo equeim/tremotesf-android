@@ -57,6 +57,14 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
                 }
             }
 
+            val labelsViewAdapter = LabelsViewAdapter(requireContext(), labelsView)
+            labelsView.apply {
+                setAdapter(labelsViewAdapter)
+                setOnItemClickListener { _, _, position, _ ->
+                    model.setLabelFilter(labelsViewAdapter.getLabel(position).orEmpty())
+                }
+            }
+
             val trackersViewAdapter = TrackersViewAdapter(requireContext(), trackersView)
             trackersView.apply {
                 setAdapter(trackersViewAdapter)
@@ -83,6 +91,16 @@ class TorrentsFiltersDialogFragment : NavigationBottomSheetDialogFragment(R.layo
             combine(allTorrents, model.statusFilterMode, ::Pair)
                 .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, statusFilterMode) ->
                     statusFilterViewAdapter.update(torrents, statusFilterMode)
+                }
+
+            combine(allTorrents, model.labelFilter, ::Pair)
+                .launchAndCollectWhenStarted(viewLifecycleOwner) { (torrents, labelFilter) ->
+                    if (labelFilter == null) {
+                        labelsViewLayout.isVisible = false
+                    } else {
+                        labelsViewLayout.isVisible = true
+                        labelsViewAdapter.update(torrents, labelFilter)
+                    }
                 }
 
             combine(allTorrents, model.trackerFilter, ::Pair)
