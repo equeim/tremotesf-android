@@ -117,6 +117,8 @@ class TorrentDetailsFragment :
             }
 
             updateLabelsText(labelsTextView, torrentDetails.labels)
+            labelsLabel.isVisible = torrentDetails.labels.isNotEmpty()
+            labelsTextView.isVisible = torrentDetails.labels.isNotEmpty()
         }
     }
 
