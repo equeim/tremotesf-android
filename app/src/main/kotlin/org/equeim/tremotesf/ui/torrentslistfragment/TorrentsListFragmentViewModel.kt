@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -137,6 +140,15 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     fun setSortOrder(order: SortOrder) = Settings.torrentsSortOrder.setAsync(order)
     val statusFilterMode: Flow<StatusFilterMode> = Settings.torrentsStatusFilter.flow()
     fun setStatusFilterMode(mode: StatusFilterMode) = Settings.torrentsStatusFilter.setAsync(mode)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val labelFilter: Flow<String?> = GlobalRpcClient.serverCapabilitiesFlow.transformLatest {
+        if (it?.supportsLabels == true) {
+            emitAll(Settings.torrentsLabelFilter.flow())
+        } else {
+            emit(null)
+        }
+    }
+    fun setLabelFilter(filter: String) = Settings.torrentsLabelFilter.setAsync(filter)
     val trackerFilter: Flow<String> = Settings.torrentsTrackerFilter.flow()
     fun setTrackerFilter(filter: String) = Settings.torrentsTrackerFilter.setAsync(filter)
     val directoryFilter: Flow<String> = Settings.torrentsDirectoryFilter.flow()
@@ -152,6 +164,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         setSortMode(SortMode.DEFAULT)
         setSortOrder(SortOrder.DEFAULT)
         setStatusFilterMode(StatusFilterMode.DEFAULT)
+        setLabelFilter("")
         setTrackerFilter("")
         setDirectoryFilter("")
     }
@@ -161,14 +174,19 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         sortMode,
         sortOrder,
         statusFilterMode,
+        labelFilter,
         trackerFilter,
         directoryFilter,
-    ) { (sortMode, sortOrder, statusFilterMode, trackerFilter, directoryFilter) ->
-        sortMode != SortMode.DEFAULT ||
-                sortOrder != SortOrder.DEFAULT ||
-                statusFilterMode != StatusFilterMode.DEFAULT ||
-                (trackerFilter as String).isNotEmpty() ||
-                (directoryFilter as String).isNotEmpty()
+    ) { settings ->
+        settings.any {
+            when (it) {
+                is SortMode -> it != SortMode.DEFAULT
+                is SortOrder -> it != SortOrder.DEFAULT
+                is StatusFilterMode -> it != StatusFilterMode.DEFAULT
+                is String -> it.isNotEmpty()
+                else -> false
+            }
+        }
     }
 
     private val refreshRequests = MutableSharedFlow<Unit>()
@@ -386,6 +404,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     private fun Flow<RpcRequestState<List<Torrent>>>.filterAndSortTorrents(): Flow<RpcRequestState<List<Torrent>>> {
         val filterPredicateFlow = combine(
             statusFilterMode,
+            labelFilter,
             trackerFilter,
             directoryFilter,
             nameFilter.flow(),
@@ -406,13 +425,15 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     private fun createFilterPredicate(
         statusFilterMode: StatusFilterMode,
+        labelFilter: String?,
         trackerFilter: String,
         directoryFilter: String,
         nameFilter: String,
     ): (Torrent) -> Boolean {
         return { torrent: Torrent ->
             statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
-                    (trackerFilter.isEmpty() || (torrent.trackerSites.find { it == trackerFilter } != null)) &&
+                    (labelFilter.isNullOrEmpty() || torrent.labels.contains(labelFilter)) &&
+                    (trackerFilter.isEmpty() || (torrent.trackerSites.contains(trackerFilter))) &&
                     (directoryFilter.isEmpty() || torrent.downloadDirectory.value == directoryFilter) &&
                     torrent.name.contains(nameFilter, true)
         }

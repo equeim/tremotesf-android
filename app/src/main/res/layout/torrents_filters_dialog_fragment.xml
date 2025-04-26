@@ -81,6 +81,21 @@ SPDX-License-Identifier: GPL-3.0-or-later
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/labels_view_layout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:hint="@string/labels">
+
+            <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
+                android:id="@+id/labels_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:readOnly="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/trackers_view_layout"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
