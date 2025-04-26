@@ -115,6 +115,8 @@ class TorrentDetailsFragment :
             if (!comment.contentEquals(commentTextView.text)) {
                 commentTextView.text = comment
             }
+            commentLabel.isVisible = comment.isNotEmpty()
+            commentTextView.isVisible = comment.isNotEmpty()
 
             updateLabelsText(labelsTextView, torrentDetails.labels)
             labelsLabel.isVisible = torrentDetails.labels.isNotEmpty()
