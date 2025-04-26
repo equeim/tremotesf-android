@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.view.ActionMode
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
 import org.equeim.tremotesf.ui.utils.fuzzyEquals
 import org.equeim.tremotesf.ui.utils.submitListAwait
+import org.equeim.tremotesf.ui.utils.updateLabelsText
 import java.lang.ref.WeakReference
 
 
@@ -167,12 +169,8 @@ class TorrentsAdapter(
                     }
                 }
 
-                if (torrent.labels.isNotEmpty()) {
-                    labelsTextView.visibility = View.VISIBLE
-                    labelsTextView.text = torrent.labels.joinToString(", ")
-                } else {
-                    labelsTextView.visibility = View.GONE
-                }
+                updateLabelsText(labelsTextView, torrent.labels)
+                labelsTextView.isVisible = torrent.labels.isNotEmpty()
             }
         }
 
