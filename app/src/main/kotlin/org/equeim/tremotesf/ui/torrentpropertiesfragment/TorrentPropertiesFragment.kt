@@ -218,6 +218,11 @@ class TorrentPropertiesFragment : NavigationFragment(
                 )
             )
 
+            R.id.edit_labels -> navigate(TorrentPropertiesFragmentDirections.toLabelsEditDialog(
+                torrentHashStrings = arrayOf(args.torrentHashString),
+                enabledLabels = torrentDetails.labels.toTypedArray(),
+            ))
+
             R.id.remove -> navigate(
                 TorrentPropertiesFragmentDirections.toRemoveTorrentDialog(
                     arrayOf(args.torrentHashString),

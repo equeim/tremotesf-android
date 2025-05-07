@@ -276,6 +276,11 @@ object Settings {
         mappedToPrefs = bandwidthPriorityMapper.enumToPrefsValue
     )
 
+    val lastAddTorrentLabels: Property<Set<String>> = PrefsProperty(
+        R.string.prefs_last_add_torrent_labels_key,
+        R.array.prefs_last_add_torrent_labels_values
+    )
+
     val mergeTrackersWhenAddingExistingTorrent: Property<Boolean> =
         PrefsProperty(
             R.string.prefs_merge_trackers_when_adding_existing_torrent_key,

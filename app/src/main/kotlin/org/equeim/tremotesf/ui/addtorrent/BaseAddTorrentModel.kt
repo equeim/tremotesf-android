@@ -7,8 +7,13 @@ package org.equeim.tremotesf.ui.addtorrent
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -17,6 +22,7 @@ import org.equeim.tremotesf.rpc.normalizePath
 import org.equeim.tremotesf.rpc.performRecoveringRequest
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.getFreeSpaceInDirectory
+import org.equeim.tremotesf.rpc.requests.getTorrentsLabels
 import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
@@ -29,10 +35,25 @@ abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(
     var shouldSetInitialLocalInputs = true
     var shouldSetInitialRpcInputs = true
 
-    val downloadingSettings: StateFlow<RpcRequestState<DownloadingServerSettings>> =
-        GlobalRpcClient.performRecoveringRequest { getDownloadingServerSettings() }
+    data class InitialRpcInputs(
+        val downloadingServerSettings: DownloadingServerSettings,
+        val allLabels: Set<String>,
+    )
+
+    val initialRpcInputs: StateFlow<RpcRequestState<InitialRpcInputs>> =
+        GlobalRpcClient.performRecoveringRequest {
+            coroutineScope {
+                val settings = async { getDownloadingServerSettings() }
+                val labels = async { getTorrentsLabels() }
+                InitialRpcInputs(settings.await(), labels.await())
+            }
+        }
             .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialRpcInputs = true }
             .stateIn(GlobalRpcClient, viewModelScope)
+
+    val shouldShowLabels: StateFlow<Boolean> = GlobalRpcClient.serverCapabilitiesFlow.map {
+        it?.supportsLabels != false
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String {
         return if (Settings.rememberAddTorrentParameters.get()) {
@@ -64,10 +85,16 @@ abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(
             TorrentLimits.BandwidthPriority.Normal
         }
 
+    suspend fun getInitialLabels(): Set<String> = if (Settings.rememberAddTorrentParameters.get()) {
+        Settings.lastAddTorrentLabels.get()
+    } else {
+        emptySet()
+    }
+
     suspend fun getFreeSpace(directory: String): FileSize? = try {
         GlobalRpcClient.getFreeSpaceInDirectory(directory)
     } catch (e: RpcRequestError) {
-        Timber.e("Failed to get free space for directory $directory")
+        Timber.e(e, "Failed to get free space for directory $directory")
         null
     }
 }

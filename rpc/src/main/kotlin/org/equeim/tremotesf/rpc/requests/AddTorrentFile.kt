@@ -41,21 +41,23 @@ suspend fun RpcClient.addTorrentFile(
     lowPriorityFiles: List<Int>,
     renamedFiles: Map<String, String>,
     start: Boolean,
+    labels: List<String>,
 ) {
     val response = handleDuplicateTorrentError(AddTorrentFileResponseArguments::duplicateTorrent) {
         torrentFile.use {
             performRequest<RpcResponse<AddTorrentFileResponseArguments>, _>(
-                org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
-                AddTorrentFileRequestArguments(
-                    torrentFile,
-                    NotNormalizedRpcPath(downloadDirectory),
-                    unwantedFiles,
-                    highPriorityFiles,
-                    lowPriorityFiles,
-                    bandwidthPriority,
-                    !start
+                method = RpcMethod.TorrentAdd,
+                arguments = AddTorrentFileRequestArguments(
+                    torrentFile = torrentFile,
+                    downloadDirectory = NotNormalizedRpcPath(downloadDirectory),
+                    unwantedFiles = unwantedFiles,
+                    highPriorityFiles = highPriorityFiles,
+                    lowPriorityFiles = lowPriorityFiles,
+                    bandwidthPriority = bandwidthPriority,
+                    paused = !start,
+                    labels = labels
                 ),
-                "addTorrentFile"
+                callerContext = "addTorrentFile"
             )
         }
     }
@@ -83,6 +85,8 @@ private data class AddTorrentFileRequestArguments(
     val bandwidthPriority: TorrentLimits.BandwidthPriority,
     @SerialName("paused")
     val paused: Boolean,
+    @SerialName("labels")
+    val labels: List<String>,
 )
 
 private object TorrentFileSerializer : KSerializer<ParcelFileDescriptor> {

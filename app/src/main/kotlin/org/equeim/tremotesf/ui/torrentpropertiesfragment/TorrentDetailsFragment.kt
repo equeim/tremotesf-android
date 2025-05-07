@@ -14,6 +14,7 @@ import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentDetails
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.navController
+import org.equeim.tremotesf.ui.navigate
 import org.equeim.tremotesf.ui.utils.DecimalFormats
 import org.equeim.tremotesf.ui.utils.FormatUtils
 import org.equeim.tremotesf.ui.utils.hide
@@ -46,6 +47,12 @@ class TorrentDetailsFragment :
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         binding.hashTextView.text = torrentHashString
+        binding.labelsTextView.setOnClickListener {
+            navigate(TorrentPropertiesFragmentDirections.toLabelsEditDialog(
+                torrentHashStrings = arrayOf(torrentHashString),
+                enabledLabels = (model.torrentDetails.value as? RpcRequestState.Loaded)?.response?.labels?.toTypedArray() ?: emptyArray(),
+            ))
+        }
         model.torrentDetails.launchAndCollectWhenStarted(viewLifecycleOwner) {
             when (it) {
                 is RpcRequestState.Loaded -> it.response?.let(::showDetails)

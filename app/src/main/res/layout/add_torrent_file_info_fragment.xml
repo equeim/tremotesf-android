@@ -17,20 +17,20 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/horizontal_edge_padding"
-        android:orientation="vertical"
         android:layout_marginTop="@dimen/vertical_edge_padding"
-        android:layout_marginBottom="@dimen/extended_fab_content_padding">
+        android:layout_marginBottom="@dimen/extended_fab_content_padding"
+        android:orientation="vertical">
 
         <include
-            layout="@layout/download_directory_edit"
-            android:id="@+id/download_directory_layout" />
+            android:id="@+id/download_directory_layout"
+            layout="@layout/download_directory_edit" />
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
-            android:hint="@string/priority"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            android:hint="@string/priority">
 
             <org.equeim.tremotesf.ui.views.NonFilteringAutoCompleteTextView
                 android:id="@+id/priority_view"
@@ -45,5 +45,19 @@ SPDX-License-Identifier: GPL-3.0-or-later
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
             android:text="@string/start_downloading_after_adding" />
+
+        <TextView
+            android:id="@+id/labels_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+            android:text="@string/labels"
+            android:textAppearance="@style/HeaderTextAppearance" />
+
+        <org.equeim.tremotesf.ui.torrentslistfragment.LabelsEditView
+            android:id="@+id/labels_edit_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/linear_layout_vertical_spacing" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

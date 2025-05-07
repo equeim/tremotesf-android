@@ -53,6 +53,9 @@
         <action
             android:id="@+id/to_transmission_settings_dialog_fragment"
             app:destination="@id/transmission_settings_dialog_fragment" />
+        <action
+            android:id="@+id/to_labels_edit_dialog"
+            app:destination="@id/labels_edit_dialog" />
     </fragment>
     <fragment
         android:id="@+id/torrent_properties_fragment"
@@ -81,6 +84,9 @@
         <action
             android:id="@+id/to_torrent_set_location_dialog"
             app:destination="@id/torrent_set_location_dialog" />
+        <action
+            android:id="@+id/to_labels_edit_dialog"
+            app:destination="@id/labels_edit_dialog" />
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
@@ -289,6 +295,16 @@
         <argument
             android:name="location"
             app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/labels_edit_dialog"
+        android:name="org.equeim.tremotesf.ui.torrentslistfragment.LabelsEditDialogFragment">
+        <argument
+            android:name="torrent_hash_strings"
+            app:argType="string[]" />
+        <argument
+            android:name="enabled_labels"
+            app:argType="string[]" />
     </dialog>
     <dialog
         android:id="@+id/server_stats_dialog"

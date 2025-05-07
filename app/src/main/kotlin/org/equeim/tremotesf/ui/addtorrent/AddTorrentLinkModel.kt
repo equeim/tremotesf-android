@@ -90,7 +90,8 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
         torrentLink: String,
         downloadDirectory: String,
         priority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean
+        startDownloading: Boolean,
+        labels: List<String>,
     ) {
         Timber.d("addTorrentLink() called with: torrentLink = $torrentLink")
         checkingIfTorrentExistsForInitialLink.get()?.cancel()
@@ -108,7 +109,7 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
                 }
             }
             GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
-                addTorrentLink(torrentLink, downloadDirectory, priority, startDownloading)
+                addTorrentLink(torrentLink, downloadDirectory, priority, startDownloading, labels)
             }
             _addTorrentState.value = AddTorrentState.AddedTorrent
         }

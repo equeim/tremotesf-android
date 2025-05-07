@@ -19,12 +19,19 @@ suspend fun RpcClient.addTorrentLink(
     downloadDirectory: String,
     bandwidthPriority: TorrentLimits.BandwidthPriority,
     start: Boolean,
+    labels: List<String>,
 ) {
     handleDuplicateTorrentError(AddTorrentLinkResponseArguments::duplicateTorrent) {
         performRequest<RpcResponse<AddTorrentLinkResponseArguments>, _>(
-            org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentAdd,
-            AddTorrentLinkRequestArguments(url, NotNormalizedRpcPath(downloadDirectory), bandwidthPriority, !start),
-            "addTorrentLink"
+            method = RpcMethod.TorrentAdd,
+            arguments = AddTorrentLinkRequestArguments(
+                url = url,
+                downloadDirectory = NotNormalizedRpcPath(downloadDirectory),
+                bandwidthPriority = bandwidthPriority,
+                paused = !start,
+                labels = labels
+            ),
+            callerContext = "addTorrentLink"
         )
     }
 }
@@ -40,6 +47,8 @@ private data class AddTorrentLinkRequestArguments(
     val bandwidthPriority: TorrentLimits.BandwidthPriority,
     @SerialName("paused")
     val paused: Boolean,
+    @SerialName("labels")
+    val labels: List<String>,
 )
 
 @Serializable

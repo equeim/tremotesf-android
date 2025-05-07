@@ -57,7 +57,7 @@ interface AddTorrentFileModel {
     data class ViewUpdateData(
         val parserStatus: ParserStatus,
         val addTorrentState: AddTorrentState?,
-        val downloadingSettings: RpcRequestState<DownloadingServerSettings>,
+        val initialRpcInputs: RpcRequestState<BaseAddTorrentModel.InitialRpcInputs>,
         val hasStoragePermission: Boolean,
     )
 
@@ -80,7 +80,8 @@ interface AddTorrentFileModel {
     fun addTorrentFile(
         downloadDirectory: String,
         bandwidthPriority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean
+        startDownloading: Boolean,
+        labels: List<String>,
     )
     fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result)
 }
@@ -111,13 +112,13 @@ class AddTorrentFileModelImpl(
     override val viewUpdateData = combine(
         parserStatus,
         addTorrentState,
-        downloadingSettings,
+        initialRpcInputs,
         storagePermissionHelper?.permissionGranted ?: flowOf(false)
-    ) { parserStatus, addTorrentLinkState, rpcStatus, hasPermission ->
+    ) { parserStatus, addTorrentLinkState, initialRpcInputs, hasPermission ->
         AddTorrentFileModel.ViewUpdateData(
             parserStatus,
             addTorrentLinkState,
-            rpcStatus,
+            initialRpcInputs,
             hasPermission
         )
     }
@@ -222,10 +223,11 @@ class AddTorrentFileModelImpl(
     override fun addTorrentFile(
         downloadDirectory: String,
         bandwidthPriority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean
+        startDownloading: Boolean,
+        labels: List<String>,
     ) {
         Timber.d(
-            "addTorrentFile() called with: downloadDirectory = $downloadDirectory, bandwidthPriority = $bandwidthPriority, startDownloading = $startDownloading"
+            "addTorrentFile() called with: downloadDirectory = $downloadDirectory, bandwidthPriority = $bandwidthPriority, startDownloading = $startDownloading, labels = $labels"
         )
         val fd = detachFd() ?: return
         val priorities = getFilePriorities()
@@ -242,7 +244,8 @@ class AddTorrentFileModelImpl(
                         highPriorityFiles = priorities.highPriorityFiles,
                         lowPriorityFiles = priorities.lowPriorityFiles,
                         renamedFiles = renamedFiles,
-                        start = startDownloading
+                        start = startDownloading,
+                        labels = labels
                     )
                 }
                 addTorrentState.value = AddTorrentState.AddedTorrent

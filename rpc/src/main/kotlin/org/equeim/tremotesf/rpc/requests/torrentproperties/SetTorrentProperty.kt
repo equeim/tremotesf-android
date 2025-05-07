@@ -5,9 +5,8 @@
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.serializer
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -70,6 +69,9 @@ suspend fun RpcClient.setTorrentFilesPriority(
         }, fileIndices
     )
 
+suspend fun RpcClient.setTorrentsLabels(torrentsHashStrings: List<String>, labels: List<String>) =
+    setTorrentProperty(torrentsHashStrings, "labels", labels)
+
 /**
  * @throws RpcRequestError
  */
@@ -77,22 +79,23 @@ internal suspend inline fun <reified T> RpcClient.setTorrentProperty(
     torrentHashString: String,
     property: String,
     value: T,
+    serializer: KSerializer<T> = serializer(),
 ): Unit =
-    setTorrentProperty(torrentHashString, property, value, serializer())
+    setTorrentProperty(listOf(torrentHashString), property, value, serializer)
 
 /**
  * @throws RpcRequestError
  */
-internal suspend fun <T> RpcClient.setTorrentProperty(
-    torrentHashString: String,
+internal suspend inline fun <reified T> RpcClient.setTorrentProperty(
+    torrentsHashStrings: List<String>,
     property: String,
     value: T,
-    serializer: KSerializer<T>,
+    serializer: KSerializer<T> = serializer(),
 ) {
     performRequest<RpcResponseWithoutArguments, _>(
         org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentSet,
         buildJsonObject {
-            put("ids", JsonArray(listOf(JsonPrimitive(torrentHashString))))
+            put("ids", json.encodeToJsonElement(torrentsHashStrings))
             put(property, json.encodeToJsonElement(serializer, value))
         },
         property
