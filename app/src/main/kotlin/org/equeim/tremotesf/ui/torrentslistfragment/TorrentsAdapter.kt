@@ -274,15 +274,15 @@ class TorrentsAdapter(
                     TorrentStatus.Paused -> R.drawable.ic_pause_24dp
                     TorrentStatus.Downloading,
                     TorrentStatus.QueuedForDownloading,
-                    -> R.drawable.ic_arrow_downward_24dp
+                        -> R.drawable.ic_arrow_downward_24dp
 
                     TorrentStatus.Seeding,
                     TorrentStatus.QueuedForSeeding,
-                    -> R.drawable.ic_arrow_upward_24dp
+                        -> R.drawable.ic_arrow_upward_24dp
 
                     TorrentStatus.Checking,
                     TorrentStatus.QueuedForChecking,
-                    -> R.drawable.ic_refresh_24dp
+                        -> R.drawable.ic_refresh_24dp
                 }
             }
             if (resId != iconResId) {
@@ -370,6 +370,26 @@ class TorrentsAdapter(
                             )
                         )
                     }
+                }
+
+                R.id.edit_labels -> {
+                    val selectedTorrents =
+                        selectionTracker.getSelectedPositionsUnsorted().map(adapter::getItem).toList()
+                    if (selectedTorrents.isEmpty()) {
+                        return false
+                    }
+                    var labels = selectedTorrents.first().labels
+                    for (torrent in selectedTorrents.subList(1, selectedTorrents.size)) {
+                        if (torrent.labels != labels) {
+                            labels = emptyList()
+                        }
+                    }
+                    activity.navigate(
+                        TorrentsListFragmentDirections.toLabelsEditDialog(
+                            torrentHashStrings = selectedTorrents.map { it.hashString }.toTypedArray(),
+                            enabledLabels = labels.toTypedArray(),
+                        )
+                    )
                 }
 
                 R.id.remove -> activity.navigate(
@@ -464,7 +484,7 @@ private fun Torrent.getStatusString(context: Context): CharSequence {
 
         TorrentStatus.QueuedForDownloading,
         TorrentStatus.QueuedForSeeding,
-        -> if (error != null) {
+            -> if (error != null) {
             context.getString(R.string.torrent_queued_with_error, errorString)
         } else {
             context.getText(R.string.torrent_queued)

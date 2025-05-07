@@ -58,6 +58,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/edit_labels"
+        android:orderInCategory="2"
+        android:title="@string/edit_labels"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/remove"
         android:icon="@drawable/ic_delete_24dp"
         android:orderInCategory="2"

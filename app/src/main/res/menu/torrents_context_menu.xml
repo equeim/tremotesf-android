@@ -44,6 +44,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
         android:title="@string/rename" />
 
     <item
+        android:id="@+id/edit_labels"
+        android:title="@string/edit_labels" />
+
+    <item
         android:id="@+id/remove"
         android:icon="@drawable/ic_delete_24dp"
         android:title="@string/remove" />

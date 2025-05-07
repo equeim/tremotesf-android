@@ -109,6 +109,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_last_add_torrent_priority_key" translatable="false">lastAddTorrentPriority</string>
     <string name="prefs_last_add_torrent_priority_default_value" translatable="false">normal</string>
 
+    <string name="prefs_last_add_torrent_labels_key" translatable="false">lastAddTorrentLabels</string>
+    <string-array name="prefs_last_add_torrent_labels_values" translatable="false" />
+
     <string name="prefs_merge_trackers_when_adding_existing_torrent_key" translatable="false">mergeTrackersWhenAddingExistingTorrent</string>
     <bool name="prefs_merge_trackers_when_adding_existing_torrent_default_value">true</bool>
 

@@ -30,7 +30,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -185,9 +188,17 @@ class AddTorrentFileFragment : AddTorrentFragment(
 
     override fun navigateBack() {
         backCallback.remove()
-        if (!model.shouldSetInitialRpcInputs) {
-            val infoFragment = findFragment<InfoFragment>()
-            infoFragment?.directoriesAdapter?.save(infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit)
+        val infoFragment = findFragment<InfoFragment>()
+        if (infoFragment != null) {
+            if (!model.shouldSetInitialRpcInputs) {
+                infoFragment.directoriesAdapter.save(infoFragment.binding.downloadDirectoryLayout.downloadDirectoryEdit)
+            }
+            if (!model.shouldSetInitialLocalInputs) {
+                @OptIn(DelicateCoroutinesApi::class)
+                GlobalScope.launch {
+                    Settings.lastAddTorrentLabels.set(infoFragment.binding.labelsEditView.enabledLabels.toSet())
+                }
+            }
         }
         super.navigateBack()
     }
@@ -200,7 +211,8 @@ class AddTorrentFileFragment : AddTorrentFragment(
             val bandwidthPriority =
                 priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())]
             val startDownloading = infoFragment.binding.startDownloadingCheckBox.isChecked
-            model.addTorrentFile(downloadDirectory, bandwidthPriority, startDownloading)
+            val labels = infoFragment.binding.labelsEditView.enabledLabels
+            model.addTorrentFile(downloadDirectory, bandwidthPriority, startDownloading, labels)
         }
     }
 
@@ -349,28 +361,45 @@ class AddTorrentFileFragment : AddTorrentFragment(
             }
 
             model.viewUpdateData.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                if (it.parserStatus == AddTorrentFileModel.ParserStatus.Loaded && it.downloadingSettings is RpcRequestState.Loaded) {
+                if (it.parserStatus == AddTorrentFileModel.ParserStatus.Loaded && it.initialRpcInputs is RpcRequestState.Loaded) {
                     with(binding) {
-                        if (model.shouldSetInitialRpcInputs) {
-                            val downloadingSettings = it.downloadingSettings.response
-                            downloadDirectoryLayout.downloadDirectoryEdit.setText(
-                                model.getInitialDownloadDirectory(downloadingSettings)
-                            )
-                            startDownloadingCheckBox.isChecked =
-                                model.getInitialStartAfterAdding(downloadingSettings)
-                            model.shouldSetInitialRpcInputs = false
-                        }
-                        if (model.shouldSetInitialLocalInputs) {
-                            val parent = requireParentFragment() as AddTorrentFileFragment
-                            priorityView.setText(
-                                parent.priorityItems[parent.priorityItemEnums.indexOf(
-                                    model.getInitialPriority()
-                                )]
-                            )
-                            model.shouldSetInitialLocalInputs = false
+                        coroutineScope {
+                            if (model.shouldSetInitialRpcInputs) {
+                                model.shouldSetInitialRpcInputs = false
+                                val (downloadingSettings, allLabels) = it.initialRpcInputs.response
+                                labelsEditView.setAllLabels(allLabels)
+                                launch {
+                                    downloadDirectoryLayout.downloadDirectoryEdit.setText(
+                                        model.getInitialDownloadDirectory(downloadingSettings)
+                                    )
+                                }
+                                launch {
+                                    startDownloadingCheckBox.isChecked =
+                                        model.getInitialStartAfterAdding(downloadingSettings)
+                                }
+                            }
+                            if (model.shouldSetInitialLocalInputs) {
+                                model.shouldSetInitialLocalInputs = false
+                                launch {
+                                    val parent = requireParentFragment() as AddTorrentFileFragment
+                                    priorityView.setText(
+                                        parent.priorityItems[parent.priorityItemEnums.indexOf(
+                                            model.getInitialPriority()
+                                        )]
+                                    )
+                                }
+                                launch {
+                                    labelsEditView.setInitialEnabledLabels(model.getInitialLabels())
+                                }
+                            }
                         }
                     }
                 }
+            }
+
+            model.shouldShowLabels.launchAndCollectWhenStarted(viewLifecycleOwner) {
+                binding.labelsHeader.isVisible = it
+                binding.labelsEditView.isVisible = it
             }
 
             applyNavigationBarBottomInset()

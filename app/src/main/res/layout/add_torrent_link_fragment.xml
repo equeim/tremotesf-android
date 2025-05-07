@@ -83,6 +83,20 @@ SPDX-License-Identifier: GPL-3.0-or-later
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/linear_layout_vertical_spacing_double"
                     android:text="@string/start_downloading_after_adding" />
+
+                <TextView
+                    android:id="@+id/labels_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing"
+                    android:text="@string/labels"
+                    android:textAppearance="@style/HeaderTextAppearance" />
+
+                <org.equeim.tremotesf.ui.torrentslistfragment.LabelsEditView
+                    android:id="@+id/labels_edit_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/linear_layout_vertical_spacing" />
             </LinearLayout>
         </ScrollView>
 
