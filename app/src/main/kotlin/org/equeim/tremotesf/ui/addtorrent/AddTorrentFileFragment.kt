@@ -196,6 +196,14 @@ class AddTorrentFileFragment : AddTorrentFragment(
             if (!model.shouldSetInitialLocalInputs) {
                 @OptIn(DelicateCoroutinesApi::class)
                 GlobalScope.launch {
+                    Settings.lastAddTorrentStartAfterAdding.set(
+                        if (infoFragment.binding.startDownloadingCheckBox.isChecked) {
+                            Settings.StartTorrentAfterAdding.Start
+                        } else {
+                            Settings.StartTorrentAfterAdding.DontStart
+                        }
+                    )
+                    Settings.lastAddTorrentPriority.set(priorityItemEnums[priorityItems.indexOf(infoFragment.binding.priorityView.text.toString())])
                     Settings.lastAddTorrentLabels.set(infoFragment.binding.labelsEditView.enabledLabels.toSet())
                 }
             }
