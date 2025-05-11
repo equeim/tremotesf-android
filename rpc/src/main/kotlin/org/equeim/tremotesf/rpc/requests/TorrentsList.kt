@@ -57,7 +57,8 @@ private data class TorrentsListObjectsRequestArguments(
     val fields: List<String> = FIELDS,
 )
 
-private val TORRENTS_LIST_OBJECTS_REQUEST = RpcRequestBody(RpcMethod.TorrentGet, TorrentsListObjectsRequestArguments())
+private val TORRENTS_LIST_OBJECTS_REQUEST =
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsListObjectsRequestArguments())
 
 @Serializable
 private data class TorrentsListObjectsResponseArguments(
@@ -73,7 +74,8 @@ private data class TorrentsListTableRequestArguments(
     val format: String = "table",
 )
 
-private val TORRENTS_LIST_TABLE_REQUEST = RpcRequestBody(RpcMethod.TorrentGet, TorrentsListTableRequestArguments())
+private val TORRENTS_LIST_TABLE_REQUEST =
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsListTableRequestArguments())
 
 @Serializable
 private data class TorrentsListTableResponseArguments(

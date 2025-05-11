@@ -44,13 +44,21 @@ private fun <T> RpcRequestBody(body: T, serializer: KSerializer<T>, method: RpcM
 internal inline fun <reified RequestArgumentsT> RpcRequestBody(
     method: RpcMethod,
     arguments: RequestArgumentsT,
-    json: Json = STATIC_JSON,
-) = RpcRequestBody(RpcRequest(method, arguments), serializer(), method, json)
+    json: Json,
+) = RpcRequestBody(RpcRequest(method, arguments), RpcRequest.serializer(serializer<RequestArgumentsT>()), method, json)
 
-internal fun RpcRequestBody(
-    requestBody: RpcRequestWithoutArguments,
-    json: Json = STATIC_JSON,
-) = RpcRequestBody(requestBody, RpcRequestWithoutArguments.serializer(), requestBody.method, json)
+internal inline fun <reified RequestArgumentsT> createStaticRpcRequestBody(
+    method: RpcMethod,
+    arguments: RequestArgumentsT,
+) = RpcRequestBody(method, arguments, STATIC_REQUEST_BODY_JSON)
 
-private val STATIC_JSON = Json { encodeDefaults = true }
+internal fun createStaticRpcRequestBody(method: RpcMethod) =
+    RpcRequestBody(
+        RpcRequestWithoutArguments(method),
+        RpcRequestWithoutArguments.serializer(),
+        method,
+        STATIC_REQUEST_BODY_JSON
+    )
+
+private val STATIC_REQUEST_BODY_JSON = Json { encodeDefaults = true }
 private val JSON_MEDIA_TYPE = "application/json".toMediaType()

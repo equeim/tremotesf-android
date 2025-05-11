@@ -6,8 +6,8 @@ package org.equeim.tremotesf.rpc
 
 import org.equeim.tremotesf.rpc.requests.FreeSpaceRequestArgumentsWithNormalizedPath
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcRequestBody
 import org.equeim.tremotesf.rpc.requests.ServerVersionResponseArguments
+import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 
 class ServerCapabilities internal constructor(
     private val rpcVersion: Int,
@@ -30,7 +30,7 @@ internal val ServerVersionResponseArguments.isSupported: Boolean
 
 internal const val MINIMUM_RPC_VERSION = 15
 
-internal val UNIX_ROOT_FREE_SPACE_REQUEST = RpcRequestBody(
+internal val UNIX_ROOT_FREE_SPACE_REQUEST = createStaticRpcRequestBody(
     RpcMethod.FreeSpace,
     FreeSpaceRequestArgumentsWithNormalizedPath("/")
 )

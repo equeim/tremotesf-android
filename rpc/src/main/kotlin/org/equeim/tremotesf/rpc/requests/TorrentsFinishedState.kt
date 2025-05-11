@@ -62,7 +62,7 @@ private data class TorrentsFinishedStateObjectsRequestArguments(
 )
 
 private val TORRENTS_FINISHED_STATE_OBJECTS_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateObjectsRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateObjectsRequestArguments())
 
 @Serializable
 private data class TorrentsFinishedStateObjectsResponseArguments(
@@ -79,7 +79,7 @@ private data class TorrentsFinishedStateTableRequestArguments(
 )
 
 private val TORRENTS_FINISHED_STATE_TABLE_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateTableRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateTableRequestArguments())
 
 @Serializable
 private data class TorrentsFinishedStateTableResponseArguments(

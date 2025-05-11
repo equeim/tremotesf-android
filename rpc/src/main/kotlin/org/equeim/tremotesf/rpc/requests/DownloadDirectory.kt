@@ -29,7 +29,7 @@ private data class DownloadDirectoryRequestArguments(
     val fields: List<String> = listOf("download-dir"),
 )
 
-private val DOWNLOAD_DIRECTORY_REQUEST = RpcRequestBody(RpcMethod.SessionGet, DownloadDirectoryRequestArguments())
+private val DOWNLOAD_DIRECTORY_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionGet, DownloadDirectoryRequestArguments())
 
 @Serializable
 private data class DownloadDirectoryResponseArguments(
