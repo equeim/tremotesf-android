@@ -38,7 +38,7 @@ private data class TorrentsLabelsObjectsRequestArguments(
 )
 
 private val TORRENTS_LABELS_OBJECTS_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsLabelsObjectsRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsLabelsObjectsRequestArguments())
 
 @Serializable
 private data class TorrentsLabelsObjectsResponseArguments(
@@ -55,7 +55,7 @@ private data class TorrentsLabelsTableRequestArguments(
 )
 
 private val TORRENTS_LABELS_TABLE_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsLabelsTableRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsLabelsTableRequestArguments())
 
 @Serializable
 private data class TorrentsLabelsTableResponseArguments(

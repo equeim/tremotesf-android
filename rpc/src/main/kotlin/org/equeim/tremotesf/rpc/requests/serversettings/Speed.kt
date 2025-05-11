@@ -12,9 +12,9 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.MinutesSinceStartOfDaySerializer
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcRequestBody
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TransferRate
+import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 import java.time.LocalTime
 
 /**
@@ -149,4 +149,4 @@ private data class SpeedServerSettingsRequestArguments(
 )
 
 private val SPEED_SERVER_SETTINGS_REQUEST_BODY =
-    RpcRequestBody(RpcMethod.SessionGet, SpeedServerSettingsRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.SessionGet, SpeedServerSettingsRequestArguments())

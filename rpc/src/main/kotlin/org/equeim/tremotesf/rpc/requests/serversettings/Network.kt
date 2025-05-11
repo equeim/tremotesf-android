@@ -10,8 +10,8 @@ import kotlinx.serialization.descriptors.elementNames
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcRequestBody
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 
 /**
  * @throws RpcRequestError
@@ -125,4 +125,4 @@ private data class NetworkServerSettingsRequestArguments(
 )
 
 private val NETWORK_SERVER_SETTINGS_REQUEST_BODY =
-    RpcRequestBody(RpcMethod.SessionGet, NetworkServerSettingsRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.SessionGet, NetworkServerSettingsRequestArguments())

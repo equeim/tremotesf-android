@@ -39,7 +39,7 @@ private data class TorrentsDownloadDirectoriesObjectsRequestArguments(
 )
 
 private val TORRENTS_DOWNLOAD_DIRECTORIES_OBJECTS_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsDownloadDirectoriesObjectsRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsDownloadDirectoriesObjectsRequestArguments())
 
 @Serializable
 private data class TorrentsDownloadDirectoriesObjectsResponseArguments(
@@ -56,7 +56,7 @@ private data class TorrentsDownloadDirectoriesTableRequestArguments(
 )
 
 private val TORRENTS_DOWNLOAD_DIRECTORIES_TABLE_REQUEST =
-    RpcRequestBody(RpcMethod.TorrentGet, TorrentsDownloadDirectoriesTableRequestArguments())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsDownloadDirectoriesTableRequestArguments())
 
 @Serializable
 private data class TorrentsDownloadDirectoriesTableResponseArguments(

@@ -14,7 +14,7 @@ private data class ServerVersionRequestArguments(
     val fields: List<String> = ServerVersionResponseArguments.serializer().descriptor.elementNames.toList(),
 )
 
-internal val SERVER_VERSION_REQUEST = RpcRequestBody(RpcMethod.SessionGet, ServerVersionRequestArguments())
+internal val SERVER_VERSION_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionGet, ServerVersionRequestArguments())
 
 @Serializable
 internal data class ServerVersionResponseArguments(

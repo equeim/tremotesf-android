@@ -17,7 +17,7 @@ import kotlin.time.Duration
 suspend fun RpcClient.getSessionStats(): SessionStatsResponseArguments =
     performRequest<RpcResponse<SessionStatsResponseArguments>>(SESSION_STATS_REQUEST).arguments
 
-private val SESSION_STATS_REQUEST = RpcRequestBody(RpcRequestWithoutArguments(RpcMethod.SessionStats))
+private val SESSION_STATS_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionStats)
 
 @Serializable
 data class SessionStatsResponseArguments(
