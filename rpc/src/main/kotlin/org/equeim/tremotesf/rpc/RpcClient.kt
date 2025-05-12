@@ -39,7 +39,6 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
 
     internal val json = Json {
         ignoreUnknownKeys = true
-        encodeDefaults = true
         serializersModule = SerializersModule {
             contextual(NormalizedRpcPath.Serializer(::serverCapabilities))
             contextual(NotNormalizedRpcPath.Serializer(::serverCapabilities))

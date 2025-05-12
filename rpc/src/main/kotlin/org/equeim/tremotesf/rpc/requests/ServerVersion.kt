@@ -8,13 +8,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
 
-@Serializable
-private data class ServerVersionRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = ServerVersionResponseArguments.serializer().descriptor.elementNames.toList(),
+internal val SERVER_VERSION_REQUEST = createStaticRpcRequestBody(
+    RpcMethod.SessionGet,
+    RequestWithFields(ServerVersionResponseArguments.serializer().descriptor.elementNames.toList())
 )
-
-internal val SERVER_VERSION_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionGet, ServerVersionRequestArguments())
 
 @Serializable
 internal data class ServerVersionResponseArguments(

@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
@@ -118,11 +119,7 @@ data class NetworkServerSettings(
     }
 }
 
-@Serializable
-private data class NetworkServerSettingsRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = NetworkServerSettings.serializer().descriptor.elementNames.toList(),
+private val NETWORK_SERVER_SETTINGS_REQUEST_BODY = createStaticRpcRequestBody(
+    RpcMethod.SessionGet,
+    RequestWithFields(NetworkServerSettings.serializer().descriptor.elementNames.toList())
 )
-
-private val NETWORK_SERVER_SETTINGS_REQUEST_BODY =
-    createStaticRpcRequestBody(RpcMethod.SessionGet, NetworkServerSettingsRequestArguments())

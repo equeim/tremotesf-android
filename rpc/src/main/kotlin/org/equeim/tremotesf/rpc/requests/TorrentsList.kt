@@ -15,7 +15,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.JsonTransformingSerializer
 import kotlinx.serialization.json.jsonArray
@@ -24,7 +23,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
 import okhttp3.HttpUrl
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestContext
 import org.equeim.tremotesf.rpc.RpcRequestError
 import timber.log.Timber
 import java.net.URI
@@ -36,55 +34,17 @@ import kotlin.time.Duration
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentsList(): List<Torrent> = if (
-    checkServerCapabilities(force = false, RpcRequestContext(RpcMethod.TorrentGet, "getTorrentsList")).hasTableMode) {
-    performRequest<RpcResponse<TorrentsListTableResponseArguments>>(
-        TORRENTS_LIST_TABLE_REQUEST,
-        "getTorrentsList"
-    ).arguments.torrents
-} else {
-    performRequest<RpcResponse<TorrentsListObjectsResponseArguments>>(
-        TORRENTS_LIST_OBJECTS_REQUEST,
-        "getTorrentsList"
-    ).arguments.torrents
-}
+suspend fun RpcClient.getTorrentsList(): List<Torrent> = performAllTorrentsRequest(
+    objectsFormatRequestBody = TORRENTS_LIST_OBJECTS_REQUEST,
+    tableFormatRequestBody = TORRENTS_LIST_TABLE_REQUEST,
+    callerContext = "getTorrentsList"
+)
 
 private val FIELDS = Torrent.serializer().descriptor.elementNames.toList()
-
-@Serializable
-private data class TorrentsListObjectsRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = FIELDS,
-)
-
 private val TORRENTS_LIST_OBJECTS_REQUEST =
-    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsListObjectsRequestArguments())
-
-@Serializable
-private data class TorrentsListObjectsResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<Torrent>,
-)
-
-@Serializable
-private data class TorrentsListTableRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = FIELDS,
-    @SerialName("format")
-    val format: String = "table",
-)
-
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, AllTorrentsRequestArguments(FIELDS, table = false))
 private val TORRENTS_LIST_TABLE_REQUEST =
-    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsListTableRequestArguments())
-
-@Serializable
-private data class TorrentsListTableResponseArguments(
-    @Serializable(TorrentsListTableSerializer::class)
-    @SerialName("torrents")
-    val torrents: List<Torrent>,
-)
-
-private object TorrentsListTableSerializer : TorrentsTableSerializer<Torrent>(serializer())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, AllTorrentsRequestArguments(FIELDS, table = true))
 
 @Serializable
 data class Torrent(
@@ -203,24 +163,5 @@ private object TrackerSitesSerializer : JsonTransformingSerializer<List<String>>
         } catch (e: Exception) {
             throw SerializationException(e)
         }
-    }
-}
-
-internal abstract class TorrentsTableSerializer<TorrentT : Any>(serializer: KSerializer<List<TorrentT>>) :
-    JsonTransformingSerializer<List<TorrentT>>(serializer) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        val table = element as? JsonArray ?: throw SerializationException()
-        val fields = ((table.firstOrNull() as? JsonArray) ?: throw SerializationException()).map { field ->
-            if (field !is JsonPrimitive) throw SerializationException()
-            if (!field.isString) throw SerializationException()
-            field.content
-        }
-        return JsonArray(table.asSequence().drop(1).map { values ->
-            values as? JsonArray ?: throw SerializationException()
-            JsonObject(values.withIndex().associateBy(
-                keySelector = { fields[it.index] },
-                valueTransform = { it.value }
-            ))
-        }.toList())
     }
 }

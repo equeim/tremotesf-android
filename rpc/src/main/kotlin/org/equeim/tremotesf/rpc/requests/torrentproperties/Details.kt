@@ -18,8 +18,8 @@ import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.OptionalSecondsToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
-import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
-import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
+import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
+import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
@@ -30,9 +30,9 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails? =
-    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentDetails>>, _>(
+    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentDetails>>, _>(
         RpcMethod.TorrentGet,
-        TorrentGetRequestForFields(hashString, TorrentDetails.serializer().descriptor.elementNames.toList()),
+        SingleTorrentRequestArguments(hashString, TorrentDetails.serializer().descriptor.elementNames.toList()),
         "getTorrentDetails"
     ).arguments.torrents.firstOrNull()
 

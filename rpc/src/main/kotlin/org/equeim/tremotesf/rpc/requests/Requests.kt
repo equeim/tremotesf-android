@@ -89,6 +89,14 @@ internal data class RequestWithTorrentsIds(
     val torrentIds: List<Int>,
 )
 
+@Serializable
+internal data class RequestWithFields(
+    @SerialName("fields")
+    val fields: List<String>,
+) {
+    constructor(vararg fields: String) : this(fields.toList())
+}
+
 internal interface BaseRpcResponse {
     val result: String
     val rawArguments: JsonObject?

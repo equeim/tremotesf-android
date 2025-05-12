@@ -24,8 +24,8 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
-import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
-import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
+import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
+import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
 import timber.log.Timber
 import java.time.Instant
@@ -34,9 +34,9 @@ import java.time.Instant
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentTrackers(hashString: String): List<Tracker>? =
-    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentTrackers>>, _>(
+    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentTrackers>>, _>(
         RpcMethod.TorrentGet,
-        TorrentGetRequestForFields(hashString, "trackerStats"),
+        SingleTorrentRequestArguments(hashString, "trackerStats"),
         "getTorrentTrackers"
     ).arguments.torrents.firstOrNull()?.trackers
 
@@ -133,9 +133,9 @@ private suspend fun RpcClient.addTorrentTrackersNewMethod(
  * @throws RpcRequestError
  */
 private suspend fun RpcClient.getTorrentTieredTrackersAnnounceUrls(hashString: String): List<Set<String>>? =
-    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentTieredTrackersAnnounceUrls>>, _>(
+    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentTieredTrackersAnnounceUrls>>, _>(
         RpcMethod.TorrentGet,
-        TorrentGetRequestForFields(hashString, "trackerList"),
+        SingleTorrentRequestArguments(hashString, "trackerList"),
         "getTorrentTieredTrackersAnnounceUrls"
     ).arguments.torrents.firstOrNull()?.trackers
 
