@@ -7,30 +7,18 @@ package org.equeim.tremotesf.rpc.requests
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
-import kotlinx.serialization.serializer
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestContext
 import org.equeim.tremotesf.rpc.RpcRequestError
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentsFinishedState(): List<TorrentFinishedState> =
-    if (checkServerCapabilities(
-            force = false,
-            RpcRequestContext(RpcMethod.TorrentGet, "getTorrentsFinishedState")
-        ).hasTableMode
-    ) {
-        performRequest<RpcResponse<TorrentsFinishedStateTableResponseArguments>>(
-            TORRENTS_FINISHED_STATE_TABLE_REQUEST,
-            "getTorrentsFinishedState"
-        ).arguments.torrents
-    } else {
-        performRequest<RpcResponse<TorrentsFinishedStateObjectsResponseArguments>>(
-            TORRENTS_FINISHED_STATE_OBJECTS_REQUEST,
-            "getTorrentsFinishedState"
-        ).arguments.torrents
-    }
+    performAllTorrentsRequest(
+        objectsFormatRequestBody = TORRENTS_FINISHED_STATE_OBJECTS_REQUEST,
+        tableFormatRequestBody = TORRENTS_FINISHED_STATE_TABLE_REQUEST,
+        callerContext = "getTorrentsFinishedState"
+    )
 
 interface RpcTorrentFinishedState {
     val hashString: String
@@ -54,38 +42,7 @@ data class TorrentFinishedState(
 }
 
 private val FIELDS = TorrentFinishedState.serializer().descriptor.elementNames.toList()
-
-@Serializable
-private data class TorrentsFinishedStateObjectsRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = FIELDS,
-)
-
 private val TORRENTS_FINISHED_STATE_OBJECTS_REQUEST =
-    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateObjectsRequestArguments())
-
-@Serializable
-private data class TorrentsFinishedStateObjectsResponseArguments(
-    @SerialName("torrents")
-    val torrents: List<TorrentFinishedState>,
-)
-
-@Serializable
-private data class TorrentsFinishedStateTableRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = FIELDS,
-    @SerialName("format")
-    val format: String = "table",
-)
-
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, AllTorrentsRequestArguments(FIELDS, table = false))
 private val TORRENTS_FINISHED_STATE_TABLE_REQUEST =
-    createStaticRpcRequestBody(RpcMethod.TorrentGet, TorrentsFinishedStateTableRequestArguments())
-
-@Serializable
-private data class TorrentsFinishedStateTableResponseArguments(
-    @Serializable(TorrentsFinishedStateTableSerializer::class)
-    @SerialName("torrents")
-    val torrents: List<TorrentFinishedState>,
-)
-
-private object TorrentsFinishedStateTableSerializer : TorrentsTableSerializer<TorrentFinishedState>(serializer())
+    createStaticRpcRequestBody(RpcMethod.TorrentGet, AllTorrentsRequestArguments(FIELDS, table = true))

@@ -23,13 +23,8 @@ suspend fun RpcClient.getDownloadDirectory(): NormalizedRpcPath {
         .downloadDirectory
 }
 
-@Serializable
-private data class DownloadDirectoryRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = listOf("download-dir"),
-)
-
-private val DOWNLOAD_DIRECTORY_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionGet, DownloadDirectoryRequestArguments())
+private val DOWNLOAD_DIRECTORY_REQUEST =
+    createStaticRpcRequestBody(RpcMethod.SessionGet, RequestWithFields("download-dir"))
 
 @Serializable
 private data class DownloadDirectoryResponseArguments(

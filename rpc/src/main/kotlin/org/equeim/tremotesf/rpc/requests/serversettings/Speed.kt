@@ -10,6 +10,7 @@ import kotlinx.serialization.descriptors.elementNames
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.MinutesSinceStartOfDaySerializer
+import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
@@ -78,7 +79,8 @@ suspend fun RpcClient.setAlternativeLimitsScheduled(value: Boolean) =
  * @throws RpcRequestError
  */
 suspend fun RpcClient.setAlternativeLimitsBeginTime(value: LocalTime) =
-    setSessionProperty("alt-speed-time-begin", value,
+    setSessionProperty(
+        "alt-speed-time-begin", value,
         MinutesSinceStartOfDaySerializer
     )
 
@@ -142,11 +144,7 @@ data class SpeedServerSettings(
     }
 }
 
-@Serializable
-private data class SpeedServerSettingsRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = SpeedServerSettings.serializer().descriptor.elementNames.toList(),
+private val SPEED_SERVER_SETTINGS_REQUEST_BODY = createStaticRpcRequestBody(
+    RpcMethod.SessionGet,
+    RequestWithFields(SpeedServerSettings.serializer().descriptor.elementNames.toList())
 )
-
-private val SPEED_SERVER_SETTINGS_REQUEST_BODY =
-    createStaticRpcRequestBody(RpcMethod.SessionGet, SpeedServerSettingsRequestArguments())

@@ -10,8 +10,8 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
-import org.equeim.tremotesf.rpc.requests.TorrentGetRequestForFields
-import org.equeim.tremotesf.rpc.requests.TorrentGetResponseForFields
+import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
+import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
 
 @Serializable
@@ -34,9 +34,9 @@ data class Peer(
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentPeers(hashString: String): List<Peer>? =
-    performRequest<RpcResponse<TorrentGetResponseForFields<TorrentPeers>>, _>(
+    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentPeers>>, _>(
         RpcMethod.TorrentGet,
-        TorrentGetRequestForFields(hashString, "peers"),
+        SingleTorrentRequestArguments(hashString, "peers"),
         "getTorrentPeers"
     ).arguments.torrents.firstOrNull()?.peers
 

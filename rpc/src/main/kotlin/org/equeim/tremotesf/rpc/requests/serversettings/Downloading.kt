@@ -12,8 +12,10 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.NotNormalizedRpcPath
+import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.RpcResponse
+import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 
 /**
  * @throws RpcRequestError
@@ -70,11 +72,8 @@ data class DownloadingServerSettings(
     val incompleteDirectory: NormalizedRpcPath,
 )
 
-@Serializable
-private data class DownloadingServerSettingsRequestArguments(
-    @SerialName("fields")
-    val fields: List<String> = DownloadingServerSettings.serializer().descriptor.elementNames.toList(),
-)
-
 private val DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY =
-    createStaticRpcRequestBody(RpcMethod.SessionGet, DownloadingServerSettingsRequestArguments())
+    createStaticRpcRequestBody(
+        RpcMethod.SessionGet,
+        RequestWithFields(DownloadingServerSettings.serializer().descriptor.elementNames.toList())
+    )
