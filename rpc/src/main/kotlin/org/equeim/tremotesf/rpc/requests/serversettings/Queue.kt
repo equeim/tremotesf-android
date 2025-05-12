@@ -12,7 +12,6 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 import kotlin.time.Duration
 
@@ -20,7 +19,7 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getQueueServerSettings(): QueueServerSettings =
-    performRequest<RpcResponse<QueueServerSettings>>(
+    performRequest<QueueServerSettings>(
         QUEUE_SERVER_SETTINGS_REQUEST_BODY,
         "getQueueServerSettings"
     ).arguments

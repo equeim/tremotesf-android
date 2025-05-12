@@ -17,7 +17,6 @@ import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.OptionalSecondsToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
@@ -30,7 +29,7 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentDetails>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentDetails>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, TorrentDetails.serializer().descriptor.elementNames.toList()),
         "getTorrentDetails"

@@ -10,7 +10,6 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.serializer
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
-import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentFiles.FilePriority
 import kotlin.time.Duration
@@ -92,7 +91,7 @@ internal suspend inline fun <reified T> RpcClient.setTorrentProperty(
     value: T,
     serializer: KSerializer<T> = serializer(),
 ) {
-    performRequest<RpcResponseWithoutArguments, _>(
+    performRequest<Unit, _>(
         org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentSet,
         buildJsonObject {
             put("ids", json.encodeToJsonElement(torrentsHashStrings))

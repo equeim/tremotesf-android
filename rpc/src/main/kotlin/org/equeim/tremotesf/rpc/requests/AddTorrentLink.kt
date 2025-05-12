@@ -22,7 +22,7 @@ suspend fun RpcClient.addTorrentLink(
     labels: List<String>,
 ) {
     handleDuplicateTorrentError(AddTorrentLinkResponseArguments::duplicateTorrent) {
-        performRequest<RpcResponse<AddTorrentLinkResponseArguments>, _>(
+        performRequest<AddTorrentLinkResponseArguments, _>(
             method = RpcMethod.TorrentAdd,
             arguments = AddTorrentLinkRequestArguments(
                 url = url,

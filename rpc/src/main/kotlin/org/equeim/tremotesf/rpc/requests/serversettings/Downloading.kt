@@ -14,14 +14,13 @@ import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.NotNormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getDownloadingServerSettings(): DownloadingServerSettings =
-    performRequest<RpcResponse<DownloadingServerSettings>>(
+    performRequest<DownloadingServerSettings>(
         DOWNLOADING_SERVER_SETTINGS_REQUEST_BODY,
         "getDownloadingServerSettings"
     ).arguments

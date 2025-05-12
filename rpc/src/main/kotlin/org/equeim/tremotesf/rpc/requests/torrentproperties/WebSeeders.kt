@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 
@@ -17,7 +16,7 @@ import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentWebSeeders(hashString: String): List<String>? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentWebSeeders>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentWebSeeders>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "webseeds"),
         "getTorrentWebSeeders"

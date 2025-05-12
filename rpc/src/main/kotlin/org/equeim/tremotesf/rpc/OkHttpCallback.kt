@@ -10,24 +10,25 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers
 import okhttp3.Response
-import org.equeim.tremotesf.rpc.requests.BaseRpcResponse
-import org.equeim.tremotesf.rpc.requests.isSuccessful
+import org.equeim.tremotesf.rpc.requests.RawRpcResponse
+import org.equeim.tremotesf.rpc.requests.RpcResponse
 import timber.log.Timber
 import java.io.IOException
 import java.net.HttpURLConnection
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
-    private val continuation: CancellableContinuation<RpcResponseT>,
+internal class OkHttpCallback<ResponseArguments : Any>(
+    private val continuation: CancellableContinuation<RpcResponse<ResponseArguments>>,
     private val json: Json,
-    private val responseBodySerializer: KSerializer<RpcResponseT>,
+    private val responseArgumentsSerializer: KSerializer<ResponseArguments>,
     private val context: RpcRequestContext,
 ) : Callback {
     private val startTimeMillis = SystemClock.elapsedRealtime()
@@ -54,6 +55,7 @@ internal class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
                             response,
                             requestHeaders
                         )
+
                         else -> RpcRequestError.UnsuccessfulHttpStatusCode(
                             response = response,
                             responseBody = body?.string(),
@@ -63,58 +65,54 @@ internal class OkHttpCallback<RpcResponseT : BaseRpcResponse>(
                 )
                 return
             }
-            if (body == null || body.contentLength() == 0L) {
-                resumeWithException(
-                    RpcRequestError.DeserializationError(
-                        response = response,
-                        requestHeaders = requestHeaders,
-                        cause = SerializationException("Response does not have a body")
-                    )
-                )
-                return
-            }
-            val rpcResponseOrError = try {
+            try {
+                if (body == null || body.contentLength() == 0L) {
+                    throw SerializationException("Response does not have a body")
+                }
                 @OptIn(ExperimentalSerializationApi::class)
-                Result.success(json.decodeFromBufferedSource(responseBodySerializer, body.source()))
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-            if (!continuation.isActive) return
-            rpcResponseOrError.onSuccess {
-                if (it.isSuccessful) {
-                    resume(it, response, requestHeaders)
-                } else {
+                val rawRpcResponse = json.decodeFromBufferedSource<RawRpcResponse>(body.source())
+                if (!rawRpcResponse.isSuccessful) {
                     resumeWithException(
                         RpcRequestError.UnsuccessfulResultField(
-                            result = it.result,
-                            rawArguments = it.rawArguments,
+                            result = rawRpcResponse.result,
+                            rawArguments = rawRpcResponse.arguments,
                             response = response,
                             requestHeaders = requestHeaders
                         )
                     )
+                    return
                 }
-            }.onFailure {
+                val arguments = if (responseArgumentsSerializer == Unit.serializer()) {
+                    @Suppress("UNCHECKED_CAST")
+                    Unit as ResponseArguments
+                } else {
+                    if (rawRpcResponse.arguments == null) {
+                        throw SerializationException("Response has no arguments")
+                    }
+                    json.decodeFromJsonElement(responseArgumentsSerializer, rawRpcResponse.arguments)
+                }
+                resume(RpcResponse(arguments, response, requestHeaders))
+            } catch (e: Exception) {
                 resumeWithException(
-                    when (it) {
-                        is IOException -> it.toRpcRequestError(call, response, requestHeaders)
-                        is SerializationException -> RpcRequestError.DeserializationError(response, requestHeaders, it)
-                        is Exception -> RpcRequestError.UnexpectedError(response, requestHeaders, it)
-                        else -> throw it
+                    when (e) {
+                        is IOException -> e.toRpcRequestError(call, response, requestHeaders)
+                        is SerializationException -> RpcRequestError.DeserializationError(response, requestHeaders, e)
+                        else -> RpcRequestError.UnexpectedError(response, requestHeaders, e)
                     }
                 )
             }
         }
     }
 
-    private fun resume(rpcResponse: RpcResponseT, httpResponse: Response, requestHeaders: Headers) {
+    private fun resume(response: RpcResponse<ResponseArguments>) {
+        if (!continuation.isActive) return
         val elapsed = SystemClock.elapsedRealtime() - startTimeMillis
         Timber.tag(RpcClient::class.simpleName!!).d("RPC request with method $context succeeded, took $elapsed ms")
-        rpcResponse.httpResponse = httpResponse
-        rpcResponse.requestHeaders = requestHeaders
-        continuation.resume(rpcResponse)
+        continuation.resume(response)
     }
 
     private fun resumeWithException(error: RpcRequestError) {
+        if (!continuation.isActive) return
         val elapsed = SystemClock.elapsedRealtime() - startTimeMillis
         synchronized(Companion) {
             Timber.tag(RpcClient::class.simpleName!!).e(error, "RPC request with $context failed, took $elapsed ms")

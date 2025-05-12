@@ -23,7 +23,6 @@ import org.equeim.tremotesf.rpc.RpcRequestContext
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
@@ -34,7 +33,7 @@ import java.time.Instant
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentTrackers(hashString: String): List<Tracker>? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentTrackers>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentTrackers>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "trackerStats"),
         "getTorrentTrackers"
@@ -133,7 +132,7 @@ private suspend fun RpcClient.addTorrentTrackersNewMethod(
  * @throws RpcRequestError
  */
 private suspend fun RpcClient.getTorrentTieredTrackersAnnounceUrls(hashString: String): List<Set<String>>? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentTieredTrackersAnnounceUrls>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentTieredTrackersAnnounceUrls>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "trackerList"),
         "getTorrentTieredTrackersAnnounceUrls"
