@@ -12,7 +12,6 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 
@@ -20,7 +19,7 @@ import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentFiles(hashString: String): TorrentFiles? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentFiles>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentFiles>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, listOf("files", "fileStats")),
         "getTorrentFiles"

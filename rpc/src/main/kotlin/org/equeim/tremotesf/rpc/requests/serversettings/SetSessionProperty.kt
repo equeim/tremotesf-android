@@ -9,7 +9,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.serializer
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
-import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
 
 /**
  * @throws RpcRequestError
@@ -28,7 +27,7 @@ internal suspend fun <T> RpcClient.setSessionProperty(
     value: T,
     serializer: KSerializer<T>,
 ) {
-    performRequest<RpcResponseWithoutArguments, _>(
+    performRequest<Unit, _>(
         org.equeim.tremotesf.rpc.requests.RpcMethod.SessionSet,
         buildJsonObject { put(property, json.encodeToJsonElement(serializer, value)) },
         property

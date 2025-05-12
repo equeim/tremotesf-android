@@ -12,7 +12,6 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.MinutesToDurationSerializer
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -22,7 +21,7 @@ import kotlin.time.Duration
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getTorrentLimits(hashString: String): TorrentLimits? =
-    performRequest<RpcResponse<SingleTorrentResponseArguments<TorrentLimits>>, _>(
+    performRequest<SingleTorrentResponseArguments<TorrentLimits>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, TorrentLimits.serializer().descriptor.elementNames.toList()),
         "getTorrentLimits"

@@ -27,12 +27,12 @@ internal suspend inline fun <reified FieldsObject : Any> RpcClient.performAllTor
             context = RpcRequestContext(RpcMethod.TorrentGet, callerContext)
         ).hasTableMode
     ) {
-        performRequest<RpcResponse<AllTorrentsTableFormatResponseArguments<FieldsObject>>>(
+        performRequest<AllTorrentsTableFormatResponseArguments<FieldsObject>>(
             tableFormatRequestBody,
             callerContext
         ).arguments.torrents
     } else {
-        performRequest<RpcResponse<AllTorrentsObjectsFormatResponseArguments<FieldsObject>>>(
+        performRequest<AllTorrentsObjectsFormatResponseArguments<FieldsObject>>(
             objectsFormatRequestBody,
             callerContext
         ).arguments.torrents

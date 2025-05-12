@@ -13,7 +13,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
  * @throws RpcRequestError
  */
 suspend fun RpcClient.removeTorrents(hashStrings: List<String>, deleteFiles: Boolean) {
-    performRequest<RpcResponseWithoutArguments, _>(
+    performRequest<Unit, _>(
         org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentRemove,
         RemoveTorrentsRequestArguments(hashStrings, deleteFiles)
     )

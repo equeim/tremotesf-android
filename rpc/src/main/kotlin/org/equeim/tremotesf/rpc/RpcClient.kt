@@ -21,7 +21,6 @@ import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.serializer
 import okhttp3.Request
 import okhttp3.Response
-import org.equeim.tremotesf.rpc.requests.BaseRpcResponse
 import org.equeim.tremotesf.rpc.requests.FreeSpaceResponseArguments
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.NotNormalizedRpcPath
@@ -50,9 +49,10 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
 
     private val serverCapabilitiesResult = MutableStateFlow<Result<ServerCapabilities>?>(null)
     val serverCapabilities: ServerCapabilities? get() = serverCapabilitiesResult.value?.getOrNull()
-    val serverCapabilitiesFlow: Flow<ServerCapabilities?> get() = serverCapabilitiesResult
-        .map { it?.getOrNull() }
-        .distinctUntilChanged()
+    val serverCapabilitiesFlow: Flow<ServerCapabilities?>
+        get() = serverCapabilitiesResult
+            .map { it?.getOrNull() }
+            .distinctUntilChanged()
 
     val shouldConnectToServer = MutableStateFlow(true)
 
@@ -94,48 +94,52 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
      * @param arguments Request arguments
      * @throws RpcRequestError
      */
-    internal suspend inline fun <reified RpcResponseT : BaseRpcResponse, reified RequestArgumentsT> performRequest(
+    internal suspend inline fun <reified ResponseArguments : Any, reified RequestArguments> performRequest(
         method: RpcMethod,
-        arguments: RequestArgumentsT,
+        arguments: RequestArguments,
         callerContext: String? = null,
-    ): RpcResponseT {
-        return performRegularRequest(RpcRequestBody(method, arguments, json), serializer(), callerContext)
+    ): RpcResponse<ResponseArguments> {
+        return performRequest<ResponseArguments>(RpcRequestBody(method, arguments, json), callerContext)
     }
 
     /**
      * @param requestBody Request body
      * @throws RpcRequestError
      */
-    internal suspend inline fun <reified RpcResponseT : BaseRpcResponse> performRequest(
+    internal suspend inline fun <reified ResponseArguments : Any> performRequest(
         requestBody: RpcRequestBody,
         callerContext: String? = null,
-    ): RpcResponseT {
-        return performRegularRequest(requestBody, serializer(), callerContext)
+    ): RpcResponse<ResponseArguments> {
+        return performRequest(
+            requestBody = requestBody,
+            responseArgumentsSerializer = serializer<ResponseArguments>(),
+            callerContext = callerContext
+        )
     }
 
-    private suspend fun <RpcResponseT : BaseRpcResponse> performRegularRequest(
+    private suspend fun <ResponseArguments : Any> performRequest(
         requestBody: RpcRequestBody,
-        responseBodySerializer: KSerializer<RpcResponseT>,
+        responseArgumentsSerializer: KSerializer<ResponseArguments>,
         callerContext: String?,
-    ): RpcResponseT {
+    ): RpcResponse<ResponseArguments> {
         val context = RpcRequestContext(requestBody.method, callerContext)
         checkServerCapabilities(force = false, context)
         return try {
-            performRequestImpl(requestBody, responseBodySerializer, context)
+            performRequestImpl(requestBody, responseArgumentsSerializer, context)
         } catch (e: RpcRequestError.UnsuccessfulHttpStatusCode) {
             processUnsuccessfulHttpStatusCode(e)
             Timber.e("Session id changed, checking server capabilities")
             checkServerCapabilities(force = true, context)
             Timber.e("Retrying request after session id change")
-            performRequestImpl(requestBody, responseBodySerializer, context)
+            performRequestImpl(requestBody, responseArgumentsSerializer, context)
         }
     }
 
-    private suspend fun <RpcResponseT : BaseRpcResponse> performRequestImpl(
+    private suspend fun <ResponseArguments : Any> performRequestImpl(
         requestBody: RpcRequestBody,
-        responseDeserializer: KSerializer<RpcResponseT>,
+        responseArgumentsSerializer: KSerializer<ResponseArguments>,
         context: RpcRequestContext,
-    ): RpcResponseT {
+    ): RpcResponse<ResponseArguments> {
         Timber.d("Performing RPC request with $context")
         val configuration =
             (connectionConfiguration.value ?: throw RpcRequestError.NoConnectionConfiguration()).getOrElse {
@@ -155,7 +159,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
                 }.build()
         )
         return suspendCancellableCoroutine { continuation ->
-            call.enqueue(OkHttpCallback(continuation, json, responseDeserializer, context))
+            call.enqueue(OkHttpCallback(continuation, json, responseArgumentsSerializer, context))
             continuation.invokeOnCancellation {
                 call.cancel()
             }
@@ -184,7 +188,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
     }
 
     private suspend fun actuallyCheckServerCapabilities(): ServerCapabilities {
-        val serverVersionResponse = performRequestImpl<RpcResponse<ServerVersionResponseArguments>>(
+        val serverVersionResponse = performRequestImpl<ServerVersionResponseArguments>(
             SERVER_VERSION_REQUEST,
             serializer(),
             RpcRequestContext(SERVER_VERSION_REQUEST.method, "checkServerCapabilities")
@@ -201,7 +205,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
             throw error
         }
         val serverOs = try {
-            val freeSpaceResponse = performRequestImpl<RpcResponse<FreeSpaceResponseArguments>>(
+            val freeSpaceResponse = performRequestImpl<FreeSpaceResponseArguments>(
                 UNIX_ROOT_FREE_SPACE_REQUEST,
                 serializer(),
                 RpcRequestContext(UNIX_ROOT_FREE_SPACE_REQUEST.method, "checkServerCapabilities")

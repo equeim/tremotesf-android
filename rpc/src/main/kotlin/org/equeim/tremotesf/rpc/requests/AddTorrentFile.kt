@@ -45,7 +45,7 @@ suspend fun RpcClient.addTorrentFile(
 ) {
     val response = handleDuplicateTorrentError(AddTorrentFileResponseArguments::duplicateTorrent) {
         torrentFile.use {
-            performRequest<RpcResponse<AddTorrentFileResponseArguments>, _>(
+            performRequest<AddTorrentFileResponseArguments, _>(
                 method = RpcMethod.TorrentAdd,
                 arguments = AddTorrentFileRequestArguments(
                     torrentFile = torrentFile,

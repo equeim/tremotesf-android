@@ -13,7 +13,6 @@ import org.equeim.tremotesf.rpc.requests.MinutesSinceStartOfDaySerializer
 import org.equeim.tremotesf.rpc.requests.RequestWithFields
 import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponse
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.createStaticRpcRequestBody
 import java.time.LocalTime
@@ -22,7 +21,7 @@ import java.time.LocalTime
  * @throws RpcRequestError
  */
 suspend fun RpcClient.getSpeedServerSettings(): SpeedServerSettings =
-    performRequest<RpcResponse<SpeedServerSettings>>(
+    performRequest<SpeedServerSettings>(
         SPEED_SERVER_SETTINGS_REQUEST_BODY,
         "getSpeedServerSettings"
     ).arguments

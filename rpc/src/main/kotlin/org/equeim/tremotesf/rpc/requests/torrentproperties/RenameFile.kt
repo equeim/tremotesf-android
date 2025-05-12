@@ -9,13 +9,12 @@ import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
-import org.equeim.tremotesf.rpc.requests.RpcResponseWithoutArguments
 
 /**
  * @throws RpcRequestError
  */
 suspend fun RpcClient.renameTorrentFile(torrentHashString: String, filePath: String, newName: String) {
-    performRequest<RpcResponseWithoutArguments, _>(
+    performRequest<Unit, _>(
         RpcMethod.TorrentRenamePath,
         RenameTorrentFileRequestArguments(listOf(torrentHashString), filePath, newName)
     )
