@@ -137,6 +137,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Создан в</string>
     <string name="created_on">Дата создания</string>
     <string name="comment">Комментарий</string>
+    <string name="labels">Метки</string>
+    <string name="edit_labels">Редактировать метки</string>
+    <string name="new_label">Новая метка</string>
+    <string name="set_labels_error">Не удалось обновить метки торрента: %1$s</string>
 
     <string name="parent_directory_list_item_label">..</string>
 
