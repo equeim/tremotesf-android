@@ -1,22 +1,22 @@
-Remote GUI for Transmission BitTorrent client.
+Zdalny interfejs graficzny dla klienta Transmission BitTorrent.
 
-Features:
- - View torrent list
- - Sort torrents
- - Filter torrents by name, status and trackers
- - Start/stop/verify/remove torrents with multi-selection
- - Add torrents from torrent files and magnet links
- - Select which files to download when adding torrent
- - Manage torrent files
- - Add and remove torrent trackers
- - View torrent peers
- - Set torrent limits
- - Change remote server settings
- - View server statistics
- - Multiple servers
- - Supports HTTPS connection
- - Can connect to servers with self-signed certificates (you need to add certificate to server settings)
- - Client certificate authentication
+Funkcje
+- Pokaż listę torrentów
+- Sortuje torrenty
+- Filtruj torrenty po nazwie, statusie oraz trackerach
+- Rozpocznij/Zatrzymaj/Zweryfikuj/Usuń kilka torrentów na raz
+- Dodaj torrenty z plików lub magnet lików
+- Wybierz które pliki chcesz pobrać kiedy dodajesz torrent
+- Zarządzaj plikami torrent
+- Dodaj i usuń trackery torrenta
+- Wyświetl peery torrenta
+- Ustaw limity torrenta
+- Zdalnie zmień ustawienia serwera
+- Wyświetl statystyki serwera
+- Obsługa wielu serwerów
+- Obsługa połaczeń HTTPS
+- Możliwość połączenia z serwerami z samodzielnie podpisanymi certyfikatami (musisz dodać certyfikat w ustawieniach serwera)
+- Autoryzacja certyfikatem klienta
 
-Source code: https://github.com/equeim/tremotesf-android
-Translations: https://www.transifex.com/equeim/tremotesf-android
+Kod źródłowy: https://github.com/equeim/tremotesf-android
+Tłumaczenia: https://www.transifex.com/equeim/tremotesf-android
