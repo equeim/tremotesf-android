@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.12.0] - 2025-05-19
+### Added
+- Labels support (thanks @sommd for initial implementation)
+- Android 15 support
+
+### Changed
+- Certificates installed by the user in Android system settings can now be used by the app
+
+### Fixed
+- Merging of trackers with old Transmission versions
+- Saving of torrent adding parameters
+
 ## [2.11.1] - 2024-06-19
 ### Fixed
 - Error when merging trackers with Transmission older than 4.0

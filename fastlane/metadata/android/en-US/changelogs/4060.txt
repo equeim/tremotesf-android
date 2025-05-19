@@ -1,0 +1,5 @@
+- Added labels support
+- Added Android 15 support
+- Certificates installed by the user in Android system settings can now be used by the app
+- Fixed merging of trackers with old Transmission versions
+- Fixed saving of torrent adding parameters
