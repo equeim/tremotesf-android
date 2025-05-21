@@ -7,6 +7,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.plugin.compose)
     alias(libs.plugins.kotlin.plugin.parcelize)
     alias(libs.plugins.androidx.navigation)
     alias(libs.plugins.tremotesf.common.settings)
@@ -73,6 +74,14 @@ android {
     }
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(layout.projectDirectory.file("compose-stability-config.conf"))
+    if (findProperty("org.equeim.tremotesf.enableComposeCompilerReports") == "true") {
+        reportsDestination = layout.buildDirectory.dir("composeReports")
+        metricsDestination = layout.buildDirectory.dir("composeMetrics")
+    }
+}
+
 dependencies {
     implementation(project(":common"))
     implementation(project(":torrentfile"))
@@ -101,12 +110,19 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.work.runtime)
 
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.uiToolingPreview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.materialIconsCore)
+
     implementation(libs.material)
     implementation(libs.fastscroll)
     implementation(libs.timber)
     implementation(libs.serialization.json.okio)
 
     debugImplementation(libs.leakcanary)
+    debugImplementation(libs.androidx.compose.uiTooling)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)

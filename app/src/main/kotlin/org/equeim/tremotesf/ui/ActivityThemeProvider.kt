@@ -22,6 +22,7 @@ object ActivityThemeProvider {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     val colorTheme: StateFlow<Settings.ColorTheme>
+    val darkThemeMode: StateFlow<Settings.DarkThemeMode>
 
     /**
      * Get initial values of theme and night mode, blocking main thread
@@ -41,9 +42,11 @@ object ActivityThemeProvider {
 
         colorTheme = Settings.colorTheme.flow()
             .stateIn(coroutineScope, SharingStarted.Eagerly, initialColorTheme)
+        darkThemeMode = Settings.darkThemeMode.flow()
+            .stateIn(coroutineScope, SharingStarted.Eagerly, initialDarkThemeMode)
 
         AppCompatDelegate.setDefaultNightMode(initialDarkThemeMode.nightMode)
-        Settings.darkThemeMode.flow().dropWhile { it == initialDarkThemeMode }.onEach {
+        darkThemeMode.dropWhile { it == initialDarkThemeMode }.onEach {
             Timber.i("Dark theme mode changed to $it")
             AppCompatDelegate.setDefaultNightMode(it.nightMode)
         }.launchIn(coroutineScope)
