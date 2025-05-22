@@ -4,15 +4,27 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import android.os.Bundle
-import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ServerSettingsDownloadingFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -27,91 +39,124 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setRenameIncompleteFiles
 import org.equeim.tremotesf.rpc.requests.serversettings.setStartAddedTorrents
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.rpc.toNativeSeparators
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.doAfterTextChangedAndNotEmpty
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
 
-
-class DownloadingFragment : NavigationFragment(
-    R.layout.server_settings_downloading_fragment,
-    R.string.server_settings_downloading
-) {
-    private val model by viewModels<DownloadingFragmentViewModel>()
-    private val binding by viewLifecycleObject(ServerSettingsDownloadingFragmentBinding::bind)
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        with(ServerSettingsDownloadingFragmentBinding.bind(requireView())) {
-            downloadDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged { setDownloadDirectory(it.toString()) }
-            }
-            startTorrentsCheckBox.setOnCheckedChangeListener { _, checked ->
-                onValueChanged { setStartAddedTorrents(checked) }
-            }
-            renameIncompleteFilesCheckBox.setOnCheckedChangeListener { _, checked ->
-                onValueChanged { setRenameIncompleteFiles(checked) }
-            }
-            incompleteFilesDirectoryCheckBox.setDependentViews(incompleteFilesDirectoryLayout) { checked ->
-                onValueChanged { setIncompleteDirectoryEnabled(checked) }
-            }
-            incompleteFilesDirectoryEdit.doAfterTextChangedAndNotEmpty {
-                onValueChanged { setIncompleteDirectory(it.toString()) }
-            }
-        }
-
-        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            when (it) {
-                is RpcRequestState.Loaded -> showSettings(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
-            }
-        }
-    }
-
-    private fun showPlaceholder(error: RpcRequestError?) {
-        hideKeyboard()
-        with(binding) {
-            scrollView.isVisible = false
-            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
-        }
-    }
-
-    private fun showSettings(settings: DownloadingServerSettings) {
-        with(binding) {
-            scrollView.isVisible = true
-            placeholderView.hide()
-        }
-        if (model.shouldSetInitialState) {
-            updateViews(settings)
-            model.shouldSetInitialState = false
-        }
-    }
-
-    private fun updateViews(settings: DownloadingServerSettings) = with(binding) {
-        downloadDirectoryEdit.setText(settings.downloadDirectory.toNativeSeparators())
-        startTorrentsCheckBox.isChecked = settings.startAddedTorrents
-        renameIncompleteFilesCheckBox.isChecked = settings.renameIncompleteFiles
-        incompleteFilesDirectoryCheckBox.isChecked = settings.incompleteDirectoryEnabled
-        incompleteFilesDirectoryEdit.setText(settings.incompleteDirectory.toNativeSeparators())
-    }
-
-    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
-        if (!model.shouldSetInitialState) {
-            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
-        }
+class DownloadingFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<DownloadingFragmentViewModel>()
+        ServerSettingsDownloadingScreen(
+            settingsRequestState = model.settings.collectAsStateWithLifecycle(),
+            navigateUp = navController::navigateUp,
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            downloadDirectory = model.downloadDirectory,
+            startAddedTorrents = model.startAddedTorrents,
+            renameIncompleteTorrents = model.renameIncompleteFiles,
+            incompleteDirectoryEnabled = model.incompleteDirectoryEnabled,
+            incompleteDirectory = model.incompleteDirectory,
+        )
     }
 }
 
 class DownloadingFragmentViewModel : ViewModel() {
-    var shouldSetInitialState = true
-    val settings: StateFlow<RpcRequestState<DownloadingServerSettings>> =
+    val settings: StateFlow<RpcRequestState<Any>> =
         GlobalRpcClient.performRecoveringRequest { getDownloadingServerSettings() }
-            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
+            .onEach {
+                if (it is RpcRequestState.Loaded) setInitialState(it.response)
+            }
             .stateIn(GlobalRpcClient, viewModelScope)
+
+    val downloadDirectory: ServerSettingsProperty<String> =
+        ServerSettingsStringProperty(RpcClient::setDownloadDirectory)
+    val startAddedTorrents: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setStartAddedTorrents)
+    val renameIncompleteFiles: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setRenameIncompleteFiles)
+    val incompleteDirectoryEnabled: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setIncompleteDirectoryEnabled)
+    val incompleteDirectory: ServerSettingsProperty<String> =
+        ServerSettingsStringProperty(RpcClient::setIncompleteDirectory)
+
+    private fun setInitialState(settings: DownloadingServerSettings) {
+        downloadDirectory.reset(settings.downloadDirectory.toNativeSeparators())
+        startAddedTorrents.reset(settings.startAddedTorrents)
+        renameIncompleteFiles.reset(settings.renameIncompleteFiles)
+        incompleteDirectoryEnabled.reset(settings.incompleteDirectoryEnabled)
+        incompleteDirectory.reset(settings.incompleteDirectory.toNativeSeparators())
+    }
+}
+
+@Composable
+private fun ServerSettingsDownloadingScreen(
+    settingsRequestState: State<RpcRequestState<Any>>,
+    navigateUp: () -> Unit,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    downloadDirectory: ServerSettingsProperty<String>,
+    startAddedTorrents: ServerSettingsProperty<Boolean>,
+    renameIncompleteTorrents: ServerSettingsProperty<Boolean>,
+    incompleteDirectoryEnabled: ServerSettingsProperty<Boolean>,
+    incompleteDirectory: ServerSettingsProperty<String>,
+) {
+    ServerSettingsCategory(
+        title = R.string.server_settings_downloading,
+        settingsRequestState = settingsRequestState,
+        navigateUp = navigateUp,
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+    ) { horizontalPadding ->
+        OutlinedTextField(
+            value = downloadDirectory.value,
+            onValueChange = downloadDirectory::update,
+            label = { Text(stringResource(R.string.download_directory)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+        )
+        TremotesfSwitchWithText(
+            checked = startAddedTorrents.value,
+            text = R.string.start_added_torrents,
+            onCheckedChange = startAddedTorrents::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfSwitchWithText(
+            checked = renameIncompleteTorrents.value,
+            text = R.string.rename_incomplete_files,
+            onCheckedChange = renameIncompleteTorrents::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfSwitchWithText(
+            checked = incompleteDirectoryEnabled.value,
+            text = R.string.incomplete_files_directory,
+            onCheckedChange = incompleteDirectoryEnabled::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        OutlinedTextField(
+            value = incompleteDirectory.value,
+            onValueChange = incompleteDirectory::update,
+            enabled = incompleteDirectoryEnabled.value,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ServerSettingsDownloadingScreenPreview() = ScreenPreview {
+    ServerSettingsDownloadingScreen(
+        settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
+        navigateUp = {},
+        navigateToDetailedErrorDialog = {},
+        downloadDirectory = remember { ServerSettingsStringProperty {} },
+        startAddedTorrents = remember { ServerSettingsBooleanProperty {} },
+        renameIncompleteTorrents = remember { ServerSettingsBooleanProperty {} },
+        incompleteDirectoryEnabled = remember { ServerSettingsBooleanProperty {} },
+        incompleteDirectory = remember { ServerSettingsStringProperty {} },
+    )
 }

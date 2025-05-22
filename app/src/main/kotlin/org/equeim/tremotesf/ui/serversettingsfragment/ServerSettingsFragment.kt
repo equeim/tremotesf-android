@@ -7,6 +7,7 @@ package org.equeim.tremotesf.ui.serversettingsfragment
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -45,12 +46,13 @@ private fun ServerSettingsScreen(navigateUp: () -> Unit, navigate: (NavDirection
                 navigateUp = navigateUp,
             )
         }
-    ) { contentPadding ->
+    ) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(contentPadding)
+                .consumeWindowInsets(innerPadding)
+                .padding(innerPadding)
         ) {
             PageListItem(R.string.server_settings_downloading) {
                 navigate(ServerSettingsFragmentDirections.toDownloadingFragment())

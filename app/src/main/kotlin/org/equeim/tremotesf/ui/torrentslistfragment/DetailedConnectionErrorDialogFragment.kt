@@ -10,15 +10,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.NavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDivider
+import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.causes
 import org.equeim.tremotesf.databinding.DetailedConnectionErrorDialogBinding
 import org.equeim.tremotesf.databinding.DetailedConnectionErrorExpandedDialogBinding
 import org.equeim.tremotesf.rpc.DetailedRpcRequestError
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.rpc.redactHeader
 import org.equeim.tremotesf.ui.NavigationDialogFragment
+import org.equeim.tremotesf.ui.serversettingsfragment.DownloadingFragmentDirections
 import org.equeim.tremotesf.ui.utils.Utils
 
 class DetailedConnectionErrorDialogFragment : NavigationDialogFragment() {
@@ -180,3 +186,6 @@ class DetailedConnectionErrorExpandedDialogFragment : NavigationDialogFragment()
         return builder.setTitle(args.title).setView(view).setNegativeButton(R.string.close, null).create()
     }
 }
+
+fun NavController.navigateToDetailedErrorDialog(error: RpcRequestError) =
+    navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.makeDetailedError(GlobalRpcClient)))
