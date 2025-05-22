@@ -5,6 +5,7 @@
 package org.equeim.tremotesf.rpc
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerializationException
@@ -18,21 +19,21 @@ import java.net.SocketTimeoutException
 import java.security.cert.CertPathValidatorException
 import java.security.cert.Certificate
 
-sealed class RpcRequestError private constructor(
+sealed class RpcRequestError(
     internal open val response: Response? = null,
     internal open val requestHeaders: Headers? = null,
     message: String? = null,
     cause: Exception? = null,
 ) : Exception(message, cause) {
-    class NoConnectionConfiguration : RpcRequestError(message = "No connection configuration")
+    class NoConnectionConfiguration internal constructor(): RpcRequestError(message = "No connection configuration")
 
-    class BadConnectionConfiguration(override val cause: Exception) :
+    class BadConnectionConfiguration internal constructor(override val cause: Exception) :
         RpcRequestError(
             message = "Bad connection configuration",
             cause = cause
         )
 
-    class ConnectionDisabled : RpcRequestError(message = "Connection to server is disabled")
+    class ConnectionDisabled internal constructor(): RpcRequestError(message = "Connection to server is disabled")
 
     class Timeout internal constructor(
         response: Response?,
@@ -125,7 +126,7 @@ sealed class RpcRequestError private constructor(
             cause = cause
         )
 
-    abstract class RequestSpecificError(
+    abstract class RequestSpecificError internal constructor(
         override val response: Response,
         override val requestHeaders: Headers,
         message: String,
@@ -157,6 +158,11 @@ internal fun IOException.toRpcRequestError(
             cause = this
         )
     }
+
+@VisibleForTesting
+fun createRpcRequestErrorForComposePreview(): RpcRequestError {
+    return RpcRequestError.NetworkError(response = null, requestHeaders = null, cause = IOException("It's coming"))
+}
 
 @Immutable
 @Parcelize
