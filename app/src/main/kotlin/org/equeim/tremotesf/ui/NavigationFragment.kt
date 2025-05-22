@@ -37,12 +37,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.color.MaterialColors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
@@ -222,6 +224,8 @@ fun Fragment.applyNavigationBarBottomInset() {
 
 fun applyNavigationBarBottomInset(paddingViews: Map<View, Int>, marginViews: Map<View, Int>, lifecycleOwner: LifecycleOwner, activity: NavigationActivity): Job {
     return activity.windowInsets
+        // Make sure that we are out of the OnApplyWindowInsetsListener
+        .flowOn(Dispatchers.Main)
         .map { it.bottomNavigationBarInsetIfImeIsHidden() }
         .distinctUntilChanged()
         .launchAndCollectWhenStarted(lifecycleOwner) { inset ->

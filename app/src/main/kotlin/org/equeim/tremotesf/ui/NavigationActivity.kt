@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
@@ -22,10 +21,6 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.PredictiveBackControl
 import androidx.lifecycle.lifecycleScope
@@ -41,10 +36,8 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
@@ -84,6 +77,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
     lateinit var upNavigationIcon: DrawerArrowDrawable
         private set
 
+    // TODO: remove
     private val _windowInsets = MutableStateFlow<WindowInsetsCompat?>(null)
     val windowInsets: Flow<WindowInsetsCompat> = _windowInsets.filterNotNull()
 
@@ -201,22 +195,8 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             _windowInsets.value = insets
-            WindowInsetsCompat.CONSUMED
+            insets
         }
-        windowInsets
-            .map { it.toActivityMargins() }
-            .distinctUntilChanged()
-            .launchAndCollectWhenStarted(this) { margins ->
-                binding.root.apply {
-                    if (marginLeft != margins.left || marginRight != margins.right || marginBottom != margins.bottom) {
-                        updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                            leftMargin = margins.left
-                            rightMargin = margins.right
-                            bottomMargin = margins.bottom
-                        }
-                    }
-                }
-            }
     }
 
     private fun handleDropEvents() {
@@ -364,15 +344,3 @@ private data class ActivityMargins(
     val right: Int,
     val bottom: Int,
 )
-
-private fun WindowInsetsCompat.toActivityMargins(): ActivityMargins {
-    val systemBars = getInsets(WindowInsetsCompat.Type.systemBars())
-    val ime = getInsets(WindowInsetsCompat.Type.ime())
-    return ActivityMargins(
-        left = ime.left.orOtherIfZero(systemBars.left),
-        right = ime.right.orOtherIfZero(systemBars.right),
-        bottom = ime.bottom
-    )
-}
-
-private fun Int.orOtherIfZero(other: Int) = if (this != 0) this else other
