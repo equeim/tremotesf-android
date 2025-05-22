@@ -223,14 +223,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="server_settings_speed">Speed</string>
     <string name="server_settings_network">Network</string>
 
-    <string-array name="server_settings_items" translatable="false">
-        <item>@string/server_settings_downloading</item>
-        <item>@string/server_settings_seeding</item>
-        <item>@string/server_settings_queue</item>
-        <item>@string/server_settings_speed</item>
-        <item>@string/server_settings_network</item>
-    </string-array>
-
     <string name="start_added_torrents">Start added torrents</string>
     <string name="rename_incomplete_files">Append \".part\" to names of incomplete files</string>
     <string name="incomplete_files_directory">Directory for incomplete files</string>
