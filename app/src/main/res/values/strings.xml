@@ -588,4 +588,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="translations_url">Translations: %1$s</string>
     <string name="maintainer">Maintainer</string>
     <string name="contributor">Contributor</string>
+
+    <string name="navigate_up">Navigate up</string>
 </resources>

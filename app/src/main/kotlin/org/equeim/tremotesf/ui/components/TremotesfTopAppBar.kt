@@ -1,0 +1,52 @@
+// SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+package org.equeim.tremotesf.ui.components
+
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
+import org.equeim.tremotesf.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TremotesfTopAppBar(
+    title: String,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier,
+    actions: @Composable (RowScope.() -> Unit) = {},
+) {
+    TopAppBar(
+        title = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        modifier = modifier,
+        navigationIcon = {
+            TremotesfIconButtonWithTooltip(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                textId = R.string.navigate_up,
+                onClick = navigateUp
+            )
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = TremotesfTopAppBarDefaults.containerColor(),
+            scrolledContainerColor = TremotesfTopAppBarDefaults.containerColor()
+        ),
+    )
+}
+
+object TremotesfTopAppBarDefaults {
+    @Composable
+    @ReadOnlyComposable
+    fun containerColor(): Color = MaterialTheme.colorScheme.surfaceContainerHigh
+}
