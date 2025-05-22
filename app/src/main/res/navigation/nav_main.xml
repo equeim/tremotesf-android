@@ -100,7 +100,18 @@
     </fragment>
     <fragment
         android:id="@+id/about_fragment"
-        android:name="org.equeim.tremotesf.ui.AboutFragment" />
+        android:name="org.equeim.tremotesf.ui.AboutFragment">
+        <action
+            android:id="@+id/to_license_fragment"
+            app:destination="@id/license_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/license_fragment"
+        android:name="org.equeim.tremotesf.ui.LicenceFragment" />
     <fragment
         android:id="@+id/connection_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ConnectionSettingsFragment">
