@@ -60,9 +60,6 @@ android {
 
     testOptions.unitTests.all { it.useJUnitPlatform() }
 
-    // https://issuetracker.google.com/issues/306442914
-    lint.disable.add("NewerVersionAvailable")
-
     flavorDimensions.add("freedom")
     productFlavors {
         register("google") {
