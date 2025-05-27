@@ -4,15 +4,23 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import android.os.Bundle
-import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ServerSettingsSeedingFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -25,91 +33,115 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setServerIdleSeedingLimi
 import org.equeim.tremotesf.rpc.requests.serversettings.setServerRatioLimit
 import org.equeim.tremotesf.rpc.requests.serversettings.setServerRatioLimited
 import org.equeim.tremotesf.rpc.stateIn
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.DecimalFormats
-import org.equeim.tremotesf.ui.utils.handleNumberRangeError
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.components.NON_NEGATIVE_DECIMALS_RANGE
+import org.equeim.tremotesf.ui.components.TremotesfDecimalNumberInputFieldState
+import org.equeim.tremotesf.ui.components.TremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.components.TremotesfNumberInputField
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
+import org.equeim.tremotesf.ui.components.rememberTremotesfDecimalNumberInputFieldState
+import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
 import kotlin.time.Duration.Companion.minutes
 
-class SeedingFragment : NavigationFragment(
-    R.layout.server_settings_seeding_fragment,
-    R.string.server_settings_seeding
-) {
-    private val model by viewModels<SeedingFragmentViewModel>()
-    private val binding by viewLifecycleObject(ServerSettingsSeedingFragmentBinding::bind)
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        with(binding) {
-            ratioLimitCheckBox.setDependentViews(ratioLimitLayout) { checked ->
-                onValueChanged { setServerRatioLimited(checked) }
-            }
-
-            ratioLimitEdit.handleNumberRangeError(0.0..10000.0) { limit ->
-                onValueChanged { setServerRatioLimit(limit) }
-            }
-
-            idleSeedingCheckBox.setDependentViews(idleSeedingLimitLayout) { checked ->
-                onValueChanged { setServerIdleSeedingLimited(checked) }
-            }
-
-            idleSeedingLimitEdit.handleNumberRangeError(0..10000) { limit ->
-                onValueChanged { setServerIdleSeedingLimit(limit.minutes) }
-            }
-        }
-
-        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            when (it) {
-                is RpcRequestState.Loaded -> showSettings(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
-            }
-        }
+class SeedingFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<SeedingFragmentViewModel>()
+        ServerSettingsSeedingScreen(
+            settingsRequestState = model.settings.collectAsStateWithLifecycle(),
+            navigateUp = navController::navigateUp,
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            ratioLimited = model.ratioLimited,
+            ratioLimit = model.ratioLimit,
+            idleSeedingLimited = model.idleSeedingLimited,
+            idleSeedingLimit = model.idleSeedingLimit,
+        )
     }
 
-    private fun showPlaceholder(error: RpcRequestError?) {
-        hideKeyboard()
-        with(binding) {
-            scrollView.isVisible = false
-            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
-        }
-    }
+}
 
-    private fun showSettings(settings: SeedingServerSettings) {
-        with(binding) {
-            scrollView.isVisible = true
-            placeholderView.hide()
-        }
-        if (model.shouldSetInitialState) {
-            updateViews(settings)
-            model.shouldSetInitialState = false
-        }
-    }
+class SeedingFragmentViewModel(application: Application) : AndroidViewModel(application) {
+    val settings: StateFlow<RpcRequestState<Any>> =
+        GlobalRpcClient.performRecoveringRequest { getSeedingServerSettings() }
+            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
+            .stateIn(GlobalRpcClient, viewModelScope)
 
-    private fun updateViews(settings: SeedingServerSettings) = with(binding) {
-        ratioLimitCheckBox.isChecked = settings.ratioLimited
-        ratioLimitEdit.setText(DecimalFormats.ratio.format(settings.ratioLimit))
-        idleSeedingCheckBox.isChecked = settings.idleSeedingLimited
-        idleSeedingLimitEdit.setText(settings.idleSeedingLimit.inWholeMinutes.toString())
-    }
+    val ratioLimited: ServerSettingsProperty<Boolean> = ServerSettingsBooleanProperty(RpcClient::setServerRatioLimited)
+    val ratioLimit: TremotesfDecimalNumberInputFieldState =
+        ServerSettingsDecimalNumberInputFieldState { setServerRatioLimit((it)) }
+    val idleSeedingLimited: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setServerIdleSeedingLimited)
+    val idleSeedingLimit: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState { setServerIdleSeedingLimit(it.minutes) }
 
-    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
-        if (!model.shouldSetInitialState) {
-            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
-        }
+    private fun setInitialState(settings: SeedingServerSettings) {
+        ratioLimited.reset(settings.ratioLimited)
+        ratioLimit.reset(settings.ratioLimit)
+        idleSeedingLimited.reset(settings.idleSeedingLimited)
+        idleSeedingLimit.reset(settings.idleSeedingLimit.inWholeMinutes)
     }
 }
 
-class SeedingFragmentViewModel : ViewModel() {
-    var shouldSetInitialState = true
-    val settings: StateFlow<RpcRequestState<SeedingServerSettings>> =
-        GlobalRpcClient.performRecoveringRequest { getSeedingServerSettings() }
-            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
-            .stateIn(GlobalRpcClient, viewModelScope)
+@Composable
+private fun ServerSettingsSeedingScreen(
+    settingsRequestState: State<RpcRequestState<Any>>,
+    navigateUp: () -> Unit,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    ratioLimited: ServerSettingsProperty<Boolean>,
+    ratioLimit: TremotesfDecimalNumberInputFieldState,
+    idleSeedingLimited: ServerSettingsProperty<Boolean>,
+    idleSeedingLimit: TremotesfIntegerNumberInputFieldState,
+) {
+    ServerSettingsCategory(
+        title = R.string.server_settings_seeding,
+        settingsRequestState = settingsRequestState,
+        navigateUp = navigateUp,
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+    ) { horizontalPadding ->
+        TremotesfSwitchWithText(
+            checked = ratioLimited.value,
+            text = R.string.stop_seeding_at_ratio,
+            onCheckedChange = ratioLimited::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = ratioLimit,
+            range = NON_NEGATIVE_DECIMALS_RANGE,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+            enabled = ratioLimited.value
+        )
+        TremotesfSwitchWithText(
+            checked = idleSeedingLimited.value,
+            text = R.string.stop_seeding_if_idle_for,
+            onCheckedChange = idleSeedingLimited::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = idleSeedingLimit,
+            // Transmission processes this value as unsigned 16-bit integer
+            range = UNSIGNED_16BIT_RANGE,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+            enabled = idleSeedingLimited.value,
+            suffix = R.string.text_field_suffix_minutes
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ServerSettingsSeedingScreenPreview() = ScreenPreview {
+    ServerSettingsSeedingScreen(
+        settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
+        navigateUp = {},
+        navigateToDetailedErrorDialog = {},
+        ratioLimited = remember { ServerSettingsBooleanProperty {} },
+        ratioLimit = rememberTremotesfDecimalNumberInputFieldState(),
+        idleSeedingLimited = remember { ServerSettingsBooleanProperty {} },
+        idleSeedingLimit = rememberTremotesfIntegerNumberInputFieldState(),
+    )
 }

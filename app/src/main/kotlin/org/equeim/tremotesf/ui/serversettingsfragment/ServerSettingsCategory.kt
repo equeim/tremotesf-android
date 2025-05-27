@@ -31,6 +31,8 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.components.TremotesfDecimalNumberInputFieldState
+import org.equeim.tremotesf.ui.components.TremotesfIntegerNumberInputFieldState
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
 
@@ -100,3 +102,15 @@ fun ServerSettingsBooleanProperty(performRpcRequest: suspend RpcClient.(Boolean)
 
 fun ServerSettingsStringProperty(performRpcRequest: suspend RpcClient.(String) -> Unit): ServerSettingsProperty<String> =
     ServerSettingsProperty("", performRpcRequest)
+
+fun ServerSettingsIntegerNumberInputFieldState(performRpcRequest: suspend RpcClient.(Long) -> Unit) =
+    TremotesfIntegerNumberInputFieldState {
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) { performRpcRequest(it) }
+    }
+
+fun ServerSettingsDecimalNumberInputFieldState(
+    performRpcRequest: suspend RpcClient.(Double) -> Unit
+) =
+    TremotesfDecimalNumberInputFieldState {
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) { performRpcRequest(it) }
+    }
