@@ -33,7 +33,7 @@ suspend fun RpcClient.setDownloadQueueEnabled(value: Boolean) =
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.setDownloadQueueSize(value: Int) =
+suspend fun RpcClient.setDownloadQueueSize(value: Long) =
     setSessionProperty("download-queue-size", value)
 
 /**
@@ -45,7 +45,7 @@ suspend fun RpcClient.setSeedQueueEnabled(value: Boolean) =
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.setSeedQueueSize(value: Int) =
+suspend fun RpcClient.setSeedQueueSize(value: Long) =
     setSessionProperty("seed-queue-size", value)
 
 /**
@@ -65,11 +65,11 @@ data class QueueServerSettings(
     @SerialName("download-queue-enabled")
     val downloadQueueEnabled: Boolean,
     @SerialName("download-queue-size")
-    val downloadQueueSize: Int,
+    val downloadQueueSize: Long,
     @SerialName("seed-queue-enabled")
     val seedQueueEnabled: Boolean,
     @SerialName("seed-queue-size")
-    val seedQueueSize: Int,
+    val seedQueueSize: Long,
     @SerialName("queue-stalled-enabled")
     val ignoreQueueIfIdle: Boolean,
     @Serializable(MinutesToDurationSerializer::class)

@@ -4,15 +4,23 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import android.os.Bundle
-import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ServerSettingsQueueFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -27,101 +35,143 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setIgnoreQueueIfIdleFor
 import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueEnabled
 import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueSize
 import org.equeim.tremotesf.rpc.stateIn
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.handleNumberRangeError
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.components.NON_NEGATIVE_INTEGERS_RANGE
+import org.equeim.tremotesf.ui.components.TremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.components.TremotesfNumberInputField
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
+import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
 import kotlin.time.Duration.Companion.minutes
 
-
-class QueueFragment : NavigationFragment(
-    R.layout.server_settings_queue_fragment,
-    R.string.server_settings_queue
-) {
-    private val model by viewModels<QueueFragmentViewModel>()
-    private val binding by viewLifecycleObject(ServerSettingsQueueFragmentBinding::bind)
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        with(binding) {
-            downloadQueueCheckBox.setDependentViews(downloadQueueLayout) { checked ->
-                onValueChanged { setDownloadQueueEnabled(checked) }
-            }
-
-            downloadQueueEdit.handleNumberRangeError(0..10000) { queueSize ->
-                onValueChanged { setDownloadQueueSize(queueSize) }
-            }
-
-            seedQueueCheckBox.setDependentViews(seedQueueLayout) { checked ->
-                onValueChanged { setSeedQueueEnabled(checked) }
-            }
-
-            seedQueueEdit.handleNumberRangeError(0..10000) { queueSize ->
-                onValueChanged { setSeedQueueSize(queueSize) }
-            }
-
-            idleQueueCheckBox.setDependentViews(idleQueueLayout) { checked ->
-                onValueChanged { setIgnoreQueueIfIdle(checked) }
-            }
-
-            idleQueueEdit.handleNumberRangeError(0..10000) { limit ->
-                onValueChanged { setIgnoreQueueIfIdleFor(limit.minutes) }
-            }
-        }
-
-        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            when (it) {
-                is RpcRequestState.Loaded -> showSettings(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
-            }
-        }
-    }
-
-    private fun showPlaceholder(error: RpcRequestError?) {
-        hideKeyboard()
-        with(binding) {
-            scrollView.isVisible = false
-            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
-        }
-    }
-
-    private fun showSettings(settings: QueueServerSettings) {
-        with(binding) {
-            scrollView.isVisible = true
-            placeholderView.hide()
-        }
-        if (model.shouldSetInitialState) {
-            updateViews(settings)
-            model.shouldSetInitialState = false
-        }
-    }
-
-    private fun updateViews(settings: QueueServerSettings) = with(binding) {
-        downloadQueueCheckBox.isChecked = settings.downloadQueueEnabled
-        downloadQueueEdit.setText(settings.downloadQueueSize.toString())
-        seedQueueCheckBox.isChecked = settings.seedQueueEnabled
-        seedQueueEdit.setText(settings.seedQueueSize.toString())
-        idleQueueCheckBox.isChecked = settings.ignoreQueueIfIdle
-        idleQueueEdit.setText(settings.ignoreQueueIfIdleFor.inWholeMinutes.toString())
-    }
-
-    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
-        if (!model.shouldSetInitialState) {
-            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
-        }
+class QueueFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<QueueFragmentViewModel>()
+        ServerSettingsQueueScreen(
+            settingsRequestState = model.settings.collectAsStateWithLifecycle(),
+            navigateUp = navController::navigateUp,
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            downloadQueueEnabled = model.downloadQueueEnabled,
+            downloadQueueSize = model.downloadQueueSize,
+            seedQueueEnabled = model.seedQueueEnabled,
+            seedQueueSize = model.seedQueueSize,
+            ignoreQueueIfIdle = model.ignoreQueueIfIdle,
+            ignoreQueueIfIdleFor = model.ignoreQueueIfIdleFor,
+        )
     }
 }
 
-class QueueFragmentViewModel : ViewModel() {
-    var shouldSetInitialState = true
-    val settings: StateFlow<RpcRequestState<QueueServerSettings>> =
+class QueueFragmentViewModel(application: Application) : AndroidViewModel(application) {
+    val settings: StateFlow<RpcRequestState<Any>> =
         GlobalRpcClient.performRecoveringRequest { getQueueServerSettings() }
-            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
+            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
             .stateIn(GlobalRpcClient, viewModelScope)
+
+    val downloadQueueEnabled: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setDownloadQueueEnabled)
+
+    val downloadQueueSize: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState(RpcClient::setDownloadQueueSize)
+
+    val seedQueueEnabled: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setSeedQueueEnabled)
+
+    val seedQueueSize: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState(RpcClient::setSeedQueueSize)
+
+    val ignoreQueueIfIdle: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setIgnoreQueueIfIdle)
+
+    val ignoreQueueIfIdleFor: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState { setIgnoreQueueIfIdleFor(it.minutes) }
+
+    private fun setInitialState(settings: QueueServerSettings) {
+        downloadQueueEnabled.reset(settings.downloadQueueEnabled)
+        downloadQueueSize.reset(settings.downloadQueueSize)
+        seedQueueEnabled.reset(settings.seedQueueEnabled)
+        seedQueueSize.reset(settings.seedQueueSize)
+        ignoreQueueIfIdle.reset(settings.ignoreQueueIfIdle)
+        ignoreQueueIfIdleFor.reset(settings.ignoreQueueIfIdleFor.inWholeMinutes)
+    }
+}
+
+@Composable
+private fun ServerSettingsQueueScreen(
+    settingsRequestState: State<RpcRequestState<Any>>,
+    navigateUp: () -> Unit,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    downloadQueueEnabled: ServerSettingsProperty<Boolean>,
+    downloadQueueSize: TremotesfIntegerNumberInputFieldState,
+    seedQueueEnabled: ServerSettingsProperty<Boolean>,
+    seedQueueSize: TremotesfIntegerNumberInputFieldState,
+    ignoreQueueIfIdle: ServerSettingsProperty<Boolean>,
+    ignoreQueueIfIdleFor: TremotesfIntegerNumberInputFieldState,
+) {
+    ServerSettingsCategory(
+        title = R.string.server_settings_queue,
+        settingsRequestState = settingsRequestState,
+        navigateUp = navigateUp,
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+    ) { horizontalPadding ->
+        TremotesfSwitchWithText(
+            checked = downloadQueueEnabled.value,
+            text = R.string.maximum_active_downloads,
+            onCheckedChange = downloadQueueEnabled::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = downloadQueueSize,
+            range = NON_NEGATIVE_INTEGERS_RANGE,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+            enabled = downloadQueueEnabled.value
+        )
+        TremotesfSwitchWithText(
+            checked = seedQueueEnabled.value,
+            text = R.string.maximum_active_uploads,
+            onCheckedChange = downloadQueueEnabled::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = seedQueueSize,
+            range = NON_NEGATIVE_INTEGERS_RANGE,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+            enabled = seedQueueEnabled.value
+        )
+        TremotesfSwitchWithText(
+            checked = ignoreQueueIfIdle.value,
+            text = R.string.ignore_queue,
+            onCheckedChange = ignoreQueueIfIdle::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = ignoreQueueIfIdleFor,
+            // Transmission processes this value as unsigned 16-bit integer
+            range = UNSIGNED_16BIT_RANGE,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+            enabled = ignoreQueueIfIdle.value,
+            suffix = R.string.text_field_suffix_minutes
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ServerSettingsQueueScreenPreview() = ScreenPreview {
+    ServerSettingsQueueScreen(
+        settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
+        navigateUp = {},
+        navigateToDetailedErrorDialog = {},
+        downloadQueueEnabled = remember { ServerSettingsBooleanProperty {} },
+        downloadQueueSize = rememberTremotesfIntegerNumberInputFieldState(),
+        seedQueueEnabled = remember { ServerSettingsBooleanProperty {} },
+        seedQueueSize = rememberTremotesfIntegerNumberInputFieldState(),
+        ignoreQueueIfIdle = remember { ServerSettingsBooleanProperty {} },
+        ignoreQueueIfIdleFor = rememberTremotesfIntegerNumberInputFieldState(),
+    )
 }
