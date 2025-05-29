@@ -11,10 +11,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <attr name="readOnly" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="TimePickerItem">
-        <attr name="android:title" format="string" />
-    </declare-styleable>
-
-    <attr name="timePickerItemStyle" format="reference" />
     <attr name="settingsColorThemeChoiceViewStyle" format="reference" />
 </resources>

@@ -37,6 +37,8 @@ value class TransferRate private constructor(val bytesPerSecond: Long) {
 
     companion object {
         fun fromKiloBytesPerSecond(kiloBytesPerSecond: Long) = TransferRate(bytesPerSecond = kiloBytesPerSecond * 1000)
+
+        val MAX_VALUE = TransferRate(Long.MAX_VALUE)
     }
 }
 

@@ -4,27 +4,45 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
-import android.content.Context
-import android.os.Bundle
-import android.text.format.DateFormat
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import androidx.annotation.AttrRes
-import androidx.core.content.withStyledAttributes
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.TimePickerDialogDefaults
+import androidx.compose.material3.TimePickerDisplayMode
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.ServerSettingsSpeedFragmentBinding
-import org.equeim.tremotesf.databinding.ServerSettingsTimePickerItemBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -46,17 +64,18 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadSpeedLimited
 import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimit
 import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimited
 import org.equeim.tremotesf.rpc.stateIn
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.handleNumberRangeError
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.setDependentViews
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
+import org.equeim.tremotesf.ui.ComponentPreview
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.applyDisabledAlpha
+import org.equeim.tremotesf.ui.components.TremotesfComboBox
+import org.equeim.tremotesf.ui.components.TremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.components.TremotesfNumberInputField
+import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
+import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -65,216 +84,184 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-
-class SpeedFragment : NavigationFragment(
-    R.layout.server_settings_speed_fragment,
-    R.string.server_settings_speed
-) {
-    private lateinit var daysSpinnerItems: List<Pair<String, AlternativeLimitsDays>>
-
-    private val model by viewModels<SpeedFragmentViewModel>()
-    private val binding by viewLifecycleObject(ServerSettingsSpeedFragmentBinding::bind)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val daysSpinnerItems = mutableListOf<Pair<String, AlternativeLimitsDays>>()
-        daysSpinnerItems.add(getString(R.string.every_day) to AlternativeLimitsDays.All)
-        daysSpinnerItems.add(getString(R.string.weekdays) to AlternativeLimitsDays.Weekdays)
-        daysSpinnerItems.add(getString(R.string.weekends) to AlternativeLimitsDays.Weekends)
-
-        val firstDayOfWeek =
-            DayOfWeek.of(WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
-        val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
-        for (day in daysOfWeek) {
-            daysSpinnerItems.add(
-                day.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) to day.toAlternativeSpeedLimitsDays()
-            )
-        }
-
-        this.daysSpinnerItems = daysSpinnerItems
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        val speedLimitRange = 0..(4 * 1024 * 1024)
-
-        with(binding) {
-            downloadSpeedLimitCheckBox.setDependentViews(downloadSpeedLimitLayout) { checked ->
-                onValueChanged { setDownloadSpeedLimited(checked) }
-            }
-
-            downloadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
-                onValueChanged { setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
-            }
-
-            uploadSpeedLimitCheckBox.setDependentViews(uploadSpeedLimitLayout) { checked ->
-                onValueChanged { setUploadSpeedLimited(checked) }
-            }
-
-            uploadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
-                onValueChanged { setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
-            }
-
-            alternativeLimitsCheckBox.setDependentViews(
-                alternativeDownloadSpeedLimitLayout,
-                alternativeUploadSpeedLimitLayout
-            ) { checked ->
-                onValueChanged { setAlternativeLimitsEnabled(checked) }
-            }
-
-            alternativeDownloadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
-                onValueChanged { setAlternativeDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
-            }
-
-            alternativeUploadSpeedLimitEdit.handleNumberRangeError(speedLimitRange) { limit ->
-                onValueChanged { setAlternativeUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(limit.toLong())) }
-            }
-
-            scheduleCheckBox.setDependentViews(
-                beginTimeItem,
-                endTimeItem,
-                daysViewLayout
-            ) { checked ->
-                onValueChanged { setAlternativeLimitsScheduled(checked) }
-            }
-
-            beginTimeItem.apply {
-                onTimeChangedListener = {
-                    onValueChanged {
-                        setAlternativeLimitsBeginTime(it)
-                    }
-                }
-            }
-
-            endTimeItem.apply {
-                onTimeChangedListener = {
-                    onValueChanged {
-                        setAlternativeLimitsEndTime(it)
-                    }
-                }
-            }
-
-            daysView.setAdapter(ArrayDropdownAdapter(daysSpinnerItems.map { it.first }))
-            daysView.setOnItemClickListener { _, _, position, _ ->
-                onValueChanged { setAlternativeLimitsDays(daysSpinnerItems[position].second) }
-            }
-        }
-
-        model.settings.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            Timber.d("Settings are $it")
-            when (it) {
-                is RpcRequestState.Loaded -> showSettings(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
-            }
-        }
-    }
-
-    private fun showPlaceholder(error: RpcRequestError?) {
-        hideKeyboard()
-        with(binding) {
-            scrollView.isVisible = false
-            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
-        }
-    }
-
-    private fun showSettings(settings: SpeedServerSettings) {
-        with(binding) {
-            scrollView.isVisible = true
-            placeholderView.hide()
-        }
-        if (model.shouldSetInitialState) {
-            updateViews(settings)
-            model.shouldSetInitialState = false
-        }
-    }
-
-    private fun updateViews(settings: SpeedServerSettings) = with(binding) {
-        downloadSpeedLimitCheckBox.isChecked = settings.downloadSpeedLimited
-        downloadSpeedLimitEdit.setText(settings.downloadSpeedLimit.kiloBytesPerSecond.toString())
-        uploadSpeedLimitCheckBox.isChecked = settings.uploadSpeedLimited
-        uploadSpeedLimitEdit.setText(settings.uploadSpeedLimit.kiloBytesPerSecond.toString())
-        alternativeLimitsCheckBox.isChecked = settings.alternativeLimitsEnabled
-        alternativeDownloadSpeedLimitEdit.setText(settings.alternativeDownloadSpeedLimit.kiloBytesPerSecond.toString())
-        alternativeUploadSpeedLimitEdit.setText(settings.alternativeUploadSpeedLimit.kiloBytesPerSecond.toString())
-        scheduleCheckBox.isChecked = settings.alternativeLimitsScheduled
-        beginTimeItem.setTime(settings.alternativeLimitsBeginTime)
-        endTimeItem.setTime(settings.alternativeLimitsEndTime)
-        daysView.setText(
-            daysView.adapter.getItem(daysSpinnerItems.indexOfFirst { it.second == settings.alternativeLimitsDays })
-                .toString()
+class SpeedFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<SpeedFragmentViewModel>()
+        ServerSettingsSpeedScreen(
+            settingsRequestState = model.settings.collectAsStateWithLifecycle(),
+            navigateUp = navController::navigateUp,
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            downloadSpeedLimited = model.downloadSpeedLimited,
+            downloadSpeedLimit = model.downloadSpeedLimit,
+            uploadSpeedLimited = model.uploadSpeedLimited,
+            uploadSpeedLimit = model.uploadSpeedLimit,
+            alternativeLimitsEnabled = model.alternativeLimitsEnabled,
+            alternativeDownloadSpeedLimit = model.alternativeDownloadSpeedLimit,
+            alternativeUploadSpeedLimit = model.alternativeUploadSpeedLimit,
+            alternativeLimitsScheduled = model.alternativeLimitsScheduled,
+            alternativeLimitsBeginTime = model.alternativeLimitsBeginTime,
+            alternativeLimitsEndTime = model.alternativeLimitsEndTime,
+            alternativeLimitsDays = model.alternativeLimitsDays
         )
     }
-
-    private fun onValueChanged(performRpcRequest: suspend RpcClient.() -> Unit) {
-        if (!model.shouldSetInitialState) {
-            GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error, performRpcRequest)
-        }
-    }
 }
 
-class TimePickerItem @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = R.attr.timePickerItemStyle,
-) : LinearLayout(context, attrs, defStyleAttr) {
-    private val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    private var time: LocalTime = LocalTime.MIN
+@Composable
+private fun ServerSettingsSpeedScreen(
+    settingsRequestState: State<RpcRequestState<Any>>,
+    navigateUp: () -> Unit,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    downloadSpeedLimited: ServerSettingsProperty<Boolean>,
+    downloadSpeedLimit: TremotesfIntegerNumberInputFieldState,
+    uploadSpeedLimited: ServerSettingsProperty<Boolean>,
+    uploadSpeedLimit: TremotesfIntegerNumberInputFieldState,
+    alternativeLimitsEnabled: ServerSettingsProperty<Boolean>,
+    alternativeDownloadSpeedLimit: TremotesfIntegerNumberInputFieldState,
+    alternativeUploadSpeedLimit: TremotesfIntegerNumberInputFieldState,
+    alternativeLimitsScheduled: ServerSettingsProperty<Boolean>,
+    alternativeLimitsBeginTime: ServerSettingsProperty<LocalTime>,
+    alternativeLimitsEndTime: ServerSettingsProperty<LocalTime>,
+    alternativeLimitsDays: ServerSettingsProperty<AlternativeLimitsDays>,
+) {
+    ServerSettingsCategory(
+        title = R.string.server_settings_speed,
+        settingsRequestState = settingsRequestState,
+        navigateUp = navigateUp,
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+    ) { horizontalPadding ->
+        TremotesfSectionHeader(R.string.limits, modifier = Modifier.padding(horizontal = horizontalPadding))
+        TremotesfSwitchWithText(
+            checked = downloadSpeedLimited.value,
+            text = R.string.download_noun,
+            onCheckedChange = downloadSpeedLimited::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = downloadSpeedLimit,
+            range = SPEED_LIMIT_RANGE,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            enabled = downloadSpeedLimited.value,
+            suffix = R.string.text_field_suffix_kbps
+        )
+        TremotesfSwitchWithText(
+            checked = uploadSpeedLimited.value,
+            text = R.string.upload_noun,
+            onCheckedChange = uploadSpeedLimited::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = uploadSpeedLimit,
+            range = SPEED_LIMIT_RANGE,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            enabled = uploadSpeedLimited.value,
+            suffix = R.string.text_field_suffix_kbps
+        )
+        TremotesfSectionHeader(
+            R.string.alternative_limits,
+            Modifier
+                .padding(top = Dimens.SpacingSmall)
+                .padding(horizontal = horizontalPadding)
+        )
+        TremotesfSwitchWithText(
+            checked = alternativeLimitsEnabled.value,
+            text = R.string.enable,
+            onCheckedChange = alternativeLimitsEnabled::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        TremotesfNumberInputField(
+            state = alternativeDownloadSpeedLimit,
+            range = SPEED_LIMIT_RANGE,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            enabled = alternativeLimitsEnabled.value,
+            suffix = R.string.text_field_suffix_kbps,
+            label = R.string.download_noun
+        )
+        TremotesfNumberInputField(
+            state = alternativeUploadSpeedLimit,
+            range = SPEED_LIMIT_RANGE,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            enabled = alternativeLimitsEnabled.value,
+            suffix = R.string.text_field_suffix_kbps,
+            label = R.string.upload_noun
+        )
+        TremotesfSwitchWithText(
+            checked = alternativeLimitsScheduled.value,
+            text = R.string.scheduled,
+            onCheckedChange = alternativeLimitsScheduled::update,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPadding = horizontalPadding
+        )
+        LimitsScheduleTime(
+            label = R.string.from,
+            time = alternativeLimitsBeginTime,
+            enabled = alternativeLimitsScheduled.value,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPading = horizontalPadding
+        )
+        LimitsScheduleTime(
+            label = R.string.to,
+            time = alternativeLimitsEndTime,
+            enabled = alternativeLimitsScheduled.value,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalContentPading = horizontalPadding
+        )
 
-    var onTimeChangedListener: ((LocalTime) -> Unit)? = null
-
-    private val binding =
-        ServerSettingsTimePickerItemBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        context.withStyledAttributes(
-            attrs,
-            R.styleable.TimePickerItem,
-            0,
-            R.style.Widget_Tremotesf_TimePickerItem
-        ) {
-            binding.titleTextView.text = getText(R.styleable.TimePickerItem_android_title)
-        }
-
-        setOnClickListener {
-            val picker = MaterialTimePicker.Builder()
-                .setTimeFormat(if (DateFormat.is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
-                .setHour(time.hour)
-                .setMinute(time.minute)
-                .build()
-            picker.addOnPositiveButtonClickListener {
-                setTime(LocalTime.of(picker.hour, picker.minute))
+        val context = LocalContext.current
+        val localeList = LocalConfiguration.current.locales
+        val dayNames: Map<AlternativeLimitsDays, String> = remember(localeList) {
+            buildMap {
+                put(AlternativeLimitsDays.All, context.getString(R.string.every_day))
+                put(AlternativeLimitsDays.Weekdays, context.getString(R.string.weekdays))
+                put(AlternativeLimitsDays.Weekends, context.getString(R.string.weekends))
+                val locale = Locale.getDefault()
+                for (dayOfWeek in DayOfWeek.entries) {
+                    put(
+                        dayOfWeek.toAlternativeSpeedLimitsDays(),
+                        dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, locale)
+                    )
+                }
             }
-            picker.show(findFragment<Fragment>().childFragmentManager, null)
         }
-    }
+        val dropdownDays: List<AlternativeLimitsDays> = remember(localeList) {
+            buildList {
+                add(AlternativeLimitsDays.All)
+                add(AlternativeLimitsDays.Weekdays)
+                add(AlternativeLimitsDays.Weekends)
+                val firstDayOfWeek =
+                    DayOfWeek.of(WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
+                val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
+                for (day in daysOfWeek) {
+                    add(day.toAlternativeSpeedLimitsDays())
+                }
+            }
+        }
 
-    override fun setEnabled(enabled: Boolean) {
-        super.setEnabled(enabled)
-        with(binding) {
-            titleTextView.isEnabled = enabled
-            textView.isEnabled = enabled
-        }
-    }
-
-    fun setTime(time: LocalTime) {
-        if (time != this.time) {
-            this.time = time
-            binding.textView.text = formatter.format(time)
-            onTimeChangedListener?.invoke(time)
-        }
+        TremotesfComboBox(
+            currentItem = alternativeLimitsDays::value,
+            updateCurrentItem = alternativeLimitsDays::update,
+            items = dropdownDays,
+            itemDisplayString = { checkNotNull(dayNames[it]) },
+            enabled = alternativeLimitsScheduled.value,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+        )
     }
 }
 
-class SpeedFragmentViewModel : ViewModel() {
-    var shouldSetInitialState = true
-    val settings: StateFlow<RpcRequestState<SpeedServerSettings>> =
-        GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
-            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialState = true }
-            .stateIn(GlobalRpcClient, viewModelScope)
-}
+private val SPEED_LIMIT_RANGE: LongRange = 0..(TransferRate.MAX_VALUE).kiloBytesPerSecond
 
 private fun DayOfWeek.toAlternativeSpeedLimitsDays(): AlternativeLimitsDays = when (this) {
     DayOfWeek.SUNDAY -> AlternativeLimitsDays.Sunday
@@ -284,4 +271,162 @@ private fun DayOfWeek.toAlternativeSpeedLimitsDays(): AlternativeLimitsDays = wh
     DayOfWeek.THURSDAY -> AlternativeLimitsDays.Thursday
     DayOfWeek.FRIDAY -> AlternativeLimitsDays.Friday
     DayOfWeek.SATURDAY -> AlternativeLimitsDays.Saturday
+}
+
+@Preview
+@Composable
+private fun ServerSettingsSpeedScreenPreview() = ScreenPreview {
+    ServerSettingsSpeedScreen(
+        settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
+        navigateUp = {},
+        navigateToDetailedErrorDialog = {},
+        downloadSpeedLimited = remember { ServerSettingsBooleanProperty {} },
+        downloadSpeedLimit = rememberTremotesfIntegerNumberInputFieldState(),
+        uploadSpeedLimited = remember { ServerSettingsBooleanProperty {} },
+        uploadSpeedLimit = rememberTremotesfIntegerNumberInputFieldState(),
+        alternativeLimitsEnabled = remember { ServerSettingsBooleanProperty {} },
+        alternativeDownloadSpeedLimit = rememberTremotesfIntegerNumberInputFieldState(),
+        alternativeUploadSpeedLimit = rememberTremotesfIntegerNumberInputFieldState(),
+        alternativeLimitsScheduled = remember { ServerSettingsBooleanProperty {} },
+        alternativeLimitsBeginTime = remember { ServerSettingsProperty(LocalTime.MIDNIGHT) {} },
+        alternativeLimitsEndTime = remember { ServerSettingsProperty(LocalTime.NOON) {} },
+        alternativeLimitsDays = remember { ServerSettingsProperty(AlternativeLimitsDays.All) {} }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LimitsScheduleTime(
+    @StringRes label: Int,
+    time: ServerSettingsProperty<LocalTime>,
+    modifier: Modifier = Modifier,
+    horizontalContentPading: Dp = Dp.Unspecified,
+    enabled: Boolean = true,
+) {
+    var showTimePickerDialog: Boolean by rememberSaveable { mutableStateOf(false) }
+    Row(
+        modifier = modifier
+            .clickable(enabled) { showTimePickerDialog = true }
+            .padding(vertical = Dimens.SpacingSmall)
+            .padding(horizontal = horizontalContentPading),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+    ) {
+        Text(
+            text = stringResource(label),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.applyDisabledAlpha(enabled),
+        )
+        val localeList = LocalConfiguration.current.locales
+        val formatter = remember(localeList) { DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT) }
+        Text(
+            text = formatter.format(time.value),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface.applyDisabledAlpha(enabled))
+    }
+    if (showTimePickerDialog) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = time.value.hour,
+            initialMinute = time.value.minute,
+        )
+        var showTimeInput: Boolean by rememberSaveable { mutableStateOf(false) }
+        val displayMode: TimePickerDisplayMode by remember {
+            derivedStateOf { if (showTimeInput) TimePickerDisplayMode.Input else TimePickerDisplayMode.Picker }
+        }
+        TimePickerDialog(
+            onDismissRequest = { showTimePickerDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    time.update(LocalTime.of(timePickerState.hour, timePickerState.minute))
+                    showTimePickerDialog = false
+                }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            title = { TimePickerDialogDefaults.Title(displayMode) },
+            modeToggleButton = {
+                TimePickerDialogDefaults.DisplayModeToggle(
+                    onDisplayModeChange = { showTimeInput = !showTimeInput },
+                    displayMode = displayMode
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showTimePickerDialog = false
+                }) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        ) {
+            if (displayMode == TimePickerDisplayMode.Picker) {
+                TimePicker(timePickerState)
+            } else {
+                TimeInput(timePickerState)
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun LimitsScheduleTimePreview() = ComponentPreview {
+    LimitsScheduleTime(label = R.string.from, time = remember { ServerSettingsProperty(LocalTime.NOON) {} })
+}
+
+class SpeedFragmentViewModel(application: Application) : AndroidViewModel(application) {
+    val settings: StateFlow<RpcRequestState<Any>> =
+        GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
+            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
+            .stateIn(GlobalRpcClient, viewModelScope)
+
+    val downloadSpeedLimited: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setDownloadSpeedLimited)
+
+    val downloadSpeedLimit: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState { setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it)) }
+
+    val uploadSpeedLimited: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setUploadSpeedLimited)
+
+    val uploadSpeedLimit: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState { setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it)) }
+
+
+    val alternativeLimitsEnabled: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setAlternativeLimitsEnabled)
+
+    val alternativeDownloadSpeedLimit: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState {
+            setAlternativeDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it))
+        }
+
+    val alternativeUploadSpeedLimit: TremotesfIntegerNumberInputFieldState =
+        ServerSettingsIntegerNumberInputFieldState {
+            setAlternativeUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it))
+        }
+
+    val alternativeLimitsScheduled: ServerSettingsProperty<Boolean> =
+        ServerSettingsBooleanProperty(RpcClient::setAlternativeLimitsScheduled)
+
+    val alternativeLimitsBeginTime: ServerSettingsProperty<LocalTime> =
+        ServerSettingsProperty(LocalTime.MIDNIGHT, RpcClient::setAlternativeLimitsBeginTime)
+
+    val alternativeLimitsEndTime: ServerSettingsProperty<LocalTime> =
+        ServerSettingsProperty(LocalTime.MIDNIGHT, RpcClient::setAlternativeLimitsEndTime)
+
+    val alternativeLimitsDays: ServerSettingsProperty<AlternativeLimitsDays> =
+        ServerSettingsProperty(AlternativeLimitsDays.All, RpcClient::setAlternativeLimitsDays)
+
+    private fun setInitialState(settings: SpeedServerSettings) {
+        downloadSpeedLimited.reset(settings.downloadSpeedLimited)
+        downloadSpeedLimit.reset(settings.downloadSpeedLimit.kiloBytesPerSecond)
+        uploadSpeedLimited.reset(settings.uploadSpeedLimited)
+        uploadSpeedLimit.reset(settings.uploadSpeedLimit.kiloBytesPerSecond)
+        alternativeLimitsEnabled.reset(settings.alternativeLimitsEnabled)
+        alternativeDownloadSpeedLimit.reset(settings.alternativeDownloadSpeedLimit.kiloBytesPerSecond)
+        alternativeUploadSpeedLimit.reset(settings.alternativeUploadSpeedLimit.kiloBytesPerSecond)
+        alternativeLimitsScheduled.reset(settings.alternativeLimitsScheduled)
+        alternativeLimitsBeginTime.reset(settings.alternativeLimitsBeginTime)
+        alternativeLimitsEndTime.reset(settings.alternativeLimitsEndTime)
+        alternativeLimitsDays.reset(settings.alternativeLimitsDays)
+    }
 }

@@ -63,7 +63,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="toolbarStyle">@style/Widget.Tremotesf.Toolbar</item>
         <item name="appBarLayoutStyle">@style/Widget.Tremotesf.AppBarLayout</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
-        <item name="timePickerItemStyle">@style/Widget.Tremotesf.TimePickerItem</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Tremotesf.BottomSheetDialog</item>
         <item name="materialCardViewStyle">@style/Widget.Tremotesf.CardView</item>
         <item name="settingsColorThemeChoiceViewStyle">
@@ -131,10 +130,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
         <item name="android:outlineAmbientShadowColor" tools:targetApi="p">@android:color/black
         </item>
         <item name="android:outlineSpotShadowColor" tools:targetApi="p">@android:color/black</item>
-    </style>
-
-    <style name="Widget.Tremotesf.TimePickerItem" parent="android:Widget">
-        <item name="android:background">?selectableItemBackground</item>
     </style>
 
     <style name="ThemeOverlay.Tremotesf.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
