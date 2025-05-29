@@ -250,11 +250,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">Porta casuale all\'avvio di Transmission</string>
     <string name="port_forwarding">Abilita l\'apertura delle porte</string>
     <string name="encryption">Crittografia</string>
-    <string-array name="encryption_items">
-        <item>Permetti</item>
-        <item>Preferisci</item>
-        <item>Richiesta</item>
-    </string-array>
+    <string name="encryption_mode_allowed">Permetti</string>
+    <string name="encryption_mode_preferred">Preferisci</string>
+    <string name="encryption_mode_required">Richiesta</string>
     <string name="enable_utp">Abilita uTP</string>
     <string name="enable_pex">Abilita PEX</string>
     <string name="enable_dht">Abilita DHT</string>

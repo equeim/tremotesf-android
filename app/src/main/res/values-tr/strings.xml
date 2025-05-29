@@ -236,11 +236,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">Transmission başlangıcında rastgele bağlantı noktası</string>
     <string name="port_forwarding">Bağlantı noktası iletmeyi etkinleştir</string>
     <string name="encryption">Şifreleme</string>
-    <string-array name="encryption_items">
-        <item>İzin ver</item>
-        <item>Tercih et</item>
-        <item>Zorunlu</item>
-    </string-array>
+    <string name="encryption_mode_allowed">İzin ver</string>
+    <string name="encryption_mode_preferred">Tercih et</string>
+    <string name="encryption_mode_required">Zorunlu</string>
     <string name="enable_utp">UTP\'yi etkinleştir</string>
     <string name="enable_pex">PEX\'i etkinleştir</string>
     <string name="enable_dht">DHT\'yi etkinleştir</string>

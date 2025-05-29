@@ -25,7 +25,7 @@ suspend fun RpcClient.getNetworkServerSettings(): NetworkServerSettings =
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.setPeerPort(value: Int) =
+suspend fun RpcClient.setPeerPort(value: Long) =
     setSessionProperty("peer-port", value)
 
 /**
@@ -73,19 +73,19 @@ suspend fun RpcClient.setUseLPD(value: Boolean) =
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.setMaximumPeersPerTorrent(value: Int) =
+suspend fun RpcClient.setMaximumPeersPerTorrent(value: Long) =
     setSessionProperty("peer-limit-per-torrent", value)
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.setMaximumPeersGlobally(value: Int) =
+suspend fun RpcClient.setMaximumPeersGlobally(value: Long) =
     setSessionProperty("peer-limit-global", value)
 
 @Serializable
 data class NetworkServerSettings(
     @SerialName("peer-port")
-    val peerPort: Int,
+    val peerPort: Long,
     @SerialName("peer-port-random-on-start")
     val useRandomPort: Boolean,
     @SerialName("port-forwarding-enabled")
@@ -101,9 +101,9 @@ data class NetworkServerSettings(
     @SerialName("lpd-enabled")
     val useLPD: Boolean,
     @SerialName("peer-limit-per-torrent")
-    val maximumPeersPerTorrent: Int,
+    val maximumPeersPerTorrent: Long,
     @SerialName("peer-limit-global")
-    val maximumPeersGlobally: Int,
+    val maximumPeersGlobally: Long,
 ) {
     @Serializable
     enum class EncryptionMode {

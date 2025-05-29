@@ -289,11 +289,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">Случайный порт при запуске Transmission</string>
     <string name="port_forwarding">Перенаправление портов</string>
     <string name="encryption">Шифрование</string>
-    <string-array name="encryption_items">
-        <item>Разрешить</item>
-        <item>Предпочитать</item>
-        <item>Требовать</item>
-    </string-array>
+    <string name="encryption_mode_allowed">Разрешить</string>
+    <string name="encryption_mode_preferred">Предпочитать</string>
+    <string name="encryption_mode_required">Требовать</string>
     <string name="enable_utp">Использовать uTP</string>
     <string name="enable_pex">Использовать PEX</string>
     <string name="enable_dht">Использовать DHT</string>

@@ -258,11 +258,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">트랜스미션 시작시 랜덤 포트</string>
     <string name="port_forwarding">포트 포워딩 활성화</string>
     <string name="encryption">암호화</string>
-    <string-array name="encryption_items">
-        <item>허용</item>
-        <item>선호</item>
-        <item>필요</item>
-    </string-array>
+    <string name="encryption_mode_allowed">허용</string>
+    <string name="encryption_mode_preferred">선호</string>
+    <string name="encryption_mode_required">필요</string>
     <string name="enable_utp">uTP 활성화</string>
     <string name="enable_pex">PEX 활성화</string>
     <string name="enable_dht">DHT 활성화</string>

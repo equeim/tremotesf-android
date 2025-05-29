@@ -180,11 +180,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">Chọn cổng ngẫu nhiên khi chạy Transmission</string>
     <string name="port_forwarding">Cho phép chuyển tiếp cổng</string>
     <string name="encryption">Mã hóa</string>
-    <string-array name="encryption_items">
-        <item>Cho phép</item>
-        <item>Prefer</item>
-        <item>Bắt buộc</item>
-    </string-array>
+    <string name="encryption_mode_allowed">Cho phép</string>
+    <string name="encryption_mode_required">Bắt buộc</string>
     <string name="enable_utp">Kích hoạt µTP</string>
     <string name="enable_pex">Kích hoạt PEX</string>
     <string name="enable_dht">Kích hoạt DHT</string>

@@ -244,11 +244,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="random_port">启动时使用随机端口</string>
     <string name="port_forwarding">启用端口转发</string>
     <string name="encryption">加密模式</string>
-    <string-array name="encryption_items">
-        <item>允许加密</item>
-        <item>偏好加密</item>
-        <item>要求加密</item>
-    </string-array>
+    <string name="encryption_mode_allowed">允许加密</string>
+    <string name="encryption_mode_preferred">偏好加密</string>
+    <string name="encryption_mode_required">要求加密</string>
     <string name="enable_utp">启用 uTP</string>
     <string name="enable_pex">启用 PEX</string>
     <string name="enable_dht">启用 DHT</string>
