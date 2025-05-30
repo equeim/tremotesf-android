@@ -582,4 +582,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="contributor">Contributor</string>
 
     <string name="navigate_up">Navigate up</string>
+
+    <string name="select_action">Select</string>
+    <string name="selection_panel">Selection panel</string>
 </resources>
