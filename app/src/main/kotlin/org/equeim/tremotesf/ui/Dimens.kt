@@ -14,6 +14,8 @@ import androidx.window.core.layout.WindowSizeClass
 object Dimens {
     val SpacingSmall = 8.dp
     val SpacingBig = 16.dp
+    val PaddingForFAB = 70.dp
+    val PaddingForSelectionPanel = 150.dp
 
     @Composable
     fun screenContentPadding(): PaddingValues {

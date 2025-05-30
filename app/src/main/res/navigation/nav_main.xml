@@ -122,9 +122,6 @@
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-        <action
-            android:id="@+id/to_remove_server_dialog"
-            app:destination="@id/remove_server_dialog" />
     </fragment>
     <fragment
         android:id="@+id/add_torrent_file_fragment"
@@ -246,9 +243,6 @@
     <dialog
         android:id="@+id/color_theme_dialog"
         android:name="org.equeim.tremotesf.ui.SettingsColorThemeFragment" />
-    <dialog
-        android:id="@+id/remove_server_dialog"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.RemoveServerDialogFragment" />
     <dialog
         android:id="@+id/torrent_file_rename_dialog"
         android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment">

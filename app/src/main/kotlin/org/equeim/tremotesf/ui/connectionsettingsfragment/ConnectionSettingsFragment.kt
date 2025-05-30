@@ -4,209 +4,240 @@
 
 package org.equeim.tremotesf.ui.connectionsettingsfragment
 
-import android.app.Dialog
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.view.ActionMode
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.databinding.ConnectionSettingsFragmentBinding
-import org.equeim.tremotesf.databinding.ServerListItemBinding
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.rpc.Servers
-import org.equeim.tremotesf.ui.NavigationDialogFragment
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.SelectionTracker
-import org.equeim.tremotesf.ui.utils.bindingAdapterPositionOrNull
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.nullIfEmpty
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltip
+import org.equeim.tremotesf.ui.components.TremotesfMultiSelectionPanel
+import org.equeim.tremotesf.ui.components.TremotesfPlaceholderText
+import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
+import org.equeim.tremotesf.ui.components.rememberTremotesfMultiSelectionState
+import org.equeim.tremotesf.ui.components.selectableBackground
+import org.equeim.tremotesf.ui.components.tremotesfMultiSelectionClickable
 import org.equeim.tremotesf.ui.utils.safeNavigate
-import org.equeim.tremotesf.ui.utils.submitListAwait
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
 
+class ConnectionSettingsFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<ConnectionSettingsViewModel>()
 
-class ConnectionSettingsFragment : NavigationFragment(
-    R.layout.connection_settings_fragment,
-    R.string.connection_settings
+        val servers = model.servers.collectAsStateWithLifecycle()
+        val comparator = remember(LocalConfiguration.current.locales) { AlphanumericComparator() }
+        val sortedServers = remember { derivedStateOf { servers.value.sortedWith(comparator) } }
+
+        ConnectionSettingsScreen(
+            navigateUp = navController::navigateUp,
+            servers = sortedServers,
+            currentServer = model.currentServer.collectAsStateWithLifecycle(),
+            setCurrentServer = model::setCurrentServer,
+            editServer = { navController.safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(it)) },
+            removeServers = model::removeServers,
+            addServer = { navController.safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(null)) }
+        )
+    }
+}
+
+@Composable
+private fun ConnectionSettingsScreen(
+    navigateUp: () -> Unit,
+    servers: State<List<String>>,
+    currentServer: State<String?>,
+    setCurrentServer: (String) -> Unit,
+    editServer: (String) -> Unit,
+    removeServers: (Set<String>) -> Unit,
+    addServer: () -> Unit,
 ) {
-    private val binding by viewLifecycleObject(ConnectionSettingsFragmentBinding::bind)
-    val adapter by viewLifecycleObject { ServersAdapter(this) }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        with(binding) {
-            serversView.adapter = adapter
-            serversView.layoutManager = LinearLayoutManager(requireContext())
-            serversView.addItemDecoration(
-                DividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
+    val selectionState = rememberTremotesfMultiSelectionState(servers) { it }
+    Scaffold(
+        topBar = {
+            TremotesfTopAppBar(
+                title = stringResource(R.string.connection_settings),
+                navigateUp = navigateUp,
             )
-            (serversView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-
-            addServerButton.setOnClickListener {
-                navigate(ConnectionSettingsFragmentDirections.toServerEditFragment(null))
+        },
+        floatingActionButton = {
+            if (!selectionState.hasSelection) {
+                ExtendedFloatingActionButton(
+                    text = { Text(stringResource(R.string.add_server)) },
+                    icon = { Icon(Icons.Filled.Add, stringResource(R.string.add_server)) },
+                    onClick = { addServer() },
+                )
             }
-        }
-
-        GlobalServers.serversState.launchAndCollectWhenStarted(viewLifecycleOwner, ::update)
-    }
-
-    suspend fun update(serversState: Servers.ServersState) {
-        adapter.update(serversState)
-        binding.placeholder.isVisible = adapter.itemCount == 0
-    }
-
-    class ServersAdapter(fragment: Fragment) :
-        ListAdapter<ServersAdapter.Item, ServersAdapter.ViewHolder>(DiffCallback()) {
-        data class Item(val serverName: String, val current: Boolean)
-
-        private val comparator = object : Comparator<Item> {
-            private val nameComparator = AlphanumericComparator()
-            override fun compare(o1: Item, o2: Item) = nameComparator.compare(o1.serverName, o2.serverName)
-        }
-
-        val selectionTracker = SelectionTracker.createForStringKeys(
-            this,
-            true,
-            fragment,
-            ::ActionModeCallback,
-            R.plurals.servers_selected
-        ) { getItem(it).serverName }
-
-        private var currentServerName: String? = null
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(
-                this,
-                selectionTracker,
-                ServerListItemBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { innerPadding ->
+        Box {
+            val layoutDirection = LocalLayoutDirection.current
+            val contentPadding = PaddingValues(
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                top = innerPadding.calculateTopPadding(),
+                end = innerPadding.calculateEndPadding(layoutDirection),
+                bottom = innerPadding.calculateBottomPadding() + Dimens.PaddingForSelectionPanel
             )
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.update()
-
-        suspend fun update(serversState: Servers.ServersState) {
-            val items = serversState.servers
-                .map { Item(it.name, it.name == serversState.currentServerName) }
-                .sortedWith(comparator)
-            currentServerName = serversState.currentServerName
-            submitListAwait(items.nullIfEmpty())
-            selectionTracker.commitAdapterUpdate()
-            selectionTracker.restoreInstanceState()
-        }
-
-        class ViewHolder(
-            private val adapter: ServersAdapter,
-            selectionTracker: SelectionTracker<String>,
-            val binding: ServerListItemBinding,
-        ) : SelectionTracker.ViewHolder<String>(selectionTracker, binding.root) {
-
-            init {
-                binding.radioButton.setOnClickListener {
-                    bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
-                        GlobalServers.setCurrentServer(item.serverName)
-                    }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding)
+                    .selectableGroup(),
+                contentPadding = contentPadding
+            ) {
+                items(items = servers.value, key = { it }) { server ->
+                    ListItem(
+                        headlineContent = { Text(server) },
+                        leadingContent = {
+                            if (!selectionState.hasSelection) {
+                                RadioButton(
+                                    selected = server == currentServer.value,
+                                    onClick = { setCurrentServer(server) }
+                                )
+                            } else {
+                                Checkbox(
+                                    checked = selectionState.isSelected(server),
+                                    onCheckedChange = null,
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                )
+                            }
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = selectableBackground(selectionState.isSelected(server))
+                        ),
+                        modifier = Modifier.tremotesfMultiSelectionClickable(selectionState, server) {
+                            editServer(server)
+                        }
+                    )
+                    HorizontalDivider()
                 }
             }
 
-            override fun update() {
-                super.update()
-                val item = bindingAdapterPositionOrNull?.let(adapter::getItem) ?: return
-                with(binding) {
-                    radioButton.isChecked = item.current
-                    textView.text = item.serverName
-                }
+            val noServers: Boolean by remember { derivedStateOf { servers.value.isEmpty() } }
+            if (noServers) {
+                TremotesfPlaceholderText(stringResource(R.string.no_servers), Modifier.align(Alignment.Center))
             }
 
-            override fun onClick(view: View) {
-                bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
-                    itemView.findNavController()
-                        .safeNavigate(
-                            ConnectionSettingsFragmentDirections.toServerEditFragment(
-                                item.serverName
+            var showRemoveDialog: Boolean by rememberSaveable { mutableStateOf(false) }
+            TremotesfMultiSelectionPanel(
+                state = selectionState,
+                selectedItemsString = R.plurals.servers_selected,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(innerPadding)
+            ) {
+                TremotesfIconButtonWithTooltip(
+                    Icons.Filled.Delete,
+                    R.string.remove
+                ) {
+                    showRemoveDialog = true
+                }
+            }
+            if (showRemoveDialog) {
+                AlertDialog(
+                    onDismissRequest = { showRemoveDialog = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            removeServers(selectionState.selectedKeys)
+                            showRemoveDialog = false
+                        }) { Text(stringResource(R.string.remove)) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            showRemoveDialog = false
+                        }) { Text(stringResource(android.R.string.cancel)) }
+                    },
+                    text = {
+                        Text(
+                            pluralStringResource(
+                                R.plurals.remove_servers_message,
+                                selectionState.selectedCount,
+                                selectionState.selectedCount
                             )
                         )
-                }
-            }
-        }
-
-        private class DiffCallback : DiffUtil.ItemCallback<Item>() {
-            override fun areItemsTheSame(oldItem: Item, newItem: Item) =
-                oldItem.serverName == newItem.serverName
-
-            override fun areContentsTheSame(oldItem: Item, newItem: Item) = oldItem == newItem
-        }
-
-        private class ActionModeCallback(selectionTracker: SelectionTracker<String>) :
-            SelectionTracker.ActionModeCallback<String>(selectionTracker) {
-
-            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                mode.menuInflater.inflate(R.menu.servers_context_menu, menu)
-                return true
-            }
-
-            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-                if (super.onActionItemClicked(mode, item)) {
-                    return true
-                }
-
-                if (selectionTracker?.hasSelection == true && item.itemId == R.id.remove) {
-                    activity.navigate(ConnectionSettingsFragmentDirections.toRemoveServerDialog())
-                    return true
-                }
-
-                return false
+                    }
+                )
             }
         }
     }
 }
 
-class RemoveServerDialogFragment : NavigationDialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val adapter =
-            (parentFragmentManager.primaryNavigationFragment as? ConnectionSettingsFragment)?.adapter
-        val selectionTracker = adapter?.selectionTracker
-        val selectedCount = selectionTracker?.selectedCount ?: 0
-        return MaterialAlertDialogBuilder(requireContext())
-            .setMessage(
-                resources.getQuantityString(
-                    R.plurals.remove_servers_message,
-                    selectedCount,
-                    selectedCount
-                )
-            )
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(R.string.remove) { _, _ ->
-                selectionTracker?.apply {
-                    GlobalServers.removeServers(
-                        adapter.currentList.slice(getSelectedPositionsUnsorted().asIterable()).mapTo(
-                            mutableSetOf(),
-                            ConnectionSettingsFragment.ServersAdapter.Item::serverName
-                        )
-                    )
-                    clearSelection()
-                }
-            }
-            .create()
+@Preview
+@Composable
+private fun ConnectionSettingsScreenPreview() = ScreenPreview {
+    ConnectionSettingsScreen(
+        navigateUp = {},
+        servers = remember { mutableStateOf(listOf("Lol", "Nope")) },
+        currentServer = remember { mutableStateOf("Lol") },
+        setCurrentServer = {},
+        editServer = {},
+        removeServers = {},
+        addServer = {},
+    )
+}
+
+class ConnectionSettingsViewModel : ViewModel() {
+    val servers: StateFlow<List<String>> =
+        GlobalServers.servers.map { servers -> servers.map { it.name } }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val currentServer: StateFlow<String?> =
+        GlobalServers.currentServer.map { it?.name }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun setCurrentServer(serverName: String) {
+        GlobalServers.setCurrentServer(serverName)
+    }
+
+    fun removeServers(serverNames: Set<String>) {
+        GlobalServers.removeServers(serverNames)
     }
 }
