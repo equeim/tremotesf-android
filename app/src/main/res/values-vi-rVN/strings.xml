@@ -286,10 +286,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="connection_settings">Cài đặt kết nối</string>
 
-    <string-array name="proxy_type_items">
-        <item>Mặc định</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Mặc định</string>
 
     </resources>

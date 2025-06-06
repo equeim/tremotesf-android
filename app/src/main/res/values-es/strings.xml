@@ -480,19 +480,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">Compartir</string>
     <string name="share_torrent">Compartir torrent</string>
 
-    <string-array name="proxy_type_items">
-        <item>Por defecto</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Por defecto</string>
 
     <string name="auto_connect_on_wifi_network">Conectarse automáticamente a este servidor al conectarse a la red Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID de la red Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Establecer desde la red Wi-Fi actual</string>
     <string name="location_permission_rationale">Para obtener información sobre el SSID de la red Wi-Fi, se necesita permiso para acceder a la ubicación precisa</string>
     <string name="request_location_permission">Permitir acceso a la ubicación</string>
-    <string name="background_wifi_networks_explanation_fdroid">Para usar esta función cuando la aplicación está en segundo plano, conceda el permiso de acceso a la ubicación en segundo plano o active la notificación persistente en la configuración de la aplicación</string>
-    <string name="background_wifi_networks_explanation_google">Para usar esta función cuando la aplicación está en segundo plano, active la notificación persistente en la configuración de la aplicación</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">Para usar esta función cuando la aplicación está en segundo plano, conceda el permiso de acceso a la ubicación en segundo plano o active la notificación persistente en la configuración de la aplicación</string>
+    <string name="background_wifi_networks_explanation_no_background_permission">Para usar esta función cuando la aplicación está en segundo plano, active la notificación persistente en la configuración de la aplicación</string>
     <string name="background_location_permission_rationale">Para obtener información sobre el SSID de la red Wi-Fi cuando la aplicación está en segundo plano, se necesita permiso para el acceso a la ubicación en segundo plano</string>
     <string name="request_background_location_permission">Permitir acceso a la ubicación en segundo plano</string>
     <string name="background_location_permission_granted">Permiso para acceder a la ubicación en segundo plano concedido</string>

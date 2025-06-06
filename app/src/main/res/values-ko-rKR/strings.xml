@@ -466,19 +466,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">공유</string>
     <string name="share_torrent">토렌트 공유</string>
 
-    <string-array name="proxy_type_items">
-        <item>기본</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">기본</string>
 
     <string name="auto_connect_on_wifi_network">Wi-Fi 네트워크에 연결되면 자동으로 이 서버에 연결됩니다</string>
     <string name="wifi_ssid_hint">Wi-Fi 네트워크 SSID</string>
     <string name="wifi_ssid_set_from_current">현재 Wi-Fi 네트워크에서 설정</string>
     <string name="location_permission_rationale">Tremotesf는 Wi-Fi SSID에 대한 정보를 얻으려면 정확한 위치 권한이 필요합니다</string>
     <string name="request_location_permission">위치 권한 부여</string>
-    <string name="background_wifi_networks_explanation_fdroid">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하거나 백그라운드 위치 권한을 부여하세요</string>
-    <string name="background_wifi_networks_explanation_google">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하세요</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하거나 백그라운드 위치 권한을 부여하세요</string>
+    <string name="background_wifi_networks_explanation_no_background_permission">앱이 백그라운드에 있을 때 이 기능을 사용하려면 앱 설정에서 지속적인 알림을 허용하세요</string>
     <string name="background_location_permission_rationale">Tremotesf는 지속적인 알림을 사용하지 않고 백그라운드에서 Wi-Fi SSID에 대한 정보를 얻으려면 백그라운드 위치 권한이 필요합니다</string>
     <string name="request_background_location_permission">백그라운드 위치 권한 부여</string>
     <string name="background_location_permission_granted">백그라운드 위치 권한이 부여됨</string>

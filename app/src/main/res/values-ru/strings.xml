@@ -518,19 +518,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">Поделиться</string>
     <string name="share_torrent">Поделиться торрентом</string>
 
-    <string-array name="proxy_type_items">
-        <item>По умолчанию</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">По умолчанию</string>
 
     <string name="auto_connect_on_wifi_network">Автоматически подключаться к этому серверу при подключении к сети Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID Wi-Fi сети</string>
     <string name="wifi_ssid_set_from_current">Установить из текущей Wi-Fi сети</string>
     <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к точному местоположению</string>
     <string name="request_location_permission">Разрешить доступ к местоположению</string>
-    <string name="background_wifi_networks_explanation_fdroid">Чтобы использовать эту функцию когда приложение находится в фоне, предоставьте разрешение на фоновый доступ к местоположению либо включите постоянное уведомление в настройках приложения</string>
-    <string name="background_wifi_networks_explanation_google">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">Чтобы использовать эту функцию когда приложение находится в фоне, предоставьте разрешение на фоновый доступ к местоположению либо включите постоянное уведомление в настройках приложения</string>
+    <string name="background_wifi_networks_explanation_no_background_permission">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
     <string name="background_location_permission_rationale">Для получения информации о SSID Wi-Fi сети когда приложение находится в фоне требуется разрешение на фоновый доступ к местоположению</string>
     <string name="request_background_location_permission">Разрешить фоновый доступ к местоположению</string>
     <string name="background_location_permission_granted">Разрешение на фоновый доступ к местоположению предоставлено</string>

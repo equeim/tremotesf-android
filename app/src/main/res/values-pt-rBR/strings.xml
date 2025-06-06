@@ -410,11 +410,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">Compartilhar</string>
     <string name="share_torrent">Compartilhar torrent</string>
 
-    <string-array name="proxy_type_items">
-        <item>Padrão</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Padrão</string>
 
     <string name="request_location_permission">Conceder permissão de localização</string>
     <string name="request_background_location_permission">Conceder permissão de localização em segundo plano</string>

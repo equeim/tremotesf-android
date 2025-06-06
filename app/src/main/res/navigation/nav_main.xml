@@ -221,18 +221,12 @@
             app:nullable="true"
             android:defaultValue="@null" />
         <action
-            android:id="@+id/to_overwrite_dialog"
-            app:destination="@id/server_overwrite_dialog" />
-        <action
             android:id="@+id/to_proxy_settings_fragment"
             app:destination="@id/server_proxy_settings_fragment"
             app:enterAnim="@animator/nav_default_enter_anim"
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-        <action
-            android:id="@+id/to_enable_location_dialog"
-            app:destination="@id/enable_location_dialog" />
     </fragment>
     <fragment
         android:id="@+id/server_certificates_fragment"
@@ -270,9 +264,6 @@
             android:name="announce_url"
             app:argType="string" />
     </dialog>
-    <dialog
-        android:id="@+id/server_overwrite_dialog"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerOverwriteDialogFragment" />
     <dialog
         android:id="@+id/remove_trackers_dialog"
         android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.RemoveTrackersDialogFragment">
@@ -344,11 +335,6 @@
     <action
         android:id="@+id/to_runtime_permission_system_settings_dialog"
         app:destination="@id/runtime_permission_system_settings_dialog" />
-
-    <dialog
-        android:id="@+id/enable_location_dialog"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.EnableLocationDialog" />
-
     <dialog
         android:id="@+id/torrents_filters_dialog_fragment"
         android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsFiltersDialogFragment" />

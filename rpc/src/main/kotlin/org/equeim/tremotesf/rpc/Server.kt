@@ -116,13 +116,13 @@ data class Server(
         private val MINIMUM_UPDATE_INTERVAL = 1.seconds
         private val MAXIMUM_UPDATE_INTERVAL = 1.hours
         val updateIntervalRange: ClosedRange<Duration> get() = MINIMUM_UPDATE_INTERVAL..MAXIMUM_UPDATE_INTERVAL
-        val updateIntervalRangeInSeconds: IntRange get() = (MINIMUM_UPDATE_INTERVAL.inWholeSeconds.toInt())..(MAXIMUM_UPDATE_INTERVAL.inWholeSeconds.toInt())
+        val updateIntervalRangeInSeconds: LongRange get() = (MINIMUM_UPDATE_INTERVAL.inWholeSeconds)..(MAXIMUM_UPDATE_INTERVAL.inWholeSeconds)
         val DEFAULT_UPDATE_INTERVAL = 5.seconds
 
         private val MINIMUM_TIMEOUT = 5.seconds
         private val MAXIMUM_TIMEOUT = 60.seconds
         val timeoutRange: ClosedRange<Duration> get() = MINIMUM_TIMEOUT..MAXIMUM_TIMEOUT
-        val timeoutRangeInSeconds: IntRange get() = (MINIMUM_TIMEOUT.inWholeSeconds.toInt())..(MAXIMUM_TIMEOUT.inWholeSeconds.toInt())
+        val timeoutRangeInSeconds: LongRange get() = (MINIMUM_TIMEOUT.inWholeSeconds)..(MAXIMUM_TIMEOUT.inWholeSeconds)
         val DEFAULT_TIMEOUT = 30.seconds
     }
 }

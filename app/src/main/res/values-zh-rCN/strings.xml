@@ -421,19 +421,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">分享</string>
     <string name="share_torrent">分享种子</string>
 
-    <string-array name="proxy_type_items">
-        <item>默认</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">默认</string>
 
     <string name="auto_connect_on_wifi_network">当连接到 Wi-Fi 网络时自动连接到该服务器</string>
     <string name="wifi_ssid_hint">Wi-Fi 网络 SSID</string>
     <string name="wifi_ssid_set_from_current">设置为当前的 Wi-Fi 网络</string>
     <string name="location_permission_rationale">Tremotesf 需要精确位置信息权限以获取 Wi-Fi SSID 信息</string>
     <string name="request_location_permission">授予位置信息权限</string>
-    <string name="background_wifi_networks_explanation_fdroid">在应用设定中授予持久通知权限或后台位置信息权限，以在应用运行在后台时使用该功能。</string>
-    <string name="background_wifi_networks_explanation_google">在应用设定中授予持久通知权限，以在应用运行在后台时使用此功能。</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">在应用设定中授予持久通知权限或后台位置信息权限，以在应用运行在后台时使用该功能。</string>
+    <string name="background_wifi_networks_explanation_no_background_permission">在应用设定中授予持久通知权限，以在应用运行在后台时使用此功能。</string>
     <string name="background_location_permission_rationale">在不使用持久通知权限的情况下，Tremotesf 需要后台位置信息权限以在后台获取 Wi-Fi SSID 信息</string>
     <string name="request_background_location_permission">授予后台位置信息权限</string>
     <string name="background_location_permission_granted">已获取后台位置信息权限</string>

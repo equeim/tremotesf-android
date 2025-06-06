@@ -451,19 +451,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">Partager</string>
     <string name="share_torrent">Partager le torrent</string>
 
-    <string-array name="proxy_type_items">
-        <item>Défaut</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Défaut</string>
 
     <string name="auto_connect_on_wifi_network">Se connecter automatiquement à ce serveur lors de la connexion au réseau Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID du réseau Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Définir à partir du réseau Wi-Fi actuel</string>
     <string name="location_permission_rationale">Tremotesf a besoin d\'une autorisation de localisation précise pour obtenir des informations sur le SSID Wi-Fi</string>
     <string name="request_location_permission">Accorder l\'autorisation de localisation</string>
-    <string name="background_wifi_networks_explanation_fdroid">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer une notification persistante dans les paramètres de l\'application ou accorder l\'autorisation de localisation en arrière-plan</string>
-    <string name="background_wifi_networks_explanation_google">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer la notification persistante dans les paramètres de l\'application</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer une notification persistante dans les paramètres de l\'application ou accorder l\'autorisation de localisation en arrière-plan</string>
+    <string name="background_wifi_networks_explanation_no_background_permission">Pour utiliser cette fonctionnalité lorsque l\'application est en arrière-plan, vous devez activer la notification persistante dans les paramètres de l\'application</string>
     <string name="background_location_permission_rationale">Tremotesf a besoin d\'une autorisation de localisation en arrière-plan pour obtenir des informations sur le SSID Wi-Fi en arrière-plan sans utiliser de notification persistante</string>
     <string name="request_background_location_permission">Accorder l\'autorisation de localisation en arrière-plan</string>
     <string name="background_location_permission_granted">Autorisation de localisation en arrière-plan accordée</string>

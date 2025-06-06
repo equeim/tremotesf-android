@@ -390,11 +390,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="proxy_settings">Vekil ayarları</string>
     <string name="proxy_type">Vekil türü</string>
-    <string-array name="proxy_type_items">
-        <item>Varsayılan</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Varsayılan</string>
 
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 

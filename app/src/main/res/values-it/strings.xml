@@ -421,11 +421,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share">Condividi</string>
     <string name="share_torrent">Condividi torrent</string>
 
-    <string-array name="proxy_type_items">
-        <item>Predefinito</item>
-        <item>HTTP</item>
-        <item>SOCKS5</item>
-    </string-array>
+    <string name="proxy_type_default">Predefinito</string>
 
     <string name="auto_connect_on_wifi_network">Connettiti automaticamente a questo server quando ti connetti alla rete Wi-Fi</string>
     <string name="wifi_ssid_hint">Rete Wi-Fi</string>
