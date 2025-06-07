@@ -4,188 +4,253 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import android.app.Dialog
-import android.graphics.Typeface
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.TextView
+import android.os.Parcelable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.navigation.NavController
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDivider
+import androidx.navigation.fragment.navArgs
+import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.causes
-import org.equeim.tremotesf.databinding.DetailedConnectionErrorDialogBinding
-import org.equeim.tremotesf.databinding.DetailedConnectionErrorExpandedDialogBinding
 import org.equeim.tremotesf.rpc.DetailedRpcRequestError
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.rpc.redactHeader
-import org.equeim.tremotesf.ui.NavigationDialogFragment
-import org.equeim.tremotesf.ui.serversettingsfragment.DownloadingFragmentDirections
+import org.equeim.tremotesf.ui.ComposeDialogFragment
+import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.utils.Utils
-
-class DetailedConnectionErrorDialogFragment : NavigationDialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(requireContext())
-        val binding = DetailedConnectionErrorDialogBinding.inflate(LayoutInflater.from(builder.context))
-        val error = DetailedConnectionErrorDialogFragmentArgs.fromBundle(requireArguments()).error
-
-        binding.addItem("Error: ${error.error}", "Error") { error.error.details() }
-
-        error.suppressedErrors.forEach {
-            binding.addItem("Suppressed: error: $it", "Suppressed error") { it.details() }
-        }
-
-        error.responseInfo?.let { response ->
-            binding.addItem("HTTP response: ${response.status}", "HTTP response") { response.details() }
-        }
-
-        if (error.serverCertificates.isNotEmpty()) {
-            binding.addItem("Server certificates", showDetailsMonospaceAndUnwrapped = true) {
-                error.serverCertificates.joinToString("\n")
-            }
-        }
-        if (error.clientCertificates.isNotEmpty()) {
-            binding.addItem("Client certificates", showDetailsMonospaceAndUnwrapped = true) {
-                error.clientCertificates.joinToString("\n")
-            }
-        }
-        if (error.requestHeaders.isNotEmpty()) {
-            binding.addItem("HTTP request headers") {
-                error.requestHeaders.joinToString("\n") { header ->
-                    val (name, value) = header.redactHeader()
-                    "$name: $value"
-                }
-            }
-        }
-
-        return builder.setView(binding.root)
-            .setTitle(R.string.detailed_error_message)
-            .setNeutralButton(R.string.share) { _, _ ->
-                Utils.shareText(
-                    error.makeShareString(),
-                    requireContext().getText(R.string.share),
-                    requireContext()
-                )
-            }
-            .setNegativeButton(R.string.close, null).create()
-    }
-
-    private fun DetailedConnectionErrorDialogBinding.addItem(
-        summary: String,
-        detailsTitle: String = summary,
-        showDetailsMonospaceAndUnwrapped: Boolean = false,
-        detailsText: () -> String,
-    ) {
-        items.addView(
-            MaterialDivider(requireContext()),
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        val view = LayoutInflater.from(requireContext())
-            .inflate(R.layout.detailed_connection_error_dialog_item, items, false) as TextView
-        items.addView(view)
-        view.text = summary
-        view.setOnClickListener {
-            navigate(
-                DetailedConnectionErrorDialogFragmentDirections.toExpandedErrorDialogFragment(
-                    detailsTitle,
-                    detailsText(),
-                    showDetailsMonospaceAndUnwrapped
-                )
-            )
-        }
-    }
-
-    private companion object {
-        fun Throwable.details(): String = buildString {
-            append("${this@details}\n")
-            for (cause in causes) {
-                append("\nCaused by:\n$cause\n")
-            }
-        }
-
-        fun DetailedRpcRequestError.ResponseInfo.details(): String = buildString {
-            append("Status: $status\n")
-            append("Protocol: $protocol\n")
-            tlsHandshakeInfo?.let { handshake ->
-                append("TLS version: ${handshake.tlsVersion}\n")
-                append("Cipher suite: ${handshake.cipherSuite}\n")
-            }
-            append("Headers:\n")
-            headers.forEach { header ->
-                val (name, value) = header.redactHeader()
-                append("  $name: $value\n")
-            }
-        }
-
-        fun DetailedRpcRequestError.makeShareString(): String = buildString {
-            append("Error:\n")
-            append(error.details().indent())
-            appendLine()
-            suppressedErrors.forEach {
-                append("Suppressed error:\n")
-                append(it.details().indent())
-                appendLine()
-            }
-            responseInfo?.let {
-                append("HTTP response:\n")
-                append(it.details().indent())
-                appendLine()
-            }
-            if (serverCertificates.isNotEmpty()) {
-                append("Server certificates:\n")
-                append(serverCertificates.joinToString("\n").indent())
-                appendLine()
-            }
-            if (clientCertificates.isNotEmpty()) {
-                append("Client certificates:\n")
-                append(clientCertificates.joinToString("\n").indent())
-                appendLine()
-            }
-            if (requestHeaders.isNotEmpty()) {
-                append("HTTP request headers:\n")
-                append(requestHeaders.joinToString("\n") { header ->
-                    val (name, value) = header.redactHeader()
-                    "$name: $value"
-                }.indent())
-                appendLine()
-            }
-        }
-
-        fun String.indent(): String =
-            lineSequence()
-                .map {
-                    when {
-                        it.isBlank() -> it
-                        else -> "  $it"
-                    }
-                }
-                .joinToString("\n")
-    }
-}
-
-class DetailedConnectionErrorExpandedDialogFragment : NavigationDialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = MaterialAlertDialogBuilder(requireContext())
-        val args = DetailedConnectionErrorExpandedDialogFragmentArgs.fromBundle(requireArguments())
-        val view = DetailedConnectionErrorExpandedDialogBinding.inflate(LayoutInflater.from(builder.context))
-            .run {
-                text.apply {
-                    text = args.text
-                    if (args.monospaceAndUnwrapped) {
-                        setTypeface(Typeface.MONOSPACE, Typeface.NORMAL)
-                        setHorizontallyScrolling(true)
-                    }
-                }
-                root
-            }
-        return builder.setTitle(args.title).setView(view).setNegativeButton(R.string.close, null).create()
-    }
-}
+import org.equeim.tremotesf.ui.utils.safeNavigate
 
 fun NavController.navigateToDetailedErrorDialog(error: RpcRequestError) =
-    navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.makeDetailedError(GlobalRpcClient)))
+    safeNavigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.makeDetailedError(GlobalRpcClient)))
+
+class DetailedConnectionErrorDialogFragment : ComposeDialogFragment() {
+    private val args: DetailedConnectionErrorDialogFragmentArgs by navArgs()
+
+    @Composable
+    override fun Content(navController: NavController) {
+        DetailedConnectionErrorDialogContent(args.error, ::dismiss)
+    }
+}
+
+@Composable
+private fun DetailedConnectionErrorDialogContent(error: DetailedRpcRequestError, onDismissRequest: () -> Unit) {
+    var showExpandedDetails: ExpandedDetails? by rememberSaveable { mutableStateOf(null) }
+    showExpandedDetails?.let {
+        ExpandedDetailsDialog(it) { showExpandedDetails = null }
+    }
+
+    TremotesfAlertDialogContent(
+        title = { Text(stringResource(R.string.detailed_error_message)) },
+        text = {
+            Column {
+                DetailsItem("Error: ${error.error}") {
+                    showExpandedDetails = ExpandedDetails(
+                        title = "Error",
+                        text = error.error.details()
+                    )
+                }
+                error.suppressedErrors.forEach {
+                    HorizontalDivider()
+                    DetailsItem("Suppressed: error: $it") {
+                        showExpandedDetails = ExpandedDetails(
+                            title = "Suppressed error",
+                            text = it.details()
+                        )
+                    }
+                }
+                error.responseInfo?.let { response ->
+                    HorizontalDivider()
+                    DetailsItem("HTTP response: ${response.status}") {
+                        showExpandedDetails = ExpandedDetails(
+                            title = "HTTP response",
+                            text = response.details()
+                        )
+                    }
+                }
+                if (error.serverCertificates.isNotEmpty()) {
+                    HorizontalDivider()
+                    DetailsItem("Server certificates") {
+                        showExpandedDetails = ExpandedDetails(
+                            title = "Server certificates",
+                            text = error.serverCertificates.joinToString("\n"),
+                            showMonospaceAndWithoutWrapping = true
+                        )
+                    }
+                }
+                if (error.clientCertificates.isNotEmpty()) {
+                    HorizontalDivider()
+                    DetailsItem("Client certificates") {
+                        showExpandedDetails = ExpandedDetails(
+                            title = "Client certificates",
+                            text = error.clientCertificates.joinToString("\n"),
+                            showMonospaceAndWithoutWrapping = true
+                        )
+                    }
+                }
+                if (error.requestHeaders.isNotEmpty()) {
+                    HorizontalDivider()
+                    DetailsItem("HTTP request headers") {
+                        showExpandedDetails = ExpandedDetails(
+                            title = "HTTP request headers",
+                            text = error.requestHeaders.joinToString("\n") { header ->
+                                val (name, value) = header.redactHeader()
+                                "$name: $value"
+                            }
+                        )
+                    }
+                }
+            }
+        },
+        buttons = {
+            val context = LocalContext.current
+            TextButton(onClick = {
+                Utils.shareText(
+                    error.makeShareString(),
+                    context.getText(R.string.share),
+                    context
+                )
+            }) {
+                Text(stringResource(R.string.share))
+            }
+            Spacer(modifier = Modifier.weight(1.0f))
+            TextButton(onDismissRequest) { Text(stringResource(R.string.close)) }
+        },
+    )
+}
+
+@Composable
+private fun DetailsItem(summary: String, onClick: () -> Unit) {
+    ListItem(
+        headlineContent = { Text(text = summary, maxLines = 3, style = MaterialTheme.typography.bodyMedium) },
+        trailingContent = { Icon(Icons.Outlined.Info, contentDescription = summary) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    )
+}
+
+private fun Throwable.details(): String = buildString {
+    append("${this@details}\n")
+    for (cause in causes) {
+        append("\nCaused by:\n$cause\n")
+    }
+}
+
+private fun DetailedRpcRequestError.ResponseInfo.details(): String = buildString {
+    append("Status: $status\n")
+    append("Protocol: $protocol\n")
+    tlsHandshakeInfo?.let { handshake ->
+        append("TLS version: ${handshake.tlsVersion}\n")
+        append("Cipher suite: ${handshake.cipherSuite}\n")
+    }
+    append("Headers:\n")
+    headers.forEach { header ->
+        val (name, value) = header.redactHeader()
+        append("  $name: $value\n")
+    }
+}
+
+private fun DetailedRpcRequestError.makeShareString(): String = buildString {
+    append("Error:\n")
+    append(error.details().indent())
+    appendLine()
+    suppressedErrors.forEach {
+        append("Suppressed error:\n")
+        append(it.details().indent())
+        appendLine()
+    }
+    responseInfo?.let {
+        append("HTTP response:\n")
+        append(it.details().indent())
+        appendLine()
+    }
+    if (serverCertificates.isNotEmpty()) {
+        append("Server certificates:\n")
+        append(serverCertificates.joinToString("\n").indent())
+        appendLine()
+    }
+    if (clientCertificates.isNotEmpty()) {
+        append("Client certificates:\n")
+        append(clientCertificates.joinToString("\n").indent())
+        appendLine()
+    }
+    if (requestHeaders.isNotEmpty()) {
+        append("HTTP request headers:\n")
+        append(requestHeaders.joinToString("\n") { header ->
+            val (name, value) = header.redactHeader()
+            "$name: $value"
+        }.indent())
+        appendLine()
+    }
+}
+
+private fun String.indent(): String =
+    lineSequence()
+        .map {
+            when {
+                it.isBlank() -> it
+                else -> "  $it"
+            }
+        }
+        .joinToString("\n")
+
+@Parcelize
+private data class ExpandedDetails(
+    val title: String,
+    val text: String,
+    val showMonospaceAndWithoutWrapping: Boolean = false,
+) : Parcelable
+
+@Composable
+private fun ExpandedDetailsDialog(details: ExpandedDetails, onDismissRequest: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(details.title) },
+        text = {
+            Box(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .run { if (details.showMonospaceAndWithoutWrapping) horizontalScroll(rememberScrollState()) else this }
+            ) {
+                SelectionContainer {
+                    Text(
+                        text = details.text,
+                        fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Monospace else FontFamily.Default
+                    )
+                }
+            }
+        },
+        confirmButton = { TextButton(onDismissRequest) { Text(stringResource(R.string.close)) } }
+    )
+}
