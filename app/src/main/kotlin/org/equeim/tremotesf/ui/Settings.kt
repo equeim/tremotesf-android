@@ -13,7 +13,6 @@ import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -36,7 +35,7 @@ import kotlin.reflect.KClass
 @SuppressLint("StaticFieldLeak")
 object Settings {
     private val context: Context = TremotesfApplication.instance
-    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val preferences = context.getSharedPreferences("${context.packageName}_preferences", Context.MODE_PRIVATE)
 
     @Volatile
     private var migrated = false
@@ -124,14 +123,14 @@ object Settings {
     }
 
     enum class ColorTheme(
-        @StringRes prefsValueResId: Int,
+        @StringRes private val prefsValueResId: Int,
         @StyleRes val activityThemeResId: Int = 0,
     ) : MappedPrefsEnum {
         System(R.string.prefs_color_theme_value_system),
         Red(R.string.prefs_color_theme_value_red, R.style.AppTheme),
         Teal(R.string.prefs_color_theme_value_teal, R.style.AppTheme_Teal);
 
-        override val prefsValue = context.getString(prefsValueResId)
+        override val prefsValue: String get() = context.getString(prefsValueResId)
     }
 
     private val colorThemeMapper =
@@ -144,7 +143,7 @@ object Settings {
         mappedToPrefs = ColorTheme::prefsValue
     )
 
-    enum class DarkThemeMode(@StringRes prefsValueResId: Int, val nightMode: Int) :
+    enum class DarkThemeMode(@StringRes private val prefsValueResId: Int, val nightMode: Int) :
         MappedPrefsEnum {
         Auto(
             R.string.prefs_dark_theme_mode_value_auto,
@@ -157,7 +156,7 @@ object Settings {
         On(R.string.prefs_dark_theme_mode_value_on, AppCompatDelegate.MODE_NIGHT_YES),
         Off(R.string.prefs_dark_theme_mode_value_off, AppCompatDelegate.MODE_NIGHT_NO);
 
-        override val prefsValue = context.getString(prefsValueResId)
+        override val prefsValue: String get() = context.getString(prefsValueResId)
     }
 
     private val darkThemeModeMapper = EnumPrefsMapper<DarkThemeMode>(
@@ -231,7 +230,7 @@ object Settings {
     val deleteFiles: Property<Boolean> =
         PrefsProperty(R.string.prefs_delete_files_key, R.bool.prefs_delete_files_default_value)
 
-    val fillTorrentLinkFromKeyboard: Property<Boolean> =
+    val fillTorrentLinkFromClipboard: Property<Boolean> =
         PrefsProperty(R.string.prefs_link_from_clipboard_key, R.bool.prefs_link_from_clipboard_default_value)
 
     val rememberAddTorrentParameters: Property<Boolean> =

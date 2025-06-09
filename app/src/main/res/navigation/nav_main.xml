@@ -90,14 +90,7 @@
     </fragment>
     <fragment
         android:id="@+id/settings_fragment"
-        android:name="org.equeim.tremotesf.ui.SettingsFragment">
-        <action
-            android:id="@+id/to_persistent_notification_warning_dialog"
-            app:destination="@id/persistent_notification_warning_dialog" />
-        <action
-            android:id="@+id/to_color_theme_dialog"
-            app:destination="@id/color_theme_dialog" />
-    </fragment>
+        android:name="org.equeim.tremotesf.ui.SettingsFragment" />
     <fragment
         android:id="@+id/about_fragment"
         android:name="org.equeim.tremotesf.ui.AboutFragment">
@@ -231,12 +224,6 @@
     <fragment
         android:id="@+id/server_certificates_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment"></fragment>
-    <dialog
-        android:id="@+id/persistent_notification_warning_dialog"
-        android:name="org.equeim.tremotesf.ui.SettingsPersistentNotificationWarningFragment" />
-    <dialog
-        android:id="@+id/color_theme_dialog"
-        android:name="org.equeim.tremotesf.ui.SettingsColorThemeFragment" />
     <dialog
         android:id="@+id/torrent_file_rename_dialog"
         android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment">

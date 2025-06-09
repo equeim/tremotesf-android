@@ -7,6 +7,7 @@ package org.equeim.tremotesf.ui
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
@@ -192,20 +193,26 @@ fun ApplicationTheme(
     content: @Composable () -> Unit
 ) {
     val darkThemeMode: Settings.DarkThemeMode by ActivityThemeProvider.darkThemeMode.collectAsStateWithLifecycle()
-    val useDarkColorScheme = when (darkThemeMode) {
-        Settings.DarkThemeMode.Auto -> isSystemInDarkTheme()
-        Settings.DarkThemeMode.On -> true
-        Settings.DarkThemeMode.Off -> false
-    }
-
     val colorTheme: Settings.ColorTheme by ActivityThemeProvider.colorTheme.collectAsStateWithLifecycle()
     val actualColorTheme = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         colorTheme
     } else {
         if (colorTheme == Settings.ColorTheme.System) Settings.ColorTheme.Red else colorTheme
     }
+    MaterialTheme(
+        colorScheme = selectColorScheme(darkThemeMode, actualColorTheme),
+        content = content,
+    )
+}
 
-    val colorScheme = when (actualColorTheme) {
+@Composable
+fun selectColorScheme(settingsDarkThemeModel: Settings.DarkThemeMode, settingsColorTheme: Settings.ColorTheme): ColorScheme {
+    val useDarkColorScheme = when (settingsDarkThemeModel) {
+        Settings.DarkThemeMode.Auto -> isSystemInDarkTheme()
+        Settings.DarkThemeMode.On -> true
+        Settings.DarkThemeMode.Off -> false
+    }
+    return when (settingsColorTheme) {
         Settings.ColorTheme.System -> {
             val context = LocalContext.current
             @SuppressLint("NewApi")
@@ -214,11 +221,6 @@ fun ApplicationTheme(
         Settings.ColorTheme.Red -> if (useDarkColorScheme) darkRedColorScheme else lightRedColorScheme
         Settings.ColorTheme.Teal -> if (useDarkColorScheme) darkTealColorScheme else lightTealColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content,
-    )
 }
 
 @Composable

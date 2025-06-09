@@ -5,309 +5,498 @@
 package org.equeim.tremotesf.ui
 
 import android.Manifest
-import android.app.Application
-import android.app.Dialog
-import android.content.Context
-import android.content.SharedPreferences
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.os.Build
-import android.os.Bundle
-import android.util.AttributeSet
-import android.view.ContextThemeWrapper
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Checkable
-import android.widget.LinearLayout
-import androidx.activity.result.ActivityResultLauncher
-import androidx.annotation.AttrRes
-import androidx.annotation.StyleRes
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatCheckedTextView
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.preference.CheckBoxPreference
-import androidx.preference.DialogPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceViewHolder
-import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.MaterialColors
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.produceIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
-import org.equeim.tremotesf.ui.utils.updateCompoundDrawables
-import kotlin.collections.set
+import org.equeim.tremotesf.ui.Settings.ColorTheme
+import org.equeim.tremotesf.ui.Settings.DarkThemeMode
+import org.equeim.tremotesf.ui.SettingsScreenViewModel.SettingsProperty
+import org.equeim.tremotesf.ui.components.TremotesfComboBox
+import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
+import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelperState
+import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
+import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
 
+class SettingsFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<SettingsScreenViewModel>()
+        val properties: SettingsScreenViewModel.Properties? by model.properties.collectAsStateWithLifecycle()
+        properties?.let { SettingsScreen(navController::navigateUp, it) }
+    }
+}
 
-class SettingsFragment : NavigationFragment(
-    R.layout.settings_fragment,
-    R.string.settings
-) {
-    class PreferenceFragment : PreferenceFragmentCompat(),
-        SharedPreferences.OnSharedPreferenceChangeListener {
-
-        private val model: PreferenceFragmentViewModel by viewModels()
-        private var notificationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            // super.onCreate() calls onCreatePreferences() so we need to setup launcher before that
-            notificationPermissionLauncher =
-                model.notificationPermissionHelper?.registerWithFragment(this, requireParentFragment())
-            model.notificationPermissionHelper?.checkPermission(requireContext())
-            super.onCreate(savedInstanceState)
-        }
-
-        override fun onDisplayPreferenceDialog(preference: Preference) {
-            if (preference is SettingsAppColorsPreference) {
-                navigate(SettingsFragmentDirections.toColorThemeDialog())
-            } else {
-                super.onDisplayPreferenceDialog(preference)
-            }
-        }
-
-        override fun onStart() {
-            super.onStart()
-            model.notificationPermissionHelper?.checkPermission(requireContext())
-        }
-
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.preferences, rootKey)
-            updateBackgroundUpdatePreference()
-
-            checkNotNull(preferenceManager.sharedPreferences).registerOnSharedPreferenceChangeListener(
-                this
-            )
-
-            findPreference<Preference>(Settings.showPersistentNotification.key)?.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue as Boolean) {
-                    navController.navigate(SettingsFragmentDirections.toPersistentNotificationWarningDialog())
-                    false
-                } else {
-                    true
-                }
-            }
-
-            findPreference<NotificationPermissionPreference>(getText(R.string.notification_permission_key))?.let { preference ->
-                val helper = model.notificationPermissionHelper
-                val launcher = notificationPermissionLauncher
-                if (helper != null && launcher != null) {
-                    helper.permissionGranted.onEach {
-                        preference.isVisible = !it
-                    }.launchIn(lifecycleScope)
-                    preference.onButtonClicked = {
-                        helper.requestPermission(this, launcher, requireParentFragment())
-                    }
-                } else {
-                    preference.isVisible = false
-                }
-            }
-
-            requireParentFragment().setFragmentResultListener(
-                SettingsPersistentNotificationWarningFragment.RESULT_KEY
-            ) { _, _ ->
-                findPreference<CheckBoxPreference>(Settings.showPersistentNotification.key)?.isChecked =
-                    true
-            }
-        }
-
-        override fun onViewStateRestored(savedInstanceState: Bundle?) {
-            super.onViewStateRestored(savedInstanceState)
-            listView.tag = getText(R.string.add_navigation_bar_padding)
-            applyNavigationBarBottomInset()
-        }
-
-        override fun onDestroy() {
-            checkNotNull(preferenceManager.sharedPreferences).unregisterOnSharedPreferenceChangeListener(
-                this
-            )
-            super.onDestroy()
-        }
-
-        override fun onSharedPreferenceChanged(
-            sharedPreferences: SharedPreferences?,
-            key: String?,
+@Composable
+private fun SettingsScreen(navigateUp: () -> Unit, properties: SettingsScreenViewModel.Properties) {
+    Scaffold(
+        topBar = { TremotesfTopAppBar(stringResource(R.string.settings), navigateUp) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .consumeWindowInsets(innerPadding)
+                .padding(innerPadding)
+                .padding(vertical = Dimens.screenContentPaddingVertical()),
+            verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
         ) {
-            when (key) {
-                Settings.notifyOnAdded.key,
-                Settings.notifyOnFinished.key,
-                Settings.showPersistentNotification.key,
-                -> updateBackgroundUpdatePreference()
-            }
-        }
+            val horizontalPadding = Dimens.screenContentPaddingHorizontal()
 
-        private fun updateBackgroundUpdatePreference() = lifecycleScope.launch {
-            findPreference<Preference>(Settings.backgroundUpdateInterval.key)
-                ?.isEnabled =
-                (Settings.notifyOnFinished.get() || Settings.notifyOnAdded.get()) && !Settings.showPersistentNotification.get()
-        }
-    }
-}
+            TremotesfSectionHeader(R.string.appearance, modifier = Modifier.padding(horizontal = horizontalPadding))
 
-class PreferenceFragmentViewModel(application: Application) : AndroidViewModel(application) {
-    val notificationPermissionHelper = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        RuntimePermissionHelper(
-            Manifest.permission.POST_NOTIFICATIONS,
-            R.string.notification_permission_rationale
-        )
-    } else {
-        null
-    }
-}
+            TremotesfComboBox(
+                currentItem = properties.darkThemeMode::value,
+                updateCurrentItem = properties.darkThemeMode::set,
+                items = DarkThemeMode.entries,
+                itemDisplayString = {
+                    stringResource(
+                        when (it) {
+                            DarkThemeMode.Auto -> R.string.prefs_dark_theme_mode_auto
+                            DarkThemeMode.On -> R.string.prefs_dark_theme_mode_on
+                            DarkThemeMode.Off -> R.string.prefs_dark_theme_mode_off
+                        }
+                    )
+                },
+                label = R.string.prefs_dark_theme_mode_title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
+            )
 
-class SettingsPersistentNotificationWarningFragment : NavigationDialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(requireContext())
-            .setMessage(R.string.persistent_notification_warning)
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                setFragmentResult(RESULT_KEY, Bundle.EMPTY)
-            }
-            .create()
-    }
-
-    companion object {
-        val RESULT_KEY = SettingsPersistentNotificationWarningFragment::class.qualifiedName!!
-    }
-}
-
-class NotificationPermissionPreference @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
-    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference,
-) : Preference(context, attrs, defStyleAttr, defStyleRes) {
-    var onButtonClicked: (() -> Unit)? = null
-
-    override fun onBindViewHolder(holder: PreferenceViewHolder) {
-        super.onBindViewHolder(holder)
-        holder.itemView.apply {
-            isClickable = false
-            isFocusable = false
-        }
-        holder.findViewById(R.id.button).setOnClickListener { onButtonClicked?.invoke() }
-    }
-}
-
-class SettingsAppColorsPreference @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle,
-    @StyleRes defStyleRes: Int = androidx.preference.R.style.Preference,
-) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
-    init {
-        // Set initial value so that height will remain fixed
-        summary = "\u200B"
-    }
-
-    private lateinit var scope: CoroutineScope
-    override fun onAttached() {
-        super.onAttached()
-        scope = MainScope()
-        scope.launch {
-            Settings.colorTheme.flow().collect {
-                setSummary(
-                    when (it) {
-                        Settings.ColorTheme.System -> R.string.prefs_color_theme_system
-                        Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
-                        Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+            TremotesfComboBox(
+                currentItem = properties.colorTheme::value,
+                updateCurrentItem = properties.colorTheme::set,
+                items = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    ColorTheme.entries
+                } else {
+                    ColorTheme.entries - ColorTheme.System
+                },
+                itemDisplayString = {
+                    stringResource(
+                        when (it) {
+                            ColorTheme.System -> R.string.prefs_color_theme_system
+                            ColorTheme.Red -> R.string.prefs_color_theme_red
+                            ColorTheme.Teal -> R.string.prefs_color_theme_teal
+                        }
+                    )
+                },
+                label = R.string.prefs_color_theme_title,
+                leadingIcon = {
+                    val color = selectColorScheme(properties.darkThemeMode.value, it).primary
+                    val radius = with(LocalDensity.current) { 6.dp.toPx() }
+                    Canvas(Modifier.size(24.dp)) {
+                        drawRoundRect(color = color, cornerRadius = CornerRadius(radius))
                     }
-                )
-            }
-        }
-    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
+            )
 
-    override fun onDetached() {
-        super.onDetached()
-        scope.cancel()
-    }
-}
+            TremotesfSwitchWithText(
+                checked = properties.torrentCompactView.value,
+                onCheckedChange = properties.torrentCompactView::set,
+                text = R.string.prefs_torrent_compact_view_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
 
-class SettingsColorThemeFragment : NavigationDialogFragment() {
-    private lateinit var themeFromSettings: Deferred<Settings.ColorTheme>
+            TremotesfSwitchWithText(
+                checked = properties.torrentNameMultiline.value,
+                onCheckedChange = properties.torrentNameMultiline::set,
+                text = R.string.prefs_torrent_name_multiline_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        themeFromSettings = lifecycleScope.async { Settings.colorTheme.get() }
-    }
+            TremotesfSectionHeader(
+                text = R.string.behaviour,
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding)
+                    .padding(top = Dimens.SpacingSmall)
+            )
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = layoutInflater.inflate(R.layout.settings_color_theme_dialog, null)
+            TremotesfSwitchWithText(
+                checked = properties.quickReturn.value,
+                onCheckedChange = properties.quickReturn::set,
+                text = R.string.quick_return_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
 
-        val viewsToTheme = mutableMapOf<View, Settings.ColorTheme>()
-        val onViewClicked = { choiceView: View ->
-            val theme = checkNotNull(viewsToTheme[choiceView])
-            requiredActivity.lifecycleScope.launch { Settings.colorTheme.set(theme) }
-            dismiss()
-        }
+            Text(
+                stringResource(R.string.quick_return_summary),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = horizontalPadding)
+            )
 
-        val choiceList = checkNotNull(view.findViewById<LinearLayout>(R.id.choice_list))
-        for (theme in Settings.ColorTheme.entries) {
-            if (theme == Settings.ColorTheme.System && !DynamicColors.isDynamicColorAvailable()) {
-                continue
-            }
-            SettingsColorThemeChoiceView(requireContext()).apply {
-                setText(
-                    when (theme) {
-                        Settings.ColorTheme.System -> R.string.prefs_color_theme_system
-                        Settings.ColorTheme.Red -> R.string.prefs_color_theme_red
-                        Settings.ColorTheme.Teal -> R.string.prefs_color_theme_teal
+            TremotesfSectionHeader(
+                text = R.string.torrents,
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding)
+                    .padding(top = Dimens.SpacingSmall)
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.deleteFiles.value,
+                onCheckedChange = properties.deleteFiles::set,
+                text = R.string.prefs_delete_files_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.fillTorrentLinkFromClipboard.value,
+                onCheckedChange = properties.fillTorrentLinkFromClipboard::set,
+                text = R.string.prefs_link_from_clipboard_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.rememberAddTorrentParameters.value,
+                onCheckedChange = properties.rememberAddTorrentParameters::set,
+                text = R.string.prefs_remember_add_torrent_parameters_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.askForMergingTrackersWhenAddingExistingTorrent.value,
+                onCheckedChange = properties.askForMergingTrackersWhenAddingExistingTorrent::set,
+                text = R.string.prefs_ask_for_merging_trackers_when_adding_existing_torrent_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.mergeTrackersWhenAddingExistingTorrent.value,
+                onCheckedChange = properties.mergeTrackersWhenAddingExistingTorrent::set,
+                text = R.string.prefs_merge_trackers_when_adding_existing_torrent_title,
+                enabled = !properties.askForMergingTrackersWhenAddingExistingTorrent.value,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSectionHeader(
+                text = R.string.notifications,
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding)
+                    .padding(top = Dimens.SpacingSmall)
+            )
+
+            val notificationsPermissionHelperState: TremotesfRuntimePermissionHelperState? =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val notificationsPermissionHelperState = rememberTremotesfRuntimePermissionHelperState(
+                        requiredPermission = Manifest.permission.POST_NOTIFICATIONS,
+                        showRationaleBeforeRequesting = true,
+                    )
+                    TremotesfRuntimePermissionHelper(
+                        state = notificationsPermissionHelperState,
+                        permissionRationaleText = R.string.notification_permission_rationale
+                    )
+                    if (!notificationsPermissionHelperState.permissionGranted) {
+                        OutlinedButton(
+                            onClick = notificationsPermissionHelperState::requestPermission,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(horizontal = horizontalPadding)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+                            ) {
+                                Icon(Icons.Filled.Error, contentDescription = null)
+                                Text(stringResource(R.string.request_notification_permission))
+                            }
+                        }
                     }
-                )
-                if (theme != Settings.ColorTheme.System) {
-                    setColorFromTheme(theme.activityThemeResId)
+                    notificationsPermissionHelperState
+                } else {
+                    null
                 }
-                choiceList.addView(
-                    this,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                viewsToTheme[this] = theme
+
+            TremotesfSwitchWithText(
+                checked = properties.notifyOnFinished.value,
+                onCheckedChange = {
+                    properties.notifyOnFinished.set(it)
+                    if (it && notificationsPermissionHelperState?.permissionGranted == false) {
+                        notificationsPermissionHelperState.requestPermission()
+                    }
+                },
+                text = R.string.notify_on_finished,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.notifyOnAdded.value,
+                onCheckedChange = {
+                    properties.notifyOnAdded.set(it)
+                    if (it && notificationsPermissionHelperState?.permissionGranted == false) {
+                        notificationsPermissionHelperState.requestPermission()
+                    }
+                },
+                text = R.string.notify_on_added,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            val backgroundUpdateIntervalEnabled: Boolean by remember {
+                derivedStateOf {
+                    (properties.notifyOnFinished.value || properties.notifyOnAdded.value) && !properties.showPersistentNotification.value
+                }
             }
+            TremotesfComboBox(
+                currentItem = properties.backgroundUpdateInterval::value,
+                updateCurrentItem = properties.backgroundUpdateInterval::set,
+                items = backgroundUpdateIntervalValues(),
+                itemDisplayString = { backgroundUpdateIntervalDisplayString(it) },
+                label = R.string.prefs_background_update_interval_title,
+                enabled = backgroundUpdateIntervalEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
+            )
+
+            TremotesfSectionHeader(
+                text = R.string.persistent_notification,
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding)
+                    .padding(top = Dimens.SpacingSmall)
+            )
+
+            var showPersistentNotificationWarning: Boolean by rememberSaveable { mutableStateOf(false) }
+            if (showPersistentNotificationWarning) {
+                AlertDialog(
+                    onDismissRequest = { showPersistentNotificationWarning = false },
+                    text = { Text(stringResource(R.string.persistent_notification_warning)) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showPersistentNotificationWarning = false
+                            properties.showPersistentNotification.set(true)
+                            if (notificationsPermissionHelperState?.permissionGranted == false) {
+                                notificationsPermissionHelperState.requestPermission()
+                            }
+                        }) {
+                            Text(stringResource(android.R.string.ok))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showPersistentNotificationWarning = false }) {
+                            Text(stringResource(android.R.string.cancel))
+                        }
+                    }
+                )
+            }
+
+            TremotesfSwitchWithText(
+                checked = properties.showPersistentNotification.value,
+                onCheckedChange = {
+                    if (it) {
+                        showPersistentNotificationWarning = true
+                    } else {
+                        properties.showPersistentNotification.set(false)
+                    }
+                },
+                text = R.string.prefs_persistent_notification_title,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSectionHeader(
+                text = R.string.notifications_on_connect,
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding)
+                    .padding(top = Dimens.SpacingSmall)
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.notifyOnFinishedSinceLastConnection.value,
+                onCheckedChange = {
+                    properties.notifyOnFinishedSinceLastConnection.set(it)
+                    if (it && notificationsPermissionHelperState?.permissionGranted == false) {
+                        notificationsPermissionHelperState.requestPermission()
+                    }
+                },
+                text = R.string.notify_on_finished_since_last,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
+
+            TremotesfSwitchWithText(
+                checked = properties.notifyOnAddedSinceLastConnection.value,
+                onCheckedChange = {
+                    properties.notifyOnAddedSinceLastConnection.set(it)
+                    if (it && notificationsPermissionHelperState?.permissionGranted == false) {
+                        notificationsPermissionHelperState.requestPermission()
+                    }
+                },
+                text = R.string.notify_on_added_since_last,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
+            )
         }
-
-        viewsToTheme.keys.forEach { it.setOnClickListener(onViewClicked) }
-
-        lifecycleScope.launch {
-            val themeFromSettings = this@SettingsColorThemeFragment.themeFromSettings.await()
-            (viewsToTheme.entries.single { it.value == themeFromSettings }.key as Checkable)
-                .isChecked = true
-        }
-
-        return AlertDialog.Builder(requireContext())
-            .setView(view)
-            .setTitle(R.string.prefs_color_theme_title)
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
     }
 }
 
-class SettingsColorThemeChoiceView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    @AttrRes defStyleAttr: Int = R.attr.settingsColorThemeChoiceViewStyle,
-) : AppCompatCheckedTextView(context, attrs, defStyleAttr) {
-    fun setColorFromTheme(@StyleRes activityThemeResId: Int) {
-        val color = MaterialColors.getColor(
-            ContextThemeWrapper(context, activityThemeResId),
-            androidx.appcompat.R.attr.colorPrimary,
-            SettingsColorThemeChoiceView::class.simpleName
-        )
-        val colorDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.settings_color_theme_color_view_shape_48dp)?.apply {
-                colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.ADD)
-            }
-        updateCompoundDrawables(end = colorDrawable)
+@Composable
+private fun backgroundUpdateIntervalValues(): List<Long> {
+    val stringValues = stringArrayResource(R.array.prefs_background_update_interval_values)
+    return remember(stringValues) { stringValues.map { it.toLong() } }
+}
+
+@Composable
+private fun backgroundUpdateIntervalDisplayString(value: Long): String {
+    val strings = stringArrayResource(R.array.prefs_background_update_interval_entries)
+    val index = backgroundUpdateIntervalValues().indexOf(value)
+    return if (index != -1) strings[index] else ""
+}
+
+class SettingsScreenViewModel : ViewModel() {
+    val properties: StateFlow<Properties?> =
+        flow { emit(loadProperties()) }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private suspend fun loadProperties() = Properties(
+        darkThemeMode = SettingsProperty(Settings.darkThemeMode),
+        colorTheme = SettingsProperty(Settings.colorTheme),
+        torrentCompactView = SettingsProperty(Settings.torrentCompactView),
+        torrentNameMultiline = SettingsProperty(Settings.torrentNameMultiline),
+        quickReturn = SettingsProperty(Settings.quickReturn),
+        deleteFiles = SettingsProperty(Settings.deleteFiles),
+        fillTorrentLinkFromClipboard = SettingsProperty(Settings.fillTorrentLinkFromClipboard),
+        rememberAddTorrentParameters = SettingsProperty(Settings.rememberAddTorrentParameters),
+        askForMergingTrackersWhenAddingExistingTorrent = SettingsProperty(Settings.askForMergingTrackersWhenAddingExistingTorrent),
+        mergeTrackersWhenAddingExistingTorrent = SettingsProperty(Settings.mergeTrackersWhenAddingExistingTorrent),
+        notifyOnFinished = SettingsProperty(Settings.notifyOnFinished),
+        notifyOnAdded = SettingsProperty(Settings.notifyOnAdded),
+        backgroundUpdateInterval = SettingsProperty(Settings.backgroundUpdateInterval),
+        showPersistentNotification = SettingsProperty(Settings.showPersistentNotification),
+        notifyOnFinishedSinceLastConnection = SettingsProperty(Settings.notifyOnFinishedSinceLastConnection),
+        notifyOnAddedSinceLastConnection = SettingsProperty(Settings.notifyOnAddedSinceLastConnection),
+    )
+
+    @Stable
+    class Properties(
+        val darkThemeMode: SettingsProperty<DarkThemeMode>,
+        val colorTheme: SettingsProperty<ColorTheme>,
+        val torrentCompactView: SettingsProperty<Boolean>,
+        val torrentNameMultiline: SettingsProperty<Boolean>,
+        val quickReturn: SettingsProperty<Boolean>,
+        val deleteFiles: SettingsProperty<Boolean>,
+        val fillTorrentLinkFromClipboard: SettingsProperty<Boolean>,
+        val rememberAddTorrentParameters: SettingsProperty<Boolean>,
+        val askForMergingTrackersWhenAddingExistingTorrent: SettingsProperty<Boolean>,
+        val mergeTrackersWhenAddingExistingTorrent: SettingsProperty<Boolean>,
+        val notifyOnFinished: SettingsProperty<Boolean>,
+        val notifyOnAdded: SettingsProperty<Boolean>,
+        val backgroundUpdateInterval: SettingsProperty<Long>,
+        val showPersistentNotification: SettingsProperty<Boolean>,
+        val notifyOnFinishedSinceLastConnection: SettingsProperty<Boolean>,
+        val notifyOnAddedSinceLastConnection: SettingsProperty<Boolean>,
+    )
+
+    @Stable
+    class SettingsProperty<T : Any>(
+        private val state: MutableState<T>,
+        private val setValue: suspend (T) -> Unit,
+    ) {
+        val value: T by state
+
+        // For preview only
+        constructor(value: T) : this(mutableStateOf(value), {})
+
+        fun set(value: T) {
+            state.value = value
+            @OptIn(DelicateCoroutinesApi::class)
+            GlobalScope.launch { setValue(value) }
+        }
     }
+
+    private suspend fun <T : Any> SettingsProperty(property: Settings.Property<T>): SettingsProperty<T> {
+        val channel = property.flow().produceIn(viewModelScope)
+        val state = mutableStateOf(channel.receive())
+        viewModelScope.launch { channel.consumeEach(state::value::set) }
+        return SettingsProperty(
+            state = state,
+            setValue = property::set
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SettingsScreenPreview() = ScreenPreview {
+    SettingsScreen(
+        navigateUp = {},
+        properties = SettingsScreenViewModel.Properties(
+            darkThemeMode = SettingsProperty(DarkThemeMode.On),
+            colorTheme = SettingsProperty(ColorTheme.Red),
+            torrentCompactView = SettingsProperty(false),
+            torrentNameMultiline = SettingsProperty(true),
+            quickReturn = SettingsProperty(false),
+            deleteFiles = SettingsProperty(true),
+            fillTorrentLinkFromClipboard = SettingsProperty(false),
+            rememberAddTorrentParameters = SettingsProperty(true),
+            askForMergingTrackersWhenAddingExistingTorrent = SettingsProperty(false),
+            mergeTrackersWhenAddingExistingTorrent = SettingsProperty(true),
+            notifyOnFinished = SettingsProperty(false),
+            notifyOnAdded = SettingsProperty(true),
+            backgroundUpdateInterval = SettingsProperty(15),
+            showPersistentNotification = SettingsProperty(false),
+            notifyOnFinishedSinceLastConnection = SettingsProperty(true),
+            notifyOnAddedSinceLastConnection = SettingsProperty(false),
+        )
+    )
 }

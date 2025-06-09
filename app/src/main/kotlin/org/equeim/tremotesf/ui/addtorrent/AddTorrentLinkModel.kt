@@ -43,7 +43,7 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
 
     suspend fun getInitialTorrentLink(): String? {
         initialUri?.let { return it.toString() }
-        if (!Settings.fillTorrentLinkFromKeyboard.get()) {
+        if (!Settings.fillTorrentLinkFromClipboard.get()) {
             Timber.d("Filling torrent link from clipboard is disabled")
             return null
         }

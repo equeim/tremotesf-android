@@ -27,7 +27,6 @@ androidx-gridlayout = "1.1.0"
 androidx-lifecycle = "2.9.1"
 androidx-navigation = "2.8.9"
 androidx-recyclerview = "1.4.0"
-androidx-preference = "1.2.1"
 androidx-swiperefreshlayout = "1.1.0"
 androidx-viewpager2 = "1.1.0"
 androidx-webkit = "1.14.0"
@@ -81,7 +80,6 @@ androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecyc
 androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "androidx-navigation" }
 androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "androidx-navigation" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx-recyclerview" }
-androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "androidx-viewpager2" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
