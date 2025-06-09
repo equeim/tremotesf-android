@@ -445,12 +445,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_dark_theme_mode_on">On</string>
     <string name="prefs_dark_theme_mode_off">Off</string>
 
-    <string-array name="prefs_dark_theme_mode_entries" translatable="false">
-        <item>@string/prefs_dark_theme_mode_auto</item>
-        <item>@string/prefs_dark_theme_mode_on</item>
-        <item>@string/prefs_dark_theme_mode_off</item>
-    </string-array>
-
     <string name="prefs_torrent_compact_view_title">Use compact view for torrents</string>
     <string name="prefs_torrent_name_multiline_title">Display torrents\' names on multiple lines</string>
 

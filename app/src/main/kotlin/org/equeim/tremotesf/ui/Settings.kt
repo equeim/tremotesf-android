@@ -8,8 +8,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.annotation.AnyRes
-import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
@@ -30,6 +28,10 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import timber.log.Timber
 import kotlin.reflect.KClass
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 
 @SuppressLint("StaticFieldLeak")
@@ -41,203 +43,177 @@ object Settings {
     private var migrated = false
     private val migrationMutex = Mutex()
 
+    private const val DEPRECATED_DARK_THEME_KEY = "darkTheme"
+    private const val DEPRECATED_OLD_COLORS_KEY = "oldColors"
+    private const val DEPRECATED_THEME_KEY = "theme"
+    private const val DEPRECATED_THEME_VALUE_AUTO = "auto"
+    private const val DEPRECATED_THEME_VALUE_DARK = "dark"
+    private const val DEPRECATED_THEME_VALUE_LIGHT = "light"
+    private const val DEPRECATED_REMEMBER_DOWNLOAD_DIRECTORY_KEY = "rememberDownloadDirectory"
+
     private suspend fun migrate() {
         if (migrated) return
         migrationMutex.withLock {
             if (migrated) return
             withContext(Dispatchers.IO) {
-                context.getString(R.string.deprecated_prefs_dark_theme_key)
-                    .let { deprecatedDarkThemeKey ->
-                        if (preferences.contains(deprecatedDarkThemeKey)) {
-                            preferences.edit {
-                                putString(
-                                    darkThemeMode.key,
-                                    if (preferences.getBoolean(deprecatedDarkThemeKey, false)) {
-                                        DarkThemeMode.On.prefsValue
-                                    } else {
-                                        DarkThemeMode.Off.prefsValue
-                                    }
-                                )
-                                remove(deprecatedDarkThemeKey)
+                if (preferences.contains(DEPRECATED_DARK_THEME_KEY)) {
+                    preferences.edit {
+                        putString(
+                            darkThemeMode.key,
+                            if (preferences.getBoolean(DEPRECATED_DARK_THEME_KEY, false)) {
+                                DarkThemeMode.On.prefsValue
+                            } else {
+                                DarkThemeMode.Off.prefsValue
                             }
-                        }
+                        )
+                        remove(DEPRECATED_DARK_THEME_KEY)
                     }
-                context.getString(R.string.deprecated_prefs_old_colors_key)
-                    .let { deprecatedOldColorsKey ->
-                        if (preferences.contains(deprecatedOldColorsKey)) {
-                            preferences.edit {
-                                putString(
-                                    colorTheme.key,
-                                    if (preferences.getBoolean(deprecatedOldColorsKey, false)) {
-                                        ColorTheme.Teal.prefsValue
-                                    } else {
-                                        ColorTheme.Red.prefsValue
-                                    }
-                                )
-                                remove(deprecatedOldColorsKey)
+                }
+                if (preferences.contains(DEPRECATED_OLD_COLORS_KEY)) {
+                    preferences.edit {
+                        putString(
+                            colorTheme.key,
+                            if (preferences.getBoolean(DEPRECATED_OLD_COLORS_KEY, false)) {
+                                ColorTheme.Teal.prefsValue
+                            } else {
+                                ColorTheme.Red.prefsValue
                             }
-                        }
+                        )
+                        remove(DEPRECATED_OLD_COLORS_KEY)
                     }
-                context.getString(R.string.deprecated_prefs_theme_key).let { deprecatedThemeKey ->
-                    if (preferences.contains(deprecatedThemeKey)) {
-                        preferences.edit {
-                            val darkThemeModeValue =
-                                when (preferences.getString(deprecatedThemeKey, null)) {
-                                    context.getString(R.string.deprecated_prefs_theme_value_auto) -> DarkThemeMode.Auto
-                                    context.getString(R.string.deprecated_prefs_theme_value_dark) -> DarkThemeMode.On
-                                    context.getString(R.string.deprecated_prefs_theme_value_light) -> DarkThemeMode.Off
-                                    else -> null
-                                }
-                            darkThemeModeValue?.let { putString(darkThemeMode.key, it.prefsValue) }
-                            remove(deprecatedThemeKey)
-                        }
+                }
+                if (preferences.contains(DEPRECATED_THEME_KEY)) {
+                    preferences.edit {
+                        val darkThemeModeValue =
+                            when (preferences.getString(DEPRECATED_THEME_KEY, null)) {
+                                DEPRECATED_THEME_VALUE_AUTO -> DarkThemeMode.Auto
+                                DEPRECATED_THEME_VALUE_DARK -> DarkThemeMode.On
+                                DEPRECATED_THEME_VALUE_LIGHT -> DarkThemeMode.Off
+                                else -> null
+                            }
+                        darkThemeModeValue?.let { putString(darkThemeMode.key, it.prefsValue) }
+                        remove(DEPRECATED_THEME_KEY)
                     }
                 }
                 if (
-                    (preferences.getString(colorTheme.key, null) ==
-                            context.getString(R.string.prefs_color_theme_system)) &&
-                    !DynamicColors.isDynamicColorAvailable()
+                    (preferences.getString(colorTheme.key, null) == ColorTheme.System.prefsValue)
+                    && !DynamicColors.isDynamicColorAvailable()
                 ) {
-                    val newValue =
-                        context.getString(R.string.prefs_color_theme_default_value)
+                    val newValue = COLOR_THEME_DEFAULT_VALUE.prefsValue
                     Timber.e("Dynamic colors are not supported, setting ${colorTheme.key} value to $newValue")
                     preferences.edit {
                         putString(colorTheme.key, newValue)
                     }
                 }
-                context.getString(R.string.deprecated_prefs_remember_download_directory_key)
-                    .let { deprecatedRememberDownloadDirectoryKey ->
-                        if (preferences.contains(deprecatedRememberDownloadDirectoryKey)) {
-                            preferences.edit {
-                                putBoolean(
-                                    rememberAddTorrentParameters.key,
-                                    preferences.getBoolean(deprecatedRememberDownloadDirectoryKey, false)
-                                )
-                                remove(deprecatedRememberDownloadDirectoryKey)
-                            }
-                        }
+                if (preferences.contains(DEPRECATED_REMEMBER_DOWNLOAD_DIRECTORY_KEY)) {
+                    preferences.edit {
+                        putBoolean(
+                            rememberAddTorrentParameters.key,
+                            preferences.getBoolean(DEPRECATED_REMEMBER_DOWNLOAD_DIRECTORY_KEY, false)
+                        )
+                        remove(DEPRECATED_REMEMBER_DOWNLOAD_DIRECTORY_KEY)
                     }
+                }
                 migrated = true
             }
         }
     }
 
     enum class ColorTheme(
-        @StringRes private val prefsValueResId: Int,
+        override val prefsValue: String,
         @StyleRes val activityThemeResId: Int = 0,
     ) : MappedPrefsEnum {
-        System(R.string.prefs_color_theme_value_system),
-        Red(R.string.prefs_color_theme_value_red, R.style.AppTheme),
-        Teal(R.string.prefs_color_theme_value_teal, R.style.AppTheme_Teal);
-
-        override val prefsValue: String get() = context.getString(prefsValueResId)
+        System("system"),
+        Red("red", R.style.AppTheme),
+        Teal("teal", R.style.AppTheme_Teal);
     }
 
+    private val COLOR_THEME_DEFAULT_VALUE = ColorTheme.Red
+
     private val colorThemeMapper =
-        EnumPrefsMapper<ColorTheme>(R.string.prefs_color_theme_key, R.string.prefs_color_theme_default_value)
+        EnumPrefsMapper<ColorTheme>(COLOR_THEME_DEFAULT_VALUE)
     val colorTheme: Property<ColorTheme> = PrefsProperty<String>(
-        R.string.prefs_color_theme_key,
-        R.string.prefs_color_theme_default_value
+        key = "colorTheme",
+        defaultValue = COLOR_THEME_DEFAULT_VALUE.prefsValue
     ).map(
         prefsToMapped = colorThemeMapper::prefsValueToEnum,
         mappedToPrefs = ColorTheme::prefsValue
     )
 
-    enum class DarkThemeMode(@StringRes private val prefsValueResId: Int, val nightMode: Int) :
+    enum class DarkThemeMode(override val prefsValue: String, val nightMode: Int) :
         MappedPrefsEnum {
         Auto(
-            R.string.prefs_dark_theme_mode_value_auto,
+            "auto",
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             } else {
                 AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
             }
         ),
-        On(R.string.prefs_dark_theme_mode_value_on, AppCompatDelegate.MODE_NIGHT_YES),
-        Off(R.string.prefs_dark_theme_mode_value_off, AppCompatDelegate.MODE_NIGHT_NO);
-
-        override val prefsValue: String get() = context.getString(prefsValueResId)
+        On("on", AppCompatDelegate.MODE_NIGHT_YES),
+        Off("off", AppCompatDelegate.MODE_NIGHT_NO);
     }
 
-    private val darkThemeModeMapper = EnumPrefsMapper<DarkThemeMode>(
-        R.string.prefs_dark_theme_mode_key,
-        R.string.prefs_dark_theme_mode_default_value
-    )
+    private val DARK_THEME_MODE_DEFAULT_VALUE = DarkThemeMode.Auto
+    private val darkThemeModeMapper = EnumPrefsMapper<DarkThemeMode>(DARK_THEME_MODE_DEFAULT_VALUE)
+
     val darkThemeMode: Property<DarkThemeMode> =
         PrefsProperty<String>(
-            R.string.prefs_dark_theme_mode_key,
-            R.string.prefs_dark_theme_mode_default_value
+            key = "darkThemeMode",
+            defaultValue = DARK_THEME_MODE_DEFAULT_VALUE.prefsValue
         ).map(prefsToMapped = darkThemeModeMapper::prefsValueToEnum, mappedToPrefs = DarkThemeMode::prefsValue)
 
-    val torrentCompactView: Property<Boolean> = PrefsProperty(
-        R.string.prefs_torrent_compact_view_key,
-        R.bool.prefs_torrent_compact_view_default_value
-    )
+    val torrentCompactView: Property<Boolean> = PrefsProperty(key = "torrentCompactView", defaultValue = false)
 
-    val torrentNameMultiline: Property<Boolean> = PrefsProperty(
-        R.string.prefs_torrent_name_multiline_key,
-        R.bool.prefs_torrent_name_multiline_default_value
-    )
+    val torrentNameMultiline: Property<Boolean> = PrefsProperty(key = "torrentNameMultiline", defaultValue = false)
 
-    val quickReturn: Property<Boolean> =
-        PrefsProperty(R.string.prefs_quick_return, R.bool.prefs_quick_return_default_value)
+    val quickReturn: Property<Boolean> = PrefsProperty(key = "quickReturn", defaultValue = false)
 
-    val showPersistentNotification: Property<Boolean> = PrefsProperty(
-        R.string.prefs_persistent_notification_key,
-        R.bool.prefs_persistent_notification_default_value
-    )
+    val showPersistentNotification: Property<Boolean> =
+        PrefsProperty(key = "persistentNotification", defaultValue = false)
 
-    val notifyOnFinished: Property<Boolean> = PrefsProperty(
-        R.string.prefs_notify_on_finished_key,
-        R.bool.prefs_notify_on_finished_default_value
-    )
+    val notifyOnFinished: Property<Boolean> = PrefsProperty(key = "notifyOnFinished", defaultValue = true)
 
-    val notifyOnAdded: Property<Boolean> =
-        PrefsProperty(R.string.prefs_notify_on_added_key, R.bool.prefs_notify_on_added_default_value)
+    val notifyOnAdded: Property<Boolean> = PrefsProperty(key = "notifyOnAdded", defaultValue = false)
 
-    val backgroundUpdateInterval: Property<Long> = PrefsProperty<String>(
-        R.string.prefs_background_update_interval_key,
-        R.string.prefs_background_update_interval_default_value
+    enum class BackgroundUpdateInterval(override val prefsValue: String, val duration: Duration) : MappedPrefsEnum {
+        Disabled("0", Duration.ZERO),
+        FifteenMinutes("15", 15.minutes),
+        ThirtyMinutes("30", 30.minutes),
+        Hour("60", 1.hours),
+        ThreeHours("180", 3.hours),
+        SixHours("360", 6.hours),
+        TwelveHours("720", 12.hours),
+        Day("1440", 1.days)
+    }
+
+    private val BACKGROUND_UPDATE_INTERVAL_DEFAULT_VALUE = BackgroundUpdateInterval.Disabled
+    private val backgroundUpdateIntervalMapper = EnumPrefsMapper(BACKGROUND_UPDATE_INTERVAL_DEFAULT_VALUE)
+
+    val backgroundUpdateInterval: Property<BackgroundUpdateInterval> = PrefsProperty<String>(
+        key = "backgroundUpdateInterval",
+        defaultValue = BACKGROUND_UPDATE_INTERVAL_DEFAULT_VALUE.prefsValue
     ).map(
-        prefsToMapped = {
-            try {
-                it.toLong()
-            } catch (ignore: NumberFormatException) {
-                0
-            }
-        },
-        mappedToPrefs = Long::toString
+        prefsToMapped = backgroundUpdateIntervalMapper::prefsValueToEnum,
+        mappedToPrefs = BackgroundUpdateInterval::prefsValue
     )
 
     val notifyOnFinishedSinceLastConnection: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_notify_on_finished_since_last_key,
-            R.bool.prefs_notify_on_finished_since_last_default_value
-        )
+        PrefsProperty(key = "notifyOnFinishedSinceLast", defaultValue = false)
 
     val notifyOnAddedSinceLastConnection: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_notify_on_added_since_last_key,
-            R.bool.prefs_notify_on_added_since_last_default_value
-        )
+        PrefsProperty(key = "notifyOnAddedSinceLast", defaultValue = false)
 
     val userDismissedNotificationPermissionRequest: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_user_dismissed_notification_permission_request_key,
-            R.bool.prefs_user_dismissed_notification_permission_request_default_value
-        )
+        PrefsProperty(key = "userDismissedNotificationPermissionRequest", defaultValue = false)
 
-    val deleteFiles: Property<Boolean> =
-        PrefsProperty(R.string.prefs_delete_files_key, R.bool.prefs_delete_files_default_value)
+    val deleteFiles: Property<Boolean> = PrefsProperty(key = "deleteFiles", defaultValue = false)
 
     val fillTorrentLinkFromClipboard: Property<Boolean> =
-        PrefsProperty(R.string.prefs_link_from_clipboard_key, R.bool.prefs_link_from_clipboard_default_value)
+        PrefsProperty(key = "fillTorrentLinkFromClipboard", defaultValue = false)
 
     val rememberAddTorrentParameters: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_remember_add_torrent_parameters_key,
-            R.bool.prefs_remember_add_torrent_parameters_default_value
-        )
+        PrefsProperty(key = "rememberAddTorrentParameters", defaultValue = true)
 
     enum class StartTorrentAfterAdding(override val prefsValue: String) : MappedPrefsEnum {
         Start("start"),
@@ -245,94 +221,80 @@ object Settings {
         Unknown("unknown")
     }
 
-    private val startTorrentAfterAddingMapper = EnumPrefsMapper<StartTorrentAfterAdding>(
-        R.string.prefs_last_add_torrent_start_after_adding_key,
-        R.string.prefs_last_add_torrent_start_after_adding_default_value
-    )
+    private val START_TORRENT_AFTER_ADDING_DEFAULT_VALUE = StartTorrentAfterAdding.Unknown
+    private val startTorrentAfterAddingMapper =
+        EnumPrefsMapper<StartTorrentAfterAdding>(START_TORRENT_AFTER_ADDING_DEFAULT_VALUE)
     val lastAddTorrentStartAfterAdding: Property<StartTorrentAfterAdding> = PrefsProperty<String>(
-        R.string.prefs_last_add_torrent_start_after_adding_key,
-        R.string.prefs_last_add_torrent_start_after_adding_default_value
+        key = "lastAddTorrentStartAfterAdding",
+        defaultValue = START_TORRENT_AFTER_ADDING_DEFAULT_VALUE.prefsValue
     ).map(
         prefsToMapped = startTorrentAfterAddingMapper::prefsValueToEnum,
         mappedToPrefs = startTorrentAfterAddingMapper.enumToPrefsValue
     )
 
-    private val bandwidthPriorityMapper = EnumPrefsMapper<TorrentLimits.BandwidthPriority>(
-        R.string.prefs_last_add_torrent_priority_key,
-        R.string.prefs_last_add_torrent_priority_default_value
-    ) {
-        when (it) {
-            TorrentLimits.BandwidthPriority.Low -> "low"
-            TorrentLimits.BandwidthPriority.Normal -> "normal"
-            TorrentLimits.BandwidthPriority.High -> "high"
+    private val BANDWIDTH_PRIORITY_DEFAULT_VALUE = TorrentLimits.BandwidthPriority.Normal
+    private val bandwidthPriorityMapper =
+        EnumPrefsMapper<TorrentLimits.BandwidthPriority>(BANDWIDTH_PRIORITY_DEFAULT_VALUE) {
+            when (it) {
+                TorrentLimits.BandwidthPriority.Low -> "low"
+                TorrentLimits.BandwidthPriority.Normal -> "normal"
+                TorrentLimits.BandwidthPriority.High -> "high"
+            }
         }
-    }
     val lastAddTorrentPriority: Property<TorrentLimits.BandwidthPriority> = PrefsProperty<String>(
-        R.string.prefs_last_add_torrent_priority_key,
-        R.string.prefs_last_add_torrent_priority_default_value
+        key = "lastAddTorrentPriority",
+        defaultValue = bandwidthPriorityMapper.enumToPrefsValue(BANDWIDTH_PRIORITY_DEFAULT_VALUE)
     ).map(
         prefsToMapped = bandwidthPriorityMapper::prefsValueToEnum,
         mappedToPrefs = bandwidthPriorityMapper.enumToPrefsValue
     )
 
     val lastAddTorrentLabels: Property<Set<String>> = PrefsProperty(
-        R.string.prefs_last_add_torrent_labels_key,
-        R.array.prefs_last_add_torrent_labels_values
+        key = "lastAddTorrentLabels",
+        defaultValue = emptySet()
     )
 
     val mergeTrackersWhenAddingExistingTorrent: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_merge_trackers_when_adding_existing_torrent_key,
-            R.bool.prefs_merge_trackers_when_adding_existing_torrent_default_value
-        )
+        PrefsProperty(key = "mergeTrackersWhenAddingExistingTorrent", defaultValue = true)
 
     val askForMergingTrackersWhenAddingExistingTorrent: Property<Boolean> =
-        PrefsProperty(
-            R.string.prefs_ask_for_merging_trackers_when_adding_existing_torrent_key,
-            R.bool.prefs_ask_for_merging_trackers_when_adding_existing_torrent_default_value
-        )
+        PrefsProperty(key = "askForMergingTrackersWhenAddingExistingTorrent", defaultValue = true)
 
     val torrentsSortMode: Property<TorrentsListFragmentViewModel.SortMode> =
-        PrefsProperty<Int>(
-            R.string.torrents_sort_mode_key,
-            R.integer.torrents_sort_mode_default_value
-        ).map(
-            prefsToMapped = { TorrentsListFragmentViewModel.SortMode.entries.getOrElse(it) { TorrentsListFragmentViewModel.SortMode.DEFAULT } },
+        PrefsProperty<Int>(key = "torrentsSortMode", defaultValue = -1).map(
+            prefsToMapped = {
+                TorrentsListFragmentViewModel.SortMode.entries.getOrElse(it) {
+                    TorrentsListFragmentViewModel.SortMode.DEFAULT
+                }
+            },
             mappedToPrefs = { it.ordinal }
         )
 
     val torrentsSortOrder: Property<TorrentsListFragmentViewModel.SortOrder> =
-        PrefsProperty<Int>(
-            R.string.torrents_sort_order_key,
-            R.integer.torrents_sort_order_default_value
-        ).map(
-            prefsToMapped = { TorrentsListFragmentViewModel.SortOrder.entries.getOrElse(it) { TorrentsListFragmentViewModel.SortOrder.DEFAULT } },
+        PrefsProperty<Int>(key = "torrentsSortOrder", defaultValue = -1).map(
+            prefsToMapped = {
+                TorrentsListFragmentViewModel.SortOrder.entries.getOrElse(it) {
+                    TorrentsListFragmentViewModel.SortOrder.DEFAULT
+                }
+            },
             mappedToPrefs = { it.ordinal }
         )
 
     val torrentsStatusFilter: Property<TorrentsListFragmentViewModel.StatusFilterMode> =
-        PrefsProperty<Int>(
-            R.string.torrents_status_filter_key,
-            R.integer.torrents_status_filter_default_value
-        ).map(
-            prefsToMapped = { TorrentsListFragmentViewModel.StatusFilterMode.entries.getOrElse(it) { TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT } },
+        PrefsProperty<Int>(key = "torrentsStatusFilter", defaultValue = -1).map(
+            prefsToMapped = {
+                TorrentsListFragmentViewModel.StatusFilterMode.entries.getOrElse(it) {
+                    TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT
+                }
+            },
             mappedToPrefs = { it.ordinal }
         )
 
-    val torrentsLabelFilter: Property<String> = PrefsProperty(
-        R.string.torrents_label_filter_key,
-        R.string.torrents_label_filter_default_value
-    )
+    val torrentsLabelFilter: Property<String> = PrefsProperty(key = "torrentsLabelFilter", defaultValue = "")
 
-    val torrentsTrackerFilter: Property<String> = PrefsProperty(
-        R.string.torrents_tracker_filter_key,
-        R.string.torrents_tracker_filter_default_value
-    )
+    val torrentsTrackerFilter: Property<String> = PrefsProperty(key = "torrentsTrackerFilter", defaultValue = "")
 
-    val torrentsDirectoryFilter: Property<String> = PrefsProperty(
-        R.string.torrents_directory_filter_key,
-        R.string.torrents_directory_filter_default_value
-    )
+    val torrentsDirectoryFilter: Property<String> = PrefsProperty(key = "torrentsFolderFilter", defaultValue = "")
 
     interface Property<T : Any> {
         val key: String
@@ -342,20 +304,17 @@ object Settings {
     }
 
     private inline fun <reified T : Any> PrefsProperty(
-        @StringRes keyResId: Int,
-        @AnyRes defaultValueResId: Int,
-    ) = PrefsProperty(T::class, keyResId, defaultValueResId)
+        key: String,
+        defaultValue: T,
+    ) = PrefsProperty(T::class, key, defaultValue)
 
     private class PrefsProperty<T : Any>(
         kClass: KClass<T>,
-        @StringRes keyResId: Int,
-        @AnyRes defaultValueResId: Int,
+        override val key: String,
+        private val defaultValue: T,
     ) : Property<T> {
-        private val defaultValue = getDefaultValue(kClass, defaultValueResId)
         private val getter = getSharedPreferencesGetter(kClass)
         private val setter = getSharedPreferencesSetter(kClass)
-
-        override val key: String = context.getString(keyResId)
 
         override suspend fun get(): T = withContext(Dispatchers.IO) {
             migrate()
@@ -379,19 +338,6 @@ object Settings {
         }
 
         private companion object {
-            private fun <T : Any> getDefaultValue(kClass: KClass<T>, @AnyRes defaultValueResId: Int): T {
-                @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
-                return when (kClass) {
-                    Boolean::class -> context.resources.getBoolean(defaultValueResId)
-                    Float::class -> context.resources.getDimension(defaultValueResId)
-                    Int::class -> context.resources.getInteger(defaultValueResId)
-                    Long::class -> context.resources.getInteger(defaultValueResId).toLong()
-                    String::class -> context.getString(defaultValueResId)
-                    Set::class -> context.resources.getStringArray(defaultValueResId).toSet()
-                    else -> throw IllegalArgumentException("Unsupported property type $kClass")
-                } as T
-            }
-
             private fun <T : Any> getSharedPreferencesGetter(kClass: KClass<T>): SharedPreferences.(String, T) -> T {
                 @Suppress("UNCHECKED_CAST")
                 return when (kClass) {
@@ -436,36 +382,30 @@ object Settings {
 
     private class EnumPrefsMapper<T : Enum<T>>(
         private val enumClass: Class<T>,
-        @StringRes private val keyResId: Int,
-        @StringRes private val defaultValueResId: Int,
+        private val defaultValue: T,
         val enumToPrefsValue: (T) -> String,
     ) {
         private val enumValues = requireNotNull(enumClass.enumConstants)
 
         fun prefsValueToEnum(prefsValue: String): T {
             enumValues.find { enumToPrefsValue(it) == prefsValue }?.let { return it }
-            val key = context.getString(keyResId)
-            Timber.e("Unknown prefs value $prefsValue for key $key and enum $enumClass")
-            val defaultPrefsValue = context.getString(defaultValueResId)
-            return enumValues.find { enumToPrefsValue(it) == defaultPrefsValue }
-                ?: throw IllegalStateException("Did not find value of enum $enumClass for default prefs value $defaultPrefsValue and key $key")
+            Timber.e("Unknown prefs value $prefsValue for enum $enumClass")
+            return defaultValue
         }
     }
 
     private inline fun <reified T : Enum<T>> EnumPrefsMapper(
-        @StringRes keyResId: Int,
-        @StringRes defaultValueResId: Int,
+        defaultValue: T,
         noinline enumToPrefsValue: (T) -> String,
     ): EnumPrefsMapper<T> =
-        EnumPrefsMapper(T::class.java, keyResId, defaultValueResId, enumToPrefsValue)
+        EnumPrefsMapper(T::class.java, defaultValue, enumToPrefsValue)
 
     private interface MappedPrefsEnum {
         val prefsValue: String
     }
 
     private inline fun <reified T> EnumPrefsMapper(
-        @StringRes keyResId: Int,
-        @StringRes defaultValueResId: Int,
+        defaultValue: T
     ): EnumPrefsMapper<T> where T : MappedPrefsEnum, T : Enum<T> =
-        EnumPrefsMapper(T::class.java, keyResId, defaultValueResId, MappedPrefsEnum::prefsValue)
+        EnumPrefsMapper(T::class.java, defaultValue, MappedPrefsEnum::prefsValue)
 }

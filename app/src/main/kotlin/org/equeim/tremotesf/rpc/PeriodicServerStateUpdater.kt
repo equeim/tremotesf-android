@@ -34,8 +34,8 @@ import org.equeim.tremotesf.service.NotificationsController
 import org.equeim.tremotesf.ui.AppForegroundTracker
 import org.equeim.tremotesf.ui.Settings
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.toJavaDuration
 
 @SuppressLint("StaticFieldLeak")
 object PeriodicServerStateUpdater {
@@ -92,16 +92,17 @@ object PeriodicServerStateUpdater {
                         Timber.e(e, "Failed to cancel background notifications job")
                     }
                 } else {
-                    val interval = Settings.backgroundUpdateInterval.get()
-                    if (interval > 0 && notificationsController.isTorrentNotificationsEnabled(false)) {
+                    val interval = Settings.backgroundUpdateInterval.get().duration.toJavaDuration()
+                    if (!interval.isZero && notificationsController.isTorrentNotificationsEnabled(false)
+                    ) {
                         val constraints =
                             Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                         val request =
-                            PeriodicWorkRequestBuilder<BackgroundNotificationsWorker>(interval, TimeUnit.MINUTES)
-                                .setInitialDelay(interval, TimeUnit.MINUTES)
+                            PeriodicWorkRequestBuilder<BackgroundNotificationsWorker>(interval)
+                                .setInitialDelay(interval)
                                 .setConstraints(constraints)
                                 .build()
-                        Timber.d("Scheduling background notifications job, interval = $interval minutes")
+                        Timber.d("Scheduling background notifications job, interval = ${interval.toMinutes()} minutes")
                         try {
                             workManager.enqueueUniquePeriodicWork(
                                 BackgroundNotificationsWorker::class.qualifiedName!!,

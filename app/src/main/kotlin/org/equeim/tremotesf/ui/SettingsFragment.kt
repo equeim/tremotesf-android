@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.ui.Settings.BackgroundUpdateInterval
 import org.equeim.tremotesf.ui.Settings.ColorTheme
 import org.equeim.tremotesf.ui.Settings.DarkThemeMode
 import org.equeim.tremotesf.ui.SettingsScreenViewModel.SettingsProperty
@@ -301,7 +302,7 @@ private fun SettingsScreen(navigateUp: () -> Unit, properties: SettingsScreenVie
             TremotesfComboBox(
                 currentItem = properties.backgroundUpdateInterval::value,
                 updateCurrentItem = properties.backgroundUpdateInterval::set,
-                items = backgroundUpdateIntervalValues(),
+                items = BackgroundUpdateInterval.entries,
                 itemDisplayString = { backgroundUpdateIntervalDisplayString(it) },
                 label = R.string.prefs_background_update_interval_title,
                 enabled = backgroundUpdateIntervalEnabled,
@@ -392,16 +393,9 @@ private fun SettingsScreen(navigateUp: () -> Unit, properties: SettingsScreenVie
 }
 
 @Composable
-private fun backgroundUpdateIntervalValues(): List<Long> {
-    val stringValues = stringArrayResource(R.array.prefs_background_update_interval_values)
-    return remember(stringValues) { stringValues.map { it.toLong() } }
-}
-
-@Composable
-private fun backgroundUpdateIntervalDisplayString(value: Long): String {
+private fun backgroundUpdateIntervalDisplayString(value: BackgroundUpdateInterval): String {
     val strings = stringArrayResource(R.array.prefs_background_update_interval_entries)
-    val index = backgroundUpdateIntervalValues().indexOf(value)
-    return if (index != -1) strings[index] else ""
+    return strings[value.ordinal]
 }
 
 class SettingsScreenViewModel : ViewModel() {
@@ -441,7 +435,7 @@ class SettingsScreenViewModel : ViewModel() {
         val mergeTrackersWhenAddingExistingTorrent: SettingsProperty<Boolean>,
         val notifyOnFinished: SettingsProperty<Boolean>,
         val notifyOnAdded: SettingsProperty<Boolean>,
-        val backgroundUpdateInterval: SettingsProperty<Long>,
+        val backgroundUpdateInterval: SettingsProperty<BackgroundUpdateInterval>,
         val showPersistentNotification: SettingsProperty<Boolean>,
         val notifyOnFinishedSinceLastConnection: SettingsProperty<Boolean>,
         val notifyOnAddedSinceLastConnection: SettingsProperty<Boolean>,
@@ -493,7 +487,7 @@ private fun SettingsScreenPreview() = ScreenPreview {
             mergeTrackersWhenAddingExistingTorrent = SettingsProperty(true),
             notifyOnFinished = SettingsProperty(false),
             notifyOnAdded = SettingsProperty(true),
-            backgroundUpdateInterval = SettingsProperty(15),
+            backgroundUpdateInterval = SettingsProperty(BackgroundUpdateInterval.FifteenMinutes),
             showPersistentNotification = SettingsProperty(false),
             notifyOnFinishedSinceLastConnection = SettingsProperty(true),
             notifyOnAddedSinceLastConnection = SettingsProperty(false),
