@@ -228,3 +228,132 @@ val Icons.AutoMirrored.Outlined.Label: ImageVector
     }
 
 private var _label: ImageVector? = null
+
+val Icons.Filled.Folder: ImageVector
+    get() {
+        if (_folder != null) {
+            return _folder!!
+        }
+        _folder = materialIcon(name = "Filled.Folder") {
+            materialPath {
+                moveTo(10.0f, 4.0f)
+                horizontalLineTo(4.0f)
+                curveToRelative(-1.1f, 0.0f, -1.99f, 0.9f, -1.99f, 2.0f)
+                lineTo(2.0f, 18.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(16.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                verticalLineTo(8.0f)
+                curveToRelative(0.0f, -1.1f, -0.9f, -2.0f, -2.0f, -2.0f)
+                horizontalLineToRelative(-8.0f)
+                lineToRelative(-2.0f, -2.0f)
+                close()
+            }
+        }
+        return _folder!!
+    }
+
+private var _folder: ImageVector? = null
+
+val Icons.AutoMirrored.Filled.InsertDriveFile: ImageVector
+    get() {
+        if (_insertDriveFile != null) {
+            return _insertDriveFile!!
+        }
+        _insertDriveFile = materialIcon(name = "AutoMirrored.Filled.InsertDriveFile", autoMirror =
+            true) {
+            materialPath {
+                moveTo(6.0f, 2.0f)
+                curveToRelative(-1.1f, 0.0f, -1.99f, 0.9f, -1.99f, 2.0f)
+                lineTo(4.0f, 20.0f)
+                curveToRelative(0.0f, 1.1f, 0.89f, 2.0f, 1.99f, 2.0f)
+                lineTo(18.0f, 22.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                lineTo(20.0f, 8.0f)
+                lineToRelative(-6.0f, -6.0f)
+                lineTo(6.0f, 2.0f)
+                close()
+                moveTo(13.0f, 9.0f)
+                lineTo(13.0f, 3.5f)
+                lineTo(18.5f, 9.0f)
+                lineTo(13.0f, 9.0f)
+                close()
+            }
+        }
+        return _insertDriveFile!!
+    }
+
+private var _insertDriveFile: ImageVector? = null
+
+val Icons.Filled.FileDownload: ImageVector
+    get() {
+        if (_fileDownload != null) {
+            return _fileDownload!!
+        }
+        _fileDownload = materialIcon(name = "Filled.FileDownload") {
+            materialPath {
+                moveTo(19.0f, 9.0f)
+                horizontalLineToRelative(-4.0f)
+                verticalLineTo(3.0f)
+                horizontalLineTo(9.0f)
+                verticalLineToRelative(6.0f)
+                horizontalLineTo(5.0f)
+                lineToRelative(7.0f, 7.0f)
+                lineToRelative(7.0f, -7.0f)
+                close()
+                moveTo(5.0f, 18.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(14.0f)
+                verticalLineToRelative(-2.0f)
+                horizontalLineTo(5.0f)
+                close()
+            }
+        }
+        return _fileDownload!!
+    }
+
+private var _fileDownload: ImageVector? = null
+
+val Icons.Filled.LowPriority: ImageVector
+    get() {
+        if (_lowPriority != null) {
+            return _lowPriority!!
+        }
+        _lowPriority = materialIcon(name = "Filled.LowPriority") {
+            materialPath {
+                moveTo(14.0f, 5.0f)
+                horizontalLineToRelative(8.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(-8.0f)
+                close()
+                moveTo(14.0f, 10.5f)
+                horizontalLineToRelative(8.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(-8.0f)
+                close()
+                moveTo(14.0f, 16.0f)
+                horizontalLineToRelative(8.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(-8.0f)
+                close()
+                moveTo(2.0f, 11.5f)
+                curveTo(2.0f, 15.08f, 4.92f, 18.0f, 8.5f, 18.0f)
+                lineTo(9.0f, 18.0f)
+                verticalLineToRelative(2.0f)
+                lineToRelative(3.0f, -3.0f)
+                lineToRelative(-3.0f, -3.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(-0.5f)
+                curveTo(6.02f, 16.0f, 4.0f, 13.98f, 4.0f, 11.5f)
+                reflectiveCurveTo(6.02f, 7.0f, 8.5f, 7.0f)
+                lineTo(12.0f, 7.0f)
+                lineTo(12.0f, 5.0f)
+                lineTo(8.5f, 5.0f)
+                curveTo(4.92f, 5.0f, 2.0f, 7.92f, 2.0f, 11.5f)
+                close()
+            }
+        }
+        return _lowPriority!!
+    }
+
+private var _lowPriority: ImageVector? = null

@@ -9,12 +9,20 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.mimeTypes
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.BuildConfig
 import org.equeim.tremotesf.R
@@ -22,24 +30,39 @@ import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.addTorrentLink
 import org.equeim.tremotesf.rpc.requests.checkIfTorrentExists
-import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.rpc.requests.torrentproperties.addTorrentTrackers
 import org.equeim.tremotesf.torrentfile.MagnetLink
 import org.equeim.tremotesf.torrentfile.parseMagnetLink
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment.AddTorrentState
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
-class AddTorrentLinkModel(private val initialUri: Uri?, application: Application) :
-    BaseAddTorrentModel(application) {
-    private val _addTorrentState = MutableStateFlow<AddTorrentState?>(null)
-    val addTorrentState: StateFlow<AddTorrentState?> by ::_addTorrentState
+@OptIn(SavedStateHandleSaveableApi::class)
+class AddTorrentLinkModel(private val initialUri: Uri?, savedStateHandle: SavedStateHandle, application: Application) :
+    BaseAddTorrentModel(savedStateHandle, application), DragAndDropTarget {
 
-    private var magnetLinkForExistingTorrent: MagnetLink? = null
-    private var existingTorrentName: String? = null
+    val torrentLink by savedStateHandle.saveable<MutableState<String>> { mutableStateOf("") }
+
+    private val _addTorrentState by savedStateHandle.saveable<MutableState<AddTorrentState?>> { mutableStateOf(null) }
+    val addTorrentState: State<AddTorrentState?> by ::_addTorrentState
 
     private val checkingIfTorrentExistsForInitialLink = AtomicReference<Job>(null)
+
+    init {
+        // Restart the coroutine after restoring state
+        if (_addTorrentState.value != null) {
+            _addTorrentState.value = null
+            addTorrentLink()
+        }
+    }
+
+    override suspend fun setInitialState(initialRpcInputs: InitialRpcInputs) {
+        if (!alreadySetInitialState) {
+            torrentLink.value = getInitialTorrentLink().orEmpty()
+            checkIfTorrentExistsForInitialLink()
+        }
+        super.setInitialState(initialRpcInputs)
+    }
 
     suspend fun getInitialTorrentLink(): String? {
         initialUri?.let { return it.toString() }
@@ -74,31 +97,14 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
             }
     }
 
-    fun acceptDragStartEvent(clipDescription: ClipDescription): Boolean {
-        Timber.i("Drag start event mime types = ${clipDescription.mimeTypes()}")
-        return TORRENT_LINK_MIME_TYPES.any(clipDescription::hasMimeType)
-    }
-
-    fun getTorrentLinkFromDropEvent(clipData: ClipData): String? {
-        return clipData.getTorrentUri(getApplication())
-            ?.takeIf { it.type == TorrentUri.Type.Link }
-            ?.uri
-            ?.toString()
-    }
-
-    fun addTorrentLink(
-        torrentLink: String,
-        downloadDirectory: String,
-        priority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean,
-        labels: List<String>,
-    ) {
-        Timber.d("addTorrentLink() called with: torrentLink = $torrentLink")
+    fun addTorrentLink() {
+        Timber.d("addTorrentLink() called")
+        saveAddTorrentParameters()
         checkingIfTorrentExistsForInitialLink.get()?.cancel()
         val magnetLink = try {
-            parseMagnetLink(torrentLink.toUri())
+            parseMagnetLink(torrentLink.value.toUri())
         } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Failed to parse '$torrentLink' as a magnet link")
+            Timber.d(e, "Failed to parse '$torrentLink' as a magnet link")
             null
         }
         viewModelScope.launch {
@@ -109,21 +115,31 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
                 }
             }
             GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
-                addTorrentLink(torrentLink, downloadDirectory, priority, startDownloading, labels)
+                addTorrentLink(
+                    url = torrentLink.value,
+                    downloadDirectory = downloadDirectory.value,
+                    bandwidthPriority = priority.value,
+                    start = startAddedTorrents.value,
+                    labels = enabledLabels
+                )
             }
             _addTorrentState.value = AddTorrentState.AddedTorrent
         }
     }
 
-    fun checkIfTorrentExistsForInitialLink(torrentLink: String) {
-        Timber.d("checkIfTorrentExistsForInitialLink() called with: torrentLink = $torrentLink")
+    private fun checkIfTorrentExistsForInitialLink() {
+        Timber.d("checkIfTorrentExistsForInitialLink() called")
         if (checkingIfTorrentExistsForInitialLink.get() != null) {
             return
         }
+        if (torrentLink.value.isEmpty()) {
+            Timber.d("checkIfTorrentExistsForInitialLink: no initial torrent link")
+            return
+        }
         val magnetLink = try {
-            parseMagnetLink(torrentLink.toUri())
+            parseMagnetLink(torrentLink.value.toUri())
         } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Failed to parse '$torrentLink' as a magnet link")
+            Timber.d(e, "checkIfTorrentExistsForInitialLink: failed to parse '${torrentLink.value}' as magnet link")
             return
         }
         viewModelScope.launch {
@@ -152,54 +168,87 @@ class AddTorrentLinkModel(private val initialUri: Uri?, application: Application
             null
         }
         if (existingTorrentName != null) {
-            this.magnetLinkForExistingTorrent = magnetLink
-            this.existingTorrentName = existingTorrentName
             when {
                 Settings.askForMergingTrackersWhenAddingExistingTorrent.get() ->
                     _addTorrentState.value =
-                        AddTorrentState.AskingForMergingTrackers(existingTorrentName)
+                        AddTorrentState.AskForMergingTrackers(existingTorrentName)
 
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
-                    mergeTrackersWithExistingTorrent(afterAsking = false)
+                    mergeTrackersWithExistingTorrent(
+                        magnetLink = magnetLink,
+                        torrentName = existingTorrentName,
+                        showMessage = true
+                    )
 
-                else -> _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(existingTorrentName, afterAsking = false)
+                else -> _addTorrentState.value =
+                    AddTorrentState.DidNotMergeTrackers(torrentName = existingTorrentName, showMessage = true)
             }
         }
         return existingTorrentName != null
     }
 
-    fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
+    override fun onMergeTrackersDialogResult(result: MergeTrackersDialogResult) {
         Timber.d("onMergeTrackersDialogResult() called with: result = $result")
-        val existingTorrentName = existingTorrentName
-        if (existingTorrentName == null) {
-            Timber.e("onMergeTrackersDialogResult: existingTorrentName must not be null")
+        super.onMergeTrackersDialogResult(result)
+        val torrentName = (_addTorrentState.value as? AddTorrentState.AskForMergingTrackers)?.torrentName
+        if (torrentName == null) {
+            Timber.e("onMergeTrackersDialogResult: addTorrentState is not AskForMergingTrackers")
+            return
+        }
+        val magnetLink = try {
+            parseMagnetLink(torrentLink.value.toUri())
+        } catch (e: IllegalArgumentException) {
+            Timber.d(e, "Failed to parse '$torrentLink' as a magnet link")
             return
         }
         when (result) {
-            is MergingTrackersDialogFragment.Result.ButtonClicked -> if (result.merge) {
-                mergeTrackersWithExistingTorrent(afterAsking = true)
-            } else {
-                _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(existingTorrentName, afterAsking = true)
+            is MergeTrackersDialogResult.ButtonClicked -> {
+                if (result.merge) {
+                    mergeTrackersWithExistingTorrent(
+                        magnetLink = magnetLink,
+                        torrentName = torrentName,
+                        showMessage = false
+                    )
+                } else {
+                    _addTorrentState.value =
+                        AddTorrentState.DidNotMergeTrackers(torrentName = torrentName, showMessage = false)
+                }
             }
-            is MergingTrackersDialogFragment.Result.Cancelled -> _addTorrentState.value = null
+
+            is MergeTrackersDialogResult.Cancelled -> _addTorrentState.value = null
         }
     }
 
-    private fun mergeTrackersWithExistingTorrent(afterAsking: Boolean) {
-        Timber.d("mergeTrackersWithExistingTorrent() called with: afterAsking = $afterAsking")
-        val magnetLink = magnetLinkForExistingTorrent
-        if (magnetLink == null) {
-            Timber.e("mergeTrackersWithExistingTorrent: magnetLinkForExistingTorrent must not be null")
-            return
-        }
-        val existingTorrentName = existingTorrentName
-        if (existingTorrentName == null) {
-            Timber.e("mergeTrackersWithExistingTorrent: existingTorrentName must not be null")
-            return
-        }
+    private fun mergeTrackersWithExistingTorrent(
+        magnetLink: MagnetLink,
+        torrentName: String,
+        showMessage: Boolean
+    ) {
+        Timber.d(
+            "mergeTrackersWithExistingTorrent() called with: magnetLink = $magnetLink, torrentName = $torrentName, showMessage = $showMessage"
+        )
         GlobalRpcClient.performBackgroundRpcRequest(R.string.merging_trackers_error) {
             addTorrentTrackers(magnetLink.infoHashV1, magnetLink.trackers)
         }
-        _addTorrentState.value = AddTorrentState.MergedTrackers(existingTorrentName, afterAsking)
+        _addTorrentState.value = AddTorrentState.MergedTrackers(torrentName, showMessage = showMessage)
+    }
+
+    fun shouldStartDragAndDrop(event: DragAndDropEvent): Boolean {
+        val mimeTypes = event.mimeTypes()
+        Timber.i("Drag start event mime types = $mimeTypes")
+        return TORRENT_LINK_MIME_TYPES.any(mimeTypes::contains)
+    }
+
+    override fun onDrop(event: DragAndDropEvent): Boolean {
+        val clipData = event.toAndroidDragEvent().clipData
+        val torrentLink = clipData.getTorrentUri(getApplication())
+            ?.takeIf { it.type == TorrentUri.Type.Link }
+            ?.uri
+            ?.toString()
+        if (torrentLink != null) {
+            this.torrentLink.value = torrentLink
+            return true
+        }
+        return false
     }
 }

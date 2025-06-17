@@ -200,21 +200,21 @@ class RpcTorrentFilesTree(
     val isEmpty: Boolean
         get() = files.isEmpty()
 
-    override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
+    override fun onSetFilesWanted(ids: List<Int>, wanted: Boolean) {
         GlobalRpcClient.performBackgroundRpcRequest(R.string.set_files_wanted_error) {
             GlobalRpcClient.setTorrentFilesWanted(
                 model.torrentHashString,
-                ids.asList(),
+                ids,
                 wanted
             )
         }
     }
 
-    override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
+    override fun onSetFilesPriority(ids: List<Int>, priority: Item.Priority) {
         GlobalRpcClient.performBackgroundRpcRequest(R.string.set_files_priority_error) {
             GlobalRpcClient.setTorrentFilesPriority(
                 model.torrentHashString,
-                ids.asList(),
+                ids,
                 priority.toTorrentFilePriority()
             )
         }

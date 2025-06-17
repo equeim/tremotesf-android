@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
-import android.Manifest
 import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
@@ -12,25 +11,19 @@ import android.content.res.AssetFileDescriptor
 import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
-import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.addTorrentFile
 import org.equeim.tremotesf.rpc.requests.checkIfTorrentExists
-import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
-import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.rpc.requests.torrentproperties.addTorrentTrackers
 import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.torrentfile.FileParseException
@@ -38,125 +31,71 @@ import org.equeim.tremotesf.torrentfile.FileReadException
 import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFragment.AddTorrentState
-import org.equeim.tremotesf.ui.utils.RuntimePermissionHelper
-import org.equeim.tremotesf.ui.utils.savedState
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileModel.LoadingState
 import timber.log.Timber
 
 
 interface AddTorrentFileModel {
-    enum class ParserStatus {
-        None,
-        Loading,
-        FileIsTooLarge,
-        ReadingError,
-        ParsingError,
-        Loaded
+    sealed interface LoadingState {
+        data object Initial : LoadingState
+        data object Loading : LoadingState
+        data class Loaded(val torrentName: String) : LoadingState
+        enum class FileLoadingError : LoadingState {
+            FileIsTooLarge,
+            ReadingError,
+            ParsingError,
+        }
+        data class InitialRpcInputsError(val error: RpcRequestError) : LoadingState
+        data object Aborted: LoadingState
     }
 
-    data class ViewUpdateData(
-        val parserStatus: ParserStatus,
-        val addTorrentState: AddTorrentState?,
-        val initialRpcInputs: RpcRequestState<BaseAddTorrentModel.InitialRpcInputs>,
-        val hasStoragePermission: Boolean,
-    )
-
-    var rememberedPagerItem: Int
-
+    val loadingState: State<LoadingState>
     val needStoragePermission: Boolean
-    val storagePermissionHelper: RuntimePermissionHelper?
-
-    val viewUpdateData: Flow<ViewUpdateData>
-
     val filesTree: TorrentFilesTree
-    val torrentName: String
-    val renamedFiles: MutableMap<String, String>
 
-    var shouldSetInitialLocalInputs: Boolean
-    var shouldSetInitialRpcInputs: Boolean
-
-    suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String
-    suspend fun getFreeSpace(directory: String): FileSize?
-    fun addTorrentFile(
-        downloadDirectory: String,
-        bandwidthPriority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean,
-        labels: List<String>,
-    )
-    fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result)
+    fun load()
+    fun addTorrentFile()
+    fun onMergeTrackersDialogResult(result: MergeTrackersDialogResult)
 }
 
+@OptIn(SavedStateHandleSaveableApi::class)
 class AddTorrentFileModelImpl(
-    private val args: AddTorrentFileFragmentArgs,
+    private val uri: Uri,
     application: Application,
     private val savedStateHandle: SavedStateHandle,
-) : BaseAddTorrentModel(application), AddTorrentFileModel {
-    override var rememberedPagerItem: Int by savedState(savedStateHandle, -1)
+) : BaseAddTorrentModel(savedStateHandle, application), AddTorrentFileModel {
+    override val needStoragePermission: Boolean =
+        uri.scheme == ContentResolver.SCHEME_FILE && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
 
-    override val storagePermissionHelper = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-        RuntimePermissionHelper(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            R.string.storage_permission_rationale_torrent
-        )
-    } else {
-        null
-    }
-
-    override val needStoragePermission =
-        args.uri.scheme == ContentResolver.SCHEME_FILE && storagePermissionHelper != null
-
-    private val parserStatus = MutableStateFlow(AddTorrentFileModel.ParserStatus.None)
-
-    private val addTorrentState = MutableStateFlow<AddTorrentState?>(null)
-
-    override val viewUpdateData = combine(
-        parserStatus,
-        addTorrentState,
-        initialRpcInputs,
-        storagePermissionHelper?.permissionGranted ?: flowOf(false)
-    ) { parserStatus, addTorrentLinkState, initialRpcInputs, hasPermission ->
-        AddTorrentFileModel.ViewUpdateData(
-            parserStatus,
-            addTorrentLinkState,
-            initialRpcInputs,
-            hasPermission
-        )
-    }
+    override val loadingState = mutableStateOf<LoadingState>(LoadingState.Initial)
 
     private var fd: AssetFileDescriptor? = null
 
-    override val filesTree = TorrentFilesTree(viewModelScope)
-    override lateinit var torrentName: String
-        private set
+    override val filesTree: TorrentFilesTree = FilesTree()
 
-    override val renamedFiles = mutableMapOf<String, String>()
+    private val renamedFiles = mutableMapOf<String, String>()
 
+    private lateinit var torrentName: String
     private lateinit var infoHashV1: String
     private lateinit var trackers: List<Set<String>>
     private lateinit var files: List<TorrentFilesTree.FileNode>
 
-    init {
-        if (needStoragePermission) {
-            viewModelScope.launch {
-                checkNotNull(storagePermissionHelper).permissionGranted.first { it }
-                load()
-            }
-        } else {
-            load()
-        }
-    }
+    private val _addTorrentState = mutableStateOf<AddTorrentState?>(null)
+    val addTorrentState: State<AddTorrentState?> by ::_addTorrentState
 
     override fun onCleared() {
         fd?.closeQuietly()
     }
 
-    private fun load() {
-        Timber.i("load: loading ${args.uri}")
-        if (parserStatus.value == AddTorrentFileModel.ParserStatus.None) {
-            parserStatus.value = AddTorrentFileModel.ParserStatus.Loading
+    override fun load() {
+        if (loadingState.value == LoadingState.Initial) {
+            Timber.i("load: loading $uri")
+            loadingState.value = LoadingState.Loading
             viewModelScope.launch {
-                doLoad(args.uri, getApplication())
+                doLoad(uri, getApplication())
             }
+        } else {
+            Timber.e("load: loadingState is not Initial")
         }
     }
 
@@ -167,26 +106,26 @@ class AddTorrentFileModelImpl(
             context.contentResolver.openAssetFileDescriptor(uri, "r")
         } catch (e: Exception) {
             Timber.e(e, "Failed to open file descriptor")
-            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            loadingState.value = LoadingState.FileLoadingError.ReadingError
             return@withContext
         }
         if (fd == null) {
             Timber.e("File descriptor is null")
-            parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            loadingState.value = LoadingState.FileLoadingError.ReadingError
             return@withContext
         }
         var closeFd = true
         try {
             val parseResult = try {
                 TorrentFileParser.parseTorrentFile(fd.fileDescriptor)
-            } catch (error: FileReadException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ReadingError
+            } catch (_: FileReadException) {
+                loadingState.value = LoadingState.FileLoadingError.ReadingError
                 return@withContext
-            } catch (error: FileIsTooLargeException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.FileIsTooLarge
+            } catch (_: FileIsTooLargeException) {
+                loadingState.value = LoadingState.FileLoadingError.FileIsTooLarge
                 return@withContext
-            } catch (error: FileParseException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+            } catch (_: FileParseException) {
+                loadingState.value = LoadingState.FileLoadingError.ParsingError
                 return@withContext
             }
 
@@ -196,7 +135,7 @@ class AddTorrentFileModelImpl(
             trackers = parseResult.trackers
 
             if (checkIfTorrentExists()) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.None
+                loadingState.value = LoadingState.Aborted
                 return@withContext
             }
 
@@ -207,10 +146,10 @@ class AddTorrentFileModelImpl(
                     this@AddTorrentFileModelImpl.fd = fd
                     this@AddTorrentFileModelImpl.files = files
                     filesTree.init(rootNode, savedStateHandle)
-                    parserStatus.value = AddTorrentFileModel.ParserStatus.Loaded
+                    loadingState.value = LoadingState.Loaded(torrentName)
                 }
-            } catch (error: FileParseException) {
-                parserStatus.value = AddTorrentFileModel.ParserStatus.ParsingError
+            } catch (_: FileParseException) {
+                loadingState.value = LoadingState.FileLoadingError.ParsingError
                 return@withContext
             }
         } finally {
@@ -220,35 +159,29 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    override fun addTorrentFile(
-        downloadDirectory: String,
-        bandwidthPriority: TorrentLimits.BandwidthPriority,
-        startDownloading: Boolean,
-        labels: List<String>,
-    ) {
-        Timber.d(
-            "addTorrentFile() called with: downloadDirectory = $downloadDirectory, bandwidthPriority = $bandwidthPriority, startDownloading = $startDownloading, labels = $labels"
-        )
+    override fun addTorrentFile() {
+        Timber.d("addTorrentFile() called")
+        saveAddTorrentParameters()
         val fd = detachFd() ?: return
         val priorities = getFilePriorities()
         val renamedFiles = renamedFiles.toMap()
         viewModelScope.launch {
-            addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
+            _addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
             if (!checkIfTorrentExists()) {
                 GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
                     addTorrentFile(
                         torrentFile = fd,
-                        downloadDirectory = downloadDirectory,
-                        bandwidthPriority = bandwidthPriority,
+                        downloadDirectory = downloadDirectory.value,
+                        bandwidthPriority = priority.value,
                         unwantedFiles = priorities.unwantedFiles,
                         highPriorityFiles = priorities.highPriorityFiles,
                         lowPriorityFiles = priorities.lowPriorityFiles,
                         renamedFiles = renamedFiles,
-                        start = startDownloading,
-                        labels = labels
+                        start = startAddedTorrents.value,
+                        labels = enabledLabels
                     )
                 }
-                addTorrentState.value = AddTorrentState.AddedTorrent
+                _addTorrentState.value = AddTorrentState.AddedTorrent
             }
         }
     }
@@ -266,13 +199,13 @@ class AddTorrentFileModelImpl(
         if (alreadyExists) {
             when {
                 Settings.askForMergingTrackersWhenAddingExistingTorrent.get() ->
-                    addTorrentState.value =
-                        AddTorrentState.AskingForMergingTrackers(torrentName)
+                    _addTorrentState.value =
+                        AddTorrentState.AskForMergingTrackers(torrentName)
 
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
                     mergeTrackersWithExistingTorrent(afterAsking = false)
 
-                else -> addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, afterAsking = false)
+                else -> _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, showMessage = true)
             }
         }
         return alreadyExists
@@ -322,12 +255,13 @@ class AddTorrentFileModelImpl(
         )
     }
 
-    override fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
+    override fun onMergeTrackersDialogResult(result: MergeTrackersDialogResult) {
+        super.onMergeTrackersDialogResult(result)
         Timber.d("onMergeTrackersDialogResult() called with: result = $result")
-        if ((result as? MergingTrackersDialogFragment.Result.ButtonClicked)?.merge == true) {
+        if ((result as? MergeTrackersDialogResult.ButtonClicked)?.merge == true) {
             mergeTrackersWithExistingTorrent(afterAsking = true)
         } else {
-            addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, afterAsking = true)
+            _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, showMessage = false)
         }
     }
 
@@ -338,7 +272,13 @@ class AddTorrentFileModelImpl(
         GlobalRpcClient.performBackgroundRpcRequest(R.string.merging_trackers_error) {
             addTorrentTrackers(infoHash, trackers)
         }
-        addTorrentState.value = AddTorrentState.MergedTrackers(torrentName, afterAsking)
+        _addTorrentState.value = AddTorrentState.MergedTrackers(torrentName, afterAsking)
+    }
+
+    private inner class FilesTree : TorrentFilesTree(viewModelScope) {
+        override fun onFileRenamed(path: String, newName: String) {
+            renamedFiles[path] = newName
+        }
     }
 
     private companion object {

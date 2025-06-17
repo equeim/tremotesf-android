@@ -5,15 +5,30 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.app.Application
+import androidx.annotation.CallSuper
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.serialization.saved
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -21,22 +36,29 @@ import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.normalizePath
 import org.equeim.tremotesf.rpc.performRecoveringRequest
 import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.getFreeSpaceInDirectory
+import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
 import org.equeim.tremotesf.rpc.requests.getTorrentsLabels
-import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
+import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
 
-abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(application) {
-    var shouldSetInitialLocalInputs = true
-    var shouldSetInitialRpcInputs = true
-
+@OptIn(SavedStateHandleSaveableApi::class)
+abstract class BaseAddTorrentModel(
+    savedStateHandle: SavedStateHandle,
+    application: Application
+) : AndroidViewModel(application) {
     data class InitialRpcInputs(
-        val downloadingServerSettings: DownloadingServerSettings,
+        val downloadDirectory: NormalizedRpcPath,
+        val torrentsDownloadDirectories: Set<NormalizedRpcPath>,
+        val startAddedTorrents: Boolean,
         val allLabels: Set<String>,
     )
 
@@ -44,57 +66,199 @@ abstract class BaseAddTorrentModel(application: Application) : AndroidViewModel(
         GlobalRpcClient.performRecoveringRequest {
             coroutineScope {
                 val settings = async { getDownloadingServerSettings() }
+                val torrentsDownloadDirectories = async { getTorrentsDownloadDirectories() }
                 val labels = async { getTorrentsLabels() }
-                InitialRpcInputs(settings.await(), labels.await())
+                InitialRpcInputs(
+                    downloadDirectory = settings.await().downloadDirectory,
+                    torrentsDownloadDirectories = torrentsDownloadDirectories.await(),
+                    startAddedTorrents = settings.await().startAddedTorrents,
+                    allLabels = labels.await()
+                )
             }
         }
-            .onEach { if (it !is RpcRequestState.Loaded) shouldSetInitialRpcInputs = true }
+            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
             .stateIn(GlobalRpcClient, viewModelScope)
 
+    val loading: StateFlow<Boolean> = initialRpcInputs
+        .map { it is RpcRequestState.Loaded }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val downloadDirectory by savedStateHandle.saveable<MutableState<String>> { mutableStateOf("") }
+    val allDownloadDirectories by savedStateHandle.saveable<SnapshotStateList<DownloadDirectoryItem>>(
+        saver = SnapshotStateListSaver()
+    ) { SnapshotStateList() }
+
+
+    sealed interface DownloadDirectoryFreeSpace {
+        data class FreeSpace(val size: FileSize): DownloadDirectoryFreeSpace
+        data object Error : DownloadDirectoryFreeSpace
+    }
+
+    val downloadDirectoryFreeSpace: StateFlow<DownloadDirectoryFreeSpace?> = snapshotFlow { downloadDirectory.value }
+        .map { if (it.isNotBlank()) getFreeSpace(it) else null }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val startAddedTorrents by savedStateHandle.saveable<MutableState<Boolean>> { mutableStateOf(false) }
+
+    val priority by savedStateHandle.saveable<MutableState<TorrentLimits.BandwidthPriority>> {
+        mutableStateOf(TorrentLimits.BandwidthPriority.Normal)
+    }
+
+    val enabledLabels by savedStateHandle.saveable<SnapshotStateList<String>>(
+        saver = SnapshotStateListSaver()
+    ) { SnapshotStateList() }
+
+    private val _allLabels = mutableStateOf<List<String>>(emptyList())
+    val allLabels: State<List<String>> by ::_allLabels
+
     val shouldShowLabels: StateFlow<Boolean> = GlobalRpcClient.serverCapabilitiesFlow.map {
-        it?.supportsLabels != false
+        it?.supportsLabels == true
     }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    suspend fun getInitialDownloadDirectory(settings: DownloadingServerSettings): String {
+    protected var alreadySetInitialState: Boolean by savedStateHandle.saved { false }
+
+    private var comparator = AlphanumericComparator()
+
+    init {
+        viewModelScope.launch {
+            application.localeChangedEvents().collect {
+                comparator = AlphanumericComparator()
+                if (alreadySetInitialState) {
+                    allDownloadDirectories.sortWith(compareBy(comparator, DownloadDirectoryItem::directory))
+                    _allLabels.value = _allLabels.value.sortedWith(comparator)
+                }
+            }
+        }
+    }
+
+    @CallSuper
+    protected open suspend fun setInitialState(initialRpcInputs: InitialRpcInputs) {
+        if (!alreadySetInitialState) {
+            enabledLabels.sort()
+            downloadDirectory.value = getInitialDownloadDirectory(initialRpcInputs.downloadDirectory)
+            allDownloadDirectories.addAll(
+                getAllDownloadDirectories(
+                    initialRpcInputs,
+                    GlobalServers.serversState.value.currentServer?.lastDownloadDirectories.orEmpty()
+                )
+            )
+            startAddedTorrents.value = getInitialStartAfterAdding(initialRpcInputs.startAddedTorrents)
+            priority.value = getInitialPriority()
+            enabledLabels.addAll(getInitialLabels())
+        } else {
+            // Can't get them again from Servers since some might have been removed
+            val restoredLastDownloadDirectories = allDownloadDirectories.mapNotNull {
+                if (it.canBeRemoved) it.directory else null
+            }
+            allDownloadDirectories.clear()
+            allDownloadDirectories.addAll(getAllDownloadDirectories(initialRpcInputs, restoredLastDownloadDirectories))
+        }
+        _allLabels.value = initialRpcInputs.allLabels.sortedWith(comparator)
+        alreadySetInitialState = true
+    }
+
+    private fun getAllDownloadDirectories(
+        initialRpcInputs: InitialRpcInputs,
+        lastDownloadDirectories: List<String>,
+    ): List<DownloadDirectoryItem> {
+        val directories = sortedMapOf<String, Boolean>(comparator)
+        directories.put(initialRpcInputs.downloadDirectory.toNativeSeparators(), false)
+        initialRpcInputs.torrentsDownloadDirectories.forEach { directories.putIfAbsent(it.toNativeSeparators(), false) }
+        lastDownloadDirectories.forEach { directories.putIfAbsent(it, true) }
+        return directories.map { (directory, canBeRemoved) -> DownloadDirectoryItem(directory, canBeRemoved) }
+    }
+
+    private suspend fun getInitialDownloadDirectory(downloadDirectoryFromServerSettings: NormalizedRpcPath): String {
         return if (Settings.rememberAddTorrentParameters.get()) {
             GlobalServers.serversState.value.currentServer
                 ?.lastDownloadDirectory
                 ?.takeIf { it.isNotEmpty() }
                 ?.normalizePath(GlobalRpcClient.serverCapabilities)
-                ?: settings.downloadDirectory
+                ?: downloadDirectoryFromServerSettings
         } else {
-            settings.downloadDirectory
+            downloadDirectoryFromServerSettings
         }.toNativeSeparators()
     }
 
-    suspend fun getInitialStartAfterAdding(settings: DownloadingServerSettings): Boolean =
+    private suspend fun getInitialStartAfterAdding(startAfterAddingFromServerSettings: Boolean): Boolean =
         if (Settings.rememberAddTorrentParameters.get()) {
             when (Settings.lastAddTorrentStartAfterAdding.get()) {
                 Settings.StartTorrentAfterAdding.Start -> true
                 Settings.StartTorrentAfterAdding.DontStart -> false
-                Settings.StartTorrentAfterAdding.Unknown -> settings.startAddedTorrents
+                Settings.StartTorrentAfterAdding.Unknown -> startAfterAddingFromServerSettings
             }
         } else {
-            settings.startAddedTorrents
+            startAfterAddingFromServerSettings
         }
 
-    suspend fun getInitialPriority(): TorrentLimits.BandwidthPriority =
+    private suspend fun getInitialPriority(): TorrentLimits.BandwidthPriority =
         if (Settings.rememberAddTorrentParameters.get()) {
             Settings.lastAddTorrentPriority.get()
         } else {
             TorrentLimits.BandwidthPriority.Normal
         }
 
-    suspend fun getInitialLabels(): Set<String> = if (Settings.rememberAddTorrentParameters.get()) {
-        Settings.lastAddTorrentLabels.get()
+    private suspend fun getInitialLabels(): List<String> = if (Settings.rememberAddTorrentParameters.get()) {
+        Settings.lastAddTorrentLabels.get().sortedWith(comparator)
     } else {
-        emptySet()
+        emptyList()
     }
 
-    suspend fun getFreeSpace(directory: String): FileSize? = try {
-        GlobalRpcClient.getFreeSpaceInDirectory(directory)
+    private suspend fun getFreeSpace(directory: String): DownloadDirectoryFreeSpace = try {
+        DownloadDirectoryFreeSpace.FreeSpace(GlobalRpcClient.getFreeSpaceInDirectory(directory))
     } catch (e: RpcRequestError) {
         Timber.e(e, "Failed to get free space for directory $directory")
-        null
+        DownloadDirectoryFreeSpace.Error
+    }
+
+    @CallSuper
+    open fun onMergeTrackersDialogResult(result: MergeTrackersDialogResult) {
+        if ((result as? MergeTrackersDialogResult.ButtonClicked)?.doNotAskAgain == true) {
+            @OptIn(DelicateCoroutinesApi::class)
+            GlobalScope.launch {
+                Settings.askForMergingTrackersWhenAddingExistingTorrent.set(false)
+                Settings.mergeTrackersWhenAddingExistingTorrent.set(result.merge)
+            }
+        }
+    }
+
+    protected fun saveAddTorrentParameters() {
+        saveLastDownloadDirectories()
+        @OptIn(DelicateCoroutinesApi::class)
+        GlobalScope.launch {
+            Settings.lastAddTorrentStartAfterAdding.set(
+                if (startAddedTorrents.value) {
+                    Settings.StartTorrentAfterAdding.Start
+                } else {
+                    Settings.StartTorrentAfterAdding.DontStart
+                }
+            )
+            Settings.lastAddTorrentPriority.set(priority.value)
+            Settings.lastAddTorrentLabels.set(enabledLabels.toSet())
+        }
+    }
+
+    private fun saveLastDownloadDirectories() {
+        val serverCapabilities = GlobalRpcClient.serverCapabilities
+        val directories = allDownloadDirectories.mapTo(ArrayList(allDownloadDirectories.size + 1)) {
+            it.directory.normalizePath(serverCapabilities).value
+        }
+        val normalizedDownloadDirectory = downloadDirectory.value.normalizePath(serverCapabilities).value
+        if (!directories.contains(normalizedDownloadDirectory)) {
+            directories.add(normalizedDownloadDirectory)
+        }
+        val currentServer = GlobalServers.serversState.value.currentServer
+        if (currentServer != null &&
+            (currentServer.lastDownloadDirectories != directories
+                    || currentServer.lastDownloadDirectory != normalizedDownloadDirectory)
+        ) {
+            GlobalServers.addOrReplaceServer(
+                currentServer.copy(
+                    lastDownloadDirectories = directories,
+                    lastDownloadDirectory = normalizedDownloadDirectory
+                )
+            )
+        }
     }
 }

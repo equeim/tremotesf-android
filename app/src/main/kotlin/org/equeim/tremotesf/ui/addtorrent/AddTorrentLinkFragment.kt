@@ -4,262 +4,285 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
-import android.os.Bundle
-import android.view.DragEvent
-import android.view.View
-import android.view.View.OnDragListener
-import androidx.core.text.trimmedLength
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.viewModels
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.AddTorrentLinkFragmentBinding
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
-import org.equeim.tremotesf.ui.utils.FormatUtils
-import org.equeim.tremotesf.ui.utils.extendWhenImeIsHidden
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.textInputLayout
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
+import org.equeim.tremotesf.rpc.requests.FileSize
+import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.ScreenPreview
+import org.equeim.tremotesf.ui.addtorrent.BaseAddTorrentModel.DownloadDirectoryFreeSpace
+import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
+import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
+import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
+import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
+import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
 
 
-class AddTorrentLinkFragment : AddTorrentFragment(
-    R.layout.add_torrent_link_fragment,
-    R.string.add_torrent_link,
-    0
-) {
+class AddTorrentLinkFragment : ComposeFragment() {
     private val args: AddTorrentLinkFragmentArgs by navArgs()
-    private val model: AddTorrentLinkModel by viewModels {
-        viewModelFactory {
-            initializer {
-                AddTorrentLinkModel(
-                    args.uri,
-                    checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
-                )
-            }
+
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel {
+            AddTorrentLinkModel(
+                args.uri,
+                createSavedStateHandle(),
+                checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
+            )
         }
-    }
-
-    private val binding by viewLifecycleObject(AddTorrentLinkFragmentBinding::bind)
-    private var directoriesAdapter: AddTorrentDirectoriesAdapter by viewLifecycleObject()
-    private var freeSpaceJob: Job? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Timber.i("onCreate: arguments = $arguments")
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.priorityView.setAdapter(ArrayDropdownAdapter(priorityItems))
-
-        directoriesAdapter = AddTorrentDirectoriesAdapter(
-            viewLifecycleOwner.lifecycleScope,
-            savedInstanceState
-        )
-        binding.downloadDirectoryLayout.downloadDirectoryEdit.setAdapter(directoriesAdapter)
-
-        binding.downloadDirectoryLayout.downloadDirectoryEdit.doAfterTextChanged { path ->
-            freeSpaceJob?.cancel()
-            freeSpaceJob = null
-            if (!path.isNullOrBlank()) {
-                freeSpaceJob = lifecycleScope.launch {
-                    binding.downloadDirectoryLayout.downloadDirectoryLayout.helperText =
-                        model.getFreeSpace(path.toString())?.let {
-                            getString(
-                                R.string.free_space,
-                                FormatUtils.formatFileSize(requireContext(), it)
-                            )
-                        }
-                    freeSpaceJob = null
-                }
-            }
-        }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        binding.addButton.apply {
-            setOnClickListener { addTorrentLink() }
-            extendWhenImeIsHidden(requiredActivity.windowInsets, viewLifecycleOwner)
-        }
-        handleDragEvents()
-
-        model.initialRpcInputs.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            when (it) {
-                is RpcRequestState.Loaded -> showView(it.response)
-                is RpcRequestState.Loading -> showPlaceholder(null)
-                is RpcRequestState.Error -> showPlaceholder(it.error)
-            }
-        }
-
-        model.addTorrentState.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            updateAddTorrentState(it, currentCoroutineContext(), binding.addButton) { torrentName ->
-                AddTorrentLinkFragmentDirections.toMergingTrackersDialogFragment(torrentName, cancelable = true)
-            }
-        }
-
-        model.shouldShowLabels.launchAndCollectWhenStarted(viewLifecycleOwner) {
-            binding.labelsHeader.isVisible = it
-            binding.labelsEditView.isVisible = it
-        }
-    }
-
-    private fun handleDragEvents() {
-        val listener = OnDragListener { view, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    Timber.d("Handling drag start event on $view")
-                    model.acceptDragStartEvent(event.clipDescription)
-                }
-
-                DragEvent.ACTION_DROP -> {
-                    Timber.d("Handling drop event on $view")
-                    model.getTorrentLinkFromDropEvent(event.clipData)?.let {
-                        binding.torrentLinkEdit.setText(it)
-                        true
-                    } ?: false
-                }
-                /**
-                 * Don't enter [also] branch to avoid log spam
-                 */
-                else -> return@OnDragListener false
-            }.also {
-                if (it) {
-                    Timber.d("Accepting event")
-                } else {
-                    Timber.d("Rejecting event")
-                }
-            }
-        }
-        binding.root.setOnDragListener(listener)
-        binding.torrentLinkEdit.setOnDragListener(listener)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        directoriesAdapter.saveInstanceState(outState)
-    }
-
-    private fun addTorrentLink(): Unit = with(binding) {
-        var error = false
-
-        val torrentLink = torrentLinkEdit.text?.toString().orEmpty()
-        torrentLinkEdit.textInputLayout.error =
-            if (torrentLink.trimmedLength() == 0) {
-                error = true
-                getString(R.string.empty_field_error)
-            } else {
-                null
-            }
-
-        val downloadDirectory =
-            downloadDirectoryLayout.downloadDirectoryEdit.text?.toString().orEmpty()
-        val downloadDirectoryLayout = downloadDirectoryLayout.downloadDirectoryLayout
-
-        downloadDirectoryLayout.error =
-            if (downloadDirectory.trimmedLength() == 0) {
-                error = true
-                getString(R.string.empty_field_error)
-            } else {
-                null
-            }
-
-        if (error) {
-            return
-        }
-
-        model.addTorrentLink(
-            torrentLink,
-            downloadDirectory,
-            priorityItemEnums[priorityItems.indexOf(priorityView.text.toString())],
-            startDownloadingCheckBox.isChecked,
-            binding.labelsEditView.enabledLabels
+        val activity = checkNotNull(LocalActivity.current) as ComponentActivity
+        AddTorrentLinkScreen(
+            navigateUp = navController::navigateUp,
+            performBackPress = { activity.onBackPressedDispatcher.onBackPressed() },
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            initialRpcInputsRequestState = model.initialRpcInputs.collectAsStateWithLifecycle(),
+            torrentLink = model.torrentLink,
+            downloadDirectory = model.downloadDirectory,
+            allDownloadDirectories = model.allDownloadDirectories,
+            downloadDirectoryFreeSpace = model.downloadDirectoryFreeSpace.collectAsStateWithLifecycle(),
+            priority = model.priority,
+            startAddedTorrents = model.startAddedTorrents,
+            enabledLabels = model.enabledLabels,
+            allLabels = model.allLabels,
+            addTorrentState = model.addTorrentState,
+            shouldShowLabels = model.shouldShowLabels.collectAsStateWithLifecycle(),
+            onMergeTrackersDialogResult = model::onMergeTrackersDialogResult,
+            addTorrentLink = model::addTorrentLink,
+            shouldStartDragAndDrop = model::shouldStartDragAndDrop,
+            dragAndDropTarget = model
         )
     }
+}
 
-    private fun showPlaceholder(error: RpcRequestError?) {
-        hideKeyboard()
-        with(binding) {
-            scrollView.isVisible = false
-            error?.let(placeholderView::showError) ?: placeholderView.showLoading()
-        }
-    }
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AddTorrentLinkScreen(
+    navigateUp: () -> Unit,
+    performBackPress: () -> Unit,
+    initialRpcInputsRequestState: State<RpcRequestState<*>>,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    torrentLink: MutableState<String>,
+    downloadDirectory: MutableState<String>,
+    allDownloadDirectories: SnapshotStateList<DownloadDirectoryItem>,
+    downloadDirectoryFreeSpace: State<DownloadDirectoryFreeSpace?>,
+    priority: MutableState<TorrentLimits.BandwidthPriority>,
+    startAddedTorrents: MutableState<Boolean>,
+    enabledLabels: SnapshotStateList<String>,
+    allLabels: State<List<String>>,
+    shouldShowLabels: State<Boolean>,
+    addTorrentState: State<AddTorrentState?>,
+    onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,
+    addTorrentLink: () -> Unit,
+    shouldStartDragAndDrop: (DragAndDropEvent) -> Boolean,
+    dragAndDropTarget: DragAndDropTarget,
+) {
+    var showTorrentLinkError: Boolean by rememberSaveable { mutableStateOf(false) }
+    val showDownloadDirectoryError = rememberSaveable { mutableStateOf(false) }
 
-    private suspend fun showView(initialRpcInputs: BaseAddTorrentModel.InitialRpcInputs) = with(binding) {
-        coroutineScope {
-            if (model.shouldSetInitialRpcInputs) {
-                model.shouldSetInitialRpcInputs = false
-                launch {
-                    downloadDirectoryLayout.downloadDirectoryEdit.setText(
-                        model.getInitialDownloadDirectory(initialRpcInputs.downloadingServerSettings)
-                    )
-                }
-                launch {
-                    startDownloadingCheckBox.isChecked =
-                        model.getInitialStartAfterAdding(initialRpcInputs.downloadingServerSettings)
-                }
-                launch {
-                    labelsEditView.setAllLabels(initialRpcInputs.allLabels)
-                }
+    Scaffold(
+        topBar = { TremotesfTopAppBar(stringResource(R.string.add_torrent_link), navigateUp) },
+        floatingActionButton = {
+            val checkingIfTorrentExists: Boolean by remember {
+                derivedStateOf { addTorrentState.value is AddTorrentState.CheckingIfTorrentExists }
             }
-            if (model.shouldSetInitialLocalInputs) {
-                val initialTorrentLink = model.getInitialTorrentLink()
-                initialTorrentLink?.let(torrentLinkEdit::setText)
-                priorityView.setText(priorityItems[priorityItemEnums.indexOf(model.getInitialPriority())])
-                model.shouldSetInitialLocalInputs = false
-
-                if (initialTorrentLink != null) {
-                    model.checkIfTorrentExistsForInitialLink(initialTorrentLink)
-                }
-            }
-        }
-        scrollView.isVisible = true
-        placeholderView.hide()
-    }
-
-    override fun navigateBack() {
-        if (!model.shouldSetInitialRpcInputs) {
-            directoriesAdapter.save(binding.downloadDirectoryLayout.downloadDirectoryEdit)
-        }
-        if (!model.shouldSetInitialLocalInputs) {
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
-                Settings.lastAddTorrentStartAfterAdding.set(
-                    if (binding.startDownloadingCheckBox.isChecked) {
-                        Settings.StartTorrentAfterAdding.Start
+            ExtendedFloatingActionButton(
+                text = { Text(stringResource(R.string.add)) },
+                icon = {
+                    if (checkingIfTorrentExists) {
+                        CircularProgressIndicator()
                     } else {
-                        Settings.StartTorrentAfterAdding.DontStart
+                        Icon(Icons.Filled.Done, contentDescription = stringResource(R.string.add))
                     }
+                },
+                expanded = !WindowInsets.isImeVisible,
+                onClick = {
+                    if (checkingIfTorrentExists) {
+                        return@ExtendedFloatingActionButton
+                    }
+                    if (torrentLink.value.isBlank()) {
+                        showTorrentLinkError = true
+                    }
+                    if (downloadDirectory.value.isBlank()) {
+                        showDownloadDirectoryError.value = true
+                    }
+                    if (!showTorrentLinkError && !showDownloadDirectoryError.value) {
+                        addTorrentLink()
+                    }
+                }
+            )
+        },
+        floatingActionButtonPosition = if (WindowInsets.isImeVisible) {
+            FabPosition.End
+        } else {
+            FabPosition.Center
+        },
+        modifier = Modifier
+            .imePadding()
+            .dragAndDropTarget(
+                shouldStartDragAndDrop = shouldStartDragAndDrop,
+                target = dragAndDropTarget
+            )
+    ) { innerPadding ->
+        TremotesfScreenContentWithPlaceholder(
+            requestState = initialRpcInputsRequestState.value,
+            onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
+            modifier = Modifier.consumeWindowInsets(innerPadding),
+            placeholdersModifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(Dimens.screenContentPadding())
+        ) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(vertical = Dimens.screenContentPaddingVertical())
+                    .padding(bottom = Dimens.PaddingForFAB),
+                verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+            ) {
+                val horizontalPadding = Dimens.screenContentPaddingHorizontal()
+
+                val shouldRequestFocus = rememberSaveable { torrentLink.value.isEmpty() }
+                val focusRequester = if (shouldRequestFocus) {
+                    rememberTremotesfInitialFocusRequester()
+                } else {
+                    null
+                }
+
+                OutlinedTextField(
+                    value = torrentLink.value,
+                    onValueChange = {
+                        torrentLink.value = it
+                        if (it.isNotBlank()) {
+                            showTorrentLinkError = false
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
+                    label = { Text(stringResource(R.string.torrent_link)) },
+                    isError = showTorrentLinkError,
+                    supportingText = if (showTorrentLinkError) {
+                        { Text(stringResource(R.string.empty_field_error)) }
+                    } else {
+                        null
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding)
+                        .dragAndDropTarget(
+                            shouldStartDragAndDrop = shouldStartDragAndDrop,
+                            target = dragAndDropTarget
+                        ).run {
+                            if (focusRequester != null) {
+                                focusRequester(focusRequester)
+                            } else {
+                                this
+                            }
+                        }
                 )
-                Settings.lastAddTorrentPriority.set(priorityItemEnums[priorityItems.indexOf(binding.priorityView.text.toString())])
-                Settings.lastAddTorrentLabels.set(binding.labelsEditView.enabledLabels.toSet())
+
+                CommonAddTorrentParameters(
+                    downloadDirectory = downloadDirectory,
+                    showDownloadDirectoryError = showDownloadDirectoryError,
+                    allDownloadDirectories = allDownloadDirectories,
+                    downloadDirectoryFreeSpace = downloadDirectoryFreeSpace,
+                    priority = priority,
+                    startAddedTorrents = startAddedTorrents,
+                    enabledLabels = enabledLabels,
+                    allLabels = allLabels,
+                    shouldShowLabels = shouldShowLabels
+                )
             }
         }
-        super.navigateBack()
     }
 
-    override fun onMergeTrackersDialogResult(result: MergingTrackersDialogFragment.Result) {
-        super.onMergeTrackersDialogResult(result)
-        model.onMergeTrackersDialogResult(result)
-    }
+    HandleAddTorrentState(
+        addTorrentState = addTorrentState.value,
+        mergeDialogCancellable = true,
+        onMergeTrackersDialogResult = onMergeTrackersDialogResult,
+        performBackPress = performBackPress
+    )
+}
+
+@Preview
+@Composable
+private fun AddTorrentLinkScreenPreview() = ScreenPreview {
+    AddTorrentLinkScreen(
+        navigateUp = {},
+        performBackPress = {},
+        initialRpcInputsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
+        navigateToDetailedErrorDialog = {},
+        torrentLink = remember { mutableStateOf("") },
+        downloadDirectory = remember { mutableStateOf("/home/dude") },
+        allDownloadDirectories = remember { SnapshotStateList() },
+        downloadDirectoryFreeSpace = remember {
+            mutableStateOf(DownloadDirectoryFreeSpace.FreeSpace(FileSize.fromBytes(10000000)))
+        },
+        priority = remember { mutableStateOf(TorrentLimits.BandwidthPriority.Normal) },
+        startAddedTorrents = remember { mutableStateOf(true) },
+        enabledLabels = remember { mutableStateListOf("egegege", "PLRPLR", "AAAAAAAA") },
+        allLabels = remember { mutableStateOf(emptyList()) },
+        shouldShowLabels = remember { mutableStateOf(true) },
+        addTorrentState = remember { mutableStateOf(null) },
+        onMergeTrackersDialogResult = {},
+        addTorrentLink = {},
+        shouldStartDragAndDrop = { false },
+        dragAndDropTarget = remember {
+            object : DragAndDropTarget {
+                override fun onDrop(event: DragAndDropEvent) = false
+            }
+        }
+    )
 }

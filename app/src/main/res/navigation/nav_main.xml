@@ -122,13 +122,6 @@
         <argument
             android:name="uri"
             app:argType="android.net.Uri" />
-        <action
-            android:id="@+id/to_torrent_file_rename_dialog"
-            app:destination="@id/torrent_file_rename_dialog" />
-
-        <action
-            android:id="@+id/to_merging_trackers_dialog_fragment"
-            app:destination="@id/merging_trackers_dialog_fragment" />
     </fragment>
     <fragment
         android:id="@+id/add_torrent_link_fragment"
@@ -138,10 +131,6 @@
             app:argType="android.net.Uri"
             app:nullable="true"
             android:defaultValue="@null" />
-
-        <action
-            android:id="@+id/to_merging_trackers_dialog_fragment"
-            app:destination="@id/merging_trackers_dialog_fragment" />
     </fragment>
 
     <fragment
@@ -384,15 +373,4 @@
     <action
         android:id="@+id/to_detailed_connection_error_dialog_fragment"
         app:destination="@id/detailed_connection_error_dialog_fragment" />
-
-    <dialog
-        android:id="@+id/merging_trackers_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.addtorrent.MergingTrackersDialogFragment">
-        <argument
-            android:name="torrent_name"
-            app:argType="string" />
-        <argument
-            android:name="cancelable"
-            app:argType="boolean" />
-    </dialog>
 </navigation>

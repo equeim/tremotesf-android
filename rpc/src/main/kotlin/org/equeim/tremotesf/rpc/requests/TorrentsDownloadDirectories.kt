@@ -13,12 +13,12 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentsDownloadDirectories(): List<NormalizedRpcPath> =
+suspend fun RpcClient.getTorrentsDownloadDirectories(): Set<NormalizedRpcPath> =
     performAllTorrentsRequest<TorrentsDownloadDirectoriesFields>(
         objectsFormatRequestBody = TORRENTS_DOWNLOAD_DIRECTORIES_OBJECTS_REQUEST,
         tableFormatRequestBody = TORRENTS_DOWNLOAD_DIRECTORIES_TABLE_REQUEST,
         callerContext = "getTorrentsDownloadDirectories"
-    ).map { it.downloadDirectory }
+    ).mapTo(mutableSetOf(), TorrentsDownloadDirectoriesFields::downloadDirectory)
 
 private val FIELDS = listOf("downloadDir")
 private val TORRENTS_DOWNLOAD_DIRECTORIES_OBJECTS_REQUEST =

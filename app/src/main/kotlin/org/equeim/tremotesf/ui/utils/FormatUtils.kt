@@ -8,27 +8,30 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.annotation.ArrayRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.TransferRate
-import timber.log.Timber
-import java.util.concurrent.atomic.AtomicReference
+import java.text.DecimalFormat
 import kotlin.time.Duration
 
-object FormatUtils {
-    private val sizeUnits = AtomicReference<Array<String>>()
-    private val speedUnits = AtomicReference<Array<String>>()
+class FileSizeFormatter(context: Context) {
+    private val sizeUnits by lazy { context.resources.getStringArray(R.array.size_units) }
+    private val speedUnits by lazy { context.resources.getStringArray(R.array.speed_units) }
+    private val decimalFormat = DecimalFormat("0.#")
 
-    init {
-        TremotesfApplication.instance.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                Timber.i("Locale changed, resetting byte units")
-                sizeUnits.set(null)
-                speedUnits.set(null)
-            }
-        }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
+    fun formatFileSize(size: FileSize): String = formatBytes(size.bytes, sizeUnits)
+
+    fun formatTransferRate(speed: TransferRate): String = formatBytes(speed.bytesPerSecond, speedUnits)
+
+    private fun formatBytes(bytes: Long, units: Array<String>): String {
+        val (size, unit) = calculateSize(bytes)
+        val numberString = decimalFormat.format(size)
+        return units[unit].format(numberString)
     }
 
     private fun calculateSize(bytes: Long): Pair<Double, Int> {
@@ -40,39 +43,31 @@ object FormatUtils {
         }
         return Pair(size, unit)
     }
+}
 
-    fun formatFileSize(context: Context, size: FileSize): String {
-        return formatBytes(size.bytes, sizeUnits, R.array.size_units, context)
+@Composable
+fun rememberFileSizeFormatter(): FileSizeFormatter {
+    val context = LocalContext.current
+    return remember(context, LocalConfiguration.current.locales) { FileSizeFormatter(context) }
+}
+
+object FormatUtils {
+    @Volatile
+    private var fileSizeFormatter: FileSizeFormatter = FileSizeFormatter(TremotesfApplication.instance)
+
+    init {
+        TremotesfApplication.instance.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                fileSizeFormatter = FileSizeFormatter(TremotesfApplication.instance)
+            }
+        }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
     }
 
-    fun formatTransferRate(context: Context, speed: TransferRate): String {
-        return formatBytes(speed.bytesPerSecond, speedUnits, R.array.speed_units, context)
-    }
+    @Deprecated("Migrate to FileSizeFormatter")
+    fun formatFileSize(@Suppress("unused") context: Context, size: FileSize): String = fileSizeFormatter.formatFileSize(size)
 
-    private fun formatBytes(
-        bytes: Long,
-        reference: AtomicReference<Array<String>>,
-        @ArrayRes resId: Int,
-        context: Context,
-    ): String {
-        val (size, unit) = calculateSize(bytes)
-        val numberString = DecimalFormats.generic.format(size)
-        val units = reference.get() ?: updateByteUnits(reference, resId, context)
-        return units?.get(unit)?.format(numberString) ?: ""
-    }
-
-    private fun updateByteUnits(
-        reference: AtomicReference<Array<String>>,
-        @ArrayRes resId: Int,
-        context: Context,
-    ): Array<String>? {
-        val units = context.resources.getStringArray(resId)
-        return if (reference.compareAndSet(null, units)) {
-            units
-        } else {
-            reference.get()
-        }
-    }
+    @Deprecated("Migrate to FileSizeFormatter")
+    fun formatTransferRate(@Suppress("unused") context: Context, speed: TransferRate): String = fileSizeFormatter.formatTransferRate(speed)
 
     fun formatDuration(context: Context, duration: Duration?): String {
         if (duration == null || duration.isNegative()) {

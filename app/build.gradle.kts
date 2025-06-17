@@ -119,6 +119,7 @@ dependencies {
 
     implementation(libs.material)
     implementation(libs.fastscroll)
+    implementation(libs.fastscroller)
     implementation(libs.timber)
     implementation(libs.serialization.json.okio)
 

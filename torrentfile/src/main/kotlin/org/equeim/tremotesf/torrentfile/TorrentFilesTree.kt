@@ -337,7 +337,7 @@ open class TorrentFilesTree(
     private inline fun setItemsWantedOrPriority(
         nodeIndexes: List<Int>,
         crossinline nodeAction: Node.(MutableList<Int>) -> Unit,
-        crossinline fileIdsAction: (IntArray) -> Unit,
+        crossinline fileIdsAction: (List<Int>) -> Unit,
     ) {
         if (!inited) return
         scope.launch {
@@ -353,7 +353,7 @@ open class TorrentFilesTree(
 
             updateItemsWithoutSorting()
             withContext(dispatchers.Main) {
-                fileIdsAction(ids.toIntArray())
+                fileIdsAction(ids)
             }
         }
     }
@@ -408,29 +408,36 @@ open class TorrentFilesTree(
     fun renameFile(path: String, newName: String) = scope.launch {
         val pathParts = path.split('/').filter(String::isNotEmpty)
         var node: Node? = rootNode
-        var updateItems = false
         for (part in pathParts) {
-            if (node == currentNode) {
-                updateItems = true
-            }
             node = (node as? DirectoryNode)?.getChildByItemNameOrNull(part)
             if (node == null) {
                 break
             }
         }
-        if (node != null && node != rootNode) {
-            ensureActive()
-
-            node.item = node.item.copy(name = newName)
-
-            if (updateItems) {
-                updateItemsWithSorting()
-            }
+        if (node != null) {
+            renameFile(node, newName)
         }
     }
 
-    protected open fun onSetFilesWanted(ids: IntArray, wanted: Boolean) = Unit
-    protected open fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) = Unit
+    @MainThread
+    fun renameFile(path: NodePath, newName: String) = scope.launch {
+        findNodeByIndexPath(path)?.let { renameFile(it, newName) }
+    }
+
+    @WorkerThread
+    private suspend fun renameFile(node: Node, newName: String) {
+        if (node === rootNode) return
+        val originalPath = getItemNamePath(node.item) ?: return
+        node.item = node.item.copy(name = newName)
+        if (currentNode.children.contains(node)) {
+            updateItemsWithSorting()
+        }
+        onFileRenamed(originalPath, newName)
+    }
+
+    protected open fun onSetFilesWanted(ids: List<Int>, wanted: Boolean) = Unit
+    protected open fun onSetFilesPriority(ids: List<Int>, priority: Item.Priority) = Unit
+    protected open fun onFileRenamed(originalPath: String, newName: String) = Unit
 
     @MainThread
     fun init(
@@ -497,5 +504,10 @@ open class TorrentFilesTree(
             pathParts.add(node.item.name)
         }
         return pathParts.joinToString("/")
+    }
+
+    @AnyThread
+    fun getCurrentNodeChildByIndexPath(path: NodePath): Item? {
+        return currentNode.children.getOrNull(path.indices.last())?.item
     }
 }

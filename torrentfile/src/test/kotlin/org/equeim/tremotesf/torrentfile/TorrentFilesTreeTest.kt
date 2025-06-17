@@ -591,10 +591,18 @@ class TorrentFilesTreeTest {
             val isInItems = currentNodePublic.children.contains(renamedNode)
             val oldItems = items.value
 
-            renameFile(path, "foo")
+            val expectedNewName = "foo"
+            var callbackCalled = false
+            onFileRenamedCallback = { originalPath, newName ->
+                if (originalPath == path && newName == expectedNewName) {
+                    callbackCalled = true
+                }
+            }
+
+            renameFile(path, expectedNewName)
             runCurrent()
 
-            mustChange.assertThatItemsChanged { assertEquals("foo", it.name) }
+            mustChange.assertThatItemsChanged { assertEquals(expectedNewName, it.name) }
             mustNotChange.assertThatItemsAreNotChanged()
 
             if (isInItems) {
@@ -756,16 +764,21 @@ class TorrentFilesTreeTest {
 
         suspend fun updateItemsWithSortingPublic() = updateItemsWithSorting()
 
-        var onSetFilesWantedCallback: (IntArray, Boolean) -> Unit = { _, _ -> }
-        override fun onSetFilesWanted(ids: IntArray, wanted: Boolean) {
-            println("onSetFilesWanted calle with: ids = ${ids.contentToString()}, wanted = $wanted")
+        var onSetFilesWantedCallback: (List<Int>, Boolean) -> Unit = { _, _ -> }
+        override fun onSetFilesWanted(ids: List<Int>, wanted: Boolean) {
+            println("onSetFilesWanted called with: ids = $ids, wanted = $wanted")
             onSetFilesWantedCallback(ids, wanted)
         }
 
-        var onSetFilesPriorityCallback: (IntArray, Item.Priority) -> Unit = { _, _ -> }
-        override fun onSetFilesPriority(ids: IntArray, priority: Item.Priority) {
-            println("onSetFilesPriority calle with: ids = ${ids.contentToString()}, priority = $priority")
+        var onSetFilesPriorityCallback: (List<Int>, Item.Priority) -> Unit = { _, _ -> }
+        override fun onSetFilesPriority(ids: List<Int>, priority: Item.Priority) {
+            println("onSetFilesPriority called with: ids = $ids, priority = $priority")
             onSetFilesPriorityCallback(ids, priority)
+        }
+
+        var onFileRenamedCallback: (String, String) -> Unit = { _, _ -> }
+        override fun onFileRenamed(originalPath: String, newName: String) {
+            println("onFileRenamed called with: originalPath = $originalPath, newName = $newName")
         }
     }
 }
