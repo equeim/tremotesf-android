@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.torrentfile
 
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -14,7 +13,7 @@ import kotlin.test.assertSame
 fun assertNodesAreSimilar(expected: TorrentFilesTree.Node, actual: TorrentFilesTree.Node?) {
     assertNotNull(actual)
     assertEquals(expected::class, actual::class)
-    assertContentEquals(expected.path, actual.path)
+    assertEquals(expected.path, actual.path)
     assertEquals(expected.item, actual.item)
     if (expected is TorrentFilesTree.DirectoryNode && actual is TorrentFilesTree.DirectoryNode) {
         assertNodesAreSimilar(expected.children, actual.children)
@@ -27,7 +26,7 @@ fun assertNodesAreSimilar(expected: List<TorrentFilesTree.Node>, actual: List<To
     }
 }
 
-fun expectedFileItem(fileId: Int, nodePath: IntArray): TorrentFilesTree.Item {
+fun expectedFileItem(fileId: Int, nodePath: TorrentFilesTree.NodePath): TorrentFilesTree.Item {
     return TorrentFilesTree.Item(
         fileId,
         fileId.toString(),
@@ -39,8 +38,8 @@ fun expectedFileItem(fileId: Int, nodePath: IntArray): TorrentFilesTree.Item {
     )
 }
 
-fun expectedDirectoryItem(nodePath: IntArray): TorrentFilesTree.Item {
-    return TorrentFilesTree.Item(name = "42${nodePath.contentToString()}", nodePath = nodePath)
+fun expectedDirectoryItem(nodePath: TorrentFilesTree.NodePath): TorrentFilesTree.Item {
+    return TorrentFilesTree.Item(name = "42$nodePath", nodePath = nodePath)
 }
 
 fun TorrentFilesTree.Node.getAllNodes(): Sequence<TorrentFilesTree.Node> {

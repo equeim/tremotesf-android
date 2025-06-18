@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree.NodePath
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,7 +39,7 @@ class TorrentFilesTreeTest {
     @Test
     fun `Check initial initialized state`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
-        val fileItem = expectedFileItem(0, intArrayOf(0))
+        val fileItem = expectedFileItem(0, NodePath(intArrayOf(0)))
         rootNode.addFile(
             fileItem.fileId,
             fileItem.name,
@@ -80,7 +81,7 @@ class TorrentFilesTreeTest {
     fun `Navigate down when we are in the root directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
-        val fileItem = expectedFileItem(0, intArrayOf(0, 0))
+        val fileItem = expectedFileItem(0, NodePath(intArrayOf(0, 0)))
         directory.addFile(
             fileItem.fileId,
             fileItem.name,
@@ -101,7 +102,7 @@ class TorrentFilesTreeTest {
     fun `Navigate down to unknown item`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
-        val fileItem = expectedFileItem(0, intArrayOf(0, 0))
+        val fileItem = expectedFileItem(0, NodePath(intArrayOf(0, 0)))
         directory.addFile(
             fileItem.fileId,
             fileItem.name,
@@ -110,7 +111,7 @@ class TorrentFilesTreeTest {
             fileItem.wantedState,
             fileItem.priority
         )
-        val unknownItem = expectedDirectoryItem(intArrayOf(42, 777))
+        val unknownItem = expectedDirectoryItem(NodePath(intArrayOf(42, 777)))
         testWithTree(rootNode) {
             navigateDown(unknownItem)
             runCurrent()
@@ -123,7 +124,7 @@ class TorrentFilesTreeTest {
     fun `Navigate up when we are in the top-level directory`() = runTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
-        val fileItem = expectedFileItem(0, intArrayOf(0, 0))
+        val fileItem = expectedFileItem(0, NodePath(intArrayOf(0, 0)))
         directory.addFile(
             fileItem.fileId,
             fileItem.name,
@@ -148,7 +149,7 @@ class TorrentFilesTreeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val subdirectory = directory.addDirectory("Foo")
-        val fileItem = expectedFileItem(0, intArrayOf(0, 0, 0))
+        val fileItem = expectedFileItem(0, NodePath(intArrayOf(0, 0, 0)))
         subdirectory.addFile(
             fileItem.fileId,
             fileItem.name,
@@ -175,7 +176,7 @@ class TorrentFilesTreeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val directory = rootNode.addDirectory("666")
         val fileItems =
-            listOf(expectedFileItem(0, intArrayOf(0, 0)), expectedFileItem(1, intArrayOf(0, 1)))
+            listOf(expectedFileItem(0, NodePath(intArrayOf(0, 0))), expectedFileItem(1, NodePath(intArrayOf(0, 1))))
         val fileNodes = fileItems.map {
             directory.addFile(
                 it.fileId,
@@ -230,7 +231,7 @@ class TorrentFilesTreeTest {
 
         val subdirectory = directory.addDirectory("Foo")
         val fileItems =
-            listOf(expectedFileItem(0, intArrayOf(0, 0)), expectedFileItem(1, intArrayOf(0, 1)))
+            listOf(expectedFileItem(0, NodePath(intArrayOf(0, 0))), expectedFileItem(1, NodePath(intArrayOf(0, 1))))
         for (item in fileItems) {
             subdirectory.addFile(
                 item.fileId,
@@ -263,7 +264,7 @@ class TorrentFilesTreeTest {
                 checkItem = { assertEquals(TorrentFilesTree.Item.WantedState.Unwanted, it.wantedState) }
                 checkParentDirectoryItem = { assertEquals(TorrentFilesTree.Item.WantedState.Mixed, it.wantedState) }
 
-                setItemsWanted(listOf(subdirectory.path.last()), false)
+                setItemsWanted(listOf(subdirectory.path.indices.last()), false)
             } else if (type == TorrentFilesTree.Item.Priority::class) {
                 onSetFilesPriorityCallback = { ids, priority ->
                     if (ids.toList() == fileItems.map { it.fileId } && priority == TorrentFilesTree.Item.Priority.Low) {
@@ -273,7 +274,7 @@ class TorrentFilesTreeTest {
                 checkItem = { assertEquals(TorrentFilesTree.Item.Priority.Low, it.priority) }
                 checkParentDirectoryItem = { assertEquals(TorrentFilesTree.Item.Priority.Mixed, it.priority) }
 
-                setItemsPriority(listOf(subdirectory.path.last()), TorrentFilesTree.Item.Priority.Low)
+                setItemsPriority(listOf(subdirectory.path.indices.last()), TorrentFilesTree.Item.Priority.Low)
             }
             runCurrent()
 
@@ -287,7 +288,7 @@ class TorrentFilesTreeTest {
             oldItems.asSequence().zip(items.value!!.asSequence()).forEach { (old, new) ->
                 when {
                     old == null -> assertNull(new)
-                    old.nodePath.contentEquals(subdirectory.path) -> checkItem(new!!)
+                    old.nodePath == subdirectory.path -> checkItem(new!!)
                     else -> {
                         assertSame(old, new)
                     }
@@ -295,7 +296,7 @@ class TorrentFilesTreeTest {
             }
 
             var node = rootNode
-            for (i in subdirectory.path.dropLast(1)) {
+            for (i in subdirectory.path.indices.dropLast(1)) {
                 node = node.children[i] as TorrentFilesTree.DirectoryNode
                 checkParentDirectoryItem(node.item)
             }

@@ -6,11 +6,13 @@ package org.equeim.tremotesf.torrentfile
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.annotation.AnyThread
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.collection.MutableScatterMap
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
@@ -39,7 +42,7 @@ open class TorrentFilesTree(
 ) {
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
 
-    sealed class Node(@Volatile var item: Item, val path: IntArray) {
+    sealed class Node(@Volatile var item: Item, val path: NodePath) {
         @CallSuper
         open fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
             item = item.copy(wantedState = Item.WantedState.fromBoolean(wanted))
@@ -51,7 +54,7 @@ open class TorrentFilesTree(
         }
     }
 
-    class FileNode(item: Item, path: IntArray) : Node(item, path) {
+    class FileNode(item: Item, path: NodePath) : Node(item, path) {
         override fun toString() = "FileNode(item=$item)"
 
         override fun setItemWantedRecursively(wanted: Boolean, ids: MutableList<Int>) {
@@ -65,7 +68,7 @@ open class TorrentFilesTree(
         }
     }
 
-    class DirectoryNode private constructor(item: Item, path: IntArray) : Node(item, path) {
+    class DirectoryNode private constructor(item: Item, path: NodePath) : Node(item, path) {
         private val _children = ArrayList<Node>()
         val children: List<Node>
             get() = _children
@@ -113,7 +116,7 @@ open class TorrentFilesTree(
             priority: Item.Priority,
         ): FileNode {
             if (id < 0) throw IllegalArgumentException("fileId can't be less than zero")
-            val path = this.path + children.size
+            val path = NodePath(this.path.indices + children.size)
             val node = FileNode(
                 Item(id, name, size, completedSize, wantedState, priority, path), path
             )
@@ -122,7 +125,7 @@ open class TorrentFilesTree(
         }
 
         internal fun addDirectory(name: String): DirectoryNode {
-            val path = this.path + children.size
+            val path = NodePath(this.path.indices + children.size)
             val node = DirectoryNode(
                 Item(
                     -1,
@@ -149,8 +152,24 @@ open class TorrentFilesTree(
         }
 
         companion object {
-            fun createRootNode() = DirectoryNode(Item(), intArrayOf())
+            fun createRootNode() = DirectoryNode(Item(), NodePath(intArrayOf()))
         }
+    }
+
+    @Parcelize
+    data class NodePath(
+        val indices: IntArray
+    ): Parcelable {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            other as NodePath
+            return indices.contentEquals(other.indices)
+        }
+
+        override fun hashCode(): Int = indices.contentHashCode()
+
+        override fun toString(): String = "NodePath(indices=${indices.contentToString()})"
     }
 
     data class Item(
@@ -160,7 +179,7 @@ open class TorrentFilesTree(
         var completedSize: Long = 0,
         var wantedState: WantedState = WantedState.Wanted,
         var priority: Priority = Priority.Normal,
-        val nodePath: IntArray = intArrayOf(),
+        val nodePath: NodePath = NodePath(intArrayOf()),
     ) {
         val isDirectory: Boolean
             get() = (fileId == -1)
@@ -192,34 +211,6 @@ open class TorrentFilesTree(
             Normal,
             High,
             Mixed
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as Item
-
-            if (fileId != other.fileId) return false
-            if (name != other.name) return false
-            if (size != other.size) return false
-            if (completedSize != other.completedSize) return false
-            if (wantedState != other.wantedState) return false
-            if (priority != other.priority) return false
-            if (!nodePath.contentEquals(other.nodePath)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = fileId
-            result = 31 * result + name.hashCode()
-            result = 31 * result + size.hashCode()
-            result = 31 * result + completedSize.hashCode()
-            result = 31 * result + wantedState.hashCode()
-            result = 31 * result + priority.hashCode()
-            result = 31 * result + nodePath.contentHashCode()
-            return result
         }
 
         internal fun recalculatedFromChildren(children: List<Node>): Item =
@@ -300,7 +291,7 @@ open class TorrentFilesTree(
         if (currentNode == rootNode) {
             return false
         }
-        val parent = findNodeByIndexPath(currentNode.path.dropLast(1).asSequence()) ?: return false
+        val parent = findNodeByIndexPath(currentNode.path.indices.dropLast(1).asSequence()) ?: return false
         if (parent !is DirectoryNode) return false
         navigateTo(parent)
         return true
@@ -310,7 +301,7 @@ open class TorrentFilesTree(
     fun navigateDown(item: Item) {
         if (!inited) return
         if (!item.isDirectory) return
-        val node = findNodeByIndexPath(item.nodePath.asSequence()) ?: return
+        val node = findNodeByIndexPath(item.nodePath) ?: return
         if (node !is DirectoryNode) return
         navigateTo(node)
     }
@@ -344,7 +335,7 @@ open class TorrentFilesTree(
     @WorkerThread
     private suspend fun updateItemsWithoutSorting() {
         val children = currentNode.children
-        val items = items.value?.map { it?.let { children[it.nodePath.last()].item } }
+        val items = items.value?.map { it?.let { children[it.nodePath.indices.last()].item } }
         coroutineContext.ensureActive()
         _items.value = items
     }
@@ -413,7 +404,7 @@ open class TorrentFilesTree(
         if (node === rootNode) return
         val path = node.path
         var n: DirectoryNode = rootNode
-        for (index in path) {
+        for (index in path.indices) {
             // Node itself may be a FileNode and in that case we don't need to recalculate it
             n = (n.children.getOrNull(index) as? DirectoryNode) ?: break
             recalculateNodes.add(n)
@@ -464,8 +455,13 @@ open class TorrentFilesTree(
 
     @MainThread
     private fun restoreInstanceState(savedStateHandle: SavedStateHandle): Boolean {
-        val path = savedStateHandle.get<Bundle>(savedStateKey)?.getIntArray("") ?: return false
-        val node = findNodeByIndexPath(path.asSequence()) as? DirectoryNode
+        val savedState = savedStateHandle.get<Bundle>(savedStateKey)
+        if (savedState == null) return false
+        val path = BundleCompat.getParcelable(savedState, "", NodePath::class.java)
+        if (path == null) {
+            return false
+        }
+        val node = findNodeByIndexPath(path) as? DirectoryNode
         navigateTo(node ?: rootNode)
         return true
     }
@@ -486,6 +482,9 @@ open class TorrentFilesTree(
     }
 
     @AnyThread
+    private fun findNodeByIndexPath(path: NodePath): Node? = findNodeByIndexPath(path.indices.asSequence())
+
+    @AnyThread
     private fun findNodeByIndexPath(path: Sequence<Int>): Node? {
         var node: Node = rootNode
         for (index in path) {
@@ -496,11 +495,11 @@ open class TorrentFilesTree(
 
     @AnyThread
     fun getItemNamePath(item: Item): String? {
-        if (item.nodePath.isEmpty()) return null
+        if (item.nodePath.indices.isEmpty()) return null
         val pathParts = ArrayList<String>()
-        pathParts.ensureCapacity(item.nodePath.size)
+        pathParts.ensureCapacity(item.nodePath.indices.size)
         var node: Node = rootNode
-        for (index in item.nodePath) {
+        for (index in item.nodePath.indices) {
             node = (node as? DirectoryNode)?.children?.getOrNull(index) ?: return null
             pathParts.add(node.item.name)
         }

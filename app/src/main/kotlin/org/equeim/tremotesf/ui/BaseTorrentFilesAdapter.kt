@@ -87,13 +87,13 @@ abstract class BaseTorrentFilesAdapter(
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
         val nodeIndexes =
-            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.indices.last() }
         filesTree.setItemsWanted(nodeIndexes, wanted)
     }
 
     private fun setSelectedItemsPriority(priority: TorrentFilesTree.Item.Priority) {
         val nodeIndexes =
-            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.indices.last() }
         filesTree.setItemsPriority(nodeIndexes, priority)
     }
 
@@ -104,7 +104,7 @@ abstract class BaseTorrentFilesAdapter(
             oldItem: TorrentFilesTree.Item,
             newItem: TorrentFilesTree.Item,
         ): Boolean {
-            return oldItem === newItem || oldItem.nodePath.contentEquals(newItem.nodePath)
+            return oldItem === newItem || oldItem.nodePath == newItem.nodePath
         }
 
         override fun areContentsTheSame(
@@ -143,7 +143,7 @@ abstract class BaseTorrentFilesAdapter(
             checkBox.setOnClickListener {
                 bindingAdapterPositionOrNull?.let(adapter::getItem)?.let { item ->
                     adapter.filesTree.setItemsWanted(
-                        listOf(item.nodePath.last()),
+                        listOf(item.nodePath.indices.last()),
                         checkBox.isChecked
                     )
                 }

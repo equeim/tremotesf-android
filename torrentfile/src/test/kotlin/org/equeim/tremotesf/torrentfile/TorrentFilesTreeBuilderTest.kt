@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.torrentfile
 
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree.NodePath
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -11,7 +12,7 @@ import kotlin.test.assertFailsWith
 class TorrentFilesTreeBuilderTest {
     @Test
     fun `Build tree with one top-level file`() {
-        val expectedFile = expectedFileItem(0, intArrayOf(0))
+        val expectedFile = expectedFileItem(0, NodePath(intArrayOf(0)))
 
         val (rootNode, files) = buildTorrentFilesTree {
             addFile(
@@ -30,8 +31,8 @@ class TorrentFilesTreeBuilderTest {
 
     @Test
     fun `Build tree with a subdirectory`() {
-        val expectedDirectory = expectedDirectoryItem(intArrayOf(0))
-        val expectedFile = expectedFileItem(0, intArrayOf(0, 0))
+        val expectedDirectory = expectedDirectoryItem(NodePath(intArrayOf(0)))
+        val expectedFile = expectedFileItem(0, NodePath(intArrayOf(0, 0)))
 
         val (rootNode, files) = buildTorrentFilesTree {
             addFile(

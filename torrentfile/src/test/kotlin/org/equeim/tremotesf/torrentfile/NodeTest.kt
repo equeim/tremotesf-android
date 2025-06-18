@@ -4,8 +4,8 @@
 
 package org.equeim.tremotesf.torrentfile
 
+import org.equeim.tremotesf.torrentfile.TorrentFilesTree.NodePath
 import org.junit.jupiter.api.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotSame
@@ -17,7 +17,7 @@ class NodeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val node = rootNode.addDirectory("0")
 
-        val expectedItem = expectedFileItem(99, intArrayOf(0, 0))
+        val expectedItem = expectedFileItem(99, NodePath(intArrayOf(0, 0)))
         node.addFile(
             expectedItem.fileId,
             expectedItem.name,
@@ -34,7 +34,7 @@ class NodeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val node = rootNode.addDirectory("0")
 
-        val expectedItem = expectedDirectoryItem(intArrayOf(0, 0))
+        val expectedItem = expectedDirectoryItem(NodePath(intArrayOf(0, 0)))
         node.addDirectory(expectedItem.name)
         checkLastChild(node, expectedItem)
     }
@@ -45,7 +45,7 @@ class NodeTest {
         val node = rootNode.addDirectory("0")
         node.addFile(98, "foo", 1, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
 
-        val expectedItem = expectedFileItem(99, intArrayOf(0, 1))
+        val expectedItem = expectedFileItem(99, NodePath(intArrayOf(0, 1)))
         node.addFile(
             expectedItem.fileId,
             expectedItem.name,
@@ -62,7 +62,7 @@ class NodeTest {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
         val node = rootNode.addDirectory("0")
 
-        val expectedItem = expectedFileItem(-666, intArrayOf(0, 0))
+        val expectedItem = expectedFileItem(-666, NodePath(intArrayOf(0, 0)))
         assertFailsWith<IllegalArgumentException> {
             node.addFile(
                 expectedItem.fileId,
@@ -81,7 +81,7 @@ class NodeTest {
         val node = rootNode.addDirectory("0")
         node.addFile(98, "foo", 1, 0, TorrentFilesTree.Item.WantedState.Wanted, TorrentFilesTree.Item.Priority.Normal)
 
-        val expectedItem = expectedDirectoryItem(intArrayOf(0, 1))
+        val expectedItem = expectedDirectoryItem(NodePath(intArrayOf(0, 1)))
         node.addDirectory(expectedItem.name)
         checkLastChild(node, expectedItem)
     }
@@ -90,7 +90,7 @@ class NodeTest {
         val lastChild = node.children.last()
         assertEquals(lastChild, node.getChildByItemNameOrNull(expectedItem.name))
         assertEquals(expectedItem, lastChild.item)
-        assertContentEquals(expectedItem.nodePath, lastChild.path)
+        assertEquals(expectedItem.nodePath, lastChild.path)
     }
 
     @Test
