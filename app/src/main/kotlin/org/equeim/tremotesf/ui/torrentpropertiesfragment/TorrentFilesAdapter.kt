@@ -23,15 +23,12 @@ class TorrentFilesAdapter(
     private val fragment: TorrentFilesFragment,
 ) : BaseTorrentFilesAdapter(model.filesTree, fragment) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == TYPE_ITEM) {
-            val binding = TorrentFileListItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-            return ItemHolder(this, selectionTracker, binding)
-        }
-        return super.onCreateViewHolder(parent, viewType)
+        val binding = TorrentFileListItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ItemHolder(this, selectionTracker, binding)
     }
 
     override fun navigateToRenameDialog(path: String, name: String) {

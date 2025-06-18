@@ -9,12 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.TorrentFilesFragmentBinding
+import org.equeim.tremotesf.ui.TorrentFilesNavigateUpAdapter
 import org.equeim.tremotesf.ui.utils.hide
 import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
 import org.equeim.tremotesf.ui.utils.showError
@@ -47,8 +49,10 @@ class TorrentFilesFragment :
         super.onViewStateRestored(savedInstanceState)
 
         val filesAdapter = TorrentFilesAdapter(model, this)
+        val navigateUpAdapter = TorrentFilesNavigateUpAdapter(model.filesTree, filesAdapter::selectionTracker)
+        val mergedAdapter = ConcatAdapter(navigateUpAdapter, filesAdapter)
         binding.filesView.apply {
-            adapter = filesAdapter
+            adapter = mergedAdapter
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
@@ -57,6 +61,7 @@ class TorrentFilesFragment :
         model.state.launchAndCollectWhenStarted(viewLifecycleOwner, ::updatePlaceholder)
 
         model.filesTree.items.launchAndCollectWhenStarted(viewLifecycleOwner, filesAdapter::update)
+        model.filesTree.isAtRoot.launchAndCollectWhenStarted(viewLifecycleOwner, navigateUpAdapter::update)
     }
 
     fun isAtRootOfTree(): StateFlow<Boolean> = model.filesTree.isAtRoot

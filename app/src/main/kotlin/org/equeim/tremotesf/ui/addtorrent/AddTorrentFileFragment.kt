@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.lifecycle.withStarted
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,6 +51,7 @@ import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.SelectionTracker
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
+import org.equeim.tremotesf.ui.TorrentFilesNavigateUpAdapter
 import org.equeim.tremotesf.ui.applyNavigationBarBottomInset
 import org.equeim.tremotesf.ui.utils.ArrayDropdownAdapter
 import org.equeim.tremotesf.ui.utils.FormatUtils
@@ -445,8 +447,10 @@ class AddTorrentFileFragment : AddTorrentFragment(
         override fun onViewStateRestored(savedInstanceState: Bundle?) {
             super.onViewStateRestored(savedInstanceState)
 
+            val navigateUpAdapter = TorrentFilesNavigateUpAdapter(mainFragment.model.filesTree, adapter::selectionTracker)
+            val mergedAdapter = ConcatAdapter(navigateUpAdapter, adapter)
             binding.filesView.apply {
-                adapter = this@FilesFragment.adapter
+                adapter = mergedAdapter
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(
                     DividerItemDecoration(
@@ -478,18 +482,15 @@ class AddTorrentFileFragment : AddTorrentFragment(
                 parent: ViewGroup,
                 viewType: Int,
             ): RecyclerView.ViewHolder {
-                if (viewType == TYPE_ITEM) {
-                    return ItemHolder(
-                        this,
-                        selectionTracker,
-                        LocalTorrentFileListItemBinding.inflate(
-                            LayoutInflater.from(parent.context),
-                            parent,
-                            false
-                        )
+                return ItemHolder(
+                    this,
+                    selectionTracker,
+                    LocalTorrentFileListItemBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
                     )
-                }
-                return super.onCreateViewHolder(parent, viewType)
+                )
             }
 
             override fun navigateToRenameDialog(path: String, name: String) {

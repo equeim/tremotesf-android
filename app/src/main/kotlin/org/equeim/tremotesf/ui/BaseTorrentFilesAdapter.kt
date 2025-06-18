@@ -24,15 +24,58 @@ import org.equeim.tremotesf.ui.utils.submitListAwait
 import java.lang.ref.WeakReference
 
 
+class TorrentFilesNavigateUpAdapter(
+    private val filesTree: TorrentFilesTree,
+    private val selectionTracker: () -> SelectionTracker<*>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var isAtRoot = true
+
+    fun update(isAtRoot: Boolean) {
+        if (isAtRoot != this.isAtRoot) {
+            this.isAtRoot = isAtRoot
+            if (isAtRoot) {
+                notifyItemRemoved(0)
+            } else {
+                notifyItemInserted(0)
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView.ViewHolder {
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.up_list_item,
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = Unit
+
+    override fun getItemCount(): Int {
+        return if (isAtRoot) 0 else 1
+    }
+
+    private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener {
+                if (!selectionTracker().hasSelection) {
+                    filesTree.navigateUp()
+                }
+            }
+        }
+    }
+}
+
+
 abstract class BaseTorrentFilesAdapter(
     private val filesTree: TorrentFilesTree,
     private val fragment: Fragment,
-) : AsyncLoadingListAdapter<TorrentFilesTree.Item?, RecyclerView.ViewHolder>(ItemCallback()) {
-    protected companion object {
-        const val TYPE_HEADER = 0
-        const val TYPE_ITEM = 1
-    }
-
+) : AsyncLoadingListAdapter<TorrentFilesTree.Item, RecyclerView.ViewHolder>(ItemCallback()) {
     lateinit var selectionTracker: SelectionTracker<Int>
         private set
 
@@ -44,38 +87,15 @@ abstract class BaseTorrentFilesAdapter(
             { ActionModeCallback(this, it) },
             R.plurals.files_selected
         ) {
-            getItem(it)?.nodePath?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
+            getItem(it)?.nodePath?.indices?.last() ?: SelectionTracker.SELECTION_KEY_UNSELECTABLE_INT
         }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return if (getItem(position) == null) {
-            TYPE_HEADER
-        } else {
-            TYPE_ITEM
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == TYPE_HEADER) {
-            return HeaderHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.up_list_item,
-                    parent,
-                    false
-                )
-            )
-        }
-        throw IllegalArgumentException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == TYPE_ITEM) {
-            (holder as BaseItemHolder).update()
-        }
+        (holder as BaseItemHolder).update()
     }
 
-    suspend fun update(items: List<TorrentFilesTree.Item?>?) {
+    suspend fun update(items: List<TorrentFilesTree.Item>) {
         submitListAwait(items)
         selectionTracker.commitAdapterUpdate()
         selectionTracker.invalidateActionMode()
@@ -87,19 +107,19 @@ abstract class BaseTorrentFilesAdapter(
 
     private fun setSelectedItemsWanted(wanted: Boolean) {
         val nodeIndexes =
-            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.indices.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it).nodePath.indices.last() }
         filesTree.setItemsWanted(nodeIndexes, wanted)
     }
 
     private fun setSelectedItemsPriority(priority: TorrentFilesTree.Item.Priority) {
         val nodeIndexes =
-            selectionTracker.mapSelectedPositionsToList { getItem(it)!!.nodePath.indices.last() }
+            selectionTracker.mapSelectedPositionsToList { getItem(it).nodePath.indices.last() }
         filesTree.setItemsPriority(nodeIndexes, priority)
     }
 
     protected abstract fun navigateToRenameDialog(path: String, name: String)
 
-    private class ItemCallback : DiffUtil.ItemCallback<TorrentFilesTree.Item?>() {
+    private class ItemCallback : DiffUtil.ItemCallback<TorrentFilesTree.Item>() {
         override fun areItemsTheSame(
             oldItem: TorrentFilesTree.Item,
             newItem: TorrentFilesTree.Item,
@@ -112,16 +132,6 @@ abstract class BaseTorrentFilesAdapter(
             newItem: TorrentFilesTree.Item,
         ): Boolean {
             return oldItem == newItem
-        }
-    }
-
-    private inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        init {
-            itemView.setOnClickListener {
-                if (!selectionTracker.hasSelection) {
-                    filesTree.navigateUp()
-                }
-            }
         }
     }
 

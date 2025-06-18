@@ -8,7 +8,12 @@ import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree.NodePath
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +22,6 @@ import kotlin.reflect.KClass
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -94,7 +98,7 @@ class TorrentFilesTreeTest {
             navigateDown(directory.item)
             runCurrent()
             assertSame(directory, currentNodePublic)
-            assertEquals(listOf(null, fileItem), items.value)
+            assertEquals(listOf(fileItem), items.value)
         }
     }
 
@@ -167,7 +171,7 @@ class TorrentFilesTreeTest {
             runCurrent()
 
             assertSame(directory, currentNodePublic)
-            assertEquals(listOf(null, subdirectory.item), items.value)
+            assertEquals(listOf(subdirectory.item), items.value)
         }
     }
 
@@ -191,7 +195,7 @@ class TorrentFilesTreeTest {
             navigateDown(directory.item)
             runCurrent()
 
-            assertEquals(listOf(null) + fileItems, items.value)
+            assertEquals(fileItems, items.value)
 
             val newFileItems = listOf(
                 fileItems[0].copy(name = "ZZZ"), fileItems[1].copy(name = "AAA")
@@ -200,7 +204,7 @@ class TorrentFilesTreeTest {
 
             updateItemsWithSortingPublic()
 
-            assertEquals(listOf(null, newFileItems[1], newFileItems[0]), items.value)
+            assertEquals(listOf(newFileItems[1], newFileItems[0]), items.value)
         }
     }
 
@@ -249,7 +253,7 @@ class TorrentFilesTreeTest {
             navigateDown(directory.item)
             runCurrent()
 
-            val oldItems = items.value!!
+            val oldItems = items.value
 
             var callbackCalled = false
             lateinit var checkItem: (TorrentFilesTree.Item) -> Unit
@@ -285,13 +289,10 @@ class TorrentFilesTreeTest {
             assertSame(otherFileItem, otherFile.item)
             assertEquals(otherFileItemCopy, otherFile.item)
 
-            oldItems.asSequence().zip(items.value!!.asSequence()).forEach { (old, new) ->
+            oldItems.asSequence().zip(items.value.asSequence()).forEach { (old, new) ->
                 when {
-                    old == null -> assertNull(new)
-                    old.nodePath == subdirectory.path -> checkItem(new!!)
-                    else -> {
-                        assertSame(old, new)
-                    }
+                    old.nodePath == subdirectory.path -> checkItem(new)
+                    else -> assertSame(old, new)
                 }
             }
 
@@ -598,7 +599,7 @@ class TorrentFilesTreeTest {
 
             if (isInItems) {
                 assertNotEquals(oldItems, items.value)
-                assertTrue(items.value!!.contains(renamedNode.item))
+                assertTrue(items.value.contains(renamedNode.item))
             } else {
                 assertSame(oldItems, items.value)
             }
