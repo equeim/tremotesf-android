@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+### Fixed
+- Merging trackers
+- Adding torrents with old Transmission versions
+
 ## [2.12.0] - 2025-05-19
 ### Added
 - Labels support (thanks @sommd for initial implementation)
