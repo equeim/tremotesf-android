@@ -10,15 +10,21 @@ import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.os.Parcelable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.os.BundleCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -45,8 +51,9 @@ interface AddTorrentFileModel {
             ReadingError,
             ParsingError,
         }
+
         data class InitialRpcInputsError(val error: RpcRequestError) : LoadingState
-        data object Aborted: LoadingState
+        data object Aborted : LoadingState
     }
 
     val loadingState: State<LoadingState>
@@ -73,7 +80,14 @@ class AddTorrentFileModelImpl(
 
     override val filesTree: TorrentFilesTree = FilesTree()
 
-    private val renamedFiles = mutableMapOf<String, String>()
+    private val renamedFiles by savedStateHandle.saveable<MutableList<RenamedFile>> { mutableListOf() }
+
+    @Parcelize
+    private data class RenamedFile(
+        val path: TorrentFilesTree.NodePath,
+        val originalNamePath: String,
+        val newName: String
+    ) : Parcelable
 
     private lateinit var torrentName: String
     private lateinit var infoHashV1: String
@@ -82,6 +96,10 @@ class AddTorrentFileModelImpl(
 
     private val _addTorrentState = mutableStateOf<AddTorrentState?>(null)
     val addTorrentState: State<AddTorrentState?> by ::_addTorrentState
+
+    init {
+        savedStateHandle.setSavedStateProvider(CHANGED_FILE_PRIORITIES_KEY) { bundleOf("" to getChangedFilePriorities()) }
+    }
 
     override fun onCleared() {
         fd?.closeQuietly()
@@ -146,6 +164,23 @@ class AddTorrentFileModelImpl(
                     this@AddTorrentFileModelImpl.fd = fd
                     this@AddTorrentFileModelImpl.files = files
                     filesTree.init(rootNode, savedStateHandle)
+                    // Restore saved state
+                    savedStateHandle.get<Bundle>(CHANGED_FILE_PRIORITIES_KEY)?.let {
+                        BundleCompat.getParcelable(it, "", ChangedFilePriorities::class.java)?.let { priorities ->
+                            if (renamedFiles.isNotEmpty() ||
+                                priorities.unwantedFiles.isNotEmpty() ||
+                                priorities.lowPriorityFiles.isNotEmpty() ||
+                                priorities.highPriorityFiles.isNotEmpty()
+                            ) {
+                                filesTree.restoreChangedProperties(
+                                    renamedFiles = renamedFiles.map { it.path to it.newName },
+                                    unwantedFiles = priorities.unwantedFiles.map(files::get),
+                                    lowPriorityFiles = priorities.lowPriorityFiles.map(files::get),
+                                    highPriorityFiles = priorities.highPriorityFiles.map(files::get)
+                                )
+                            }
+                        }
+                    }
                     loadingState.value = LoadingState.Loaded(torrentName)
                 }
             } catch (_: FileParseException) {
@@ -163,8 +198,8 @@ class AddTorrentFileModelImpl(
         Timber.d("addTorrentFile() called")
         saveAddTorrentParameters()
         val fd = detachFd() ?: return
-        val priorities = getFilePriorities()
-        val renamedFiles = renamedFiles.toMap()
+        val priorities = getChangedFilePriorities()
+        val renamedFiles = renamedFiles.associate { it.originalNamePath to it.newName }
         viewModelScope.launch {
             _addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
             if (!checkIfTorrentExists()) {
@@ -224,13 +259,14 @@ class AddTorrentFileModelImpl(
         }
     }
 
-    data class FilePriorities(
+    @Parcelize
+    private data class ChangedFilePriorities(
         val unwantedFiles: List<Int>,
         val lowPriorityFiles: List<Int>,
         val highPriorityFiles: List<Int>,
-    )
+    ) : Parcelable
 
-    private fun getFilePriorities(): FilePriorities {
+    private fun getChangedFilePriorities(): ChangedFilePriorities {
         val unwantedFiles = mutableListOf<Int>()
         val lowPriorityFiles = mutableListOf<Int>()
         val highPriorityFiles = mutableListOf<Int>()
@@ -248,7 +284,7 @@ class AddTorrentFileModelImpl(
             }
         }
 
-        return FilePriorities(
+        return ChangedFilePriorities(
             unwantedFiles,
             lowPriorityFiles,
             highPriorityFiles
@@ -276,8 +312,8 @@ class AddTorrentFileModelImpl(
     }
 
     private inner class FilesTree : TorrentFilesTree(viewModelScope) {
-        override fun onFileRenamed(path: String, newName: String) {
-            renamedFiles[path] = newName
+        override fun onFileRenamed(path: NodePath, originalNamePath: String, newName: String) {
+            renamedFiles.add(RenamedFile(path, originalNamePath, newName))
         }
     }
 
@@ -290,5 +326,7 @@ class AddTorrentFileModelImpl(
                 Timber.e(e, "closeQuietly: failed to close file descriptor")
             }
         }
+
+        const val CHANGED_FILE_PRIORITIES_KEY = "changedFilePriorities"
     }
 }

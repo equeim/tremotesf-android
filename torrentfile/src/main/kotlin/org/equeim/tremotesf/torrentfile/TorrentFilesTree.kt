@@ -432,12 +432,12 @@ open class TorrentFilesTree(
         if (currentNode.children.contains(node)) {
             updateItemsWithSorting()
         }
-        onFileRenamed(originalPath, newName)
+        onFileRenamed(node.path, originalPath, newName)
     }
 
     protected open fun onSetFilesWanted(ids: List<Int>, wanted: Boolean) = Unit
     protected open fun onSetFilesPriority(ids: List<Int>, priority: Item.Priority) = Unit
-    protected open fun onFileRenamed(originalPath: String, newName: String) = Unit
+    protected open fun onFileRenamed(path: NodePath, originalNamePath: String, newName: String) = Unit
 
     @MainThread
     fun init(
@@ -451,6 +451,35 @@ open class TorrentFilesTree(
             navigateTo(rootNode)
         }
         savedStateHandle.setSavedStateProvider(savedStateKey, ::saveInstanceState)
+    }
+
+    fun restoreChangedProperties(
+        renamedFiles: List<Pair<NodePath, String>>,
+        unwantedFiles: List<Node>,
+        lowPriorityFiles: List<Node>,
+        highPriorityFiles: List<Node>
+    ) = scope.launch {
+        for ((path, newName) in renamedFiles) {
+            val node = findNodeByIndexPath(path) ?: continue
+            node.item = node.item.copy(name = newName)
+        }
+        for (node in unwantedFiles) {
+            node.item.wantedState = Item.WantedState.Unwanted
+        }
+        for (node in lowPriorityFiles) {
+            node.item.priority = Item.Priority.Low
+        }
+        for (node in highPriorityFiles) {
+            node.item.priority = Item.Priority.High
+        }
+        recalculateNodesAndTheirParents(
+            sequence {
+                yieldAll(unwantedFiles)
+                yieldAll(lowPriorityFiles)
+                yieldAll(highPriorityFiles)
+            }
+        )
+        updateItemsWithSorting()
     }
 
     @MainThread

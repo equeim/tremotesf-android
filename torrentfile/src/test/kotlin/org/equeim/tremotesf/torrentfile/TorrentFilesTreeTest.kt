@@ -593,8 +593,8 @@ class TorrentFilesTreeTest {
 
             val expectedNewName = "foo"
             var callbackCalled = false
-            onFileRenamedCallback = { originalPath, newName ->
-                if (originalPath == path && newName == expectedNewName) {
+            onFileRenamedCallback = { nodePath, originalPath, newName ->
+                if (nodePath == renamedNode.path && originalPath == path && newName == expectedNewName) {
                     callbackCalled = true
                 }
             }
@@ -776,8 +776,8 @@ class TorrentFilesTreeTest {
             onSetFilesPriorityCallback(ids, priority)
         }
 
-        var onFileRenamedCallback: (String, String) -> Unit = { _, _ -> }
-        override fun onFileRenamed(originalPath: String, newName: String) {
+        var onFileRenamedCallback: (NodePath, String, String) -> Unit = { _, _, _ -> }
+        override fun onFileRenamed(path: NodePath, originalPath: String, newName: String) {
             println("onFileRenamed called with: originalPath = $originalPath, newName = $newName")
         }
     }
