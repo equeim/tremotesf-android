@@ -33,6 +33,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.equeim.tremotesf.R
@@ -47,7 +49,8 @@ fun TremotesfLabelsEditor(
     removeLabel: (String) -> Unit,
     addLabel: (String) -> Unit,
     allLabels: () -> List<String>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textFieldFocusRequester: FocusRequester? = null
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
         EnabledLabelsList(labels = enabledLabels, removeLabel = removeLabel)
@@ -75,7 +78,14 @@ fun TremotesfLabelsEditor(
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                    .run {
+                        if (textFieldFocusRequester != null) {
+                            focusRequester(textFieldFocusRequester)
+                        } else {
+                            this
+                        }
+                    },
             )
             ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 for (label in allLabels()) {

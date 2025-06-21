@@ -270,7 +270,7 @@
     </dialog>
     <dialog
         android:id="@+id/labels_edit_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.LabelsEditDialogFragment">
+        android:name="org.equeim.tremotesf.ui.LabelsEditDialogFragment">
         <argument
             android:name="torrent_hash_strings"
             app:argType="string[]" />
