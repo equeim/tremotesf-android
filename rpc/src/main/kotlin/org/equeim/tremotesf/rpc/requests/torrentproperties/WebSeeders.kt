@@ -11,16 +11,17 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentWebSeeders(hashString: String): List<String>? =
+suspend fun RpcClient.getTorrentWebSeeders(hashString: String): List<String> =
     performRequest<SingleTorrentResponseArguments<TorrentWebSeeders>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "webseeds"),
         "getTorrentWebSeeders"
-    ).arguments.torrents.firstOrNull()?.webSeeders
+    ).getSingleTorrent().webSeeders
 
 @Serializable
 private data class TorrentWebSeeders(@SerialName("webseeds") val webSeeders: List<String>)

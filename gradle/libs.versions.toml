@@ -33,6 +33,7 @@ androidx-webkit = "1.14.0"
 androidx-window = "1.4.0"
 androidx-work = "2.10.1"
 
+composeGrid = "2.3.1"
 fastscroll = "2.1.0"
 fastscroller = "0.3.2"
 leakcanary = "2.14"
@@ -87,6 +88,7 @@ androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-w
 androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 
+composeGrid = { module = "com.cheonjaeung.compose.grid:grid", version.ref = "composeGrid" }
 fastscroll = { module = "io.github.l4digital:fastscroll", version.ref = "fastscroll" }
 fastscroller = { module = "io.github.oikvpqya.compose.fastscroller:fastscroller-material3", version.ref = "fastscroller" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }

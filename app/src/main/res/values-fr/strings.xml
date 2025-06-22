@@ -165,18 +165,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Envoi</string>
 
     <string name="ratio_limit">Limite de ratio</string>
-    <string-array name="ratio_limit_mode">
-        <item>Utiliser les paramètres globaux</item>
-        <item>Partager peu importe le ratio</item>
-        <item>Arrêter de partager au ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">Utiliser les paramètres globaux</string>
+    <string name="ratio_limit_unlimited">Partager peu importe le ratio</string>
 
     <string name="idle_seeding">Partage inactif</string>
-    <string-array name="idle_seeding_mode">
-        <item>Utiliser les paramètres globaux</item>
-        <item>Partager quelle que soit l\'activité</item>
-        <item>Arrêter de partager si inactif pendant</item>
-    </string-array>
+    <string name="idle_seeding_global">Utiliser les paramètres globaux</string>
+    <string name="idle_seeding_unlimited">Partager quelle que soit l\'activité</string>
 
     <string name="maximum_peers">Nombre maximum de pairs</string>
 

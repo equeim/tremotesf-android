@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -33,6 +34,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
+import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.History
 
 @Parcelize
@@ -51,6 +56,7 @@ fun TremotesfDownloadDirectoryField(
     modifier: Modifier = Modifier,
     @StringRes label: Int = 0,
     imeAction: ImeAction = ImeAction.Unspecified,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     isError: Boolean = false,
     @StringRes supportingText: Int = 0
 ) {
@@ -65,6 +71,7 @@ fun TremotesfDownloadDirectoryField(
             onValueChange = onDownloadDirectoryChanged,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = imeAction),
+            keyboardActions = keyboardActions,
             label = label.takeIf { it != 0 }?.let { { Text(stringResource(label)) } },
             isError = isError,
             supportingText = supportingText.takeIf { it != 0 }?.let { { Text(stringResource(label)) } },
@@ -99,4 +106,44 @@ fun TremotesfDownloadDirectoryField(
             }
         }
     }
+}
+
+fun getInitialAllDownloadDirectories(
+    downloadDirectoryFromServerSettings: NormalizedRpcPath,
+    torrentsDownloadDirectories: Set<NormalizedRpcPath>,
+    comparator: AlphanumericComparator
+): List<DownloadDirectoryItem> = getAllDownloadDirectories(
+    downloadDirectoryFromServerSettings = downloadDirectoryFromServerSettings,
+    torrentsDownloadDirectories = torrentsDownloadDirectories,
+    lastDownloadDirectories = GlobalServers.serversState.value.currentServer?.lastDownloadDirectories.orEmpty(),
+    comparator = comparator
+)
+
+fun updateAllDownloadDirectories(
+    restoredAllDownloadDirectories: List<DownloadDirectoryItem>,
+    downloadDirectoryFromServerSettings: NormalizedRpcPath,
+    torrentsDownloadDirectories: Set<NormalizedRpcPath>,
+    comparator: AlphanumericComparator
+): List<DownloadDirectoryItem> {
+    return getAllDownloadDirectories(
+        downloadDirectoryFromServerSettings = downloadDirectoryFromServerSettings,
+        torrentsDownloadDirectories = torrentsDownloadDirectories,
+        lastDownloadDirectories = restoredAllDownloadDirectories.mapNotNull {
+            if (it.canBeRemoved) it.directory else null
+        },
+        comparator = comparator
+    )
+}
+
+private fun getAllDownloadDirectories(
+    downloadDirectoryFromServerSettings: NormalizedRpcPath,
+    torrentsDownloadDirectories: Set<NormalizedRpcPath>,
+    lastDownloadDirectories: List<String>,
+    comparator: AlphanumericComparator
+): List<DownloadDirectoryItem> {
+    val directories = sortedMapOf<String, Boolean>(comparator)
+    directories.put(downloadDirectoryFromServerSettings.toNativeSeparators(), false)
+    torrentsDownloadDirectories.forEach { directories.putIfAbsent(it.toNativeSeparators(), false) }
+    lastDownloadDirectories.forEach { directories.putIfAbsent(it, true) }
+    return directories.map { (directory, canBeRemoved) -> DownloadDirectoryItem(directory, canBeRemoved) }
 }

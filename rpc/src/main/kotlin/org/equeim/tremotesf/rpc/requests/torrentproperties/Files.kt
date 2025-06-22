@@ -14,16 +14,17 @@ import org.equeim.tremotesf.rpc.requests.RpcEnum
 import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentFiles(hashString: String): TorrentFiles? =
+suspend fun RpcClient.getTorrentFiles(hashString: String): TorrentFiles =
     performRequest<SingleTorrentResponseArguments<TorrentFiles>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, listOf("files", "fileStats")),
         "getTorrentFiles"
-    ).arguments.torrents.firstOrNull()
+    ).getSingleTorrent()
 
 @Serializable
 data class TorrentFiles(

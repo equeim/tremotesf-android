@@ -69,32 +69,55 @@ object FormatUtils {
     @Deprecated("Migrate to FileSizeFormatter")
     fun formatTransferRate(@Suppress("unused") context: Context, speed: TransferRate): String = fileSizeFormatter.formatTransferRate(speed)
 
-    fun formatDuration(context: Context, duration: Duration?): String {
-        if (duration == null || duration.isNegative()) {
-            return "\u221E"
-        }
+    fun formatTorrentEta(context: Context, eta: Duration?): String = formatTorrentEtaImpl(eta, context)
 
-        var seconds = duration.inWholeSeconds
-
-        val days = seconds / 86400
-        seconds %= 86400
-        val hours = seconds / 3600
-        seconds %= 3600
-        val minutes = seconds / 60
-        seconds %= 60
-
-        if (days > 0) {
-            return context.getString(R.string.duration_days, days, hours)
-        }
-
-        if (hours > 0) {
-            return context.getString(R.string.duration_hours, hours, minutes)
-        }
-
-        if (minutes > 0) {
-            return context.getString(R.string.duration_minutes, minutes, seconds)
-        }
-
-        return context.getString(R.string.duration_seconds, seconds)
-    }
+    fun formatDuration(context: Context, duration: Duration): String = formatDurationImpl(duration, context)
 }
+
+@Composable
+fun formatDuration(duration: Duration): String {
+    val context = LocalContext.current
+    return remember(context, LocalConfiguration.current) { formatDurationImpl(duration, context) }
+}
+
+private fun formatDurationImpl(duration: Duration, context: Context): String {
+    if (duration.isNegative()) return ""
+
+    var seconds = duration.inWholeSeconds
+
+    val days = seconds / 86400
+    seconds %= 86400
+    val hours = seconds / 3600
+    seconds %= 3600
+    val minutes = seconds / 60
+    seconds %= 60
+
+    if (days > 0) {
+        return context.getString(R.string.duration_days, days, hours)
+    }
+
+    if (hours > 0) {
+        return context.getString(R.string.duration_hours, hours, minutes)
+    }
+
+    if (minutes > 0) {
+        return context.getString(R.string.duration_minutes, minutes, seconds)
+    }
+
+    return context.getString(R.string.duration_seconds, seconds)
+}
+
+@Composable
+fun formatTorrentEta(eta: Duration?): String {
+    val context = LocalContext.current
+    return remember(context, LocalConfiguration.current) { formatTorrentEtaImpl(eta, context) }
+}
+
+private fun formatTorrentEtaImpl(eta: Duration?, context: Context): String {
+    if (eta == null || eta.isNegative()) {
+        return INFINITY_SYMBOL
+    }
+    return formatDurationImpl(eta, context)
+}
+
+private const val INFINITY_SYMBOL = "\u221E"

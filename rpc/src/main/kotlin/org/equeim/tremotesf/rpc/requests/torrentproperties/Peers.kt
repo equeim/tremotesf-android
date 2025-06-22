@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
@@ -12,7 +13,9 @@ import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 
+@Immutable
 @Serializable
 data class Peer(
     @SerialName("address")
@@ -32,12 +35,12 @@ data class Peer(
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentPeers(hashString: String): List<Peer>? =
+suspend fun RpcClient.getTorrentPeers(hashString: String): List<Peer> =
     performRequest<SingleTorrentResponseArguments<TorrentPeers>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "peers"),
         "getTorrentPeers"
-    ).arguments.torrents.firstOrNull()?.peers
+    ).getSingleTorrent().peers
 
 @Serializable
 private data class TorrentPeers(

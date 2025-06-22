@@ -26,18 +26,19 @@ import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 import timber.log.Timber
 import java.time.Instant
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentTrackers(hashString: String): List<Tracker>? =
+suspend fun RpcClient.getTorrentTrackers(hashString: String): List<Tracker> =
     performRequest<SingleTorrentResponseArguments<TorrentTrackers>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, "trackerStats"),
         "getTorrentTrackers"
-    ).arguments.torrents.firstOrNull()?.trackers
+    ).getSingleTorrent().trackers
 
 @Serializable
 data class Tracker(

@@ -51,7 +51,7 @@ android {
         isShrinkResources = true
         isMinifyEnabled = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), file("proguard-rules.pro"))
-        signingConfig = signingConfigs.findByName("release")
+        signingConfig = signingConfigs.findByName("debug")
     }
 
     buildFeatures {
@@ -118,6 +118,7 @@ dependencies {
     implementation(libs.androidx.compose.materialIconsCore)
 
     implementation(libs.material)
+    implementation(libs.composeGrid)
     implementation(libs.fastscroll)
     implementation(libs.fastscroller)
     implementation(libs.timber)

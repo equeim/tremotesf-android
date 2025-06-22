@@ -57,30 +57,13 @@
             android:id="@+id/to_labels_edit_dialog"
             app:destination="@id/labels_edit_dialog" />
     </fragment>
+
     <fragment
         android:id="@+id/torrent_properties_fragment"
         android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragment">
         <argument
             android:name="torrent_hash_string"
             app:argType="string" />
-        <argument
-            android:name="torrent_name"
-            app:argType="string" />
-        <action
-            android:id="@+id/to_torrent_file_rename_dialog"
-            app:destination="@id/torrent_file_rename_dialog" />
-        <action
-            android:id="@+id/to_add_trackers_dialog"
-            app:destination="@id/add_trackers_dialog" />
-        <action
-            android:id="@+id/to_edit_tracker_dialog"
-            app:destination="@id/edit_tracker_dialog" />
-        <action
-            android:id="@+id/to_remove_trackers_dialog"
-            app:destination="@id/remove_trackers_dialog" />
-        <action
-            android:id="@+id/to_remove_torrent_dialog"
-            app:destination="@id/remove_torrent_dialog" />
         <action
             android:id="@+id/to_torrents_set_location_dialog"
             app:destination="@id/torrents_set_location_dialog" />
@@ -226,26 +209,6 @@
             android:name="torrent_hash_string"
             app:argType="string"
             app:nullable="true" />
-    </dialog>
-    <dialog
-        android:id="@+id/add_trackers_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.AddTrackersDialogFragment"></dialog>
-    <dialog
-        android:id="@+id/edit_tracker_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.EditTrackerDialogFragment">
-        <argument
-            android:name="tracker_id"
-            app:argType="integer" />
-        <argument
-            android:name="announce_url"
-            app:argType="string" />
-    </dialog>
-    <dialog
-        android:id="@+id/remove_trackers_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentpropertiesfragment.RemoveTrackersDialogFragment">
-        <argument
-            android:name="tracker_ids"
-            app:argType="integer[]" />
     </dialog>
     <dialog
         android:id="@+id/remove_torrent_dialog"

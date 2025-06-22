@@ -6,6 +6,7 @@
 
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,19 +23,21 @@ import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.UnixTimeToInstantSerializer
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 import java.time.Instant
 import kotlin.time.Duration
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails? =
+suspend fun RpcClient.getTorrentDetails(hashString: String): TorrentDetails =
     performRequest<SingleTorrentResponseArguments<TorrentDetails>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, TorrentDetails.serializer().descriptor.elementNames.toList()),
         "getTorrentDetails"
-    ).arguments.torrents.firstOrNull()
+    ).getSingleTorrent()
 
+@Immutable
 @Serializable
 data class TorrentDetails(
     @SerialName("id")

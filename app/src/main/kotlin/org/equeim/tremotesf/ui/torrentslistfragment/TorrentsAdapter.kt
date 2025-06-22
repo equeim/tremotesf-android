@@ -138,7 +138,7 @@ class TorrentsAdapter(
                 }
 
                 if (oldTorrent?.eta != torrent.eta) {
-                    etaTextView.text = FormatUtils.formatDuration(context, torrent.eta)
+                    etaTextView.text = FormatUtils.formatTorrentEta(context, torrent.eta)
                 }
 
                 progressBar.progress = (torrent.percentDone * 100).toInt()
@@ -295,8 +295,7 @@ class TorrentsAdapter(
             val torrent = this.torrent ?: return
             fragment.navigate(
                 TorrentsListFragmentDirections.toTorrentPropertiesFragment(
-                    torrent.hashString,
-                    torrent.name
+                    torrent.hashString
                 )
             )
         }

@@ -181,18 +181,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Раздача</string>
 
     <string name="ratio_limit">Ограничение рейтинга</string>
-    <string-array name="ratio_limit_mode">
-        <item>Использовать глобальные настройки</item>
-        <item>Раздавать независимо от рейтинга</item>
-        <item>@string/stop_seeding_at_ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">Использовать глобальные настройки</string>
+    <string name="ratio_limit_unlimited">Раздавать независимо от рейтинга</string>
 
     <string name="idle_seeding">Раздача при простое</string>
-    <string-array name="idle_seeding_mode">
-        <item>Использовать глобальные настройки</item>
-        <item>Раздавать независимо от активности</item>
-        <item>@string/stop_seeding_if_idle_for</item>
-    </string-array>
+    <string name="idle_seeding_global">Использовать глобальные настройки</string>
+    <string name="idle_seeding_unlimited">Раздавать независимо от активности</string>
 
     <string name="text_field_suffix_minutes">минуты</string>
     <string name="maximum_peers">Максимальное количество пиров</string>

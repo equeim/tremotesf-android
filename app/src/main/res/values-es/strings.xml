@@ -171,18 +171,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Compartiendo</string>
 
     <string name="ratio_limit">Límite de ratio</string>
-    <string-array name="ratio_limit_mode">
-        <item>Usar ajustes globales</item>
-        <item>Compartir independientemente del ratio</item>
-        <item>Dejar de compartir al alcanzar ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">Usar ajustes globales</string>
+    <string name="ratio_limit_unlimited">Compartir independientemente del ratio</string>
 
     <string name="idle_seeding">Compartiendo durante inactividad</string>
-    <string-array name="idle_seeding_mode">
-        <item>Usar ajustes globales</item>
-        <item>Compartir independientemente de la actividad</item>
-        <item>Dejar de compartir si se está inactivo durante</item>
-    </string-array>
+    <string name="idle_seeding_global">Usar ajustes globales</string>
+    <string name="idle_seeding_unlimited">Compartir independientemente de la actividad</string>
 
     <string name="text_field_suffix_minutes">minutos</string>
     <string name="maximum_peers">Máximo número de peers</string>

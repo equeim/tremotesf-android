@@ -37,7 +37,7 @@ import kotlin.coroutines.coroutineContext
 
 open class TorrentFilesTree(
     parentScope: CoroutineScope,
-    private val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
+    protected val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
     private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
     protected val scope = CoroutineScope(dispatcher + Job(parentScope.coroutineContext[Job]))
@@ -405,29 +405,10 @@ open class TorrentFilesTree(
     }
 
     @MainThread
-    fun renameFile(path: String, newName: String) = scope.launch {
-        val pathParts = path.split('/').filter(String::isNotEmpty)
-        var node: Node? = rootNode
-        for (part in pathParts) {
-            node = (node as? DirectoryNode)?.getChildByItemNameOrNull(part)
-            if (node == null) {
-                break
-            }
-        }
-        if (node != null) {
-            renameFile(node, newName)
-        }
-    }
-
-    @MainThread
     fun renameFile(path: NodePath, newName: String) = scope.launch {
-        findNodeByIndexPath(path)?.let { renameFile(it, newName) }
-    }
-
-    @WorkerThread
-    private suspend fun renameFile(node: Node, newName: String) {
-        if (node === rootNode) return
-        val originalPath = getItemNamePath(node.item) ?: return
+        val node = findNodeByIndexPath(path) ?: return@launch
+        if (node === rootNode) return@launch
+        val originalPath = getItemNamePath(node.item) ?: return@launch
         node.item = node.item.copy(name = newName)
         if (currentNode.children.contains(node)) {
             updateItemsWithSorting()

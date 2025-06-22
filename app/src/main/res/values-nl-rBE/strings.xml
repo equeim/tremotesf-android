@@ -138,18 +138,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Seeden</string>
 
     <string name="ratio_limit">Verhoudingslimiet</string>
-    <string-array name="ratio_limit_mode">
-        <item>Algemene instellingen gebruiken</item>
-        <item>Seeden ongeacht verhouding</item>
-        <item>Seeden stoppen bij verhouding</item>
-    </string-array>
+    <string name="ratio_limit_global">Algemene instellingen gebruiken</string>
+    <string name="ratio_limit_unlimited">Seeden ongeacht verhouding</string>
 
     <string name="idle_seeding">Inactief seeden</string>
-    <string-array name="idle_seeding_mode">
-        <item>Algemene instellingen gebruiken</item>
-        <item>Seeden ongeacht activiteit</item>
-        <item>Seeden stoppen indien inactief voor</item>
-    </string-array>
+    <string name="idle_seeding_global">Algemene instellingen gebruiken</string>
+    <string name="idle_seeding_unlimited">Seeden ongeacht activiteit</string>
 
     <string name="maximum_peers">Maximaal aantal peers</string>
 

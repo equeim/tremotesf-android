@@ -46,6 +46,8 @@ import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
+import org.equeim.tremotesf.ui.components.getInitialAllDownloadDirectories
+import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
@@ -138,35 +140,27 @@ abstract class BaseAddTorrentModel(
             enabledLabels.sort()
             downloadDirectory.value = getInitialDownloadDirectory(initialRpcInputs.downloadDirectory)
             allDownloadDirectories.addAll(
-                getAllDownloadDirectories(
-                    initialRpcInputs,
-                    GlobalServers.serversState.value.currentServer?.lastDownloadDirectories.orEmpty()
+                getInitialAllDownloadDirectories(
+                    downloadDirectoryFromServerSettings = initialRpcInputs.downloadDirectory,
+                    torrentsDownloadDirectories = initialRpcInputs.torrentsDownloadDirectories,
+                    comparator = comparator
                 )
             )
             startAddedTorrents.value = getInitialStartAfterAdding(initialRpcInputs.startAddedTorrents)
             priority.value = getInitialPriority()
             enabledLabels.addAll(getInitialLabels())
         } else {
-            // Can't get them again from Servers since some might have been removed
-            val restoredLastDownloadDirectories = allDownloadDirectories.mapNotNull {
-                if (it.canBeRemoved) it.directory else null
-            }
+            val updated = updateAllDownloadDirectories(
+                restoredAllDownloadDirectories = allDownloadDirectories,
+                downloadDirectoryFromServerSettings = initialRpcInputs.downloadDirectory,
+                torrentsDownloadDirectories = initialRpcInputs.torrentsDownloadDirectories,
+                comparator = comparator
+            )
             allDownloadDirectories.clear()
-            allDownloadDirectories.addAll(getAllDownloadDirectories(initialRpcInputs, restoredLastDownloadDirectories))
+            allDownloadDirectories.addAll(updated)
         }
         _allLabels.value = initialRpcInputs.allLabels.sortedWith(comparator)
         alreadySetInitialState = true
-    }
-
-    private fun getAllDownloadDirectories(
-        initialRpcInputs: InitialRpcInputs,
-        lastDownloadDirectories: List<String>,
-    ): List<DownloadDirectoryItem> {
-        val directories = sortedMapOf<String, Boolean>(comparator)
-        directories.put(initialRpcInputs.downloadDirectory.toNativeSeparators(), false)
-        initialRpcInputs.torrentsDownloadDirectories.forEach { directories.putIfAbsent(it.toNativeSeparators(), false) }
-        lastDownloadDirectories.forEach { directories.putIfAbsent(it, true) }
-        return directories.map { (directory, canBeRemoved) -> DownloadDirectoryItem(directory, canBeRemoved) }
     }
 
     private suspend fun getInitialDownloadDirectory(downloadDirectoryFromServerSettings: NormalizedRpcPath): String {

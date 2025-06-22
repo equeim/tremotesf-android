@@ -479,7 +479,7 @@ class TorrentFilesTreeTest {
             TorrentFilesTree.Item.Priority.Normal
         )
 
-        renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
+        renameFileCorrectly(rootNode, file2) {
             navigateDown(directory.item)
             runCurrent()
             navigateDown(subdirectory.item)
@@ -510,7 +510,7 @@ class TorrentFilesTreeTest {
             TorrentFilesTree.Item.Priority.Normal
         )
 
-        renameFileCorrectly(rootNode, file2, "dir/subdir/file2") {
+        renameFileCorrectly(rootNode, file2) {
             navigateDown(directory.item)
             runCurrent()
         }
@@ -539,7 +539,7 @@ class TorrentFilesTreeTest {
             TorrentFilesTree.Item.Priority.Normal
         )
 
-        renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
+        renameFileCorrectly(rootNode, subdirectory) {
             navigateDown(directory.item)
             runCurrent()
         }
@@ -568,7 +568,7 @@ class TorrentFilesTreeTest {
             TorrentFilesTree.Item.Priority.Normal
         )
 
-        renameFileCorrectly(rootNode, subdirectory, "dir/subdir") {
+        renameFileCorrectly(rootNode, subdirectory) {
             navigateDown(directory.item)
             runCurrent()
             navigateDown(subdirectory.item)
@@ -579,7 +579,6 @@ class TorrentFilesTreeTest {
     private fun TestScope.renameFileCorrectly(
         rootNode: TorrentFilesTree.DirectoryNode,
         renamedNode: TorrentFilesTree.Node,
-        path: String,
         navigate: TestTree.() -> Unit,
     ) {
         val mustChange = NodesThatMustChangeHelper(renamedNode)
@@ -591,15 +590,16 @@ class TorrentFilesTreeTest {
             val isInItems = currentNodePublic.children.contains(renamedNode)
             val oldItems = items.value
 
+            val expectedOriginalPath = getItemNamePath(renamedNode.item)
             val expectedNewName = "foo"
             var callbackCalled = false
             onFileRenamedCallback = { nodePath, originalPath, newName ->
-                if (nodePath == renamedNode.path && originalPath == path && newName == expectedNewName) {
+                if (nodePath == renamedNode.path && originalPath == expectedOriginalPath && newName == expectedNewName) {
                     callbackCalled = true
                 }
             }
 
-            renameFile(path, expectedNewName)
+            renameFile(renamedNode.path, expectedNewName)
             runCurrent()
 
             mustChange.assertThatItemsChanged { assertEquals(expectedNewName, it.name) }
@@ -616,25 +616,25 @@ class TorrentFilesTreeTest {
 
     @Test
     fun `Rename file when path is incorrect 1`() = runTest {
-        renameFileWhenPathIsIncorrect("foo/bar")
+        renameFileWhenPathIsIncorrect(NodePath(intArrayOf(0, 42)))
     }
 
     @Test
     fun `Rename file when path is incorrect 2`() = runTest {
-        renameFileWhenPathIsIncorrect("dir/subdir/foo")
+        renameFileWhenPathIsIncorrect(NodePath(intArrayOf(0, 0, 42)))
     }
 
     @Test
     fun `Rename file when path is incorrect 3`() = runTest {
-        renameFileWhenPathIsIncorrect("dir/subdir/file1/foo")
+        renameFileWhenPathIsIncorrect(NodePath(intArrayOf(0, 0, 0, 0)))
     }
 
     @Test
     fun `Rename file when path is incorrect 4`() = runTest {
-        renameFileWhenPathIsIncorrect("")
+        renameFileWhenPathIsIncorrect(NodePath(intArrayOf()))
     }
 
-    private fun TestScope.renameFileWhenPathIsIncorrect(path: String) {
+    private fun TestScope.renameFileWhenPathIsIncorrect(path: NodePath) {
         val rootNode = TorrentFilesTree.DirectoryNode.createRootNode()
 
         val directory = rootNode.addDirectory("dir")

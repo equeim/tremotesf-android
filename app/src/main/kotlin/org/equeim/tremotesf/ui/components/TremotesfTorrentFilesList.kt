@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
@@ -76,11 +77,10 @@ fun TremotesfTorrentsFilesList(
     filesTree: TorrentFilesTree,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
     itemSupportingContent: @Composable (TorrentFilesTree.Item) -> Unit
 ) {
-
     val items: List<TorrentFilesTree.Item> by filesTree.items.collectAsStateWithLifecycle()
-    val listState = rememberLazyListState()
     val isAtRoot: Boolean by filesTree.isAtRoot.collectAsStateWithLifecycle()
     val selectionState =
         rememberTremotesfMultiSelectionState(listItems = filesTree.items.collectAsStateWithLifecycle()) { it.nodePath }

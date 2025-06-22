@@ -109,7 +109,7 @@ class NotificationsController(private val context: Context) {
                     NavDeepLinkBuilder(context)
                         .setGraph(R.navigation.nav_main)
                         .setDestination(R.id.torrent_properties_fragment)
-                        .setArguments(TorrentPropertiesFragmentArgs(hashString, torrentName).toBundle())
+                        .setArguments(TorrentPropertiesFragmentArgs(hashString).toBundle())
                         .createPendingIntent()
                 )
                 .setAutoCancel(true)

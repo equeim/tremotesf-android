@@ -14,8 +14,11 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.JsonTransformingSerializer
+import okhttp3.Headers
+import okhttp3.Response
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestContext
+import org.equeim.tremotesf.rpc.RpcRequestError
 
 internal suspend inline fun <reified FieldsObject : Any> RpcClient.performAllTorrentsRequest(
     objectsFormatRequestBody: RpcRequestBody,
@@ -117,10 +120,25 @@ internal data class SingleTorrentRequestArguments private constructor(
 internal data class SingleTorrentResponseArguments<FieldsObject : Any>(
     @SerialName("torrents")
     val torrents: List<FieldsObject>,
-) {
-    init {
-        if (torrents.size > 1) {
-            throw SerializationException("'torrents' array must not contain more than one element")
-        }
+)
+
+internal fun <FieldsObject : Any> RpcResponse<SingleTorrentResponseArguments<FieldsObject>>.getSingleTorrent(): FieldsObject {
+    return when (arguments.torrents.size) {
+        1 -> arguments.torrents.first()
+        0 -> throw TorrentNotFound(httpResponse, requestHeaders)
+        else -> throw RpcRequestError.DeserializationError(
+            httpResponse,
+            requestHeaders,
+            SerializationException("'torrents' array must not contain more than one element")
+        )
     }
 }
+
+class TorrentNotFound(
+    response: Response,
+    requestHeaders: Headers
+) : RpcRequestError.RequestSpecificError(
+    response = response,
+    requestHeaders = requestHeaders,
+    message = "Torrent not found"
+)

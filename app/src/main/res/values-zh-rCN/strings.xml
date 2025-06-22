@@ -153,18 +153,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">做种</string>
 
     <string name="ratio_limit">分享率限制</string>
-    <string-array name="ratio_limit_mode">
-        <item>使用全局设置</item>
-        <item>忽略分享率做种</item>
-        <item>@string/stop_seeding_at_ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">使用全局设置</string>
+    <string name="ratio_limit_unlimited">忽略分享率做种</string>
 
     <string name="idle_seeding">空闲设置</string>
-    <string-array name="idle_seeding_mode">
-        <item>使用全局设置</item>
-        <item>忽略活动做种</item>
-        <item>@string/stop_seeding_if_idle_for</item>
-    </string-array>
+    <string name="idle_seeding_global">使用全局设置</string>
+    <string name="idle_seeding_unlimited">忽略活动做种</string>
 
     <string name="maximum_peers">最大节点数</string>
 

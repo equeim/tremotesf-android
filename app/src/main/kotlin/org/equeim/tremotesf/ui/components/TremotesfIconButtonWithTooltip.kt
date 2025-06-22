@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.ui.components
 
-import android.view.HapticFeedbackConstants
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,23 +11,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TremotesfIconButtonWithTooltip(
     icon: ImageVector,
@@ -37,23 +27,12 @@ fun TremotesfIconButtonWithTooltip(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    val text = stringResource(textId)
-
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-        tooltip = {
-            PlainTooltip {
-                Text(text)
-            }
-            val view = LocalView.current
-            LaunchedEffect(null) { view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) }
-        },
-        state = rememberTooltipState(),
-        focusable = false,
+    BaseTremotesfButtonWithTooltip(
+        tooltipText = textId,
         modifier = modifier
-    ) {
-        IconButton(onClick, enabled = enabled) {
-            Icon(icon, text)
+    ) { tooltipText ->
+        IconButton(onClick = onClick, enabled = enabled) {
+            Icon(imageVector = icon, contentDescription = tooltipText)
         }
     }
 }

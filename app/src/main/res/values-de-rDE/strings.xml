@@ -165,18 +165,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Seeden</string>
 
     <string name="ratio_limit">Verhältnislimit</string>
-    <string-array name="ratio_limit_mode">
-        <item>Nutze globale Einstellungen</item>
-        <item>Seede unabhängig des Verhältnisses</item>
-        <item>@string/stop_seeding_at_ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">Nutze globale Einstellungen</string>
+    <string name="ratio_limit_unlimited">Seede unabhängig des Verhältnisses</string>
 
     <string name="idle_seeding">Seede wenn untätig</string>
-    <string-array name="idle_seeding_mode">
-        <item>Nutze globale Einstellungen</item>
-        <item>Seede unabhängig von der Aktivität</item>
-        <item>@string/stop_seeding_if_idle_for</item>
-    </string-array>
+    <string name="idle_seeding_global">Nutze globale Einstellungen</string>
+    <string name="idle_seeding_unlimited">Seede unabhängig von der Aktivität</string>
 
     <string name="text_field_suffix_minutes">Minuten</string>
     <string name="maximum_peers">Maximale Teilnehmeranzahl</string>

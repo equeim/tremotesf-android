@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc.requests.torrentproperties
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.elementNames
@@ -15,23 +16,22 @@ import org.equeim.tremotesf.rpc.requests.RpcMethod
 import org.equeim.tremotesf.rpc.requests.SingleTorrentRequestArguments
 import org.equeim.tremotesf.rpc.requests.SingleTorrentResponseArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
+import org.equeim.tremotesf.rpc.requests.getSingleTorrent
 import kotlin.time.Duration
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.getTorrentLimits(hashString: String): TorrentLimits? =
+suspend fun RpcClient.getTorrentLimits(hashString: String): TorrentLimits =
     performRequest<SingleTorrentResponseArguments<TorrentLimits>, _>(
         RpcMethod.TorrentGet,
         SingleTorrentRequestArguments(hashString, TorrentLimits.serializer().descriptor.elementNames.toList()),
         "getTorrentLimits"
-    ).arguments.torrents.firstOrNull()
+    ).getSingleTorrent()
 
+@Immutable
 @Serializable
 data class TorrentLimits(
-    @SerialName("id")
-    val id: Int,
-
     @SerialName("honorsSessionLimits")
     val honorsSessionLimits: Boolean,
     @SerialName("bandwidthPriority")
@@ -59,7 +59,7 @@ data class TorrentLimits(
     val idleSeedingLimitMode: IdleSeedingLimitMode,
 
     @SerialName("peer-limit")
-    val peersLimit: Int,
+    val peersLimit: Long
 ) {
 
     @Serializable(BandwidthPriority.Serializer::class)

@@ -171,27 +171,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="download_noun">Download</string>
     <string name="upload_noun">Upload</string>
 
-    <string-array name="priority_items" translatable="false">
-        <item>@string/high_priority</item>
-        <item>@string/normal_priority</item>
-        <item>@string/low_pririty</item>
-    </string-array>
-
     <string name="seeding">Seeding</string>
 
     <string name="ratio_limit">Ratio limit</string>
-    <string-array name="ratio_limit_mode">
-        <item>Use global settings</item>
-        <item>Seed regardless of ratio</item>
-        <item>@string/stop_seeding_at_ratio</item>
-    </string-array>
+    <string name="ratio_limit_global">Use global settings</string>
+    <string name="ratio_limit_unlimited">Seed regardless of ratio</string>
 
     <string name="idle_seeding">Idle seeding</string>
-    <string-array name="idle_seeding_mode">
-        <item>Use global settings</item>
-        <item>Seed regardless of activity</item>
-        <item>@string/stop_seeding_if_idle_for</item>
-    </string-array>
+    <string name="idle_seeding_global">Use global settings</string>
+    <string name="idle_seeding_unlimited">Seed regardless of activity</string>
 
     <string name="text_field_suffix_minutes">minutes</string>
     <string name="maximum_peers">Maximum peers</string>
@@ -577,4 +565,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="select_action">Select</string>
     <string name="selection_panel">Selection panel</string>
+    <string name="selected">Selected</string>
+
+    <string name="more_options">More options</string>
 </resources>

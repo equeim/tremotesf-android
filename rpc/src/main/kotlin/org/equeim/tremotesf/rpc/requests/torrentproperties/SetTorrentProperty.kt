@@ -49,7 +49,7 @@ suspend fun RpcClient.setTorrentIdleSeedingLimitMode(
 ) =
     setTorrentProperty(torrentHashString, "seedIdleMode", value)
 
-suspend fun RpcClient.setTorrentPeersLimit(torrentHashString: String, value: Int) =
+suspend fun RpcClient.setTorrentPeersLimit(torrentHashString: String, value: Long) =
     setTorrentProperty(torrentHashString, "peer-limit", value)
 
 suspend fun RpcClient.setTorrentFilesWanted(torrentHashString: String, fileIndices: List<Int>, wanted: Boolean) =

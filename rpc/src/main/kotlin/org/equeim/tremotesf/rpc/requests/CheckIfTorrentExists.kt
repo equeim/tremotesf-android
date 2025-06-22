@@ -14,11 +14,15 @@ import org.equeim.tremotesf.rpc.RpcRequestError
  * @throws RpcRequestError
  */
 suspend fun RpcClient.checkIfTorrentExists(hashString: String): String? =
-    performRequest<SingleTorrentResponseArguments<TorrentExistsFields>, _>(
-        method = RpcMethod.TorrentGet,
-        arguments = SingleTorrentRequestArguments(hashString, "name"),
-        callerContext = "checkIfTorrentExists"
-    ).arguments.torrents.firstOrNull()?.name
+    try {
+        performRequest<SingleTorrentResponseArguments<TorrentExistsFields>, _>(
+            method = RpcMethod.TorrentGet,
+            arguments = SingleTorrentRequestArguments(hashString, "name"),
+            callerContext = "checkIfTorrentExists"
+        ).getSingleTorrent().name
+    } catch (_: TorrentNotFound) {
+        null
+    }
 
 @Serializable
 private data class TorrentExistsFields(
