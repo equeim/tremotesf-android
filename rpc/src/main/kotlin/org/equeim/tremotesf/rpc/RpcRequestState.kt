@@ -30,11 +30,11 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-sealed interface RpcRequestState<in T> {
-    data object Loading : RpcRequestState<Any?>
+sealed interface RpcRequestState<out T> {
+    data object Loading : RpcRequestState<Nothing>
 
     @JvmInline
-    value class Error(val error: RpcRequestError) : RpcRequestState<Any?>
+    value class Error(val error: RpcRequestError) : RpcRequestState<Nothing>
 
     @JvmInline
     value class Loaded<T>(val response: T) : RpcRequestState<T>
