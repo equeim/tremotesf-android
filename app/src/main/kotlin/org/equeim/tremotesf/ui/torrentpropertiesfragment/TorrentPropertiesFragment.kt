@@ -204,7 +204,7 @@ class TorrentPropertiesFragment : NavigationFragment(
             }
 
             R.id.set_location -> navigate(
-                TorrentPropertiesFragmentDirections.toTorrentSetLocationDialog(
+                TorrentPropertiesFragmentDirections.toTorrentsSetLocationDialog(
                     torrentHashStrings = arrayOf(args.torrentHashString),
                     location = torrentDetails.downloadDirectory.toNativeSeparators()
                 )

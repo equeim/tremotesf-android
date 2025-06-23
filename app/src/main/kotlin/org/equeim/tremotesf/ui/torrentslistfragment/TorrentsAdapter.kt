@@ -352,7 +352,7 @@ class TorrentsAdapter(
                 R.id.set_location -> {
                     adapter.getFirstSelectedTorrent()?.let { firstTorrent ->
                         activity.navigate(
-                            TorrentsListFragmentDirections.toTorrentSetLocationDialog(
+                            TorrentsListFragmentDirections.toTorrentsSetLocationDialog(
                                 selectionTracker.mapSelectedPositionsToArray { adapter.getItem(it).hashString },
                                 firstTorrent.downloadDirectory.toNativeSeparators()
                             )

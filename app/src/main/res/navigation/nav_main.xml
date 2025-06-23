@@ -42,8 +42,8 @@
             android:id="@+id/to_remove_torrent_dialog"
             app:destination="@id/remove_torrent_dialog" />
         <action
-            android:id="@+id/to_torrent_set_location_dialog"
-            app:destination="@id/torrent_set_location_dialog" />
+            android:id="@+id/to_torrents_set_location_dialog"
+            app:destination="@id/torrents_set_location_dialog" />
         <action
             android:id="@+id/to_torrents_filters_dialog_fragment"
             app:destination="@id/torrents_filters_dialog_fragment" />
@@ -82,8 +82,8 @@
             android:id="@+id/to_remove_torrent_dialog"
             app:destination="@id/remove_torrent_dialog" />
         <action
-            android:id="@+id/to_torrent_set_location_dialog"
-            app:destination="@id/torrent_set_location_dialog" />
+            android:id="@+id/to_torrents_set_location_dialog"
+            app:destination="@id/torrents_set_location_dialog" />
         <action
             android:id="@+id/to_labels_edit_dialog"
             app:destination="@id/labels_edit_dialog" />
@@ -259,8 +259,8 @@
             android:defaultValue="false" />
     </dialog>
     <dialog
-        android:id="@+id/torrent_set_location_dialog"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentSetLocationDialogFragment">
+        android:id="@+id/torrents_set_location_dialog"
+        android:name="org.equeim.tremotesf.ui.TorrentsSetLocationDialogFragment">
         <argument
             android:name="torrent_hash_strings"
             app:argType="string[]" />
