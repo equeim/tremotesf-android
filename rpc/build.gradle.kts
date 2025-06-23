@@ -32,6 +32,9 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.serialization.json.okio)
 
+    implementation(platform(libs.androidx.compose.bom))
+    compileOnly(libs.androidx.compose.runtime)
+
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)

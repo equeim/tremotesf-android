@@ -5,6 +5,7 @@
 package org.equeim.tremotesf.rpc
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonObject
@@ -157,6 +158,7 @@ internal fun IOException.toRpcRequestError(
         )
     }
 
+@Immutable
 @Parcelize
 data class DetailedRpcRequestError(
     val error: RpcRequestError,

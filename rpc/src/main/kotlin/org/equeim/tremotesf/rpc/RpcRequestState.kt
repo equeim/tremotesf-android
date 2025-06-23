@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc
 
+import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -30,6 +31,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
+@Immutable
 sealed interface RpcRequestState<out T> {
     data object Loading : RpcRequestState<Nothing>
 
