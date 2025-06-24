@@ -46,6 +46,7 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentDetails
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.components.TremotesfDetailsGrid
 import org.equeim.tremotesf.ui.components.TremotesfLabelsList
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.utils.formatTorrentEta
@@ -70,31 +71,12 @@ fun DetailsTab(
     shouldShowLabels: State<Boolean>,
     navigateToLabelsEditDialog: () -> Unit
 ) {
-    val columns = remember {
-        object : SimpleGridCells {
-            override fun Density.calculateCrossAxisCellSizes(
-                availableSize: Int,
-                spacing: Int
-            ): List<Int> {
-                val firstColumnWidth = (availableSize / 2.5f).coerceAtMost(MAX_FIRST_COLUMN_WIDTH.toPx()).roundToInt()
-                val secondColumnWidth = availableSize - firstColumnWidth - spacing
-                return listOf(firstColumnWidth, secondColumnWidth)
-            }
-
-            override fun fillCellSize(): Boolean = true
-
-            private val MAX_FIRST_COLUMN_WIDTH = 250.dp
-        }
-    }
-
-    VerticalGrid(
-        columns = columns,
+    TremotesfDetailsGrid(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(innerPadding)
-            .padding(Dimens.screenContentPadding()),
-        verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+            .padding(Dimens.screenContentPadding())
     ) {
         val fileSizeFormatter = rememberFileSizeFormatter()
         val formatTime = rememberTimeFormatter()

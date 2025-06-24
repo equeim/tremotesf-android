@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc.requests
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.equeim.tremotesf.rpc.RpcClient
@@ -19,6 +20,7 @@ suspend fun RpcClient.getSessionStats(): SessionStatsResponseArguments =
 
 private val SESSION_STATS_REQUEST = createStaticRpcRequestBody(RpcMethod.SessionStats)
 
+@Immutable
 @Serializable
 data class SessionStatsResponseArguments(
     @SerialName("downloadSpeed")
@@ -30,6 +32,7 @@ data class SessionStatsResponseArguments(
     @SerialName("cumulative-stats")
     val total: Stats,
 ) {
+    @Immutable
     @Serializable
     data class Stats(
         @SerialName("downloadedBytes")
