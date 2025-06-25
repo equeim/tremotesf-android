@@ -36,26 +36,46 @@
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/to_torrent_file_rename_dialog"
-            app:destination="@id/torrent_file_rename_dialog" />
+            android:id="@+id/to_add_torrent_link_fragment"
+            app:destination="@id/add_torrent_link_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/to_remove_torrent_dialog"
-            app:destination="@id/remove_torrent_dialog" />
+            android:id="@+id/to_add_torrent_file_fragment"
+            app:destination="@id/add_torrent_file_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/to_torrents_set_location_dialog"
-            app:destination="@id/torrents_set_location_dialog" />
+            android:id="@+id/to_connection_settings_fragment"
+            app:destination="@id/connection_settings_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+
         <action
-            android:id="@+id/to_torrents_filters_dialog_fragment"
-            app:destination="@id/torrents_filters_dialog_fragment" />
+            android:id="@+id/to_server_settings_fragment"
+            app:destination="@id/server_settings_fragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+
         <action
-            android:id="@+id/to_add_torrent_menu_fragment"
-            app:destination="@id/add_torrent_menu_fragment" />
-        <action
-            android:id="@+id/to_transmission_settings_dialog_fragment"
-            app:destination="@id/transmission_settings_dialog_fragment" />
+            android:id="@+id/to_server_stats_dialog"
+            app:destination="@id/server_stats_dialog" />
+
         <action
             android:id="@+id/to_labels_edit_dialog"
             app:destination="@id/labels_edit_dialog" />
+
+        <action
+            android:id="@+id/to_torrents_set_location_dialog"
+            app:destination="@id/torrents_set_location_dialog" />
     </fragment>
 
     <fragment
@@ -111,9 +131,9 @@
         android:name="org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment">
         <argument
             android:name="uri"
+            android:defaultValue="@null"
             app:argType="android.net.Uri"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -182,9 +202,9 @@
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
         <argument
             android:name="server"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <action
             android:id="@+id/to_proxy_settings_fragment"
             app:destination="@id/server_proxy_settings_fragment"
@@ -195,32 +215,7 @@
     </fragment>
     <fragment
         android:id="@+id/server_certificates_fragment"
-        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment"></fragment>
-    <dialog
-        android:id="@+id/torrent_file_rename_dialog"
-        android:name="org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment">
-        <argument
-            android:name="file_path"
-            app:argType="string" />
-        <argument
-            android:name="file_name"
-            app:argType="string" />
-        <argument
-            android:name="torrent_hash_string"
-            app:argType="string"
-            app:nullable="true" />
-    </dialog>
-    <dialog
-        android:id="@+id/remove_torrent_dialog"
-        android:name="org.equeim.tremotesf.ui.RemoveTorrentDialogFragment">
-        <argument
-            android:name="torrent_hash_strings"
-            app:argType="string[]" />
-        <argument
-            android:name="pop_back_stack"
-            app:argType="boolean"
-            android:defaultValue="false" />
-    </dialog>
+        android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerCertificatesFragment" />
     <dialog
         android:id="@+id/torrents_set_location_dialog"
         android:name="org.equeim.tremotesf.ui.TorrentsSetLocationDialogFragment">
@@ -247,7 +242,7 @@
     <fragment
         android:id="@+id/server_proxy_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerProxySettingsFragment"
-        android:label="ProxySettingsFragment"></fragment>
+        android:label="ProxySettingsFragment" />
 
     <dialog
         android:id="@+id/runtime_permission_rationale_dialog"
@@ -274,55 +269,6 @@
     <action
         android:id="@+id/to_runtime_permission_system_settings_dialog"
         app:destination="@id/runtime_permission_system_settings_dialog" />
-    <dialog
-        android:id="@+id/torrents_filters_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TorrentsFiltersDialogFragment" />
-
-    <dialog
-        android:id="@+id/add_torrent_menu_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.AddTorrentMenuFragment">
-
-        <action
-            android:id="@+id/to_add_torrent_file_fragment"
-            app:destination="@id/add_torrent_file_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/torrents_list_fragment" />
-        <action
-            android:id="@+id/to_add_torrent_link_fragment"
-            app:destination="@id/add_torrent_link_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-    </dialog>
-
-    <dialog
-        android:id="@+id/transmission_settings_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.TransmissionSettingsDialogFragment">
-
-        <action
-            android:id="@+id/to_connection_settings_fragment"
-            app:destination="@id/connection_settings_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-
-        <action
-            android:id="@+id/to_server_settings_fragment"
-            app:destination="@id/server_settings_fragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-
-        <action
-            android:id="@+id/to_server_stats_dialog"
-            app:destination="@id/server_stats_dialog" />
-    </dialog>
 
     <dialog
         android:id="@+id/detailed_connection_error_dialog_fragment"

@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,7 @@ fun TremotesfPlaceholderText(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TremotesfLoadingPlaceholder(modifier: Modifier = Modifier) {
+fun TremotesfLoadingPlaceholder(modifier: Modifier = Modifier, @StringRes text: Int = DEFAULT_LOADING_TEXT) {
     Box(modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -47,7 +48,7 @@ fun TremotesfLoadingPlaceholder(modifier: Modifier = Modifier) {
             modifier = Modifier.align(Alignment.Center)
         ) {
             CircularProgressIndicator()
-            TremotesfPlaceholderText(stringResource(R.string.loading))
+            TremotesfPlaceholderText(stringResource(text))
         }
     }
 }
@@ -114,11 +115,13 @@ fun <Response> TremotesfScreenContentWithPlaceholder(
     onShowDetailedErrorButtonClicked: (RpcRequestError) -> Unit,
     modifier: Modifier = Modifier,
     placeholdersModifier: Modifier = Modifier,
+    @StringRes loadingText: Int = DEFAULT_LOADING_TEXT,
     content: @Composable (response: Response) -> Unit
 ) {
     when (requestState) {
         is RpcRequestState.Loading -> TremotesfLoadingPlaceholder(
-            modifier = modifier.then(placeholdersModifier)
+            modifier = modifier.then(placeholdersModifier),
+            text = loadingText
         )
 
         is RpcRequestState.Error -> TremotesfErrorPlaceholder(
@@ -134,3 +137,4 @@ fun <Response> TremotesfScreenContentWithPlaceholder(
 }
 
 private const val PLACEHOLDER_TEXT_ALPHA = 0.6f
+private val DEFAULT_LOADING_TEXT = R.string.loading

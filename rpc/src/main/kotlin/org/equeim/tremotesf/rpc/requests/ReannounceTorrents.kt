@@ -10,6 +10,6 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.reannounceTorrents(ids: List<Int>) {
-    performRequest<Unit, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentReannounce, RequestWithTorrentsIds(ids))
+suspend fun RpcClient.reannounceTorrents(ids: Set<Int>) {
+    performRequest<Unit, _>(RpcMethod.TorrentReannounce, RequestWithTorrentsIds(ids))
 }

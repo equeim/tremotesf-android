@@ -77,7 +77,7 @@ internal enum class RpcMethod {
 @Serializable
 internal data class RequestWithTorrentsIds(
     @SerialName("ids")
-    val torrentIds: List<Int>,
+    val torrentIds: Set<Int>,
 )
 
 @Serializable

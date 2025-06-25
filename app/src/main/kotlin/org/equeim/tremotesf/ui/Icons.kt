@@ -383,3 +383,265 @@ val Icons.Filled.Pause: ImageVector
     }
 
 private var _pause: ImageVector? = null
+
+val Icons.Filled.FilterList: ImageVector
+    get() {
+        if (_filterList != null) {
+            return _filterList!!
+        }
+        _filterList = materialIcon(name = "Filled.FilterList") {
+            materialPath {
+                moveTo(10.0f, 18.0f)
+                horizontalLineToRelative(4.0f)
+                verticalLineToRelative(-2.0f)
+                horizontalLineToRelative(-4.0f)
+                verticalLineToRelative(2.0f)
+                close()
+                moveTo(3.0f, 6.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(18.0f)
+                lineTo(21.0f, 6.0f)
+                lineTo(3.0f, 6.0f)
+                close()
+                moveTo(6.0f, 13.0f)
+                horizontalLineToRelative(12.0f)
+                verticalLineToRelative(-2.0f)
+                lineTo(6.0f, 11.0f)
+                verticalLineToRelative(2.0f)
+                close()
+            }
+        }
+        return _filterList!!
+    }
+
+private var _filterList: ImageVector? = null
+
+val Icons.Filled.Restore: ImageVector
+    get() {
+        if (_restore != null) {
+            return _restore!!
+        }
+        _restore = materialIcon(name = "Filled.Restore") {
+            materialPath {
+                moveTo(13.0f, 3.0f)
+                curveToRelative(-4.97f, 0.0f, -9.0f, 4.03f, -9.0f, 9.0f)
+                lineTo(1.0f, 12.0f)
+                lineToRelative(3.89f, 3.89f)
+                lineToRelative(0.07f, 0.14f)
+                lineTo(9.0f, 12.0f)
+                lineTo(6.0f, 12.0f)
+                curveToRelative(0.0f, -3.87f, 3.13f, -7.0f, 7.0f, -7.0f)
+                reflectiveCurveToRelative(7.0f, 3.13f, 7.0f, 7.0f)
+                reflectiveCurveToRelative(-3.13f, 7.0f, -7.0f, 7.0f)
+                curveToRelative(-1.93f, 0.0f, -3.68f, -0.79f, -4.94f, -2.06f)
+                lineToRelative(-1.42f, 1.42f)
+                curveTo(8.27f, 19.99f, 10.51f, 21.0f, 13.0f, 21.0f)
+                curveToRelative(4.97f, 0.0f, 9.0f, -4.03f, 9.0f, -9.0f)
+                reflectiveCurveToRelative(-4.03f, -9.0f, -9.0f, -9.0f)
+                close()
+                moveTo(12.0f, 8.0f)
+                verticalLineToRelative(5.0f)
+                lineToRelative(4.28f, 2.54f)
+                lineToRelative(0.72f, -1.21f)
+                lineToRelative(-3.5f, -2.08f)
+                lineTo(13.5f, 8.0f)
+                lineTo(12.0f, 8.0f)
+                close()
+            }
+        }
+        return _restore!!
+    }
+
+private var _restore: ImageVector? = null
+
+val Icons.AutoMirrored.Filled.SortAscending: ImageVector
+    get() {
+        if (_sortAscending != null) {
+            return _sortAscending!!
+        }
+        _sortAscending = materialIcon(name = "AutoMirrored.Filled.SortAscending", autoMirror = true) {
+            materialPath {
+                moveTo(10f, 11f)
+                verticalLineTo(13f)
+                horizontalLineTo(18f)
+                verticalLineTo(11f)
+                horizontalLineTo(10f)
+                moveTo(10f, 5f)
+                verticalLineTo(7f)
+                horizontalLineTo(14f)
+                verticalLineTo(5f)
+                horizontalLineTo(10f)
+                moveTo(10f, 17f)
+                verticalLineTo(19f)
+                horizontalLineTo(22f)
+                verticalLineTo(17f)
+                horizontalLineTo(10f)
+                moveTo(6f, 7f)
+                horizontalLineTo(8.5f)
+                lineTo(5f, 3.5f)
+                lineTo(1.5f, 7f)
+                horizontalLineTo(4f)
+                verticalLineTo(20f)
+                horizontalLineTo(6f)
+                verticalLineTo(7f)
+                close()
+            }
+        }
+
+        return _sortAscending!!
+    }
+
+private var _sortAscending: ImageVector? = null
+
+val Icons.AutoMirrored.Filled.SortDescending: ImageVector
+    get() {
+        if (_sortDescending != null) {
+            return _sortDescending!!
+        }
+        _sortDescending = materialIcon(name = "AutoMirrored.Filled.SortDescending", autoMirror = true) {
+            materialPath {
+                moveTo(10f, 13f)
+                verticalLineTo(11f)
+                horizontalLineTo(18f)
+                verticalLineTo(13f)
+                horizontalLineTo(10f)
+                moveTo(10f, 19f)
+                verticalLineTo(17f)
+                horizontalLineTo(14f)
+                verticalLineTo(19f)
+                horizontalLineTo(10f)
+                moveTo(10f, 7f)
+                verticalLineTo(5f)
+                horizontalLineTo(22f)
+                verticalLineTo(7f)
+                horizontalLineTo(10f)
+                moveTo(6f, 17f)
+                horizontalLineTo(8.5f)
+                lineTo(5f, 20.5f)
+                lineTo(1.5f, 17f)
+                horizontalLineTo(4f)
+                verticalLineTo(4f)
+                horizontalLineTo(6f)
+                verticalLineTo(17f)
+                close()
+            }
+        }
+
+        return _sortDescending!!
+    }
+
+private var _sortDescending: ImageVector? = null
+
+val Icons.Filled.ArrowDownward: ImageVector
+    get() {
+        if (_arrowDownward != null) {
+            return _arrowDownward!!
+        }
+        _arrowDownward = materialIcon(name = "Filled.ArrowDownward") {
+            materialPath {
+                moveTo(20.0f, 12.0f)
+                lineToRelative(-1.41f, -1.41f)
+                lineTo(13.0f, 16.17f)
+                verticalLineTo(4.0f)
+                horizontalLineToRelative(-2.0f)
+                verticalLineToRelative(12.17f)
+                lineToRelative(-5.58f, -5.59f)
+                lineTo(4.0f, 12.0f)
+                lineToRelative(8.0f, 8.0f)
+                lineToRelative(8.0f, -8.0f)
+                close()
+            }
+        }
+        return _arrowDownward!!
+    }
+
+private var _arrowDownward: ImageVector? = null
+
+val Icons.Filled.ArrowUpward: ImageVector
+    get() {
+        if (_arrowUpward != null) {
+            return _arrowUpward!!
+        }
+        _arrowUpward = materialIcon(name = "Filled.ArrowUpward") {
+            materialPath {
+                moveTo(4.0f, 12.0f)
+                lineToRelative(1.41f, 1.41f)
+                lineTo(11.0f, 7.83f)
+                verticalLineTo(20.0f)
+                horizontalLineToRelative(2.0f)
+                verticalLineTo(7.83f)
+                lineToRelative(5.58f, 5.59f)
+                lineTo(20.0f, 12.0f)
+                lineToRelative(-8.0f, -8.0f)
+                lineToRelative(-8.0f, 8.0f)
+                close()
+            }
+        }
+        return _arrowUpward!!
+    }
+
+private var _arrowUpward: ImageVector? = null
+
+
+val TransmissionSettingsIcon: ImageVector
+    get() {
+        if (_TransmissionSettingsIcon != null) {
+            return _TransmissionSettingsIcon!!
+        }
+        _TransmissionSettingsIcon = materialIcon(
+            name = "TransmissionSettings",
+        ) {
+            materialPath {
+                moveTo(11f, 1f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, -1f, 1f)
+                verticalLineToRelative(1f)
+                horizontalLineTo(3f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, -1f, 1f)
+                verticalLineToRelative(4f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, 1f, 1f)
+                horizontalLineToRelative(7f)
+                verticalLineToRelative(3f)
+                horizontalLineTo(5f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, -2f, 2f)
+                verticalLineToRelative(7f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, 2f, 2f)
+                horizontalLineToRelative(14f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, 2f, -2f)
+                verticalLineToRelative(-7f)
+                arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, -2f, -2f)
+                horizontalLineToRelative(-5f)
+                verticalLineTo(9f)
+                horizontalLineToRelative(7f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, 1f, -1f)
+                verticalLineTo(4f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, -1f, -1f)
+                horizontalLineToRelative(-7f)
+                verticalLineTo(2f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = false, -1f, -1f)
+                horizontalLineToRelative(-2f)
+                close()
+                moveTo(6f, 14f)
+                horizontalLineToRelative(4f)
+                verticalLineToRelative(2f)
+                horizontalLineTo(7f)
+                lineToRelative(5f, 4f)
+                lineToRelative(5f, -4f)
+                horizontalLineToRelative(-3f)
+                verticalLineToRelative(-2f)
+                horizontalLineToRelative(4f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = true, 1f, 1f)
+                verticalLineToRelative(5f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = true, -1f, 1f)
+                horizontalLineTo(6f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = true, -1f, -1f)
+                verticalLineToRelative(-5f)
+                arcToRelative(1f, 1f, 0f, isMoreThanHalf = false, isPositiveArc = true, 1f, -1f)
+                close()
+            }
+        }
+
+        return _TransmissionSettingsIcon!!
+    }
+
+@Suppress("ObjectPropertyName")
+private var _TransmissionSettingsIcon: ImageVector? = null

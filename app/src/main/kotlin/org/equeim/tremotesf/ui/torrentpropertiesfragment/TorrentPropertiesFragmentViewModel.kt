@@ -107,32 +107,32 @@ class TorrentPropertiesFragmentViewModel(
             performRequestAndRefresh(
                 R.string.torrents_start_error,
                 detailsRefreshRequests
-            ) { startTorrents(listOf(it.id)) }
+            ) { startTorrents(setOf(it.id)) }
         }
 
         override fun startNow() {
             performRequestAndRefresh(
                 R.string.torrents_start_error,
                 detailsRefreshRequests
-            ) { startTorrentsNow(listOf(it.id)) }
+            ) { startTorrentsNow(setOf(it.id)) }
         }
 
         override fun pause() {
             performRequestAndRefresh(
                 R.string.torrents_pause_error,
                 detailsRefreshRequests
-            ) { stopTorrents(listOf(it.id)) }
+            ) { stopTorrents(setOf(it.id)) }
         }
 
         override fun check() {
             performRequestAndRefresh(
                 R.string.torrents_check_error,
                 detailsRefreshRequests
-            ) { verifyTorrents(listOf(it.id)) }
+            ) { verifyTorrents(setOf(it.id)) }
         }
 
         override fun reannounce() {
-            performRequest(R.string.torrents_reannounce_error) { reannounceTorrents(listOf(it.id)) }
+            performRequest(R.string.torrents_reannounce_error) { reannounceTorrents(setOf(it.id)) }
         }
 
         override fun remove(deleteFiles: Boolean) {
@@ -155,7 +155,7 @@ class TorrentPropertiesFragmentViewModel(
             performRequestAndRefresh(R.string.trackers_add_error, trackersRefreshRequests) {
                 addTorrentTrackers(
                     torrentHashString = it.hashString,
-                    trackersToAdd = announceUrls.map { setOf(it) },
+                    trackersToAdd = announceUrls.map { url -> setOf(url) },
                     existingTrackersMaybe = trackers
                 )
             }

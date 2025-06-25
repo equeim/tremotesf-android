@@ -4,353 +4,397 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import android.graphics.drawable.LayerDrawable
-import android.os.Bundle
-import android.view.MenuItem
-import androidx.activity.addCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.navGraphViewModels
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
+import android.Manifest
+import android.net.Uri
+import android.os.Build
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.TorrentsListFragmentBinding
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
+import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.isRecoverable
-import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.rpc.requests.Torrent
-import org.equeim.tremotesf.ui.NavigationFragment
-import org.equeim.tremotesf.ui.RemoveTorrentDialogFragment
-import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.TorrentFileRenameDialogFragment
-import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
+import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
+import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
+import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.FloatingActionButtonState
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.hide
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.showError
-import org.equeim.tremotesf.ui.utils.showLoading
-import org.equeim.tremotesf.ui.utils.showSnackbar
-import org.equeim.tremotesf.ui.utils.viewLifecycleObject
-import timber.log.Timber
+import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
+import org.equeim.tremotesf.ui.utils.safeNavigate
 
+class TorrentsListFragment : ComposeFragment() {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel<TorrentsListFragmentViewModel>()
+        val context = LocalContext.current
+        TorrentsListScreen(
+            title = model.titleState.collectAsStateWithLifecycle(),
+            subtitle = model.subtitleState.collectAsStateWithLifecycle(),
 
-class TorrentsListFragment : NavigationFragment(
-    R.layout.torrents_list_fragment,
-    0,
-    R.menu.torrents_list_fragment_menu
-) {
-    private val model by navGraphViewModels<TorrentsListFragmentViewModel>(R.id.torrents_list_fragment)
-    private var notificationPermissionLauncher: ActivityResultLauncher<Array<String>>? = null
-    private val binding by viewLifecycleObject(TorrentsListFragmentBinding::bind)
+            shouldConnectToServer = GlobalRpcClient.shouldConnectToServer.collectAsStateWithLifecycle(),
+            setShouldConnectToServer = { GlobalRpcClient.shouldConnectToServer.value = it },
+            currentServer = model.currentServer.collectAsStateWithLifecycle(),
+            setCurrentServer = GlobalServers::setCurrentServer,
+            servers = model.servers.collectAsStateWithLifecycle(),
+            alternativeSpeedLimitsEnabled = model.alternativeSpeedLimitsEnabled.collectAsStateWithLifecycle(),
+            setAlternativeSpeedLimitsEnabled = model::setAlternativeSpeedLimitsEnabled,
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        notificationPermissionLauncher = model.notificationPermissionHelper?.registerWithFragment(this)
-    }
+            labelsEnabled = model.labelsEnabled.collectAsStateWithLifecycle(),
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+            showTransmissionSettingsButton = model.showTransmissionSettingsButton.collectAsStateWithLifecycle(),
+            showFiltersAndSearchButtons = model.showFiltersAndSearchButtons.collectAsStateWithLifecycle(),
+            sortAndFilterSettings = model.sortAndFilterSettings.collectAsStateWithLifecycle(),
+            floatingActionButtonState = model.floatingActionButtonState.collectAsStateWithLifecycle(),
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            if (Settings.quickReturn.get()) {
-                toolbar.setOnClickListener {
-                    binding.torrentsView.scrollToPosition(0)
-                }
-            }
-        }
-
-        setupBottomBar()
-
-        binding.swipeRefreshLayout.apply {
-            setColorSchemeColors(
-                MaterialColors.getColor(
-                    binding.swipeRefreshLayout,
-                    com.google.android.material.R.attr.colorPrimary,
-                )
-            )
-            setProgressBackgroundColorSchemeColor(
-                MaterialColors.getColor(
-                    binding.swipeRefreshLayout,
-                    com.google.android.material.R.attr.colorSurfaceContainerHighest,
-                )
-            )
-            setOnRefreshListener {
-                model.refresh()
-            }
-        }
-
-        binding.torrentsView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-            fastScroller.setSwipeRefreshLayout(binding.swipeRefreshLayout)
-        }
-
-        binding.placeholderView.detailedErrorMessageButton.setOnClickListener {
-            (model.torrentsListState.value as? RpcRequestState.Error)?.let { error ->
-                navigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.error.makeDetailedError(GlobalRpcClient)))
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val compactView = async { Settings.torrentCompactView.get() }
-            val multilineName = async { Settings.torrentNameMultiline.get() }
-            if (compactView.await()) {
-                binding.torrentsView.addItemDecoration(
-                    DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-                )
-            }
-            val torrentsAdapter = TorrentsAdapter(
-                this@TorrentsListFragment,
-                model,
-                compactView.await(),
-                multilineName.await()
-            )
-            binding.torrentsView.adapter = torrentsAdapter
-            model.torrentsListState.launchAndCollectWhenStarted(viewLifecycleOwner) { updateList(it, torrentsAdapter) }
-            model.torrentsLoadedEvents
-                .launchAndCollectWhenStarted(viewLifecycleOwner) { binding.swipeRefreshLayout.isRefreshing = false }
-
-            model.sortSettingsChanged
-                .onEach {
-                    torrentsAdapter.currentListChanged.first()
-                    binding.torrentsView.scrollToPosition(0)
-                }
-                .launchAndCollectWhenStarted(viewLifecycleOwner)
-        }
-
-        combine(
-            model.showAddTorrentButton,
-            model.connectionButtonState
-        ) { showAddTorrentButton, connectionButtonState ->
-            showAddTorrentButton || connectionButtonState != TorrentsListFragmentViewModel.ConnectionButtonState.Hidden
-        }.distinctUntilChanged().launchAndCollectWhenStarted(viewLifecycleOwner) {
-            binding.endButtonSpacer.isVisible = it
-        }
-
-        GlobalServers.currentServer.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateTitle)
-        model.subtitleState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateSubtitle)
-
-        notificationPermissionLauncher?.let { launcher ->
-            model.showNotificationPermissionRequest
-                .filter { it }
-                .launchAndCollectWhenStarted(viewLifecycleOwner) {
-                    val result = binding.root.showSnackbar(
-                        message = R.string.notification_permission_rationale,
-                        duration = Snackbar.LENGTH_INDEFINITE,
-                        lifecycleOwner = viewLifecycleOwner,
-                        activity = requiredActivity,
-                        actionText = R.string.request_permission,
-                        anchorViewId = R.id.bottom_toolbar,
-                        action = { model.notificationPermissionHelper?.requestPermission(this, launcher) }
+            navigateToSettings = { navController.safeNavigate(TorrentsListFragmentDirections.toSettingsFragment()) },
+            navigateToAboutScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toAboutFragment()) },
+            shutdownApp = { Utils.shutdownApp(context) },
+            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
+            navigateToServerAddingScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toServerEditFragment()) },
+            navigateToAddTorrentFileScreen = {
+                navController.safeNavigate(
+                    TorrentsListFragmentDirections.toAddTorrentFileFragment(
+                        it
                     )
-                    model.showNotificationPermissionRequest.compareAndSet(it, false)
-                    if (result.event == Snackbar.Callback.DISMISS_EVENT_SWIPE) {
-                        model.onNotificationPermissionRequestDismissed()
-                    }
-                }
-        }
+                )
+            },
+            navigateToAddTorrentLinkScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toAddTorrentLinkFragment()) },
+            navigateToTorrentPropertiesScreen = {
+                navController.safeNavigate(
+                    TorrentsListFragmentDirections.toTorrentPropertiesFragment(
+                        it
+                    )
+                )
+            },
+            navigateToConnectionSettingsScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toConnectionSettingsFragment()) },
+            navigateToServerSettingsScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toServerSettingsFragment()) },
+            navigateToServerStatsDialog = { navController.safeNavigate(TorrentsListFragmentDirections.toServerStatsDialog()) },
+            navigateToSetLocationDialog = { torrentHashStrings, location ->
+                navController.safeNavigate(
+                    TorrentsListFragmentDirections.toTorrentsSetLocationDialog(
+                        torrentHashStrings.toTypedArray(),
+                        location
+                    )
+                )
+            },
+            navigateToLabelsEditDialog = { torrentHashStrings, enabledLabels ->
+                navController.safeNavigate(
+                    TorrentsListFragmentDirections.toLabelsEditDialog(
+                        torrentHashStrings.toTypedArray(),
+                        enabledLabels.toTypedArray()
+                    )
+                )
+            },
 
-        RemoveTorrentDialogFragment.setFragmentResultListener(this) {
-            model.removeTorrents(it.torrentHashStrings, it.deleteFiles)
-        }
+            torrents = model.torrents.collectAsStateWithLifecycle(),
+            allTorrents = model.allTorrents.collectAsStateWithLifecycle(),
+            refreshingManually = model.refreshingManually,
+            refreshManually = model::refreshManually,
+            listSettings = model.listSettings.collectAsStateWithLifecycle(),
+            quickReturnEnabled = model.quickReturnEnabled.collectAsStateWithLifecycle(),
+            torrentsOperations = model.torrentOperations,
 
-        TorrentFileRenameDialogFragment.setFragmentResultListener(this) {
-            if (it.torrentHashString != null) {
-                model.renameTorrentFile(it.torrentHashString, it.filePath, it.newName)
-            }
-        }
-    }
-
-    override fun onStart() {
-        Timber.d("onStart() called")
-        super.onStart()
-        model.checkNotificationPermission()
-    }
-
-    override fun onStop() {
-        Timber.d("onStop() called")
-        super.onStop()
-    }
-
-    private fun setupBottomBar() {
-        with(binding) {
-            transmissionSettings.apply {
-                setOnClickListener { navigate(TorrentsListFragmentDirections.toTransmissionSettingsDialogFragment()) }
-            }
-            model.showTransmissionSettingsButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                transmissionSettings.isVisible = it
-            }
-
-            torrentsFilters.apply {
-                setOnClickListener { navigate(TorrentsListFragmentDirections.toTorrentsFiltersDialogFragment()) }
-
-                val badgeDrawable = (drawable as LayerDrawable).getDrawable(1)
-                model.sortOrFiltersEnabled.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                    badgeDrawable.alpha = if (it) 192 else 0
-                }
-            }
-            model.showTorrentsFiltersButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                torrentsFilters.isVisible = it
-            }
-
-            searchView.apply {
-                setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextChange(newText: String): Boolean {
-                        model.nameFilter.set(newText.trim())
-                        return true
-                    }
-
-                    override fun onQueryTextSubmit(query: String): Boolean {
-                        return false
-                    }
-                })
-
-                setOnSearchClickListener {
-                    model.searchViewIsIconified.set(false)
-                }
-                setOnCloseListener {
-                    model.searchViewIsIconified.set(true)
-                    false
-                }
-                val backCallback = requiredActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                    collapse()
-                }
-                combine(model.searchViewIsIconified.flow(), requiredActivity.actionMode) { isIconified, actionMode ->
-                    !isIconified && actionMode == null
-                }.launchAndCollectWhenStarted(viewLifecycleOwner, backCallback::isEnabled::set)
-            }
-            model.showSearchView.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                if (!it) searchView.collapse()
-                searchView.isVisible = it
-            }
-
-            addTorrentButton.setOnClickListener {
-                navigate(TorrentsListFragmentDirections.toAddTorrentMenuFragment())
-            }
-            model.showAddTorrentButton.launchAndCollectWhenStarted(viewLifecycleOwner) {
-                binding.addTorrentButton.apply {
-                    isVisible = it
-                }
-            }
-
-            model.connectionButtonState.launchAndCollectWhenStarted(viewLifecycleOwner, ::updateConnectionButton)
-        }
-    }
-
-    private suspend fun updateList(state: RpcRequestState<List<Torrent>>, adapter: TorrentsAdapter) {
-        binding.apply {
-            swipeRefreshLayout.isEnabled = ((state as? RpcRequestState.Error)?.error?.isRecoverable ?: true) == true
-
-            if (state is RpcRequestState.Loaded && state.response.isNotEmpty()) {
-                adapter.update(state.response)
-                placeholderView.hide()
-                bottomToolbar.hideOnScroll = true
-            } else {
-                adapter.update(null)
-                requiredActivity.actionMode.value?.finish()
-                bottomToolbar.apply {
-                    hideOnScroll = false
-                    performShow()
-                }
-                when (state) {
-                    is RpcRequestState.Loading -> placeholderView.showLoading(getText(R.string.connecting))
-                    is RpcRequestState.Error -> placeholderView.showError(state.error)
-                    is RpcRequestState.Loaded -> placeholderView.showError(getText(R.string.no_torrents))
-                }
-            }
-        }
-    }
-
-    private fun updateConnectionButton(state: TorrentsListFragmentViewModel.ConnectionButtonState) {
-        binding.connectionButton.apply {
-            val text = when (state) {
-                TorrentsListFragmentViewModel.ConnectionButtonState.AddServer -> {
-                    setOnClickListener { navigate(TorrentsListFragmentDirections.toServerEditFragment()) }
-                    R.string.add_server
-                }
-
-                TorrentsListFragmentViewModel.ConnectionButtonState.Connect -> {
-                    setOnClickListener { GlobalRpcClient.shouldConnectToServer.value = true }
-                    R.string.connect
-                }
-
-                TorrentsListFragmentViewModel.ConnectionButtonState.Disconnect -> {
-                    setOnClickListener { GlobalRpcClient.shouldConnectToServer.value = false }
-                    R.string.disconnect
-                }
-
-                TorrentsListFragmentViewModel.ConnectionButtonState.Hidden -> {
-                    setOnClickListener(null)
-                    null
-                }
-            }
-            isVisible = if (text == null) {
-                false
-            } else {
-                setText(text)
-                true
-            }
-        }
-    }
-
-    override fun onToolbarMenuItemClicked(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.settings -> navigate(TorrentsListFragmentDirections.toSettingsFragment())
-            R.id.about -> navigate(TorrentsListFragmentDirections.toAboutFragment())
-            R.id.quit -> Utils.shutdownApp(requireContext())
-            else -> return false
-        }
-        return true
-    }
-
-    private fun updateTitle(currentServer: Server?) {
-        toolbar.title = if (currentServer != null) {
-            getString(
-                R.string.current_server_string,
-                currentServer.name,
-                currentServer.address
-            )
-        } else {
-            getString(R.string.app_name)
-        }
-    }
-
-    private fun updateSubtitle(state: TorrentsListFragmentViewModel.SubtitleState?) {
-        toolbar.subtitle = if (state != null) {
-            getString(
-                R.string.main_activity_subtitle,
-                FormatUtils.formatTransferRate(requireContext(), state.downloadSpeed),
-                FormatUtils.formatTransferRate(requireContext(), state.uploadSpeed)
-            )
-        } else {
-            null
-        }
+            checkNotificationPermission = model.checkNotificationPermission,
+            onCheckedNotificationPermission = model::onCheckedNotificationPermission,
+            onShownNotificationPermissionRequest = model::onShownNotificationPermissionRequest
+        )
     }
 }
 
-private fun SearchView.collapse(): Boolean {
-    return if (!isIconified) {
-        // We need to clear query before calling setIconified(true)
-        setQuery(null, false)
-        isIconified = true
-        true
-    } else {
-        false
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun TorrentsListScreen(
+    title: State<TorrentsListFragmentViewModel.TitleState?>,
+    subtitle: State<TorrentsListFragmentViewModel.SubtitleState?>,
+
+    shouldConnectToServer: State<Boolean>,
+    setShouldConnectToServer: (Boolean) -> Unit,
+    currentServer: State<String?>,
+    setCurrentServer: (String) -> Unit,
+    servers: State<List<String>>,
+    alternativeSpeedLimitsEnabled: State<Boolean>,
+    setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
+
+    labelsEnabled: State<Boolean>,
+
+    sortAndFilterSettings: State<TorrentsListFragmentViewModel.SortAndFilterSettings?>,
+    showTransmissionSettingsButton: State<Boolean>,
+    showFiltersAndSearchButtons: State<Boolean>,
+    floatingActionButtonState: State<FloatingActionButtonState>,
+
+    navigateToSettings: () -> Unit,
+    navigateToAboutScreen: () -> Unit,
+    shutdownApp: () -> Unit,
+    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    navigateToServerAddingScreen: () -> Unit,
+    navigateToAddTorrentFileScreen: (Uri) -> Unit,
+    navigateToAddTorrentLinkScreen: () -> Unit,
+    navigateToTorrentPropertiesScreen: (String) -> Unit,
+    navigateToConnectionSettingsScreen: () -> Unit,
+    navigateToServerSettingsScreen: () -> Unit,
+    navigateToServerStatsDialog: () -> Unit,
+    navigateToSetLocationDialog: (torrentHashStrings: List<String>, location: String) -> Unit,
+    navigateToLabelsEditDialog: (torrentHashStrings: List<String>, enabledLabels: List<String>) -> Unit,
+
+    torrents: State<RpcRequestState<List<Torrent>>>,
+    allTorrents: State<RpcRequestState<List<Torrent>>>,
+    refreshingManually: State<Boolean>,
+    refreshManually: () -> Unit,
+    listSettings: State<TorrentsListFragmentViewModel.ListSettings?>,
+    quickReturnEnabled: State<Boolean>,
+    torrentsOperations: TorrentsOperations,
+
+    checkNotificationPermission: StateFlow<Boolean?>,
+    onCheckedNotificationPermission: () -> Unit,
+    onShownNotificationPermissionRequest: () -> Unit
+) {
+    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val bottomAppBarScrollBehaviour = bottomBarScrollBehavior()
+
+    val toolbarClicked =
+        remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    val title = title.value
+                    Text(
+                        text = if (title != null) {
+                            stringResource(R.string.current_server_string, title.serverName, title.serverAddress)
+                        } else {
+                            stringResource(R.string.app_name)
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                subtitle = {
+                    val subtitle = subtitle.value
+                    if (subtitle != null) {
+                        val fileSizeFormatter = rememberFileSizeFormatter()
+                        Text(
+                            stringResource(
+                                R.string.main_activity_subtitle,
+                                fileSizeFormatter.formatTransferRate(subtitle.downloadSpeed),
+                                fileSizeFormatter.formatTransferRate(subtitle.uploadSpeed)
+                            )
+                        )
+                    }
+                },
+                titleHorizontalAlignment = Alignment.CenterHorizontally,
+                actions = {
+                    TremotesfIconButtonWithTooltipAndMenu(Icons.Filled.MoreVert, R.string.more_options) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.settings)) },
+                            onClick = {
+                                navigateToSettings()
+                                dismiss()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.about)) },
+                            onClick = {
+                                navigateToAboutScreen()
+                                dismiss()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.quit)) },
+                            onClick = {
+                                shutdownApp()
+                                dismiss()
+                            }
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                scrollBehavior = topAppBarScrollBehavior,
+                modifier = Modifier.clickable(interactionSource = null, indication = null) {
+                    if (quickReturnEnabled.value) {
+                        toolbarClicked.tryEmit(Unit)
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            BottomBar(
+                scrollBehaviour = bottomAppBarScrollBehaviour,
+
+                shouldConnectToServer = shouldConnectToServer,
+                setShouldConnectToServer = setShouldConnectToServer,
+                currentServer = currentServer,
+                setCurrentServer = setCurrentServer,
+                servers = servers,
+                alternativeSpeedLimitsEnabled = alternativeSpeedLimitsEnabled,
+                setAlternativeSpeedLimitsEnabled = setAlternativeSpeedLimitsEnabled,
+
+                sortAndFilterSettings = sortAndFilterSettings,
+                labelsEnabled = labelsEnabled,
+                showTransmissionSettingsButton = showTransmissionSettingsButton,
+                showFiltersAndSearchButtons = showFiltersAndSearchButtons,
+                floatingActionButtonState = floatingActionButtonState,
+
+                navigateToServerAddingScreen = navigateToServerAddingScreen,
+                navigateToAddTorrentFileScreen = navigateToAddTorrentFileScreen,
+                navigateToAddTorrentLinkScreen = navigateToAddTorrentLinkScreen,
+                navigateToConnectionSettingsScreen = navigateToConnectionSettingsScreen,
+                navigateToServerSettingsScreen = navigateToServerSettingsScreen,
+                navigateToServerStatsDialog = navigateToServerStatsDialog,
+
+                allTorrents = remember {
+                    derivedStateOf { (allTorrents.value as? RpcRequestState.Loaded)?.response ?: emptyList() }
+                }
+            )
+        },
+        modifier = Modifier
+            .imePadding()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .nestedScroll(bottomAppBarScrollBehaviour.nestedScrollConnection)
+    ) { innerPadding ->
+        val pullToRefreshState = rememberPullToRefreshState()
+        val enablePullToRefresh = remember {
+            derivedStateOf {
+                when (val state = torrents.value) {
+                    is RpcRequestState.Loaded -> true
+                    is RpcRequestState.Error -> state.error.isRecoverable
+                    else -> false
+                }
+            }
+        }
+        Box(
+            Modifier.pullToRefresh(
+                isRefreshing = refreshingManually.value,
+                state = pullToRefreshState,
+                enabled = enablePullToRefresh.value,
+                onRefresh = refreshManually
+            )
+        ) {
+            TremotesfScreenContentWithPlaceholder(
+                requestState = torrents.value,
+                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
+                loadingText = R.string.connecting,
+                modifier = Modifier.consumeWindowInsets(innerPadding),
+                placeholdersModifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(Dimens.screenContentPadding())
+            ) { torrents ->
+                val listSettings = listSettings.value ?: return@TremotesfScreenContentWithPlaceholder
+                val compactView = listSettings.compactView.collectAsStateWithLifecycle()
+                val multilineName = listSettings.multilineName.collectAsStateWithLifecycle()
+                TorrentsList(
+                    innerPadding = innerPadding,
+                    torrents = torrents,
+                    compactView = compactView.value,
+                    multilineName = multilineName.value,
+                    toolbarClicked = toolbarClicked,
+                    labelsEnabled = labelsEnabled,
+                    sortAndFilterSettings = sortAndFilterSettings,
+                    torrentsOperations = torrentsOperations,
+                    navigateToTorrentPropertiesScreen = navigateToTorrentPropertiesScreen,
+                    navigateToSetLocationDialog = navigateToSetLocationDialog,
+                    navigateToLabelsEditDialog = navigateToLabelsEditDialog
+                )
+            }
+            PullToRefreshDefaults.Indicator(
+                state = pullToRefreshState,
+                isRefreshing = refreshingManually.value,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(innerPadding)
+            )
+        }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val notificationPermissionHelperState = rememberTremotesfRuntimePermissionHelperState(
+            requiredPermission = Manifest.permission.POST_NOTIFICATIONS,
+            showRationaleBeforeRequesting = false
+        )
+        TremotesfRuntimePermissionHelper(
+            state = notificationPermissionHelperState,
+            permissionRationaleText = R.string.notification_permission_rationale
+        )
+        var showSnackbar: Boolean by rememberSaveable { mutableStateOf(false) }
+        LaunchedEffect(notificationPermissionHelperState, checkNotificationPermission) {
+            if (checkNotificationPermission.filterNotNull().first() && notificationPermissionHelperState.permissionGranted) {
+                onCheckedNotificationPermission()
+                showSnackbar = true
+            }
+        }
+        if (showSnackbar) {
+            val message = stringResource(R.string.notification_permission_rationale)
+            val actionLabel = stringResource(R.string.request_permission)
+            LaunchedEffect(message, actionLabel) {
+                R.string.request_notification_permission
+                val result = snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = actionLabel,
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Indefinite
+                )
+                onShownNotificationPermissionRequest()
+                if (result == SnackbarResult.ActionPerformed) {
+                    notificationPermissionHelperState.requestPermission()
+                }
+            }
+        }
     }
 }

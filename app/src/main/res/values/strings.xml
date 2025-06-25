@@ -525,7 +525,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="storage_permission_rationale_torrent">Tremotesf needs storage access permission to open this torrent file</string>
 
-    <string name="torrents_filters">Filters</string>
+    <string name="torrents_filters">Sorting and filters</string>
     <string name="transmission_settings">Transmission settings</string>
 
     <string name="load_from_file">Load from file</string>
@@ -568,4 +568,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="selected">Selected</string>
 
     <string name="more_options">More options</string>
+
+    <string name="search">Search</string>
+    <string name="clear">Clear</string>
+    <string name="sort_order">Sort order:</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
 </resources>

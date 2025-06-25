@@ -10,6 +10,6 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.verifyTorrents(ids: List<Int>) {
-    performRequest<Unit, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentVerify, RequestWithTorrentsIds(ids))
+suspend fun RpcClient.verifyTorrents(ids: Set<Int>) {
+    performRequest<Unit, _>(RpcMethod.TorrentVerify, RequestWithTorrentsIds(ids))
 }

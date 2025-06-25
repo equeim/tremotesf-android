@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.rpc.requests
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -46,6 +47,7 @@ private val TORRENTS_LIST_OBJECTS_REQUEST =
 private val TORRENTS_LIST_TABLE_REQUEST =
     createStaticRpcRequestBody(RpcMethod.TorrentGet, AllTorrentsRequestArguments(FIELDS, table = true))
 
+@Immutable
 @Serializable
 data class Torrent(
     @SerialName("id")

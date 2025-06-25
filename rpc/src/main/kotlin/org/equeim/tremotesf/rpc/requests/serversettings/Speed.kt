@@ -147,3 +147,23 @@ private val SPEED_SERVER_SETTINGS_REQUEST_BODY = createStaticRpcRequestBody(
     RpcMethod.SessionGet,
     RequestWithFields(SpeedServerSettings.serializer().descriptor.elementNames.toList())
 )
+
+/**
+ * @throws RpcRequestError
+ */
+suspend fun RpcClient.checkIfAlternativeSpeedLimitsEnabled(): Boolean =
+    performRequest<AlternativeSpeedLimitRequestArguments>(
+        ALTERNATIVE_SPEED_LIMIT_REQUEST_BODY,
+        "checkIfAlternativeSpeedLimitsEnabled"
+    ).arguments.alternativeLimitsEnabled
+
+@Serializable
+private data class AlternativeSpeedLimitRequestArguments(
+    @SerialName("alt-speed-enabled")
+    val alternativeLimitsEnabled: Boolean
+)
+
+private val ALTERNATIVE_SPEED_LIMIT_REQUEST_BODY = createStaticRpcRequestBody(
+    RpcMethod.SessionGet,
+    RequestWithFields("alt-speed-enabled")
+)

@@ -10,13 +10,13 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.startTorrents(ids: List<Int>) {
-    performRequest<Unit, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentStart, RequestWithTorrentsIds(ids), "startTorrents")
+suspend fun RpcClient.startTorrents(ids: Set<Int>) {
+    performRequest<Unit, _>(RpcMethod.TorrentStart, RequestWithTorrentsIds(ids), "startTorrents")
 }
 
 /**
  * @throws RpcRequestError
  */
-suspend fun RpcClient.startTorrentsNow(ids: List<Int>) {
-    performRequest<Unit, _>(org.equeim.tremotesf.rpc.requests.RpcMethod.TorrentStartNow, RequestWithTorrentsIds(ids), "startTorrentsNow")
+suspend fun RpcClient.startTorrentsNow(ids: Set<Int>) {
+    performRequest<Unit, _>(RpcMethod.TorrentStartNow, RequestWithTorrentsIds(ids), "startTorrentsNow")
 }
