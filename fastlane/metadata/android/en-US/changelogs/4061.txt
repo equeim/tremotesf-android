@@ -1,0 +1,2 @@
+- Fixed merging trackers
+- Fixed adding torrents with old Transmission versions

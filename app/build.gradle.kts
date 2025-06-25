@@ -33,8 +33,8 @@ android {
 
     defaultConfig {
         applicationId = "org.equeim.tremotesf"
-        versionCode = 4060
-        versionName = "2.12.0"
+        versionCode = 4061
+        versionName = "2.12.1"
     }
 
     if (keystoreProperties != null) {

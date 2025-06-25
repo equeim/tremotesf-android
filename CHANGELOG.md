@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.12.1] - 2025-06-25
 ### Fixed
 - Merging trackers
 - Adding torrents with old Transmission versions
