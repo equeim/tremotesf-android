@@ -13,6 +13,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.serialization.saved
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
 import kotlinx.coroutines.channels.Channel
@@ -33,12 +34,11 @@ import org.equeim.tremotesf.ui.addtorrent.TorrentUri
 import org.equeim.tremotesf.ui.addtorrent.getTorrentUri
 import org.equeim.tremotesf.ui.addtorrent.mimeTypes
 import org.equeim.tremotesf.ui.addtorrent.toTorrentUri
-import org.equeim.tremotesf.ui.utils.savedState
 import timber.log.Timber
 
 class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) :
     AndroidViewModel(application) {
-    var navigatedInitially by savedState(savedStateHandle, false)
+    var navigatedInitially: Boolean by savedStateHandle.saved { false }
 
     data class AddTorrentDirections(@IdRes val destinationId: Int, val arguments: Bundle)
 

@@ -103,7 +103,6 @@ import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.ZoneOffset
-import kotlin.collections.mapNotNull
 import kotlin.time.Duration.Companion.minutes
 
 @Composable

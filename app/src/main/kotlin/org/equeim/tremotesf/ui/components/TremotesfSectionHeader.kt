@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.ui.ComponentPreview
-import org.equeim.tremotesf.ui.Dimens
 
 @Composable
 fun TremotesfSectionHeader(@StringRes text: Int, modifier: Modifier = Modifier) {

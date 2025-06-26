@@ -15,7 +15,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -58,13 +57,10 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setAlternativeLimitsEnab
 import org.equeim.tremotesf.rpc.requests.startTorrents
 import org.equeim.tremotesf.rpc.requests.startTorrentsNow
 import org.equeim.tremotesf.rpc.requests.stopTorrents
-import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentDetails
 import org.equeim.tremotesf.rpc.requests.torrentproperties.renameTorrentFile
 import org.equeim.tremotesf.rpc.requests.verifyTorrents
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentOperations
-import timber.log.Timber
 import java.time.Instant
 import kotlin.time.Duration
 

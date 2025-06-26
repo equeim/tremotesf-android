@@ -7,8 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="list_item_selected_color">#26000000</color>
-
     <color name="system_bars_semi_transparent_light">#e6ffffff</color>
     <color name="system_bars_semi_transparent_dark">#66000000</color>
 

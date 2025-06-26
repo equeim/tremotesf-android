@@ -9,18 +9,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.DragEvent
-import android.view.KeyEvent
 import android.view.LayoutInflater
-import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
-import androidx.appcompat.view.ActionMode
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.PredictiveBackControl
 import androidx.lifecycle.lifecycleScope
@@ -30,12 +23,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -52,7 +41,7 @@ import org.equeim.tremotesf.ui.utils.showSnackbar
 import timber.log.Timber
 
 
-class NavigationActivity : AppCompatActivity(), NavControllerProvider {
+class NavigationActivity : AppCompatActivity() {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
@@ -66,20 +55,7 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
 
     private lateinit var binding: NavigationActivityBinding
 
-    private val _actionMode = MutableStateFlow<ActionMode?>(null)
-    val actionMode: StateFlow<ActionMode?> by ::_actionMode
-
-    override lateinit var navController: NavController
-
-    lateinit var appBarConfiguration: AppBarConfiguration
-        private set
-
-    lateinit var upNavigationIcon: DrawerArrowDrawable
-        private set
-
-    // TODO: remove
-    private val _windowInsets = MutableStateFlow<WindowInsetsCompat?>(null)
-    val windowInsets: Flow<WindowInsetsCompat> = _windowInsets.filterNotNull()
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
@@ -99,24 +75,11 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        handleWindowInsets()
-
-        val actionModeBackCallback = onBackPressedDispatcher.addCallback(this) {
-            actionMode.value?.finish()
-        }
-        actionMode.launchAndCollectWhenStarted(this) {
-            actionModeBackCallback.isEnabled = it != null
-        }
-
         navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
         navController.addOnDestinationChangedListener { _, _, _ ->
             hideKeyboard()
         }
-
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        upNavigationIcon = DrawerArrowDrawable(this).apply { progress = 1.0f }
-
         handleDropEvents()
 
         model.showSnackbarMessage
@@ -191,14 +154,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
         this.intent = intent
     }
 
-    private fun handleWindowInsets() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            _windowInsets.value = insets
-            insets
-        }
-    }
-
     private fun handleDropEvents() {
         binding.root.setOnDragListener { _, event ->
             when (event.action) {
@@ -265,25 +220,6 @@ class NavigationActivity : AppCompatActivity(), NavControllerProvider {
             )
         }
     }
-
-    override fun onSupportActionModeStarted(mode: ActionMode) {
-        super.onSupportActionModeStarted(mode)
-        _actionMode.value = mode
-    }
-
-    override fun onSupportActionModeFinished(mode: ActionMode) {
-        super.onSupportActionModeFinished(mode)
-        _actionMode.value = null
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if ((supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.primaryNavigationFragment as? NavigationFragment)?.showOverflowMenu() == true) {
-                return true
-            }
-        }
-        return super.onKeyUp(keyCode, event)
-    }
 }
 
 class NavHostFragment : NavHostFragment() {
@@ -338,9 +274,3 @@ class NavHostFragment : NavHostFragment() {
         }
     }
 }
-
-private data class ActivityMargins(
-    val left: Int,
-    val right: Int,
-    val bottom: Int,
-)

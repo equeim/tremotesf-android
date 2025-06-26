@@ -107,7 +107,7 @@ import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
 import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
-import org.equeim.tremotesf.ui.navigate
+import org.equeim.tremotesf.ui.utils.safeNavigate
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.net.Proxy
@@ -138,8 +138,8 @@ class ServerEditFragment : ComposeFragment() {
             autoConnectOnWifiNetworkSSID = model.autoConnectOnWifiNetworkSSID,
             showSSIDErrorMessage = model.showSSIDErrorMessage,
             locationEnabled = model.locationEnabled.collectAsStateWithLifecycle(),
-            navigateToProxySettings = { navigate(ServerEditFragmentDirections.toProxySettingsFragment()) },
-            navigateToCertificatesSettings = { navigate(ServerEditFragmentDirections.toCertificatesFragment()) },
+            navigateToProxySettings = { navController.safeNavigate(ServerEditFragmentDirections.toProxySettingsFragment()) },
+            navigateToCertificatesSettings = { navController.safeNavigate(ServerEditFragmentDirections.toCertificatesFragment()) },
             setSSIDFromCurrentNetwork = model::setSSIDFromCurrentNetwork,
             isAboutToOverwriteServer = model::isAboutToOverwriteServer,
             saveServer = model::saveServer

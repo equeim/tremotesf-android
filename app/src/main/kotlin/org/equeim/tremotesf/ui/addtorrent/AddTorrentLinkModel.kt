@@ -5,8 +5,6 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.net.Uri
 import androidx.compose.runtime.MutableState
