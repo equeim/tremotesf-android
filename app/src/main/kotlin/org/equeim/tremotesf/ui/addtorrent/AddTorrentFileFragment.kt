@@ -81,7 +81,7 @@ import org.equeim.tremotesf.ui.components.TremotesfScrollableTopAppBarWithSubtit
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBarDefaults
 import org.equeim.tremotesf.ui.components.TremotesfTorrentsFilesList
 import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
 

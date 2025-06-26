@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package org.equeim.tremotesf.ui.torrentslistfragment
+package org.equeim.tremotesf.ui
 
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
@@ -45,7 +45,6 @@ import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.rpc.redactHeader
-import org.equeim.tremotesf.ui.ComposeDialogFragment
 import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
@@ -142,7 +141,7 @@ private fun DetailedConnectionErrorDialogContent(error: DetailedRpcRequestError,
             }) {
                 Text(stringResource(R.string.share))
             }
-            Spacer(modifier = Modifier.weight(1.0f))
+            Spacer(modifier = Modifier.Companion.weight(1.0f))
             TextButton(onDismissRequest) { Text(stringResource(R.string.close)) }
         },
     )
@@ -153,8 +152,8 @@ private fun DetailsItem(summary: String, onClick: () -> Unit) {
     ListItem(
         headlineContent = { Text(text = summary, maxLines = 3, style = MaterialTheme.typography.bodyMedium) },
         trailingContent = { Icon(Icons.Outlined.Info, contentDescription = summary) },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        modifier = Modifier
+        colors = ListItemDefaults.colors(containerColor = Color.Companion.Transparent),
+        modifier = Modifier.Companion
             .fillMaxWidth()
             .clickable(onClick = onClick)
     )
@@ -239,14 +238,14 @@ private fun ExpandedDetailsDialog(details: ExpandedDetails, onDismissRequest: ()
         title = { Text(details.title) },
         text = {
             Box(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .verticalScroll(rememberScrollState())
                     .run { if (details.showMonospaceAndWithoutWrapping) horizontalScroll(rememberScrollState()) else this }
             ) {
                 SelectionContainer {
                     Text(
                         text = details.text,
-                        fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Monospace else FontFamily.Default
+                        fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Companion.Monospace else FontFamily.Companion.Default
                     )
                 }
             }

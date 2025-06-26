@@ -67,7 +67,7 @@ import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 
 
 class AddTorrentLinkFragment : ComposeFragment() {

@@ -69,6 +69,7 @@ import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.FloatingActionButtonState
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter

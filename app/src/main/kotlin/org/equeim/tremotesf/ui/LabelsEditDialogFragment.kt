@@ -35,7 +35,7 @@ import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 
 class LabelsEditDialogFragment : ComposeDialogFragment() {

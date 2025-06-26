@@ -57,7 +57,7 @@ import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.getInitialAllDownloadDirectories
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
 import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
 

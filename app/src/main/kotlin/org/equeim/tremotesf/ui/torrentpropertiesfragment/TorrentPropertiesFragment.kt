@@ -65,7 +65,7 @@ import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfScrollableTopAppBar
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBarDefaults
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
 

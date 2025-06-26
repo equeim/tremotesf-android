@@ -42,7 +42,7 @@ import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 
 class DownloadingFragment : ComposeFragment() {
     @Composable

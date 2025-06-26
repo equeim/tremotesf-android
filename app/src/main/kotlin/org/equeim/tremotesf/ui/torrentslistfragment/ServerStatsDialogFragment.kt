@@ -48,6 +48,7 @@ import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfDetailsGrid
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.formatDuration
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter

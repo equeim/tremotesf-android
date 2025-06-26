@@ -43,7 +43,7 @@ import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
 import org.equeim.tremotesf.ui.components.rememberTremotesfDecimalNumberInputFieldState
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
-import org.equeim.tremotesf.ui.torrentslistfragment.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import kotlin.time.Duration.Companion.minutes
 
 class SeedingFragment : ComposeFragment() {

@@ -246,7 +246,7 @@
 
     <dialog
         android:id="@+id/detailed_connection_error_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.torrentslistfragment.DetailedConnectionErrorDialogFragment">
+        android:name="org.equeim.tremotesf.ui.DetailedConnectionErrorDialogFragment">
 
         <argument
             android:name="error"
