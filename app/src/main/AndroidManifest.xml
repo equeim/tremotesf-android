@@ -53,6 +53,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
         <activity
             android:name=".ui.NavigationActivity"
+            android:configChanges="density|fontScale|fontWeightAdjustment|grammaticalGender|keyboard|keyboardHidden|layoutDirection|locale|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">

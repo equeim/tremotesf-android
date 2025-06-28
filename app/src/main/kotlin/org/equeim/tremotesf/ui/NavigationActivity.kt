@@ -17,6 +17,7 @@ import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.PredictiveBackControl
@@ -121,6 +122,25 @@ class NavigationActivity : FragmentActivity() {
         }
 
         Timber.i("onCreate: return")
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        Timber.d("onConfigurationChanged() called with: newConfig = $newConfig")
+        super.onConfigurationChanged(newConfig)
+        Timber.d("onConfigurationChanged: night mode is ${newConfig.nightModeString()}")
+        // These properties are set by Activity once on creation, so we need to update them ourselves on configuration change
+        WindowInsetsControllerCompat(window, binding.root).apply {
+            val isLight = resources.getBoolean(R.bool.is_light_theme)
+            isAppearanceLightStatusBars = isLight
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = getColor(R.color.navigation_bar_color)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                isAppearanceLightNavigationBars = isLight
+            }
+            window.setBackgroundDrawableResource(R.color.window_background)
+        }
     }
 
     private fun overrideIntentWithDeepLink() {
