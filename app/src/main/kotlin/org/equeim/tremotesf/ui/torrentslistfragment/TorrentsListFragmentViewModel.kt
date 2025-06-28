@@ -62,6 +62,7 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.renameTorrentFile
 import org.equeim.tremotesf.rpc.requests.verifyTorrents
 import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.addtorrent.MergingTrackersMessage
 import java.time.Instant
 import kotlin.time.Duration
 
@@ -320,6 +321,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     private val _checkNotificationPermission = MutableStateFlow<Boolean?>(null)
     val checkNotificationPermission: StateFlow<Boolean?> by ::_checkNotificationPermission
+
+    val showMergingTrackersMessage: MutableState<MergingTrackersMessage?> = mutableStateOf(null)
 
     init {
         viewModelScope.launch {

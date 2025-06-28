@@ -6,7 +6,12 @@ package org.equeim.tremotesf.rpc
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
@@ -16,6 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.requests.TorrentAlreadyExists
 import org.equeim.tremotesf.rpc.requests.TorrentNotFound
@@ -24,7 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @SuppressLint("StaticFieldLeak")
 object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
-    data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int)
+    @Parcelize
+    data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int) : Parcelable
 
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)
 
@@ -97,4 +104,10 @@ fun RpcRequestError.getErrorString(context: Context): String = when (this) {
         is TorrentNotFound -> context.getString(R.string.torrent_not_found)
         else -> context.getString(R.string.connection_error)
     }
+}
+
+@Composable
+fun RpcRequestError.getErrorString(): String {
+    LocalConfiguration.current
+    return getErrorString(LocalContext.current)
 }

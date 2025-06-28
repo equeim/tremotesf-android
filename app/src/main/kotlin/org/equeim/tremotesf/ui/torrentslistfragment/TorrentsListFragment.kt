@@ -7,6 +7,7 @@ package org.equeim.tremotesf.ui.torrentslistfragment
 import android.Manifest
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -35,6 +36,7 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -52,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -65,6 +68,8 @@ import org.equeim.tremotesf.rpc.isRecoverable
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.ShowRpcErrorsSnackbar
+import org.equeim.tremotesf.ui.addtorrent.MergingTrackersMessage
 import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
@@ -78,7 +83,9 @@ import org.equeim.tremotesf.ui.utils.safeNavigate
 class TorrentsListFragment : ComposeFragment() {
     @Composable
     override fun Content(navController: NavController) {
-        val model = viewModel<TorrentsListFragmentViewModel>()
+        // Need to scope it to the back stack entry instead of fragment since it will be accessed from AddTorrent(File|Link)Fragment
+        val model =
+            viewModel<TorrentsListFragmentViewModel>(viewModelStoreOwner = navController.getBackStackEntry(R.id.torrents_list_fragment))
         val context = LocalContext.current
         TorrentsListScreen(
             title = model.titleState.collectAsStateWithLifecycle(),
@@ -149,7 +156,10 @@ class TorrentsListFragment : ComposeFragment() {
 
             checkNotificationPermission = model.checkNotificationPermission,
             onCheckedNotificationPermission = model::onCheckedNotificationPermission,
-            onShownNotificationPermissionRequest = model::onShownNotificationPermissionRequest
+            onShownNotificationPermissionRequest = model::onShownNotificationPermissionRequest,
+
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors,
+            showMergingTrackersMessage = model.showMergingTrackersMessage
         )
     }
 }
@@ -199,7 +209,10 @@ private fun TorrentsListScreen(
 
     checkNotificationPermission: StateFlow<Boolean?>,
     onCheckedNotificationPermission: () -> Unit,
-    onShownNotificationPermissionRequest: () -> Unit
+    onShownNotificationPermissionRequest: () -> Unit,
+
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>,
+    showMergingTrackersMessage: MutableState<MergingTrackersMessage?>
 ) {
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val bottomAppBarScrollBehaviour = bottomBarScrollBehavior()
@@ -364,37 +377,80 @@ private fun TorrentsListScreen(
         }
     }
 
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+
+    ShowMergingTrackersMessage(showMergingTrackersMessage, snackbarHostState)
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val notificationPermissionHelperState = rememberTremotesfRuntimePermissionHelperState(
-            requiredPermission = Manifest.permission.POST_NOTIFICATIONS,
-            showRationaleBeforeRequesting = false
+        ShowNotificationPermissionSnackbar(
+            checkNotificationPermission = checkNotificationPermission,
+            onCheckedNotificationPermission = onCheckedNotificationPermission,
+            onShownNotificationPermissionRequest = onShownNotificationPermissionRequest,
+            snackbarHostState = snackbarHostState
         )
-        TremotesfRuntimePermissionHelper(
-            state = notificationPermissionHelperState,
-            permissionRationaleText = R.string.notification_permission_rationale
-        )
-        var showSnackbar: Boolean by rememberSaveable { mutableStateOf(false) }
-        LaunchedEffect(notificationPermissionHelperState, checkNotificationPermission) {
-            if (checkNotificationPermission.filterNotNull().first() && notificationPermissionHelperState.permissionGranted) {
-                onCheckedNotificationPermission()
-                showSnackbar = true
+    }
+}
+
+@Composable
+private fun ShowMergingTrackersMessage(
+    mergingTrackersMessage: MutableState<MergingTrackersMessage?>,
+    snackbarHostState: SnackbarHostState
+) {
+    val messageString = mergingTrackersMessage.value?.let { stringResource(it.stringId, it.torrentName) }
+    if (messageString != null) {
+        LaunchedEffect(messageString) {
+            try {
+                snackbarHostState.showSnackbar(
+                    message = messageString,
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short
+                )
+            } finally {
+                mergingTrackersMessage.value = null
             }
         }
-        if (showSnackbar) {
-            val message = stringResource(R.string.notification_permission_rationale)
-            val actionLabel = stringResource(R.string.request_permission)
-            LaunchedEffect(message, actionLabel) {
-                R.string.request_notification_permission
-                val result = snackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = actionLabel,
-                    withDismissAction = true,
-                    duration = SnackbarDuration.Indefinite
-                )
-                onShownNotificationPermissionRequest()
-                if (result == SnackbarResult.ActionPerformed) {
-                    notificationPermissionHelperState.requestPermission()
-                }
+    }
+}
+
+@Composable
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private fun ShowNotificationPermissionSnackbar(
+    checkNotificationPermission: StateFlow<Boolean?>,
+    onCheckedNotificationPermission: () -> Unit,
+    onShownNotificationPermissionRequest: () -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val notificationPermissionHelperState = rememberTremotesfRuntimePermissionHelperState(
+        requiredPermission = Manifest.permission.POST_NOTIFICATIONS,
+        showRationaleBeforeRequesting = false
+    )
+    TremotesfRuntimePermissionHelper(
+        state = notificationPermissionHelperState,
+        permissionRationaleText = R.string.notification_permission_rationale
+    )
+    var showSnackbar: Boolean by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(notificationPermissionHelperState, checkNotificationPermission) {
+        if (checkNotificationPermission.filterNotNull()
+                .first() && notificationPermissionHelperState.permissionGranted
+        ) {
+            onCheckedNotificationPermission()
+            showSnackbar = true
+        }
+    }
+    if (showSnackbar) {
+        val message = stringResource(R.string.notification_permission_rationale)
+        val actionLabel = stringResource(R.string.request_permission)
+        LaunchedEffect(message, actionLabel) {
+            R.string.request_notification_permission
+            val result = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = actionLabel,
+                withDismissAction = true,
+                duration = SnackbarDuration.Indefinite
+            )
+            onShownNotificationPermissionRequest()
+            if (result == SnackbarResult.ActionPerformed) {
+                notificationPermissionHelperState.requestPermission()
             }
         }
     }

@@ -10,21 +10,11 @@ import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.serialization.saved
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDeepLinkBuilder
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
@@ -118,36 +108,6 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
                 R.id.add_torrent_link_fragment,
                 AddTorrentLinkFragmentArgs(uri.uri).toBundle()
             )
-        }
-    }
-
-    sealed interface SnackbarMessage {
-        data class Error(val error: GlobalRpcClient.BackgroundRpcRequestError) : SnackbarMessage
-        data class TextMessage(@StringRes val message: Int, val formatArgs: List<Any>) : SnackbarMessage
-    }
-
-    private val snackbarMessages = Channel<SnackbarMessage>(Channel.UNLIMITED)
-
-    fun showSnackbarMessage(@StringRes message: Int, vararg formatArgs: Any) {
-        snackbarMessages.trySend(SnackbarMessage.TextMessage(message, formatArgs.asList()))
-    }
-
-    private val _showSnackbarMessage = MutableStateFlow<SnackbarMessage?>(null)
-    val showSnackbarMessage: StateFlow<SnackbarMessage?> by ::_showSnackbarMessage
-
-    fun snackbarDismissed() {
-        _showSnackbarMessage.value = null
-    }
-
-    init {
-        viewModelScope.launch {
-            GlobalRpcClient.backgroundRpcRequestsErrors.receiveAsFlow().map(SnackbarMessage::Error).collect(snackbarMessages::send)
-        }
-        viewModelScope.launch {
-            for (message in snackbarMessages) {
-                _showSnackbarMessage.first { it == null }
-                _showSnackbarMessage.value = message
-            }
         }
     }
 }

@@ -40,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
@@ -102,7 +104,8 @@ class SpeedFragment : ComposeFragment() {
             alternativeLimitsScheduled = model.alternativeLimitsScheduled,
             alternativeLimitsBeginTime = model.alternativeLimitsBeginTime,
             alternativeLimitsEndTime = model.alternativeLimitsEndTime,
-            alternativeLimitsDays = model.alternativeLimitsDays
+            alternativeLimitsDays = model.alternativeLimitsDays,
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 }
@@ -123,12 +126,14 @@ private fun ServerSettingsSpeedScreen(
     alternativeLimitsBeginTime: ServerSettingsProperty<LocalTime>,
     alternativeLimitsEndTime: ServerSettingsProperty<LocalTime>,
     alternativeLimitsDays: ServerSettingsProperty<AlternativeLimitsDays>,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     ServerSettingsCategory(
         title = R.string.server_settings_speed,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
+        backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSectionHeader(R.string.limits, modifier = Modifier.padding(horizontal = horizontalPadding))
         TremotesfSwitchWithText(
@@ -290,7 +295,8 @@ private fun ServerSettingsSpeedScreenPreview() = ScreenPreview {
         alternativeLimitsScheduled = remember { ServerSettingsBooleanProperty {} },
         alternativeLimitsBeginTime = remember { ServerSettingsProperty(LocalTime.MIDNIGHT) {} },
         alternativeLimitsEndTime = remember { ServerSettingsProperty(LocalTime.NOON) {} },
-        alternativeLimitsDays = remember { ServerSettingsProperty(AlternativeLimitsDays.All) {} }
+        alternativeLimitsDays = remember { ServerSettingsProperty(AlternativeLimitsDays.All) {} },
+        backgroundRpcRequestsErrors = remember { Channel() }
     )
 }
 

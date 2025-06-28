@@ -15,21 +15,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.channels.ReceiveChannel
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.ShowRpcErrorsSnackbar
 import org.equeim.tremotesf.ui.components.TremotesfDecimalNumberInputFieldState
 import org.equeim.tremotesf.ui.components.TremotesfIntegerNumberInputFieldState
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
@@ -41,8 +45,12 @@ fun ServerSettingsCategory(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>,
     loadedSettingsContent: @Composable ColumnScope.(Dp) -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+
     Scaffold(
         topBar = {
             TremotesfTopAppBar(

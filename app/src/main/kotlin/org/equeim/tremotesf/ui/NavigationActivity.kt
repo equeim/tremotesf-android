@@ -24,20 +24,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.databinding.NavigationActivityBinding
-import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.getErrorString
-import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.service.ForegroundService
 import org.equeim.tremotesf.ui.utils.hideKeyboard
-import org.equeim.tremotesf.ui.utils.launchAndCollectWhenStarted
-import org.equeim.tremotesf.ui.utils.showSnackbar
 import timber.log.Timber
 
 
@@ -81,47 +73,6 @@ class NavigationActivity : AppCompatActivity() {
             hideKeyboard()
         }
         handleDropEvents()
-
-        model.showSnackbarMessage
-            .filterNotNull()
-            .launchAndCollectWhenStarted(this) { message ->
-                when (message) {
-                    is NavigationActivityViewModel.SnackbarMessage.Error -> {
-                        val error = message.error
-                        binding.root.showSnackbar(
-                            message = getString(
-                                error.errorContext,
-                                error.error.getErrorString(this)
-                            ),
-                            duration = Snackbar.LENGTH_LONG,
-                            lifecycleOwner = this,
-                            activity = this,
-                            actionText = R.string.see_detailed_error_message,
-                            action = {
-                                navigate(
-                                    NavMainDirections.toDetailedConnectionErrorDialogFragment(
-                                        error.error.makeDetailedError(GlobalRpcClient)
-                                    )
-                                )
-                            }
-                        )
-                    }
-
-                    is NavigationActivityViewModel.SnackbarMessage.TextMessage -> {
-                        binding.root.showSnackbar(
-                            message = if (message.formatArgs.isNotEmpty()) {
-                                getString(message.message, *message.formatArgs.toTypedArray())
-                            } else {
-                                getText(message.message)
-                            },
-                            duration = Snackbar.LENGTH_SHORT,
-                            lifecycleOwner = this,
-                            activity = this
-                        )
-                    }
-                }
-                model.snackbarDismissed()
-            }
 
         ForegroundService.startStopAutomatically()
 

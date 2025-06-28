@@ -93,7 +93,6 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewmodel)

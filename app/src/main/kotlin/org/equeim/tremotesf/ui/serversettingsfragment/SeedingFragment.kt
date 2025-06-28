@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
@@ -58,6 +60,7 @@ class SeedingFragment : ComposeFragment() {
             ratioLimit = model.ratioLimit,
             idleSeedingLimited = model.idleSeedingLimited,
             idleSeedingLimit = model.idleSeedingLimit,
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 
@@ -94,12 +97,14 @@ private fun ServerSettingsSeedingScreen(
     ratioLimit: TremotesfDecimalNumberInputFieldState,
     idleSeedingLimited: ServerSettingsProperty<Boolean>,
     idleSeedingLimit: TremotesfIntegerNumberInputFieldState,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     ServerSettingsCategory(
         title = R.string.server_settings_seeding,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
+        backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSwitchWithText(
             checked = ratioLimited.value,
@@ -143,5 +148,6 @@ private fun ServerSettingsSeedingScreenPreview() = ScreenPreview {
         ratioLimit = rememberTremotesfDecimalNumberInputFieldState(),
         idleSeedingLimited = remember { ServerSettingsBooleanProperty {} },
         idleSeedingLimit = rememberTremotesfIntegerNumberInputFieldState(),
+        backgroundRpcRequestsErrors = remember { Channel() }
     )
 }

@@ -5,8 +5,6 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.Manifest
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,10 +95,8 @@ class AddTorrentFileFragment : ComposeFragment() {
                 savedStateHandle = createSavedStateHandle()
             )
         }
-        val activity = checkNotNull(LocalActivity.current) as ComponentActivity
         AddTorrentFileScreen(
             navigateUp = navController::navigateUp,
-            performBackPress = activity.onBackPressedDispatcher::onBackPressed,
             navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
 
             needStoragePermission = model.needStoragePermission,
@@ -122,6 +118,7 @@ class AddTorrentFileFragment : ComposeFragment() {
             addTorrentState = model.addTorrentState,
             onMergeTrackersDialogResult = model::onMergeTrackersDialogResult
         )
+        HandleTerminalAddTorrentState(model.addTorrentState, navController, requireActivity())
     }
 }
 
@@ -129,7 +126,6 @@ class AddTorrentFileFragment : ComposeFragment() {
 @Composable
 private fun AddTorrentFileScreen(
     navigateUp: () -> Unit,
-    performBackPress: () -> Unit,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
 
     needStoragePermission: Boolean,
@@ -288,12 +284,16 @@ private fun AddTorrentFileScreen(
 
         when (loadingState.value) {
             is LoadingState.Loaded, is LoadingState.Aborted -> {
-                HandleAddTorrentState(
-                    addTorrentState = addTorrentState.value,
-                    mergeDialogCancellable = false,
-                    onMergeTrackersDialogResult = onMergeTrackersDialogResult,
-                    performBackPress = performBackPress
-                )
+                val showMergingTrackersDialog: AddTorrentState.AskForMergingTrackers? by remember {
+                    derivedStateOf { addTorrentState.value as? AddTorrentState.AskForMergingTrackers }
+                }
+                showMergingTrackersDialog?.let {
+                    MergingTrackersDialog(
+                        torrentName = it.torrentName,
+                        cancellable = false,
+                        onMergeTrackersDialogResult = onMergeTrackersDialogResult
+                    )
+                }
             }
 
             else -> Unit
@@ -460,7 +460,6 @@ private fun AddTorrentFileScreenPreview() = ScreenPreview {
 
     AddTorrentFileScreen(
         navigateUp = {},
-        performBackPress = {},
         navigateToDetailedErrorDialog = {},
 
         needStoragePermission = false,

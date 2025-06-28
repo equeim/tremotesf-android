@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
@@ -60,6 +62,7 @@ class QueueFragment : ComposeFragment() {
             seedQueueSize = model.seedQueueSize,
             ignoreQueueIfIdle = model.ignoreQueueIfIdle,
             ignoreQueueIfIdleFor = model.ignoreQueueIfIdleFor,
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 }
@@ -109,12 +112,14 @@ private fun ServerSettingsQueueScreen(
     seedQueueSize: TremotesfIntegerNumberInputFieldState,
     ignoreQueueIfIdle: ServerSettingsProperty<Boolean>,
     ignoreQueueIfIdleFor: TremotesfIntegerNumberInputFieldState,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     ServerSettingsCategory(
         title = R.string.server_settings_queue,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
+        backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSwitchWithText(
             checked = downloadQueueEnabled.value,
@@ -173,5 +178,6 @@ private fun ServerSettingsQueueScreenPreview() = ScreenPreview {
         seedQueueSize = rememberTremotesfIntegerNumberInputFieldState(),
         ignoreQueueIfIdle = remember { ServerSettingsBooleanProperty {} },
         ignoreQueueIfIdleFor = rememberTremotesfIntegerNumberInputFieldState(),
+        backgroundRpcRequestsErrors = remember { Channel() }
     )
 }

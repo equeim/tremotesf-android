@@ -21,6 +21,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -43,10 +45,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
@@ -58,6 +62,7 @@ import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.Pause
+import org.equeim.tremotesf.ui.ShowRpcErrorsSnackbar
 import org.equeim.tremotesf.ui.TorrentRenameDialog
 import org.equeim.tremotesf.ui.TorrentsRemoveDialog
 import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltip
@@ -95,10 +100,12 @@ class TorrentPropertiesFragment : ComposeFragment() {
                 )
             },
             navigateToSetLocationDialog = { location ->
-                navController.safeNavigate(TorrentPropertiesFragmentDirections.toTorrentsSetLocationDialog(
-                    torrentHashStrings = arrayOf(args.torrentHashString),
-                    location = location
-                ))
+                navController.safeNavigate(
+                    TorrentPropertiesFragmentDirections.toTorrentsSetLocationDialog(
+                        torrentHashStrings = arrayOf(args.torrentHashString),
+                        location = location
+                    )
+                )
             },
 
             torrentDetails = model.torrentDetails.collectAsStateWithLifecycle(),
@@ -115,7 +122,9 @@ class TorrentPropertiesFragment : ComposeFragment() {
             limits = model.limits,
             torrentLimitsOperations = model.torrentLimitsOperations,
 
-            quickReturnEnabled = model.quickReturnEnabled::value
+            quickReturnEnabled = model.quickReturnEnabled::value,
+
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 }
@@ -142,7 +151,9 @@ private fun TorrentPropertiesScreen(
     limits: StateFlow<RpcRequestState<TorrentLimits>>,
     torrentLimitsOperations: TorrentLimitsOperations,
 
-    quickReturnEnabled: () -> Boolean
+    quickReturnEnabled: () -> Boolean,
+
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pagerState = rememberPagerState { Tab.entries.size }
@@ -163,7 +174,11 @@ private fun TorrentPropertiesScreen(
 
     val toolbarClicked = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Column {
                 val loadedTorrentDetails = remember {

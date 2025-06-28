@@ -4,8 +4,6 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -82,10 +80,8 @@ class AddTorrentLinkFragment : ComposeFragment() {
                 checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
             )
         }
-        val activity = checkNotNull(LocalActivity.current) as ComponentActivity
         AddTorrentLinkScreen(
             navigateUp = navController::navigateUp,
-            performBackPress = { activity.onBackPressedDispatcher.onBackPressed() },
             navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             initialRpcInputsRequestState = model.initialRpcInputs.collectAsStateWithLifecycle(),
             torrentLink = model.torrentLink,
@@ -103,6 +99,7 @@ class AddTorrentLinkFragment : ComposeFragment() {
             shouldStartDragAndDrop = model::shouldStartDragAndDrop,
             dragAndDropTarget = model
         )
+        HandleTerminalAddTorrentState(model.addTorrentState, navController, requireActivity())
     }
 }
 
@@ -110,7 +107,6 @@ class AddTorrentLinkFragment : ComposeFragment() {
 @Composable
 private fun AddTorrentLinkScreen(
     navigateUp: () -> Unit,
-    performBackPress: () -> Unit,
     initialRpcInputsRequestState: State<RpcRequestState<*>>,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     torrentLink: MutableState<String>,
@@ -248,12 +244,16 @@ private fun AddTorrentLinkScreen(
         }
     }
 
-    HandleAddTorrentState(
-        addTorrentState = addTorrentState.value,
-        mergeDialogCancellable = true,
-        onMergeTrackersDialogResult = onMergeTrackersDialogResult,
-        performBackPress = performBackPress
-    )
+    val showMergingTrackersDialog: AddTorrentState.AskForMergingTrackers? by remember {
+        derivedStateOf { addTorrentState.value as? AddTorrentState.AskForMergingTrackers }
+    }
+    showMergingTrackersDialog?.let {
+        MergingTrackersDialog(
+            torrentName = it.torrentName,
+            cancellable = true,
+            onMergeTrackersDialogResult = onMergeTrackersDialogResult
+        )
+    }
 }
 
 @Preview
@@ -261,7 +261,6 @@ private fun AddTorrentLinkScreen(
 private fun AddTorrentLinkScreenPreview() = ScreenPreview {
     AddTorrentLinkScreen(
         navigateUp = {},
-        performBackPress = {},
         initialRpcInputsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateToDetailedErrorDialog = {},
         torrentLink = remember { mutableStateOf("") },

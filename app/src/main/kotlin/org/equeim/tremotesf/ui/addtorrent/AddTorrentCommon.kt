@@ -4,10 +4,10 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
+import android.content.Context
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -34,12 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
+import androidx.navigation.NavController
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.Dimens
-import org.equeim.tremotesf.ui.NavigationActivityViewModel
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.addtorrent.BaseAddTorrentModel.DownloadDirectoryFreeSpace
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
@@ -48,6 +49,7 @@ import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
 import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 
 @Composable
@@ -94,6 +96,7 @@ fun ColumnScope.CommonAddTorrentParameters(
             is DownloadDirectoryFreeSpace.FreeSpace -> remember(formatter, freeSpace) {
                 context.getString(R.string.free_space, formatter.formatFileSize(freeSpace.size))
             }
+
             is DownloadDirectoryFreeSpace.Error -> stringResource(R.string.free_space_error)
         }
         Text(
@@ -164,72 +167,65 @@ sealed interface AddTorrentState : Parcelable {
 }
 
 @Composable
-fun HandleAddTorrentState(
-    addTorrentState: AddTorrentState?,
-    mergeDialogCancellable: Boolean,
-    onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,
-    performBackPress: () -> Unit
+fun HandleTerminalAddTorrentState(state: State<AddTorrentState?>, navController: NavController, activity: ComponentActivity) {
+    val performBackPress = { activity.onBackPressedDispatcher.onBackPressed() }
+    when (val state = state.value) {
+        is AddTorrentState.AddedTorrent ->
+            LaunchedEffect(null) { performBackPress() }
+
+        is AddTorrentState.DidNotMergeTrackers -> LaunchedEffect(null) {
+            if (state.showMessage) {
+                showMergingTrackersMessage(
+                    navController,
+                    activity,
+                    MergingTrackersMessage(merging = false, torrentName = state.torrentName)
+                )
+            }
+            performBackPress()
+        }
+
+        is AddTorrentState.MergedTrackers -> LaunchedEffect(null) {
+            if (state.showMessage) {
+                showMergingTrackersMessage(
+                    navController,
+                    activity,
+                    MergingTrackersMessage(merging = true, torrentName = state.torrentName)
+                )
+            }
+            performBackPress()
+        }
+
+        else -> Unit
+    }
+}
+
+data class MergingTrackersMessage(private val merging: Boolean, val torrentName: String) {
+    val stringId: Int
+        get() = if (merging) R.string.torrent_duplicate_merging_trackers else R.string.torrent_duplicate_not_merging_trackers
+}
+
+private fun showMergingTrackersMessage(
+    navController: NavController,
+    context: Context,
+    message: MergingTrackersMessage
 ) {
-    when (addTorrentState) {
-        is AddTorrentState.AskForMergingTrackers -> {
-            MergingTrackersDialog(
-                torrentName = addTorrentState.torrentName,
-                cancellable = mergeDialogCancellable,
-                onMergeTrackersDialogResult = onMergeTrackersDialogResult
-            )
-        }
-
-        is AddTorrentState.AddedTorrent -> LaunchedEffect(Unit) { performBackPress() }
-
-        is AddTorrentState.MergedTrackers -> {
-            val activity = checkNotNull(LocalActivity.current) as ComponentActivity
-            val activityModel = viewModel<NavigationActivityViewModel>(viewModelStoreOwner = activity)
-            LaunchedEffect(Unit) {
-                val inOurOwnTask = activity.isTaskRoot
-                if (inOurOwnTask) {
-                    activityModel.showSnackbarMessage(
-                        R.string.torrent_duplicate_merging_trackers,
-                        addTorrentState.torrentName
-                    )
-                } else {
-                    Toast.makeText(
-                        activity,
-                        activity.getString(
-                            R.string.torrent_duplicate_merging_trackers,
-                            addTorrentState.torrentName
-                        ),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                performBackPress()
-            }
-        }
-
-        is AddTorrentState.DidNotMergeTrackers -> {
-            val activity = checkNotNull(LocalActivity.current) as ComponentActivity
-            val activityModel = viewModel<NavigationActivityViewModel>(viewModelStoreOwner = activity)
-            LaunchedEffect(Unit) {
-                val inOurOwnTask = activity.isTaskRoot
-                if (inOurOwnTask) {
-                    activityModel.showSnackbarMessage(
-                        R.string.torrent_duplicate_not_merging_trackers,
-                        addTorrentState.torrentName
-                    )
-                } else {
-                    Toast.makeText(
-                        activity,
-                        activity.getString(
-                            R.string.torrent_duplicate_not_merging_trackers,
-                            addTorrentState.torrentName
-                        ),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                performBackPress()
-            }
-        }
-
-        is AddTorrentState.CheckingIfTorrentExists, null -> Unit
+    val torrentsListScreenViewModel = try {
+        ViewModelProvider.create(navController.getBackStackEntry(R.id.torrents_list_fragment))
+            .get<TorrentsListFragmentViewModel>()
+    } catch (_: IllegalArgumentException) {
+        null
+    }
+    if (torrentsListScreenViewModel != null) {
+        torrentsListScreenViewModel.showMergingTrackersMessage.value = message
+    } else {
+        Toast.makeText(
+            context,
+            context.getString(
+                message.stringId,
+                message.torrentName
+            ),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 
@@ -243,7 +239,7 @@ sealed interface MergeTrackersDialogResult {
 }
 
 @Composable
-private fun MergingTrackersDialog(
+fun MergingTrackersDialog(
     torrentName: String,
     cancellable: Boolean,
     onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,

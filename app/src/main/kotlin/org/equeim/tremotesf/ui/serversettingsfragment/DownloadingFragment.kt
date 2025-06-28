@@ -22,6 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
@@ -57,6 +59,7 @@ class DownloadingFragment : ComposeFragment() {
             renameIncompleteTorrents = model.renameIncompleteFiles,
             incompleteDirectoryEnabled = model.incompleteDirectoryEnabled,
             incompleteDirectory = model.incompleteDirectory,
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 }
@@ -99,12 +102,14 @@ private fun ServerSettingsDownloadingScreen(
     renameIncompleteTorrents: ServerSettingsProperty<Boolean>,
     incompleteDirectoryEnabled: ServerSettingsProperty<Boolean>,
     incompleteDirectory: ServerSettingsProperty<String>,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     ServerSettingsCategory(
         title = R.string.server_settings_downloading,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
+        backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         OutlinedTextField(
             value = downloadDirectory.value,
@@ -158,5 +163,6 @@ private fun ServerSettingsDownloadingScreenPreview() = ScreenPreview {
         renameIncompleteTorrents = remember { ServerSettingsBooleanProperty {} },
         incompleteDirectoryEnabled = remember { ServerSettingsBooleanProperty {} },
         incompleteDirectory = remember { ServerSettingsStringProperty {} },
+        backgroundRpcRequestsErrors = remember { Channel() }
     )
 }

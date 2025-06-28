@@ -19,6 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
@@ -70,7 +72,8 @@ class NetworkFragment : ComposeFragment() {
             useDHT = model.useDHT,
             useLPD = model.useLPD,
             maximumPeersPerTorrent = model.maximumPeersPerTorrent,
-            maximumPeersGlobally = model.maximumPeersGlobally
+            maximumPeersGlobally = model.maximumPeersGlobally,
+            backgroundRpcRequestsErrors = GlobalRpcClient.backgroundRpcRequestsErrors
         )
     }
 }
@@ -90,13 +93,15 @@ private fun ServerSettingsNetworkScreen(
     useDHT: ServerSettingsProperty<Boolean>,
     useLPD: ServerSettingsProperty<Boolean>,
     maximumPeersPerTorrent: TremotesfIntegerNumberInputFieldState,
-    maximumPeersGlobally: TremotesfIntegerNumberInputFieldState
+    maximumPeersGlobally: TremotesfIntegerNumberInputFieldState,
+    backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>
 ) {
     ServerSettingsCategory(
         title = R.string.server_settings_network,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
+        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
+        backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSectionHeader(R.string.connection, modifier = Modifier.padding(horizontal = horizontalPadding))
         TremotesfNumberInputField(
@@ -211,7 +216,8 @@ private fun ServerSettingsNetworkScreenPreview() = ScreenPreview {
         useDHT = remember { ServerSettingsBooleanProperty {} },
         useLPD = remember { ServerSettingsBooleanProperty {} },
         maximumPeersPerTorrent = rememberTremotesfIntegerNumberInputFieldState(),
-        maximumPeersGlobally = rememberTremotesfIntegerNumberInputFieldState()
+        maximumPeersGlobally = rememberTremotesfIntegerNumberInputFieldState(),
+        backgroundRpcRequestsErrors = remember { Channel() }
     )
 }
 
