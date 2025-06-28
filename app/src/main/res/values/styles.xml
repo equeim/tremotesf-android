@@ -7,13 +7,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
-        <item name="windowActionModeOverlay">true</item>
+
+    <style name="BaseAppTheme" parent="android:Theme.Material.NoActionBar" />
+
+    <style name="AppTheme" parent="BaseAppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/navigation_bar_color</item>
-        <item name="android:windowLightStatusBar">@bool/light_system_bars
+        <item name="android:windowLightStatusBar">@bool/is_light_theme
         </item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/light_system_bars
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">@bool/is_light_theme
         </item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <!--       Android removes background from our icon on splash screen. Override windowSplashScreenIconBackgroundColor to fix it -->
@@ -21,77 +23,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
             @color/ic_launcher_background
         </item>
 
-        <item name="colorPrimary">@color/theme_red_primary</item>
-        <item name="colorOnPrimary">@color/theme_red_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/theme_red_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/theme_red_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/theme_red_secondary</item>
-        <item name="colorOnSecondary">@color/theme_red_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/theme_red_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/theme_red_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/theme_red_tertiary</item>
-        <item name="colorOnTertiary">@color/theme_red_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/theme_red_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/theme_red_onTertiaryContainer</item>
-        <item name="colorError">@color/theme_red_error</item>
-        <item name="colorErrorContainer">@color/theme_red_errorContainer</item>
-        <item name="colorOnError">@color/theme_red_onError</item>
-        <item name="colorOnErrorContainer">@color/theme_red_onErrorContainer</item>
-        <item name="android:colorBackground">@color/theme_red_background</item>
-        <item name="colorOnBackground">@color/theme_red_onBackground</item>
-        <item name="colorSurface">@color/theme_red_surface</item>
-        <item name="colorSurfaceContainerLowest">?colorSurface</item>
-        <item name="colorSurfaceContainerLow">@color/theme_red_surfaceContainerLow</item>
-        <item name="colorSurfaceContainer">@color/theme_red_surfaceContainer</item>
-        <item name="colorSurfaceContainerHigh">@color/theme_red_surfaceContainerHigh</item>
-        <item name="colorSurfaceContainerHighest">@color/theme_red_surfaceVariant</item>
-        <item name="colorOnSurface">@color/theme_red_onSurface</item>
-        <item name="colorSurfaceVariant">@color/theme_red_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/theme_red_onSurfaceVariant</item>
-        <item name="colorOutline">@color/theme_red_outline</item>
-        <item name="colorOnSurfaceInverse">@color/theme_red_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/theme_red_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/theme_red_inversePrimary</item>
-        <item name="android:windowBackground">@color/theme_red_background</item>
+        <!-- Used by WebView's dark mode feature pre-Q -->
+        <item name="isLightTheme">@bool/is_light_theme</item>
 
-        <item name="elevationOverlayColor">@android:color/white</item>
-    </style>
-
-    <style name="AppTheme.Teal">
-        <item name="colorPrimary">@color/theme_teal_primary</item>
-        <item name="colorOnPrimary">@color/theme_teal_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/theme_teal_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/theme_teal_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/theme_teal_secondary</item>
-        <item name="colorOnSecondary">@color/theme_teal_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/theme_teal_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/theme_teal_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/theme_teal_tertiary</item>
-        <item name="colorOnTertiary">@color/theme_teal_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/theme_teal_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/theme_teal_onTertiaryContainer</item>
-        <item name="colorError">@color/theme_teal_error</item>
-        <item name="colorErrorContainer">@color/theme_teal_errorContainer</item>
-        <item name="colorOnError">@color/theme_teal_onError</item>
-        <item name="colorOnErrorContainer">@color/theme_teal_onErrorContainer</item>
-        <item name="android:colorBackground">@color/theme_teal_background</item>
-        <item name="colorOnBackground">@color/theme_teal_onBackground</item>
-        <item name="colorSurface">@color/theme_teal_surface</item>
-        <item name="colorSurfaceContainerLow">@color/theme_teal_surfaceContainerLow</item>
-        <item name="colorSurfaceContainer">@color/theme_teal_surfaceContainer</item>
-        <item name="colorSurfaceContainerHigh">@color/theme_teal_surfaceContainerHigh</item>
-        <item name="colorSurfaceContainerHighest">@color/theme_teal_surfaceVariant</item>
-        <item name="colorOnSurface">@color/theme_teal_onSurface</item>
-        <item name="colorSurfaceVariant">@color/theme_teal_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/theme_teal_onSurfaceVariant</item>
-        <item name="colorOutline">@color/theme_teal_outline</item>
-        <item name="colorOnSurfaceInverse">@color/theme_teal_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/theme_teal_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/theme_teal_inversePrimary</item>
-        <item name="android:windowBackground">@color/theme_teal_background</item>
-    </style>
-
-    <style name="AppTheme.Splash" parent="@style/AppTheme">
-        <item name="android:windowBackground">@color/theme_red_background_night</item>
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 </resources>

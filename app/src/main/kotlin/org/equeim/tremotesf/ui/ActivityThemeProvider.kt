@@ -4,7 +4,9 @@
 
 package org.equeim.tremotesf.ui
 
-import androidx.appcompat.app.AppCompatDelegate
+import android.app.UiModeManager
+import android.os.Build
+import androidx.core.content.getSystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
+import org.equeim.tremotesf.TremotesfApplication
 import timber.log.Timber
 
 object ActivityThemeProvider {
@@ -45,12 +48,21 @@ object ActivityThemeProvider {
         darkThemeMode = Settings.darkThemeMode.flow()
             .stateIn(coroutineScope, SharingStarted.Eagerly, initialDarkThemeMode)
 
-        AppCompatDelegate.setDefaultNightMode(initialDarkThemeMode.nightMode)
-        darkThemeMode.dropWhile { it == initialDarkThemeMode }.onEach {
-            Timber.i("Dark theme mode changed to $it")
-            AppCompatDelegate.setDefaultNightMode(it.nightMode)
-        }.launchIn(coroutineScope)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val uiModeManager = checkNotNull(TremotesfApplication.instance.getSystemService<UiModeManager>())
+            darkThemeMode.dropWhile { it == initialDarkThemeMode }.onEach {
+                Timber.i("Dark theme mode changed to $it, set night mode")
+                uiModeManager.setApplicationNightMode(it.nightMode)
+            }.launchIn(coroutineScope)
+        }
 
         Timber.i("init() returned")
     }
+
+    private val Settings.DarkThemeMode.nightMode: Int
+        get() = when (this) {
+            Settings.DarkThemeMode.Auto -> UiModeManager.MODE_NIGHT_AUTO
+            Settings.DarkThemeMode.On -> UiModeManager.MODE_NIGHT_YES
+            Settings.DarkThemeMode.Off -> UiModeManager.MODE_NIGHT_NO
+        }
 }

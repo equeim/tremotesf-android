@@ -91,7 +91,6 @@ dependencies {
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.annotation)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.runtime)
@@ -99,7 +98,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.navigation.fragment)
-    implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.window)
     implementation(libs.androidx.work.runtime)
@@ -111,7 +109,6 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.materialIconsCore)
 
-    implementation(libs.material)
     implementation(libs.composeGrid)
     implementation(libs.fastscroller)
     implementation(libs.timber)

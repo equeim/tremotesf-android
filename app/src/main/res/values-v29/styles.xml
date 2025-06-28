@@ -7,6 +7,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources>
-
-    <style name="AppTheme.Splash" parent="@style/AppTheme" />
+    <style name="BaseAppTheme" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

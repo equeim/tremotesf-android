@@ -7,13 +7,17 @@ package org.equeim.tremotesf.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.PredictiveBackControl
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +27,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -33,13 +36,20 @@ import org.equeim.tremotesf.ui.utils.hideKeyboard
 import timber.log.Timber
 
 
-class NavigationActivity : AppCompatActivity() {
+class NavigationActivity : FragmentActivity() {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
         fun finishAllActivities() = createdActivities.apply {
             forEach(Activity::finishAndRemoveTask)
             clear()
+        }
+
+        private fun Configuration.nightModeString(): String? = when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> "YES"
+            Configuration.UI_MODE_NIGHT_NO -> "NO"
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> "UNDEFINED"
+            else -> null
         }
     }
 
@@ -48,6 +58,30 @@ class NavigationActivity : AppCompatActivity() {
     private lateinit var binding: NavigationActivityBinding
 
     private lateinit var navController: NavController
+
+    private lateinit var initialDarkThemeMode: Settings.DarkThemeMode
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            initialDarkThemeMode = ActivityThemeProvider.darkThemeMode.value
+            when (initialDarkThemeMode) {
+                Settings.DarkThemeMode.On, Settings.DarkThemeMode.Off -> {
+                    Timber.d("Overriding night mode for dark theme mode $initialDarkThemeMode")
+                    val config = Configuration()
+                    config.uiMode = if (initialDarkThemeMode == Settings.DarkThemeMode.On) {
+                        Configuration.UI_MODE_NIGHT_YES
+                    } else {
+                        Configuration.UI_MODE_NIGHT_NO
+                    }
+                    applyOverrideConfiguration(config)
+                }
+
+                Settings.DarkThemeMode.Auto ->
+                    Timber.d("Not overriding night mode for dark theme mode $initialDarkThemeMode")
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
@@ -61,7 +95,9 @@ class NavigationActivity : AppCompatActivity() {
         createdActivities.add(this)
         AppForegroundTracker.registerActivity(this)
 
-        applyColorTheme()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        Timber.d("Night mode is ${resources.configuration.nightModeString()}")
+
         overrideIntentWithDeepLink()
 
         binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
@@ -76,24 +112,15 @@ class NavigationActivity : AppCompatActivity() {
 
         ForegroundService.startStopAutomatically()
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            lifecycleScope.launch {
+                val newMode = ActivityThemeProvider.darkThemeMode.first { it != initialDarkThemeMode }
+                Timber.d("Dark theme mode changed to $newMode, recreating activity")
+                ActivityCompat.recreate(this@NavigationActivity)
+            }
+        }
+
         Timber.i("onCreate: return")
-    }
-
-    private fun applyColorTheme() {
-        val colorTheme = ActivityThemeProvider.colorTheme.value
-        if (colorTheme == Settings.ColorTheme.System) {
-            Timber.i("Applying dynamic colors")
-            DynamicColors.applyToActivityIfAvailable(this@NavigationActivity)
-        } else {
-            Timber.i("Setting color theme $colorTheme")
-            setTheme(colorTheme.activityThemeResId)
-        }
-
-        lifecycleScope.launch {
-            val newColorTheme = ActivityThemeProvider.colorTheme.first { it != colorTheme }
-            Timber.i("Color theme changed to $newColorTheme, recreating activity")
-            recreate()
-        }
     }
 
     private fun overrideIntentWithDeepLink() {
@@ -210,8 +237,8 @@ class NavHostFragment : NavHostFragment() {
         private fun NavOptions.overridePopAnimations() =
             NavOptions.Builder()
                 .apply {
-                    setPopEnterAnim(popEnterAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_enter_anim))
-                    setPopExitAnim(popExitAnim.orDefault(androidx.navigation.ui.R.animator.nav_default_pop_exit_anim))
+                    setPopEnterAnim(popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
+                    setPopExitAnim(popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
                     setEnterAnim(enterAnim)
                     setExitAnim(exitAnim)
                     setLaunchSingleTop(shouldLaunchSingleTop())

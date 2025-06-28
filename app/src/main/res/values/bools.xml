@@ -7,5 +7,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources>
-    <bool name="light_system_bars">true</bool>
+    <bool name="is_light_theme">true</bool>
 </resources>

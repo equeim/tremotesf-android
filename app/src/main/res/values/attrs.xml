@@ -7,9 +7,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <resources>
-    <declare-styleable name="NonFilteringAutoCompleteTextView">
-        <attr name="readOnly" format="boolean" />
-    </declare-styleable>
-
-    <attr name="settingsColorThemeChoiceViewStyle" format="reference" />
+    <attr name="isLightTheme" format="boolean" />
 </resources>

@@ -8,10 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.annotation.StyleRes
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import org.equeim.tremotesf.R
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
@@ -97,7 +93,7 @@ object Settings {
                 }
                 if (
                     (preferences.getString(colorTheme.key, null) == ColorTheme.System.prefsValue)
-                    && !DynamicColors.isDynamicColorAvailable()
+                    && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
                 ) {
                     val newValue = COLOR_THEME_DEFAULT_VALUE.prefsValue
                     Timber.e("Dynamic colors are not supported, setting ${colorTheme.key} value to $newValue")
@@ -119,13 +115,10 @@ object Settings {
         }
     }
 
-    enum class ColorTheme(
-        override val prefsValue: String,
-        @StyleRes val activityThemeResId: Int = 0,
-    ) : MappedPrefsEnum {
+    enum class ColorTheme(override val prefsValue: String) : MappedPrefsEnum {
         System("system"),
-        Red("red", R.style.AppTheme),
-        Teal("teal", R.style.AppTheme_Teal);
+        Red("red"),
+        Teal("teal")
     }
 
     private val COLOR_THEME_DEFAULT_VALUE = ColorTheme.Red
@@ -140,18 +133,10 @@ object Settings {
         mappedToPrefs = ColorTheme::prefsValue
     )
 
-    enum class DarkThemeMode(override val prefsValue: String, val nightMode: Int) :
-        MappedPrefsEnum {
-        Auto(
-            "auto",
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            } else {
-                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-            }
-        ),
-        On("on", AppCompatDelegate.MODE_NIGHT_YES),
-        Off("off", AppCompatDelegate.MODE_NIGHT_NO);
+    enum class DarkThemeMode(override val prefsValue: String) : MappedPrefsEnum {
+        Auto("auto"),
+        On("on"),
+        Off("off")
     }
 
     private val DARK_THEME_MODE_DEFAULT_VALUE = DarkThemeMode.Auto
