@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -101,8 +101,6 @@ class TorrentPropertiesFragment : ComposeFragment() {
                 ))
             },
 
-            onCurrentTabChanged = { model.currentTab.value = it },
-
             torrentDetails = model.torrentDetails.collectAsStateWithLifecycle(),
             shouldShowLabels = model.shouldShowLabels.collectAsStateWithLifecycle(),
 
@@ -111,10 +109,10 @@ class TorrentPropertiesFragment : ComposeFragment() {
             filesTree = model.filesTree,
             filesTreeState = model.filesTreeState,
 
-            trackers = model.trackers.collectAsStateWithLifecycle(),
-            peers = model.peers.collectAsStateWithLifecycle(),
-            webSeeders = model.webSeeders.collectAsStateWithLifecycle(),
-            limits = model.limits.collectAsStateWithLifecycle(),
+            trackers = model.trackers,
+            peers = model.peers,
+            webSeeders = model.webSeeders,
+            limits = model.limits,
             torrentLimitsOperations = model.torrentLimitsOperations,
 
             quickReturnEnabled = model.quickReturnEnabled::value
@@ -130,30 +128,24 @@ private fun TorrentPropertiesScreen(
     navigateToLabelsEditDialog: (enabledLabels: List<String>) -> Unit,
     navigateToSetLocationDialog: (location: String) -> Unit,
 
-    onCurrentTabChanged: (Tab) -> Unit,
-
     torrentDetails: State<RpcRequestState<TorrentDetails>>,
     shouldShowLabels: State<Boolean>,
 
     torrentOperations: TorrentOperations,
 
     filesTree: TorrentFilesTree,
-    filesTreeState: State<TorrentPropertiesFragmentViewModel.FilesTreeState>,
+    filesTreeState: StateFlow<TorrentPropertiesFragmentViewModel.FilesTreeState>,
 
-    trackers: State<RpcRequestState<List<TorrentPropertiesFragmentViewModel.TrackerItem>>>,
-    peers: State<RpcRequestState<List<Peer>>>,
-    webSeeders: State<RpcRequestState<List<String>>>,
-    limits: State<RpcRequestState<TorrentLimits>>,
+    trackers: StateFlow<RpcRequestState<List<TorrentPropertiesFragmentViewModel.TrackerItem>>>,
+    peers: StateFlow<RpcRequestState<List<Peer>>>,
+    webSeeders: StateFlow<RpcRequestState<List<String>>>,
+    limits: StateFlow<RpcRequestState<TorrentLimits>>,
     torrentLimitsOperations: TorrentLimitsOperations,
 
     quickReturnEnabled: () -> Boolean
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pagerState = rememberPagerState { Tab.entries.size }
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { onCurrentTabChanged(Tab.entries[it]) }
-    }
 
     val navigateToLabelsEditDialog = {
         val torrentDetails = (torrentDetails.value as? RpcRequestState.Loaded)?.response
@@ -272,7 +264,7 @@ private fun TorrentPropertiesScreen(
 
                     Tab.Trackers -> TrackersTab(
                         innerPadding = innerPadding,
-                        trackers = trackers.value,
+                        trackers = trackers,
                         toolbarClicked = toolbarClicked,
                         navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
                         torrentOperations = torrentOperations
@@ -280,21 +272,21 @@ private fun TorrentPropertiesScreen(
 
                     Tab.Peers -> PeersTab(
                         innerPadding = innerPadding,
-                        peers = peers.value,
+                        peers = peers,
                         toolbarClicked = toolbarClicked,
                         navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
                     )
 
                     Tab.WebSeeders -> WebSeedersTab(
                         innerPadding = innerPadding,
-                        webSeeders = webSeeders.value,
+                        webSeeders = webSeeders,
                         toolbarClicked = toolbarClicked,
                         navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
                     )
 
                     Tab.Limits -> LimitsTab(
                         innerPadding = innerPadding,
-                        limits = limits.value,
+                        limits = limits,
                         operations = torrentLimitsOperations,
                         navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
                     )
@@ -415,7 +407,7 @@ private fun TopAppBarMenuActions(
     }
 }
 
-enum class Tab {
+private enum class Tab {
     Details,
     Files,
     Trackers,

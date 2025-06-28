@@ -21,6 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
@@ -43,12 +46,13 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun LimitsTab(
     innerPadding: PaddingValues,
-    limits: RpcRequestState<TorrentLimits>,
+    limits: StateFlow<RpcRequestState<TorrentLimits>>,
     operations: TorrentLimitsOperations,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
+    val limits = limits.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
-        requestState = limits,
+        requestState = limits.value,
         onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
@@ -93,7 +97,7 @@ fun LimitsTab(
                 horizontalContentPadding = horizontalPadding
             )
 
-            var downloadSpeedLimit =
+            val downloadSpeedLimit =
                 rememberTremotesfIntegerNumberInputFieldState(limits.downloadSpeedLimit.kiloBytesPerSecond) {
                     operations.setDownloadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it))
                 }
@@ -121,7 +125,7 @@ fun LimitsTab(
                 horizontalContentPadding = horizontalPadding
             )
 
-            var uploadSpeedLimit =
+            val uploadSpeedLimit =
                 rememberTremotesfIntegerNumberInputFieldState(limits.uploadSpeedLimit.kiloBytesPerSecond) {
                     operations.setUploadSpeedLimit(TransferRate.fromKiloBytesPerSecond(it))
                 }
@@ -267,19 +271,21 @@ private fun LimitsTabPreview() = ComponentPreview {
     LimitsTab(
         innerPadding = PaddingValues(),
         limits = remember {
-            RpcRequestState.Loaded(
-                TorrentLimits(
-                    honorsSessionLimits = true,
-                    bandwidthPriority = TorrentLimits.BandwidthPriority.High,
-                    downloadSpeedLimited = true,
-                    downloadSpeedLimit = TransferRate.fromKiloBytesPerSecond(99999),
-                    uploadSpeedLimited = false,
-                    uploadSpeedLimit = TransferRate.fromKiloBytesPerSecond(1),
-                    ratioLimit = 42.0,
-                    ratioLimitMode = TorrentLimits.RatioLimitMode.Single,
-                    idleSeedingLimit = 1000.days,
-                    idleSeedingLimitMode = TorrentLimits.IdleSeedingLimitMode.Single,
-                    peersLimit = 777
+            MutableStateFlow(
+                RpcRequestState.Loaded(
+                    TorrentLimits(
+                        honorsSessionLimits = true,
+                        bandwidthPriority = TorrentLimits.BandwidthPriority.High,
+                        downloadSpeedLimited = true,
+                        downloadSpeedLimit = TransferRate.fromKiloBytesPerSecond(99999),
+                        uploadSpeedLimited = false,
+                        uploadSpeedLimit = TransferRate.fromKiloBytesPerSecond(1),
+                        ratioLimit = 42.0,
+                        ratioLimitMode = TorrentLimits.RatioLimitMode.Single,
+                        idleSeedingLimit = 1000.days,
+                        idleSeedingLimitMode = TorrentLimits.IdleSeedingLimitMode.Single,
+                        peersLimit = 777
+                    )
                 )
             )
         },

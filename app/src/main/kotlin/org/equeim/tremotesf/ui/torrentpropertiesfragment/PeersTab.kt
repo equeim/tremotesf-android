@@ -27,7 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -45,12 +48,13 @@ import java.text.DecimalFormat
 @Composable
 fun PeersTab(
     innerPadding: PaddingValues,
-    peers: RpcRequestState<List<Peer>>,
+    peers: StateFlow<RpcRequestState<List<Peer>>>,
     toolbarClicked: Flow<Unit>,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
+    val peers = peers.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
-        requestState = peers,
+        requestState = peers.value,
         onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
@@ -136,15 +140,17 @@ private fun PeersTabPreview() = ComponentPreview {
     PeersTab(
         innerPadding = PaddingValues(),
         peers = remember {
-            RpcRequestState.Loaded(
-                listOf(
-                    Peer(
-                        address = "127.0.0.1",
-                        client = "MalwareTorrent",
-                        downloadSpeed = TransferRate.fromKiloBytesPerSecond(666),
-                        uploadSpeed = TransferRate.fromKiloBytesPerSecond(42000),
-                        progress = 0.69,
-                        flags = ""
+            MutableStateFlow(
+                RpcRequestState.Loaded(
+                    listOf(
+                        Peer(
+                            address = "127.0.0.1",
+                            client = "MalwareTorrent",
+                            downloadSpeed = TransferRate.fromKiloBytesPerSecond(666),
+                            uploadSpeed = TransferRate.fromKiloBytesPerSecond(42000),
+                            progress = 0.69,
+                            flags = ""
+                        )
                     )
                 )
             )

@@ -23,7 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -37,12 +40,13 @@ import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 @Composable
 fun WebSeedersTab(
     innerPadding: PaddingValues,
-    webSeeders: RpcRequestState<List<String>>,
+    webSeeders: StateFlow<RpcRequestState<List<String>>>,
     toolbarClicked: Flow<Unit>,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
+    val webSeeders = webSeeders.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
-        requestState = webSeeders,
+        requestState = webSeeders.value,
         onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
@@ -94,7 +98,7 @@ fun WebSeedersTab(
 private fun WebSeedersTabPreview() = ComponentPreview {
     WebSeedersTab(
         innerPadding = PaddingValues(),
-        webSeeders = remember { RpcRequestState.Loaded(listOf("http://example.com")) },
+        webSeeders = remember { MutableStateFlow(RpcRequestState.Loaded(listOf("http://example.com"))) },
         toolbarClicked = remember { emptyFlow() },
         navigateToDetailedErrorDialog = {}
     )

@@ -5,7 +5,6 @@
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
 import androidx.annotation.StringRes
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,16 +20,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.hasSubscribersDebounced
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
@@ -97,8 +94,6 @@ class TorrentPropertiesFragmentViewModel(
 
     var shouldNavigateUp: Boolean by mutableStateOf(false)
         private set
-
-    val currentTab = MutableStateFlow<Tab?>(null)
 
     val torrentOperations: TorrentOperations = object : TorrentOperations {
         val details: TorrentDetails? get() = (torrentDetails.value as? RpcRequestState.Loaded)?.response
@@ -228,8 +223,8 @@ class TorrentPropertiesFragmentViewModel(
         data class Error(val error: RpcRequestError) : FilesTreeState
     }
 
-    private val _filesTreeState = mutableStateOf<FilesTreeState>(FilesTreeState.Loading)
-    val filesTreeState: State<FilesTreeState> by ::_filesTreeState
+    private val _filesTreeState = MutableStateFlow<FilesTreeState>(FilesTreeState.Loading)
+    val filesTreeState: StateFlow<FilesTreeState> by ::_filesTreeState
 
     data class TrackerItem(
         val tracker: Tracker,
@@ -241,7 +236,6 @@ class TorrentPropertiesFragmentViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val trackers: StateFlow<RpcRequestState<List<TrackerItem>>> = GlobalRpcClient.performPeriodicRequest(
         manualRefreshRequests = trackersRefreshRequests,
-        shouldRefreshPeriodically = currentTab.map { it == Tab.Trackers }.distinctUntilChanged()
     ) { getTorrentTrackers(torrentHashString) }.transformLatest {
         when (it) {
             is RpcRequestState.Loaded -> processTrackers(it.response)
@@ -250,21 +244,16 @@ class TorrentPropertiesFragmentViewModel(
         }
     }.stateIn(GlobalRpcClient, viewModelScope)
 
-    val peers: StateFlow<RpcRequestState<List<Peer>>> = GlobalRpcClient.performPeriodicRequest(
-        shouldRefreshPeriodically = currentTab.map { it == Tab.Peers }.distinctUntilChanged()
-    ) {
+    val peers: StateFlow<RpcRequestState<List<Peer>>> = GlobalRpcClient.performPeriodicRequest {
         getTorrentPeers(torrentHashString)
     }.stateIn(GlobalRpcClient, viewModelScope)
 
-    val webSeeders: StateFlow<RpcRequestState<List<String>>> = GlobalRpcClient.performPeriodicRequest(
-        shouldRefreshPeriodically = currentTab.map { it == Tab.WebSeeders }.distinctUntilChanged()
-    ) {
+    val webSeeders: StateFlow<RpcRequestState<List<String>>> = GlobalRpcClient.performPeriodicRequest {
         getTorrentWebSeeders(torrentHashString)
     }.stateIn(GlobalRpcClient, viewModelScope)
 
-    val limits: StateFlow<RpcRequestState<TorrentLimits>> = flow {
-        currentTab.first { it == Tab.Limits }
-        emitAll(GlobalRpcClient.performRecoveringRequest { getTorrentLimits(torrentHashString) })
+    val limits: StateFlow<RpcRequestState<TorrentLimits>> = GlobalRpcClient.performRecoveringRequest {
+        getTorrentLimits(torrentHashString)
     }.stateIn(GlobalRpcClient, viewModelScope)
 
     val torrentLimitsOperations: TorrentLimitsOperations = object : TorrentLimitsOperations {
@@ -321,48 +310,48 @@ class TorrentPropertiesFragmentViewModel(
 
     init {
         viewModelScope.launch {
-            @OptIn(ExperimentalCoroutinesApi::class)
-            GlobalRpcClient.performPeriodicRequest(
-                shouldRefreshPeriodically = currentTab.map { it == Tab.Files }.distinctUntilChanged()
-            ) {
-                getTorrentFiles(torrentHashString)
-            }.collect { requestState ->
-                when (requestState) {
-                    is RpcRequestState.Loading -> {
-                        if (_filesTreeState.value is FilesTreeState.Error) {
-                            _filesTreeState.value = FilesTreeState.Loading
-                        }
-                    }
-
-                    is RpcRequestState.Loaded -> {
-                        val files = requestState.response
-                        when (val state = _filesTreeState.value) {
-                            is FilesTreeState.Loading, is FilesTreeState.Error -> {
-                                if (!files.files.isEmpty()) {
-                                    filesTree.createTree(
-                                        rpcFiles = files,
-                                        savedStateHandle = savedStateHandle
-                                    )
-                                    _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = true)
-                                } else {
-                                    _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = false)
-                                }
-                            }
-
-                            is FilesTreeState.Loaded -> {
-                                if (!state.torrentHasFiles && !files.files.isEmpty()) {
-                                    _filesTreeState.value = FilesTreeState.Loading
-                                    filesTree.createTree(files, savedStateHandle)
-                                } else {
-                                    filesTree.updateTree(files)
-                                }
+            _filesTreeState.hasSubscribersDebounced().collectLatest { hasSubscribers ->
+                if (!hasSubscribers) return@collectLatest
+                GlobalRpcClient.performPeriodicRequest {
+                    getTorrentFiles(torrentHashString)
+                }.collect { requestState ->
+                    when (requestState) {
+                        is RpcRequestState.Loading -> {
+                            if (_filesTreeState.value is FilesTreeState.Error) {
+                                _filesTreeState.value = FilesTreeState.Loading
                             }
                         }
-                    }
 
-                    is RpcRequestState.Error -> {
-                        _filesTreeState.value = FilesTreeState.Error(requestState.error)
-                        filesTree.reset()
+                        is RpcRequestState.Loaded -> {
+                            val files = requestState.response
+                            when (val state = _filesTreeState.value) {
+                                is FilesTreeState.Loading, is FilesTreeState.Error -> {
+                                    if (!files.files.isEmpty()) {
+                                        filesTree.createTree(
+                                            rpcFiles = files,
+                                            savedStateHandle = savedStateHandle
+                                        )
+                                        _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = true)
+                                    } else {
+                                        _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = false)
+                                    }
+                                }
+
+                                is FilesTreeState.Loaded -> {
+                                    if (!state.torrentHasFiles && !files.files.isEmpty()) {
+                                        _filesTreeState.value = FilesTreeState.Loading
+                                        filesTree.createTree(files, savedStateHandle)
+                                    } else {
+                                        filesTree.updateTree(files)
+                                    }
+                                }
+                            }
+                        }
+
+                        is RpcRequestState.Error -> {
+                            _filesTreeState.value = FilesTreeState.Error(requestState.error)
+                            filesTree.reset()
+                        }
                     }
                 }
             }

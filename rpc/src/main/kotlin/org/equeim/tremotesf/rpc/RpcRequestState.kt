@@ -17,9 +17,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
@@ -103,12 +104,9 @@ private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> RpcClient.performPeriodicRequest(
     manualRefreshRequests: Flow<*> = emptyFlow<Unit>(),
-    shouldRefreshPeriodically: Flow<Boolean> = flowOf(true),
     performRequest: suspend RpcClient.() -> T,
 ): Flow<RpcRequestState<T>> {
-    val refreshInterval = combine(getConnectionConfiguration(), shouldRefreshPeriodically) { configuration, shouldRefresh ->
-        if (shouldRefresh) configuration?.getOrNull()?.updateInterval else null
-    }
+    val refreshInterval = getConnectionConfiguration().map { it?.getOrNull()?.updateInterval }.distinctUntilChanged()
     val periodicRefreshRequests = refreshInterval.transformLatest { interval ->
         if (interval != null) {
             while (currentCoroutineContext().isActive) {
@@ -140,6 +138,7 @@ fun <T> Flow<RpcRequestState<T>>.stateIn(
     coroutineScope: CoroutineScope,
     coroutineContext: CoroutineContext = EmptyCoroutineContext
 ): StateFlow<RpcRequestState<T>> {
+    @Suppress("UnusedFlow")
     val originalFlow = this
     val stateFlow = MutableStateFlow<RpcRequestState<T>>(
         getInitialNonRecoverableError(

@@ -55,7 +55,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
@@ -82,13 +85,14 @@ import java.time.Instant
 @Composable
 fun TrackersTab(
     innerPadding: PaddingValues,
-    trackers: RpcRequestState<List<TrackerItem>>,
+    trackers: StateFlow<RpcRequestState<List<TrackerItem>>>,
     toolbarClicked: Flow<Unit>,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     torrentOperations: TorrentOperations
 ) {
+    val trackers = trackers.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
-        requestState = trackers,
+        requestState = trackers.value,
         onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
@@ -391,23 +395,25 @@ private fun TrackersTabPreview() = ComponentPreview {
     TrackersTab(
         innerPadding = PaddingValues(),
         trackers = remember {
-            RpcRequestState.Loaded(
-                listOf(
-                    TrackerItem(
-                        tracker = Tracker(
-                            id = 0,
-                            announceUrl = "http://example.com",
-                            status = Tracker.Status.WaitingForUpdate,
-                            lastAnnounceSucceeded = false,
-                            lastAnnounceTime = Instant.EPOCH,
-                            lastAnnounceResult = "lol",
-                            peers = 44,
-                            seeders = 11,
-                            leechers = 33,
-                            nextUpdateTime = Instant.EPOCH,
-                            tier = 0
-                        ),
-                        nextUpdateEta = Duration.ofSeconds(666)
+            MutableStateFlow(
+                RpcRequestState.Loaded(
+                    listOf(
+                        TrackerItem(
+                            tracker = Tracker(
+                                id = 0,
+                                announceUrl = "http://example.com",
+                                status = Tracker.Status.WaitingForUpdate,
+                                lastAnnounceSucceeded = false,
+                                lastAnnounceTime = Instant.EPOCH,
+                                lastAnnounceResult = "lol",
+                                peers = 44,
+                                seeders = 11,
+                                leechers = 33,
+                                nextUpdateTime = Instant.EPOCH,
+                                tier = 0
+                            ),
+                            nextUpdateEta = Duration.ofSeconds(666)
+                        )
                     )
                 )
             )

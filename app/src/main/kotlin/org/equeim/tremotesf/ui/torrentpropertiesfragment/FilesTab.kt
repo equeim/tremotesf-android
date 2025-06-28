@@ -17,13 +17,14 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
@@ -39,10 +40,11 @@ import java.text.DecimalFormat
 fun FilesTab(
     innerPadding: PaddingValues,
     filesTree: TorrentFilesTree,
-    filesTreeState: State<TorrentPropertiesFragmentViewModel.FilesTreeState>,
+    filesTreeState: StateFlow<TorrentPropertiesFragmentViewModel.FilesTreeState>,
     toolbarClicked: Flow<Unit>,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
+    val filesTreeState = filesTreeState.collectAsStateWithLifecycle()
     when (val state = filesTreeState.value) {
         is TorrentPropertiesFragmentViewModel.FilesTreeState.Loading -> TremotesfLoadingPlaceholder(
             modifier = Modifier
