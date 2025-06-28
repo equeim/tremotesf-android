@@ -183,13 +183,14 @@ fun BottomBar(
         if (showAddTorrentBottomSheet) {
             val coroutineScope = rememberCoroutineScope()
             val sheetState = rememberModalBottomSheetState()
-            val hide = {
+            val hideAndNavigate = { navigate: () -> Unit ->
                 coroutineScope.launch {
                     try {
                         sheetState.hide()
                     } finally {
                         showAddTorrentBottomSheet = false
                     }
+                    navigate()
                 }
             }
             ModalBottomSheet(
@@ -201,16 +202,14 @@ fun BottomBar(
                         headlineContent = { Text(stringResource(R.string.add_torrent_file)) },
                         colors = ListItemDefaults.colors(containerColor = Color.Companion.Transparent),
                         modifier = Modifier.clickable {
-                            launchActivityToOpenTorrentFile()
-                            hide()
+                            hideAndNavigate(launchActivityToOpenTorrentFile)
                         }
                     )
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.add_torrent_link)) },
                         colors = ListItemDefaults.colors(containerColor = Color.Companion.Transparent),
                         modifier = Modifier.clickable {
-                            navigateToAddTorrentLinkScreen()
-                            hide()
+                            hideAndNavigate(navigateToAddTorrentLinkScreen)
                         }
                     )
                 }

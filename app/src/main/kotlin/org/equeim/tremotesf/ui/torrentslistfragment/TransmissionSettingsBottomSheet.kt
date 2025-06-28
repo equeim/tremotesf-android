@@ -63,14 +63,16 @@ fun TransmissionSettingsBottomSheet(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val hide: () -> Unit = {
+    val hideAndNavigate = { navigate: () -> Unit ->
         coroutineScope.launch {
             try {
                 sheetState.hide()
             } finally {
                 onDismissRequest()
             }
+            navigate()
         }
+        Unit
     }
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -84,10 +86,9 @@ fun TransmissionSettingsBottomSheet(
             servers = servers,
             alternativeSpeedLimitsEnabled = alternativeSpeedLimitsEnabled,
             setAlternativeSpeedLimitsEnabled = setAlternativeSpeedLimitsEnabled,
-            navigateToConnectionSettingsScreen = navigateToConnectionSettingsScreen,
-            navigateToServerSettingsScreen = navigateToServerSettingsScreen,
-            navigateToServerStatsDialog = navigateToServerStatsDialog,
-            hide = hide
+            navigateToConnectionSettingsScreen = { hideAndNavigate(navigateToConnectionSettingsScreen) },
+            navigateToServerSettingsScreen = { hideAndNavigate(navigateToServerSettingsScreen) },
+            navigateToServerStatsDialog = { hideAndNavigate(navigateToServerStatsDialog) }
         )
     }
 }
@@ -103,8 +104,7 @@ private fun TransmissionSettingsBottomSheetContent(
     setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
     navigateToConnectionSettingsScreen: () -> Unit,
     navigateToServerSettingsScreen: () -> Unit,
-    navigateToServerStatsDialog: () -> Unit,
-    hide: () -> Unit
+    navigateToServerStatsDialog: () -> Unit
 ) {
     Column(
         Modifier
@@ -151,14 +151,12 @@ private fun TransmissionSettingsBottomSheetContent(
 
         ClickableText(R.string.connection_settings) {
             navigateToConnectionSettingsScreen()
-            hide()
         }
 
         HorizontalDivider()
 
         ClickableText(R.string.server_settings, enabled = shouldConnectToServer.value) {
             navigateToServerSettingsScreen()
-            hide()
         }
 
         val alternativeSpeedLimitsState = alternativeSpeedLimitsEnabled.collectAsStateWithLifecycle()
@@ -178,7 +176,6 @@ private fun TransmissionSettingsBottomSheetContent(
 
         ClickableText(R.string.server_stats, enabled = shouldConnectToServer.value) {
             navigateToServerStatsDialog()
-            hide()
         }
     }
 }
@@ -209,7 +206,6 @@ private fun TransmissionSettingsBottomSheetPreview() = ComponentPreview {
         setAlternativeSpeedLimitsEnabled = {},
         navigateToConnectionSettingsScreen = {},
         navigateToServerSettingsScreen = {},
-        navigateToServerStatsDialog = {},
-        hide = {},
+        navigateToServerStatsDialog = {}
     )
 }
