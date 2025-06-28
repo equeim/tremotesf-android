@@ -293,7 +293,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         SharingStarted.Eagerly, GlobalServers.serversState.value.servers.isNotEmpty()
     )
     val showFiltersAndSearchButtons: StateFlow<Boolean> =
-        torrents.map { it is RpcRequestState.Loaded }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        torrents.map { it is RpcRequestState.Loaded }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     enum class FloatingActionButtonState {
         AddTorrent,
@@ -317,7 +317,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 is RpcRequestState.Loaded -> FloatingActionButtonState.AddTorrent
             }
         }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, FloatingActionButtonState.Disconnect)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), FloatingActionButtonState.Disconnect)
 
     private val _checkNotificationPermission = MutableStateFlow<Boolean?>(null)
     val checkNotificationPermission: StateFlow<Boolean?> by ::_checkNotificationPermission
