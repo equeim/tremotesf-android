@@ -86,7 +86,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     )
                 }
             }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), null)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     val currentServer: StateFlow<String?> = GlobalServers.currentServer.map { it?.name }.stateIn(
         viewModelScope,
