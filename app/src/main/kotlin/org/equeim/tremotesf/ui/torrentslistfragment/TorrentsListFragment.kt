@@ -89,7 +89,7 @@ class TorrentsListFragment : ComposeFragment() {
             currentServer = model.currentServer.collectAsStateWithLifecycle(),
             setCurrentServer = GlobalServers::setCurrentServer,
             servers = model.servers.collectAsStateWithLifecycle(),
-            alternativeSpeedLimitsEnabled = model.alternativeSpeedLimitsEnabled.collectAsStateWithLifecycle(),
+            alternativeSpeedLimitsEnabled = model.alternativeSpeedLimitsEnabled,
             setAlternativeSpeedLimitsEnabled = model::setAlternativeSpeedLimitsEnabled,
 
             labelsEnabled = model.labelsEnabled.collectAsStateWithLifecycle(),
@@ -165,7 +165,7 @@ private fun TorrentsListScreen(
     currentServer: State<String?>,
     setCurrentServer: (String) -> Unit,
     servers: State<List<String>>,
-    alternativeSpeedLimitsEnabled: State<Boolean>,
+    alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>>,
     setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
 
     labelsEnabled: State<Boolean>,

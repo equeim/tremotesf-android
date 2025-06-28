@@ -46,6 +46,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.performPeriodicRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequest
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -100,11 +101,9 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         GlobalServers.serversState.value.servers.map(Server::name)
     )
 
-    val alternativeSpeedLimitsEnabled: StateFlow<Boolean> = GlobalRpcClient.performPeriodicRequest {
+    val alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>> = GlobalRpcClient.performRecoveringRequest {
         checkIfAlternativeSpeedLimitsEnabled()
-    }
-        .map { (it as? RpcRequestState.Loaded)?.response == true }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    }.stateIn(GlobalRpcClient, viewModelScope)
 
     fun setAlternativeSpeedLimitsEnabled(enabled: Boolean) {
         GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) {

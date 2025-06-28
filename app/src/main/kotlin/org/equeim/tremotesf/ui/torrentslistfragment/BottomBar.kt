@@ -60,8 +60,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.FilterList
@@ -83,7 +85,7 @@ fun BottomBar(
     currentServer: State<String?>,
     setCurrentServer: (String) -> Unit,
     servers: State<List<String>>,
-    alternativeSpeedLimitsEnabled: State<Boolean>,
+    alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>>,
     setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
 
     sortAndFilterSettings: State<SortAndFilterSettings?>,

@@ -23,6 +23,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,9 +33,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.applyDisabledAlpha
@@ -49,7 +54,7 @@ fun TransmissionSettingsBottomSheet(
     currentServer: State<String?>,
     setCurrentServer: (String) -> Unit,
     servers: State<List<String>>,
-    alternativeSpeedLimitsEnabled: State<Boolean>,
+    alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>>,
     setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
     navigateToConnectionSettingsScreen: () -> Unit,
     navigateToServerSettingsScreen: () -> Unit,
@@ -94,7 +99,7 @@ private fun TransmissionSettingsBottomSheetContent(
     currentServer: State<String?>,
     setCurrentServer: (String) -> Unit,
     servers: State<List<String>>,
-    alternativeSpeedLimitsEnabled: State<Boolean>,
+    alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>>,
     setAlternativeSpeedLimitsEnabled: (Boolean) -> Unit,
     navigateToConnectionSettingsScreen: () -> Unit,
     navigateToServerSettingsScreen: () -> Unit,
@@ -156,11 +161,17 @@ private fun TransmissionSettingsBottomSheetContent(
             hide()
         }
 
+        val alternativeSpeedLimitsState = alternativeSpeedLimitsEnabled.collectAsStateWithLifecycle()
+        val alternativeSpeedLimitsEnabled: Boolean? by remember {
+            derivedStateOf {
+                (alternativeSpeedLimitsState.value as? RpcRequestState.Loaded)?.response
+            }
+        }
         TremotesfSwitchWithText(
-            checked = alternativeSpeedLimitsEnabled.value,
+            checked = alternativeSpeedLimitsEnabled ?: false,
             onCheckedChange = setAlternativeSpeedLimitsEnabled,
             text = R.string.alternative_speed_limits,
-            enabled = shouldConnectToServer.value,
+            enabled = shouldConnectToServer.value && alternativeSpeedLimitsEnabled != null,
             modifier = Modifier.fillMaxWidth(),
             horizontalContentPadding = horizontalPadding
         )
@@ -194,7 +205,7 @@ private fun TransmissionSettingsBottomSheetPreview() = ComponentPreview {
         currentServer = remember { mutableStateOf("localhost") },
         setCurrentServer = {},
         servers = remember { mutableStateOf(emptyList()) },
-        alternativeSpeedLimitsEnabled = remember { mutableStateOf(false) },
+        alternativeSpeedLimitsEnabled = remember { MutableStateFlow(RpcRequestState.Loaded(false)) },
         setAlternativeSpeedLimitsEnabled = {},
         navigateToConnectionSettingsScreen = {},
         navigateToServerSettingsScreen = {},
