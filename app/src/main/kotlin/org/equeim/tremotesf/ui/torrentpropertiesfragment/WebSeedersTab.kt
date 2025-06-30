@@ -20,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,13 +28,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.components.TremotesfErrorPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
+import org.equeim.tremotesf.ui.utils.rememberAlphanumericComparator
 
 @Composable
 fun WebSeedersTab(
@@ -72,8 +71,7 @@ fun WebSeedersTab(
             toolbarClicked.collect { listState.scrollToItem(0) }
         }
 
-        val comparator =
-            remember(LocalConfiguration.current.locales) { AlphanumericComparator() }
+        val comparator = rememberAlphanumericComparator()
         val sortedWebSeeders = remember { derivedStateOf { webSeeders.sortedWith(comparator) } }
 
         LazyColumn(

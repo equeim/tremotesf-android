@@ -51,6 +51,7 @@ import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
+import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
 @Composable
 fun ColumnScope.CommonAddTorrentParameters(
@@ -91,7 +92,7 @@ fun ColumnScope.CommonAddTorrentParameters(
 
     downloadDirectoryFreeSpace.value?.let { freeSpace ->
         val context = LocalContext.current
-        val formatter = remember(context, LocalConfiguration.current.locales) { FileSizeFormatter(context) }
+        val formatter = rememberFileSizeFormatter()
         val text = when (freeSpace) {
             is DownloadDirectoryFreeSpace.FreeSpace -> remember(formatter, freeSpace) {
                 context.getString(R.string.free_space, formatter.formatFileSize(freeSpace.size))

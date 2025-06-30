@@ -79,6 +79,7 @@ import org.equeim.tremotesf.ui.components.rememberTremotesfMultiSelectionState
 import org.equeim.tremotesf.ui.components.selectableBackground
 import org.equeim.tremotesf.ui.components.tremotesfMultiSelectionClickable
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentViewModel.TrackerItem
+import org.equeim.tremotesf.ui.utils.rememberLocaleDependentValue
 import java.time.Duration
 import java.time.Instant
 
@@ -120,7 +121,7 @@ fun TrackersTab(
         )
 
         val comparator: Comparator<TrackerItem> =
-            remember(LocalConfiguration.current.locales) { compareBy(AlphanumericComparator()) { it.tracker.announceUrl } }
+            rememberLocaleDependentValue { compareBy(AlphanumericComparator()) { it.tracker.announceUrl } }
         val sortedTrackers = remember { derivedStateOf { trackers.sortedWith(comparator) } }
 
         var showAddTrackersDialog: Boolean by rememberSaveable { mutableStateOf(false) }

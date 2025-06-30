@@ -10,9 +10,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 
 class FileSizeFormatter(context: Context) {
@@ -94,3 +97,18 @@ private fun formatTorrentEtaImpl(eta: Duration?, context: Context): String {
 }
 
 private const val INFINITY_SYMBOL = "\u221E"
+
+@Composable
+inline fun <T> rememberLocaleDependentValue(crossinline calculation: () -> T): T =
+    remember(LocalConfiguration.current.locales, calculation = calculation)
+
+@Composable
+inline fun rememberNumberFormat(crossinline formatProducer: () -> NumberFormat): NumberFormat =
+    rememberLocaleDependentValue(formatProducer)
+
+@Composable
+inline fun rememberDateTimeFormatter(crossinline formatterProducer: () -> DateTimeFormatter): DateTimeFormatter =
+    rememberLocaleDependentValue(formatterProducer)
+
+@Composable
+fun rememberAlphanumericComparator(): AlphanumericComparator = rememberLocaleDependentValue { AlphanumericComparator() }

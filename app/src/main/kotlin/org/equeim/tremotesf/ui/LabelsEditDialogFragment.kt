@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
@@ -35,6 +33,7 @@ import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
+import org.equeim.tremotesf.ui.utils.rememberAlphanumericComparator
 
 class LabelsEditDialogFragment : ComposeDialogFragment() {
     @Composable
@@ -59,9 +58,10 @@ private fun LabelsEditDialogContent(
     onDismissRequest: () -> Unit,
     navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
+    val comparator = rememberAlphanumericComparator()
     val enabledLabels: SnapshotStateList<String> = rememberSaveable(saver = SnapshotStateListSaver()) {
         SnapshotStateList<String>().apply {
-            addAll(initialEnabledLabels().sortedWith(AlphanumericComparator()))
+            addAll(initialEnabledLabels().sortedWith(comparator))
         }
     }
 
@@ -73,8 +73,8 @@ private fun LabelsEditDialogContent(
                 onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
                 placeholdersModifier = Modifier.fillMaxWidth()
             ) { allLabels ->
-                val allLabelsSorted = remember(LocalConfiguration.current.locales) {
-                    mutableStateOf(allLabels.sortedWith(AlphanumericComparator()))
+                val allLabelsSorted = remember(allLabels, comparator) {
+                    mutableStateOf(allLabels.sortedWith(comparator))
                 }
                 val focusRequester = rememberTremotesfInitialFocusRequester()
                 TremotesfLabelsEditor(

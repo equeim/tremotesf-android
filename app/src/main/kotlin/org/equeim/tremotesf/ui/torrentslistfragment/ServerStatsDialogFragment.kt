@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,7 +49,9 @@ import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.formatDuration
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
+import org.equeim.tremotesf.ui.utils.rememberNumberFormat
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import kotlin.time.Duration.Companion.days
 
 class ServerStatsDialogFragment : ComposeDialogFragment() {
@@ -85,7 +86,7 @@ private fun ServerStatsDialogContent(
                         .verticalScroll(rememberScrollState())
                 ) {
                     val fileSizeFormatter = rememberFileSizeFormatter()
-                    val ratioFormatter = remember(LocalConfiguration.current.locales) { DecimalFormat("0.00") }
+                    val ratioFormatter = rememberNumberFormat { DecimalFormat("0.00") }
 
                     TremotesfSectionHeader(R.string.current_session, Modifier.span { maxLineSpan })
 
@@ -121,7 +122,7 @@ private fun ServerStatsDialogContent(
 private fun GridScope.CommonStats(
     stats: SessionStatsResponseArguments.Stats,
     fileSizeFormatter: FileSizeFormatter,
-    ratioFormatter: DecimalFormat
+    ratioFormatter: NumberFormat
 ) {
     Text(stringResource(R.string.downloaded))
     Text(fileSizeFormatter.formatFileSize(stats.downloaded))

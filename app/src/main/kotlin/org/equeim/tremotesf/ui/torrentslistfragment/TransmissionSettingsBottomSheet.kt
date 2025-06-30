@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,13 +37,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.applyDisabledAlpha
 import org.equeim.tremotesf.ui.components.TremotesfComboBox
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.utils.rememberAlphanumericComparator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +134,7 @@ private fun TransmissionSettingsBottomSheetContent(
 
         val horizontalPadding = Dimens.screenContentPaddingHorizontal()
 
-        val comparator = remember(LocalConfiguration.current.locales) { AlphanumericComparator() }
+        val comparator = rememberAlphanumericComparator()
         val sortedServers = remember { derivedStateOf { servers.value.sortedWith(comparator) } }
 
         TremotesfComboBox(

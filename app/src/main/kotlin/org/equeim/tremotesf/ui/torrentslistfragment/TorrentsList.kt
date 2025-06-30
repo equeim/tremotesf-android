@@ -53,7 +53,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
@@ -100,7 +99,9 @@ import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.formatTorrentEta
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
+import org.equeim.tremotesf.ui.utils.rememberNumberFormat
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.ZoneOffset
 import kotlin.time.Duration.Companion.minutes
@@ -135,7 +136,7 @@ fun TorrentsList(
     val selectionState = rememberTremotesfMultiSelectionState(torrents, Torrent::id)
 
     val fileSizeFormatter = rememberFileSizeFormatter()
-    val progressFormatter = remember(LocalConfiguration.current.locales) { DecimalFormat("0.#") }
+    val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
 
     val layoutDirection = LocalLayoutDirection.current
     val listPadding = PaddingValues(
@@ -220,7 +221,7 @@ private fun LazyItemScope.TorrentCard(
     torrent: Torrent,
     multilineName: Boolean,
     fileSizeFormatter: FileSizeFormatter,
-    progressFormatter: DecimalFormat,
+    progressFormatter: NumberFormat,
     selectionState: TremotesfMultiSelectionState<Torrent, Int>,
     onClick: () -> Unit
 ) {
@@ -363,7 +364,7 @@ private fun LazyItemScope.TorrentCompactListItem(
     torrent: Torrent,
     multilineName: Boolean,
     fileSizeFormatter: FileSizeFormatter,
-    progressFormatter: DecimalFormat,
+    progressFormatter: NumberFormat,
     selectionState: TremotesfMultiSelectionState<Torrent, Int>,
     onClick: () -> Unit
 ) {
@@ -448,7 +449,7 @@ private fun StatusIcon(status: TorrentStatus) {
 }
 
 @Composable
-private fun Torrent.getStatusString(progressFormatter: DecimalFormat): String {
+private fun Torrent.getStatusString(progressFormatter: NumberFormat): String {
     return when (status) {
         TorrentStatus.Paused -> if (error != null) {
             stringResource(R.string.torrent_paused_with_error, errorString)

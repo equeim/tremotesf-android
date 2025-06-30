@@ -24,7 +24,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +42,8 @@ import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.components.TremotesfErrorPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
+import org.equeim.tremotesf.ui.utils.rememberLocaleDependentValue
+import org.equeim.tremotesf.ui.utils.rememberNumberFormat
 import java.text.DecimalFormat
 
 @Composable
@@ -81,10 +82,10 @@ fun PeersTab(
         }
 
         val fileSizeFormatter = rememberFileSizeFormatter()
-        val progressFormatter = remember(LocalConfiguration.current.locales) { DecimalFormat("0.#") }
+        val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
 
         val comparator =
-            remember(LocalConfiguration.current.locales) { compareBy(AlphanumericComparator(), Peer::address) }
+            rememberLocaleDependentValue { compareBy(AlphanumericComparator(), Peer::address) }
         val sortedPeers = remember { derivedStateOf { peers.sortedWith(comparator) } }
 
         LazyColumn(

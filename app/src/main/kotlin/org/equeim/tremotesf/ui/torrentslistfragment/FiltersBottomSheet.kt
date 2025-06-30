@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,6 +52,7 @@ import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewMode
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.SortMode
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.SortOrder
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.StatusFilterMode
+import org.equeim.tremotesf.ui.utils.rememberAlphanumericComparator
 import java.util.function.BiFunction
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +146,7 @@ private fun FiltersBottomSheetContent(
             }
         }
 
-        val comparator = remember(LocalConfiguration.current.locales) { AlphanumericComparator() }
+        val comparator = rememberAlphanumericComparator()
         val calculatedFilters: CalculatedFilters by remember {
             derivedStateOf {
                 calculateFilters(

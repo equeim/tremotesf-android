@@ -40,7 +40,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +54,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.Dimens
@@ -67,6 +65,7 @@ import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
 import org.equeim.tremotesf.ui.components.rememberTremotesfMultiSelectionState
 import org.equeim.tremotesf.ui.components.selectableBackground
 import org.equeim.tremotesf.ui.components.tremotesfMultiSelectionClickable
+import org.equeim.tremotesf.ui.utils.rememberAlphanumericComparator
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
 class ConnectionSettingsFragment : ComposeFragment() {
@@ -75,7 +74,7 @@ class ConnectionSettingsFragment : ComposeFragment() {
         val model = viewModel<ConnectionSettingsViewModel>()
 
         val servers = model.servers.collectAsStateWithLifecycle()
-        val comparator = remember(LocalConfiguration.current.locales) { AlphanumericComparator() }
+        val comparator = rememberAlphanumericComparator()
         val sortedServers = remember { derivedStateOf { servers.value.sortedWith(comparator) } }
 
         ConnectionSettingsScreen(

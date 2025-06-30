@@ -17,9 +17,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +32,7 @@ import org.equeim.tremotesf.ui.components.TremotesfErrorPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfLoadingPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfTorrentsFilesList
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
+import org.equeim.tremotesf.ui.utils.rememberNumberFormat
 import java.text.DecimalFormat
 
 @Composable
@@ -84,7 +83,7 @@ fun FilesTab(
                 }
             }
             val fileSizeFormatter = rememberFileSizeFormatter()
-            val progressFormatter = remember(LocalConfiguration.current.locales) { DecimalFormat("0.#") }
+            val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
             TremotesfTorrentsFilesList(
                 filesTree = filesTree,
                 listState = listState,

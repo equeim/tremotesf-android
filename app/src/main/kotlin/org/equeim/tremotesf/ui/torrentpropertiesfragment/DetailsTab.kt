@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -46,8 +45,9 @@ import org.equeim.tremotesf.ui.components.TremotesfDetailsGrid
 import org.equeim.tremotesf.ui.components.TremotesfLabelsList
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.utils.formatTorrentEta
+import org.equeim.tremotesf.ui.utils.rememberDateTimeFormatter
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
-import timber.log.Timber
+import org.equeim.tremotesf.ui.utils.rememberNumberFormat
 import java.text.DecimalFormat
 import java.time.Duration
 import java.time.Instant
@@ -92,7 +92,7 @@ fun DetailsTab(
             Text(fileSizeFormatter.formatFileSize(torrentDetails.totalUploaded))
 
             Text(stringResource(R.string.ratio))
-            val ratioFormatter = remember(LocalConfiguration.current.locales) { DecimalFormat("0.00") }
+            val ratioFormatter = rememberNumberFormat { DecimalFormat("0.00") }
             Text(ratioFormatter.format(torrentDetails.ratio))
 
             Text(stringResource(R.string.download_speed))
@@ -177,8 +177,7 @@ fun DetailsTab(
 
 @Composable
 private fun rememberTimeFormatter(): (Instant) -> String {
-    val dateTimeFormatter = remember(LocalConfiguration.current.locales) {
-        Timber.d(Throwable(), "Creating DateTimeFormatter")
+    val dateTimeFormatter = rememberDateTimeFormatter {
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
     }
     val context = LocalContext.current

@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,6 +75,8 @@ import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
 import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
+import org.equeim.tremotesf.ui.utils.rememberDateTimeFormatter
+import org.equeim.tremotesf.ui.utils.rememberLocaleDependentValue
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -222,8 +223,7 @@ private fun ServerSettingsSpeedScreen(
         )
 
         val context = LocalContext.current
-        val localeList = LocalConfiguration.current.locales
-        val dayNames: Map<AlternativeLimitsDays, String> = remember(localeList) {
+        val dayNames: Map<AlternativeLimitsDays, String> = rememberLocaleDependentValue {
             buildMap {
                 put(AlternativeLimitsDays.All, context.getString(R.string.every_day))
                 put(AlternativeLimitsDays.Weekdays, context.getString(R.string.weekdays))
@@ -237,7 +237,7 @@ private fun ServerSettingsSpeedScreen(
                 }
             }
         }
-        val dropdownDays: List<AlternativeLimitsDays> = remember(localeList) {
+        val dropdownDays: List<AlternativeLimitsDays> = rememberLocaleDependentValue {
             buildList {
                 add(AlternativeLimitsDays.All)
                 add(AlternativeLimitsDays.Weekdays)
@@ -320,8 +320,7 @@ private fun LimitsScheduleTime(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant.applyDisabledAlpha(enabled),
         )
-        val localeList = LocalConfiguration.current.locales
-        val formatter = remember(localeList) { DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT) }
+        val formatter = rememberDateTimeFormatter { DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT) }
         Text(
             text = formatter.format(time.value),
             style = MaterialTheme.typography.titleMedium,
