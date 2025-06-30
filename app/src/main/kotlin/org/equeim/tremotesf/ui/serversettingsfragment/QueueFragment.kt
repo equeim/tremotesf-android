@@ -21,13 +21,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.QueueServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.getQueueServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadQueueEnabled
@@ -36,7 +35,6 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setIgnoreQueueIfIdle
 import org.equeim.tremotesf.rpc.requests.serversettings.setIgnoreQueueIfIdleFor
 import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueEnabled
 import org.equeim.tremotesf.rpc.requests.serversettings.setSeedQueueSize
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.components.NON_NEGATIVE_INTEGERS_RANGE
@@ -69,9 +67,7 @@ class QueueFragment : ComposeFragment() {
 
 class QueueFragmentViewModel(application: Application) : AndroidViewModel(application) {
     val settings: StateFlow<RpcRequestState<Any>> =
-        GlobalRpcClient.performRecoveringRequest { getQueueServerSettings() }
-            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
-            .stateIn(GlobalRpcClient, viewModelScope)
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) { setInitialState(getQueueServerSettings()) }
 
     val downloadQueueEnabled: ServerSettingsProperty<Boolean> =
         ServerSettingsBooleanProperty(RpcClient::setDownloadQueueEnabled)

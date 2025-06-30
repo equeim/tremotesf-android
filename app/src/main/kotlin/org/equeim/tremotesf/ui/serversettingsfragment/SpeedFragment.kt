@@ -43,13 +43,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.SpeedServerSettings.AlternativeLimitsDays
@@ -65,7 +64,6 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadSpeedLimit
 import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadSpeedLimited
 import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimit
 import org.equeim.tremotesf.rpc.requests.serversettings.setUploadSpeedLimited
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.Dimens
@@ -327,7 +325,8 @@ private fun LimitsScheduleTime(
         Text(
             text = formatter.format(time.value),
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface.applyDisabledAlpha(enabled))
+            color = MaterialTheme.colorScheme.onSurface.applyDisabledAlpha(enabled)
+        )
     }
     if (showTimePickerDialog) {
         val timePickerState = rememberTimePickerState(
@@ -380,9 +379,7 @@ private fun LimitsScheduleTimePreview() = ComponentPreview {
 
 class SpeedFragmentViewModel(application: Application) : AndroidViewModel(application) {
     val settings: StateFlow<RpcRequestState<Any>> =
-        GlobalRpcClient.performRecoveringRequest { getSpeedServerSettings() }
-            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
-            .stateIn(GlobalRpcClient, viewModelScope)
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) { setInitialState(getSpeedServerSettings()) }
 
     val downloadSpeedLimited: ServerSettingsProperty<Boolean> =
         ServerSettingsBooleanProperty(RpcClient::setDownloadSpeedLimited)

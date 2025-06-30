@@ -4,7 +4,6 @@
 
 package org.equeim.tremotesf.ui.torrentslistfragment
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -34,13 +33,12 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performPeriodicRequest
+import org.equeim.tremotesf.rpc.performPeriodicRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.getDownloadDirFreeSpace
 import org.equeim.tremotesf.rpc.requests.getSessionStats
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.ComposeDialogFragment
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.ScreenPreview
@@ -177,11 +175,11 @@ class ServerStatsDialogFragmentViewModel : ViewModel() {
     )
 
     val uiState: StateFlow<RpcRequestState<UiState>> =
-        GlobalRpcClient.performPeriodicRequest {
+        GlobalRpcClient.performPeriodicRequestIntoStateFlow(viewModelScope) {
             coroutineScope {
                 val stats = async { getSessionStats() }
                 val freeSpace = async { getDownloadDirFreeSpace() }
                 UiState(stats.await(), freeSpace.await())
             }
-        }.stateIn(GlobalRpcClient, viewModelScope)
+        }
 }

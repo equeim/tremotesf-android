@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
@@ -46,7 +47,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.performPeriodicRequest
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -60,7 +61,7 @@ import org.equeim.tremotesf.rpc.requests.startTorrentsNow
 import org.equeim.tremotesf.rpc.requests.stopTorrents
 import org.equeim.tremotesf.rpc.requests.torrentproperties.renameTorrentFile
 import org.equeim.tremotesf.rpc.requests.verifyTorrents
-import org.equeim.tremotesf.rpc.stateIn
+import org.equeim.tremotesf.rpc.stateInRpcRequest
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.addtorrent.MergingTrackersMessage
 import java.time.Instant
@@ -102,9 +103,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         GlobalServers.serversState.value.servers.map(Server::name)
     )
 
-    val alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>> = GlobalRpcClient.performRecoveringRequest {
-        checkIfAlternativeSpeedLimitsEnabled()
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    val alternativeSpeedLimitsEnabled: StateFlow<RpcRequestState<Boolean>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) { checkIfAlternativeSpeedLimitsEnabled() }
 
     fun setAlternativeSpeedLimitsEnabled(enabled: Boolean) {
         GlobalRpcClient.performBackgroundRpcRequest(R.string.set_server_settings_error) {
@@ -255,10 +255,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     else -> Unit
                 }
             }
-            .stateIn(GlobalRpcClient, viewModelScope, Dispatchers.Default)
+            .stateInRpcRequest(GlobalRpcClient, viewModelScope + Dispatchers.Default)
 
     val torrents: StateFlow<RpcRequestState<List<Torrent>>> =
-        allTorrents.filterAndSortTorrents().stateIn(GlobalRpcClient, viewModelScope, Dispatchers.Default)
+        allTorrents.filterAndSortTorrents()
+            .stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(), allTorrents.value)
 
     private val _refreshingManually = mutableStateOf(false)
     val refreshingManually: State<Boolean> by ::_refreshingManually

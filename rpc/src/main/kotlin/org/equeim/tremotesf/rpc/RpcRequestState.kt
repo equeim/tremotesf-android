@@ -27,8 +27,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.common.hasSubscribersDebounced
 import timber.log.Timber
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -59,39 +57,10 @@ fun <T> RpcClient.performRecoveringRequest(
             }
         }
 
-private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
+fun <T> RpcClient.performRecoveringRequestIntoStateFlow(
+    scope: CoroutineScope,
     performRequest: suspend RpcClient.() -> T,
-    collector: FlowCollector<RpcRequestState<T>>
-) {
-    coroutineScope {
-        var delayedLoadingOnRetry: Job? = null
-        var retryAttempts = 0
-        while (currentCoroutineContext().isActive) {
-            try {
-                val response = performRequest()
-                delayedLoadingOnRetry?.cancel()
-                collector.emit(RpcRequestState.Loaded(response))
-                break
-            } catch (e: RpcRequestError) {
-                delayedLoadingOnRetry?.cancel()
-                if (e.isRecoverable) {
-                    collector.emit(RpcRequestState.Error(e))
-                    retryAttempts += 1
-                    val waitFor = (INITIAL_RETRY_INTERVAL * retryAttempts).coerceAtMost(MAX_RETRY_INTERVAL)
-                    Timber.tag(RpcClient::class.simpleName!!).e("Retrying RPC request after $waitFor")
-                    delay(waitFor)
-                    delayedLoadingOnRetry = launch {
-                        delay(RETRY_LOADING_STATE_DELAY)
-                        collector.emit(RpcRequestState.Loading)
-                    }
-                } else {
-                    // Just wait until requestRestartEvents in performRecoveringRequest/performPeriodicRequest emits new value with nonRecoverableError
-                    delay(Duration.INFINITE)
-                }
-            }
-        }
-    }
-}
+): StateFlow<RpcRequestState<T>> = performRecoveringRequest(performRequest).stateInRpcRequest(this, scope)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> RpcClient.performPeriodicRequest(
@@ -127,6 +96,71 @@ fun <T> RpcClient.performPeriodicRequest(
     }
 }
 
+fun <T> RpcClient.performPeriodicRequestIntoStateFlow(
+    scope: CoroutineScope,
+    manualRefreshRequests: Flow<*> = emptyFlow<Unit>(),
+    performRequest: suspend RpcClient.() -> T,
+): StateFlow<RpcRequestState<T>> =
+    performPeriodicRequest(manualRefreshRequests, performRequest).stateInRpcRequest(this, scope)
+
+fun <T> Flow<RpcRequestState<T>>.stateInRpcRequest(
+    rpcClient: RpcClient,
+    scope: CoroutineScope
+): StateFlow<RpcRequestState<T>> {
+    @Suppress("UnusedFlow")
+    val originalFlow = this
+    val stateFlow = MutableStateFlow<RpcRequestState<T>>(rpcClient.getInitialRequestState())
+    scope.launch {
+        stateFlow
+            .hasSubscribersDebounced()
+            .collectLatest { hasSubscribers ->
+                // Don't reset state after we lost subscribers and skip loading state when we are subscribed to again while data was loaded
+                if (hasSubscribers) {
+                    if (stateFlow.value is RpcRequestState.Loaded) {
+                        originalFlow.dropWhile { it is RpcRequestState.Loading }
+                    } else {
+                        originalFlow
+                    }.collect(stateFlow)
+                }
+            }
+    }
+    return stateFlow
+}
+
+private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
+    performRequest: suspend RpcClient.() -> T,
+    collector: FlowCollector<RpcRequestState<T>>
+) {
+    coroutineScope {
+        var delayedLoadingOnRetry: Job? = null
+        var retryAttempts = 0
+        while (currentCoroutineContext().isActive) {
+            try {
+                val response = performRequest()
+                delayedLoadingOnRetry?.cancel()
+                collector.emit(RpcRequestState.Loaded(response))
+                break
+            } catch (e: RpcRequestError) {
+                delayedLoadingOnRetry?.cancel()
+                if (e.isRecoverable) {
+                    collector.emit(RpcRequestState.Error(e))
+                    retryAttempts += 1
+                    val waitFor = (INITIAL_RETRY_INTERVAL * retryAttempts).coerceAtMost(MAX_RETRY_INTERVAL)
+                    Timber.tag(RpcClient::class.simpleName!!).e("Retrying RPC request after $waitFor")
+                    delay(waitFor)
+                    delayedLoadingOnRetry = launch {
+                        delay(RETRY_LOADING_STATE_DELAY)
+                        collector.emit(RpcRequestState.Loading)
+                    }
+                } else {
+                    // Just wait until requestRestartEvents in performRecoveringRequest/performPeriodicRequest emits new value with nonRecoverableError
+                    delay(Duration.INFINITE)
+                }
+            }
+        }
+    }
+}
+
 private class RequestRestartEvent(val nonRecoverableError: RpcRequestState.Error? = null)
 
 private fun RpcClient.requestRestartEvents(): Flow<RequestRestartEvent> = combine(
@@ -147,34 +181,10 @@ private fun getInitialNonRecoverableError(
         else -> null
     }
 
-fun <T> Flow<RpcRequestState<T>>.stateIn(
-    rpcClient: RpcClient,
-    coroutineScope: CoroutineScope,
-    coroutineContext: CoroutineContext = EmptyCoroutineContext
-): StateFlow<RpcRequestState<T>> {
-    @Suppress("UnusedFlow")
-    val originalFlow = this
-    val stateFlow = MutableStateFlow<RpcRequestState<T>>(
-        getInitialNonRecoverableError(
-            rpcClient.getConnectionConfiguration().value,
-            rpcClient.shouldConnectToServer.value
-        ) ?: RpcRequestState.Loading
-    )
-    coroutineScope.launch(coroutineContext) {
-        stateFlow
-            .hasSubscribersDebounced()
-            .collectLatest { hasSubscribers ->
-                if (hasSubscribers) {
-                    if (stateFlow.value is RpcRequestState.Loaded) {
-                        originalFlow.dropWhile { it is RpcRequestState.Loading }
-                    } else {
-                        originalFlow
-                    }.collect(stateFlow)
-                }
-            }
-    }
-    return stateFlow
-}
+private fun <T> RpcClient.getInitialRequestState(): RpcRequestState<T> = getInitialNonRecoverableError(
+    getConnectionConfiguration().value,
+    shouldConnectToServer.value
+) ?: RpcRequestState.Loading
 
 private val INITIAL_RETRY_INTERVAL = 5.seconds
 private val MAX_RETRY_INTERVAL = 1.minutes

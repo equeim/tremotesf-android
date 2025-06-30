@@ -33,7 +33,8 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performPeriodicRequest
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performPeriodicRequestIntoStateFlow
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.reannounceTorrents
 import org.equeim.tremotesf.rpc.requests.removeTorrents
@@ -66,7 +67,7 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentRatioLimitM
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentUploadSpeedLimit
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentUploadSpeedLimited
 import org.equeim.tremotesf.rpc.requests.verifyTorrents
-import org.equeim.tremotesf.rpc.stateIn
+import org.equeim.tremotesf.rpc.stateInRpcRequest
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.Settings
 import timber.log.Timber
@@ -81,9 +82,9 @@ class TorrentPropertiesFragmentViewModel(
     private val detailsRefreshRequests =
         MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val torrentDetails: StateFlow<RpcRequestState<TorrentDetails>> =
-        GlobalRpcClient.performPeriodicRequest(detailsRefreshRequests) {
+        GlobalRpcClient.performPeriodicRequestIntoStateFlow(viewModelScope, detailsRefreshRequests) {
             getTorrentDetails(torrentHashString)
-        }.stateIn(GlobalRpcClient, viewModelScope)
+        }
 
     val shouldShowLabels: StateFlow<Boolean> = GlobalRpcClient.serverCapabilitiesFlow.map {
         it?.supportsLabels == true
@@ -242,19 +243,16 @@ class TorrentPropertiesFragmentViewModel(
             is RpcRequestState.Error -> emit(it)
             is RpcRequestState.Loading -> emit(it)
         }
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    }.stateInRpcRequest(GlobalRpcClient, viewModelScope)
 
-    val peers: StateFlow<RpcRequestState<List<Peer>>> = GlobalRpcClient.performPeriodicRequest {
-        getTorrentPeers(torrentHashString)
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    val peers: StateFlow<RpcRequestState<List<Peer>>> =
+        GlobalRpcClient.performPeriodicRequestIntoStateFlow(viewModelScope) { getTorrentPeers(torrentHashString) }
 
-    val webSeeders: StateFlow<RpcRequestState<List<String>>> = GlobalRpcClient.performPeriodicRequest {
-        getTorrentWebSeeders(torrentHashString)
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    val webSeeders: StateFlow<RpcRequestState<List<String>>> =
+        GlobalRpcClient.performPeriodicRequestIntoStateFlow(viewModelScope) { getTorrentWebSeeders(torrentHashString) }
 
-    val limits: StateFlow<RpcRequestState<TorrentLimits>> = GlobalRpcClient.performRecoveringRequest {
-        getTorrentLimits(torrentHashString)
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    val limits: StateFlow<RpcRequestState<TorrentLimits>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) { getTorrentLimits(torrentHashString) }
 
     val torrentLimitsOperations: TorrentLimitsOperations = object : TorrentLimitsOperations {
         override fun setHonorSessionLimits(honor: Boolean) {

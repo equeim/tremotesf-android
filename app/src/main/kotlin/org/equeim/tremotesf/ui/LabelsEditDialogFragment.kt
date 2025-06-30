@@ -27,15 +27,13 @@ import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.getTorrentsLabels
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentsLabels
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 
 class LabelsEditDialogFragment : ComposeDialogFragment() {
@@ -101,9 +99,8 @@ private fun LabelsEditDialogContent(
 }
 
 class LabelsEditDialogViewModel(private val torrentHashStrings: List<String>) : ViewModel() {
-    val allLabels: StateFlow<RpcRequestState<Set<String>>> = GlobalRpcClient.performRecoveringRequest {
-        getTorrentsLabels()
-    }.stateIn(GlobalRpcClient, viewModelScope)
+    val allLabels: StateFlow<RpcRequestState<Set<String>>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) { getTorrentsLabels() }
 
     fun updateLabels(labels: List<String>) {
         GlobalRpcClient.performBackgroundRpcRequest(R.string.set_labels_error) {

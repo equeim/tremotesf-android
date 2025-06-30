@@ -23,9 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.common.AlphanumericComparator
@@ -34,7 +32,7 @@ import org.equeim.tremotesf.rpc.GlobalServers
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.normalizePath
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.getFreeSpaceInDirectory
@@ -42,7 +40,6 @@ import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
 import org.equeim.tremotesf.rpc.requests.getTorrentsLabels
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
@@ -57,34 +54,29 @@ abstract class BaseAddTorrentModel(
     savedStateHandle: SavedStateHandle,
     application: Application
 ) : AndroidViewModel(application) {
-    data class InitialRpcInputs(
+    protected data class InitialRpcInputs(
         val downloadDirectory: NormalizedRpcPath,
         val torrentsDownloadDirectories: Set<NormalizedRpcPath>,
         val startAddedTorrents: Boolean,
         val allLabels: Set<String>,
     )
 
-    val initialRpcInputs: StateFlow<RpcRequestState<InitialRpcInputs>> =
-        GlobalRpcClient.performRecoveringRequest {
+    val initialRpcInputs: StateFlow<RpcRequestState<Any>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) {
             coroutineScope {
                 val settings = async { getDownloadingServerSettings() }
                 val torrentsDownloadDirectories = async { getTorrentsDownloadDirectories() }
                 val labels = async { getTorrentsLabels() }
-                InitialRpcInputs(
-                    downloadDirectory = settings.await().downloadDirectory,
-                    torrentsDownloadDirectories = torrentsDownloadDirectories.await(),
-                    startAddedTorrents = settings.await().startAddedTorrents,
-                    allLabels = labels.await()
+                setInitialState(
+                    InitialRpcInputs(
+                        downloadDirectory = settings.await().downloadDirectory,
+                        torrentsDownloadDirectories = torrentsDownloadDirectories.await(),
+                        startAddedTorrents = settings.await().startAddedTorrents,
+                        allLabels = labels.await()
+                    )
                 )
             }
         }
-            .onEach { if (it is RpcRequestState.Loaded) setInitialState(it.response) }
-            .stateIn(GlobalRpcClient, viewModelScope)
-
-    val loading: StateFlow<Boolean> = initialRpcInputs
-        .map { it is RpcRequestState.Loaded }
-        .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val downloadDirectory by savedStateHandle.saveable<MutableState<String>> { mutableStateOf("") }
     val allDownloadDirectories by savedStateHandle.saveable<SnapshotStateList<DownloadDirectoryItem>>(
@@ -93,7 +85,7 @@ abstract class BaseAddTorrentModel(
 
 
     sealed interface DownloadDirectoryFreeSpace {
-        data class FreeSpace(val size: FileSize): DownloadDirectoryFreeSpace
+        data class FreeSpace(val size: FileSize) : DownloadDirectoryFreeSpace
         data object Error : DownloadDirectoryFreeSpace
     }
 

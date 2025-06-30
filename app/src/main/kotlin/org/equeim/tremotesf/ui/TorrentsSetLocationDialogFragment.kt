@@ -36,19 +36,17 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentsLocation
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
 import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
@@ -57,7 +55,6 @@ import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.getInitialAllDownloadDirectories
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
 import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
 
@@ -151,23 +148,14 @@ class TorrentSetLocationDialogViewModel(
         saver = SnapshotStateListSaver()
     ) { SnapshotStateList() }
 
-    val allDownloadDirectoriesRequest: StateFlow<RpcRequestState<Any>> = GlobalRpcClient.performRecoveringRequest {
-        coroutineScope {
-            val settings = async { getDownloadingServerSettings() }
-            val torrentsDownloadDirectories = async { getTorrentsDownloadDirectories() }
-            settings.await().downloadDirectory to torrentsDownloadDirectories.await()
-        }
-    }
-        .onEach {
-            if (it is RpcRequestState.Loaded) {
-                val (downloadDirectory, torrentsDownloadDirectories) = it.response
-                setInitialState(
-                    downloadDirectoryFromServerSettings = downloadDirectory,
-                    torrentsDownloadDirectories = torrentsDownloadDirectories
-                )
+    val allDownloadDirectoriesRequest: StateFlow<RpcRequestState<Any>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) {
+            coroutineScope {
+                val settings = async { getDownloadingServerSettings() }
+                val torrentsDownloadDirectories = async { getTorrentsDownloadDirectories() }
+                setInitialState(settings.await().downloadDirectory, torrentsDownloadDirectories.await())
             }
         }
-        .stateIn(GlobalRpcClient, viewModelScope)
 
     private var comparator = AlphanumericComparator()
 

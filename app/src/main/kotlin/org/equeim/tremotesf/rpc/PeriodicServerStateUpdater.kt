@@ -47,8 +47,10 @@ object PeriodicServerStateUpdater {
 
     val sessionStateRefreshRequests = MutableSharedFlow<Unit>()
     val sessionStats: StateFlow<RpcRequestState<SessionStatsResponseArguments>> =
-        GlobalRpcClient.performPeriodicRequest(sessionStateRefreshRequests) { getSessionStats() }
-            .stateIn(GlobalRpcClient, coroutineScope)
+        GlobalRpcClient.performPeriodicRequestIntoStateFlow(
+            coroutineScope,
+            sessionStateRefreshRequests
+        ) { getSessionStats() }
 
     val updatingTorrentsOnTorrentsListScreen = MutableStateFlow(false)
 

@@ -25,13 +25,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
-import org.equeim.tremotesf.rpc.performRecoveringRequest
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.serversettings.setDownloadDirectory
@@ -39,7 +38,6 @@ import org.equeim.tremotesf.rpc.requests.serversettings.setIncompleteDirectory
 import org.equeim.tremotesf.rpc.requests.serversettings.setIncompleteDirectoryEnabled
 import org.equeim.tremotesf.rpc.requests.serversettings.setRenameIncompleteFiles
 import org.equeim.tremotesf.rpc.requests.serversettings.setStartAddedTorrents
-import org.equeim.tremotesf.rpc.stateIn
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.ScreenPreview
@@ -66,11 +64,9 @@ class DownloadingFragment : ComposeFragment() {
 
 class DownloadingFragmentViewModel : ViewModel() {
     val settings: StateFlow<RpcRequestState<Any>> =
-        GlobalRpcClient.performRecoveringRequest { getDownloadingServerSettings() }
-            .onEach {
-                if (it is RpcRequestState.Loaded) setInitialState(it.response)
-            }
-            .stateIn(GlobalRpcClient, viewModelScope)
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) {
+            setInitialState(getDownloadingServerSettings())
+        }
 
     val downloadDirectory: ServerSettingsProperty<String> =
         ServerSettingsStringProperty(RpcClient::setDownloadDirectory)
@@ -117,7 +113,9 @@ private fun ServerSettingsDownloadingScreen(
             label = { Text(stringResource(R.string.download_directory)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding)
         )
         TremotesfSwitchWithText(
             checked = startAddedTorrents.value,
@@ -146,7 +144,9 @@ private fun ServerSettingsDownloadingScreen(
             enabled = incompleteDirectoryEnabled.value,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding)
         )
     }
 }
