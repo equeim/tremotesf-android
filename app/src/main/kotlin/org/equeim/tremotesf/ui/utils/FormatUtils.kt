@@ -4,16 +4,12 @@
 
 package org.equeim.tremotesf.ui.utils
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import java.text.DecimalFormat
@@ -49,29 +45,6 @@ class FileSizeFormatter(context: Context) {
 fun rememberFileSizeFormatter(): FileSizeFormatter {
     val context = LocalContext.current
     return remember(context, LocalConfiguration.current.locales) { FileSizeFormatter(context) }
-}
-
-object FormatUtils {
-    @Volatile
-    private var fileSizeFormatter: FileSizeFormatter = FileSizeFormatter(TremotesfApplication.instance)
-
-    init {
-        TremotesfApplication.instance.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                fileSizeFormatter = FileSizeFormatter(TremotesfApplication.instance)
-            }
-        }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
-    }
-
-    @Deprecated("Migrate to FileSizeFormatter")
-    fun formatFileSize(@Suppress("unused") context: Context, size: FileSize): String = fileSizeFormatter.formatFileSize(size)
-
-    @Deprecated("Migrate to FileSizeFormatter")
-    fun formatTransferRate(@Suppress("unused") context: Context, speed: TransferRate): String = fileSizeFormatter.formatTransferRate(speed)
-
-    fun formatTorrentEta(context: Context, eta: Duration?): String = formatTorrentEtaImpl(eta, context)
-
-    fun formatDuration(context: Context, duration: Duration): String = formatDurationImpl(duration, context)
 }
 
 @Composable

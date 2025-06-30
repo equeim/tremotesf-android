@@ -43,7 +43,7 @@ object PeriodicServerStateUpdater {
     private val context = TremotesfApplication.instance
     private val workManager = WorkManager.getInstance(context)
 
-    val notificationsController = NotificationsController(context)
+    val notificationsController = NotificationsController(context, coroutineScope)
 
     val sessionStateRefreshRequests = MutableSharedFlow<Unit>()
     val sessionStats: StateFlow<RpcRequestState<SessionStatsResponseArguments>> =

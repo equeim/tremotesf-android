@@ -12,6 +12,8 @@ import android.graphics.drawable.Icon
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
 import androidx.navigation.NavDeepLinkBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
@@ -20,11 +22,12 @@ import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
-import org.equeim.tremotesf.ui.utils.FormatUtils
+import org.equeim.tremotesf.ui.utils.FileSizeFormatter
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
 import kotlin.random.Random
 
-class NotificationsController(private val context: Context) {
+class NotificationsController(private val context: Context, coroutineScope: CoroutineScope) {
     private val notificationManager = context.getSystemService<NotificationManager>().also {
         if (it == null) {
             Timber.e("NotificationManager is null")
@@ -32,6 +35,7 @@ class NotificationsController(private val context: Context) {
     }
 
     private val random = Random(System.nanoTime())
+    private var fileSizeFormatter = FileSizeFormatter(context)
 
     init {
         if (notificationManager != null) {
@@ -55,6 +59,10 @@ class NotificationsController(private val context: Context) {
                 )
             )
             Timber.i("init: created notification channels")
+        }
+
+        coroutineScope.launch {
+            context.localeChangedEvents().collect { fileSizeFormatter = FileSizeFormatter(context) }
         }
     }
 
@@ -156,14 +164,8 @@ class NotificationsController(private val context: Context) {
                 is RpcRequestState.Loading -> context.getText(R.string.connecting)
                 is RpcRequestState.Loaded -> context.getString(
                     R.string.main_activity_subtitle,
-                    FormatUtils.formatTransferRate(
-                        context,
-                        sessionStats.response.downloadSpeed
-                    ),
-                    FormatUtils.formatTransferRate(
-                        context,
-                        sessionStats.response.uploadSpeed
-                    )
+                    fileSizeFormatter.formatTransferRate(sessionStats.response.downloadSpeed),
+                    fileSizeFormatter.formatTransferRate(sessionStats.response.uploadSpeed)
                 )
 
                 is RpcRequestState.Error -> sessionStats.error.getErrorString(context)
