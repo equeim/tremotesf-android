@@ -16,7 +16,7 @@ import org.equeim.tremotesf.rpc.RpcRequestError
  */
 suspend fun RpcClient.getDownloadDirFreeSpace(): FileSize {
     return performRequest<FreeSpaceResponseArguments, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.FreeSpace,
+        RpcMethod.FreeSpace,
         FreeSpaceRequestArgumentsWithNormalizedPath(getDownloadDirectory().value),
         "getDownloadDirFreeSpace"
     ).arguments.freeSpace
@@ -27,7 +27,7 @@ suspend fun RpcClient.getDownloadDirFreeSpace(): FileSize {
  */
 suspend fun RpcClient.getFreeSpaceInDirectory(directory: String): FileSize =
     performRequest<FreeSpaceResponseArguments, _>(
-        org.equeim.tremotesf.rpc.requests.RpcMethod.FreeSpace,
+        RpcMethod.FreeSpace,
         FreeSpaceRequestArguments(NotNormalizedRpcPath(directory))
     ).arguments.freeSpace
 
