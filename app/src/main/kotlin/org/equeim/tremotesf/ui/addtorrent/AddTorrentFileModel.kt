@@ -165,8 +165,8 @@ class AddTorrentFileModelImpl(
                     this@AddTorrentFileModelImpl.files = files
                     filesTree.init(rootNode, savedStateHandle)
                     // Restore saved state
-                    savedStateHandle.get<Bundle>(CHANGED_FILE_PRIORITIES_KEY)?.let {
-                        BundleCompat.getParcelable(it, "", ChangedFilePriorities::class.java)?.let { priorities ->
+                    savedStateHandle.get<Bundle>(CHANGED_FILE_PRIORITIES_KEY)?.let { bundle ->
+                        BundleCompat.getParcelable(bundle, "", ChangedFilePriorities::class.java)?.let { priorities ->
                             if (renamedFiles.isNotEmpty() ||
                                 priorities.unwantedFiles.isNotEmpty() ||
                                 priorities.lowPriorityFiles.isNotEmpty() ||
