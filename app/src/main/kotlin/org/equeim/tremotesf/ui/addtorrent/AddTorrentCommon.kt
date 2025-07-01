@@ -28,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -50,7 +49,6 @@ import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
-import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
 @Composable
