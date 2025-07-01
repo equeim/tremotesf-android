@@ -155,7 +155,7 @@ private suspend fun RpcClient.addTorrentTrackersOldMethod(
     existingTrackersMaybe: List<Tracker>?,
 ) {
     // Transmission adds each announce URL to each own tier when using trackerAdd property, so take first URL from each tier
-    val existingTrackers = (existingTrackersMaybe ?: getTorrentTrackers(torrentHashString).orEmpty())
+    val existingTrackers = (existingTrackersMaybe ?: getTorrentTrackers(torrentHashString))
         .toTieredAnnounceUrls()
         .firstFromTiers()
         .toSet()
