@@ -30,7 +30,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     AndroidViewModel(application) {
     var navigatedInitially: Boolean by savedStateHandle.saved { false }
 
-    data class AddTorrentDirections(@IdRes val destinationId: Int, val arguments: Bundle)
+    data class AddTorrentDirections(@param:IdRes val destinationId: Int, val arguments: Bundle)
 
     fun getAddTorrentDirections(intent: Intent): AddTorrentDirections? {
         if (intent.action != Intent.ACTION_VIEW) return null

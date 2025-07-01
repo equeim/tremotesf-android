@@ -51,7 +51,7 @@ fun TremotesfIconButtonWithTooltipAndMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            val scope = object : DropdownMenuScope by this {
+            val scope = object : DropdownMenuScope, ColumnScope by this {
                 override fun dismiss() { expanded = false }
             }
             with(scope) { menuContent() }

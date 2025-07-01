@@ -8,6 +8,9 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.api.AndroidBasePlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 
 val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
 val javaVersion = JavaVersion.VERSION_11
@@ -15,15 +18,19 @@ val javaVersion = JavaVersion.VERSION_11
 private fun getSdkVersion(alias: String): Int =
     libs.findVersion(alias).get().requiredVersion.toInt()
 
+typealias AndroidExtension = CommonExtension<*, *, *, *, *, *>
+
 plugins.withType<AndroidBasePlugin> {
-    val androidExtension = extensions.getByType(CommonExtension::class)
-    androidExtension.configureAndroidProject()
-    @Suppress("DEPRECATION")
-    (androidExtension as ExtensionAware).extensions.getByType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions::class)
-        .configureKotlin()
+    extensions.getByName<AndroidExtension>("android").configureAndroidProject()
 }
 
-private fun CommonExtension<*, *, *, *, *, *>.configureAndroidProject() {
+plugins.withType<KotlinBasePlugin> {
+    extensions.getByName<KotlinAndroidExtension>("kotlin").compilerOptions.jvmTarget.set(
+        JvmTarget.fromTarget(javaVersion.toString())
+    )
+}
+
+private fun AndroidExtension.configureAndroidProject() {
     compileSdk = getSdkVersion("sdk.platform.compile")
     defaultConfig.minSdk = getSdkVersion("sdk.platform.min")
     compileOptions {
@@ -49,9 +56,4 @@ private fun LibraryExtension.configureLibraryProject() {
 
 private fun ApplicationExtension.configureApplicationProject() {
     defaultConfig.targetSdk = getSdkVersion("sdk.platform.target")
-}
-
-@Suppress("DEPRECATION")
-private fun org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions.configureKotlin() {
-    jvmTarget = javaVersion.toString()
 }

@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 object GlobalRpcClient : RpcClient(CoroutineScope(SupervisorJob() + Dispatchers.Default)) {
     @Parcelize
-    data class BackgroundRpcRequestError(val error: RpcRequestError, @StringRes val errorContext: Int) : Parcelable
+    data class BackgroundRpcRequestError(val error: RpcRequestError, @param:StringRes val errorContext: Int) : Parcelable
 
     val backgroundRpcRequestsErrors: Channel<BackgroundRpcRequestError> = Channel(Channel.UNLIMITED)
 
