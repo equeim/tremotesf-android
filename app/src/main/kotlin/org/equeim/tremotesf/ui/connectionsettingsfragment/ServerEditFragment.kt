@@ -626,7 +626,7 @@ private val LOCATION_PERMISSIONS_TO_REQUEST: List<String> = if (Build.VERSION.SD
 
 private val LOCATION_NEEDS_TO_BE_ENABLED: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
-@Suppress("KotlinConstantConditions")
+@Suppress("SimplifyBooleanWithConstants", "KotlinConstantConditions")
 private val CAN_REQUEST_BACKGROUND_LOCATION_PERMISSION: Boolean =
     !BuildConfig.GOOGLE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
