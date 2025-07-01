@@ -590,13 +590,14 @@ class TorrentFilesTreeTest {
             val isInItems = currentNodePublic.children.contains(renamedNode)
             val oldItems = items.value
 
-            val expectedOriginalPath = getItemNamePath(renamedNode.item)
+            val expectedOriginalNamePath = getItemNamePath(renamedNode.item)
             val expectedNewName = "foo"
             var callbackCalled = false
-            onFileRenamedCallback = { nodePath, originalPath, newName ->
-                if (nodePath == renamedNode.path && originalPath == expectedOriginalPath && newName == expectedNewName) {
-                    callbackCalled = true
-                }
+            onFileRenamedCallback = { nodePath, originalNamePath, newName ->
+                assertEquals(renamedNode.path, nodePath)
+                assertEquals(expectedOriginalNamePath, originalNamePath)
+                assertEquals(expectedNewName, newName)
+                callbackCalled = true
             }
 
             renameFile(renamedNode.path, expectedNewName)
@@ -604,6 +605,7 @@ class TorrentFilesTreeTest {
 
             mustChange.assertThatItemsChanged { assertEquals(expectedNewName, it.name) }
             mustNotChange.assertThatItemsAreNotChanged()
+            assertTrue(callbackCalled)
 
             if (isInItems) {
                 assertNotEquals(oldItems, items.value)
@@ -777,8 +779,9 @@ class TorrentFilesTreeTest {
         }
 
         var onFileRenamedCallback: (NodePath, String, String) -> Unit = { _, _, _ -> }
-        override fun onFileRenamed(path: NodePath, originalPath: String, newName: String) {
-            println("onFileRenamed called with: originalPath = $originalPath, newName = $newName")
+        override fun onFileRenamed(path: NodePath, originalNamePath: String, newName: String) {
+            println("onFileRenamed called with: originalPath = $originalNamePath, newName = $newName")
+            onFileRenamedCallback(path, originalNamePath, newName)
         }
     }
 }
