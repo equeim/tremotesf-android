@@ -78,7 +78,7 @@ private fun String.dropTrailingSeparator(serverCapabilities: ServerCapabilities)
     }
 }
 
-private val ABSOLUTE_DOS_FILE_PATH_REGEX = Regex("^[A-Za-z]:[\\\\/].*\$")
+private val ABSOLUTE_DOS_FILE_PATH_REGEX = Regex("^[A-Za-z]:[\\\\/].*$")
 private const val WINDOWS_SEPARATOR_CHAR = '\\'
 
 private const val UNIX_SEPARATOR_CHAR = '/'

@@ -21,41 +21,41 @@ class PathsTest {
             NormalizeTestCase(input = "///home//foo", onUnix = "/home/foo", onWindows = "//home/foo"),
             NormalizeTestCase(input = "C:/home//foo", onUnix = "C:/home/foo", onWindows = "C:/home/foo"),
             NormalizeTestCase(input = "C:/home//foo/", onUnix = "C:/home/foo", onWindows = "C:/home/foo"),
-            NormalizeTestCase(input = "C:\\home\\foo", onUnix = "C:\\home\\foo", onWindows = "C:/home/foo"),
-            NormalizeTestCase(input = "C:\\home\\foo\\", onUnix = "C:\\home\\foo\\", onWindows = "C:/home/foo"),
-            NormalizeTestCase(input = "C:\\home\\foo\\\\", onUnix = "C:\\home\\foo\\\\", onWindows = "C:/home/foo"),
-            NormalizeTestCase(input = "z:\\home\\foo", onUnix = "z:\\home\\foo", onWindows = "Z:/home/foo"),
-            NormalizeTestCase(input = "D:\\", onUnix = "D:\\", onWindows = "D:/"),
-            NormalizeTestCase(input = " D:\\ ", onUnix = "D:\\", onWindows = "D:/"),
-            NormalizeTestCase(input = "D:\\\\", onUnix = "D:\\\\", onWindows = "D:/"),
+            NormalizeTestCase(input = """C:\home\foo""", onUnix = """C:\home\foo""", onWindows = "C:/home/foo"),
+            NormalizeTestCase(input = """C:\home\foo\""", onUnix = """C:\home\foo\""", onWindows = "C:/home/foo"),
+            NormalizeTestCase(input = """C:\home\foo\\""", onUnix = """C:\home\foo\\""", onWindows = "C:/home/foo"),
+            NormalizeTestCase(input = """z:\home\foo""", onUnix = """z:\home\foo""", onWindows = "Z:/home/foo"),
+            NormalizeTestCase(input = """D:\""", onUnix = """D:\""", onWindows = "D:/"),
+            NormalizeTestCase(input = """ D:\ """, onUnix = """D:\""", onWindows = "D:/"),
+            NormalizeTestCase(input = """D:\\""", onUnix = """D:\\""", onWindows = "D:/"),
             NormalizeTestCase(input = "D:/", onUnix = "D:", onWindows = "D:/"),
             NormalizeTestCase(input = "D://", onUnix = "D:", onWindows = "D:/"),
-            NormalizeTestCase(input = "///home//fo\\o", onUnix = "/home/fo\\o", onWindows = "//home/fo/o"),
+            NormalizeTestCase(input = """///home//fo\o""", onUnix = """/home/fo\o""", onWindows = "//home/fo/o"),
             NormalizeTestCase(input = "///home//fo  o", onUnix = "/home/fo  o", onWindows = "//home/fo  o"),
-            NormalizeTestCase(input = "C:\\home\\fo o", onUnix = "C:\\home\\fo o", onWindows = "C:/home/fo o"),
+            NormalizeTestCase(input = """C:\home\fo o""", onUnix = """C:\home\fo o""", onWindows = "C:/home/fo o"),
             NormalizeTestCase(
-                input = "\\\\LOCALHOST\\c$\\home\\foo",
-                onUnix = "\\\\LOCALHOST\\c\$\\home\\foo",
+                input = """\\LOCALHOST\c$\home\foo""",
+                onUnix = """\\LOCALHOST\c$\home\foo""",
                 onWindows = "//LOCALHOST/c$/home/foo"
             ),
             NormalizeTestCase(
-                input = "\\\\LOCALHOST\\C$\\home\\foo",
-                onUnix = "\\\\LOCALHOST\\C\$\\home\\foo",
+                input = """\\LOCALHOST\C$\home\foo""",
+                onUnix = """\\LOCALHOST\C$\home\foo""",
                 onWindows = "//LOCALHOST/C$/home/foo"
             ),
             NormalizeTestCase(
-                input = "\\\\.\\c:\\home\\foo",
-                onUnix = "\\\\.\\c:\\home\\foo",
+                input = """\\.\c:\home\foo""",
+                onUnix = """\\.\c:\home\foo""",
                 onWindows = "//./c:/home/foo"
             ),
             NormalizeTestCase(
-                input = "\\\\.\\C:\\home\\foo",
-                onUnix = "\\\\.\\C:\\home\\foo",
+                input = """\\.\C:\home\foo""",
+                onUnix = """\\.\C:\home\foo""",
                 onWindows = "//./C:/home/foo"
             ),
             NormalizeTestCase(input = "d:", onUnix = "d:", onWindows = "d:"),
             NormalizeTestCase(input = "d:foo", onUnix = "d:foo", onWindows = "d:foo"),
-            NormalizeTestCase(input = "C::\\wtf", onUnix = "C::\\wtf", onWindows = "C::/wtf"),
+            NormalizeTestCase(input = """C::\wtf""", onUnix = """C::\wtf""", onWindows = "C::/wtf"),
         )
 
         val serverOsIsUnix =
