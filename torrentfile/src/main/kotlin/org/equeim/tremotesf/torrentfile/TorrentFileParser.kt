@@ -169,7 +169,7 @@ object TorrentFileParser {
                 }
             }.getOrElse {
                 Timber.e(it, "Failed to build file tree")
-                throw if (it is FileParseException) it else FileParseException(it)
+                throw it as? FileParseException ?: FileParseException(it)
             }
         }
 
