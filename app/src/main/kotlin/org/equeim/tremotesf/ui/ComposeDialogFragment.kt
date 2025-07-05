@@ -6,6 +6,7 @@ package org.equeim.tremotesf.ui
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +20,15 @@ import androidx.navigation.fragment.findNavController
 abstract class ComposeDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        android.R.style.Theme_Material_Dialog
-        setStyle(STYLE_NO_TITLE, android.R.style.Theme_Material_Dialog)
+        setStyle(STYLE_NO_TITLE, 0)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).apply {
-            window?.setBackgroundDrawableResource(android.R.color.transparent)
+            window?.apply {
+                setBackgroundDrawableResource(android.R.color.transparent)
+                setGravity(Gravity.CENTER)
+            }
         }
     }
 
