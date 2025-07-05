@@ -48,16 +48,50 @@ fun TremotesfAlertDialogWithoutTextPadding(
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
 ) {
+    TremotesfAlertDialogWithoutTextPadding(
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        properties = properties,
+        buttons = {
+            dismissButton?.invoke()
+            confirmButton()
+        },
+        icon = icon,
+        title = title,
+        text = text,
+        shape = shape,
+        containerColor = containerColor,
+        tonalElevation = tonalElevation,
+        iconContentColor = iconContentColor,
+        titleContentColor = titleContentColor,
+        textContentColor = textContentColor
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TremotesfAlertDialogWithoutTextPadding(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    buttons: @Composable FlowRowScope.() -> Unit,
+    icon: @Composable (() -> Unit)? = null,
+    title: @Composable (() -> Unit)? = null,
+    text: @Composable (() -> Unit)? = null,
+    shape: Shape = AlertDialogDefaults.shape,
+    containerColor: Color = AlertDialogDefaults.containerColor,
+    iconContentColor: Color = AlertDialogDefaults.iconContentColor,
+    titleContentColor: Color = AlertDialogDefaults.titleContentColor,
+    textContentColor: Color = AlertDialogDefaults.textContentColor,
+    tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
+    properties: DialogProperties = DialogProperties(),
+) {
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
         properties = properties,
     ) {
         TremotesfAlertDialogContent(
-            buttons = {
-                dismissButton?.invoke()
-                confirmButton()
-            },
+            buttons = buttons,
             icon = icon,
             title = title,
             text = text,

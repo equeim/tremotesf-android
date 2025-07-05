@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.torrentproperties.Peer
@@ -70,7 +69,6 @@ import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfScrollableTopAppBar
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBarDefaults
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.safeNavigate
 
@@ -90,7 +88,6 @@ class TorrentPropertiesFragment : ComposeFragment() {
         }
         TorrentPropertiesScreen(
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             navigateToLabelsEditDialog = { enabledLabels ->
                 navController.safeNavigate(
                     TorrentPropertiesFragmentDirections.toLabelsEditDialog(
@@ -133,7 +130,6 @@ class TorrentPropertiesFragment : ComposeFragment() {
 @Composable
 private fun TorrentPropertiesScreen(
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     navigateToLabelsEditDialog: (enabledLabels: List<String>) -> Unit,
     navigateToSetLocationDialog: (location: String) -> Unit,
 
@@ -175,7 +171,7 @@ private fun TorrentPropertiesScreen(
     val toolbarClicked = MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     val snackbarHostState = remember { SnackbarHostState() }
-    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -245,69 +241,64 @@ private fun TorrentPropertiesScreen(
     ) { innerPadding ->
         TremotesfScreenContentWithPlaceholder(
             requestState = torrentDetails.value,
-            onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
             modifier = Modifier
                 .fillMaxSize()
                 .consumeWindowInsets(innerPadding),
             placeholdersModifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(Dimens.screenContentPadding())
-        ) { torrentDetails ->
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(innerPadding)
-            ) { currentPage ->
-                val currentTab = Tab.entries[currentPage]
-                when (currentTab) {
-                    Tab.Details -> DetailsTab(
-                        innerPadding = innerPadding,
-                        torrentDetails = torrentDetails,
-                        shouldShowLabels = shouldShowLabels,
-                        navigateToLabelsEditDialog = navigateToLabelsEditDialog
-                    )
+                .padding(Dimens.screenContentPadding()),
+            content = { torrentDetails ->
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(innerPadding)
+                ) { currentPage ->
+                    val currentTab = Tab.entries[currentPage]
+                    when (currentTab) {
+                        Tab.Details -> DetailsTab(
+                            innerPadding = innerPadding,
+                            torrentDetails = torrentDetails,
+                            shouldShowLabels = shouldShowLabels,
+                            navigateToLabelsEditDialog = navigateToLabelsEditDialog
+                        )
 
-                    Tab.Files -> FilesTab(
-                        innerPadding = innerPadding,
-                        filesTree = filesTree,
-                        filesTreeState = filesTreeState,
-                        toolbarClicked = toolbarClicked,
-                        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
-                    )
+                        Tab.Files -> FilesTab(
+                            innerPadding = innerPadding,
+                            filesTree = filesTree,
+                            filesTreeState = filesTreeState,
+                            toolbarClicked = toolbarClicked,
+                        )
 
-                    Tab.Trackers -> TrackersTab(
-                        innerPadding = innerPadding,
-                        trackers = trackers,
-                        toolbarClicked = toolbarClicked,
-                        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
-                        torrentOperations = torrentOperations
-                    )
+                        Tab.Trackers -> TrackersTab(
+                            innerPadding = innerPadding,
+                            trackers = trackers,
+                            toolbarClicked = toolbarClicked,
+                            torrentOperations = torrentOperations
+                        )
 
-                    Tab.Peers -> PeersTab(
-                        innerPadding = innerPadding,
-                        peers = peers,
-                        toolbarClicked = toolbarClicked,
-                        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
-                    )
+                        Tab.Peers -> PeersTab(
+                            innerPadding = innerPadding,
+                            peers = peers,
+                            toolbarClicked = toolbarClicked,
+                        )
 
-                    Tab.WebSeeders -> WebSeedersTab(
-                        innerPadding = innerPadding,
-                        webSeeders = webSeeders,
-                        toolbarClicked = toolbarClicked,
-                        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
-                    )
+                        Tab.WebSeeders -> WebSeedersTab(
+                            innerPadding = innerPadding,
+                            webSeeders = webSeeders,
+                            toolbarClicked = toolbarClicked,
+                        )
 
-                    Tab.Limits -> LimitsTab(
-                        innerPadding = innerPadding,
-                        limits = limits,
-                        operations = torrentLimitsOperations,
-                        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog
-                    )
+                        Tab.Limits -> LimitsTab(
+                            innerPadding = innerPadding,
+                            limits = limits,
+                            operations = torrentLimitsOperations,
+                        )
+                    }
                 }
             }
-        }
+        )
     }
 }
 

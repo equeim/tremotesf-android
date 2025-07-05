@@ -14,6 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,11 +25,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import org.equeim.tremotesf.R
+import org.equeim.tremotesf.rpc.DetailedRpcRequestError
+import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.createRpcRequestErrorForComposePreview
 import org.equeim.tremotesf.rpc.getErrorString
+import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.ui.ComponentPreview
+import org.equeim.tremotesf.ui.DetailedConnectionErrorDialog
 import org.equeim.tremotesf.ui.Dimens
 
 @Composable
@@ -76,7 +84,7 @@ fun TremotesfErrorPlaceholder(error: String, modifier: Modifier = Modifier) {
 fun TremotesfErrorPlaceholder(
     error: RpcRequestError,
     modifier: Modifier = Modifier,
-    onShowDetailedErrorButtonClicked: (RpcRequestError) -> Unit,
+    onShowDetailedErrorButtonClicked: (DetailedRpcRequestError) -> Unit,
 ) {
     Box(modifier) {
         Column(
@@ -88,7 +96,7 @@ fun TremotesfErrorPlaceholder(
             when (error) {
                 is RpcRequestError.NoConnectionConfiguration, is RpcRequestError.ConnectionDisabled -> Unit
                 else -> {
-                    OutlinedButton(onClick = { onShowDetailedErrorButtonClicked(error) }) {
+                    OutlinedButton(onClick = { onShowDetailedErrorButtonClicked(error.makeDetailedError(GlobalRpcClient)) }) {
                         Text(stringResource(R.string.see_detailed_error_message))
                     }
                 }
@@ -112,12 +120,13 @@ private fun TremotesfRpcErrorPlaceholderPreview() = ComponentPreview {
 @Composable
 fun <Response> TremotesfScreenContentWithPlaceholder(
     requestState: RpcRequestState<Response>,
-    onShowDetailedErrorButtonClicked: (RpcRequestError) -> Unit,
     modifier: Modifier = Modifier,
     placeholdersModifier: Modifier = Modifier,
     @StringRes loadingText: Int = DEFAULT_LOADING_TEXT,
     content: @Composable (response: Response) -> Unit
 ) {
+    var showDetailedErrorDialog: DetailedRpcRequestError? by rememberSaveable { mutableStateOf(null) }
+
     when (requestState) {
         is RpcRequestState.Loading -> TremotesfLoadingPlaceholder(
             modifier = modifier.then(placeholdersModifier),
@@ -126,13 +135,17 @@ fun <Response> TremotesfScreenContentWithPlaceholder(
 
         is RpcRequestState.Error -> TremotesfErrorPlaceholder(
             error = requestState.error,
-            onShowDetailedErrorButtonClicked = onShowDetailedErrorButtonClicked,
+            onShowDetailedErrorButtonClicked = { showDetailedErrorDialog = it },
             modifier = modifier.then(placeholdersModifier)
         )
 
         is RpcRequestState.Loaded -> Box(modifier) {
             content(requestState.response)
         }
+    }
+
+    showDetailedErrorDialog?.let {
+        DetailedConnectionErrorDialog(error = it, onDismissRequest = { showDetailedErrorDialog = null })
     }
 }
 

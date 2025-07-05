@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
@@ -73,7 +72,6 @@ class TorrentsSetLocationDialogFragment : ComposeDialogFragment() {
         }
         TorrentSetLocationDialogContent(
             allDownloadDirectoriesRequest = model.allDownloadDirectoriesRequest.collectAsStateWithLifecycle(),
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             initialLocation = args::location,
             allDownloadDirectories = model.allDownloadDirectories,
             setLocation = model::setLocation,
@@ -85,7 +83,6 @@ class TorrentsSetLocationDialogFragment : ComposeDialogFragment() {
 @Composable
 private fun TorrentSetLocationDialogContent(
     allDownloadDirectoriesRequest: State<RpcRequestState<Any>>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     initialLocation: () -> String,
     allDownloadDirectories: SnapshotStateList<DownloadDirectoryItem>,
     setLocation: (String, Boolean) -> Unit,
@@ -103,30 +100,30 @@ private fun TorrentSetLocationDialogContent(
         text = {
             TremotesfScreenContentWithPlaceholder(
                 requestState = allDownloadDirectoriesRequest.value,
-                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
-                placeholdersModifier = Modifier.fillMaxWidth()
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
-                    val focusRequester = rememberTremotesfInitialFocusRequester()
-                    TremotesfDownloadDirectoryField(
-                        downloadDirectory = location,
-                        onDownloadDirectoryChanged = { location = it },
-                        allDownloadDirectories = allDownloadDirectories,
-                        removeDownloadDirectory = allDownloadDirectories::remove,
-                        label = R.string.location,
-                        imeAction = ImeAction.Done,
-                        keyboardActions = KeyboardActions { setLocationIfNotBlankAndDismiss() },
-                        modifier = Modifier.focusRequester(focusRequester).padding(horizontal = DialogPadding).fillMaxWidth()
-                    )
-                    TremotesfSwitchWithText(
-                        checked = moveFiles,
-                        onCheckedChange = { moveFiles = it },
-                        text = R.string.move_files,
-                        horizontalContentPadding = DialogPadding,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                placeholdersModifier = Modifier.fillMaxWidth(),
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
+                        val focusRequester = rememberTremotesfInitialFocusRequester()
+                        TremotesfDownloadDirectoryField(
+                            downloadDirectory = location,
+                            onDownloadDirectoryChanged = { location = it },
+                            allDownloadDirectories = allDownloadDirectories,
+                            removeDownloadDirectory = allDownloadDirectories::remove,
+                            label = R.string.location,
+                            imeAction = ImeAction.Done,
+                            keyboardActions = KeyboardActions { setLocationIfNotBlankAndDismiss() },
+                            modifier = Modifier.focusRequester(focusRequester).padding(horizontal = DialogPadding).fillMaxWidth()
+                        )
+                        TremotesfSwitchWithText(
+                            checked = moveFiles,
+                            onCheckedChange = { moveFiles = it },
+                            text = R.string.move_files,
+                            horizontalContentPadding = DialogPadding,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
-            }
+            )
         },
         applyHorizontalPaddingToText = false,
         buttons = {

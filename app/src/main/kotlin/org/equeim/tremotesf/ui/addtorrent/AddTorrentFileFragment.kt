@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,11 +62,12 @@ import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.DetailedRpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.ComposeFragment
+import org.equeim.tremotesf.ui.DetailedConnectionErrorDialog
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileModel.LoadingState
@@ -79,7 +81,6 @@ import org.equeim.tremotesf.ui.components.TremotesfScrollableTopAppBarWithSubtit
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBarDefaults
 import org.equeim.tremotesf.ui.components.TremotesfTorrentsFilesList
 import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
 
@@ -97,7 +98,6 @@ class AddTorrentFileFragment : ComposeFragment() {
         }
         AddTorrentFileScreen(
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
 
             needStoragePermission = model.needStoragePermission,
 
@@ -126,7 +126,6 @@ class AddTorrentFileFragment : ComposeFragment() {
 @Composable
 private fun AddTorrentFileScreen(
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
 
     needStoragePermission: Boolean,
 
@@ -224,6 +223,11 @@ private fun AddTorrentFileScreen(
 
         LaunchedEffect(null) { loadTorrentFile() }
 
+        var showDetailedErrorDialog: DetailedRpcRequestError? by rememberSaveable { mutableStateOf(null) }
+        showDetailedErrorDialog?.let {
+            DetailedConnectionErrorDialog(error = it, onDismissRequest = { showDetailedErrorDialog = null })
+        }
+
         when (val state = loadingState.value) {
             is LoadingState.Initial, is LoadingState.Aborted -> Unit
             is LoadingState.Loading -> TremotesfLoadingPlaceholder(
@@ -253,7 +257,7 @@ private fun AddTorrentFileScreen(
 
             is LoadingState.InitialRpcInputsError -> TremotesfErrorPlaceholder(
                 error = state.error,
-                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
+                onShowDetailedErrorButtonClicked = { showDetailedErrorDialog = it },
                 modifier = Modifier
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding)
@@ -460,7 +464,6 @@ private fun AddTorrentFileScreenPreview() = ScreenPreview {
 
     AddTorrentFileScreen(
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
 
         needStoragePermission = false,
 

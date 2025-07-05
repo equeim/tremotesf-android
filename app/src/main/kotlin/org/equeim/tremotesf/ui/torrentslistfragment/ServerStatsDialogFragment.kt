@@ -30,7 +30,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performPeriodicRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.FileSize
@@ -45,7 +44,6 @@ import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfDetailsGrid
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.formatDuration
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
@@ -60,7 +58,6 @@ class ServerStatsDialogFragment : ComposeDialogFragment() {
         val model = viewModel<ServerStatsDialogFragmentViewModel>()
         ServerStatsDialogContent(
             uiState = model.uiState.collectAsStateWithLifecycle().value,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             onDismissRequest = ::dismiss
         )
     }
@@ -69,7 +66,6 @@ class ServerStatsDialogFragment : ComposeDialogFragment() {
 @Composable
 private fun ServerStatsDialogContent(
     uiState: RpcRequestState<ServerStatsDialogFragmentViewModel.UiState>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     TremotesfAlertDialogContent(
@@ -77,42 +73,42 @@ private fun ServerStatsDialogContent(
         text = {
             TremotesfScreenContentWithPlaceholder(
                 requestState = uiState,
-                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
-                placeholdersModifier = Modifier.fillMaxWidth()
-            ) { uiState ->
-                TremotesfDetailsGrid(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    val fileSizeFormatter = rememberFileSizeFormatter()
-                    val ratioFormatter = rememberNumberFormat { DecimalFormat("0.00") }
+                placeholdersModifier = Modifier.fillMaxWidth(),
+                content = { uiState ->
+                    TremotesfDetailsGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        val fileSizeFormatter = rememberFileSizeFormatter()
+                        val ratioFormatter = rememberNumberFormat { DecimalFormat("0.00") }
 
-                    TremotesfSectionHeader(R.string.current_session, Modifier.span { maxLineSpan })
+                        TremotesfSectionHeader(R.string.current_session, Modifier.span { maxLineSpan })
 
-                    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
-                        CommonStats(uiState.sessionStats.currentSession, fileSizeFormatter, ratioFormatter)
-                    }
+                        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
+                            CommonStats(uiState.sessionStats.currentSession, fileSizeFormatter, ratioFormatter)
+                        }
 
-                    TremotesfSectionHeader(
-                        R.string.total,
-                        Modifier
-                            .span { maxLineSpan }
-                            .padding(top = Dimens.SpacingSmall)
-                    )
-
-                    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
-                        val total = uiState.sessionStats.total
-                        Text(
-                            text = pluralStringResource(R.plurals.started_times, total.sessionCount, total.sessionCount),
-                            modifier = Modifier.span { maxLineSpan }
+                        TremotesfSectionHeader(
+                            R.string.total,
+                            Modifier
+                                .span { maxLineSpan }
+                                .padding(top = Dimens.SpacingSmall)
                         )
-                        CommonStats(total, fileSizeFormatter, ratioFormatter)
-                        Text(stringResource(R.string.free_space_in_download_directory))
-                        Text(fileSizeFormatter.formatFileSize(uiState.downloadDirFreeSpace))
+
+                        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
+                            val total = uiState.sessionStats.total
+                            Text(
+                                text = pluralStringResource(R.plurals.started_times, total.sessionCount, total.sessionCount),
+                                modifier = Modifier.span { maxLineSpan }
+                            )
+                            CommonStats(total, fileSizeFormatter, ratioFormatter)
+                            Text(stringResource(R.string.free_space_in_download_directory))
+                            Text(fileSizeFormatter.formatFileSize(uiState.downloadDirFreeSpace))
+                        }
                     }
                 }
-            }
+            )
         },
         buttons = { TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.close)) } }
     )
@@ -164,7 +160,6 @@ private fun ServerStatsDialogPreview() = ScreenPreview {
                 )
             )
         },
-        navigateToDetailedErrorDialog = {},
         onDismissRequest = {}
     )
 }

@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.ComponentPreview
 import org.equeim.tremotesf.ui.Dimens
@@ -41,54 +40,53 @@ fun WebSeedersTab(
     innerPadding: PaddingValues,
     webSeeders: StateFlow<RpcRequestState<List<String>>>,
     toolbarClicked: Flow<Unit>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
     val webSeeders = webSeeders.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
         requestState = webSeeders.value,
-        onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(innerPadding)
-            .padding(Dimens.screenContentPadding())
-    ) { webSeeders ->
-        if (webSeeders.isEmpty()) {
-            TremotesfErrorPlaceholder(
-                error = stringResource(R.string.no_web_seeders),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
-                    .padding(Dimens.screenContentPadding())
-            )
-            return@TremotesfScreenContentWithPlaceholder
-        }
+            .padding(Dimens.screenContentPadding()),
+        content = { webSeeders ->
+            if (webSeeders.isEmpty()) {
+                TremotesfErrorPlaceholder(
+                    error = stringResource(R.string.no_web_seeders),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(Dimens.screenContentPadding())
+                )
+                return@TremotesfScreenContentWithPlaceholder
+            }
 
-        val listState = rememberLazyListState()
-        LaunchedEffect(toolbarClicked) {
-            toolbarClicked.collect { listState.scrollToItem(0) }
-        }
+            val listState = rememberLazyListState()
+            LaunchedEffect(toolbarClicked) {
+                toolbarClicked.collect { listState.scrollToItem(0) }
+            }
 
-        val comparator = rememberAlphanumericComparator()
-        val sortedWebSeeders = remember { derivedStateOf { webSeeders.sortedWith(comparator) } }
+            val comparator = rememberAlphanumericComparator()
+            val sortedWebSeeders = remember { derivedStateOf { webSeeders.sortedWith(comparator) } }
 
-        LazyColumn(
-            state = listState,
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(
-                items = sortedWebSeeders.value,
-                key = { it }
-            ) { webSeeder ->
-                Column {
-                    ListItem(headlineContent = { Text(webSeeder) })
+            LazyColumn(
+                state = listState,
+                contentPadding = innerPadding,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    items = sortedWebSeeders.value,
+                    key = { it }
+                ) { webSeeder ->
+                    Column {
+                        ListItem(headlineContent = { Text(webSeeder) })
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 @Preview
@@ -98,6 +96,5 @@ private fun WebSeedersTabPreview() = ComponentPreview {
         innerPadding = PaddingValues(),
         webSeeders = remember { MutableStateFlow(RpcRequestState.Loaded(listOf("http://example.com"))) },
         toolbarClicked = remember { emptyFlow() },
-        navigateToDetailedErrorDialog = {}
     )
 }

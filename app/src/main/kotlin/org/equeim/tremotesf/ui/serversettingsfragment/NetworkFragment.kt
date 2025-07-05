@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.NetworkServerSettings
@@ -50,7 +49,6 @@ import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 
 
 class NetworkFragment : ComposeFragment() {
@@ -60,7 +58,6 @@ class NetworkFragment : ComposeFragment() {
         ServerSettingsNetworkScreen(
             settingsRequestState = model.settings.collectAsStateWithLifecycle(),
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             peerPort = model.peerPort,
             useRandomPort = model.useRandomPort,
             usePortForwarding = model.usePortForwarding,
@@ -81,7 +78,6 @@ class NetworkFragment : ComposeFragment() {
 private fun ServerSettingsNetworkScreen(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     peerPort: TremotesfIntegerNumberInputFieldState,
     useRandomPort: ServerSettingsProperty<Boolean>,
     usePortForwarding: ServerSettingsProperty<Boolean>,
@@ -98,7 +94,6 @@ private fun ServerSettingsNetworkScreen(
         title = R.string.server_settings_network,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
         backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSectionHeader(R.string.connection, modifier = Modifier.padding(horizontal = horizontalPadding))
@@ -204,7 +199,6 @@ private fun ServerSettingsNetworkScreenPreview() = ScreenPreview {
     ServerSettingsNetworkScreen(
         settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
         peerPort = rememberTremotesfIntegerNumberInputFieldState(),
         useRandomPort = remember { ServerSettingsBooleanProperty {} },
         usePortForwarding = remember { ServerSettingsBooleanProperty {} },

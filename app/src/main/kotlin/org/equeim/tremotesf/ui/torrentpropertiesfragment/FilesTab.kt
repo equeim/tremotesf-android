@@ -17,6 +17,10 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,9 +28,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.DetailedRpcRequestError
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
+import org.equeim.tremotesf.ui.DetailedConnectionErrorDialog
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.components.TremotesfErrorPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfLoadingPlaceholder
@@ -41,9 +46,14 @@ fun FilesTab(
     filesTree: TorrentFilesTree,
     filesTreeState: StateFlow<TorrentPropertiesFragmentViewModel.FilesTreeState>,
     toolbarClicked: Flow<Unit>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
     val filesTreeState = filesTreeState.collectAsStateWithLifecycle()
+
+    var showDetailedErrorDialog: DetailedRpcRequestError? by rememberSaveable { mutableStateOf(null) }
+    showDetailedErrorDialog?.let {
+        DetailedConnectionErrorDialog(error = it, onDismissRequest = { showDetailedErrorDialog = null })
+    }
+
     when (val state = filesTreeState.value) {
         is TorrentPropertiesFragmentViewModel.FilesTreeState.Loading -> TremotesfLoadingPlaceholder(
             modifier = Modifier
@@ -55,7 +65,7 @@ fun FilesTab(
 
         is TorrentPropertiesFragmentViewModel.FilesTreeState.Error -> TremotesfErrorPlaceholder(
             error = state.error,
-            onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
+            onShowDetailedErrorButtonClicked = { showDetailedErrorDialog = it },
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())

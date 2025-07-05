@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.QueueServerSettings
@@ -43,7 +42,6 @@ import org.equeim.tremotesf.ui.components.TremotesfNumberInputField
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import kotlin.time.Duration.Companion.minutes
 
 class QueueFragment : ComposeFragment() {
@@ -53,7 +51,6 @@ class QueueFragment : ComposeFragment() {
         ServerSettingsQueueScreen(
             settingsRequestState = model.settings.collectAsStateWithLifecycle(),
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             downloadQueueEnabled = model.downloadQueueEnabled,
             downloadQueueSize = model.downloadQueueSize,
             seedQueueEnabled = model.seedQueueEnabled,
@@ -101,7 +98,6 @@ class QueueFragmentViewModel(application: Application) : AndroidViewModel(applic
 private fun ServerSettingsQueueScreen(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     downloadQueueEnabled: ServerSettingsProperty<Boolean>,
     downloadQueueSize: TremotesfIntegerNumberInputFieldState,
     seedQueueEnabled: ServerSettingsProperty<Boolean>,
@@ -114,7 +110,6 @@ private fun ServerSettingsQueueScreen(
         title = R.string.server_settings_queue,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
         backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSwitchWithText(
@@ -167,7 +162,6 @@ private fun ServerSettingsQueueScreenPreview() = ScreenPreview {
     ServerSettingsQueueScreen(
         settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
         downloadQueueEnabled = remember { ServerSettingsBooleanProperty {} },
         downloadQueueSize = rememberTremotesfIntegerNumberInputFieldState(),
         seedQueueEnabled = remember { ServerSettingsBooleanProperty {} },

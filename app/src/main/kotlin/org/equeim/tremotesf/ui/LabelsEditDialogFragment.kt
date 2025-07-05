@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.getTorrentsLabels
@@ -45,7 +44,6 @@ class LabelsEditDialogFragment : ComposeDialogFragment() {
             allLabels = model.allLabels.collectAsStateWithLifecycle(),
             updateLabels = model::updateLabels,
             onDismissRequest = ::dismiss,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog
         )
     }
 }
@@ -56,7 +54,6 @@ private fun LabelsEditDialogContent(
     allLabels: State<RpcRequestState<Set<String>>>,
     updateLabels: (List<String>) -> Unit,
     onDismissRequest: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
     val comparator = rememberAlphanumericComparator()
     val enabledLabels: SnapshotStateList<String> = rememberSaveable(saver = SnapshotStateListSaver()) {
@@ -70,21 +67,21 @@ private fun LabelsEditDialogContent(
         text = {
             TremotesfScreenContentWithPlaceholder(
                 requestState = allLabels.value,
-                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
-                placeholdersModifier = Modifier.fillMaxWidth()
-            ) { allLabels ->
-                val allLabelsSorted = remember(allLabels, comparator) {
-                    mutableStateOf(allLabels.sortedWith(comparator))
+                placeholdersModifier = Modifier.fillMaxWidth(),
+                content = { allLabels ->
+                    val allLabelsSorted = remember(allLabels, comparator) {
+                        mutableStateOf(allLabels.sortedWith(comparator))
+                    }
+                    val focusRequester = rememberTremotesfInitialFocusRequester()
+                    TremotesfLabelsEditor(
+                        enabledLabels = enabledLabels,
+                        removeLabel = enabledLabels::remove,
+                        addLabel = enabledLabels::add,
+                        allLabels = allLabelsSorted::value,
+                        textFieldFocusRequester = focusRequester
+                    )
                 }
-                val focusRequester = rememberTremotesfInitialFocusRequester()
-                TremotesfLabelsEditor(
-                    enabledLabels = enabledLabels,
-                    removeLabel = enabledLabels::remove,
-                    addLabel = enabledLabels::add,
-                    allLabels = allLabelsSorted::value,
-                    textFieldFocusRequester = focusRequester
-                )
-            }
+            )
         },
         buttons = {
             TextButton(onClick = onDismissRequest) { Text(stringResource(android.R.string.cancel)) }

@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.DownloadingServerSettings
@@ -42,7 +41,6 @@ import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 
 class DownloadingFragment : ComposeFragment() {
     @Composable
@@ -51,7 +49,6 @@ class DownloadingFragment : ComposeFragment() {
         ServerSettingsDownloadingScreen(
             settingsRequestState = model.settings.collectAsStateWithLifecycle(),
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             downloadDirectory = model.downloadDirectory,
             startAddedTorrents = model.startAddedTorrents,
             renameIncompleteTorrents = model.renameIncompleteFiles,
@@ -92,7 +89,6 @@ class DownloadingFragmentViewModel : ViewModel() {
 private fun ServerSettingsDownloadingScreen(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     downloadDirectory: ServerSettingsProperty<String>,
     startAddedTorrents: ServerSettingsProperty<Boolean>,
     renameIncompleteTorrents: ServerSettingsProperty<Boolean>,
@@ -104,7 +100,6 @@ private fun ServerSettingsDownloadingScreen(
         title = R.string.server_settings_downloading,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
         backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         OutlinedTextField(
@@ -157,7 +152,6 @@ private fun ServerSettingsDownloadingScreenPreview() = ScreenPreview {
     ServerSettingsDownloadingScreen(
         settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
         downloadDirectory = remember { ServerSettingsStringProperty {} },
         startAddedTorrents = remember { ServerSettingsBooleanProperty {} },
         renameIncompleteTorrents = remember { ServerSettingsBooleanProperty {} },

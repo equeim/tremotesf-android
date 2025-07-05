@@ -61,7 +61,6 @@ import kotlinx.coroutines.flow.first
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.isRecoverable
 import org.equeim.tremotesf.rpc.requests.Torrent
@@ -73,7 +72,6 @@ import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.rememberTremotesfRuntimePermissionHelperState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel.FloatingActionButtonState
 import org.equeim.tremotesf.ui.utils.Utils
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
@@ -108,7 +106,6 @@ class TorrentsListFragment : ComposeFragment() {
             navigateToSettings = { navController.safeNavigate(TorrentsListFragmentDirections.toSettingsFragment()) },
             navigateToAboutScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toAboutFragment()) },
             shutdownApp = { Utils.shutdownApp(context) },
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             navigateToServerAddingScreen = { navController.safeNavigate(TorrentsListFragmentDirections.toServerEditFragment()) },
             navigateToAddTorrentFileScreen = {
                 navController.safeNavigate(
@@ -187,7 +184,6 @@ private fun TorrentsListScreen(
     navigateToSettings: () -> Unit,
     navigateToAboutScreen: () -> Unit,
     shutdownApp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     navigateToServerAddingScreen: () -> Unit,
     navigateToAddTorrentFileScreen: (Uri) -> Unit,
     navigateToAddTorrentLinkScreen: () -> Unit,
@@ -340,32 +336,32 @@ private fun TorrentsListScreen(
         ) {
             TremotesfScreenContentWithPlaceholder(
                 requestState = torrents.value,
-                onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
-                loadingText = R.string.connecting,
                 modifier = Modifier.consumeWindowInsets(innerPadding),
                 placeholdersModifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
-                    .padding(Dimens.screenContentPadding())
-            ) { torrents ->
-                val listSettings = listSettings.value ?: return@TremotesfScreenContentWithPlaceholder
-                val compactView = listSettings.compactView.collectAsStateWithLifecycle()
-                val multilineName = listSettings.multilineName.collectAsStateWithLifecycle()
-                TorrentsList(
-                    innerPadding = innerPadding,
-                    torrents = torrents,
-                    compactView = compactView.value,
-                    multilineName = multilineName.value,
-                    toolbarClicked = toolbarClicked,
-                    labelsEnabled = labelsEnabled,
-                    sortAndFilterSettings = sortAndFilterSettings,
-                    torrentsOperations = torrentsOperations,
-                    navigateToTorrentPropertiesScreen = navigateToTorrentPropertiesScreen,
-                    navigateToSetLocationDialog = navigateToSetLocationDialog,
-                    navigateToLabelsEditDialog = navigateToLabelsEditDialog
-                )
-            }
+                    .padding(Dimens.screenContentPadding()),
+                loadingText = R.string.connecting,
+                { torrents ->
+                    val listSettings = listSettings.value ?: return@TremotesfScreenContentWithPlaceholder
+                    val compactView = listSettings.compactView.collectAsStateWithLifecycle()
+                    val multilineName = listSettings.multilineName.collectAsStateWithLifecycle()
+                    TorrentsList(
+                        innerPadding = innerPadding,
+                        torrents = torrents,
+                        compactView = compactView.value,
+                        multilineName = multilineName.value,
+                        toolbarClicked = toolbarClicked,
+                        labelsEnabled = labelsEnabled,
+                        sortAndFilterSettings = sortAndFilterSettings,
+                        torrentsOperations = torrentsOperations,
+                        navigateToTorrentPropertiesScreen = navigateToTorrentPropertiesScreen,
+                        navigateToSetLocationDialog = navigateToSetLocationDialog,
+                        navigateToLabelsEditDialog = navigateToLabelsEditDialog
+                    )
+                }
+            )
             PullToRefreshDefaults.Indicator(
                 state = pullToRefreshState,
                 isRefreshing = refreshingManually.value,
@@ -376,7 +372,7 @@ private fun TorrentsListScreen(
         }
     }
 
-    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors)
 
     ShowMergingTrackersMessage(showMergingTrackersMessage, snackbarHostState)
 

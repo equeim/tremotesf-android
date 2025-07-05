@@ -36,42 +36,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.navigation.NavController
-import androidx.navigation.fragment.navArgs
 import kotlinx.parcelize.Parcelize
-import org.equeim.tremotesf.NavMainDirections
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.causes
 import org.equeim.tremotesf.rpc.DetailedRpcRequestError
-import org.equeim.tremotesf.rpc.GlobalRpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
-import org.equeim.tremotesf.rpc.makeDetailedError
 import org.equeim.tremotesf.rpc.redactHeader
 import org.equeim.tremotesf.ui.components.DialogPadding
-import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
+import org.equeim.tremotesf.ui.components.TremotesfAlertDialogWithoutTextPadding
 import org.equeim.tremotesf.ui.utils.Utils
-import org.equeim.tremotesf.ui.utils.safeNavigate
-
-fun NavController.navigateToDetailedErrorDialog(error: RpcRequestError) =
-    safeNavigate(NavMainDirections.toDetailedConnectionErrorDialogFragment(error.makeDetailedError(GlobalRpcClient)))
-
-class DetailedConnectionErrorDialogFragment : ComposeDialogFragment() {
-    private val args: DetailedConnectionErrorDialogFragmentArgs by navArgs()
-
-    @Composable
-    override fun Content(navController: NavController) {
-        DetailedConnectionErrorDialogContent(args.error, ::dismiss)
-    }
-}
 
 @Composable
-private fun DetailedConnectionErrorDialogContent(error: DetailedRpcRequestError, onDismissRequest: () -> Unit) {
+fun DetailedConnectionErrorDialog(error: DetailedRpcRequestError, onDismissRequest: () -> Unit) {
     var showExpandedDetails: ExpandedDetails? by rememberSaveable { mutableStateOf(null) }
-    showExpandedDetails?.let {
-        ExpandedDetailsDialog(it) { showExpandedDetails = null }
-    }
 
-    TremotesfAlertDialogContent(
+    TremotesfAlertDialogWithoutTextPadding(
+        onDismissRequest = onDismissRequest,
         title = { Text(stringResource(R.string.detailed_error_message)) },
         text = {
             Column {
@@ -133,7 +112,6 @@ private fun DetailedConnectionErrorDialogContent(error: DetailedRpcRequestError,
                 }
             }
         },
-        applyHorizontalPaddingToText = false,
         buttons = {
             val context = LocalContext.current
             TextButton(onClick = {
@@ -149,6 +127,10 @@ private fun DetailedConnectionErrorDialogContent(error: DetailedRpcRequestError,
             TextButton(onDismissRequest) { Text(stringResource(R.string.close)) }
         },
     )
+
+    showExpandedDetails?.let {
+        ExpandedDetailsDialog(it) { showExpandedDetails = null }
+    }
 }
 
 @Composable

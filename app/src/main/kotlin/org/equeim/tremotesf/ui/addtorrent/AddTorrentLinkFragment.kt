@@ -53,7 +53,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.FileSize
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
@@ -65,7 +64,6 @@ import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
 import org.equeim.tremotesf.ui.components.TremotesfTopAppBar
 import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 
 
 class AddTorrentLinkFragment : ComposeFragment() {
@@ -82,7 +80,6 @@ class AddTorrentLinkFragment : ComposeFragment() {
         }
         AddTorrentLinkScreen(
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             initialRpcInputsRequestState = model.initialRpcInputs.collectAsStateWithLifecycle(),
             torrentLink = model.torrentLink,
             downloadDirectory = model.downloadDirectory,
@@ -108,7 +105,6 @@ class AddTorrentLinkFragment : ComposeFragment() {
 private fun AddTorrentLinkScreen(
     navigateUp: () -> Unit,
     initialRpcInputsRequestState: State<RpcRequestState<*>>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     torrentLink: MutableState<String>,
     downloadDirectory: MutableState<String>,
     allDownloadDirectories: SnapshotStateList<DownloadDirectoryItem>,
@@ -173,75 +169,75 @@ private fun AddTorrentLinkScreen(
     ) { innerPadding ->
         TremotesfScreenContentWithPlaceholder(
             requestState = initialRpcInputsRequestState.value,
-            onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
             modifier = Modifier.consumeWindowInsets(innerPadding),
             placeholdersModifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(Dimens.screenContentPadding())
-        ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
-                    .padding(vertical = Dimens.screenContentPaddingVertical())
-                    .padding(bottom = Dimens.PaddingForFAB),
-                verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
-            ) {
-                val horizontalPadding = Dimens.screenContentPaddingHorizontal()
+                .padding(Dimens.screenContentPadding()),
+            content = {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(vertical = Dimens.screenContentPaddingVertical())
+                        .padding(bottom = Dimens.PaddingForFAB),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+                ) {
+                    val horizontalPadding = Dimens.screenContentPaddingHorizontal()
 
-                val shouldRequestFocus = rememberSaveable { torrentLink.value.isEmpty() }
-                val focusRequester = if (shouldRequestFocus) {
-                    rememberTremotesfInitialFocusRequester()
-                } else {
-                    null
-                }
-
-                OutlinedTextField(
-                    value = torrentLink.value,
-                    onValueChange = {
-                        torrentLink.value = it
-                        if (it.isNotBlank()) {
-                            showTorrentLinkError = false
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-                    label = { Text(stringResource(R.string.torrent_link)) },
-                    isError = showTorrentLinkError,
-                    supportingText = if (showTorrentLinkError) {
-                        { Text(stringResource(R.string.empty_field_error)) }
+                    val shouldRequestFocus = rememberSaveable { torrentLink.value.isEmpty() }
+                    val focusRequester = if (shouldRequestFocus) {
+                        rememberTremotesfInitialFocusRequester()
                     } else {
                         null
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = horizontalPadding)
-                        .dragAndDropTarget(
-                            shouldStartDragAndDrop = shouldStartDragAndDrop,
-                            target = dragAndDropTarget
-                        ).run {
-                            if (focusRequester != null) {
-                                focusRequester(focusRequester)
-                            } else {
-                                this
-                            }
-                        }
-                )
+                    }
 
-                CommonAddTorrentParameters(
-                    downloadDirectory = downloadDirectory,
-                    showDownloadDirectoryError = showDownloadDirectoryError,
-                    allDownloadDirectories = allDownloadDirectories,
-                    downloadDirectoryFreeSpace = downloadDirectoryFreeSpace,
-                    priority = priority,
-                    startAddedTorrents = startAddedTorrents,
-                    enabledLabels = enabledLabels,
-                    allLabels = allLabels,
-                    shouldShowLabels = shouldShowLabels
-                )
+                    OutlinedTextField(
+                        value = torrentLink.value,
+                        onValueChange = {
+                            torrentLink.value = it
+                            if (it.isNotBlank()) {
+                                showTorrentLinkError = false
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
+                        label = { Text(stringResource(R.string.torrent_link)) },
+                        isError = showTorrentLinkError,
+                        supportingText = if (showTorrentLinkError) {
+                            { Text(stringResource(R.string.empty_field_error)) }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = horizontalPadding)
+                            .dragAndDropTarget(
+                                shouldStartDragAndDrop = shouldStartDragAndDrop,
+                                target = dragAndDropTarget
+                            ).run {
+                                if (focusRequester != null) {
+                                    focusRequester(focusRequester)
+                                } else {
+                                    this
+                                }
+                            }
+                    )
+
+                    CommonAddTorrentParameters(
+                        downloadDirectory = downloadDirectory,
+                        showDownloadDirectoryError = showDownloadDirectoryError,
+                        allDownloadDirectories = allDownloadDirectories,
+                        downloadDirectoryFreeSpace = downloadDirectoryFreeSpace,
+                        priority = priority,
+                        startAddedTorrents = startAddedTorrents,
+                        enabledLabels = enabledLabels,
+                        allLabels = allLabels,
+                        shouldShowLabels = shouldShowLabels
+                    )
+                }
             }
-        }
+        )
     }
 
     val showMergingTrackersDialog: AddTorrentState.AskForMergingTrackers? by remember {
@@ -262,7 +258,6 @@ private fun AddTorrentLinkScreenPreview() = ScreenPreview {
     AddTorrentLinkScreen(
         navigateUp = {},
         initialRpcInputsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
-        navigateToDetailedErrorDialog = {},
         torrentLink = remember { mutableStateOf("") },
         downloadDirectory = remember { mutableStateOf("/home/dude") },
         allDownloadDirectories = remember { SnapshotStateList() },

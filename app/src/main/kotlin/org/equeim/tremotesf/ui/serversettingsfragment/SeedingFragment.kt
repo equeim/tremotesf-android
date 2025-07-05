@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.serversettings.SeedingServerSettings
@@ -43,7 +42,6 @@ import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.UNSIGNED_16BIT_RANGE
 import org.equeim.tremotesf.ui.components.rememberTremotesfDecimalNumberInputFieldState
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import kotlin.time.Duration.Companion.minutes
 
 class SeedingFragment : ComposeFragment() {
@@ -53,7 +51,6 @@ class SeedingFragment : ComposeFragment() {
         ServerSettingsSeedingScreen(
             settingsRequestState = model.settings.collectAsStateWithLifecycle(),
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             ratioLimited = model.ratioLimited,
             ratioLimit = model.ratioLimit,
             idleSeedingLimited = model.idleSeedingLimited,
@@ -88,7 +85,6 @@ class SeedingFragmentViewModel(application: Application) : AndroidViewModel(appl
 private fun ServerSettingsSeedingScreen(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     ratioLimited: ServerSettingsProperty<Boolean>,
     ratioLimit: TremotesfDecimalNumberInputFieldState,
     idleSeedingLimited: ServerSettingsProperty<Boolean>,
@@ -99,7 +95,6 @@ private fun ServerSettingsSeedingScreen(
         title = R.string.server_settings_seeding,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
         backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSwitchWithText(
@@ -139,7 +134,6 @@ private fun ServerSettingsSeedingScreenPreview() = ScreenPreview {
     ServerSettingsSeedingScreen(
         settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
         ratioLimited = remember { ServerSettingsBooleanProperty {} },
         ratioLimit = rememberTremotesfDecimalNumberInputFieldState(),
         idleSeedingLimited = remember { ServerSettingsBooleanProperty {} },

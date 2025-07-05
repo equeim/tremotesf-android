@@ -30,7 +30,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.ShowRpcErrorsSnackbar
@@ -44,12 +43,11 @@ fun ServerSettingsCategory(
     @StringRes title: Int,
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     backgroundRpcRequestsErrors: ReceiveChannel<GlobalRpcClient.BackgroundRpcRequestError>,
     loadedSettingsContent: @Composable ColumnScope.(Dp) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors, navigateToDetailedErrorDialog)
+    ShowRpcErrorsSnackbar(snackbarHostState, backgroundRpcRequestsErrors)
 
     Scaffold(
         topBar = {
@@ -62,24 +60,24 @@ fun ServerSettingsCategory(
     ) { innerPadding ->
         TremotesfScreenContentWithPlaceholder(
             requestState = settingsRequestState.value,
-            onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
             modifier = Modifier.consumeWindowInsets(innerPadding),
             placeholdersModifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(Dimens.screenContentPadding())
-        ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
-                    .padding(vertical = Dimens.screenContentPaddingVertical()),
-                verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
-            ) {
-                loadedSettingsContent(Dimens.screenContentPaddingHorizontal())
+                .padding(Dimens.screenContentPadding()),
+            content = {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(vertical = Dimens.screenContentPaddingVertical()),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+                ) {
+                    loadedSettingsContent(Dimens.screenContentPaddingHorizontal())
+                }
             }
-        }
+        )
     }
 }
 

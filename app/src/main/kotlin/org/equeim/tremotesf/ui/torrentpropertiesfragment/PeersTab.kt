@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.TransferRate
 import org.equeim.tremotesf.rpc.requests.torrentproperties.Peer
@@ -51,88 +50,87 @@ fun PeersTab(
     innerPadding: PaddingValues,
     peers: StateFlow<RpcRequestState<List<Peer>>>,
     toolbarClicked: Flow<Unit>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit
 ) {
     val peers = peers.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
         requestState = peers.value,
-        onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(innerPadding)
-            .padding(Dimens.screenContentPadding())
-    ) { peers ->
-        if (peers.isEmpty()) {
-            TremotesfErrorPlaceholder(
-                error = stringResource(R.string.no_peers),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
-                    .padding(Dimens.screenContentPadding())
-            )
-            return@TremotesfScreenContentWithPlaceholder
-        }
+            .padding(Dimens.screenContentPadding()),
+        content = { peers ->
+            if (peers.isEmpty()) {
+                TremotesfErrorPlaceholder(
+                    error = stringResource(R.string.no_peers),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(Dimens.screenContentPadding())
+                )
+                return@TremotesfScreenContentWithPlaceholder
+            }
 
-        val listState = rememberLazyListState()
-        LaunchedEffect(toolbarClicked) {
-            toolbarClicked.collect { listState.scrollToItem(0) }
-        }
+            val listState = rememberLazyListState()
+            LaunchedEffect(toolbarClicked) {
+                toolbarClicked.collect { listState.scrollToItem(0) }
+            }
 
-        val fileSizeFormatter = rememberFileSizeFormatter()
-        val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
+            val fileSizeFormatter = rememberFileSizeFormatter()
+            val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
 
-        val comparator =
-            rememberLocaleDependentValue { compareBy(AlphanumericComparator(), Peer::address) }
-        val sortedPeers = remember { derivedStateOf { peers.sortedWith(comparator) } }
+            val comparator =
+                rememberLocaleDependentValue { compareBy(AlphanumericComparator(), Peer::address) }
+            val sortedPeers = remember { derivedStateOf { peers.sortedWith(comparator) } }
 
-        LazyColumn(
-            state = listState,
-            contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(
-                items = sortedPeers.value,
-                key = Peer::address
-            ) { peer ->
-                Column {
-                    ListItem(
-                        headlineContent = { Text(peer.address) },
-                        supportingContent = {
-                            Row(Modifier.fillMaxWidth()) {
-                                Column(Modifier.weight(1.0f)) {
-                                    Text(
-                                        stringResource(
-                                            R.string.download_speed_string,
-                                            fileSizeFormatter.formatTransferRate(peer.downloadSpeed)
+            LazyColumn(
+                state = listState,
+                contentPadding = innerPadding,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    items = sortedPeers.value,
+                    key = Peer::address
+                ) { peer ->
+                    Column {
+                        ListItem(
+                            headlineContent = { Text(peer.address) },
+                            supportingContent = {
+                                Row(Modifier.fillMaxWidth()) {
+                                    Column(Modifier.weight(1.0f)) {
+                                        Text(
+                                            stringResource(
+                                                R.string.download_speed_string,
+                                                fileSizeFormatter.formatTransferRate(peer.downloadSpeed)
+                                            )
                                         )
-                                    )
-                                    Text(
-                                        stringResource(
-                                            R.string.upload_speed_string,
-                                            fileSizeFormatter.formatTransferRate(peer.uploadSpeed)
+                                        Text(
+                                            stringResource(
+                                                R.string.upload_speed_string,
+                                                fileSizeFormatter.formatTransferRate(peer.uploadSpeed)
+                                            )
                                         )
-                                    )
-                                }
-                                Column(Modifier.weight(1.0f), horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        stringResource(
-                                            R.string.progress_string,
-                                            progressFormatter.format(peer.progress)
+                                    }
+                                    Column(Modifier.weight(1.0f), horizontalAlignment = Alignment.End) {
+                                        Text(
+                                            stringResource(
+                                                R.string.progress_string,
+                                                progressFormatter.format(peer.progress)
+                                            )
                                         )
-                                    )
-                                    Text(peer.client)
+                                        Text(peer.client)
+                                    }
                                 }
                             }
-                        }
-                    )
-                    HorizontalDivider()
+                        )
+                        HorizontalDivider()
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 @Preview
@@ -157,6 +155,5 @@ private fun PeersTabPreview() = ComponentPreview {
             )
         },
         toolbarClicked = remember { emptyFlow() },
-        navigateToDetailedErrorDialog = {}
     )
 }

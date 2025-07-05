@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcClient
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -74,7 +73,6 @@ import org.equeim.tremotesf.ui.components.TremotesfNumberInputField
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.components.rememberTremotesfIntegerNumberInputFieldState
-import org.equeim.tremotesf.ui.navigateToDetailedErrorDialog
 import org.equeim.tremotesf.ui.utils.rememberDateTimeFormatter
 import org.equeim.tremotesf.ui.utils.rememberLocaleDependentValue
 import java.time.DayOfWeek
@@ -92,7 +90,6 @@ class SpeedFragment : ComposeFragment() {
         ServerSettingsSpeedScreen(
             settingsRequestState = model.settings.collectAsStateWithLifecycle(),
             navigateUp = navController::navigateUp,
-            navigateToDetailedErrorDialog = navController::navigateToDetailedErrorDialog,
             downloadSpeedLimited = model.downloadSpeedLimited,
             downloadSpeedLimit = model.downloadSpeedLimit,
             uploadSpeedLimited = model.uploadSpeedLimited,
@@ -113,7 +110,6 @@ class SpeedFragment : ComposeFragment() {
 private fun ServerSettingsSpeedScreen(
     settingsRequestState: State<RpcRequestState<Any>>,
     navigateUp: () -> Unit,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     downloadSpeedLimited: ServerSettingsProperty<Boolean>,
     downloadSpeedLimit: TremotesfIntegerNumberInputFieldState,
     uploadSpeedLimited: ServerSettingsProperty<Boolean>,
@@ -131,7 +127,6 @@ private fun ServerSettingsSpeedScreen(
         title = R.string.server_settings_speed,
         settingsRequestState = settingsRequestState,
         navigateUp = navigateUp,
-        navigateToDetailedErrorDialog = navigateToDetailedErrorDialog,
         backgroundRpcRequestsErrors = backgroundRpcRequestsErrors
     ) { horizontalPadding ->
         TremotesfSectionHeader(R.string.limits, modifier = Modifier.padding(horizontal = horizontalPadding))
@@ -282,7 +277,6 @@ private fun ServerSettingsSpeedScreenPreview() = ScreenPreview {
     ServerSettingsSpeedScreen(
         settingsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
         navigateUp = {},
-        navigateToDetailedErrorDialog = {},
         downloadSpeedLimited = remember { ServerSettingsBooleanProperty {} },
         downloadSpeedLimit = rememberTremotesfIntegerNumberInputFieldState(),
         uploadSpeedLimited = remember { ServerSettingsBooleanProperty {} },

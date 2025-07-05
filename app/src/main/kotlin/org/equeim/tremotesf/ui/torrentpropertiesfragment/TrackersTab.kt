@@ -62,7 +62,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
-import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.torrentproperties.Tracker
 import org.equeim.tremotesf.ui.ComponentPreview
@@ -87,194 +86,193 @@ fun TrackersTab(
     innerPadding: PaddingValues,
     trackers: StateFlow<RpcRequestState<List<TrackerItem>>>,
     toolbarClicked: Flow<Unit>,
-    navigateToDetailedErrorDialog: (RpcRequestError) -> Unit,
     torrentOperations: TorrentOperations
 ) {
     val trackers = trackers.collectAsStateWithLifecycle()
     TremotesfScreenContentWithPlaceholder(
         requestState = trackers.value,
-        onShowDetailedErrorButtonClicked = navigateToDetailedErrorDialog,
         modifier = Modifier.fillMaxSize(),
         placeholdersModifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(innerPadding)
-            .padding(Dimens.screenContentPadding())
-    ) { trackers ->
-        val listState = rememberLazyListState()
-        LaunchedEffect(toolbarClicked) {
-            toolbarClicked.collect { listState.scrollToItem(0) }
-        }
+            .padding(Dimens.screenContentPadding()),
+        content = { trackers ->
+            val listState = rememberLazyListState()
+            LaunchedEffect(toolbarClicked) {
+                toolbarClicked.collect { listState.scrollToItem(0) }
+            }
 
-        val layoutDirection = LocalLayoutDirection.current
-        val listPadding = PaddingValues(
-            start = innerPadding.calculateStartPadding(layoutDirection),
-            top = innerPadding.calculateTopPadding(),
-            end = innerPadding.calculateEndPadding(layoutDirection),
-            bottom = innerPadding.calculateBottomPadding() + Dimens.PaddingForSelectionPanel
-        )
+            val layoutDirection = LocalLayoutDirection.current
+            val listPadding = PaddingValues(
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                top = innerPadding.calculateTopPadding(),
+                end = innerPadding.calculateEndPadding(layoutDirection),
+                bottom = innerPadding.calculateBottomPadding() + Dimens.PaddingForSelectionPanel
+            )
 
-        val selectionState = rememberTremotesfMultiSelectionState(
-            listItems = trackers,
-            keySelector = { it.tracker.id }
-        )
+            val selectionState = rememberTremotesfMultiSelectionState(
+                listItems = trackers,
+                keySelector = { it.tracker.id }
+            )
 
-        val comparator: Comparator<TrackerItem> =
-            rememberLocaleDependentValue { compareBy(AlphanumericComparator()) { it.tracker.announceUrl } }
-        val sortedTrackers = remember { derivedStateOf { trackers.sortedWith(comparator) } }
+            val comparator: Comparator<TrackerItem> =
+                rememberLocaleDependentValue { compareBy(AlphanumericComparator()) { it.tracker.announceUrl } }
+            val sortedTrackers = remember { derivedStateOf { trackers.sortedWith(comparator) } }
 
-        var showAddTrackersDialog: Boolean by rememberSaveable { mutableStateOf(false) }
-        var showEditTrackerDialog: EditTrackerDialogParams? by rememberSaveable { mutableStateOf(null) }
-        var showRemoveTrackersDialog: RemoveTrackersDialogParams? by rememberSaveable { mutableStateOf(null) }
+            var showAddTrackersDialog: Boolean by rememberSaveable { mutableStateOf(false) }
+            var showEditTrackerDialog: EditTrackerDialogParams? by rememberSaveable { mutableStateOf(null) }
+            var showRemoveTrackersDialog: RemoveTrackersDialogParams? by rememberSaveable { mutableStateOf(null) }
 
-        Box {
-            LazyColumn(
-                state = listState,
-                contentPadding = listPadding,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = sortedTrackers.value,
-                    key = { it.tracker.id }
-                ) { item ->
-                    Column {
-                        Box {
-                            ListItem(
-                                headlineContent = { Text(item.tracker.announceUrl) },
-                                supportingContent = {
-                                    Row(modifier = Modifier.fillMaxWidth()) {
-                                        Column(
-                                            modifier = Modifier
-                                                .weight(3.0f)
-                                        ) {
-                                            Text(
-                                                stringResource(
-                                                    when (item.tracker.status) {
-                                                        Tracker.Status.Inactive -> R.string.tracker_inactive
-                                                        Tracker.Status.WaitingForUpdate -> R.string.tracker_waiting_for_update
-                                                        Tracker.Status.QueuedForUpdate -> R.string.tracker_queued_for_update
-                                                        Tracker.Status.Updating -> R.string.tracker_updating
-                                                    }
-                                                )
-                                            )
-                                            if (item.nextUpdateEta != null) {
+            Box {
+                LazyColumn(
+                    state = listState,
+                    contentPadding = listPadding,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = sortedTrackers.value,
+                        key = { it.tracker.id }
+                    ) { item ->
+                        Column {
+                            Box {
+                                ListItem(
+                                    headlineContent = { Text(item.tracker.announceUrl) },
+                                    supportingContent = {
+                                        Row(modifier = Modifier.fillMaxWidth()) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .weight(3.0f)
+                                            ) {
                                                 Text(
                                                     stringResource(
-                                                        R.string.next_update,
-                                                        DateUtils.formatElapsedTime(item.nextUpdateEta.seconds)
+                                                        when (item.tracker.status) {
+                                                            Tracker.Status.Inactive -> R.string.tracker_inactive
+                                                            Tracker.Status.WaitingForUpdate -> R.string.tracker_waiting_for_update
+                                                            Tracker.Status.QueuedForUpdate -> R.string.tracker_queued_for_update
+                                                            Tracker.Status.Updating -> R.string.tracker_updating
+                                                        }
+                                                    )
+                                                )
+                                                if (item.nextUpdateEta != null) {
+                                                    Text(
+                                                        stringResource(
+                                                            R.string.next_update,
+                                                            DateUtils.formatElapsedTime(item.nextUpdateEta.seconds)
+                                                        )
+                                                    )
+                                                }
+                                                item.tracker.errorMessage?.takeIf { it.isNotEmpty() }?.let { error ->
+                                                    Text(
+                                                        text = stringResource(R.string.tracker_error, error),
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
+                                                }
+                                            }
+
+                                            Column(
+                                                modifier = Modifier
+                                                    .weight(1.0f)
+                                            ) {
+                                                Text(
+                                                    pluralStringResource(
+                                                        R.plurals.peers_plural,
+                                                        item.tracker.peers,
+                                                        item.tracker.peers
+                                                    )
+                                                )
+                                                Text(
+                                                    pluralStringResource(
+                                                        R.plurals.seeders_plural,
+                                                        item.tracker.seeders,
+                                                        item.tracker.seeders
+                                                    )
+                                                )
+                                                Text(
+                                                    pluralStringResource(
+                                                        R.plurals.leechers_plural,
+                                                        item.tracker.leechers,
+                                                        item.tracker.leechers
                                                     )
                                                 )
                                             }
-                                            item.tracker.errorMessage?.takeIf { it.isNotEmpty() }?.let { error ->
-                                                Text(
-                                                    text = stringResource(R.string.tracker_error, error),
-                                                    color = MaterialTheme.colorScheme.error
-                                                )
-                                            }
                                         }
-
-                                        Column(
-                                            modifier = Modifier
-                                                .weight(1.0f)
-                                        ) {
-                                            Text(
-                                                pluralStringResource(
-                                                    R.plurals.peers_plural,
-                                                    item.tracker.peers,
-                                                    item.tracker.peers
-                                                )
-                                            )
-                                            Text(
-                                                pluralStringResource(
-                                                    R.plurals.seeders_plural,
-                                                    item.tracker.seeders,
-                                                    item.tracker.seeders
-                                                )
-                                            )
-                                            Text(
-                                                pluralStringResource(
-                                                    R.plurals.leechers_plural,
-                                                    item.tracker.leechers,
-                                                    item.tracker.leechers
-                                                )
-                                            )
-                                        }
+                                    },
+                                    colors = ListItemDefaults.colors(
+                                        containerColor = selectableBackground(selectionState.isSelected(item.tracker.id))
+                                    ),
+                                    modifier = Modifier.tremotesfMultiSelectionClickable(selectionState, item.tracker.id) {
+                                        showEditTrackerDialog =
+                                            EditTrackerDialogParams(item.tracker.id, item.tracker.announceUrl)
                                     }
-                                },
-                                colors = ListItemDefaults.colors(
-                                    containerColor = selectableBackground(selectionState.isSelected(item.tracker.id))
-                                ),
-                                modifier = Modifier.tremotesfMultiSelectionClickable(selectionState, item.tracker.id) {
-                                    showEditTrackerDialog =
-                                        EditTrackerDialogParams(item.tracker.id, item.tracker.announceUrl)
-                                }
-                            )
-                            if (selectionState.isSelected(item.tracker.id)) {
-                                Icon(
-                                    imageVector = Icons.Filled.CheckCircle,
-                                    contentDescription = stringResource(R.string.selected),
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.align(Alignment.TopEnd).padding(Dimens.SpacingBig)
                                 )
+                                if (selectionState.isSelected(item.tracker.id)) {
+                                    Icon(
+                                        imageVector = Icons.Filled.CheckCircle,
+                                        contentDescription = stringResource(R.string.selected),
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.align(Alignment.TopEnd).padding(Dimens.SpacingBig)
+                                    )
+                                }
                             }
+                            HorizontalDivider()
                         }
-                        HorizontalDivider()
                     }
                 }
-            }
 
-            if (trackers.isEmpty()) {
-                TremotesfErrorPlaceholder(
-                    error = stringResource(R.string.no_trackers),
+                if (trackers.isEmpty()) {
+                    TremotesfErrorPlaceholder(
+                        error = stringResource(R.string.no_trackers),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .padding(Dimens.screenContentPadding())
+                    )
+                }
+
+                TremotesfMultiSelectionPanel(
+                    state = selectionState,
+                    selectedItemsString = R.plurals.trackers_selected,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(Dimens.screenContentPadding())
+                        .align(Alignment.BottomCenter)
+                        .padding(innerPadding),
+                    actions = {
+                        TremotesfIconButtonWithTooltip(Icons.Filled.Delete, R.string.remove) {
+                            showRemoveTrackersDialog = RemoveTrackersDialogParams(selectionState.selectedKeys.toList())
+                        }
+                    }
                 )
-            }
 
-            TremotesfMultiSelectionPanel(
-                state = selectionState,
-                selectedItemsString = R.plurals.trackers_selected,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(innerPadding),
-                actions = {
-                    TremotesfIconButtonWithTooltip(Icons.Filled.Delete, R.string.remove) {
-                        showRemoveTrackersDialog = RemoveTrackersDialogParams(selectionState.selectedKeys.toList())
+                if (!selectionState.hasSelection) {
+                    TremotesfFloatingActionButtonWithTooltip(
+                        icon = Icons.Filled.Add,
+                        textId = R.string.add_trackers,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(innerPadding)
+                            .padding(Dimens.screenContentPadding())
+                    ) {
+                        showAddTrackersDialog = true
                     }
                 }
-            )
 
-            if (!selectionState.hasSelection) {
-                TremotesfFloatingActionButtonWithTooltip(
-                    icon = Icons.Filled.Add,
-                    textId = R.string.add_trackers,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(innerPadding)
-                        .padding(Dimens.screenContentPadding())
-                ) {
-                    showAddTrackersDialog = true
+                if (showAddTrackersDialog) {
+                    AddTrackersDialog(torrentOperations) { showAddTrackersDialog = false }
                 }
-            }
 
-            if (showAddTrackersDialog) {
-                AddTrackersDialog(torrentOperations) { showAddTrackersDialog = false }
-            }
+                showEditTrackerDialog?.let { params ->
+                    EditTrackerDialog(
+                        params = params,
+                        torrentOperations = torrentOperations
+                    ) { showEditTrackerDialog = null }
+                }
 
-            showEditTrackerDialog?.let { params ->
-                EditTrackerDialog(
-                    params = params,
-                    torrentOperations = torrentOperations
-                ) { showEditTrackerDialog = null }
-            }
-
-            showRemoveTrackersDialog?.let { params ->
-                RemoveTrackersDialog(params, torrentOperations) { showRemoveTrackersDialog = null }
+                showRemoveTrackersDialog?.let { params ->
+                    RemoveTrackersDialog(params, torrentOperations) { showRemoveTrackersDialog = null }
+                }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -419,7 +417,6 @@ private fun TrackersTabPreview() = ComponentPreview {
             )
         },
         toolbarClicked = remember { emptyFlow() },
-        navigateToDetailedErrorDialog = {},
         torrentOperations = TORRENT_OPERATIONS_FOR_PREVIEW
     )
 }
