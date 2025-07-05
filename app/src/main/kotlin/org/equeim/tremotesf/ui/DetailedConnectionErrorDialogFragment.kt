@@ -5,6 +5,7 @@
 package org.equeim.tremotesf.ui
 
 import android.os.Parcelable
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +44,7 @@ import org.equeim.tremotesf.rpc.DetailedRpcRequestError
 import org.equeim.tremotesf.rpc.redactHeader
 import org.equeim.tremotesf.ui.components.DialogPadding
 import org.equeim.tremotesf.ui.components.TremotesfAlertDialogWithoutTextPadding
+import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltip
 import org.equeim.tremotesf.ui.utils.Utils
 
 @Composable
@@ -51,64 +53,27 @@ fun DetailedConnectionErrorDialog(error: DetailedRpcRequestError, onDismissReque
 
     TremotesfAlertDialogWithoutTextPadding(
         onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(R.string.detailed_error_message)) },
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingBig)
+            ) {
+                if (showExpandedDetails != null) {
+                    TremotesfIconButtonWithTooltip(Icons.AutoMirrored.Filled.ArrowBack, R.string.navigate_up) {
+                        showExpandedDetails = null
+                    }
+                }
+                Text(showExpandedDetails?.title ?: stringResource(R.string.detailed_error_message))
+            }
+
+        },
         text = {
-            Column {
-                DetailsItem("Error: ${error.error}") {
-                    showExpandedDetails = ExpandedDetails(
-                        title = "Error",
-                        text = error.error.details()
-                    )
-                }
-                error.suppressedErrors.forEach {
-                    HorizontalDivider()
-                    DetailsItem("Suppressed: error: $it") {
-                        showExpandedDetails = ExpandedDetails(
-                            title = "Suppressed error",
-                            text = it.details()
-                        )
-                    }
-                }
-                error.responseInfo?.let { response ->
-                    HorizontalDivider()
-                    DetailsItem("HTTP response: ${response.status}") {
-                        showExpandedDetails = ExpandedDetails(
-                            title = "HTTP response",
-                            text = response.details()
-                        )
-                    }
-                }
-                if (error.serverCertificates.isNotEmpty()) {
-                    HorizontalDivider()
-                    DetailsItem("Server certificates") {
-                        showExpandedDetails = ExpandedDetails(
-                            title = "Server certificates",
-                            text = error.serverCertificates.joinToString("\n"),
-                            showMonospaceAndWithoutWrapping = true
-                        )
-                    }
-                }
-                if (error.clientCertificates.isNotEmpty()) {
-                    HorizontalDivider()
-                    DetailsItem("Client certificates") {
-                        showExpandedDetails = ExpandedDetails(
-                            title = "Client certificates",
-                            text = error.clientCertificates.joinToString("\n"),
-                            showMonospaceAndWithoutWrapping = true
-                        )
-                    }
-                }
-                if (error.requestHeaders.isNotEmpty()) {
-                    HorizontalDivider()
-                    DetailsItem("HTTP request headers") {
-                        showExpandedDetails = ExpandedDetails(
-                            title = "HTTP request headers",
-                            text = error.requestHeaders.joinToString("\n") { header ->
-                                val (name, value) = header.redactHeader()
-                                "$name: $value"
-                            }
-                        )
-                    }
+            showExpandedDetails.let { expandedDetails ->
+                if (expandedDetails == null) {
+                    MainView(error) { showExpandedDetails = it }
+                } else {
+                    ExpandedDetailsView(expandedDetails)
+                    BackHandler { showExpandedDetails = null }
                 }
             }
         },
@@ -127,11 +92,81 @@ fun DetailedConnectionErrorDialog(error: DetailedRpcRequestError, onDismissReque
             TextButton(onDismissRequest) { Text(stringResource(R.string.close)) }
         },
     )
+}
 
-    showExpandedDetails?.let {
-        ExpandedDetailsDialog(it) { showExpandedDetails = null }
+@Composable
+private fun MainView(error: DetailedRpcRequestError, showExpandedDetails: (ExpandedDetails) -> Unit) {
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+        DetailsItem("Error: ${error.error}") {
+            showExpandedDetails(
+                ExpandedDetails(
+                    title = "Error",
+                    text = error.error.details()
+                )
+            )
+        }
+        error.suppressedErrors.forEach {
+            HorizontalDivider()
+            DetailsItem("Suppressed: error: $it") {
+                showExpandedDetails(
+                    ExpandedDetails(
+                        title = "Suppressed error",
+                        text = it.details()
+                    )
+                )
+            }
+        }
+        error.responseInfo?.let { response ->
+            HorizontalDivider()
+            DetailsItem("HTTP response: ${response.status}") {
+                showExpandedDetails(
+                    ExpandedDetails(
+                        title = "HTTP response",
+                        text = response.details()
+                    )
+                )
+            }
+        }
+        if (error.serverCertificates.isNotEmpty()) {
+            HorizontalDivider()
+            DetailsItem("Server certificates") {
+                showExpandedDetails(
+                    ExpandedDetails(
+                        title = "Server certificates",
+                        text = error.serverCertificates.joinToString("\n"),
+                        showMonospaceAndWithoutWrapping = true
+                    )
+                )
+            }
+        }
+        if (error.clientCertificates.isNotEmpty()) {
+            HorizontalDivider()
+            DetailsItem("Client certificates") {
+                showExpandedDetails(
+                    ExpandedDetails(
+                        title = "Client certificates",
+                        text = error.clientCertificates.joinToString("\n"),
+                        showMonospaceAndWithoutWrapping = true
+                    )
+                )
+            }
+        }
+        if (error.requestHeaders.isNotEmpty()) {
+            HorizontalDivider()
+            DetailsItem("HTTP request headers") {
+                showExpandedDetails(
+                    ExpandedDetails(
+                        title = "HTTP request headers",
+                        text = error.requestHeaders.joinToString("\n") { header ->
+                            val (name, value) = header.redactHeader()
+                            "$name: $value"
+                        }
+                    ))
+            }
+        }
     }
 }
+
 
 @Composable
 private fun DetailsItem(summary: String, onClick: () -> Unit) {
@@ -219,32 +254,26 @@ private fun String.indent(): String =
         }
         .joinToString("\n")
 
+@Composable
+private fun ExpandedDetailsView(details: ExpandedDetails) {
+    Box(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .run { if (details.showMonospaceAndWithoutWrapping) horizontalScroll(rememberScrollState()) else this }
+            .padding(horizontal = DialogPadding)
+    ) {
+        SelectionContainer {
+            Text(
+                text = details.text,
+                fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Companion.Monospace else FontFamily.Companion.Default
+            )
+        }
+    }
+}
+
 @Parcelize
 private data class ExpandedDetails(
     val title: String,
     val text: String,
     val showMonospaceAndWithoutWrapping: Boolean = false,
 ) : Parcelable
-
-@Composable
-private fun ExpandedDetailsDialog(details: ExpandedDetails, onDismissRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text(details.title) },
-        text = {
-            Box(
-                modifier = Modifier.Companion
-                    .verticalScroll(rememberScrollState())
-                    .run { if (details.showMonospaceAndWithoutWrapping) horizontalScroll(rememberScrollState()) else this }
-            ) {
-                SelectionContainer {
-                    Text(
-                        text = details.text,
-                        fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Companion.Monospace else FontFamily.Companion.Default
-                    )
-                }
-            }
-        },
-        confirmButton = { TextButton(onDismissRequest) { Text(stringResource(R.string.close)) } }
-    )
-}
