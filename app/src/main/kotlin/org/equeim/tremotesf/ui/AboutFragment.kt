@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,8 +30,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -290,18 +295,29 @@ private fun LicenseScreen(navigateUp: () -> Unit) {
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
         val screenPadding = Dimens.screenContentPadding()
+
+        val contentPaddingScript: String by
+        remember { derivedStateOf { makeContentPaddingScript(innerPadding, screenPadding, layoutDirection) } }
+        var isLoaded: Boolean by remember { mutableStateOf(false) }
+
         AndroidView(
             modifier = Modifier
                 .consumeWindowInsets(innerPadding)
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize(),
-            factory = { createLicenseWebView(it) ?: View(it) },
-            update = { (it as? WebView)?.setinnerPadding(innerPadding, screenPadding, layoutDirection) }
+            factory = {
+                createLicenseWebView(it) { isLoaded = true } ?: View(it)
+            },
+            update = {
+                if (isLoaded) {
+                    (it as? WebView)?.evaluateJavascript(contentPaddingScript) {}
+                }
+            }
         )
     }
 }
 
-private fun createLicenseWebView(context: Context): WebView? {
+private fun createLicenseWebView(context: Context, onLoaded: WebView.() -> Unit): WebView? {
     val view = try {
         WebView(context)
     } catch (e: Exception) {
@@ -311,7 +327,12 @@ private fun createLicenseWebView(context: Context): WebView? {
     view.apply {
         @SuppressLint("SetJavaScriptEnabled")
         settings.javaScriptEnabled = true
-        clipToPadding = false
+        webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                onLoaded()
+            }
+        }
         try {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, true)
@@ -325,21 +346,20 @@ private fun createLicenseWebView(context: Context): WebView? {
     return view
 }
 
-private fun WebView.setinnerPadding(
+private fun makeContentPaddingScript(
     scaffoldInnerPadding: PaddingValues,
     screenPadding: PaddingValues,
-    layoutDirection: LayoutDirection,
-) {
+    layoutDirection: LayoutDirection
+): String {
     val top = screenPadding.calculateTopPadding().value
     val right = (scaffoldInnerPadding.calculateRightPadding(layoutDirection) +
             screenPadding.calculateRightPadding(layoutDirection)).value
     val bottom = (scaffoldInnerPadding.calculateBottomPadding() + screenPadding.calculateBottomPadding()).value
     val left = (scaffoldInnerPadding.calculateLeftPadding(layoutDirection) +
             screenPadding.calculateLeftPadding(layoutDirection)).value
-    val script = """
+    return """
         document.body.style.margin = "${top}px ${right}px ${bottom}px ${left}px"
     """.trimIndent()
-    evaluateJavascript(script) {}
 }
 
 private enum class Tab {
