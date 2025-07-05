@@ -8,6 +8,7 @@ import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +48,7 @@ import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
 import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
 import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentsLocation
+import org.equeim.tremotesf.ui.components.DialogPadding
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
 import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
 import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
@@ -114,17 +116,19 @@ private fun TorrentSetLocationDialogContent(
                         label = R.string.location,
                         imeAction = ImeAction.Done,
                         keyboardActions = KeyboardActions { setLocationIfNotBlankAndDismiss() },
-                        modifier = Modifier.focusRequester(focusRequester)
+                        modifier = Modifier.focusRequester(focusRequester).padding(horizontal = DialogPadding).fillMaxWidth()
                     )
                     TremotesfSwitchWithText(
                         checked = moveFiles,
                         onCheckedChange = { moveFiles = it },
                         text = R.string.move_files,
-                        horizontalContentPadding = Dimens.SpacingSmall
+                        horizontalContentPadding = DialogPadding,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
         },
+        applyHorizontalPaddingToText = false,
         buttons = {
             TextButton(onClick = onDismissRequest) { Text(stringResource(android.R.string.cancel)) }
             if (allDownloadDirectoriesRequest.value is RpcRequestState.Loaded) {

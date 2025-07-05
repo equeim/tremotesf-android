@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -42,7 +43,9 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.addtorrent.BaseAddTorrentModel.DownloadDirectoryFreeSpace
+import org.equeim.tremotesf.ui.components.DialogPadding
 import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
+import org.equeim.tremotesf.ui.components.TremotesfAlertDialogWithoutTextPadding
 import org.equeim.tremotesf.ui.components.TremotesfComboBox
 import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
 import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
@@ -166,7 +169,11 @@ sealed interface AddTorrentState : Parcelable {
 }
 
 @Composable
-fun HandleTerminalAddTorrentState(state: State<AddTorrentState?>, navController: NavController, activity: ComponentActivity) {
+fun HandleTerminalAddTorrentState(
+    state: State<AddTorrentState?>,
+    navController: NavController,
+    activity: ComponentActivity
+) {
     val performBackPress = { activity.onBackPressedDispatcher.onBackPressed() }
     when (val state = state.value) {
         is AddTorrentState.AddedTorrent ->
@@ -244,25 +251,31 @@ fun MergingTrackersDialog(
     onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,
 ) {
     var doNotAskAgain: Boolean by rememberSaveable { mutableStateOf(false) }
-    AlertDialog(
+    TremotesfAlertDialogWithoutTextPadding(
         onDismissRequest = {
             if (cancellable) {
                 onMergeTrackersDialogResult(MergeTrackersDialogResult.Cancelled)
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
-                Text(stringResource(R.string.torrent_duplicate_merging_trackers_question, torrentName))
-                TremotesfSwitchWithText(
-                    checked = doNotAskAgain,
-                    onCheckedChange = { doNotAskAgain = it },
-                    text = R.string.do_not_ask_again,
-                    horizontalContentPadding = Dimens.SpacingSmall,
-                    modifier = Modifier.fillMaxWidth()
+            Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingBig)) {
+                Text(
+                    text = stringResource(R.string.torrent_duplicate_merging_trackers_question, torrentName),
+                    modifier = Modifier.padding(horizontal = DialogPadding)
                 )
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+                    TremotesfSwitchWithText(
+                        checked = doNotAskAgain,
+                        onCheckedChange = { doNotAskAgain = it },
+                        text = R.string.do_not_ask_again,
+                        horizontalContentPadding = DialogPadding,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
         },
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         confirmButton = {
             TextButton(onClick = {
                 onMergeTrackersDialogResult(
