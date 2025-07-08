@@ -28,9 +28,9 @@ androidx-window = "1.4.0"
 androidx-work = "2.10.2"
 
 composeGrid = "2.3.1"
-fastscroller = "0.3.2"
 leakcanary = "2.14"
 timber = "5.0.1"
+lazycolumnscrollbar = "2.2.0"
 
 okhttp = "4.12.0"
 
@@ -73,9 +73,9 @@ androidx-window = { module = "androidx.window:window", version.ref = "androidx-w
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 
 composeGrid = { module = "com.cheonjaeung.compose.grid:grid", version.ref = "composeGrid" }
-fastscroller = { module = "io.github.oikvpqya.compose.fastscroller:fastscroller-material3", version.ref = "fastscroller" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+lazycolumnscrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumnscrollbar" }
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -63,9 +62,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import io.github.oikvpqya.compose.fastscroller.VerticalScrollbar
-import io.github.oikvpqya.compose.fastscroller.material3.defaultMaterialScrollbarStyle
-import io.github.oikvpqya.compose.fastscroller.rememberScrollbarAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
@@ -89,6 +85,7 @@ import org.equeim.tremotesf.ui.TorrentRenameDialog
 import org.equeim.tremotesf.ui.TorrentsRemoveDialog
 import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltip
 import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
+import org.equeim.tremotesf.ui.components.TremotesfLazyColumnScrollBar
 import org.equeim.tremotesf.ui.components.TremotesfMultiSelectionPanel
 import org.equeim.tremotesf.ui.components.TremotesfMultiSelectionState
 import org.equeim.tremotesf.ui.components.TremotesfPlaceholderText
@@ -190,14 +187,7 @@ fun TorrentsList(
             )
         }
 
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(listState),
-            style = defaultMaterialScrollbarStyle(),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(innerPadding)
-                .fillMaxHeight()
-        )
+        TremotesfLazyColumnScrollBar(listState, Modifier.padding(innerPadding))
 
         SelectionPanel(
             selectionState = selectionState,

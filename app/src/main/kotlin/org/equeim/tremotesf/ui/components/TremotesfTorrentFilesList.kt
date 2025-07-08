@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -53,9 +52,6 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.oikvpqya.compose.fastscroller.VerticalScrollbar
-import io.github.oikvpqya.compose.fastscroller.material3.defaultMaterialScrollbarStyle
-import io.github.oikvpqya.compose.fastscroller.rememberScrollbarAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.drop
@@ -216,14 +212,7 @@ fun TremotesfTorrentsFilesList(
             }
         }
 
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(listState),
-            style = defaultMaterialScrollbarStyle(),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(contentPadding)
-                .fillMaxHeight()
-        )
+        TremotesfLazyColumnScrollBar(listState, Modifier.padding(contentPadding))
 
         SelectionPanel(
             selectionState = selectionState,

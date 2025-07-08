@@ -110,9 +110,9 @@ dependencies {
     implementation(libs.androidx.compose.materialIconsCore)
 
     implementation(libs.composeGrid)
-    implementation(libs.fastscroller)
     implementation(libs.timber)
     implementation(libs.serialization.json.okio)
+    implementation(libs.lazycolumnscrollbar)
 
     debugImplementation(libs.leakcanary)
     debugImplementation(libs.androidx.compose.uiTooling)
