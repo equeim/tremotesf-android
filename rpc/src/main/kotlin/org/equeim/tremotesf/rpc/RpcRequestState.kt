@@ -47,7 +47,7 @@ sealed interface RpcRequestState<out T> {
 fun <T> RpcClient.performRecoveringRequest(
     performRequest: suspend RpcClient.() -> T,
 ): Flow<RpcRequestState<T>> =
-    requestRestartEvents()
+    startRequestFromScratchEvents()
         .transformLatest {
             if (it.nonRecoverableError != null) {
                 emit(it.nonRecoverableError)
@@ -70,14 +70,15 @@ fun <T> RpcClient.performPeriodicRequest(
     return channelFlow {
         var lastEmittedState: RpcRequestState<T>? = null
         merge(
-            requestRestartEvents(),
-            manualRefreshRequests.map { RequestRestartEvent() }
+            startRequestFromScratchEvents(),
+            manualRefreshRequests.map { ManualRefresh() }
         ).transformLatest {
-            if (it.nonRecoverableError != null) {
-                emit(it.nonRecoverableError)
+            (it as? StartRequestFromScratch)?.nonRecoverableError?.let { error ->
+                emit(error)
                 return@transformLatest
             }
-            if (lastEmittedState !is RpcRequestState.Loaded) {
+            // If user triggered manual refresh and we are already loaded then we don't want to emit Loading state
+            if (!(it is ManualRefresh && lastEmittedState is RpcRequestState.Loaded)) {
                 emit(RpcRequestState.Loading)
             }
             while (currentCoroutineContext().isActive) {
@@ -95,6 +96,8 @@ fun <T> RpcClient.performPeriodicRequest(
         }
     }
 }
+
+private class ManualRefresh
 
 fun <T> RpcClient.performPeriodicRequestIntoStateFlow(
     scope: CoroutineScope,
@@ -161,13 +164,13 @@ private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
     }
 }
 
-private class RequestRestartEvent(val nonRecoverableError: RpcRequestState.Error? = null)
+private class StartRequestFromScratch(val nonRecoverableError: RpcRequestState.Error? = null)
 
-private fun RpcClient.requestRestartEvents(): Flow<RequestRestartEvent> = combine(
+private fun RpcClient.startRequestFromScratchEvents(): Flow<StartRequestFromScratch> = combine(
     getConnectionConfiguration(),
     shouldConnectToServer
 ) { configuration, shouldConnectToServer ->
-    RequestRestartEvent(getInitialNonRecoverableError(configuration, shouldConnectToServer))
+    StartRequestFromScratch(getInitialNonRecoverableError(configuration, shouldConnectToServer))
 }
 
 private fun getInitialNonRecoverableError(
