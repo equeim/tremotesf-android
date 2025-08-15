@@ -186,6 +186,22 @@ class RpcClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
+    fun `Check connection error when reading response body on http status code error`(errorDuringValidation: Boolean) =
+        runTest {
+            if (!errorDuringValidation) {
+                enqueueSuccessfulValidation()
+            }
+            server.enqueue(
+                MockResponse.Builder()
+                    .code(HttpURLConnection.HTTP_INTERNAL_ERROR)
+                    .body("lol")
+                    .onResponseBody(SocketEffect.ShutdownConnection).build()
+            )
+            assertThrows<RpcRequestError.NetworkError> { client.getSessionStats() }
+        }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
     fun `Check http status code error`(errorDuringValidation: Boolean) = runTest {
         if (errorDuringValidation) {
             server.enqueue(MockResponse(HttpURLConnection.HTTP_INTERNAL_ERROR))

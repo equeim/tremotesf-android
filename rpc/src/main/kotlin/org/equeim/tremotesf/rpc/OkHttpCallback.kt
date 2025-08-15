@@ -48,24 +48,24 @@ internal class OkHttpCallback<ResponseArguments : Any>(
                 if (response.isSuccessful) Log.DEBUG else Log.ERROR,
                 "Received response headers for RPC request with $context: status is ${response.status}"
             )
-            if (!response.isSuccessful) {
-                resumeWithException(
-                    when (response.code) {
-                        HttpURLConnection.HTTP_UNAUTHORIZED -> RpcRequestError.AuthenticationError(
-                            response,
-                            requestHeaders
-                        )
-
-                        else -> RpcRequestError.UnsuccessfulHttpStatusCode(
-                            response = response,
-                            responseBody = body?.string(),
-                            requestHeaders = requestHeaders
-                        )
-                    }
-                )
-                return
-            }
             try {
+                if (!response.isSuccessful) {
+                    resumeWithException(
+                        when (response.code) {
+                            HttpURLConnection.HTTP_UNAUTHORIZED -> RpcRequestError.AuthenticationError(
+                                response,
+                                requestHeaders
+                            )
+
+                            else -> RpcRequestError.UnsuccessfulHttpStatusCode(
+                                response = response,
+                                responseBody = body.string(),
+                                requestHeaders = requestHeaders
+                            )
+                        }
+                    )
+                    return
+                }
                 if (body.contentLength() == 0L) {
                     throw SerializationException("Response does not have a body")
                 }
