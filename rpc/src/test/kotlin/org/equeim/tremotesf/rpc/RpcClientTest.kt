@@ -20,11 +20,11 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.okio.decodeFromBufferedSource
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.SocketEffect
 import okhttp3.Credentials
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.SocketPolicy
+import okhttp3.Headers.Companion.headersOf
 import org.equeim.tremotesf.rpc.requests.getSessionStats
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -36,6 +36,7 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.time.LocalTime
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -82,54 +83,69 @@ class RpcClientTest {
     @Test
     fun `Check that validation is performed on first request`() = runTest {
         server.enqueue(
-            MockResponse().setResponseCode(HttpURLConnection.HTTP_CONFLICT)
-                .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                code = HttpURLConnection.HTTP_CONFLICT,
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            )
         )
         enqueueSuccessfulValidation()
         server.enqueue(
-            MockResponse().setBody(TEST_SESSION_STATS_RESPONSE_BODY).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = TEST_SESSION_STATS_RESPONSE_BODY
+            )
         )
         client.getSessionStats()
         server.takeRequest()
         assertEquals(
             EXPECTED_SERVER_VERSION_REQUEST_BODY,
-            client.json.decodeFromBufferedSource<JsonElement>(server.takeRequest().body)
+            client.json.decodeFromString<JsonElement>(assertNotNull(server.takeRequest().body).utf8())
         )
         assertEquals(
             EXPECTED_UNIX_ROOT_FREE_SPACE_REQUEST_BODY,
-            client.json.decodeFromBufferedSource<JsonElement>(server.takeRequest().body)
+            client.json.decodeFromString<JsonElement>(assertNotNull(server.takeRequest().body).utf8())
         )
     }
 
     @Test
     fun `Check that validation is performed when session id changes`() = runTest {
         server.enqueue(
-            MockResponse().setResponseCode(HttpURLConnection.HTTP_CONFLICT)
-                .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                code = HttpURLConnection.HTTP_CONFLICT,
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            )
         )
         enqueueSuccessfulValidation()
         server.enqueue(
-            MockResponse().setBody(TEST_SESSION_STATS_RESPONSE_BODY).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = TEST_SESSION_STATS_RESPONSE_BODY
+            )
         )
         client.getSessionStats()
         repeat(4) { server.takeRequest() }
         server.enqueue(
-            MockResponse().setResponseCode(HttpURLConnection.HTTP_CONFLICT)
-                .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_2)
+            MockResponse(
+                code = HttpURLConnection.HTTP_CONFLICT,
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_2)
+            )
         )
         enqueueSuccessfulValidation()
         server.enqueue(
-            MockResponse().setBody(TEST_SESSION_STATS_RESPONSE_BODY).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_2)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_2),
+                body = TEST_SESSION_STATS_RESPONSE_BODY
+            )
         )
         client.getSessionStats()
         server.takeRequest()
         assertEquals(
             EXPECTED_SERVER_VERSION_REQUEST_BODY,
-            client.json.decodeFromBufferedSource<JsonElement>(server.takeRequest().body)
+            client.json.decodeFromString<JsonElement>(assertNotNull(server.takeRequest().body).utf8())
         )
         assertEquals(
             EXPECTED_UNIX_ROOT_FREE_SPACE_REQUEST_BODY,
-            client.json.decodeFromBufferedSource<JsonElement>(server.takeRequest().body)
+            client.json.decodeFromString<JsonElement>(assertNotNull(server.takeRequest().body).utf8())
         )
     }
 
@@ -137,37 +153,36 @@ class RpcClientTest {
     fun `Check session stats request`() = runTest {
         enqueueSuccessfulValidation()
         server.enqueue(
-            MockResponse().setBody(TEST_SESSION_STATS_RESPONSE_BODY).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = TEST_SESSION_STATS_RESPONSE_BODY
+            )
         )
         client.getSessionStats()
         repeat(2) { server.takeRequest() }
-        val body = client.json.decodeFromBufferedSource<JsonElement>(server.takeRequest().body)
+        val body = client.json.decodeFromString<JsonElement>(assertNotNull(server.takeRequest().body).utf8())
         assertEquals(EXPECTED_SESSION_STATS_REQUEST_BODY, body)
     }
 
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
     fun `Check timeout error`(errorDuringValidation: Boolean) = runTest {
-        if (errorDuringValidation) {
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
-        } else {
+        if (!errorDuringValidation) {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
         }
+        server.enqueue(MockResponse.Builder().onResponseStart(SocketEffect.Stall).build())
         assertThrows<RpcRequestError.Timeout> { client.getSessionStats() }
     }
 
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
     fun `Check connection error`(errorDuringValidation: Boolean) = runTest {
-        if (errorDuringValidation) {
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
-        } else {
+        if (!errorDuringValidation) {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
-            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
         }
+        val response = MockResponse.Builder().onResponseStart(SocketEffect.ShutdownConnection).build()
+        server.enqueue(response)
+        server.enqueue(response)
         assertThrows<RpcRequestError.NetworkError> { client.getSessionStats() }
     }
 
@@ -175,10 +190,10 @@ class RpcClientTest {
     @ValueSource(booleans = [true, false])
     fun `Check http status code error`(errorDuringValidation: Boolean) = runTest {
         if (errorDuringValidation) {
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_INTERNAL_ERROR))
         } else {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_INTERNAL_ERROR))
         }
         val error = assertThrows<RpcRequestError.UnsuccessfulHttpStatusCode> { client.getSessionStats() }
         assertEquals(HttpURLConnection.HTTP_INTERNAL_ERROR, error.response.code)
@@ -188,10 +203,10 @@ class RpcClientTest {
     @ValueSource(booleans = [true, false])
     fun `Check deserialization error`(errorDuringValidation: Boolean) = runTest {
         if (errorDuringValidation) {
-            server.enqueue(MockResponse().setBody("lol"))
+            server.enqueue(MockResponse(body = "lol"))
         } else {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setBody("lol"))
+            server.enqueue(MockResponse(body = "lol"))
         }
         assertThrows<RpcRequestError.DeserializationError> { client.getSessionStats() }
     }
@@ -212,10 +227,10 @@ class RpcClientTest {
     @ValueSource(booleans = [true, false])
     fun `Check authentication error due to no credentials`(errorDuringValidation: Boolean) = runTest {
         if (errorDuringValidation) {
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_UNAUTHORIZED))
         } else {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_UNAUTHORIZED))
         }
         assertThrows<RpcRequestError.AuthenticationError> { client.getSessionStats() }
     }
@@ -231,10 +246,10 @@ class RpcClientTest {
             )
         )
         if (errorDuringValidation) {
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_UNAUTHORIZED))
         } else {
             enqueueSuccessfulValidation()
-            server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+            server.enqueue(MockResponse(HttpURLConnection.HTTP_UNAUTHORIZED))
         }
         assertThrows<RpcRequestError.AuthenticationError> { client.getSessionStats() }
     }
@@ -251,16 +266,21 @@ class RpcClientTest {
             )
         )
         enqueueSuccessfulValidation()
-        server.enqueue(MockResponse().setBody(TEST_SESSION_STATS_RESPONSE_BODY))
+        server.enqueue(MockResponse(body = TEST_SESSION_STATS_RESPONSE_BODY))
         client.getSessionStats()
-        assertEquals(Credentials.basic(username, password), server.takeRequest().getHeader(AUTHORIZATION_HEADER))
+        assertEquals(Credentials.basic(username, password), server.takeRequest().headers[AUTHORIZATION_HEADER])
     }
 
     @Test
     fun `Check error when server is too old`() = runTest {
         val serverVersionResponse =
             """{"arguments":{"rpc-version":13,"rpc-version-minimum":13,"version":"2.30"},"result":"success"}"""
-        server.enqueue(MockResponse().setBody(serverVersionResponse).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1))
+        server.enqueue(
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = serverVersionResponse
+            )
+        )
         val error = assertThrows<RpcRequestError.UnsupportedServerVersion> { client.getSessionStats() }
         assertEquals("2.30", error.version)
     }
@@ -269,7 +289,12 @@ class RpcClientTest {
     fun `Check error when server is too new`() = runTest {
         val serverVersionResponse =
             """{"arguments":{"rpc-version":42,"rpc-version-minimum":21,"version":"666.666"},"result":"success"}"""
-        server.enqueue(MockResponse().setBody(serverVersionResponse).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1))
+        server.enqueue(
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = serverVersionResponse
+            )
+        )
         val error = assertThrows<RpcRequestError.UnsupportedServerVersion> { client.getSessionStats() }
         assertEquals("666.666", error.version)
     }
@@ -279,14 +304,18 @@ class RpcClientTest {
     fun `Check RPC response error`(errorDuringValidation: Boolean) = runTest {
         if (errorDuringValidation) {
             server.enqueue(
-                MockResponse().setBody("""{"result":"wtf", "arguments": {}}""")
-                    .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+                MockResponse(
+                    headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                    body = """{"result":"wtf", "arguments": {}}"""
+                )
             )
         } else {
             enqueueSuccessfulValidation()
             server.enqueue(
-                MockResponse().setBody("""{"result":"wtf", "arguments": {}}""")
-                    .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+                MockResponse(
+                    headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                    body = """{"result":"wtf", "arguments": {}}"""
+                )
             )
         }
         val error = assertThrows<RpcRequestError.UnsuccessfulResultField> { client.getSessionStats() }
@@ -305,11 +334,16 @@ class RpcClientTest {
 
     private fun enqueueSuccessfulValidation() {
         server.enqueue(
-            MockResponse().setBody(TEST_SERVER_VERSION_RESPONSE_BODY).addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = TEST_SERVER_VERSION_RESPONSE_BODY
+            )
         )
         server.enqueue(
-            MockResponse().setBody(TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_SUCCESS)
-                .addHeader(SESSION_ID_HEADER, TEST_SESSION_ID_1)
+            MockResponse(
+                headers = headersOf(SESSION_ID_HEADER, TEST_SESSION_ID_1),
+                body = TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_SUCCESS
+            )
         )
     }
 

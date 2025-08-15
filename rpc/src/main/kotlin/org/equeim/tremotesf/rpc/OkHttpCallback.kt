@@ -66,7 +66,7 @@ internal class OkHttpCallback<ResponseArguments : Any>(
                 return
             }
             try {
-                if (body == null || body.contentLength() == 0L) {
+                if (body.contentLength() == 0L) {
                     throw SerializationException("Response does not have a body")
                 }
                 @OptIn(ExperimentalSerializationApi::class)

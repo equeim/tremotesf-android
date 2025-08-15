@@ -157,7 +157,7 @@ private fun AddTorrentFileScreen(
             Column {
                 TremotesfScrollableTopAppBarWithSubtitle(
                     title = stringResource(R.string.add_torrent_file),
-                    subtitle = (loadingState.value as? LoadingState.Loaded)?.torrentName.orEmpty(),
+                    subtitle = (loadingState.value as? LoadingState.Loaded)?.torrentName,
                     scrollBehavior = scrollBehavior,
                     navigateUp = navigateUp
                 )

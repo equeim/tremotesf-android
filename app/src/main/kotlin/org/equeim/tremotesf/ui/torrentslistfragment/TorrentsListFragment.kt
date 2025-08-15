@@ -10,8 +10,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -20,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -160,7 +161,7 @@ class TorrentsListFragment : ComposeFragment() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TorrentsListScreen(
     title: State<TorrentsListFragmentViewModel.TitleState?>,
@@ -222,31 +223,36 @@ private fun TorrentsListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = title.value
-                    Text(
-                        text = if (title != null) {
-                            stringResource(R.string.current_server_string, title.serverName, title.serverAddress)
-                        } else {
-                            stringResource(R.string.app_name)
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                subtitle = {
-                    val subtitle = subtitle.value
-                    if (subtitle != null) {
-                        val fileSizeFormatter = rememberFileSizeFormatter()
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        val title = title.value
                         Text(
-                            stringResource(
-                                R.string.main_activity_subtitle,
-                                fileSizeFormatter.formatTransferRate(subtitle.downloadSpeed),
-                                fileSizeFormatter.formatTransferRate(subtitle.uploadSpeed)
-                            )
+                            text = if (title != null) {
+                                stringResource(R.string.current_server_string, title.serverName, title.serverAddress)
+                            } else {
+                                stringResource(R.string.app_name)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+
+                        // TODO: use TopAppBar override with subtitle parameter after update material3 to 1.5
+                        val subtitle = subtitle.value
+                        if (subtitle != null) {
+                            val fileSizeFormatter = rememberFileSizeFormatter()
+                            Text(
+                                text = stringResource(
+                                    R.string.main_activity_subtitle,
+                                    fileSizeFormatter.formatTransferRate(subtitle.downloadSpeed),
+                                    fileSizeFormatter.formatTransferRate(subtitle.uploadSpeed)
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = TopAppBarDefaults.topAppBarColors().subtitleContentColor
+                            )
+                        }
                     }
                 },
-                titleHorizontalAlignment = Alignment.CenterHorizontally,
                 actions = {
                     TremotesfIconButtonWithTooltipAndMenu(Icons.Filled.MoreVert, R.string.more_options) {
                         DropdownMenuItem(

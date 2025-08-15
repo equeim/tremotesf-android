@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,13 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -75,7 +75,6 @@ fun FiltersBottomSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun FiltersBottomSheetContent(
     sortAndFilterSettings: SortAndFilterSettings,
@@ -139,11 +138,7 @@ private fun FiltersBottomSheetContent(
             itemVerticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.sort_order))
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
-                val sortOrder = sortAndFilterSettings.sortOrder.collectAsStateWithLifecycle()
-                SortOrderButton(SortOrder.Ascending, sortOrder, sortAndFilterSettings::setSortOrder)
-                SortOrderButton(SortOrder.Descending, sortOrder, sortAndFilterSettings::setSortOrder)
-            }
+            SortOrderButtons(sortAndFilterSettings.sortOrder.collectAsStateWithLifecycle(), sortAndFilterSettings::setSortOrder)
         }
 
         val comparator = rememberAlphanumericComparator()
@@ -231,39 +226,38 @@ private fun FiltersBottomSheetContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SortOrderButton(
-    sortOrder: SortOrder,
+private fun SortOrderButtons(
     currentSortOrder: State<SortOrder>,
     setSortOrder: (SortOrder) -> Unit
 ) {
-    ToggleButton(
-        checked = currentSortOrder.value == sortOrder,
-        onCheckedChange = {
-            if (it) {
-                setSortOrder(sortOrder)
-            }
-        }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
-        ) {
+    SingleChoiceSegmentedButtonRow {
+        for ((index, sortOrder) in SortOrder.entries.withIndex()) {
             val text = stringResource(
                 when (sortOrder) {
                     SortOrder.Ascending -> R.string.ascending
                     SortOrder.Descending -> R.string.descending
                 }
             )
-            Icon(
-                when (sortOrder) {
-                    SortOrder.Ascending -> Icons.AutoMirrored.Filled.SortAscending
-                    SortOrder.Descending -> Icons.AutoMirrored.Filled.SortDescending
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = SortOrder.entries.size),
+                selected = currentSortOrder.value == sortOrder,
+                onClick = {
+                    if (sortOrder != currentSortOrder.value) {
+                        setSortOrder(sortOrder)
+                    }
                 },
-                text
+                icon = {
+                    Icon(
+                        when (sortOrder) {
+                            SortOrder.Ascending -> Icons.AutoMirrored.Filled.SortAscending
+                            SortOrder.Descending -> Icons.AutoMirrored.Filled.SortDescending
+                        },
+                        text
+                    )
+                },
+                label = { Text(text) }
             )
-            Text(text)
         }
     }
 }

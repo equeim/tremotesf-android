@@ -6,11 +6,11 @@
 
 package org.equeim.tremotesf.ui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -70,22 +70,31 @@ fun TremotesfScrollableTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TremotesfScrollableTopAppBarWithSubtitle(
     title: String,
-    subtitle: String,
+    subtitle: String?,
     navigateUp: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
     actions: @Composable (RowScope.() -> Unit) = {},
 ) {
     TopAppBar(
-        title = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        subtitle = {
-            if (subtitle.isNotEmpty()) {
-                Text(text = subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        title = {
+            Column {
+                Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                // TODO: use TopAppBar override with subtitle parameter after update material3 to 1.5
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = TopAppBarDefaults.topAppBarColors().subtitleContentColor
+                    )
+                }
             }
+            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
         modifier = modifier,
         navigationIcon = {
