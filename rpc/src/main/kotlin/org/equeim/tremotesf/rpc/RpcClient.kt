@@ -32,7 +32,10 @@ import org.equeim.tremotesf.rpc.requests.ServerVersionResponseArguments
 import timber.log.Timber
 import java.net.HttpURLConnection
 
-open class RpcClient(protected val coroutineScope: CoroutineScope) {
+open class RpcClient(
+    protected val coroutineScope: CoroutineScope,
+    private val retryOnConnectionFailure: Boolean = true
+) {
     private val connectionConfiguration = MutableStateFlow<Result<ConnectionConfiguration>?>(null)
     internal fun getConnectionConfiguration(): StateFlow<Result<ConnectionConfiguration>?> = connectionConfiguration
 
@@ -74,7 +77,7 @@ open class RpcClient(protected val coroutineScope: CoroutineScope) {
         Timber.d("setConnectionConfiguration() called with: server = $server")
         val newConnectionConfiguration = server?.let {
             try {
-                Result.success(createConnectionConfiguration(it))
+                Result.success(createConnectionConfiguration(it, retryOnConnectionFailure))
             } catch (e: Exception) {
                 Timber.e(e, "Bad connection configuration")
                 Result.failure(e)

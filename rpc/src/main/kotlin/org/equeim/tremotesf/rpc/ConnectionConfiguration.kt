@@ -24,7 +24,7 @@ internal data class ConnectionConfiguration(
 /**
  * @throws RuntimeException
  */
-internal fun createConnectionConfiguration(server: Server): ConnectionConfiguration {
+internal fun createConnectionConfiguration(server: Server, retryOnConnectionFailure: Boolean): ConnectionConfiguration {
     val url = createUrl(server)
     val timeout = server.timeout.toJavaDuration()
     val builder = OkHttpClient.Builder()
@@ -33,6 +33,7 @@ internal fun createConnectionConfiguration(server: Server): ConnectionConfigurat
         .readTimeout(timeout)
         .writeTimeout(timeout)
         .callTimeout(timeout)
+        .retryOnConnectionFailure(retryOnConnectionFailure)
         .proxy(server.proxyType?.let {
             Proxy(
                 it,

@@ -44,7 +44,7 @@ import kotlin.time.Duration.Companion.seconds
 class RpcClientTest {
     private val dispatcher = StandardTestDispatcher()
     private val server = MockWebServer()
-    private val client = RpcClient(TestScope(dispatcher))
+    private val client = RpcClient(coroutineScope = TestScope(context = dispatcher), retryOnConnectionFailure = false)
 
     private class TestTree : Timber.DebugTree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
@@ -180,9 +180,7 @@ class RpcClientTest {
         if (!errorDuringValidation) {
             enqueueSuccessfulValidation()
         }
-        val response = MockResponse.Builder().onResponseStart(SocketEffect.ShutdownConnection).build()
-        server.enqueue(response)
-        server.enqueue(response)
+        server.enqueue(MockResponse.Builder().onResponseStart(SocketEffect.ShutdownConnection).build())
         assertThrows<RpcRequestError.NetworkError> { client.getSessionStats() }
     }
 
