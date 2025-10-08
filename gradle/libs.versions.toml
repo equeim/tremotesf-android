@@ -5,7 +5,7 @@
 [versions]
 android-gradle-plugin = "8.12.0"
 kotlin = "2.2.10"
-gradle-versions-plugin = "0.52.0"
+deezer-caupain = "1.6.1"
 
 sdk-platform-compile = "36"
 sdk-platform-min = "26"
@@ -94,5 +94,5 @@ kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.re
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-navigation = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
-gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions-plugin" }
+deezer-caupain = { id = "com.deezer.caupain", version.ref = "deezer-caupain" }
 tremotesf-common-settings = { id = "org.equeim.tremotesf.common-settings" }
