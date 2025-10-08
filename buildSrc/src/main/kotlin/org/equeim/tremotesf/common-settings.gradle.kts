@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 
 val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
-val javaVersion = JavaVersion.VERSION_11
+val javaVersion = JavaVersion.VERSION_17
 
 private fun getSdkVersion(alias: String): Int =
     libs.findVersion(alias).get().requiredVersion.toInt()
