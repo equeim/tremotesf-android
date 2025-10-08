@@ -9,7 +9,7 @@ deezer-caupain = "1.6.1"
 
 sdk-platform-compile = "36"
 sdk-platform-min = "26"
-sdk-platform-target = "35"
+sdk-platform-target = "36"
 
 coroutines = "1.10.2"
 serialization = "1.9.0"
