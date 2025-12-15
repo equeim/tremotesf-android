@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Ngắt kết nối</string>
     <string name="connecting">Đang kết nối\u2026</string>
 
@@ -186,7 +186,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">Bắt đầu tải xuống sau khi thêm</string>
 
-    <string name="torrent_link">Liên kết của torrent</string>
     <string name="add_torrent_link">Thêm liên kết của torrent</string>
 
     <string name="current_session">Phiên hiện tại</string>

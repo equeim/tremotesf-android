@@ -6,13 +6,16 @@ package org.equeim.tremotesf.torrentfile
 
 import android.net.Uri
 import android.net.UrlQuerySanitizer
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 
+@Parcelize
 data class MagnetLink(
     val uri: Uri,
     val infoHashV1: String,
     val trackers: List<Set<String>>,
-)
+) : Parcelable
 
 fun parseMagnetLink(uri: Uri): MagnetLink {
     Timber.d("parseMagnetLink() called with: uri = $uri")

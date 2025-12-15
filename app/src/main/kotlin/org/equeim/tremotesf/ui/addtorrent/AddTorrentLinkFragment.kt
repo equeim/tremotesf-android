@@ -26,6 +26,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -73,7 +75,7 @@ class AddTorrentLinkFragment : ComposeFragment() {
     override fun Content(navController: NavController) {
         val model = viewModel {
             AddTorrentLinkModel(
-                args.uri,
+                args.uris?.asList().orEmpty(),
                 createSavedStateHandle(),
                 checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
             )
@@ -81,7 +83,7 @@ class AddTorrentLinkFragment : ComposeFragment() {
         AddTorrentLinkScreen(
             navigateUp = navController::navigateUp,
             initialRpcInputsRequestState = model.initialRpcInputs.collectAsStateWithLifecycle(),
-            torrentLink = model.torrentLink,
+            torrentLinksText = model.torrentLinksText,
             downloadDirectory = model.downloadDirectory,
             allDownloadDirectories = model.allDownloadDirectories,
             downloadDirectoryFreeSpace = model.downloadDirectoryFreeSpace.collectAsStateWithLifecycle(),
@@ -91,12 +93,13 @@ class AddTorrentLinkFragment : ComposeFragment() {
             allLabels = model.allLabels,
             addTorrentState = model.addTorrentState,
             shouldShowLabels = model.shouldShowLabels.collectAsStateWithLifecycle(),
+            showMergingTrackersMessage = model.showMergingTrackersMessage,
             onMergeTrackersDialogResult = model::onMergeTrackersDialogResult,
-            addTorrentLink = model::addTorrentLink,
+            addTorrent = model::addTorrent,
             shouldStartDragAndDrop = model::shouldStartDragAndDrop,
             dragAndDropTarget = model
         )
-        HandleTerminalAddTorrentState(model.addTorrentState, navController, requireActivity())
+        HandleFinishedAddTorrentState(model.addTorrentState, navController, requireActivity())
     }
 }
 
@@ -105,7 +108,7 @@ class AddTorrentLinkFragment : ComposeFragment() {
 private fun AddTorrentLinkScreen(
     navigateUp: () -> Unit,
     initialRpcInputsRequestState: State<RpcRequestState<*>>,
-    torrentLink: MutableState<String>,
+    torrentLinksText: MutableState<String>,
     downloadDirectory: MutableState<String>,
     allDownloadDirectories: SnapshotStateList<DownloadDirectoryItem>,
     downloadDirectoryFreeSpace: State<DownloadDirectoryFreeSpace?>,
@@ -115,15 +118,19 @@ private fun AddTorrentLinkScreen(
     allLabels: State<List<String>>,
     shouldShowLabels: State<Boolean>,
     addTorrentState: State<AddTorrentState?>,
+    showMergingTrackersMessage: MutableState<MergingTrackersMessage?>,
     onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,
-    addTorrentLink: () -> Unit,
+    addTorrent: () -> Unit,
     shouldStartDragAndDrop: (DragAndDropEvent) -> Boolean,
     dragAndDropTarget: DragAndDropTarget,
 ) {
     var showTorrentLinkError: Boolean by rememberSaveable { mutableStateOf(false) }
     val showDownloadDirectoryError = rememberSaveable { mutableStateOf(false) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = { TremotesfTopAppBar(stringResource(R.string.add_torrent_link), navigateUp) },
         floatingActionButton = {
             val checkingIfTorrentExists: Boolean by remember {
@@ -143,14 +150,14 @@ private fun AddTorrentLinkScreen(
                     if (checkingIfTorrentExists) {
                         return@ExtendedFloatingActionButton
                     }
-                    if (torrentLink.value.isBlank()) {
+                    if (torrentLinksText.value.isBlank()) {
                         showTorrentLinkError = true
                     }
                     if (downloadDirectory.value.isBlank()) {
                         showDownloadDirectoryError.value = true
                     }
                     if (!showTorrentLinkError && !showDownloadDirectoryError.value) {
-                        addTorrentLink()
+                        addTorrent()
                     }
                 }
             )
@@ -186,7 +193,7 @@ private fun AddTorrentLinkScreen(
                 ) {
                     val horizontalPadding = Dimens.screenContentPaddingHorizontal()
 
-                    val shouldRequestFocus = rememberSaveable { torrentLink.value.isEmpty() }
+                    val shouldRequestFocus = rememberSaveable { torrentLinksText.value.isEmpty() }
                     val focusRequester = if (shouldRequestFocus) {
                         rememberTremotesfInitialFocusRequester()
                     } else {
@@ -194,21 +201,22 @@ private fun AddTorrentLinkScreen(
                     }
 
                     OutlinedTextField(
-                        value = torrentLink.value,
+                        value = torrentLinksText.value,
                         onValueChange = {
-                            torrentLink.value = it
+                            torrentLinksText.value = it
                             if (it.isNotBlank()) {
                                 showTorrentLinkError = false
                             }
                         },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-                        label = { Text(stringResource(R.string.torrent_link)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.None),
+                        label = { Text(stringResource(R.string.torrent_links)) },
                         isError = showTorrentLinkError,
                         supportingText = if (showTorrentLinkError) {
                             { Text(stringResource(R.string.empty_field_error)) }
                         } else {
                             null
                         },
+                        minLines = 2,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = horizontalPadding)
@@ -240,12 +248,14 @@ private fun AddTorrentLinkScreen(
         )
     }
 
+    ShowMergingTrackersMessage(showMergingTrackersMessage, snackbarHostState)
+
     val showMergingTrackersDialog: AddTorrentState.AskForMergingTrackers? by remember {
         derivedStateOf { addTorrentState.value as? AddTorrentState.AskForMergingTrackers }
     }
     showMergingTrackersDialog?.let {
         MergingTrackersDialog(
-            torrentName = it.torrentName,
+            torrentNames = it.torrentNames,
             cancellable = true,
             onMergeTrackersDialogResult = onMergeTrackersDialogResult
         )
@@ -258,7 +268,7 @@ private fun AddTorrentLinkScreenPreview() = ScreenPreview {
     AddTorrentLinkScreen(
         navigateUp = {},
         initialRpcInputsRequestState = remember { mutableStateOf(RpcRequestState.Loaded(Unit)) },
-        torrentLink = remember { mutableStateOf("") },
+        torrentLinksText = remember { mutableStateOf("") },
         downloadDirectory = remember { mutableStateOf("/home/dude") },
         allDownloadDirectories = remember { SnapshotStateList() },
         downloadDirectoryFreeSpace = remember {
@@ -270,8 +280,9 @@ private fun AddTorrentLinkScreenPreview() = ScreenPreview {
         allLabels = remember { mutableStateOf(emptyList()) },
         shouldShowLabels = remember { mutableStateOf(true) },
         addTorrentState = remember { mutableStateOf(null) },
+        showMergingTrackersMessage = remember { mutableStateOf(null) },
         onMergeTrackersDialogResult = {},
-        addTorrentLink = {},
+        addTorrent = {},
         shouldStartDragAndDrop = { false },
         dragAndDropTarget = remember {
             object : DragAndDropTarget {

@@ -118,7 +118,7 @@ class AddTorrentFileFragment : ComposeFragment() {
             addTorrentState = model.addTorrentState,
             onMergeTrackersDialogResult = model::onMergeTrackersDialogResult
         )
-        HandleTerminalAddTorrentState(model.addTorrentState, navController, requireActivity())
+        HandleFinishedAddTorrentState(model.addTorrentState, navController, requireActivity())
     }
 }
 
@@ -293,7 +293,7 @@ private fun AddTorrentFileScreen(
                 }
                 showMergingTrackersDialog?.let {
                     MergingTrackersDialog(
-                        torrentName = it.torrentName,
+                        torrentNames = it.torrentNames,
                         cancellable = false,
                         onMergeTrackersDialogResult = onMergeTrackersDialogResult
                     )

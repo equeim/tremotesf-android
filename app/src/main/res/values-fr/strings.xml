@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">Déconnecté</string>
     <string name="connecting">Connexion\u2026</string>
 
@@ -267,7 +267,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">Commencer le téléchargement après l\'ajout</string>
 
-    <string name="torrent_link">Lien du torrent</string>
     <string name="add_torrent_link">Ajouter un torrent via un lien</string>
 
     <string name="current_session">Session actuelle</string>

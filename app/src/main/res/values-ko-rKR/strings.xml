@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="disconnected">연결 해제</string>
     <string name="connecting">연결\u2026</string>
 
@@ -265,7 +265,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">추가 후 다운로드 시작</string>
 
-    <string name="torrent_link">토렌트 링크</string>
     <string name="add_torrent_link">토렌트 링크 추가</string>
 
     <string name="current_session">현재 세션</string>

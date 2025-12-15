@@ -69,6 +69,7 @@ import org.equeim.tremotesf.ui.ComposeFragment
 import org.equeim.tremotesf.ui.Dimens
 import org.equeim.tremotesf.ui.ShowRpcErrorsSnackbar
 import org.equeim.tremotesf.ui.addtorrent.MergingTrackersMessage
+import org.equeim.tremotesf.ui.addtorrent.ShowMergingTrackersMessage
 import org.equeim.tremotesf.ui.components.TremotesfIconButtonWithTooltipAndMenu
 import org.equeim.tremotesf.ui.components.TremotesfRuntimePermissionHelper
 import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
@@ -389,27 +390,6 @@ private fun TorrentsListScreen(
             onShownNotificationPermissionRequest = onShownNotificationPermissionRequest,
             snackbarHostState = snackbarHostState
         )
-    }
-}
-
-@Composable
-private fun ShowMergingTrackersMessage(
-    mergingTrackersMessage: MutableState<MergingTrackersMessage?>,
-    snackbarHostState: SnackbarHostState
-) {
-    val messageString = mergingTrackersMessage.value?.let { stringResource(it.stringId, it.torrentName) }
-    if (messageString != null) {
-        LaunchedEffect(messageString) {
-            try {
-                snackbarHostState.showSnackbar(
-                    message = messageString,
-                    withDismissAction = true,
-                    duration = SnackbarDuration.Short
-                )
-            } finally {
-                mergingTrackersMessage.value = null
-            }
-        }
     }
 }
 

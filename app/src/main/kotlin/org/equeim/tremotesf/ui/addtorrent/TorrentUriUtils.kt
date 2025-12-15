@@ -61,7 +61,7 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
                 try {
                     parseMagnetLink(this)
                     TorrentUri.Type.Link
-                } catch (e: IllegalArgumentException) {
+                } catch (_: IllegalArgumentException) {
                     null
                 }
             } else {
@@ -72,40 +72,39 @@ private fun Uri.getTorrentUriType(context: Context, validateUri: Boolean): Torre
         else -> null
     }
 
-fun ClipData.getTorrentUri(context: Context): TorrentUri? =
-    items().firstNotNullOfOrNull { it.getTorrentUri(context) }
+fun ClipData.getTorrentUris(context: Context): List<TorrentUri> =
+    items().flatMap { it.getTorrentUris(context) }.toList()
 
 private fun ClipData.items(): Sequence<ClipData.Item> =
     (0 until itemCount).asSequence().map(::getItemAt)
 
-fun ClipData.Item.getTorrentUri(context: Context): TorrentUri? {
+fun ClipData.Item.getTorrentUris(context: Context): List<TorrentUri> {
     if (BuildConfig.DEBUG) {
         Timber.d("Processing ClipData.Item with:")
         Timber.d(" - uri: $uri")
         Timber.d(" - intent: $intent")
         Timber.d(" - text: $text")
     }
-    return uri()
+    return uris()
         .also {
             if (BuildConfig.DEBUG) {
-                Timber.d(" - Final URI is $it")
+                Timber.d(" - Final URIs are:\n ${it.joinToString("\n ")}")
             }
         }
-        ?.toTorrentUri(context, validateUri = true)
+        .mapNotNull { it.toTorrentUri(context, validateUri = true) }
         .also {
             if (BuildConfig.DEBUG) {
-                Timber.d(" - Torrent URI is $it")
+                Timber.d(" - Torrent URIs are:\n ${it.joinToString("\n ")}")
             }
         }
 }
 
-private fun ClipData.Item.uri(): Uri? {
-    uri?.let { return it }
-    intent?.data?.let { return it }
-    text?.lineSequence()?.forEach { line ->
-        runCatching { URI(line).toString().toUri() }.onSuccess { return it }
-    }
-    return null
+private fun ClipData.Item.uris(): List<Uri> {
+    uri?.let { return listOf(it) }
+    intent?.data?.let { return listOf(it) }
+    return text?.lineSequence()?.mapNotNull { line ->
+        runCatching { URI(line).toString().toUri() }.getOrNull()
+    }?.toList().orEmpty()
 }
 
 fun ClipDescription.mimeTypes(): List<String> = (0 until mimeTypeCount).map(::getMimeType)

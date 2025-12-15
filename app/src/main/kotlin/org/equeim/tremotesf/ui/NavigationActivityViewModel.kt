@@ -21,7 +21,7 @@ import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
 import org.equeim.tremotesf.ui.addtorrent.TORRENT_FILE_MIME_TYPE
 import org.equeim.tremotesf.ui.addtorrent.TORRENT_LINK_MIME_TYPES
 import org.equeim.tremotesf.ui.addtorrent.TorrentUri
-import org.equeim.tremotesf.ui.addtorrent.getTorrentUri
+import org.equeim.tremotesf.ui.addtorrent.getTorrentUris
 import org.equeim.tremotesf.ui.addtorrent.mimeTypes
 import org.equeim.tremotesf.ui.addtorrent.toTorrentUri
 import timber.log.Timber
@@ -36,7 +36,7 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
         if (intent.action != Intent.ACTION_VIEW) return null
         return intent.data
             ?.toTorrentUri(getApplication(), validateUri = false)
-            ?.let(::getAddTorrentDirections)
+            ?.let { getAddTorrentDirections(listOf(it)) }
     }
 
     fun getInitialDeepLinkIntent(intent: Intent): Intent? {
@@ -94,19 +94,22 @@ class NavigationActivityViewModel(application: Application, savedStateHandle: Sa
     }
 
     fun getAddTorrentDirections(clipData: ClipData): AddTorrentDirections? {
-        return clipData.getTorrentUri(getApplication())?.let(::getAddTorrentDirections)
+        return getAddTorrentDirections(clipData.getTorrentUris(getApplication()))
     }
 
-    private fun getAddTorrentDirections(uri: TorrentUri): AddTorrentDirections {
-        return when (uri.type) {
+    private fun getAddTorrentDirections(uris: List<TorrentUri>): AddTorrentDirections? {
+        if (uris.isEmpty()) return null
+        val firstUri = uris.first()
+        return when (firstUri.type) {
             TorrentUri.Type.File -> AddTorrentDirections(
                 R.id.add_torrent_file_fragment,
-                AddTorrentFileFragmentArgs(uri.uri).toBundle()
+                AddTorrentFileFragmentArgs(firstUri.uri).toBundle()
             )
-
             TorrentUri.Type.Link -> AddTorrentDirections(
                 R.id.add_torrent_link_fragment,
-                AddTorrentLinkFragmentArgs(uri.uri).toBundle()
+                AddTorrentLinkFragmentArgs(
+                    uris.mapNotNull { it.takeIf { it.type == TorrentUri.Type.Link }?.uri }.toTypedArray()
+                ).toBundle()
             )
         }
     }

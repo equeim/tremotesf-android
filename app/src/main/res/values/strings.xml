@@ -284,7 +284,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">Start downloading after adding</string>
 
-    <string name="torrent_link">Torrent link</string>
+    <string name="torrent_links">Torrent links</string>
     <string name="add_torrent_link">Add torrent link</string>
 
     <string name="current_session">Current session</string>
@@ -444,8 +444,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Ask for merging trackers when adding existing torrent</string>
 
     <string name="torrent_duplicate_not_merging_trackers">Not adding existing torrent «%1$s»</string>
+    <string name="torrents_duplicates_not_merging_trackers">Not adding existing torrents:\n%1$s</string>
     <string name="torrent_duplicate_merging_trackers">Merging trackers for «%1$s» torrent</string>
+    <string name="torrents_duplicates_merging_trackers">Merging trackers for torrents:\n%1$s</string>
     <string name="torrent_duplicate_merging_trackers_question">Torrent «%1$s» is already added, merge trackers?</string>
+    <string name="torrents_duplicates_merging_trackers_question">Torrents are already added:\n%1$s\n\nMerge trackers?</string>
     <string name="merging_trackers_error">Failed to merge trackers: %1$s</string>
     <string name="merge_no">Do not merge</string>
     <string name="merge_yes">Merge</string>

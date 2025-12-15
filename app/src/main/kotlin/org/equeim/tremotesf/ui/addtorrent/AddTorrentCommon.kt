@@ -5,7 +5,9 @@
 package org.equeim.tremotesf.ui.addtorrent
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Parcelable
+import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,9 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
@@ -54,6 +61,7 @@ import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
 import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
+@Suppress("UnusedReceiverParameter")
 @Composable
 fun ColumnScope.CommonAddTorrentParameters(
     downloadDirectory: MutableState<String>,
@@ -160,57 +168,30 @@ fun ColumnScope.CommonAddTorrentParameters(
 sealed interface AddTorrentState : Parcelable {
     // Intermediary states
     data object CheckingIfTorrentExists : AddTorrentState
-    data class AskForMergingTrackers(val torrentName: String) : AddTorrentState
+    data class AskForMergingTrackers(val torrentNames: List<String>) : AddTorrentState
 
-    // Terminal states
-    data object AddedTorrent : AddTorrentState
-    data class MergedTrackers(val torrentName: String, val showMessage: Boolean) : AddTorrentState
-    data class DidNotMergeTrackers(val torrentName: String, val showMessage: Boolean) : AddTorrentState
+    // Terminal state
+    data class Finished(val mergingTrackersMessage: MergingTrackersMessage? = null) : AddTorrentState
 }
 
 @Composable
-fun HandleTerminalAddTorrentState(
+fun HandleFinishedAddTorrentState(
     state: State<AddTorrentState?>,
     navController: NavController,
     activity: ComponentActivity
 ) {
-    val performBackPress = { activity.onBackPressedDispatcher.onBackPressed() }
-    when (val state = state.value) {
-        is AddTorrentState.AddedTorrent ->
-            LaunchedEffect(null) { performBackPress() }
-
-        is AddTorrentState.DidNotMergeTrackers -> LaunchedEffect(null) {
-            if (state.showMessage) {
-                showMergingTrackersMessage(
-                    navController,
-                    activity,
-                    MergingTrackersMessage(merging = false, torrentName = state.torrentName)
-                )
+    val state = state.value
+    if (state is AddTorrentState.Finished) {
+        LaunchedEffect(null) {
+            if (state.mergingTrackersMessage != null) {
+                showMergingTrackersMessageAfterAddingTorrent(navController, activity, state.mergingTrackersMessage)
             }
-            performBackPress()
+            activity.onBackPressedDispatcher.onBackPressed()
         }
-
-        is AddTorrentState.MergedTrackers -> LaunchedEffect(null) {
-            if (state.showMessage) {
-                showMergingTrackersMessage(
-                    navController,
-                    activity,
-                    MergingTrackersMessage(merging = true, torrentName = state.torrentName)
-                )
-            }
-            performBackPress()
-        }
-
-        else -> Unit
     }
 }
 
-data class MergingTrackersMessage(private val merging: Boolean, val torrentName: String) {
-    val stringId: Int
-        get() = if (merging) R.string.torrent_duplicate_merging_trackers else R.string.torrent_duplicate_not_merging_trackers
-}
-
-private fun showMergingTrackersMessage(
+private fun showMergingTrackersMessageAfterAddingTorrent(
     navController: NavController,
     context: Context,
     message: MergingTrackersMessage
@@ -226,12 +207,53 @@ private fun showMergingTrackersMessage(
     } else {
         Toast.makeText(
             context,
-            context.getString(
-                message.stringId,
-                message.torrentName
-            ),
+            message.getDisplayText(context.resources),
             Toast.LENGTH_SHORT
         ).show()
+    }
+}
+
+@Parcelize
+data class MergingTrackersMessage(private val merging: Boolean, val torrentNames: List<String>) : Parcelable {
+    fun getDisplayText(resources: Resources): String {
+        return if (torrentNames.size == 1) {
+            resources.getString(
+                if (merging) R.string.torrent_duplicate_merging_trackers else R.string.torrent_duplicate_not_merging_trackers,
+                torrentNames.first()
+            )
+        } else {
+            resources.getString(
+                if (merging) R.string.torrents_duplicates_merging_trackers else R.string.torrents_duplicates_not_merging_trackers,
+                buildMultipleTorrentsListString(
+                    torrentNames = torrentNames,
+                    isRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowMergingTrackersMessage(
+    mergingTrackersMessage: MutableState<MergingTrackersMessage?>,
+    snackbarHostState: SnackbarHostState
+) {
+    val messageString = mergingTrackersMessage.value?.let {
+        val resources = LocalResources.current
+        remember(it, resources) { it.getDisplayText(resources) }
+    }
+    if (messageString != null) {
+        LaunchedEffect(messageString) {
+            try {
+                snackbarHostState.showSnackbar(
+                    message = messageString,
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short
+                )
+            } finally {
+                mergingTrackersMessage.value = null
+            }
+        }
     }
 }
 
@@ -246,7 +268,7 @@ sealed interface MergeTrackersDialogResult {
 
 @Composable
 fun MergingTrackersDialog(
-    torrentName: String,
+    torrentNames: List<String>,
     cancellable: Boolean,
     onMergeTrackersDialogResult: (MergeTrackersDialogResult) -> Unit,
 ) {
@@ -260,7 +282,18 @@ fun MergingTrackersDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingBig)) {
                 Text(
-                    text = stringResource(R.string.torrent_duplicate_merging_trackers_question, torrentName),
+                    text = if (torrentNames.size == 1) {
+                        stringResource(R.string.torrent_duplicate_merging_trackers_question, torrentNames.first())
+                    } else {
+                        val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+                        val torrents = remember(torrentNames, isRtl) {
+                            buildMultipleTorrentsListString(
+                                torrentNames = torrentNames,
+                                isRtl = isRtl
+                            )
+                        }
+                        stringResource(R.string.torrents_duplicates_merging_trackers_question, torrents)
+                    },
                     modifier = Modifier.padding(horizontal = DialogPadding)
                 )
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
@@ -273,7 +306,6 @@ fun MergingTrackersDialog(
                     )
                 }
             }
-
         },
         textContentColor = MaterialTheme.colorScheme.onSurface,
         confirmButton = {
@@ -305,8 +337,35 @@ fun MergingTrackersDialog(
 @Composable
 fun MergingTrackersDialogPreview() = ScreenPreview {
     MergingTrackersDialog(
-        torrentName = "Bzzt",
+        torrentNames = listOf("Bzzt"),
         cancellable = true,
         onMergeTrackersDialogResult = {}
     )
+}
+
+@Preview
+@Composable
+fun MergingTrackersDialogPreviewSeveralTorrents() = ScreenPreview {
+    MergingTrackersDialog(
+        torrentNames = listOf("Bzzt", "Hmm", "Foo"),
+        cancellable = true,
+        onMergeTrackersDialogResult = {}
+    )
+}
+
+private fun buildMultipleTorrentsListString(torrentNames: List<String>, isRtl: Boolean): String = buildString {
+    for ((index, torrentName) in torrentNames.withIndex()) {
+        if (isRtl) {
+            append(torrentName)
+            append('\u00a0') // NBSP
+            append('\u2022') // Dot
+        } else {
+            append('\u2022') // Dot
+            append('\u00a0') // NBSP
+            append(torrentName)
+        }
+        if (index != torrentNames.lastIndex) {
+            append('\n')
+        }
+    }
 }

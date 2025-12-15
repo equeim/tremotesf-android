@@ -29,7 +29,7 @@ import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.requests.addTorrentFile
-import org.equeim.tremotesf.rpc.requests.checkIfTorrentExists
+import org.equeim.tremotesf.rpc.requests.checkIfTorrentsExist
 import org.equeim.tremotesf.rpc.requests.torrentproperties.addTorrentTrackers
 import org.equeim.tremotesf.torrentfile.FileIsTooLargeException
 import org.equeim.tremotesf.torrentfile.FileParseException
@@ -152,6 +152,7 @@ class AddTorrentFileModelImpl(
             infoHashV1 = parseResult.infoHashV1
             trackers = parseResult.trackers
 
+            checkIfTorrentExists()
             if (checkIfTorrentExists()) {
                 loadingState.value = LoadingState.Aborted
                 return@withContext
@@ -216,14 +217,14 @@ class AddTorrentFileModelImpl(
                         labels = enabledLabels
                     )
                 }
-                _addTorrentState.value = AddTorrentState.AddedTorrent
+                _addTorrentState.value = AddTorrentState.Finished()
             }
         }
     }
 
     private suspend fun checkIfTorrentExists(): Boolean {
         val alreadyExists = try {
-            GlobalRpcClient.checkIfTorrentExists(infoHashV1) != null
+            GlobalRpcClient.checkIfTorrentsExist(listOf(infoHashV1)).singleOrNull()?.hashString == infoHashV1
         } catch (e: RpcRequestError) {
             Timber.e(
                 e,
@@ -235,12 +236,12 @@ class AddTorrentFileModelImpl(
             when {
                 Settings.askForMergingTrackersWhenAddingExistingTorrent.get() ->
                     _addTorrentState.value =
-                        AddTorrentState.AskForMergingTrackers(torrentName)
+                        AddTorrentState.AskForMergingTrackers(listOf(torrentName))
 
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
-                    mergeTrackersWithExistingTorrent(afterAsking = false)
+                    mergeTrackersWithExistingTorrent(showMessage = true)
 
-                else -> _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, showMessage = true)
+                else -> _addTorrentState.value = AddTorrentState.Finished(MergingTrackersMessage(merging = false, torrentNames = listOf(torrentName)))
             }
         }
         return alreadyExists
@@ -295,20 +296,26 @@ class AddTorrentFileModelImpl(
         super.onMergeTrackersDialogResult(result)
         Timber.d("onMergeTrackersDialogResult() called with: result = $result")
         if ((result as? MergeTrackersDialogResult.ButtonClicked)?.merge == true) {
-            mergeTrackersWithExistingTorrent(afterAsking = true)
+            mergeTrackersWithExistingTorrent(showMessage = false)
         } else {
-            _addTorrentState.value = AddTorrentState.DidNotMergeTrackers(torrentName, showMessage = false)
+            _addTorrentState.value = AddTorrentState.Finished()
         }
     }
 
-    private fun mergeTrackersWithExistingTorrent(afterAsking: Boolean) {
-        Timber.d("mergeTrackersWithExistingTorrent() called with: afterAsking = $afterAsking")
+    private fun mergeTrackersWithExistingTorrent(showMessage: Boolean) {
+        Timber.d("mergeTrackersWithExistingTorrent() called with: showMessage = $showMessage")
         val infoHash = this.infoHashV1
         val trackers = this.trackers
         GlobalRpcClient.performBackgroundRpcRequest(R.string.merging_trackers_error) {
             addTorrentTrackers(infoHash, trackers)
         }
-        _addTorrentState.value = AddTorrentState.MergedTrackers(torrentName, afterAsking)
+        _addTorrentState.value = AddTorrentState.Finished(
+            if (showMessage) {
+                MergingTrackersMessage(merging = true, torrentNames = listOf(torrentName))
+            } else {
+                null
+            }
+        )
     }
 
     private inner class FilesTree : TorrentFilesTree(viewModelScope) {

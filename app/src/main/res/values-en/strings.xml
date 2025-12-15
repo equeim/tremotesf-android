@@ -245,7 +245,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">Start downloading after adding</string>
 
-    <string name="torrent_link">Torrent link</string>
     <string name="add_torrent_link">Add torrent link</string>
 
     <string name="current_session">Current session</string>

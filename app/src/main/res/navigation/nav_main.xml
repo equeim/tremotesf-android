@@ -130,9 +130,9 @@
         android:id="@+id/add_torrent_link_fragment"
         android:name="org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragment">
         <argument
-            android:name="uri"
+            android:name="uris"
             android:defaultValue="@null"
-            app:argType="android.net.Uri"
+            app:argType="android.net.Uri[]"
             app:nullable="true" />
     </fragment>
 
