@@ -730,7 +730,8 @@ private fun TorrentsListPreview(
                     webSeedersSendingToUsCount = 3,
                     addedDate = LocalDate.of(2025, 1, 1).atStartOfDay().toInstant(ZoneOffset.UTC),
                     trackerSites = listOf("http://example.com"),
-                    labels = listOf("wiki", "porn?", "lol", "hmm")
+                    labels = listOf("wiki", "porn?", "lol", "hmm"),
+                    activityDate = null
                 ),
                 Torrent(
                     id = 1,
@@ -756,7 +757,8 @@ private fun TorrentsListPreview(
                     peersGettingFromUsCount = 44,
                     webSeedersSendingToUsCount = 3,
                     addedDate = LocalDate.of(2025, 1, 1).atStartOfDay().toInstant(ZoneOffset.UTC),
-                    trackerSites = listOf("http://example.com")
+                    trackerSites = listOf("http://example.com"),
+                    activityDate = null
                 )
             )
         },

@@ -125,6 +125,7 @@ private fun FiltersBottomSheetContent(
                         SortMode.Ratio -> R.string.ratio
                         SortMode.Size -> R.string.size
                         SortMode.AddedDate -> R.string.added_date
+                        SortMode.LastActivity -> R.string.last_activity
                     }
                 )
             },

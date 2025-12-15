@@ -123,7 +123,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         Eta,
         Ratio,
         Size,
-        AddedDate;
+        AddedDate,
+        LastActivity;
 
         companion object {
             val DEFAULT = Name
@@ -442,6 +443,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                     SortMode.Ratio -> o1.ratio.compareTo(o2.ratio)
                     SortMode.Size -> o1.totalSize.bytes.compareTo(o2.totalSize.bytes)
                     SortMode.AddedDate -> nullsFirst<Instant>().compare(o1.addedDate, o2.addedDate)
+                    SortMode.LastActivity -> nullsFirst<Instant>().compare(o1.activityDate, o2.activityDate)
                 }
                 if (sortMode != SortMode.Name && compared == 0) {
                     compared = nameComparator.compare(o1.name, o2.name)

@@ -99,6 +99,9 @@ data class Torrent(
     @Serializable(UnixTimeToInstantSerializer::class)
     @SerialName("addedDate")
     val addedDate: Instant?,
+    @Serializable(UnixTimeToInstantSerializer::class)
+    @SerialName("activityDate")
+    val activityDate: Instant?,
     @Serializable(TrackerSitesSerializer::class)
     @SerialName("trackers")
     val trackerSites: List<String>,
