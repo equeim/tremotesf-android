@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Support of adding multiple torrent links
+
+### Changed
+- UI was rewritten using Compose framework. The design and UX remained mostly the same, however
+- Changed UI for selecting multiple items in a list. Selection panel is now shown at the bottom of the screen
+
 ## [2.12.1] - 2025-06-25
 ### Fixed
 - Merging trackers
