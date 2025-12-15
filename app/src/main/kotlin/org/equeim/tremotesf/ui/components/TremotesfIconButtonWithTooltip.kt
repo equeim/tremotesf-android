@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -31,6 +32,24 @@ fun TremotesfIconButtonWithTooltip(
         modifier = modifier
     ) { tooltipText ->
         IconButton(onClick = onClick, enabled = enabled) {
+            Icon(imageVector = icon, contentDescription = tooltipText)
+        }
+    }
+}
+
+@Composable
+fun TremotesfFilledIconButtonWithTooltip(
+    icon: ImageVector,
+    @StringRes textId: Int,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    BaseTremotesfButtonWithTooltip(
+        tooltipText = textId,
+        modifier = modifier
+    ) { tooltipText ->
+        FilledIconButton(onClick = onClick, enabled = enabled) {
             Icon(imageVector = icon, contentDescription = tooltipText)
         }
     }

@@ -129,6 +129,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="comment">Comment</string>
     <string name="labels">Labels</string>
     <string name="edit_labels">Edit labels</string>
+    <string name="no_labels">No labels</string>
     <string name="new_label">New label</string>
     <string name="set_labels_error">Failed to update torrent\'s labels: %1$s</string>
 
