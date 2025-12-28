@@ -3,12 +3,16 @@
 ## [Unreleased]
 ### Added
 - Support of adding multiple torrent links
+- Sorting torrents by last activity
 
 ### Changed
 - UI was rewritten using Compose framework. The design and UX remained mostly the same, however
 - Changed UI for selecting multiple items in a list. Selection panel is now shown at the bottom of the screen
 - Dialog for editing labels now shows a button for adding entered label (previously in only worked by pressing Enter on keyboard),
   as well as "no labels" placeholder to guide user to actually add the label
+
+### Fixed
+- "Checking" filter now also shows torrents queued for checking
 
 ## [2.12.1] - 2025-06-25
 ### Fixed
