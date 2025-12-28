@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.13.0] - 2025-12-29
 ### Added
 - Support of adding multiple torrent links
 - Sorting torrents by last activity
