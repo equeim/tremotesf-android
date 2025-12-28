@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Bağlantı kesildi</string>
     <string name="connecting">Bağlanıyor\u2026</string>
 
@@ -105,7 +105,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Oluşturan</string>
     <string name="created_on">Oluşturma tarihi</string>
     <string name="comment">Yorum</string>
-
     <string name="parent_directory_list_item_label">..</string>
 
     <string name="progress_string">%s%%</string>
@@ -384,7 +383,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="proxy_settings">Vekil ayarları</string>
     <string name="proxy_type">Vekil türü</string>
     <string name="proxy_type_default">Varsayılan</string>
-
     <string name="date_time_with_relative">%1$s (%2$s)</string>
 
     </resources>

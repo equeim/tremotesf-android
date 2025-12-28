@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">已断开</string>
     <string name="connecting">正在连接\u2026</string>
 
@@ -113,7 +113,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">创建者</string>
     <string name="created_on">创建于</string>
     <string name="comment">注释</string>
-
     <string name="parent_directory_list_item_label">..</string>
 
     <string name="progress_string">%s%%</string>
@@ -415,14 +414,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share_torrent">分享种子</string>
 
     <string name="proxy_type_default">默认</string>
-
     <string name="auto_connect_on_wifi_network">当连接到 Wi-Fi 网络时自动连接到该服务器</string>
     <string name="wifi_ssid_hint">Wi-Fi 网络 SSID</string>
     <string name="wifi_ssid_set_from_current">设置为当前的 Wi-Fi 网络</string>
     <string name="location_permission_rationale">Tremotesf 需要精确位置信息权限以获取 Wi-Fi SSID 信息</string>
     <string name="request_location_permission">授予位置信息权限</string>
-    <string name="background_wifi_networks_explanation_with_background_permission">在应用设定中授予持久通知权限或后台位置信息权限，以在应用运行在后台时使用该功能。</string>
-    <string name="background_wifi_networks_explanation_no_background_permission">在应用设定中授予持久通知权限，以在应用运行在后台时使用此功能。</string>
     <string name="background_location_permission_rationale">在不使用持久通知权限的情况下，Tremotesf 需要后台位置信息权限以在后台获取 Wi-Fi SSID 信息</string>
     <string name="request_background_location_permission">授予后台位置信息权限</string>
     <string name="background_location_permission_granted">已获取后台位置信息权限</string>
@@ -437,7 +433,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="storage_permission_rationale_torrent">Tremotesf 需要文件和媒体权限以打开此种子文件</string>
 
-    <string name="torrents_filters">筛选</string>
     <string name="transmission_settings">Transmission 设定</string>
 
     <string name="load_from_file">从文件载入</string>

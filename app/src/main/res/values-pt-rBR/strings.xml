@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando\u2026</string>
 
@@ -112,7 +112,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Criado por</string>
     <string name="created_on">Criado em</string>
     <string name="comment">Comentário</string>
-
     <string name="parent_directory_list_item_label">..</string>
 
     <string name="progress_string">%s%%</string>
@@ -404,12 +403,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share_torrent">Compartilhar torrent</string>
 
     <string name="proxy_type_default">Padrão</string>
-
     <string name="request_location_permission">Conceder permissão de localização</string>
     <string name="request_background_location_permission">Conceder permissão de localização em segundo plano</string>
     <string name="enable_location">Habilitar localização</string>
 
-    <string name="torrents_filters">Filtros</string>
     <string name="transmission_settings">Configurações do Transmission</string>
 
     <string name="load_from_file">Carregar de arquivo</string>
@@ -432,4 +429,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="translations_url">Traduções: %1$s</string>
     <string name="maintainer">Mantenedor</string>
     <string name="contributor">Contribuidor</string>
-</resources>
+
+    </resources>

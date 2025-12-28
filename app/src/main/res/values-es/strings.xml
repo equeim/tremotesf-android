@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Desconectado</string>
     <string name="connecting">Conectando…</string>
 
@@ -131,7 +131,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Creado en</string>
     <string name="created_on">Fecha de creación</string>
     <string name="comment">Comentario</string>
-
     <string name="parent_directory_list_item_label">..</string>
 
     <string name="progress_string">%s%%</string>
@@ -474,14 +473,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share_torrent">Compartir torrent</string>
 
     <string name="proxy_type_default">Por defecto</string>
-
     <string name="auto_connect_on_wifi_network">Conectarse automáticamente a este servidor al conectarse a la red Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID de la red Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Establecer desde la red Wi-Fi actual</string>
     <string name="location_permission_rationale">Para obtener información sobre el SSID de la red Wi-Fi, se necesita permiso para acceder a la ubicación precisa</string>
     <string name="request_location_permission">Permitir acceso a la ubicación</string>
-    <string name="background_wifi_networks_explanation_with_background_permission">Para usar esta función cuando la aplicación está en segundo plano, conceda el permiso de acceso a la ubicación en segundo plano o active la notificación persistente en la configuración de la aplicación</string>
-    <string name="background_wifi_networks_explanation_no_background_permission">Para usar esta función cuando la aplicación está en segundo plano, active la notificación persistente en la configuración de la aplicación</string>
     <string name="background_location_permission_rationale">Para obtener información sobre el SSID de la red Wi-Fi cuando la aplicación está en segundo plano, se necesita permiso para el acceso a la ubicación en segundo plano</string>
     <string name="request_background_location_permission">Permitir acceso a la ubicación en segundo plano</string>
     <string name="background_location_permission_granted">Permiso para acceder a la ubicación en segundo plano concedido</string>
@@ -496,7 +492,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="storage_permission_rationale_torrent">Para abrir este archivo torrent, se necesita permiso para acceder al almacenamiento</string>
 
-    <string name="torrents_filters">Filtros</string>
     <string name="transmission_settings">Configuración de Transmission</string>
 
     <string name="load_from_file">Cargar desde archivo</string>
@@ -528,4 +523,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="translations_url">Traducciones: %1$s</string>
     <string name="maintainer">Mantenedor</string>
     <string name="contributor">Contribuidor</string>
-</resources>
+
+    </resources>

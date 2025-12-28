@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Disconnesso</string>
     <string name="connecting">In connessione\n2026</string>
 
@@ -117,7 +117,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="created_by">Creato da</string>
     <string name="created_on">Creato il</string>
     <string name="comment">Commento</string>
-
     <string name="parent_directory_list_item_label">..</string>
 
     <string name="progress_string">%s%%</string>
@@ -155,7 +154,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="seeding">Seed</string>
 
     <string name="ratio_limit">Limite rapporto</string>
-    <string name="ratio_limit_global">Usa i limiti globali</string>
+    <string name="ratio_limit_global">Usa impostazioni globali</string>
     <string name="ratio_limit_unlimited">Continua il seed comunque</string>
 
     <string name="idle_seeding">Seed in attesa</string>
@@ -415,7 +414,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share_torrent">Condividi torrent</string>
 
     <string name="proxy_type_default">Predefinito</string>
-
     <string name="auto_connect_on_wifi_network">Connettiti automaticamente a questo server quando ti connetti alla rete Wi-Fi</string>
     <string name="wifi_ssid_hint">Rete Wi-Fi</string>
     <string name="wifi_ssid_set_from_current">Imposta la rete Wi-Fi corrente</string>

@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="disconnected">Отключено</string>
     <string name="connecting">Подключение…</string>
 
@@ -139,6 +139,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="comment">Комментарий</string>
     <string name="labels">Метки</string>
     <string name="edit_labels">Редактировать метки</string>
+    <string name="no_labels">Нет меток</string>
     <string name="new_label">Новая метка</string>
     <string name="set_labels_error">Не удалось обновить метки торрента: %1$s</string>
 
@@ -242,6 +243,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="empty_field_error">Это поле должно быть заполнено</string>
     <string name="number_range_error">Значение должно быть в диапазоне %1$d - %2$d</string>
     <string name="number_range_error_float">Значение должно быть в диапазоне %1$.1f - %2$.1f</string>
+    <string name="number_parse_error_integer">Значение не является целым числом</string>
+    <string name="number_parse_error_float">Значение не является десятичной дробью</string>
 
     <string name="server_exists">Сервер с эти именем уже существует</string>
     <string name="overwrite">Перезаписать</string>
@@ -296,6 +299,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="start_downloading_after_adding">Начать загрузку после добавления</string>
 
+    <string name="torrent_links">Ссылки на торренты</string>
     <string name="add_torrent_link">Добавить ссылку на торрент</string>
 
     <string name="current_session">Текущая сессия</string>
@@ -468,8 +472,11 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="prefs_ask_for_merging_trackers_when_adding_existing_torrent_title">Спрашивать об объединении трекеров при добавлении существующего торрента</string>
 
     <string name="torrent_duplicate_not_merging_trackers">Торрент уже существует: %1$s</string>
+    <string name="torrents_duplicates_not_merging_trackers">Торренты уже существуют:\n%1$s</string>
     <string name="torrent_duplicate_merging_trackers">Объединены трекеры для «%1$s» торрента</string>
+    <string name="torrents_duplicates_merging_trackers">Объединены трекеры для торрентов:\n%1$s</string>
     <string name="torrent_duplicate_merging_trackers_question">Торрент «%1$s» уже добавлен, объединить трекеры?</string>
+    <string name="torrents_duplicates_merging_trackers_question">Торренты уже добавлены:\n%1$s\n\nОбъединить трекеры?</string>
     <string name="merging_trackers_error">Не удалось объединить трекеры: %1$s</string>
     <string name="merge_no">Не объединять</string>
     <string name="merge_yes">Объединить</string>
@@ -512,13 +519,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="share_torrent">Поделиться торрентом</string>
 
     <string name="proxy_type_default">По умолчанию</string>
-
     <string name="auto_connect_on_wifi_network">Автоматически подключаться к этому серверу при подключении к сети Wi-Fi</string>
     <string name="wifi_ssid_hint">SSID Wi-Fi сети</string>
     <string name="wifi_ssid_set_from_current">Установить из текущей Wi-Fi сети</string>
     <string name="location_permission_rationale">Для получения информации о SSID Wi-Fi сети требуется разрешение на доступ к точному местоположению</string>
     <string name="request_location_permission">Разрешить доступ к местоположению</string>
-    <string name="background_wifi_networks_explanation_with_background_permission">Чтобы использовать эту функцию когда приложение находится в фоне, предоставьте разрешение на фоновый доступ к местоположению либо включите постоянное уведомление в настройках приложения</string>
+    <string name="background_wifi_networks_explanation_with_background_permission">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения либо предоставьте разрешение на фоновый доступ к местоположению</string>
     <string name="background_wifi_networks_explanation_no_background_permission">Чтобы использовать эту функцию когда приложение находится в фоне, включите постоянное уведомление в настройках приложения</string>
     <string name="background_location_permission_rationale">Для получения информации о SSID Wi-Fi сети когда приложение находится в фоне требуется разрешение на фоновый доступ к местоположению</string>
     <string name="request_background_location_permission">Разрешить фоновый доступ к местоположению</string>
@@ -534,7 +540,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
     <string name="storage_permission_rationale_torrent">Для открытия этого торрент-файла требуется разрешение на доступ к памяти</string>
 
-    <string name="torrents_filters">Фильтры</string>
+    <string name="torrents_filters">Сортировка и фильтры</string>
     <string name="transmission_settings">Настройки Transmission</string>
 
     <string name="load_from_file">Загрузить из файла</string>
@@ -566,4 +572,18 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="translations_url">Переводы: %1$s</string>
     <string name="maintainer">Сопровождающий</string>
     <string name="contributor">Участник</string>
+
+    <string name="navigate_up">Перейти вверх</string>
+
+    <string name="select_action">Выбрать</string>
+    <string name="selection_panel">Панель выбора</string>
+    <string name="selected">Выбрано</string>
+
+    <string name="more_options">Ещё</string>
+
+    <string name="search">Поиск</string>
+    <string name="clear">Очистить</string>
+    <string name="sort_order">Порядок сортировки:</string>
+    <string name="ascending">По возрастанию</string>
+    <string name="descending">По убыванию</string>
 </resources>
