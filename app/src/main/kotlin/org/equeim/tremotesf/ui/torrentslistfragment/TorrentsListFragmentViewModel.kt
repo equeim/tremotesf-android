@@ -479,7 +479,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 }
 
                 StatusFilterMode.Paused -> (torrent.status == TorrentStatus.Paused)
-                StatusFilterMode.Checking -> (torrent.status == TorrentStatus.Checking)
+                StatusFilterMode.Checking -> when (torrent.status) {
+                    TorrentStatus.Checking, TorrentStatus.QueuedForChecking -> true
+                    else -> false
+                }
+
                 StatusFilterMode.Errored -> (torrent.error != null)
                 StatusFilterMode.All -> true
             }
