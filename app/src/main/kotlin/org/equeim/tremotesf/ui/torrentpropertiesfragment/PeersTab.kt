@@ -117,7 +117,7 @@ fun PeersTab(
                                         Text(
                                             stringResource(
                                                 R.string.progress_string,
-                                                progressFormatter.format(peer.progress)
+                                                progressFormatter.format(peer.progress * 100)
                                             )
                                         )
                                         Text(peer.client)
