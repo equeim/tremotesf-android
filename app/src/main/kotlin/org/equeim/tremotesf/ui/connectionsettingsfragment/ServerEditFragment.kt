@@ -911,7 +911,7 @@ private fun ServerCertificatesScreen(
                 onValueChange = clientCertificate::value::set,
                 label = { Text(stringResource(R.string.certificate)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                enabled = selfSignedCertificateEnabled.value,
+                enabled = clientCertificateEnabled.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding)
