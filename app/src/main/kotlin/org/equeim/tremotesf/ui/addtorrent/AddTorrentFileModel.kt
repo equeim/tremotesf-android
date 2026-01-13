@@ -18,16 +18,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalRpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
+import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.requests.addTorrentFile
 import org.equeim.tremotesf.rpc.requests.checkIfTorrentsExist
 import org.equeim.tremotesf.rpc.requests.torrentproperties.addTorrentTrackers
@@ -56,7 +63,7 @@ interface AddTorrentFileModel {
         data object Aborted : LoadingState
     }
 
-    val loadingState: State<LoadingState>
+    val loadingState: StateFlow<LoadingState>
     val needStoragePermission: Boolean
     val filesTree: TorrentFilesTree
 
@@ -74,7 +81,18 @@ class AddTorrentFileModelImpl(
     override val needStoragePermission: Boolean =
         uri.scheme == ContentResolver.SCHEME_FILE && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
 
-    override val loadingState = mutableStateOf<LoadingState>(LoadingState.Initial)
+    private val torrentLoadingState = MutableStateFlow<LoadingState>(LoadingState.Initial)
+    override val loadingState: StateFlow<LoadingState> = combine(torrentLoadingState, initialRpcInputs) { torrentLoadingState, initialRpcInputs ->
+        if (torrentLoadingState is LoadingState.Loaded) {
+            when (initialRpcInputs) {
+                is RpcRequestState.Error -> LoadingState.InitialRpcInputsError(initialRpcInputs.error)
+                is RpcRequestState.Loading -> LoadingState.Loading
+                is RpcRequestState.Loaded -> torrentLoadingState
+            }
+        } else {
+            torrentLoadingState
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), LoadingState.Initial)
 
     private var fd: AssetFileDescriptor? = null
 
@@ -106,45 +124,39 @@ class AddTorrentFileModelImpl(
     }
 
     override fun load() {
-        if (loadingState.value == LoadingState.Initial) {
-            Timber.i("load: loading $uri")
-            loadingState.value = LoadingState.Loading
-            viewModelScope.launch {
-                doLoad(uri, getApplication())
-            }
-        } else {
+        if (!torrentLoadingState.compareAndSet(LoadingState.Initial, LoadingState.Loading)) {
             Timber.e("load: loadingState is not Initial")
+            return
+        }
+        viewModelScope.launch {
+            Timber.i("load: loading $uri")
+            torrentLoadingState.value = doLoad(uri, application)
         }
     }
 
-    private suspend fun doLoad(uri: Uri, context: Context) = withContext(Dispatchers.IO) {
+    private suspend fun doLoad(uri: Uri, context: Context): LoadingState = withContext(Dispatchers.IO) {
         Timber.d("Parsing torrent file from URI $uri")
 
         val fd = try {
             context.contentResolver.openAssetFileDescriptor(uri, "r")
         } catch (e: Exception) {
             Timber.e(e, "Failed to open file descriptor")
-            loadingState.value = LoadingState.FileLoadingError.ReadingError
-            return@withContext
+            return@withContext LoadingState.FileLoadingError.ReadingError
         }
         if (fd == null) {
             Timber.e("File descriptor is null")
-            loadingState.value = LoadingState.FileLoadingError.ReadingError
-            return@withContext
+            return@withContext LoadingState.FileLoadingError.ReadingError
         }
         var closeFd = true
         try {
             val parseResult = try {
                 TorrentFileParser.parseTorrentFile(fd.fileDescriptor)
             } catch (_: FileReadException) {
-                loadingState.value = LoadingState.FileLoadingError.ReadingError
-                return@withContext
+                return@withContext LoadingState.FileLoadingError.ReadingError
             } catch (_: FileIsTooLargeException) {
-                loadingState.value = LoadingState.FileLoadingError.FileIsTooLarge
-                return@withContext
+                return@withContext LoadingState.FileLoadingError.FileIsTooLarge
             } catch (_: FileParseException) {
-                loadingState.value = LoadingState.FileLoadingError.ParsingError
-                return@withContext
+                return@withContext LoadingState.FileLoadingError.ParsingError
             }
 
             Timber.d("Parsed torrent file from URI $uri, its info hash is ${parseResult.infoHashV1}")
@@ -154,11 +166,10 @@ class AddTorrentFileModelImpl(
 
             checkIfTorrentExists()
             if (checkIfTorrentExists()) {
-                loadingState.value = LoadingState.Aborted
-                return@withContext
+                return@withContext LoadingState.Aborted
             }
 
-            try {
+            return@withContext try {
                 val (rootNode, files) = TorrentFileParser.createFilesTree(parseResult)
                 withContext(Dispatchers.Main) {
                     closeFd = false
@@ -182,11 +193,10 @@ class AddTorrentFileModelImpl(
                             }
                         }
                     }
-                    loadingState.value = LoadingState.Loaded(torrentName)
+                    LoadingState.Loaded(torrentName)
                 }
             } catch (_: FileParseException) {
-                loadingState.value = LoadingState.FileLoadingError.ParsingError
-                return@withContext
+                LoadingState.FileLoadingError.ParsingError
             }
         } finally {
             if (closeFd) {

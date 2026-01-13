@@ -102,7 +102,7 @@ class AddTorrentFileFragment : ComposeFragment() {
             needStoragePermission = model.needStoragePermission,
 
             loadTorrentFile = model::load,
-            loadingState = model.loadingState,
+            loadingState = model.loadingState.collectAsStateWithLifecycle(),
             downloadDirectory = model.downloadDirectory,
             allDownloadDirectories = model.allDownloadDirectories,
             downloadDirectoryFreeSpace = model.downloadDirectoryFreeSpace.collectAsStateWithLifecycle(),

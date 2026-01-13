@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Fixed
+- Restoration of torrent adding parameters (download directory, etc) when adding torrent file
+
 ## [2.13.0] - 2025-12-29
 ### Added
 - Support of adding multiple torrent links
