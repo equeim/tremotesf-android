@@ -119,7 +119,10 @@ class ServerEditFragment : ComposeFragment() {
     @Composable
     override fun Content(navController: NavController) {
         val model =
-            viewModel<ServerEditFragmentViewModel>(initializer = ServerEditFragmentViewModel.initializer(navController))
+            viewModel<ServerEditFragmentViewModel>(
+                viewModelStoreOwner = navController.getBackStackEntry(R.id.server_edit_fragment),
+                initializer = ServerEditFragmentViewModel.initializer(navController)
+            )
         LifecycleEventEffect(event = Lifecycle.Event.ON_START, onEvent = model::checkIfLocationEnabled)
         ServerEditScreen(
             navigateUp = navController::navigateUp,
