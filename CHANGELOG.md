@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.13.1] - 2026-01-16
 ### Fixed
 - Restoration of torrent adding parameters (download directory, etc) when adding torrent file
 - Saving of certificates and proxy settings when editing/adding server

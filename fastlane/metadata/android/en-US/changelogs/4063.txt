@@ -1,0 +1,4 @@
+Fixed restoration of torrent adding parameters (download directory, etc) when adding torrent file
+Fixed saving of certificates and proxy settings when editing/adding server
+Fixed torrents links text field filling the whole screen when long/multiple torrent links are entered
+Fixed peer progress display (thanks @sommd)
