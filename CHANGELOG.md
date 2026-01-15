@@ -4,6 +4,7 @@
 ### Fixed
 - Restoration of torrent adding parameters (download directory, etc) when adding torrent file
 - Saving of certificates and proxy settings when editing/adding server
+- Torrents links text field filling the whole screen when long/multiple torrent links are entered
 
 ## [2.13.0] - 2025-12-29
 ### Added

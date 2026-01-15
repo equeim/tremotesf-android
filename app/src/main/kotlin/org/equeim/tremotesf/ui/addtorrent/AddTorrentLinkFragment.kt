@@ -217,6 +217,7 @@ private fun AddTorrentLinkScreen(
                             null
                         },
                         minLines = 2,
+                        maxLines = 4,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = horizontalPadding)
