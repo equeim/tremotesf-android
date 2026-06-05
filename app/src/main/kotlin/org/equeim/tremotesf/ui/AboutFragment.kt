@@ -5,8 +5,11 @@
 package org.equeim.tremotesf.ui
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.view.View
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
@@ -328,6 +331,20 @@ private fun createLicenseWebView(context: Context, onLoaded: WebView.() -> Unit)
         @SuppressLint("SetJavaScriptEnabled")
         settings.javaScriptEnabled = true
         webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                val scheme = request.url.scheme?.lowercase()
+                if (scheme != "http" && scheme != "https" && scheme != "mailto") {
+                    return false
+                }
+                return try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+                    true
+                } catch (e: ActivityNotFoundException) {
+                    Timber.e(e, "Failed to open ${request.url}")
+                    false
+                }
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 onLoaded()
