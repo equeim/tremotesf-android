@@ -1,4 +1,3 @@
-import com.deezer.caupain.model.StabilityLevelPolicy
 import com.deezer.caupain.plugin.DependenciesUpdateTask
 
 // SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
@@ -18,8 +17,4 @@ plugins {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
-}
-
-tasks.withType<DependenciesUpdateTask> {
-    selectIf(StabilityLevelPolicy)
 }

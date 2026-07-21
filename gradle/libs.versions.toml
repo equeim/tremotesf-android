@@ -5,7 +5,7 @@
 [versions]
 android-gradle-plugin = "8.13.0"
 kotlin = "2.2.20"
-deezer-caupain = "1.6.1"
+deezer-caupain = "1.9.1"
 
 sdk-platform-compile = "36"
 sdk-platform-min = "26"
