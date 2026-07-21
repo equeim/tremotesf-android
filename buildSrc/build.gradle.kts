@@ -18,6 +18,6 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    implementation(libs.android.gradle.plugin.api)
-    implementation(libs.kotlin.gradle.plugin.api)
+    implementation(libs.android.gradle.plugin)
+    implementation(libs.kotlin.gradle.plugin)
 }

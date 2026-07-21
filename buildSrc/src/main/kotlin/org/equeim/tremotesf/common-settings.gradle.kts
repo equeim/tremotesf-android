@@ -7,37 +7,26 @@ package org.equeim.tremotesf
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.gradle.api.AndroidBasePlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 
-val libs = extensions.getByType(VersionCatalogsExtension::class).named("libs")
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 val javaVersion = JavaVersion.VERSION_17
 
-private fun getSdkVersion(alias: String): Int =
-    libs.findVersion(alias).get().requiredVersion.toInt()
+extensions.getByName<CommonExtension>("android").configureAndroidProject()
 
-typealias AndroidExtension = CommonExtension<*, *, *, *, *, *>
+extensions.getByName<KotlinAndroidExtension>("kotlin").compilerOptions.jvmTarget.set(
+    JvmTarget.fromTarget(javaVersion.toString())
+)
 
-plugins.withType<AndroidBasePlugin> {
-    extensions.getByName<AndroidExtension>("android").configureAndroidProject()
-}
-
-plugins.withType<KotlinBasePlugin> {
-    extensions.getByName<KotlinAndroidExtension>("kotlin").compilerOptions.jvmTarget.set(
-        JvmTarget.fromTarget(javaVersion.toString())
-    )
-}
-
-private fun AndroidExtension.configureAndroidProject() {
+private fun CommonExtension.configureAndroidProject() {
     compileSdk = getSdkVersion("sdk.platform.compile")
     defaultConfig.minSdk = getSdkVersion("sdk.platform.min")
-    compileOptions {
+    compileOptions.apply {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }
-    lint {
+    lint.apply {
         informational.add("MissingTranslation")
         quiet = false
         checkAllWarnings = true
@@ -57,3 +46,5 @@ private fun LibraryExtension.configureLibraryProject() {
 private fun ApplicationExtension.configureApplicationProject() {
     defaultConfig.targetSdk = getSdkVersion("sdk.platform.target")
 }
+
+private fun getSdkVersion(alias: String): Int = libs.findVersion(alias).get().requiredVersion.toInt()

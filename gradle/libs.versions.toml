@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [versions]
-android-gradle-plugin = "8.13.0"
+android-gradle-plugin = "9.3.0"
 kotlin = "2.2.20"
 deezer-caupain = "1.9.1"
 
@@ -21,7 +21,7 @@ androidx-compose = "2025.10.00"
 androidx-core = "1.17.0"
 androidx-fragment = "1.8.9"
 androidx-lifecycle = "2.9.4"
-androidx-navigation = "2.8.9"
+androidx-navigation = "2.9.8"
 androidx-webkit = "1.14.0"
 androidx-window = "1.5.0"
 androidx-work = "2.10.5"
@@ -39,8 +39,8 @@ mockk = "1.14.6"
 serialization-bencode = "0.1"
 
 [libraries]
-android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
-kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -86,11 +86,11 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# Not setting version for com.android.application, com.android.library and org.jetbrains.kotlin.plugin.parcelize since they are already on classpath through buildSrc
+android-application = { id = "com.android.application" }
+android-library = { id = "com.android.library" }
+kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-navigation = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
 deezer-caupain = { id = "com.deezer.caupain", version.ref = "deezer-caupain" }
