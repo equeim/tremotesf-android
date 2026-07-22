@@ -23,6 +23,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
@@ -32,10 +33,12 @@ import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
+import java.util.Locale
 import java.util.concurrent.Executors
 
 open class TorrentFilesTree(
     parentScope: CoroutineScope,
+    private val localeChangedEvents: Flow<Locale>,
     protected val dispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
     private val dispatchers: TremotesfDispatchers = DefaultTremotesfDispatchers,
 ) {
@@ -230,7 +233,7 @@ open class TorrentFilesTree(
     }
 
     private val comparator = object : Comparator<Item?> {
-        private val nameComparator = AlphanumericComparator(Locale.getDefault())
+        var nameComparator = AlphanumericComparator(Locale.getDefault())
 
         override fun compare(item1: Item?, item2: Item?): Int {
             if (item1 == null) {
@@ -423,6 +426,12 @@ open class TorrentFilesTree(
             navigateTo(rootNode)
         }
         savedStateHandle.setSavedStateProvider(savedStateKey, ::saveInstanceState)
+        scope.launch {
+            localeChangedEvents.collect {
+                comparator.nameComparator = AlphanumericComparator(it)
+                updateItemsWithSorting()
+            }
+        }
     }
 
     fun restoreChangedProperties(

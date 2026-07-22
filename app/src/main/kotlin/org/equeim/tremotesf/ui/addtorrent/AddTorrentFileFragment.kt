@@ -60,6 +60,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.DetailedRpcRequestError
@@ -481,7 +482,13 @@ private fun AddTorrentFileScreenPreview() = ScreenPreview {
         allLabels = remember { mutableStateOf(emptyList()) },
         shouldShowLabels = remember { mutableStateOf(true) },
 
-        filesTree = remember { TorrentFilesTree(coroutineScope, dispatcher = Dispatchers.Main) },
+        filesTree = remember {
+            TorrentFilesTree(
+                parentScope = coroutineScope,
+                localeChangedEvents = emptyFlow(),
+                dispatcher = Dispatchers.Main
+            )
+        },
 
         addTorrent = {},
         addTorrentState = remember { mutableStateOf(null) },

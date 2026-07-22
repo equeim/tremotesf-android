@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -80,6 +81,7 @@ class TorrentPropertiesFragment : ComposeFragment() {
         val model = viewModel {
             TorrentPropertiesFragmentViewModel(
                 torrentHashString = args.torrentHashString,
+                application = checkNotNull(get(APPLICATION_KEY)),
                 savedStateHandle = createSavedStateHandle()
             )
         }

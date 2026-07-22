@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
@@ -760,7 +761,12 @@ class TorrentFilesTreeTest {
     }
 
     private inner class TestTree(parentScope: CoroutineScope) :
-        TorrentFilesTree(parentScope, dispatcher, dispatchers) {
+        TorrentFilesTree(
+            parentScope = parentScope,
+            localeChangedEvents = emptyFlow(),
+            dispatcher = dispatcher,
+            dispatchers = dispatchers
+        ) {
         val currentNodePublic: DirectoryNode
             get() = currentNode
 
