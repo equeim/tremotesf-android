@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
@@ -64,7 +65,9 @@ import org.equeim.tremotesf.rpc.requests.verifyTorrents
 import org.equeim.tremotesf.rpc.stateInRpcRequest
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.addtorrent.MergingTrackersMessage
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import java.time.Instant
+import java.util.Locale
 import kotlin.time.Duration
 
 class TorrentsListFragmentViewModel(application: Application, savedStateHandle: SavedStateHandle) :
@@ -397,8 +400,9 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 )
             )
         }
+        val localeFlow = application.localeChangedEvents().onStart { emit(Locale.getDefault()) }
         val comparatorFlow = sortAndFilterSettings.filterNotNull().transform {
-            emitAll(combine(it.sortMode, it.sortOrder, ::createComparator))
+            emitAll(combine(it.sortMode, it.sortOrder, localeFlow, ::createComparator))
         }
         return combine(this, filterPredicateFlow, comparatorFlow) { requestState, filterPredicate, comparator ->
             if (requestState is RpcRequestState.Loaded) {
@@ -428,9 +432,9 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }
 
-    private fun createComparator(sortMode: SortMode, sortOrder: SortOrder): Comparator<Torrent> {
+    private fun createComparator(sortMode: SortMode, sortOrder: SortOrder, locale: Locale): Comparator<Torrent> {
         return object : Comparator<Torrent> {
-            private val nameComparator = AlphanumericComparator()
+            private val nameComparator = AlphanumericComparator(locale)
 
             override fun compare(o1: Torrent, o2: Torrent): Int {
                 var compared = when (sortMode) {
