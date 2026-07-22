@@ -228,7 +228,7 @@ class NavHostFragment : NavHostFragment() {
         }
     }
 
-    @Suppress("OverridingDeprecatedMember", "OVERRIDE_DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
         return FragmentNavigator(requireContext(), childFragmentManager, id)
     }

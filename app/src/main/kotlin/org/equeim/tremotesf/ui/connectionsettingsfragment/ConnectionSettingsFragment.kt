@@ -84,7 +84,7 @@ class ConnectionSettingsFragment : ComposeFragment() {
             setCurrentServer = model::setCurrentServer,
             editServer = { navController.safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(it)) },
             removeServers = model::removeServers,
-            addServer = { navController.safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment(null)) }
+            addServer = { navController.safeNavigate(ConnectionSettingsFragmentDirections.toServerEditFragment()) }
         )
     }
 }

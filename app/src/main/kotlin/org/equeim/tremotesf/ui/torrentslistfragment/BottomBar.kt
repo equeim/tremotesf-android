@@ -176,7 +176,7 @@ fun BottomBar(
             try {
                 openTorrentFileActivityLauncher.launch(TORRENT_FILE_MIME_TYPE)
             } catch (e: ActivityNotFoundException) {
-                Timber.Forest.e(e, "Failed to start activity")
+                Timber.e(e, "Failed to start activity")
             }
         }
 
@@ -200,14 +200,14 @@ fun BottomBar(
                 Column {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.add_torrent_file)) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Companion.Transparent),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier = Modifier.clickable {
                             hideAndNavigate(launchActivityToOpenTorrentFile)
                         }
                     )
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.add_torrent_link)) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Companion.Transparent),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier = Modifier.clickable {
                             hideAndNavigate(navigateToAddTorrentLinkScreen)
                         }
@@ -235,11 +235,11 @@ private fun Buttons(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = Dimens.SpacingSmall),
-        verticalAlignment = Alignment.Companion.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.Companion.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
         ) {
             if (showTransmissionSettingsButton.value) {
@@ -276,7 +276,7 @@ private fun Buttons(
             Modifier
                 .fillMaxHeight()
                 .padding(Dimens.SpacingSmall),
-            contentAlignment = Alignment.Companion.Center,
+            contentAlignment = Alignment.Center,
         ) {
             val fabState = floatingActionButtonState.value
             if (fabState == TorrentsListFragmentViewModel.FloatingActionButtonState.AddTorrent) {
@@ -331,7 +331,7 @@ private fun SearchBar(sortAndFilterSettings: SortAndFilterSettings, cancelSearch
         value = sortAndFilterSettings.nameFilter.value,
         onValueChange = { sortAndFilterSettings.nameFilter.value = it },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Companion.None),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
         leadingIcon = {
             TremotesfIconButtonWithTooltip(Icons.AutoMirrored.Filled.ArrowBack, R.string.close) {
                 cancelSearch()

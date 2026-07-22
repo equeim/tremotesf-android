@@ -88,7 +88,7 @@ fun DetailedConnectionErrorDialog(error: DetailedRpcRequestError, onDismissReque
             }) {
                 Text(stringResource(R.string.share))
             }
-            Spacer(modifier = Modifier.Companion.weight(1.0f))
+            Spacer(modifier = Modifier.weight(1.0f))
             TextButton(onDismissRequest) { Text(stringResource(R.string.close)) }
         },
     )
@@ -265,7 +265,7 @@ private fun ExpandedDetailsView(details: ExpandedDetails) {
         SelectionContainer {
             Text(
                 text = details.text,
-                fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Companion.Monospace else FontFamily.Companion.Default
+                fontFamily = if (details.showMonospaceAndWithoutWrapping) FontFamily.Monospace else FontFamily.Default
             )
         }
     }
