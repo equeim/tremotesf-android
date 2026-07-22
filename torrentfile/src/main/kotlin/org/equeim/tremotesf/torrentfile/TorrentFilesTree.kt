@@ -230,7 +230,7 @@ open class TorrentFilesTree(
     }
 
     private val comparator = object : Comparator<Item?> {
-        private val nameComparator = AlphanumericComparator()
+        private val nameComparator = AlphanumericComparator(Locale.getDefault())
 
         override fun compare(item1: Item?, item2: Item?): Int {
             if (item1 == null) {

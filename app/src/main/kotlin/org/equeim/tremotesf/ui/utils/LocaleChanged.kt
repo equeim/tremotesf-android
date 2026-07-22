@@ -11,16 +11,18 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import java.util.Locale
 
-fun Context.localeChangedEvents(): Flow<Unit> = callbackFlow {
+fun Context.localeChangedEvents(): Flow<Locale> = callbackFlow {
     var previousLocales = resources.configuration.locales
     val callback = object : ComponentCallbacks {
         override fun onConfigurationChanged(newConfig: Configuration) {
             if (newConfig.locales != previousLocales) {
                 previousLocales = newConfig.locales
-                trySend(Unit)
+                trySend(newConfig.locales[0])
             }
         }
+
         @Suppress("OVERRIDE_DEPRECATION")
         override fun onLowMemory() = Unit
     }

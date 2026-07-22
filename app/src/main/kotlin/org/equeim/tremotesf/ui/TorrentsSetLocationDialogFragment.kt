@@ -58,6 +58,7 @@ import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
 import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
+import java.util.Locale
 
 class TorrentsSetLocationDialogFragment : ComposeDialogFragment() {
     @Composable
@@ -158,14 +159,14 @@ class TorrentSetLocationDialogViewModel(
             }
         }
 
-    private var comparator = AlphanumericComparator()
+    private var comparator = AlphanumericComparator(Locale.getDefault())
 
     private var alreadySetInitialState: Boolean by savedStateHandle.saved { false }
 
     init {
         viewModelScope.launch {
             application.localeChangedEvents().collect {
-                comparator = AlphanumericComparator()
+                comparator = AlphanumericComparator(it)
                 if (alreadySetInitialState) {
                     allDownloadDirectories.sortWith(compareBy(comparator, DownloadDirectoryItem::directory))
                 }

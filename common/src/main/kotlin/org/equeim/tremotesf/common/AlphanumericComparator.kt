@@ -5,11 +5,12 @@
 package org.equeim.tremotesf.common
 
 import java.text.Collator
+import java.util.Locale
 
 import kotlin.math.sign
 
-class AlphanumericComparator : Comparator<String> {
-    private val collator = Collator.getInstance()
+class AlphanumericComparator(locale: Locale) : Comparator<String> {
+    private val collator = Collator.getInstance(locale)
 
     override fun compare(s1: String?, s2: String?): Int {
         if (s1 == null) {
