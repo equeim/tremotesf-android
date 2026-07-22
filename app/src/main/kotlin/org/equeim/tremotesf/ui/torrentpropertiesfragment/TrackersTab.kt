@@ -117,7 +117,11 @@ fun TrackersTab(
             )
 
             val comparator: Comparator<TrackerItem> =
-                rememberLocaleDependentValue { compareBy(AlphanumericComparator()) { it.tracker.announceUrl } }
+                rememberLocaleDependentValue {
+                    compareBy(AlphanumericComparator(it)) { trackerItem ->
+                        trackerItem.tracker.announceUrl
+                    }
+                }
             val sortedTrackers = remember { derivedStateOf { trackers.sortedWith(comparator) } }
 
             var showAddTrackersDialog: Boolean by rememberSaveable { mutableStateOf(false) }

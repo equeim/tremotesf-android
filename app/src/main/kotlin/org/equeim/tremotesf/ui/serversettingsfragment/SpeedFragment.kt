@@ -219,13 +219,12 @@ private fun ServerSettingsSpeedScreen(
         )
 
         val context = LocalContext.current
-        val dayNames: Map<AlternativeLimitsDays, String> = rememberLocaleDependentValue {
+        val dayNames: Map<AlternativeLimitsDays, String> = rememberLocaleDependentValue { locale ->
             @SuppressLint("LocalContextGetResourceValueCall")
             buildMap {
                 put(AlternativeLimitsDays.All, context.getString(R.string.every_day))
                 put(AlternativeLimitsDays.Weekdays, context.getString(R.string.weekdays))
                 put(AlternativeLimitsDays.Weekends, context.getString(R.string.weekends))
-                val locale = Locale.getDefault()
                 for (dayOfWeek in DayOfWeek.entries) {
                     put(
                         dayOfWeek.toAlternativeSpeedLimitsDays(),
@@ -234,13 +233,13 @@ private fun ServerSettingsSpeedScreen(
                 }
             }
         }
-        val dropdownDays: List<AlternativeLimitsDays> = rememberLocaleDependentValue {
+        val dropdownDays: List<AlternativeLimitsDays> = rememberLocaleDependentValue { locale ->
             buildList {
                 add(AlternativeLimitsDays.All)
                 add(AlternativeLimitsDays.Weekdays)
                 add(AlternativeLimitsDays.Weekends)
                 val firstDayOfWeek =
-                    DayOfWeek.of(WeekFields.of(Locale.getDefault()).firstDayOfWeek.value)
+                    DayOfWeek.of(WeekFields.of(locale).firstDayOfWeek.value)
                 val daysOfWeek = generateSequence(firstDayOfWeek) { it + 1 }.take(DayOfWeek.entries.size)
                 for (day in daysOfWeek) {
                     add(day.toAlternativeSpeedLimitsDays())

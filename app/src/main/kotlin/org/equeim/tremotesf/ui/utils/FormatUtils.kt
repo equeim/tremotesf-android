@@ -16,6 +16,7 @@ import org.equeim.tremotesf.rpc.requests.TransferRate
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.time.Duration
 
 class FileSizeFormatter(resources: Resources) {
@@ -99,17 +100,18 @@ private fun formatTorrentEtaImpl(eta: Duration?, resources: Resources): String {
 private const val INFINITY_SYMBOL = "\u221E"
 
 @Composable
-inline fun <T> rememberLocaleDependentValue(crossinline calculation: () -> T): T {
-    return remember(LocalLocale.current, calculation = calculation)
+inline fun <T> rememberLocaleDependentValue(crossinline calculation: (Locale) -> T): T {
+    val locale = LocalLocale.current.platformLocale
+    return remember(locale) { calculation(locale) }
 }
 
 @Composable
 inline fun rememberNumberFormat(crossinline formatProducer: () -> NumberFormat): NumberFormat =
-    rememberLocaleDependentValue(formatProducer)
+    rememberLocaleDependentValue { formatProducer() }
 
 @Composable
 inline fun rememberDateTimeFormatter(crossinline formatterProducer: () -> DateTimeFormatter): DateTimeFormatter =
-    rememberLocaleDependentValue(formatterProducer)
+    rememberLocaleDependentValue { formatterProducer() }
 
 @Composable
-fun rememberAlphanumericComparator(): AlphanumericComparator = rememberLocaleDependentValue { AlphanumericComparator() }
+fun rememberAlphanumericComparator(): AlphanumericComparator = rememberLocaleDependentValue { AlphanumericComparator(it) }

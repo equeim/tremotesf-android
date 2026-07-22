@@ -82,7 +82,7 @@ fun PeersTab(
             val progressFormatter = rememberNumberFormat { DecimalFormat("0.#") }
 
             val comparator =
-                rememberLocaleDependentValue { compareBy(AlphanumericComparator(), Peer::address) }
+                rememberLocaleDependentValue { compareBy(AlphanumericComparator(it), Peer::address) }
             val sortedPeers = remember { derivedStateOf { peers.sortedWith(comparator).distinctBy(Peer::address) } }
 
             LazyColumn(

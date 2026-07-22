@@ -48,6 +48,7 @@ import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
 import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
+import java.util.Locale
 
 @OptIn(SavedStateHandleSaveableApi::class)
 abstract class BaseAddTorrentModel(
@@ -112,12 +113,12 @@ abstract class BaseAddTorrentModel(
 
     protected var alreadySetInitialState: Boolean by savedStateHandle.saved { false }
 
-    private var comparator = AlphanumericComparator()
+    private var comparator = AlphanumericComparator(Locale.getDefault())
 
     init {
         viewModelScope.launch {
             application.localeChangedEvents().collect {
-                comparator = AlphanumericComparator()
+                comparator = AlphanumericComparator(it)
                 if (alreadySetInitialState) {
                     allDownloadDirectories.sortWith(compareBy(comparator, DownloadDirectoryItem::directory))
                     _allLabels.value = _allLabels.value.sortedWith(comparator)
