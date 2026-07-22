@@ -21,6 +21,7 @@ fun Context.localeChangedEvents(): Flow<Unit> = callbackFlow {
                 trySend(Unit)
             }
         }
+        @Suppress("OVERRIDE_DEPRECATION")
         override fun onLowMemory() = Unit
     }
     registerComponentCallbacks(callback)

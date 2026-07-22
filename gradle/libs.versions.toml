@@ -4,7 +4,7 @@
 
 [versions]
 android-gradle-plugin = "9.3.0"
-kotlin = "2.2.20"
+kotlin = "2.4.10"
 deezer-caupain = "1.9.1"
 
 sdk-platform-compile = "36"
