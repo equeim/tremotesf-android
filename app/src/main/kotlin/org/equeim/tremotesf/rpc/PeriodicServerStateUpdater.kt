@@ -165,7 +165,7 @@ object PeriodicServerStateUpdater {
     suspend fun updateTorrentsFromBackground(): Boolean {
         val torrentsFinishedState = try {
             GlobalRpcClient.getTorrentsFinishedState()
-        } catch (e: RpcRequestError) {
+        } catch (_: RpcRequestError) {
             return false
         }
         onTorrentsUpdated(torrentsFinishedState)

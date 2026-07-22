@@ -56,14 +56,14 @@ class AlphanumericComparator(locale: Locale) : Comparator<String> {
                     val s1Number: Long
                     try {
                         s1Number = s1Slice.toLong()
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         result = 1
                         break
                     }
                     val s2Number: Long
                     try {
                         s2Number = s2Slice.toLong()
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         result = -1
                         break
                     }

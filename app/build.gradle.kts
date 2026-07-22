@@ -24,7 +24,7 @@ class KeystoreProperties(rootProject: Project) {
 
 val keystoreProperties = try {
     KeystoreProperties(rootProject)
-} catch (e: Exception) {
+} catch (_: Exception) {
     null
 }
 
