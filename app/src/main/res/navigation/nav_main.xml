@@ -243,17 +243,4 @@
         android:id="@+id/server_proxy_settings_fragment"
         android:name="org.equeim.tremotesf.ui.connectionsettingsfragment.ServerProxySettingsFragment"
         android:label="ProxySettingsFragment" />
-
-    <dialog
-        android:id="@+id/detailed_connection_error_dialog_fragment"
-        android:name="org.equeim.tremotesf.ui.DetailedConnectionErrorDialogFragment">
-
-        <argument
-            android:name="error"
-            app:argType="org.equeim.tremotesf.rpc.DetailedRpcRequestError" />
-    </dialog>
-
-    <action
-        android:id="@+id/to_detailed_connection_error_dialog_fragment"
-        app:destination="@id/detailed_connection_error_dialog_fragment" />
 </navigation>
