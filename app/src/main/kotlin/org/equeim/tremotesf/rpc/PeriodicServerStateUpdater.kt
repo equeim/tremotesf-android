@@ -123,7 +123,7 @@ object PeriodicServerStateUpdater {
         }
     }
 
-    suspend fun onTorrentsUpdated(torrents: List<RpcTorrentFinishedState>) =
+    suspend fun onTorrentsUpdated(torrents: List<RpcTorrentFinishedState>) {
         onTorrentsUpdatedMutex.withLock {
             Timber.d("Updating finished state for ${torrents.size} torrents")
             val firstUpdate = updatedTorrentsSinceEnablingConnection.compareAndSet(false, true)
@@ -160,6 +160,7 @@ object PeriodicServerStateUpdater {
             }
             GlobalServers.saveCurrentServerTorrentsFinishedState(newFinishedState)
         }
+    }
 
     suspend fun updateTorrentsFromBackground(): Boolean {
         val torrentsFinishedState = try {
