@@ -204,8 +204,8 @@ private fun String.annotateLinks(color: Color): AnnotatedString {
     return AnnotatedString(this, annotations = PatternsCompat.WEB_URL.toRegex().findAll(this).map {
         AnnotatedString.Range(
             item = LinkAnnotation.Url(it.value, styles),
-            start = it.range.start,
-            end = it.range.endInclusive + 1
+            start = it.range.first,
+            end = it.range.last + 1
         )
     }.toList())
 }

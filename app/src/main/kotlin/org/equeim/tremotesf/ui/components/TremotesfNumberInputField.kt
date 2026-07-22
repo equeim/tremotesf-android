@@ -64,8 +64,8 @@ fun TremotesfNumberInputField(
 
                         OutOfRange -> stringResource(
                             R.string.number_range_error,
-                            range.start,
-                            range.endInclusive
+                            range.first,
+                            range.last
                         )
                     }
                 )
