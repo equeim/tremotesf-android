@@ -71,9 +71,8 @@ open class TorrentFilesTree(
     }
 
     class DirectoryNode private constructor(item: Item, path: NodePath) : Node(item, path) {
-        private val _children = ArrayList<Node>()
         val children: List<Node>
-            get() = _children
+            field = ArrayList<Node>()
         private var namesToChildrenCache: MutableScatterMap<String, Node>? = MutableScatterMap()
 
         override fun toString() = "DirectoryNode(item=$item)"
@@ -92,7 +91,7 @@ open class TorrentFilesTree(
         }
 
         internal fun initiallyCalculateFromChildrenRecursively() {
-            _children.trimToSize()
+            children.trimToSize()
             // getChildByItemNameOrNull() will be used rarely after creating tree, so we don't need to keep namesToChildrenCache in memory
             namesToChildrenCache = null
             children.forEach { (it as? DirectoryNode)?.initiallyCalculateFromChildrenRecursively() }
@@ -136,7 +135,7 @@ open class TorrentFilesTree(
         }
 
         private fun addChild(name: String, node: Node) {
-            _children.add(node)
+            children.add(node)
             checkNotNull(namesToChildrenCache).compute(name) { _, existingNode ->
                 if (existingNode != null) {
                     throw IllegalArgumentException("Child with this name already exists")
@@ -268,11 +267,11 @@ open class TorrentFilesTree(
     protected var currentNode: DirectoryNode = rootNode
         private set
 
-    private val _isAtRoot = MutableStateFlow(true)
-    val isAtRoot: StateFlow<Boolean> by ::_isAtRoot
+    val isAtRoot: StateFlow<Boolean>
+        field = MutableStateFlow(true)
 
-    private val _items = MutableStateFlow<List<Item>>(emptyList())
-    val items: StateFlow<List<Item>> by ::_items
+    val items: StateFlow<List<Item>>
+        field = MutableStateFlow<List<Item>>(emptyList())
 
     fun destroy() {
         scope.cancel()
@@ -304,7 +303,7 @@ open class TorrentFilesTree(
     private fun navigateTo(node: DirectoryNode) {
         scope.launch {
             currentNode = node
-            _isAtRoot.value = currentNode == rootNode
+            isAtRoot.value = currentNode == rootNode
             updateItemsWithSorting()
         }
     }
@@ -316,7 +315,7 @@ open class TorrentFilesTree(
         items.addAll(parentNode.children.asSequence().map { it.item })
         items.sortWith(comparator)
         currentCoroutineContext().ensureActive()
-        _items.value = items
+        this.items.value = items
     }
 
     @WorkerThread
@@ -324,7 +323,7 @@ open class TorrentFilesTree(
         val children = currentNode.children
         val items = items.value.map { it.let { children[it.nodePath.indices.last()].item } }
         currentCoroutineContext().ensureActive()
-        _items.value = items
+        this.items.value = items
     }
 
     @WorkerThread
@@ -482,8 +481,8 @@ open class TorrentFilesTree(
         scope.coroutineContext.cancelChildren()
         rootNode = DirectoryNode.createRootNode()
         currentNode = rootNode
-        _isAtRoot.value = true
-        _items.value = emptyList()
+        isAtRoot.value = true
+        items.value = emptyList()
         inited = false
     }
 

@@ -43,8 +43,8 @@ class WifiNetworkServersController(
     private val wifiManager by lazy { context.getSystemService<WifiManager>() }
     private val connectivityManager by lazy { context.getSystemService<ConnectivityManager>() }
 
-    private val _observingActiveWifiNetwork = MutableStateFlow(false)
-    val observingActiveWifiNetwork: StateFlow<Boolean> by ::_observingActiveWifiNetwork
+    val observingActiveWifiNetwork: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     init {
         Timber.i("init")
@@ -60,7 +60,7 @@ class WifiNetworkServersController(
             combine(hasServersWithWifiNetwork, appInForeground, Boolean::and)
                 .distinctUntilChanged()
                 .collectLatest { shouldObserveWifiNetworks ->
-                    _observingActiveWifiNetwork.value = shouldObserveWifiNetworks
+                    observingActiveWifiNetwork.value = shouldObserveWifiNetworks
                     if (shouldObserveWifiNetworks) {
                         Timber.i("Start observing active Wi-Fi network")
                         observeActiveWifiNetwork().collect(::onCurrentWifiSsidChanged)

@@ -50,11 +50,11 @@ abstract class Servers(
             }
     }
 
-    private val _serversState = MutableStateFlow(ServersState(emptyList(), null))
-    val serversState: StateFlow<ServersState> by ::_serversState
-    val servers: Flow<List<Server>> = _serversState.map { it.servers }.distinctUntilChanged()
-    val hasServers: Flow<Boolean> = _serversState.map { it.servers.isNotEmpty() }.distinctUntilChanged()
-    val currentServer: Flow<Server?> = _serversState.map { it.currentServer }.distinctUntilChanged()
+    val serversState: StateFlow<ServersState>
+        field = MutableStateFlow(ServersState(emptyList(), null))
+    val servers: Flow<List<Server>> = serversState.map { it.servers }.distinctUntilChanged()
+    val hasServers: Flow<Boolean> = serversState.map { it.servers.isNotEmpty() }.distinctUntilChanged()
+    val currentServer: Flow<Server?> = serversState.map { it.currentServer }.distinctUntilChanged()
 
     private val json = Json {
         prettyPrint = true
@@ -71,7 +71,7 @@ abstract class Servers(
             val (servers, changed) = context.openFileInput(FILE_NAME).use {
                 json.decodeFromBufferedSource(ServersState.serializer(), it.source().buffer())
             }.validateLoaded()
-            _serversState.value = servers
+            serversState.value = servers
             if (changed) {
                 save()
             }
@@ -137,7 +137,7 @@ abstract class Servers(
 
     private fun save() {
         Timber.i("save() called")
-        save(_serversState.value)
+        save(serversState.value)
     }
 
     protected abstract fun save(serversState: ServersState)
@@ -164,7 +164,7 @@ abstract class Servers(
 
     fun addOrReplaceServer(newServer: Server, previousName: String? = null) {
         Timber.d("addOrReplaceServer() called with: newServer = $newServer, previousName = $previousName")
-        _serversState.update { state ->
+        serversState.update { state ->
             val servers = state.servers.toMutableList()
             val removeNames = setOfNotNull(newServer.name, previousName)
             servers.removeAll { removeNames.contains(it.name) }
@@ -183,7 +183,7 @@ abstract class Servers(
 
     fun removeServers(serverNames: Set<String>) {
         Timber.d("removeServers() called with: serverNames = $serverNames")
-        _serversState.update { state ->
+        serversState.update { state ->
             val servers = state.servers.toMutableList()
             servers.removeAll { serverNames.contains(it.name) }
             var currentServerName = state.currentServerName
@@ -197,7 +197,7 @@ abstract class Servers(
 
     fun setCurrentServer(serverName: String) {
         Timber.d("setCurrentServer() called with: serverName = $serverName")
-        val oldState = _serversState.getAndUpdate { state ->
+        val oldState = serversState.getAndUpdate { state ->
             if (serverName != state.currentServerName && state.servers.find { it.name == serverName } != null) {
                 state.copy(currentServerName = serverName)
             } else {
@@ -213,7 +213,7 @@ abstract class Servers(
 
     fun saveCurrentServerTorrentsFinishedState(newFinishedState: Map<Server.TorrentHashString, Server.TorrentFinishedState>) {
         Timber.d("Saving finished state for ${newFinishedState.size} torrents")
-        _serversState.update { state ->
+        serversState.update { state ->
             val currentServer = state.currentServer
             if (currentServer != null) {
                 Timber.d("saveCurrentServerTorrentsFinishedState: current server = $currentServer")
