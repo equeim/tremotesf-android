@@ -456,12 +456,8 @@ open class TorrentFilesTree(
 
     @MainThread
     private fun restoreInstanceState(savedStateHandle: SavedStateHandle): Boolean {
-        val savedState = savedStateHandle.get<Bundle>(savedStateKey)
-        if (savedState == null) return false
-        val path = BundleCompat.getParcelable(savedState, "", NodePath::class.java)
-        if (path == null) {
-            return false
-        }
+        val savedState = savedStateHandle.get<Bundle>(savedStateKey) ?: return false
+        val path = BundleCompat.getParcelable(savedState, "", NodePath::class.java) ?: return false
         val node = findNodeByIndexPath(path) as? DirectoryNode
         navigateTo(node ?: rootNode)
         return true

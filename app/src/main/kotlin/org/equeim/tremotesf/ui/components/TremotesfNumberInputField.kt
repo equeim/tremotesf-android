@@ -42,8 +42,7 @@ fun TremotesfNumberInputField(
     OutlinedTextField(
         value = state.textFieldValue,
         onValueChange = {
-            val number = format.parseOrNull(it)
-            when (number) {
+            when (val number = format.parseOrNull(it)) {
                 null -> state.update(it, ParsingFailure)
                 !is Long, !in range -> state.update(it, OutOfRange)
                 else -> state.update(it, number)

@@ -64,7 +64,7 @@ class NodesThatMustChangeHelper(val nodes: List<TorrentFilesTree.Node>) {
         }
 }
 
-class NodesThatMustNotChangeHelper(val nodes: List<TorrentFilesTree.Node>) {
+class NodesThatMustNotChangeHelper(private val nodes: List<TorrentFilesTree.Node>) {
     constructor(nodes: Sequence<TorrentFilesTree.Node>) : this(nodes.toList())
     constructor(vararg nodes: TorrentFilesTree.Node) : this(nodes.toList())
 
