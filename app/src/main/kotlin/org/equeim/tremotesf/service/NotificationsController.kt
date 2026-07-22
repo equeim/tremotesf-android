@@ -35,7 +35,7 @@ class NotificationsController(private val context: Context, coroutineScope: Coro
     }
 
     private val random = Random(System.nanoTime())
-    private var fileSizeFormatter = FileSizeFormatter(context)
+    private var fileSizeFormatter = FileSizeFormatter(context.resources)
 
     init {
         if (notificationManager != null) {
@@ -62,7 +62,7 @@ class NotificationsController(private val context: Context, coroutineScope: Coro
         }
 
         coroutineScope.launch {
-            context.localeChangedEvents().collect { fileSizeFormatter = FileSizeFormatter(context) }
+            context.localeChangedEvents().collect { fileSizeFormatter = FileSizeFormatter(context.resources) }
         }
     }
 
@@ -168,7 +168,7 @@ class NotificationsController(private val context: Context, coroutineScope: Coro
                     fileSizeFormatter.formatTransferRate(sessionStats.response.uploadSpeed)
                 )
 
-                is RpcRequestState.Error -> sessionStats.error.getErrorString(context)
+                is RpcRequestState.Error -> sessionStats.error.getErrorString(context.resources)
             }
         )
 

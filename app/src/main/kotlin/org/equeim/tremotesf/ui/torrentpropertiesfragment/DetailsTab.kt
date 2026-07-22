@@ -23,7 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -180,7 +180,7 @@ private fun rememberTimeFormatter(): (Instant) -> String {
     val dateTimeFormatter = rememberDateTimeFormatter {
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
     }
-    val context = LocalContext.current
+    val resources = LocalResources.current
     return { time ->
         val absolute = dateTimeFormatter.format(time.atZone(ZoneId.systemDefault()))
         val now = Instant.now()
@@ -192,7 +192,7 @@ private fun rememberTimeFormatter(): (Instant) -> String {
                 DateUtils.MINUTE_IN_MILLIS,
                 0
             )
-            context.getString(R.string.date_time_with_relative, absolute, relative)
+            resources.getString(R.string.date_time_with_relative, absolute, relative)
         } else {
             absolute
         }

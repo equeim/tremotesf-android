@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.ui
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -80,6 +81,7 @@ fun DetailedConnectionErrorDialog(error: DetailedRpcRequestError, onDismissReque
         buttons = {
             val context = LocalContext.current
             TextButton(onClick = {
+                @SuppressLint("LocalContextGetResourceValueCall")
                 Utils.shareText(
                     error.makeShareString(),
                     context.getText(R.string.share),

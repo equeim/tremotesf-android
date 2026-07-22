@@ -4,6 +4,7 @@
 
 package org.equeim.tremotesf.ui.serversettingsfragment
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -219,6 +220,7 @@ private fun ServerSettingsSpeedScreen(
 
         val context = LocalContext.current
         val dayNames: Map<AlternativeLimitsDays, String> = rememberLocaleDependentValue {
+            @SuppressLint("LocalContextGetResourceValueCall")
             buildMap {
                 put(AlternativeLimitsDays.All, context.getString(R.string.every_day))
                 put(AlternativeLimitsDays.Weekdays, context.getString(R.string.weekdays))
