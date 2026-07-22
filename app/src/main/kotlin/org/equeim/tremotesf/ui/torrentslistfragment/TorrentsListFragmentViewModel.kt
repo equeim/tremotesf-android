@@ -305,19 +305,17 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     }
 
     val floatingActionButtonState: StateFlow<FloatingActionButtonState> = torrents.map { torrentsListState ->
-        when {
-            else -> when (torrentsListState) {
-                is RpcRequestState.Error -> {
-                    when (torrentsListState.error) {
-                        is RpcRequestError.NoConnectionConfiguration -> FloatingActionButtonState.AddServer
-                        is RpcRequestError.ConnectionDisabled -> FloatingActionButtonState.Connect
-                        else -> FloatingActionButtonState.Disconnect
-                    }
+        when (torrentsListState) {
+            is RpcRequestState.Error -> {
+                when (torrentsListState.error) {
+                    is RpcRequestError.NoConnectionConfiguration -> FloatingActionButtonState.AddServer
+                    is RpcRequestError.ConnectionDisabled -> FloatingActionButtonState.Connect
+                    else -> FloatingActionButtonState.Disconnect
                 }
-
-                is RpcRequestState.Loading -> FloatingActionButtonState.Disconnect
-                is RpcRequestState.Loaded -> FloatingActionButtonState.AddTorrent
             }
+
+            is RpcRequestState.Loading -> FloatingActionButtonState.Disconnect
+            is RpcRequestState.Loaded -> FloatingActionButtonState.AddTorrent
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), FloatingActionButtonState.Disconnect)
 

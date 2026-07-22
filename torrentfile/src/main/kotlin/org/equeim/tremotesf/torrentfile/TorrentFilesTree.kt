@@ -126,15 +126,7 @@ open class TorrentFilesTree(
         internal fun addDirectory(name: String): DirectoryNode {
             val path = NodePath(this.path.indices + children.size)
             val node = DirectoryNode(
-                Item(
-                    -1,
-                    name,
-                    0,
-                    0,
-                    Item.WantedState.Wanted,
-                    Item.Priority.Normal,
-                    path
-                ), path
+                item = Item(name = name, nodePath = path), path = path
             )
             addChild(name, node)
             return node

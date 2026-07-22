@@ -152,7 +152,6 @@ class TorrentFileParserTest {
         val singleFileTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
                 info = TorrentFileParser.TorrentFile.Info(
-                    files = null,
                     singleFileSize = 353370112,
                     nameOfDirectoryOrSingleFile = "debian-10.9.0-amd64-netinst.iso",
                 ),
@@ -187,7 +186,6 @@ class TorrentFileParserTest {
                             listOf("Fedora-Workstation-Live-x86_64-34-1.2.iso")
                         )
                     ),
-                    singleFileSize = null,
                     nameOfDirectoryOrSingleFile = "Fedora-Workstation-Live-x86_64-34",
                 ),
                 singleTrackerAnnounceUrl = "http://torrent.fedoraproject.org:6969/announce"
@@ -235,10 +233,8 @@ class TorrentFileParserTest {
                             listOf("debian", "debian-10.9.0-amd64-netinst.iso.torrent")
                         )
                     ),
-                    singleFileSize = null,
                     nameOfDirectoryOrSingleFile = "foo",
-                ),
-                singleTrackerAnnounceUrl = null
+                )
             )
         }
         val multipleFileTorrentWithSubdirectoriesTreeResult by lazy {
@@ -267,7 +263,6 @@ class TorrentFileParserTest {
         val multipleTrackersTorrentParsed by lazy {
             TorrentFileParser.TorrentFile(
                 info = TorrentFileParser.TorrentFile.Info(
-                    files = null,
                     singleFileSize = 22711545577,
                     nameOfDirectoryOrSingleFile = "enwiki-20231220-pages-articles-multistream.xml.bz2",
                 ),

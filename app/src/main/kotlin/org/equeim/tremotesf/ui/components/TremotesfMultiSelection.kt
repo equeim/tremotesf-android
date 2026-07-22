@@ -285,7 +285,7 @@ fun <Key : Any> Modifier.tremotesfMultiSelectionClickable(
     onClick: () -> Unit
 ): Modifier {
     return if (!state.hasSelection) {
-        return combinedClickable(
+        combinedClickable(
             onClick = onClick,
             onLongClick = { state.select(key) },
             onLongClickLabel = stringResource(R.string.select_action)
