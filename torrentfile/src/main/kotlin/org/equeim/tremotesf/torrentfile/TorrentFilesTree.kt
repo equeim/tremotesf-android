@@ -21,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,6 @@ import org.equeim.tremotesf.common.AlphanumericComparator
 import org.equeim.tremotesf.common.DefaultTremotesfDispatchers
 import org.equeim.tremotesf.common.TremotesfDispatchers
 import java.util.concurrent.Executors
-import kotlin.coroutines.coroutineContext
 
 open class TorrentFilesTree(
     parentScope: CoroutineScope,
@@ -320,7 +320,7 @@ open class TorrentFilesTree(
         val items = ArrayList<Item>(parentNode.children.size)
         items.addAll(parentNode.children.asSequence().map { it.item })
         items.sortWith(comparator)
-        coroutineContext.ensureActive()
+        currentCoroutineContext().ensureActive()
         _items.value = items
     }
 
@@ -328,7 +328,7 @@ open class TorrentFilesTree(
     private suspend fun updateItemsWithoutSorting() {
         val children = currentNode.children
         val items = items.value.map { it.let { children[it.nodePath.indices.last()].item } }
-        coroutineContext.ensureActive()
+        currentCoroutineContext().ensureActive()
         _items.value = items
     }
 
