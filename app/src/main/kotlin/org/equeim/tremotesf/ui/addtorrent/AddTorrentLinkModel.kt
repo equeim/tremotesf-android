@@ -81,7 +81,7 @@ class AddTorrentLinkModel(
         super.setInitialState(initialRpcInputs)
     }
 
-    suspend fun getInitialTorrentLinks(): List<Uri> {
+    private suspend fun getInitialTorrentLinks(): List<Uri> {
         if (initialUris.isNotEmpty()) return initialUris
         if (!Settings.fillTorrentLinkFromClipboard.get()) {
             Timber.d("Filling torrent link from clipboard is disabled")

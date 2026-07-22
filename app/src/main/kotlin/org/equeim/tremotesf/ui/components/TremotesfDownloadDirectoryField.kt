@@ -142,7 +142,7 @@ private fun getAllDownloadDirectories(
     comparator: AlphanumericComparator
 ): List<DownloadDirectoryItem> {
     val directories = sortedMapOf<String, Boolean>(comparator)
-    directories.put(downloadDirectoryFromServerSettings.toNativeSeparators(), false)
+    directories[downloadDirectoryFromServerSettings.toNativeSeparators()] = false
     torrentsDownloadDirectories.forEach { directories.putIfAbsent(it.toNativeSeparators(), false) }
     lastDownloadDirectories.forEach { directories.putIfAbsent(it, true) }
     return directories.map { (directory, canBeRemoved) -> DownloadDirectoryItem(directory, canBeRemoved) }

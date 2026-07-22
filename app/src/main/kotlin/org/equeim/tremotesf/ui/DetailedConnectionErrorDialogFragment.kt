@@ -245,14 +245,12 @@ private fun DetailedRpcRequestError.makeShareString(): String = buildString {
 }
 
 private fun String.indent(): String =
-    lineSequence()
-        .map {
-            when {
-                it.isBlank() -> it
-                else -> "  $it"
-            }
+    lineSequence().joinToString("\n") {
+        when {
+            it.isBlank() -> it
+            else -> "  $it"
         }
-        .joinToString("\n")
+    }
 
 @Composable
 private fun ExpandedDetailsView(details: ExpandedDetails) {

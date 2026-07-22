@@ -362,8 +362,8 @@ class RpcClientTest {
     }
 
     private companion object {
-        val TEST_SESSION_ID_1 = "hmm"
-        val TEST_SESSION_ID_2 = "huh"
+        const val TEST_SESSION_ID_1 = "hmm"
+        const val TEST_SESSION_ID_2 = "huh"
 
         val EXPECTED_SERVER_VERSION_REQUEST_BODY = JsonObject(
             mapOf(
@@ -389,10 +389,10 @@ class RpcClientTest {
             )
         )
 
-        val TEST_SERVER_VERSION_RESPONSE_BODY =
+        const val TEST_SERVER_VERSION_RESPONSE_BODY =
             """{"arguments":{"rpc-version":17,"rpc-version-minimum":14,"version":"4.0.3 (6b0e49bbb2)"},"result":"success"}"""
-        val TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_SUCCESS = """{"arguments":{"size-bytes":666},"result":"success"}"""
-        val TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_FAILURE = """{"arguments":{},"result":"nope"}"""
+        const val TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_SUCCESS = """{"arguments":{"size-bytes":666},"result":"success"}"""
+        const val TEST_UNIX_ROOT_FREE_SPACE_RESPONSE_BODY_FAILURE = """{"arguments":{},"result":"nope"}"""
 
         val EXPECTED_SESSION_STATS_REQUEST_BODY = JsonObject(mapOf("method" to JsonPrimitive("session-stats")))
         val TEST_SESSION_STATS_RESPONSE_BODY = """
