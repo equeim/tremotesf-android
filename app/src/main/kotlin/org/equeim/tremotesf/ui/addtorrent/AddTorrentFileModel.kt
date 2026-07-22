@@ -16,7 +16,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.os.BundleCompat
-import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
@@ -116,7 +115,9 @@ class AddTorrentFileModelImpl(
     val addTorrentState: State<AddTorrentState?> by ::_addTorrentState
 
     init {
-        savedStateHandle.setSavedStateProvider(CHANGED_FILE_PRIORITIES_KEY) { bundleOf("" to getChangedFilePriorities()) }
+        savedStateHandle.setSavedStateProvider(CHANGED_FILE_PRIORITIES_KEY) {
+            Bundle().apply { putParcelable("", getChangedFilePriorities()) }
+        }
     }
 
     override fun onCleared() {
