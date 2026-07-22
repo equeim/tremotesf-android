@@ -265,6 +265,7 @@ private val AUTHORS = listOf(
 private fun TranslatorsTab(innerPadding: PaddingValues) {
     val context = LocalContext.current
     val text = remember {
+        @SuppressLint("LocalContextResourcesRead")
         context.resources.openRawResource(R.raw.translators).use { it.reader().readText() }
     }
     Column(

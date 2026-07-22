@@ -33,7 +33,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -100,12 +99,10 @@ fun ColumnScope.CommonAddTorrentParameters(
     )
 
     downloadDirectoryFreeSpace.value?.let { freeSpace ->
-        val context = LocalContext.current
         val formatter = rememberFileSizeFormatter()
         val text = when (freeSpace) {
-            is DownloadDirectoryFreeSpace.FreeSpace -> remember(formatter, freeSpace) {
-                context.getString(R.string.free_space, formatter.formatFileSize(freeSpace.size))
-            }
+            is DownloadDirectoryFreeSpace.FreeSpace ->
+                stringResource(R.string.free_space, formatter.formatFileSize(freeSpace.size))
 
             is DownloadDirectoryFreeSpace.Error -> stringResource(R.string.free_space_error)
         }
