@@ -709,8 +709,8 @@ class ServerEditFragmentViewModel(
     val proxyUser by savedStateHandle.saveable<MutableState<String>> { mutableStateOf(editingServer.proxyUser) }
     val proxyPassword by savedStateHandle.saveable<MutableState<String>> { mutableStateOf(editingServer.proxyPassword) }
 
-    private val _locationEnabled = MutableStateFlow(isLocationEnabled())
-    val locationEnabled: StateFlow<Boolean> by ::_locationEnabled
+    val locationEnabled: StateFlow<Boolean>
+        field = MutableStateFlow(isLocationEnabled())
 
     private fun isLocationEnabled(): Boolean {
         val locationManager = getApplication<Application>().getSystemService<LocationManager>()
@@ -727,7 +727,7 @@ class ServerEditFragmentViewModel(
     }
 
     fun checkIfLocationEnabled() {
-        _locationEnabled.value = isLocationEnabled()
+        locationEnabled.value = isLocationEnabled()
     }
 
     fun setSSIDFromCurrentNetwork() {

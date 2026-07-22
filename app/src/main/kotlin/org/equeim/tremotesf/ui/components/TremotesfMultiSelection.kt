@@ -94,28 +94,28 @@ class TremotesfMultiSelectionState<Item : Any, Key : Any>(
     savedSelectedKeys: ArrayList<Key>?,
     coroutineScope: CoroutineScope,
 ) {
-    private val _selectedKeys = SnapshotStateSet<Key>().apply {
-        savedSelectedKeys?.let { addAll(it) }
-    }
+    val selectedKeys: Set<Key>
+        field = SnapshotStateSet<Key>().apply {
+            savedSelectedKeys?.let { addAll(it) }
+        }
 
-    val selectedKeys: Set<Key> by ::_selectedKeys
-    val selectedCount: Int by derivedStateOf { _selectedKeys.size }
+    val selectedCount: Int by derivedStateOf { selectedKeys.size }
 
-    val hasSelection: Boolean by derivedStateOf { _selectedKeys.isNotEmpty() }
+    val hasSelection: Boolean by derivedStateOf { selectedKeys.isNotEmpty() }
 
     init {
         coroutineScope.launch {
             snapshotFlow { listItems.value }
                 .collect { newList ->
-                    if (_selectedKeys.isNotEmpty()) {
+                    if (selectedKeys.isNotEmpty()) {
                         if (newList.isEmpty()) {
                             deselectAll()
                         } else {
-                            val keysToRemove = _selectedKeys.filter { selected ->
+                            val keysToRemove = selectedKeys.filter { selected ->
                                 newList.none { keySelector(it) == selected }
                             }
                             if (keysToRemove.isNotEmpty()) {
-                                _selectedKeys.removeAll(keysToRemove)
+                                selectedKeys.removeAll(keysToRemove)
                             }
                         }
                     }
@@ -123,14 +123,14 @@ class TremotesfMultiSelectionState<Item : Any, Key : Any>(
         }
     }
 
-    fun isSelected(key: Key): Boolean = _selectedKeys.contains(key)
+    fun isSelected(key: Key): Boolean = selectedKeys.contains(key)
 
     fun select(key: Key) {
-        _selectedKeys.add(key)
+        selectedKeys.add(key)
     }
 
     fun deselect(key: Key) {
-        _selectedKeys.remove(key)
+        selectedKeys.remove(key)
     }
 
     fun setSelected(key: Key, selected: Boolean) {
@@ -138,11 +138,11 @@ class TremotesfMultiSelectionState<Item : Any, Key : Any>(
     }
 
     fun selectAll() {
-        _selectedKeys.addAll(listItems.value.map(keySelector))
+        selectedKeys.addAll(listItems.value.map(keySelector))
     }
 
     fun deselectAll() {
-        _selectedKeys.clear()
+        selectedKeys.clear()
     }
 
     companion object {
@@ -151,7 +151,7 @@ class TremotesfMultiSelectionState<Item : Any, Key : Any>(
             keySelector: Item.() -> Key,
             coroutineScope: CoroutineScope,
         ) = Saver<TremotesfMultiSelectionState<Item, Key>, ArrayList<Key>>(
-            save = { ArrayList<Key>(it._selectedKeys.size).apply { addAll(it._selectedKeys) } },
+            save = { ArrayList<Key>(it.selectedKeys.size).apply { addAll(it.selectedKeys) } },
             restore = {
                 TremotesfMultiSelectionState(
                     listItems = listItems,

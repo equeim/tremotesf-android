@@ -140,7 +140,7 @@ class TorrentPropertiesFragmentViewModel(
         }
 
         override fun rename(newName: String) {
-            if (_filesTreeState.value is FilesTreeState.Loaded) {
+            if (filesTreeState.value is FilesTreeState.Loaded) {
                 filesTree.renameFile(TorrentFilesTree.NodePath(intArrayOf(0)), newName)
             } else {
                 performRequestAndRefresh(R.string.file_rename_error, detailsRefreshRequests) {
@@ -228,8 +228,8 @@ class TorrentPropertiesFragmentViewModel(
         data class Error(val error: RpcRequestError) : FilesTreeState
     }
 
-    private val _filesTreeState = MutableStateFlow<FilesTreeState>(FilesTreeState.Loading)
-    val filesTreeState: StateFlow<FilesTreeState> by ::_filesTreeState
+    val filesTreeState: StateFlow<FilesTreeState>
+        field = MutableStateFlow<FilesTreeState>(FilesTreeState.Loading)
 
     data class TrackerItem(
         val tracker: Tracker,
@@ -312,36 +312,36 @@ class TorrentPropertiesFragmentViewModel(
 
     init {
         viewModelScope.launch {
-            _filesTreeState.hasSubscribersDebounced().collectLatest { hasSubscribers ->
+            filesTreeState.hasSubscribersDebounced().collectLatest { hasSubscribers ->
                 if (!hasSubscribers) return@collectLatest
                 GlobalRpcClient.performPeriodicRequest {
                     getTorrentFiles(torrentHashString)
                 }.collect { requestState ->
                     when (requestState) {
                         is RpcRequestState.Loading -> {
-                            if (_filesTreeState.value is FilesTreeState.Error) {
-                                _filesTreeState.value = FilesTreeState.Loading
+                            if (filesTreeState.value is FilesTreeState.Error) {
+                                filesTreeState.value = FilesTreeState.Loading
                             }
                         }
 
                         is RpcRequestState.Loaded -> {
                             val files = requestState.response
-                            when (val state = _filesTreeState.value) {
+                            when (val state = filesTreeState.value) {
                                 is FilesTreeState.Loading, is FilesTreeState.Error -> {
                                     if (!files.files.isEmpty()) {
                                         filesTree.createTree(
                                             rpcFiles = files,
                                             savedStateHandle = savedStateHandle
                                         )
-                                        _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = true)
+                                        filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = true)
                                     } else {
-                                        _filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = false)
+                                        filesTreeState.value = FilesTreeState.Loaded(torrentHasFiles = false)
                                     }
                                 }
 
                                 is FilesTreeState.Loaded -> {
                                     if (!state.torrentHasFiles && !files.files.isEmpty()) {
-                                        _filesTreeState.value = FilesTreeState.Loading
+                                        filesTreeState.value = FilesTreeState.Loading
                                         filesTree.createTree(files, savedStateHandle)
                                     } else {
                                         filesTree.updateTree(files)
@@ -351,7 +351,7 @@ class TorrentPropertiesFragmentViewModel(
                         }
 
                         is RpcRequestState.Error -> {
-                            _filesTreeState.value = FilesTreeState.Error(requestState.error)
+                            filesTreeState.value = FilesTreeState.Error(requestState.error)
                             filesTree.reset()
                         }
                     }

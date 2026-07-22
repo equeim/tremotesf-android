@@ -112,8 +112,8 @@ class AddTorrentFileModelImpl(
     private lateinit var trackers: List<Set<String>>
     private lateinit var files: List<TorrentFilesTree.FileNode>
 
-    private val _addTorrentState = mutableStateOf<AddTorrentState?>(null)
-    val addTorrentState: State<AddTorrentState?> by ::_addTorrentState
+    val addTorrentState: State<AddTorrentState?>
+        field = mutableStateOf<AddTorrentState?>(null)
 
     init {
         savedStateHandle.setSavedStateProvider(CHANGED_FILE_PRIORITIES_KEY) {
@@ -214,7 +214,7 @@ class AddTorrentFileModelImpl(
         val priorities = getChangedFilePriorities()
         val renamedFiles = renamedFiles.associate { it.originalNamePath to it.newName }
         viewModelScope.launch {
-            _addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
+            addTorrentState.value = AddTorrentState.CheckingIfTorrentExists
             if (!checkIfTorrentExists()) {
                 GlobalRpcClient.performBackgroundRpcRequest(R.string.add_torrent_error) {
                     addTorrentFile(
@@ -229,7 +229,7 @@ class AddTorrentFileModelImpl(
                         labels = enabledLabels
                     )
                 }
-                _addTorrentState.value = AddTorrentState.Finished()
+                addTorrentState.value = AddTorrentState.Finished()
             }
         }
     }
@@ -247,13 +247,13 @@ class AddTorrentFileModelImpl(
         if (alreadyExists) {
             when {
                 Settings.askForMergingTrackersWhenAddingExistingTorrent.get() ->
-                    _addTorrentState.value =
+                    addTorrentState.value =
                         AddTorrentState.AskForMergingTrackers(listOf(torrentName))
 
                 Settings.mergeTrackersWhenAddingExistingTorrent.get() ->
                     mergeTrackersWithExistingTorrent(showMessage = true)
 
-                else -> _addTorrentState.value = AddTorrentState.Finished(MergingTrackersMessage(merging = false, torrentNames = listOf(torrentName)))
+                else -> addTorrentState.value = AddTorrentState.Finished(MergingTrackersMessage(merging = false, torrentNames = listOf(torrentName)))
             }
         }
         return alreadyExists
@@ -310,7 +310,7 @@ class AddTorrentFileModelImpl(
         if ((result as? MergeTrackersDialogResult.ButtonClicked)?.merge == true) {
             mergeTrackersWithExistingTorrent(showMessage = false)
         } else {
-            _addTorrentState.value = AddTorrentState.Finished()
+            addTorrentState.value = AddTorrentState.Finished()
         }
     }
 
@@ -321,7 +321,7 @@ class AddTorrentFileModelImpl(
         GlobalRpcClient.performBackgroundRpcRequest(R.string.merging_trackers_error) {
             addTorrentTrackers(infoHash, trackers)
         }
-        _addTorrentState.value = AddTorrentState.Finished(
+        addTorrentState.value = AddTorrentState.Finished(
             if (showMessage) {
                 MergingTrackersMessage(merging = true, torrentNames = listOf(torrentName))
             } else {

@@ -254,7 +254,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 when (it) {
                     is RpcRequestState.Loaded, is RpcRequestState.Error ->
                         // Launch a coroutine to do it in the main thread
-                        viewModelScope.launch { _refreshingManually.value = false }
+                        viewModelScope.launch { refreshingManually.value = false }
 
                     else -> Unit
                 }
@@ -265,11 +265,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         allTorrents.filterAndSortTorrents()
             .stateIn(viewModelScope + Dispatchers.Default, SharingStarted.WhileSubscribed(), allTorrents.value)
 
-    private val _refreshingManually = mutableStateOf(false)
-    val refreshingManually: State<Boolean> by ::_refreshingManually
+    val refreshingManually: State<Boolean>
+        field = mutableStateOf(false)
 
     fun refreshManually() {
-        _refreshingManually.value = true
+        refreshingManually.value = true
         viewModelScope.launch {
             refreshRequests.emit(Unit)
             PeriodicServerStateUpdater.sessionStateRefreshRequests.emit(Unit)
@@ -322,14 +322,14 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), FloatingActionButtonState.Disconnect)
 
-    private val _checkNotificationPermission = MutableStateFlow<Boolean?>(null)
-    val checkNotificationPermission: StateFlow<Boolean?> by ::_checkNotificationPermission
+    val checkNotificationPermission: StateFlow<Boolean?>
+        field = MutableStateFlow<Boolean?>(null)
 
     val showMergingTrackersMessage: MutableState<MergingTrackersMessage?> = mutableStateOf(null)
 
     init {
         viewModelScope.launch {
-            _checkNotificationPermission.value = if (Settings.userDismissedNotificationPermissionRequest.get()) {
+            checkNotificationPermission.value = if (Settings.userDismissedNotificationPermissionRequest.get()) {
                 false
             } else {
                 val notificationsSettings = listOf(
@@ -345,7 +345,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
     }
 
     fun onCheckedNotificationPermission() {
-        _checkNotificationPermission.value = false
+        checkNotificationPermission.value = false
     }
 
     fun onShownNotificationPermissionRequest() {

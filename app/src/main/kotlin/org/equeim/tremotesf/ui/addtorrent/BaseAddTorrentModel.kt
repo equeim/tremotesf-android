@@ -104,8 +104,8 @@ abstract class BaseAddTorrentModel(
         saver = SnapshotStateListSaver()
     ) { SnapshotStateList() }
 
-    private val _allLabels = mutableStateOf<List<String>>(emptyList())
-    val allLabels: State<List<String>> by ::_allLabels
+    val allLabels: State<List<String>>
+        field = mutableStateOf<List<String>>(emptyList())
 
     val shouldShowLabels: StateFlow<Boolean> = GlobalRpcClient.serverCapabilitiesFlow.map {
         it?.supportsLabels == true
@@ -121,7 +121,7 @@ abstract class BaseAddTorrentModel(
                 comparator = AlphanumericComparator(it)
                 if (alreadySetInitialState) {
                     allDownloadDirectories.sortWith(compareBy(comparator, DownloadDirectoryItem::directory))
-                    _allLabels.value = _allLabels.value.sortedWith(comparator)
+                    allLabels.value = allLabels.value.sortedWith(comparator)
                 }
             }
         }
@@ -152,7 +152,7 @@ abstract class BaseAddTorrentModel(
             allDownloadDirectories.clear()
             allDownloadDirectories.addAll(updated)
         }
-        _allLabels.value = initialRpcInputs.allLabels.sortedWith(comparator)
+        allLabels.value = initialRpcInputs.allLabels.sortedWith(comparator)
         alreadySetInitialState = true
     }
 
