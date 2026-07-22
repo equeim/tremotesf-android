@@ -75,7 +75,7 @@ abstract class Servers(
             if (changed) {
                 save()
             }
-        } catch (error: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             Timber.d("Servers file does not exist")
         } catch (error: IOException) {
             Timber.e(error, "Error reading servers file")

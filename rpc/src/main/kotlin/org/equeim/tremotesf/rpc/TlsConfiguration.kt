@@ -133,7 +133,7 @@ private fun createKeyManagerForClientCertificate(clientCertificates: List<Certif
         )
         KeyFactory.getInstance("RSA").generatePrivate(spec)
     } catch (e: Exception) {
-        throw RuntimeException("Failed to parse client certificate's private key")
+        throw RuntimeException("Failed to parse client certificate's private key", e)
     }
     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     keyStore.load(null, null)
