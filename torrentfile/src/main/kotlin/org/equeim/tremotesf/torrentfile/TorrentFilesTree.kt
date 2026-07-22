@@ -13,7 +13,6 @@ import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.collection.MutableScatterMap
 import androidx.core.os.BundleCompat
-import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -478,7 +477,7 @@ open class TorrentFilesTree(
 
     @MainThread
     private fun saveInstanceState(): Bundle {
-        return bundleOf("" to currentNode.path)
+        return Bundle().apply { putParcelable("", currentNode.path) }
     }
 
     @MainThread
