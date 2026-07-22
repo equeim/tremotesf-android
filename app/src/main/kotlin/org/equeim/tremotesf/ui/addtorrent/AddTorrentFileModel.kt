@@ -44,6 +44,7 @@ import org.equeim.tremotesf.torrentfile.TorrentFileParser
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.Settings
 import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileModel.LoadingState
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
 
 
@@ -329,7 +330,9 @@ class AddTorrentFileModelImpl(
         )
     }
 
-    private inner class FilesTree : TorrentFilesTree(viewModelScope) {
+    private inner class FilesTree : TorrentFilesTree(
+        parentScope = viewModelScope, localeChangedEvents = application.localeChangedEvents()
+    ) {
         override fun onFileRenamed(path: NodePath, originalNamePath: String, newName: String) {
             renamedFiles.add(RenamedFile(path, originalNamePath, newName))
         }

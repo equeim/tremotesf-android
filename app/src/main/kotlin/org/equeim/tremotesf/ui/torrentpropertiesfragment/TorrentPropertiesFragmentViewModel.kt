@@ -4,12 +4,13 @@
 
 package org.equeim.tremotesf.ui.torrentpropertiesfragment
 
+import android.app.Application
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
@@ -70,6 +71,7 @@ import org.equeim.tremotesf.rpc.requests.verifyTorrents
 import org.equeim.tremotesf.rpc.stateInRpcRequest
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.ui.Settings
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
 import java.time.Instant
 import kotlin.time.Duration
@@ -77,8 +79,9 @@ import kotlin.time.Duration.Companion.seconds
 
 class TorrentPropertiesFragmentViewModel(
     val torrentHashString: String,
-    private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
+    application: Application,
+    private val savedStateHandle: SavedStateHandle,
+) : AndroidViewModel(application) {
     private val detailsRefreshRequests =
         MutableSharedFlow<Unit>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val torrentDetails: StateFlow<RpcRequestState<TorrentDetails>> =
@@ -215,6 +218,7 @@ class TorrentPropertiesFragmentViewModel(
     val filesTree = RpcTorrentFilesTree(
         torrentHashString = torrentHashString,
         parentScope = viewModelScope,
+        localeChangedEvents = application.localeChangedEvents(),
         onTorrentRenamed = { detailsRefreshRequests.tryEmit(Unit) }
     )
 

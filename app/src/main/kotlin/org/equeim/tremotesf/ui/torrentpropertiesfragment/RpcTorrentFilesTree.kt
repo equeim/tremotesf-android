@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.BuildConfig
@@ -21,12 +22,14 @@ import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentFilesWanted
 import org.equeim.tremotesf.torrentfile.TorrentFilesTree
 import org.equeim.tremotesf.torrentfile.buildTorrentFilesTree
 import timber.log.Timber
+import java.util.Locale
 
 class RpcTorrentFilesTree(
     private val torrentHashString: String,
     parentScope: CoroutineScope,
+    localeChangedEvents: Flow<Locale>,
     private val onTorrentRenamed: () -> Unit
-) : TorrentFilesTree(parentScope) {
+) : TorrentFilesTree(parentScope = parentScope, localeChangedEvents = localeChangedEvents) {
     companion object {
         private fun Item.updatedFromIfNeeded(file: TorrentFiles.File, fileStats: TorrentFiles.FileStats): Item? {
             val newName = file.pathSegments.lastOrNull().orEmpty()
