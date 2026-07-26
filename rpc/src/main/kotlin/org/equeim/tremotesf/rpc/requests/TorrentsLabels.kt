@@ -1,6 +1,6 @@
 package org.equeim.tremotesf.rpc.requests
 
-// SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
+// SPDX-FileCopyrightText: 2017-2026 Alexey Rochev <equeim@gmail.com>
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 

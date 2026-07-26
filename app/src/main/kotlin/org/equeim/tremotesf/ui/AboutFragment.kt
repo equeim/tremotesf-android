@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017-2025 Alexey Rochev <equeim@gmail.com>
+// SPDX-FileCopyrightText: 2017-2026 Alexey Rochev <equeim@gmail.com>
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -144,7 +144,7 @@ private fun AboutTab(innerPadding: PaddingValues, showLicense: () -> Unit) {
         val linkStyles = TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.secondary))
         val text = buildAnnotatedString {
             withStyle(ParagraphStyle()) {
-                append("\u00A9 2017-2025 Alexey Rochev <")
+                append("\u00A9 2017-2026 Alexey Rochev <")
                 withLink(LinkAnnotation.Url(EMAIL_URL, linkStyles)) {
                     append(EMAIL)
                 }
