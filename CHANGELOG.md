@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+### Fixed
+- Crash when Transmission returns several peers with the same ip for a torrent
+- Torrents and files lists are now resorted when system locale changes
+
 ## [2.13.1] - 2026-01-16
 ### Fixed
 - Restoration of torrent adding parameters (download directory, etc) when adding torrent file
