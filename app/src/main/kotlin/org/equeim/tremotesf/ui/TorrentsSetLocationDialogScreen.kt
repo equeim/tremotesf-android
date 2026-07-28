@@ -1,0 +1,217 @@
+// SPDX-FileCopyrightText: 2017-2026 Alexey Rochev <equeim@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+package org.equeim.tremotesf.ui
+
+import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.serialization.saved
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation3.runtime.metadata
+import androidx.navigation3.scene.DialogSceneStrategy
+import androidx.navigation3.scene.DialogSceneStrategy.Companion.DialogKey
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import org.equeim.tremotesf.R
+import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.GlobalRpcClient
+import org.equeim.tremotesf.rpc.RpcRequestState
+import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
+import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
+import org.equeim.tremotesf.rpc.requests.getTorrentsDownloadDirectories
+import org.equeim.tremotesf.rpc.requests.serversettings.getDownloadingServerSettings
+import org.equeim.tremotesf.rpc.requests.torrentproperties.setTorrentsLocation
+import org.equeim.tremotesf.ui.components.DialogPadding
+import org.equeim.tremotesf.ui.components.DownloadDirectoryItem
+import org.equeim.tremotesf.ui.components.TremotesfAlertDialogContent
+import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
+import org.equeim.tremotesf.ui.components.TremotesfScreenContentWithPlaceholder
+import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
+import org.equeim.tremotesf.ui.components.getInitialAllDownloadDirectories
+import org.equeim.tremotesf.ui.components.rememberTremotesfInitialFocusRequester
+import org.equeim.tremotesf.ui.components.updateAllDownloadDirectories
+import org.equeim.tremotesf.ui.utils.SnapshotStateListSaver
+import org.equeim.tremotesf.ui.utils.localeChangedEvents
+import kotlinx.parcelize.Parcelize
+import java.util.Locale
+
+@Parcelize
+data class TorrentsSetLocationDialogDestination(
+    val torrentHashStrings: List<String>,
+    val location: String
+) : Destination {
+    @Composable
+    override fun Content(navController: NavController) {
+        val model = viewModel {
+            TorrentSetLocationDialogViewModel(
+                torrentsHashStrings = torrentHashStrings,
+                savedStateHandle = createSavedStateHandle(),
+                application = checkNotNull(get(ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY))
+            )
+        }
+        TorrentSetLocationDialogContent(
+            allDownloadDirectoriesRequest = model.allDownloadDirectoriesRequest.collectAsStateWithLifecycle(),
+            initialLocation = { location },
+            allDownloadDirectories = model.allDownloadDirectories,
+            setLocation = model::setLocation,
+            onDismissRequest = navController::popBackStack
+        )
+    }
+
+    override val metadata: Map<String, Any>
+        get() = metadata { put(DialogKey, DialogProperties()) }
+}
+
+@Composable
+private fun TorrentSetLocationDialogContent(
+    allDownloadDirectoriesRequest: State<RpcRequestState<Any>>,
+    initialLocation: () -> String,
+    allDownloadDirectories: SnapshotStateList<DownloadDirectoryItem>,
+    setLocation: (String, Boolean) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    var location: String by rememberSaveable { mutableStateOf(initialLocation()) }
+    var moveFiles: Boolean by rememberSaveable { mutableStateOf(false) }
+    val setLocationIfNotBlankAndDismiss = {
+        if (location.isNotBlank()) {
+            setLocation(location, moveFiles)
+            onDismissRequest()
+        }
+    }
+    TremotesfAlertDialogContent(
+        text = {
+            TremotesfScreenContentWithPlaceholder(
+                requestState = allDownloadDirectoriesRequest.value,
+                placeholdersModifier = Modifier.fillMaxWidth(),
+                content = {
+                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)) {
+                        val focusRequester = rememberTremotesfInitialFocusRequester()
+                        TremotesfDownloadDirectoryField(
+                            downloadDirectory = location,
+                            onDownloadDirectoryChanged = { location = it },
+                            allDownloadDirectories = allDownloadDirectories,
+                            removeDownloadDirectory = allDownloadDirectories::remove,
+                            label = R.string.location,
+                            imeAction = ImeAction.Done,
+                            keyboardActions = KeyboardActions { setLocationIfNotBlankAndDismiss() },
+                            modifier = Modifier.focusRequester(focusRequester).padding(horizontal = DialogPadding).fillMaxWidth()
+                        )
+                        TremotesfSwitchWithText(
+                            checked = moveFiles,
+                            onCheckedChange = { moveFiles = it },
+                            text = R.string.move_files,
+                            horizontalContentPadding = DialogPadding,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            )
+        },
+        applyHorizontalPaddingToText = false,
+        buttons = {
+            TextButton(onClick = onDismissRequest) { Text(stringResource(android.R.string.cancel)) }
+            if (allDownloadDirectoriesRequest.value is RpcRequestState.Loaded) {
+                TextButton(onClick = setLocationIfNotBlankAndDismiss, enabled = location.isNotBlank()) {
+                    Text(
+                        stringResource(android.R.string.ok)
+                    )
+                }
+            }
+        }
+    )
+}
+
+class TorrentSetLocationDialogViewModel(
+    private val torrentsHashStrings: List<String>,
+    savedStateHandle: SavedStateHandle,
+    application: Application
+) : ViewModel() {
+    @OptIn(SavedStateHandleSaveableApi::class)
+    val allDownloadDirectories by savedStateHandle.saveable<SnapshotStateList<DownloadDirectoryItem>>(
+        saver = SnapshotStateListSaver()
+    ) { SnapshotStateList() }
+
+    val allDownloadDirectoriesRequest: StateFlow<RpcRequestState<Any>> =
+        GlobalRpcClient.performRecoveringRequestIntoStateFlow(viewModelScope) {
+            coroutineScope {
+                val settings = async { getDownloadingServerSettings() }
+                val torrentsDownloadDirectories = async { getTorrentsDownloadDirectories() }
+                setInitialState(settings.await().downloadDirectory, torrentsDownloadDirectories.await())
+            }
+        }
+
+    private var comparator = AlphanumericComparator(Locale.getDefault())
+
+    private var alreadySetInitialState: Boolean by savedStateHandle.saved { false }
+
+    init {
+        viewModelScope.launch {
+            application.localeChangedEvents().collect {
+                comparator = AlphanumericComparator(it)
+                if (alreadySetInitialState) {
+                    allDownloadDirectories.sortWith(compareBy(comparator, DownloadDirectoryItem::directory))
+                }
+            }
+        }
+    }
+
+    private fun setInitialState(
+        downloadDirectoryFromServerSettings: NormalizedRpcPath,
+        torrentsDownloadDirectories: Set<NormalizedRpcPath>
+    ) {
+        if (!alreadySetInitialState) {
+            allDownloadDirectories.addAll(
+                getInitialAllDownloadDirectories(
+                    downloadDirectoryFromServerSettings = downloadDirectoryFromServerSettings,
+                    torrentsDownloadDirectories = torrentsDownloadDirectories,
+                    comparator = comparator
+                )
+            )
+            alreadySetInitialState = true
+        } else {
+            val updated = updateAllDownloadDirectories(
+                restoredAllDownloadDirectories = allDownloadDirectories,
+                downloadDirectoryFromServerSettings = downloadDirectoryFromServerSettings,
+                torrentsDownloadDirectories = torrentsDownloadDirectories,
+                comparator = comparator
+            )
+            allDownloadDirectories.clear()
+            allDownloadDirectories.addAll(updated)
+        }
+    }
+
+    fun setLocation(location: String, moveFiles: Boolean) {
+        GlobalRpcClient.performBackgroundRpcRequest(R.string.torrent_set_location_error) {
+            setTorrentsLocation(torrentsHashStrings, location, moveFiles)
+        }
+    }
+}

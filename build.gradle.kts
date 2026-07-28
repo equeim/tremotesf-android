@@ -5,7 +5,6 @@
 plugins {
     alias(libs.plugins.kotlin.plugin.compose) apply (false)
     alias(libs.plugins.kotlin.plugin.serialization) apply (false)
-    alias(libs.plugins.androidx.navigation) apply (false)
     alias(libs.plugins.tremotesf.common.settings) apply(false)
     alias(libs.plugins.deezer.caupain)
 }

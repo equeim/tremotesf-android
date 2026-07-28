@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.plugin.compose)
     alias(libs.plugins.kotlin.plugin.parcelize)
-    alias(libs.plugins.androidx.navigation)
     alias(libs.plugins.tremotesf.common.settings)
 }
 
@@ -91,12 +90,12 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.service)
-    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.window)
     implementation(libs.androidx.work.runtime)

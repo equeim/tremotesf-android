@@ -21,7 +21,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.equeim.tremotesf.TremotesfApplication
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
+import org.equeim.tremotesf.ui.torrentslist.TorrentsListScreenViewModel
 import timber.log.Timber
 import kotlin.reflect.KClass
 import kotlin.time.Duration
@@ -245,31 +245,31 @@ object Settings {
     val askForMergingTrackersWhenAddingExistingTorrent: Property<Boolean> =
         PrefsProperty(key = "askForMergingTrackersWhenAddingExistingTorrent", defaultValue = true)
 
-    val torrentsSortMode: Property<TorrentsListFragmentViewModel.SortMode> =
+    val torrentsSortMode: Property<TorrentsListScreenViewModel.SortMode> =
         PrefsProperty<Int>(key = "torrentsSortMode", defaultValue = -1).map(
             prefsToMapped = {
-                TorrentsListFragmentViewModel.SortMode.entries.getOrElse(it) {
-                    TorrentsListFragmentViewModel.SortMode.DEFAULT
+                TorrentsListScreenViewModel.SortMode.entries.getOrElse(it) {
+                    TorrentsListScreenViewModel.SortMode.DEFAULT
                 }
             },
             mappedToPrefs = { it.ordinal }
         )
 
-    val torrentsSortOrder: Property<TorrentsListFragmentViewModel.SortOrder> =
+    val torrentsSortOrder: Property<TorrentsListScreenViewModel.SortOrder> =
         PrefsProperty<Int>(key = "torrentsSortOrder", defaultValue = -1).map(
             prefsToMapped = {
-                TorrentsListFragmentViewModel.SortOrder.entries.getOrElse(it) {
-                    TorrentsListFragmentViewModel.SortOrder.DEFAULT
+                TorrentsListScreenViewModel.SortOrder.entries.getOrElse(it) {
+                    TorrentsListScreenViewModel.SortOrder.DEFAULT
                 }
             },
             mappedToPrefs = { it.ordinal }
         )
 
-    val torrentsStatusFilter: Property<TorrentsListFragmentViewModel.StatusFilterMode> =
+    val torrentsStatusFilter: Property<TorrentsListScreenViewModel.StatusFilterMode> =
         PrefsProperty<Int>(key = "torrentsStatusFilter", defaultValue = -1).map(
             prefsToMapped = {
-                TorrentsListFragmentViewModel.StatusFilterMode.entries.getOrElse(it) {
-                    TorrentsListFragmentViewModel.StatusFilterMode.DEFAULT
+                TorrentsListScreenViewModel.StatusFilterMode.entries.getOrElse(it) {
+                    TorrentsListScreenViewModel.StatusFilterMode.DEFAULT
                 }
             },
             mappedToPrefs = { it.ordinal }
