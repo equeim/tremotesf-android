@@ -7,11 +7,12 @@ package org.equeim.tremotesf.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Icon
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
-import androidx.navigation.NavDeepLinkBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
@@ -20,8 +21,10 @@ import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
 import org.equeim.tremotesf.rpc.getErrorString
 import org.equeim.tremotesf.rpc.requests.SessionStatsResponseArguments
+import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.Settings
-import org.equeim.tremotesf.ui.torrentpropertiesfragment.TorrentPropertiesFragmentArgs
+import org.equeim.tremotesf.ui.toInternalDeepLink
+import org.equeim.tremotesf.ui.torrentproperties.TorrentPropertiesDestination
 import org.equeim.tremotesf.ui.utils.FileSizeFormatter
 import org.equeim.tremotesf.ui.utils.localeChangedEvents
 import timber.log.Timber
@@ -114,11 +117,14 @@ class NotificationsController(private val context: Context, coroutineScope: Coro
                 .setContentTitle(context.getText(notificationTitle))
                 .setContentText(torrentName)
                 .setContentIntent(
-                    NavDeepLinkBuilder(context)
-                        .setGraph(R.navigation.nav_main)
-                        .setDestination(R.id.torrent_properties_fragment)
-                        .setArguments(TorrentPropertiesFragmentArgs(hashString).toBundle())
-                        .createPendingIntent()
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, NavigationActivity::class.java)
+                            .setData(TorrentPropertiesDestination(hashString).toInternalDeepLink())
+                            .setAction(Intent.ACTION_VIEW),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
                 )
                 .setAutoCancel(true)
                 .build()
@@ -133,10 +139,12 @@ class NotificationsController(private val context: Context, coroutineScope: Coro
             Notification.Builder(context, PERSISTENT_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentIntent(
-                    NavDeepLinkBuilder(context)
-                        .setGraph(R.navigation.nav_main)
-                        .setDestination(R.id.torrents_list_fragment)
-                        .createPendingIntent()
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(context, NavigationActivity::class.java),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
                 )
                 .setOngoing(true)
                 .setShowWhen(false)

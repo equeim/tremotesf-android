@@ -4,12 +4,15 @@
 
 package org.equeim.tremotesf.ui.addtorrent
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Parcelable
 import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -41,12 +44,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.get
-import androidx.navigation.NavController
 import kotlinx.parcelize.Parcelize
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.requests.torrentproperties.TorrentLimits
 import org.equeim.tremotesf.ui.Dimens
+import org.equeim.tremotesf.ui.NavController
+import org.equeim.tremotesf.ui.NavigationActivity
 import org.equeim.tremotesf.ui.ScreenPreview
 import org.equeim.tremotesf.ui.addtorrent.BaseAddTorrentModel.DownloadDirectoryFreeSpace
 import org.equeim.tremotesf.ui.components.DialogPadding
@@ -57,7 +62,8 @@ import org.equeim.tremotesf.ui.components.TremotesfDownloadDirectoryField
 import org.equeim.tremotesf.ui.components.TremotesfLabelsEditor
 import org.equeim.tremotesf.ui.components.TremotesfSectionHeader
 import org.equeim.tremotesf.ui.components.TremotesfSwitchWithText
-import org.equeim.tremotesf.ui.torrentslistfragment.TorrentsListFragmentViewModel
+import org.equeim.tremotesf.ui.torrentslist.TorrentsListDestination
+import org.equeim.tremotesf.ui.torrentslist.TorrentsListScreenViewModel
 import org.equeim.tremotesf.ui.utils.rememberFileSizeFormatter
 
 @Suppress("UnusedReceiverParameter")
@@ -175,13 +181,18 @@ sealed interface AddTorrentState : Parcelable {
 fun HandleFinishedAddTorrentState(
     state: State<AddTorrentState?>,
     navController: NavController,
-    activity: ComponentActivity
 ) {
     val state = state.value
     if (state is AddTorrentState.Finished) {
+        val owner = navController.viewModelStoreOwnerForDestinationOrNull<TorrentsListDestination>()
+        val activity = checkNotNull(LocalActivity.current) as ComponentActivity
         LaunchedEffect(null) {
             if (state.mergingTrackersMessage != null) {
-                showMergingTrackersMessageAfterAddingTorrent(navController, activity, state.mergingTrackersMessage)
+                showMergingTrackersMessageAfterAddingTorrent(
+                    message = state.mergingTrackersMessage,
+                    context = activity,
+                    torrentsListScreenViewModelStoreOwner = owner
+                )
             }
             activity.onBackPressedDispatcher.onBackPressed()
         }
@@ -189,18 +200,14 @@ fun HandleFinishedAddTorrentState(
 }
 
 private fun showMergingTrackersMessageAfterAddingTorrent(
-    navController: NavController,
+    message: MergingTrackersMessage,
     context: Context,
-    message: MergingTrackersMessage
+    torrentsListScreenViewModelStoreOwner: ViewModelStoreOwner?
 ) {
-    val torrentsListScreenViewModel = try {
-        ViewModelProvider.create(navController.getBackStackEntry(R.id.torrents_list_fragment))
-            .get<TorrentsListFragmentViewModel>()
-    } catch (_: IllegalArgumentException) {
-        null
-    }
-    if (torrentsListScreenViewModel != null) {
-        torrentsListScreenViewModel.showMergingTrackersMessage.value = message
+    if (torrentsListScreenViewModelStoreOwner != null) {
+        val viewModel =
+            ViewModelProvider.create(torrentsListScreenViewModelStoreOwner).get<TorrentsListScreenViewModel>()
+        viewModel.showMergingTrackersMessage.value = message
     } else {
         Toast.makeText(
             context,
@@ -364,5 +371,19 @@ private fun buildMultipleTorrentsListString(torrentNames: List<String>, isRtl: B
         if (index != torrentNames.lastIndex) {
             append('\n')
         }
+    }
+}
+
+fun NavController.popBackStackOrStartNewTask(activity: Activity) {
+    if (activity.isTaskRoot) {
+        popBackStack()
+    } else {
+        activity.startActivity(
+            Intent(
+                activity,
+                NavigationActivity::class.java
+            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        )
+        activity.finish()
     }
 }

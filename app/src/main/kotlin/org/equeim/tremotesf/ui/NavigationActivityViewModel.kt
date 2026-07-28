@@ -5,112 +5,114 @@
 package org.equeim.tremotesf.ui
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipDescription
 import android.content.Intent
-import android.os.Bundle
-import androidx.annotation.IdRes
+import android.net.Uri
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.mimeTypes
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.serialization.saved
-import androidx.navigation.NavDeepLinkBuilder
-import org.equeim.tremotesf.R
 import org.equeim.tremotesf.rpc.GlobalServers
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileFragmentArgs
-import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkFragmentArgs
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentFileDestination
+import org.equeim.tremotesf.ui.addtorrent.AddTorrentLinkDestination
 import org.equeim.tremotesf.ui.addtorrent.TORRENT_FILE_MIME_TYPE
 import org.equeim.tremotesf.ui.addtorrent.TORRENT_LINK_MIME_TYPES
 import org.equeim.tremotesf.ui.addtorrent.TorrentUri
 import org.equeim.tremotesf.ui.addtorrent.getTorrentUris
-import org.equeim.tremotesf.ui.addtorrent.mimeTypes
 import org.equeim.tremotesf.ui.addtorrent.toTorrentUri
+import org.equeim.tremotesf.ui.connectionsettings.ServerEditDestination
+import org.equeim.tremotesf.ui.torrentproperties.TorrentPropertiesDestination
+import org.equeim.tremotesf.ui.torrentslist.TorrentsListDestination
 import timber.log.Timber
 
-class NavigationActivityViewModel(application: Application, savedStateHandle: SavedStateHandle) :
-    AndroidViewModel(application) {
-    var navigatedInitially: Boolean by savedStateHandle.saved { false }
-
-    data class AddTorrentDirections(@param:IdRes val destinationId: Int, val arguments: Bundle)
-
-    fun getAddTorrentDirections(intent: Intent): AddTorrentDirections? {
-        if (intent.action != Intent.ACTION_VIEW) return null
-        return intent.data
-            ?.toTorrentUri(getApplication(), validateUri = false)
-            ?.let { getAddTorrentDirections(listOf(it)) }
+class NavigationActivityViewModel(application: Application) : AndroidViewModel(application) {
+    fun getInitialDestinations(intent: Intent, isTaskRoot: Boolean): List<Destination> {
+        Timber.d("getInitialDestinations() called with: intent = $intent, isTaskRoot = $isTaskRoot")
+        if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
+            val deepLinkDestination = getDeepLinkDestination(intent)
+            if (deepLinkDestination != null) {
+                return if (isTaskRoot) {
+                    listOf(TorrentsListDestination, deepLinkDestination)
+                } else {
+                    listOf(deepLinkDestination)
+                }
+            }
+        }
+        return if (GlobalServers.serversState.value.servers.isEmpty()) {
+            listOf(TorrentsListDestination, ServerEditDestination())
+        } else {
+            listOf(TorrentsListDestination)
+        }
     }
 
-    fun getInitialDeepLinkIntent(intent: Intent): Intent? {
-        if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
-            Timber.w("getInitialDeepLinkIntent: activity was launched from history, return null")
+    fun getDeepLinkDestination(intent: Intent): Destination? {
+        Timber.d("getDeepLinkDestination() called with: intent = $intent")
+        if (intent.action != Intent.ACTION_VIEW) {
+            Timber.d("getDeepLinkDestination: action is not VIEW")
             return null
         }
-
-        var deepLinkIntent: Intent? = getAddTorrentDirections(intent)?.run {
-            createDeepLinkIntent(
-                destinationId,
-                arguments,
-                intent
-            )
+        val uri = intent.data
+        if (uri == null) {
+            Timber.d("getDeepLinkDestination: data is null")
+            return null
         }
-        if (deepLinkIntent == null) {
-            if ((intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
-                if (GlobalServers.serversState.value.servers.isEmpty()) {
-                    deepLinkIntent = createDeepLinkIntent(R.id.server_edit_fragment, null, intent)
-                }
-            } else {
-                Timber.i("getInitialDeepLinkIntent: we are not on our own task, return null")
-            }
-        }
-        return deepLinkIntent
-    }
-
-    private fun createDeepLinkIntent(
-        @IdRes destinationId: Int,
-        arguments: Bundle?,
-        originalIntent: Intent,
-    ): Intent {
-        return NavDeepLinkBuilder(getApplication())
-            .setGraph(R.navigation.nav_main)
-            .setDestination(destinationId)
-            .setArguments(arguments)
-            .createTaskStackBuilder()
-            .intents
-            .single()
-            .apply {
-                // Restore original intent's flags
-                flags = originalIntent.flags
-                // Prevent NavController from recreating activity if its intent doesn't have FLAG_ACTIVITY_CLEAR_TASK
-                if ((flags and Intent.FLAG_ACTIVITY_NEW_TASK) != 0 && (flags and Intent.FLAG_ACTIVITY_CLEAR_TASK) == 0) {
-                    Timber.w("createDeepLinkIntent: add FLAG_ACTIVITY_CLEAR_TASK")
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                }
+        Timber.d("getDeepLinkDestination: data = $uri")
+        return uri.parseAsInternalDeepLink()
+            ?: uri.toTorrentUri(getApplication(), validateUri = false)?.let {
+                getAddTorrentDestination(listOf(it))
             }
     }
 
-    fun acceptDragStartEvent(clipDescription: ClipDescription): Boolean {
-        Timber.i("Drag start event mime types = ${clipDescription.mimeTypes()}")
-        return clipDescription.hasMimeType(TORRENT_FILE_MIME_TYPE) ||
-                TORRENT_LINK_MIME_TYPES.any(clipDescription::hasMimeType)
+    fun shouldStartDragAndDrop(startEvent: DragAndDropEvent): Boolean {
+        val mimeTypes = startEvent.mimeTypes()
+        Timber.i("Received shouldStartDragAndDrop event, mime types = $mimeTypes")
+        val ok = mimeTypes.contains(TORRENT_FILE_MIME_TYPE) || TORRENT_LINK_MIME_TYPES.any(mimeTypes::contains)
+        if (ok) {
+            Timber.i("Accepting shouldStartDragAndDrop event")
+        } else {
+            Timber.i("Rejecting shouldStartDragAndDrop event")
+        }
+        return ok
     }
 
-    fun getAddTorrentDirections(clipData: ClipData): AddTorrentDirections? {
-        return getAddTorrentDirections(clipData.getTorrentUris(getApplication()))
+    fun getAddTorrentDestination(event: DragAndDropEvent): Destination? {
+        return getAddTorrentDestination(event.toAndroidDragEvent().clipData.getTorrentUris(getApplication()))
     }
 
-    private fun getAddTorrentDirections(uris: List<TorrentUri>): AddTorrentDirections? {
+    private fun getAddTorrentDestination(uris: List<TorrentUri>): Destination? {
         if (uris.isEmpty()) return null
         val firstUri = uris.first()
         return when (firstUri.type) {
-            TorrentUri.Type.File -> AddTorrentDirections(
-                R.id.add_torrent_file_fragment,
-                AddTorrentFileFragmentArgs(firstUri.uri).toBundle()
-            )
-            TorrentUri.Type.Link -> AddTorrentDirections(
-                R.id.add_torrent_link_fragment,
-                AddTorrentLinkFragmentArgs(
-                    uris.mapNotNull { it.takeIf { it.type == TorrentUri.Type.Link }?.uri }.toTypedArray()
-                ).toBundle()
+            TorrentUri.Type.File -> AddTorrentFileDestination(uri = firstUri.uri)
+            TorrentUri.Type.Link -> AddTorrentLinkDestination(
+                uris = uris.mapNotNull { it.takeIf { it.type == TorrentUri.Type.Link }?.uri }
             )
         }
     }
 }
+
+fun Destination.toInternalDeepLink(): Uri {
+    val builder = Uri.Builder().scheme(INTERNAL_DEEP_LINK_SCHEME).authority(INTERNAL_DEEP_LINK_AUTHORITY)
+    when (this) {
+        is TorrentPropertiesDestination ->
+            builder.appendPath(TORRENT_PROPERTIES_PATH)
+                .appendPath(torrentHashString)
+
+        else -> throw IllegalArgumentException("Destination $this can't be used in internal deep link")
+    }
+    return builder.build()
+}
+
+fun Uri.parseAsInternalDeepLink(): Destination? {
+    if (scheme != INTERNAL_DEEP_LINK_SCHEME) return null
+    if (authority != INTERNAL_DEEP_LINK_AUTHORITY) return null
+    val pathSegments = this.pathSegments
+    if (pathSegments.getOrNull(0) != TORRENT_PROPERTIES_PATH) return null
+    val torrentHashString = pathSegments.getOrNull(1) ?: return null
+    return TorrentPropertiesDestination(torrentHashString).also {
+        Timber.d("Parsed $this as $it")
+    }
+}
+
+private const val INTERNAL_DEEP_LINK_SCHEME = "tremotesf"
+private const val INTERNAL_DEEP_LINK_AUTHORITY = "org.equeim.tremotesf"
+private const val TORRENT_PROPERTIES_PATH = "torrentProperties"

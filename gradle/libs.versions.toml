@@ -19,9 +19,8 @@ androidx-annotation = "1.10.0"
 androidx-collection = "1.6.0"
 androidx-compose = "2026.06.01"
 androidx-core = "1.19.0"
-androidx-fragment = "1.8.9"
 androidx-lifecycle = "2.11.0"
-androidx-navigation = "2.9.8"
+androidx-navigation3 = "1.1.5"
 androidx-webkit = "1.16.0"
 androidx-window = "1.5.1"
 androidx-work = "2.11.2"
@@ -61,12 +60,12 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
-androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "androidx-navigation" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidx-navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "androidx-webkit" }
 androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
@@ -92,6 +91,5 @@ android-library = { id = "com.android.library" }
 kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
 kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-androidx-navigation = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
 deezer-caupain = { id = "com.deezer.caupain", version.ref = "deezer-caupain" }
 tremotesf-common-settings = { id = "org.equeim.tremotesf.common-settings" }

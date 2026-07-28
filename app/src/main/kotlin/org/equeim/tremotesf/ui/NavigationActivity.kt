@@ -10,34 +10,35 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.view.DragEvent
-import android.view.LayoutInflater
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.AnimatorRes
-import androidx.annotation.IdRes
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.PredictiveBackControl
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.DialogSceneStrategy
+import androidx.navigation3.scene.SinglePaneSceneStrategy
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.defaultPopTransitionSpec
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.equeim.tremotesf.R
-import org.equeim.tremotesf.databinding.NavigationActivityBinding
 import org.equeim.tremotesf.service.ForegroundService
-import org.equeim.tremotesf.ui.utils.hideKeyboard
+import org.equeim.tremotesf.ui.torrentslist.TorrentsListDestination
 import timber.log.Timber
 
 
-class NavigationActivity : FragmentActivity() {
+class NavigationActivity : ComponentActivity() {
     companion object {
         private val createdActivities = mutableListOf<NavigationActivity>()
 
@@ -56,9 +57,7 @@ class NavigationActivity : FragmentActivity() {
 
     private val model by viewModels<NavigationActivityViewModel>()
 
-    private lateinit var binding: NavigationActivityBinding
-
-    private lateinit var navController: NavController
+    private val deepLinkDestinations = Channel<Destination>(Channel.CONFLATED)
 
     private lateinit var initialDarkThemeMode: Settings.DarkThemeMode
 
@@ -88,10 +87,6 @@ class NavigationActivity : FragmentActivity() {
         Timber.i("onCreate() called with: savedInstanceState = $savedInstanceState")
         Timber.i("onCreate: intent = $intent")
 
-        // https://issuetracker.google.com/issues/342919181
-        @OptIn(PredictiveBackControl::class)
-        FragmentManager.enablePredictiveBack(false)
-
         super.onCreate(savedInstanceState)
         createdActivities.add(this)
         AppForegroundTracker.registerActivity(this)
@@ -99,17 +94,71 @@ class NavigationActivity : FragmentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         Timber.d("Night mode is ${resources.configuration.nightModeString()}")
 
-        overrideIntentWithDeepLink()
+        val initialDestinations = model.getInitialDestinations(intent, isTaskRoot)
+        Timber.d("Initial destinations = $initialDestinations")
+        setContent {
+            ApplicationTheme {
+                val viewModelStoreDecorator =
+                    rememberExtendedViewModelStoreNavEntryDecorator<NavController.BackStackEntry>()
+                val navController = rememberNavController(
+                    initialDestinations = initialDestinations,
+                    viewModelStoreDecorator = viewModelStoreDecorator
+                )
 
-        binding = NavigationActivityBinding.inflate(LayoutInflater.from(this))
-        setContentView(binding.root)
+                LaunchedEffect(Unit) {
+                    for (destination in deepLinkDestinations) {
+                        navController.apply {
+                            if (isTaskRoot) {
+                                popUpTo<TorrentsListDestination>()
+                                navigateTo(destination)
+                            } else {
+                                resetFirstDestination(destination)
+                            }
+                        }
+                    }
+                }
 
-        navController =
-            (supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment).navController
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            hideKeyboard()
+                NavDisplay(
+                    backStack = navController.backStack,
+                    onBack = navController::popBackStack,
+                    sceneStrategies = listOf(DialogSceneStrategy(), SinglePaneSceneStrategy()),
+                    entryProvider = { key ->
+                        NavEntry(
+                            key = key,
+                            contentKey = key.contentKey,
+                            metadata = key.destination.metadata
+                        ) { key.destination.Content(navController) }
+                    },
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        viewModelStoreDecorator
+                    ),
+                    // Use the same animation as when navigation back though button on the toolbar to get rid of ugly scaling animation
+                    // We need to do it like that because predictivePopTransitionSpec takes a parameter which we want to ignore
+                    predictivePopTransitionSpec = defaultPopTransitionSpec<NavController.BackStackEntry>()
+                        .let { popSpec -> { popSpec() } },
+                    modifier = Modifier.dragAndDropTarget(
+                        shouldStartDragAndDrop = model::shouldStartDragAndDrop,
+                        target = object : DragAndDropTarget {
+                            override fun onDrop(event: DragAndDropEvent): Boolean {
+                                Timber.i("Received onDrop event")
+                                val permissions = requestDragAndDropPermissions(event.toAndroidDragEvent())
+                                val destination = model.getAddTorrentDestination(event)
+                                return if (destination != null) {
+                                    deepLinkDestinations.trySend(destination)
+                                    Timber.i("Accepting onDrop event")
+                                    true
+                                } else {
+                                    Timber.i("Rejecting onDrop event")
+                                    permissions?.release()
+                                    false
+                                }
+                            }
+                        }
+                    )
+                )
+            }
         }
-        handleDropEvents()
 
         ForegroundService.startStopAutomatically()
 
@@ -129,7 +178,7 @@ class NavigationActivity : FragmentActivity() {
         super.onConfigurationChanged(newConfig)
         Timber.d("onConfigurationChanged: night mode is ${newConfig.nightModeString()}")
         // These properties are set by Activity once on creation, so we need to update them ourselves on configuration change
-        WindowInsetsControllerCompat(window, binding.root).apply {
+        WindowInsetsControllerCompat(window, findViewById(android.R.id.content)).apply {
             val isLight = resources.getBoolean(R.bool.is_light_theme)
             isAppearanceLightStatusBars = isLight
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -140,52 +189,6 @@ class NavigationActivity : FragmentActivity() {
                 isAppearanceLightNavigationBars = isLight
             }
             window.setBackgroundDrawableResource(R.color.window_background)
-        }
-    }
-
-    private fun overrideIntentWithDeepLink() {
-        if (model.navigatedInitially) return
-        model.navigatedInitially = true
-
-        val intent = model.getInitialDeepLinkIntent(intent) ?: return
-        Timber.i("overrideIntentWithDeepLink: intent = $intent")
-        this.intent = intent
-    }
-
-    private fun handleDropEvents() {
-        binding.root.setOnDragListener { _, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    Timber.d("Handling drag start event")
-                    model.acceptDragStartEvent(event.clipDescription)
-                }
-
-                DragEvent.ACTION_DROP -> {
-                    Timber.d("Handling drop event")
-                    val directions = model.getAddTorrentDirections(event.clipData)
-                    if (directions != null) {
-                        requestDragAndDropPermissions(event)
-                        navController.navigate(
-                            directions.destinationId,
-                            directions.arguments,
-                            NavOptions.Builder()
-                                .setPopUpTo(navController.graph.startDestinationId, false)
-                                .build()
-                        )
-                    }
-                    directions != null
-                }
-                /**
-                 * Don't enter [also] branch to avoid log spam
-                 */
-                else -> return@setOnDragListener false
-            }.also {
-                if (it) {
-                    Timber.d("Accepting event")
-                } else {
-                    Timber.d("Rejecting event")
-                }
-            }
         }
     }
 
@@ -208,67 +211,6 @@ class NavigationActivity : FragmentActivity() {
     override fun onNewIntent(intent: Intent) {
         Timber.i("onNewIntent() called with: intent = $intent")
         super.onNewIntent(intent)
-        model.getAddTorrentDirections(intent)?.let { (destinationId, arguments) ->
-            navController.navigate(
-                destinationId,
-                arguments,
-                NavOptions.Builder()
-                    .setPopUpTo(navController.graph.startDestinationId, false)
-                    .build()
-            )
-        }
-    }
-}
-
-class NavHostFragment : NavHostFragment() {
-    override fun onCreateNavHostController(navHostController: NavHostController) {
-        super.onCreateNavHostController(navHostController)
-        navHostController.addOnDestinationChangedListener { _, destination, _ ->
-            Timber.i("Destination changed: destination = $destination")
-        }
-    }
-
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun createFragmentNavigator(): Navigator<out androidx.navigation.fragment.FragmentNavigator.Destination> {
-        return FragmentNavigator(requireContext(), childFragmentManager, id)
-    }
-
-    // NavController doesn't set any pop animations when handling deep links
-    // Use this workaround to always set pop animations
-    @Navigator.Name("fragment")
-    class FragmentNavigator(
-        context: Context,
-        fragmentManager: FragmentManager,
-        @IdRes containerId: Int,
-    ) : androidx.navigation.fragment.FragmentNavigator(context, fragmentManager, containerId) {
-        override fun navigate(
-            entries: List<NavBackStackEntry>,
-            navOptions: NavOptions?,
-            navigatorExtras: Navigator.Extras?,
-        ) = super.navigate(entries, navOptions?.overridePopAnimations(), navigatorExtras)
-
-        override fun navigate(
-            destination: Destination,
-            args: Bundle?,
-            navOptions: NavOptions?,
-            navigatorExtras: Navigator.Extras?,
-        ) = super.navigate(destination, args, navOptions?.overridePopAnimations(), navigatorExtras)
-
-        private fun NavOptions.overridePopAnimations() =
-            NavOptions.Builder()
-                .apply {
-                    setPopEnterAnim(popEnterAnim.orDefault(R.animator.nav_default_pop_enter_anim))
-                    setPopExitAnim(popExitAnim.orDefault(R.animator.nav_default_pop_exit_anim))
-                    setEnterAnim(enterAnim)
-                    setExitAnim(exitAnim)
-                    setLaunchSingleTop(shouldLaunchSingleTop())
-                    setPopUpTo(popUpToId, isPopUpToInclusive())
-                }
-                .build()
-
-        private companion object {
-            fun Int.orDefault(@AnimatorRes defaultAnimator: Int): Int =
-                if (this != -1) this else defaultAnimator
-        }
+        model.getDeepLinkDestination(intent)?.let(deepLinkDestinations::trySend)
     }
 }
