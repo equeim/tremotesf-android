@@ -849,7 +849,7 @@ private fun ServerCertificatesScreen(
     loadClientCertificateFromFile: (Uri) -> Unit,
 ) {
     Scaffold(topBar = {
-        TremotesfTopAppBar(stringResource(R.string.proxy_settings), navigateUp)
+        TremotesfTopAppBar(stringResource(R.string.certificates), navigateUp)
     }) { innerPadding ->
         Column(
             Modifier
