@@ -128,7 +128,7 @@ private fun ServerSettingsQueueScreen(
         TremotesfSwitchWithText(
             checked = seedQueueEnabled.value,
             text = R.string.maximum_active_uploads,
-            onCheckedChange = downloadQueueEnabled::update,
+            onCheckedChange = seedQueueEnabled::update,
             modifier = Modifier.fillMaxWidth(),
             horizontalContentPadding = horizontalPadding
         )
