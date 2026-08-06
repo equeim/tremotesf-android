@@ -130,6 +130,7 @@ class ServerEditFragment : ComposeFragment() {
             name = model.name,
             address = model.address,
             port = model.port,
+            useIPv4Only = model.useIPv4Only,
             httpsEnabled = model.httpsEnabled,
             apiPath = model.apiPath,
             authentication = model.authentication,
@@ -158,6 +159,7 @@ private fun ServerEditScreen(
     name: MutableState<String>,
     address: MutableState<String>,
     port: TremotesfIntegerNumberInputFieldState,
+    useIPv4Only: MutableState<Boolean>,
     httpsEnabled: MutableState<Boolean>,
     apiPath: MutableState<String>,
     authentication: MutableState<Boolean>,
@@ -327,6 +329,14 @@ private fun ServerEditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding)
+            )
+
+            TremotesfSwitchWithText(
+                checked = useIPv4Only.value,
+                text = R.string.use_ipv4_only,
+                onCheckedChange = useIPv4Only::value::set,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalContentPadding = horizontalPadding
             )
 
             TremotesfSwitchWithText(
@@ -642,6 +652,7 @@ private fun ServerEditScreenPreview() = ScreenPreview {
         name = remember { mutableStateOf("hmm") },
         address = remember { mutableStateOf("4.2.4.2") },
         port = rememberTremotesfIntegerNumberInputFieldState(42),
+        useIPv4Only = remember { mutableStateOf(false) },
         httpsEnabled = remember { mutableStateOf(false) },
         apiPath = remember { mutableStateOf("/lol") },
         authentication = remember { mutableStateOf(false) },
@@ -679,6 +690,7 @@ class ServerEditFragmentViewModel(
     val port by savedStateHandle.saveable(saver = TremotesfIntegerNumberInputFieldState.Saver()) {
         TremotesfIntegerNumberInputFieldState((editingServer.port).toLong())
     }
+    val useIPv4Only by savedStateHandle.saveable<MutableState<Boolean>> { mutableStateOf(editingServer.useIPv4Only) }
     val httpsEnabled by savedStateHandle.saveable<MutableState<Boolean>> { mutableStateOf(editingServer.httpsEnabled) }
     val apiPath by savedStateHandle.saveable<MutableState<String>> { mutableStateOf(editingServer.apiPath) }
     val authentication by savedStateHandle.saveable<MutableState<Boolean>> { mutableStateOf(editingServer.authentication) }
@@ -782,6 +794,7 @@ class ServerEditFragmentViewModel(
             proxyUser = proxyUser.value.trim(),
             proxyPassword = proxyPassword.value.trim(),
 
+            useIPv4Only = useIPv4Only.value,
             httpsEnabled = httpsEnabled.value,
             selfSignedCertificateEnabled = selfSignedCertificateEnabled.value,
             selfSignedCertificate = selfSignedCertificate.value.trim(),

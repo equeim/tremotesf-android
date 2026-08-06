@@ -565,4 +565,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
     <string name="sort_order">Sort order:</string>
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
+
+    <string name="use_ipv4_only">Use IPv4 only</string>
 </resources>

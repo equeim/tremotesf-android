@@ -52,6 +52,8 @@ data class Server(
     @SerialName("proxyPassword")
     val proxyPassword: String = "",
 
+    @SerialName("useIPv4Only")
+    val useIPv4Only: Boolean = false,
     @SerialName("httpsEnabled")
     val httpsEnabled: Boolean = false,
     @SerialName("selfSignedCertificateEnabled")

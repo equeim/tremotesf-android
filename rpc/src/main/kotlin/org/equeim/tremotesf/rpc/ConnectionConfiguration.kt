@@ -40,6 +40,7 @@ internal fun createConnectionConfiguration(server: Server, retryOnConnectionFail
                 InetSocketAddress.createUnresolved(server.proxyHostname, server.proxyPort)
             )
         })
+        .dns(DnsFilter(server.useIPv4Only))
     var clientCertificates: List<Certificate> = emptyList()
     val clientCertificate = if (server.clientCertificateEnabled) server.clientCertificate.takeIf { it.isNotBlank() } else null
     val serverCertificate = if (server.selfSignedCertificateEnabled) server.selfSignedCertificate.takeIf { it.isNotBlank() } else null
