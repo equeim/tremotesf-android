@@ -166,7 +166,6 @@ class AddTorrentFileModelImpl(
             infoHashV1 = parseResult.infoHashV1
             trackers = parseResult.trackers
 
-            checkIfTorrentExists()
             if (checkIfTorrentExists()) {
                 return@withContext LoadingState.Aborted
             }
