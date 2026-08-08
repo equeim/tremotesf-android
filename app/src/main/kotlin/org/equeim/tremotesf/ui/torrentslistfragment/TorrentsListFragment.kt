@@ -412,7 +412,7 @@ private fun ShowNotificationPermissionSnackbar(
     var showSnackbar: Boolean by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(notificationPermissionHelperState, checkNotificationPermission) {
         if (checkNotificationPermission.filterNotNull()
-                .first() && notificationPermissionHelperState.permissionGranted
+                .first() && !notificationPermissionHelperState.permissionGranted
         ) {
             onCheckedNotificationPermission()
             showSnackbar = true
