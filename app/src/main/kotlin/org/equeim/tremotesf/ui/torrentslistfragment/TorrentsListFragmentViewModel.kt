@@ -356,16 +356,16 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
 
     val torrentOperations: TorrentsOperations = object : TorrentsOperations {
         override fun start(ids: Set<Int>) =
-            performRequestAndRefresh(R.string.torrents_reannounce_error) { startTorrents(ids) }
+            performRequestAndRefresh(R.string.torrents_start_error) { startTorrents(ids) }
 
         override fun startNow(ids: Set<Int>) =
-            performRequestAndRefresh(R.string.torrents_reannounce_error) { startTorrentsNow(ids) }
+            performRequestAndRefresh(R.string.torrents_start_error) { startTorrentsNow(ids) }
 
         override fun stop(ids: Set<Int>) =
-            performRequestAndRefresh(R.string.torrents_reannounce_error) { stopTorrents(ids) }
+            performRequestAndRefresh(R.string.torrents_pause_error) { stopTorrents(ids) }
 
         override fun verify(ids: Set<Int>) =
-            performRequestAndRefresh(R.string.torrents_reannounce_error) { verifyTorrents(ids) }
+            performRequestAndRefresh(R.string.torrents_check_error) { verifyTorrents(ids) }
 
         override fun reannounce(ids: Set<Int>) =
             performRequestAndRefresh(R.string.torrents_reannounce_error) { reannounceTorrents(ids) }
