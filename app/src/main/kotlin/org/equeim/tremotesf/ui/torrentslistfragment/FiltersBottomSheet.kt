@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.rpc.toNativeSeparators
 import org.equeim.tremotesf.ui.ComponentPreview
@@ -176,16 +177,22 @@ private fun FiltersBottomSheetContent(
         )
 
         if (labelsEnabled.value) {
+            val currentLabelFilterString by sortAndFilterSettings.labelFilter.collectAsStateWithLifecycle()
+            val currentLabelFilter = remember {
+                derivedStateOf {
+                    calculatedFilters.labels.find { it.label == currentLabelFilterString }
+                        ?: CalculatedFilters.LabelFilter(currentLabelFilterString, 0)
+                }
+            }
             TremotesfComboBox(
-                currentItem = sortAndFilterSettings.labelFilter.collectAsStateWithLifecycle()::value,
-                updateCurrentItem = sortAndFilterSettings::setLabelFilter,
-                items = calculatedFilters.sortedLabels,
+                currentItem = currentLabelFilter::value,
+                updateCurrentItem = { sortAndFilterSettings.setLabelFilter(it.label) },
+                items = calculatedFilters.labels,
                 itemDisplayString = {
-                    val count = calculatedFilters.labelsCounts.getOrDefault(it, 0)
-                    if (it.isEmpty()) {
-                        stringResource(R.string.torrents_all, count)
+                    if (it.label == "") {
+                        stringResource(R.string.torrents_all, it.torrentsCount)
                     } else {
-                        stringResource(R.string.directories_spinner_text, it, count)
+                        stringResource(R.string.directories_spinner_text, it.label, it.torrentsCount)
                     }
                 },
                 label = R.string.labels,
@@ -193,32 +200,47 @@ private fun FiltersBottomSheetContent(
             )
         }
 
+        val currentTrackerFilterString by sortAndFilterSettings.trackerFilter.collectAsStateWithLifecycle()
+        val currentTrackerFilter = remember {
+            derivedStateOf {
+                calculatedFilters.trackers.find { it.trackerSite == currentTrackerFilterString }
+                    ?: CalculatedFilters.TrackerFilter(currentTrackerFilterString, 0)
+            }
+        }
         TremotesfComboBox(
-            currentItem = sortAndFilterSettings.trackerFilter.collectAsStateWithLifecycle()::value,
-            updateCurrentItem = sortAndFilterSettings::setTrackerFilter,
-            items = calculatedFilters.sortedTrackers,
+            currentItem = currentTrackerFilter::value,
+            updateCurrentItem = { sortAndFilterSettings.setTrackerFilter(it.trackerSite) },
+            items = calculatedFilters.trackers,
             itemDisplayString = {
-                val count = calculatedFilters.trackersCounts.getOrDefault(it, 0)
-                if (it.isEmpty()) {
-                    stringResource(R.string.torrents_all, count)
+                if (it.trackerSite.isEmpty()) {
+                    stringResource(R.string.torrents_all, it.torrentsCount)
                 } else {
-                    stringResource(R.string.trackers_spinner_text, it, count)
+                    stringResource(R.string.trackers_spinner_text, it.trackerSite, it.torrentsCount)
                 }
             },
             label = R.string.trackers,
             modifier = Modifier.fillMaxWidth()
         )
 
+        val currentDirectoryFilterString by sortAndFilterSettings.directoryFilter.collectAsStateWithLifecycle()
+        val currentDirectoryFilter = remember {
+            derivedStateOf {
+                calculatedFilters.directories.find { it.directory == currentDirectoryFilterString }
+                    ?: CalculatedFilters.DirectoryFilter(
+                        directory = currentDirectoryFilterString,
+                        torrentsCount = 0
+                    )
+            }
+        }
         TremotesfComboBox(
-            currentItem = sortAndFilterSettings.directoryFilter.collectAsStateWithLifecycle()::value,
-            updateCurrentItem = sortAndFilterSettings::setDirectoryFilter,
-            items = calculatedFilters.sortedDirectories,
+            currentItem = currentDirectoryFilter::value,
+            updateCurrentItem = { sortAndFilterSettings.setDirectoryFilter(it.directory) },
+            items = calculatedFilters.directories,
             itemDisplayString = {
-                val count = calculatedFilters.directoriesCounts.getOrDefault(it, 0)
-                if (it.isEmpty()) {
-                    stringResource(R.string.torrents_all, count)
+                if (it.directory.isEmpty()) {
+                    stringResource(R.string.torrents_all, it.torrentsCount)
                 } else {
-                    stringResource(R.string.directories_spinner_text, it, count)
+                    stringResource(R.string.directories_spinner_text, it.directory, it.torrentsCount)
                 }
             },
             label = R.string.directories,
@@ -265,13 +287,14 @@ private fun SortOrderButtons(
 
 private data class CalculatedFilters(
     val statusFilterModesCounts: Map<StatusFilterMode, Int>,
-    val sortedLabels: List<String>,
-    val labelsCounts: Map<String, Int>,
-    val sortedTrackers: List<String>,
-    val trackersCounts: Map<String, Int>,
-    val sortedDirectories: List<String>,
-    val directoriesCounts: Map<String, Int>
-)
+    val labels: List<LabelFilter>,
+    val trackers: List<TrackerFilter>,
+    val directories: List<DirectoryFilter>
+) {
+    data class LabelFilter(val label: String, val torrentsCount: Int)
+    data class TrackerFilter(val trackerSite: String, val torrentsCount: Int)
+    data class DirectoryFilter(val directory: String, val torrentsCount: Int)
+}
 
 private fun calculateFilters(
     torrents: List<Torrent>,
@@ -280,12 +303,12 @@ private fun calculateFilters(
 ): CalculatedFilters {
     val modes = mutableMapOf(StatusFilterMode.All to torrents.size)
     val labels = if (labelsEnabled) {
-        mutableMapOf("" to torrents.size)
+        sortedMapOf(comparator, "" to torrents.size)
     } else {
         null
     }
-    val trackers = mutableMapOf("" to torrents.size)
-    val directories = mutableMapOf("" to torrents.size)
+    val trackers = sortedMapOf(comparator, "" to torrents.size)
+    val directories = sortedMapOf(nullsFirst(compareBy(comparator, NormalizedRpcPath::value)), null to torrents.size)
     for (torrent in torrents) {
         for (mode in STATUS_FILTER_MODES_WITHOUT_ALL) {
             if (statusFilterAcceptsTorrent(torrent, mode)) {
@@ -300,21 +323,23 @@ private fun calculateFilters(
         for (tracker in torrent.trackerSites) {
             trackers.compute(tracker, IncrementCount)
         }
-        directories.compute(torrent.downloadDirectory.toNativeSeparators(), IncrementCount)
+        directories.compute(torrent.downloadDirectory, IncrementCount)
     }
     return CalculatedFilters(
         statusFilterModesCounts = modes,
-        sortedLabels = labels?.keys?.sortedWith(comparator) ?: emptyList(),
-        labelsCounts = labels ?: emptyMap(),
-        sortedTrackers = trackers.keys.sortedWith(comparator),
-        trackersCounts = trackers,
-        sortedDirectories = directories.keys.sortedWith(comparator),
-        directoriesCounts = directories
+        labels = labels?.map { CalculatedFilters.LabelFilter(it.key, it.value) }.orEmpty(),
+        trackers = trackers.map { CalculatedFilters.TrackerFilter(it.key, it.value) },
+        directories = directories.map {
+            CalculatedFilters.DirectoryFilter(
+                directory = it.key?.toNativeSeparators().orEmpty(),
+                torrentsCount = it.value
+            )
+        }
     )
 }
 
-private object IncrementCount : BiFunction<Any, Int?, Int> {
-    override fun apply(key: Any, count: Int?): Int {
+private object IncrementCount : BiFunction<Any?, Int?, Int> {
+    override fun apply(key: Any?, count: Int?): Int {
         return (count ?: 0) + 1
     }
 }
