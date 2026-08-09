@@ -21,15 +21,12 @@ fun NormalizedRpcPath.toNativeSeparators(): String =
 
 @JvmName("normalizePathImpl")
 private fun normalizePath(path: String, serverCapabilities: ServerCapabilities?): NormalizedRpcPath {
-    //Timber.d("Normalizing path $path")
     if (path.isEmpty()) {
-        //Timber.d("Empty")
-        return NormalizedRpcPath(path, null)
+        return NormalizedRpcPath.EMPTY
     }
     var normalized = path.trim()
     if (normalized.isEmpty()) {
-        //Timber.d("Blank")
-        return NormalizedRpcPath(normalized, null)
+        return NormalizedRpcPath.EMPTY
     }
     if (serverCapabilities == null) {
         return NormalizedRpcPath(normalized, null)
@@ -41,7 +38,6 @@ private fun normalizePath(path: String, serverCapabilities: ServerCapabilities?)
         }
     }
     normalized = normalized.collapseRepeatingSeparators(serverCapabilities).dropTrailingSeparator(serverCapabilities)
-    //Timber.d("Normalized to $normalized")
     return NormalizedRpcPath(normalized, serverCapabilities.serverOs)
 }
 

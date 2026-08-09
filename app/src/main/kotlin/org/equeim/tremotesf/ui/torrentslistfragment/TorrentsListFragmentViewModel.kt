@@ -47,8 +47,10 @@ import org.equeim.tremotesf.rpc.RpcClient
 import org.equeim.tremotesf.rpc.RpcRequestError
 import org.equeim.tremotesf.rpc.RpcRequestState
 import org.equeim.tremotesf.rpc.Server
+import org.equeim.tremotesf.rpc.normalizePath
 import org.equeim.tremotesf.rpc.performPeriodicRequest
 import org.equeim.tremotesf.rpc.performRecoveringRequestIntoStateFlow
+import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.rpc.requests.TorrentStatus
 import org.equeim.tremotesf.rpc.requests.TransferRate
@@ -165,7 +167,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         val statusFilterMode: StateFlow<StatusFilterMode>,
         val labelFilter: StateFlow<String>,
         val trackerFilter: StateFlow<String>,
-        val directoryFilter: StateFlow<String>,
+        val directoryFilter: StateFlow<NormalizedRpcPath>,
         val isAnySettingChanged: StateFlow<Boolean>
     ) {
         fun setSortMode(mode: SortMode) {
@@ -188,8 +190,8 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             GlobalScope.launch { Settings.torrentsTrackerFilter.set(tracker) }
         }
 
-        fun setDirectoryFilter(directory: String) {
-            GlobalScope.launch { Settings.torrentsDirectoryFilter.set(directory) }
+        fun setDirectoryFilter(directory: NormalizedRpcPath?) {
+            GlobalScope.launch { Settings.torrentsDirectoryFilter.set(directory?.value.orEmpty()) }
         }
 
         fun reset() {
@@ -199,7 +201,7 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
             setStatusFilterMode(StatusFilterMode.DEFAULT)
             setLabelFilter("")
             setTrackerFilter("")
-            setDirectoryFilter("")
+            setDirectoryFilter(null)
         }
     }
 
@@ -216,7 +218,11 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
                 statusFilterMode = Settings.torrentsStatusFilter.flow().stateIn(viewModelScope),
                 labelFilter = Settings.torrentsLabelFilter.flow().stateIn(viewModelScope),
                 trackerFilter = Settings.torrentsTrackerFilter.flow().stateIn(viewModelScope),
-                directoryFilter = Settings.torrentsDirectoryFilter.flow().stateIn(viewModelScope),
+                directoryFilter = combine(
+                    Settings.torrentsDirectoryFilter.flow(),
+                    GlobalRpcClient.serverCapabilitiesFlow,
+                    String::normalizePath
+                ).stateIn(viewModelScope),
                 isAnySettingChanged = combine<Any, Boolean>(
                     nameFilterFlow,
                     Settings.torrentsSortMode.flow(),
@@ -421,14 +427,14 @@ class TorrentsListFragmentViewModel(application: Application, savedStateHandle: 
         statusFilterMode: StatusFilterMode,
         labelFilter: String?,
         trackerFilter: String,
-        directoryFilter: String,
+        directoryFilter: NormalizedRpcPath,
     ): (Torrent) -> Boolean {
         return { torrent: Torrent ->
             (nameFilter.isEmpty() || torrent.name.contains(nameFilter, true)) &&
                     statusFilterAcceptsTorrent(torrent, statusFilterMode) &&
                     (labelFilter.isNullOrEmpty() || torrent.labels.contains(labelFilter)) &&
                     (trackerFilter.isEmpty() || (torrent.trackerSites.contains(trackerFilter))) &&
-                    (directoryFilter.isEmpty() || torrent.downloadDirectory.value == directoryFilter)
+                    (directoryFilter.isEmpty() || torrent.downloadDirectory == directoryFilter)
         }
     }
 

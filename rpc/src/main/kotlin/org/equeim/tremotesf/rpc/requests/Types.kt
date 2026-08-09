@@ -48,6 +48,8 @@ data class NormalizedRpcPath internal constructor(
     val value: String,
     internal val serverOs: ServerCapabilities.ServerOs?,
 ) {
+    fun isEmpty(): Boolean = value.isEmpty()
+
     internal class Serializer(private val serverCapabilities: () -> ServerCapabilities?) :
         KSerializer<NormalizedRpcPath> {
         override val descriptor: SerialDescriptor =
@@ -57,6 +59,10 @@ data class NormalizedRpcPath internal constructor(
             decoder.decodeString().normalizePath(serverCapabilities())
 
         override fun serialize(encoder: Encoder, value: NormalizedRpcPath) = encoder.encodeString(value.value)
+    }
+
+    companion object {
+        val EMPTY = NormalizedRpcPath(value = "", serverOs = null)
     }
 }
 

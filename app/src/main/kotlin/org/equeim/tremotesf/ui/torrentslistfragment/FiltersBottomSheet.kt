@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.equeim.tremotesf.R
 import org.equeim.tremotesf.common.AlphanumericComparator
+import org.equeim.tremotesf.rpc.normalizePath
 import org.equeim.tremotesf.rpc.requests.NormalizedRpcPath
 import org.equeim.tremotesf.rpc.requests.Torrent
 import org.equeim.tremotesf.rpc.toNativeSeparators
@@ -222,25 +223,26 @@ private fun FiltersBottomSheetContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        val currentDirectoryFilterString by sortAndFilterSettings.directoryFilter.collectAsStateWithLifecycle()
-        val currentDirectoryFilter = remember {
+        val currentDirectoryFilter by sortAndFilterSettings.directoryFilter.collectAsStateWithLifecycle()
+        val currentDirectoryFilterCalculated = remember {
             derivedStateOf {
-                calculatedFilters.directories.find { it.directory == currentDirectoryFilterString }
+                calculatedFilters.directories.find { it.directory == currentDirectoryFilter }
                     ?: CalculatedFilters.DirectoryFilter(
-                        directory = currentDirectoryFilterString,
+                        directory = currentDirectoryFilter,
+                        displayDirectory = currentDirectoryFilter.toNativeSeparators(),
                         torrentsCount = 0
                     )
             }
         }
         TremotesfComboBox(
-            currentItem = currentDirectoryFilter::value,
+            currentItem = currentDirectoryFilterCalculated::value,
             updateCurrentItem = { sortAndFilterSettings.setDirectoryFilter(it.directory) },
             items = calculatedFilters.directories,
             itemDisplayString = {
                 if (it.directory.isEmpty()) {
                     stringResource(R.string.torrents_all, it.torrentsCount)
                 } else {
-                    stringResource(R.string.directories_spinner_text, it.directory, it.torrentsCount)
+                    stringResource(R.string.directories_spinner_text, it.displayDirectory, it.torrentsCount)
                 }
             },
             label = R.string.directories,
@@ -293,7 +295,7 @@ private data class CalculatedFilters(
 ) {
     data class LabelFilter(val label: String, val torrentsCount: Int)
     data class TrackerFilter(val trackerSite: String, val torrentsCount: Int)
-    data class DirectoryFilter(val directory: String, val torrentsCount: Int)
+    data class DirectoryFilter(val directory: NormalizedRpcPath, val displayDirectory: String, val torrentsCount: Int)
 }
 
 private fun calculateFilters(
@@ -308,7 +310,7 @@ private fun calculateFilters(
         null
     }
     val trackers = sortedMapOf(comparator, "" to torrents.size)
-    val directories = sortedMapOf(nullsFirst(compareBy(comparator, NormalizedRpcPath::value)), null to torrents.size)
+    val directories = sortedMapOf(compareBy(comparator, NormalizedRpcPath::value), NormalizedRpcPath.EMPTY to torrents.size)
     for (torrent in torrents) {
         for (mode in STATUS_FILTER_MODES_WITHOUT_ALL) {
             if (statusFilterAcceptsTorrent(torrent, mode)) {
@@ -331,7 +333,8 @@ private fun calculateFilters(
         trackers = trackers.map { CalculatedFilters.TrackerFilter(it.key, it.value) },
         directories = directories.map {
             CalculatedFilters.DirectoryFilter(
-                directory = it.key?.toNativeSeparators().orEmpty(),
+                directory = it.key,
+                displayDirectory = it.key.toNativeSeparators(),
                 torrentsCount = it.value
             )
         }
@@ -358,7 +361,7 @@ private fun FiltersBottomSheetPreview() = ComponentPreview {
                 statusFilterMode = MutableStateFlow(StatusFilterMode.Downloading),
                 labelFilter = MutableStateFlow(""),
                 trackerFilter = MutableStateFlow(""),
-                directoryFilter = MutableStateFlow(""),
+                directoryFilter = MutableStateFlow("".normalizePath(null)),
                 isAnySettingChanged = MutableStateFlow(true)
             )
         },
