@@ -5,7 +5,9 @@
 package org.equeim.tremotesf.rpc
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -59,6 +61,9 @@ open class RpcClient(
 
     val shouldConnectToServer = MutableStateFlow(true)
 
+    val disconnectedFromServer: Flow<Unit>
+        field = MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     init {
         coroutineScope.launch {
             shouldConnectToServer.collect {
@@ -66,6 +71,7 @@ open class RpcClient(
                     connectionConfiguration.value?.getOrNull()?.httpClient?.apply {
                         dispatcher.cancelAll()
                         connectionPool.evictAll()
+                        disconnectedFromServer.tryEmit(Unit)
                     }
                 }
             }
@@ -87,6 +93,7 @@ open class RpcClient(
             dispatcher.cancelAll()
             dispatcher.executorService.shutdown()
             connectionPool.evictAll()
+            disconnectedFromServer.tryEmit(Unit)
         }
         sessionId = null
         serverCapabilitiesResult.value = null
