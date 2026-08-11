@@ -83,7 +83,7 @@ fun <T> RpcClient.performPeriodicRequest(
             }
             while (currentCoroutineContext().isActive) {
                 actuallyPerformRecoveringRequest(performRequest, this)
-                val updateInterval = getConnectionConfiguration().value?.getOrNull()?.updateInterval
+                val updateInterval = connectionConfiguration.value?.getOrNull()?.updateInterval
                 if (updateInterval != null) {
                     delay(updateInterval)
                 } else {
@@ -167,7 +167,7 @@ private suspend fun <T> RpcClient.actuallyPerformRecoveringRequest(
 private class StartRequestFromScratch(val nonRecoverableError: RpcRequestState.Error? = null)
 
 private fun RpcClient.startRequestFromScratchEvents(): Flow<StartRequestFromScratch> = combine(
-    getConnectionConfiguration(),
+    connectionConfiguration,
     shouldConnectToServer
 ) { configuration, shouldConnectToServer ->
     StartRequestFromScratch(getInitialNonRecoverableError(configuration, shouldConnectToServer))
@@ -185,7 +185,7 @@ private fun getInitialNonRecoverableError(
     }
 
 private fun <T> RpcClient.getInitialRequestState(): RpcRequestState<T> = getInitialNonRecoverableError(
-    getConnectionConfiguration().value,
+    connectionConfiguration.value,
     shouldConnectToServer.value
 ) ?: RpcRequestState.Loading
 

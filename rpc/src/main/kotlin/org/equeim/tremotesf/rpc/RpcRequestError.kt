@@ -210,7 +210,7 @@ fun RpcRequestError.makeDetailedError(client: RpcClient): DetailedRpcRequestErro
         clientCertificates = response?.run {
             withPriorResponses.flatMap { it.handshake?.localCertificates.orEmpty() }.toSet().toList()
         }
-            ?: client.getConnectionConfiguration().value?.getOrNull()?.clientCertificates.orEmpty(),
+            ?: client.connectionConfiguration.value?.getOrNull()?.clientCertificates.orEmpty(),
         requestHeaders = requestHeaders?.toList().orEmpty(),
     )
 }

@@ -38,8 +38,8 @@ open class RpcClient(
     protected val coroutineScope: CoroutineScope,
     private val retryOnConnectionFailure: Boolean = true
 ) {
-    private val connectionConfiguration = MutableStateFlow<Result<ConnectionConfiguration>?>(null)
-    internal fun getConnectionConfiguration(): StateFlow<Result<ConnectionConfiguration>?> = connectionConfiguration
+    internal val connectionConfiguration: StateFlow<Result<ConnectionConfiguration>?>
+        field = MutableStateFlow(null)
 
     internal val json = Json {
         ignoreUnknownKeys = true
