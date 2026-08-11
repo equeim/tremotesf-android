@@ -76,10 +76,8 @@ object PeriodicServerStateUpdater {
         }
 
         coroutineScope.launch {
-            GlobalRpcClient.shouldConnectToServer.collect {
-                if (!it) {
-                    updatedTorrentsSinceEnablingConnection.set(false)
-                }
+            GlobalRpcClient.disconnectedFromServer.collect {
+                updatedTorrentsSinceEnablingConnection.set(false)
             }
         }
 
