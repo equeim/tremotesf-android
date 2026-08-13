@@ -429,6 +429,7 @@ private fun ShowNotificationPermissionSnackbar(
                 withDismissAction = true,
                 duration = SnackbarDuration.Indefinite
             )
+            showSnackbar = false
             onShownNotificationPermissionRequest()
             if (result == SnackbarResult.ActionPerformed) {
                 notificationPermissionHelperState.requestPermission()
