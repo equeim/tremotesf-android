@@ -18,5 +18,6 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("build-logic")
 includeBuild("bencode")
 include(":common", ":rpc", ":torrentfile", ":app")
