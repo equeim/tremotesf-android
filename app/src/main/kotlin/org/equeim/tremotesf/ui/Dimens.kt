@@ -5,7 +5,7 @@
 package org.equeim.tremotesf.ui
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -19,7 +19,7 @@ object Dimens {
 
     @Composable
     fun screenContentPadding(): PaddingValues {
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+        val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
         val horizontal = screenContentPaddingHorizontal(windowSizeClass)
         val vertical = screenContentPaddingVertical(windowSizeClass)
         return PaddingValues(
@@ -31,7 +31,7 @@ object Dimens {
     }
 
     @Composable
-    fun screenContentPaddingVertical(): Dp = screenContentPaddingVertical(currentWindowAdaptiveInfo().windowSizeClass)
+    fun screenContentPaddingVertical(): Dp = screenContentPaddingVertical(currentWindowAdaptiveInfoV2().windowSizeClass)
 
     private fun screenContentPaddingVertical(windowSizeClass: WindowSizeClass): Dp =
         if (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)) {
@@ -42,7 +42,7 @@ object Dimens {
 
     @Composable
     fun screenContentPaddingHorizontal(): Dp =
-        screenContentPaddingHorizontal(currentWindowAdaptiveInfo().windowSizeClass)
+        screenContentPaddingHorizontal(currentWindowAdaptiveInfoV2().windowSizeClass)
 
     private fun screenContentPaddingHorizontal(windowSizeClass: WindowSizeClass): Dp =
         if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
