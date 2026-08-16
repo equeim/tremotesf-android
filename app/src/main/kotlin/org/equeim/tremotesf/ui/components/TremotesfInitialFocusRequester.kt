@@ -5,7 +5,7 @@
 package org.equeim.tremotesf.ui.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +18,7 @@ fun rememberTremotesfInitialFocusRequester(): FocusRequester {
     val requester = remember { FocusRequester() }
     var requestedFocus: Boolean by rememberSaveable { mutableStateOf(false) }
     if (!requestedFocus) {
-        LaunchedEffect(null) {
+        SideEffect(Unit) {
             requester.requestFocus()
             requestedFocus = true
         }

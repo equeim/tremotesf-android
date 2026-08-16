@@ -27,7 +27,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -87,7 +87,7 @@ data class TorrentPropertiesDestination(val torrentHashString: String) : Destina
             )
         }
         if (model.shouldNavigateUp) {
-            LaunchedEffect(null) { navController.popBackStack() }
+            SideEffect(Unit) { navController.popBackStack() }
         }
         TorrentPropertiesScreen(
             navigateUp = navController::popBackStack,

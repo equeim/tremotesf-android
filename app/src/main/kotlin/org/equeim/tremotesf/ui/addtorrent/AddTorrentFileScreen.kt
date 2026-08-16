@@ -36,8 +36,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -206,7 +206,7 @@ private fun AddTorrentFileScreen(
         }
 
         if (permissionHelperState != null && !permissionHelperState.permissionGranted) {
-            LaunchedEffect(permissionHelperState) {
+            SideEffect(Unit) {
                 permissionHelperState.requestPermission()
             }
 
@@ -221,7 +221,7 @@ private fun AddTorrentFileScreen(
             return@Scaffold
         }
 
-        LaunchedEffect(null) { loadTorrentFile() }
+        SideEffect(Unit) { loadTorrentFile() }
 
         var showDetailedErrorDialog: DetailedRpcRequestError? by rememberSaveable { mutableStateOf(null) }
         showDetailedErrorDialog?.let {

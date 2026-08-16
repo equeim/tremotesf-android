@@ -15,7 +15,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -35,7 +35,7 @@ fun BaseTremotesfButtonWithTooltip(
             tooltip = {
                 PlainTooltip { Text(tooltipTextString) }
                 val view = LocalView.current
-                LaunchedEffect(null) { view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) }
+                SideEffect(Unit) { view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS) }
             },
             state = rememberTooltipState(),
             focusable = false
