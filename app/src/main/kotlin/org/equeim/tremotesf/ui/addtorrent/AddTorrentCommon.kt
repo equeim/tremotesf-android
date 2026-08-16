@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -186,7 +187,7 @@ fun HandleFinishedAddTorrentState(
     if (state is AddTorrentState.Finished) {
         val owner = navController.viewModelStoreOwnerForDestinationOrNull<TorrentsListDestination>()
         val activity = checkNotNull(LocalActivity.current) as ComponentActivity
-        LaunchedEffect(null) {
+        SideEffect(Unit) {
             if (state.mergingTrackersMessage != null) {
                 showMergingTrackersMessageAfterAddingTorrent(
                     message = state.mergingTrackersMessage,
